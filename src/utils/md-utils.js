@@ -1,0 +1,119 @@
+import markdownit from "npm:markdown-it";
+import * as katex from 'https://cdn.skypack.dev/markdown-it-katex@2.0.3?min';
+import MarkdownItFootnote from "npm:markdown-it-footnote";
+import sup from 'npm:markdown-it-sup';
+const inlineTextColor = import('https://cdn.skypack.dev/@gerhobbelt/markdown-it-inline-text-color@1.0.1-1?min');
+import textBgColor from 'https://cdn.jsdelivr.net/npm/markdown-it-color-plus/+esm';
+import html5Media from 'https://cdn.jsdelivr.net/npm/markdown-it-html5-embed/+esm';
+
+
+const ATXRenderer = function () {
+  const mapping = {
+    h1: "h2",
+    h2: "h3"
+  };
+  function getTagName(token) {
+    return token.markup == "-" || token.markup == "="
+      ? "h1"
+      : mapping[token.tag] ?? token.tag;
+  }
+
+  function open(tokens, idx) {
+    const token = tokens[idx];
+    const tag = getTagName(token);
+
+    return `<${tag}>`;
+  }
+
+  function close(tokens, idx) {
+    const token = tokens[idx];
+    const tag = getTagName(token);
+
+    return `</${tag}>`;
+  }
+
+  return function (md) {
+    // Custom rule to wrap the first word of H1 headings in a <span>
+    md.core.ruler.push("wrap_first_word_in_h1", function (state) {
+      // Iterate over all tokens in the markdown content
+      state.tokens.forEach((token, i) => {
+        // Check if it's an opening tag for a heading and it's a first-level heading (h1)
+        if (token.type === "heading_open" && token.tag === "h1") {
+          const inlineToken = state.tokens[i + 1]; // The next token is the inline token that holds the content
+
+          if (inlineToken.type === "inline") {
+            // Find the first text token in the inline token's children
+            const textToken = inlineToken.children.find(
+              (child) => child.type === "text"
+            );
+
+            if (textToken) {
+              // Split the text content into words
+              const words = textToken.content.split(" ");
+
+              if (words.length > 0) {
+                // Modify the content: replace the first word with an HTML span and keep the rest as text
+                const firstWord = words.shift(); // Extract the first word
+
+                // Create a new token for the span-wrapped first word
+                const firstWordToken = new state.Token("html_inline", "", 0);
+                firstWordToken.content = `<span>${firstWord}</span>`;
+
+                // Update the original text token to contain the remaining words
+                textToken.content = textToken.content.substr(firstWord.length);
+
+                // Insert the new firstWordToken before the textToken in the children array
+                inlineToken.children.unshift(firstWordToken);
+              }
+            }
+          }
+        }
+      });
+    });
+    md.renderer.rules.heading_open = open;
+    md.renderer.rules.heading_close = close;
+  };
+}
+
+const Markdown = new markdownit({html: false})
+.use(katex.default, {
+  svg: {
+    scale: 2
+  }
+})
+.use(sup)
+.use(MarkdownItFootnote)
+.use(textBgColor.default, { inline: false, isMultiLine: true })
+.use(html5Media, {
+  html5embed: {
+    useImageSyntax: false, // Enables video/audio embed with ![]() syntax (default)
+    useLinkSyntax: true // Enables video/audio embed with []() syntax
+  }
+})
+.use(ATXRenderer())
+
+const mdPlus = {
+  unsafe(string) {
+    var head = document.head || document.getElementsByTagName("head")[0];
+    const href =
+      "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css";
+    
+    const existingLink = document.querySelector(`head link[href="${href}"]`);
+    if (!existingLink) {
+      var link = document.createElement("link");
+      head.appendChild(link);
+
+      link.rel = "stylesheet";
+      link.href = href;
+    }
+
+    const template = document.createElement("template");
+    template.innerHTML = Markdown.render(string);
+    return template.content.cloneNode(true);
+  },
+  renderToString(string){
+    return Markdown.render(string);
+  }
+};
+
+export default mdPlus;
