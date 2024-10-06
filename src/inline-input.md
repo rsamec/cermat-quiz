@@ -99,8 +99,8 @@ function toTemplate(
   };
 
   // Apply the string interpolation
-  const updatedStrings = mdPlus.renderToString(interpolateString(template)).replaceAll("(formatValue(","\${computed(() => formatValue(")
-  console.log(updatedStrings)
+  const updatedStrings = mdPlus.renderToString(interpolateString(template));
+  console.log(updatedStrings.replaceAll("(formatValue(","\${computed(() => formatValue("))
 
 
   // Safely create a template literal using new Function
