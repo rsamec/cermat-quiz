@@ -144,7 +144,7 @@ import {renderQuiz} from './components/quiz-form.js';
 ```js
 
 const displayOptions = {useAIHelpers, useQuizPerColumn, useFormControl:true};
-const actionsButton =Inputs.button(["Sdílet","Tisk"].map(d => [d, () => window.open(`http://127.0.0.1:3000/quiz-${observable.params.subject}-${observable.params.period}?q=${queryValue}&${convertFlagsToQueryParam(displayOptions)}&useFormControl=${d ==="Tisk"? false: true}`)]))
+const actionsButton =Inputs.button(["Sdílet","Tisk"].map(d => [d, () => window.open(`/quiz-${observable.params.subject}-${observable.params.period}?q=${queryValue}&${convertFlagsToQueryParam(displayOptions)}&useFormControl=${d ==="Tisk"? false: true}`)]))
 ```
 
 ```js
