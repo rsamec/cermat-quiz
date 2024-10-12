@@ -7,15 +7,15 @@ const quizLangCategories = ["AJA-2023", "AJB-2023", "AJA-2024", "AJB-2024", "DEA
     out[d] = {
       questions: [
         [1, 2, 3, 4],
-        range(5, 13),
-        range(13,21),
-        range(21,25),
-        range(25,30),
-        range(30,40),
-        range(40,45),
-        range(45,50),
-        range(50,60),
-        range(60,65),        
+        range(5, 12),
+        range(13,20),
+        range(21,24),
+        range(25,29),
+        range(30,39),
+        range(40,44),
+        range(45,49),
+        range(50,59),
+        range(60,64),        
       ].flatMap((arr, i) =>
         arr.map((d) => ({
           id: d,

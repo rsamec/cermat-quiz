@@ -1,0 +1,17 @@
+.h-stack {
+  display:flex;
+
+  &.h-stack--s {
+    gap: 5px;
+  }
+  &.h-stack--m {
+    gap: 10px;
+  }
+  &.h-stack--wrap {
+    flex-wrap: wrap;
+  }    
+}
+
+.grow {
+  flex-grow:1
+}

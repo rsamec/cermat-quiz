@@ -1,6 +1,27 @@
 ---
 title: Quiz markdown
+draft: true
 ---
+```js
+//import {renderQuiz} from './components/quiz.js';
+```
+
+<!-- ```js
+const data = await renderQuiz({selectedQuestions:[{code:'AJA-2024',id:1}]})
+display(html`${data}`);
+``` -->
+
+
+<script type="module">
+
+import {renderQuiz} from "http://127.0.0.1:3000/_import/components/quiz.js";
+const data = await renderQuiz({selectedQuestions:[...Array(60)].map((d,i) => ({code:'AJA-2024',id:i+1}))})
+document.getElementById("rr").appendChild(data[0]);
+
+</script>
+
+<div id="rr">aa</div>
+
 
 ```js echo
 mdPlus.unsafe(`This is a checkbox, {red}(supported by) combining [markdown-it](https://github.com/markdown-it/markdown-it) and [markdown-it-task-lists](https://github.com/revin/markdown-it-task-lists).

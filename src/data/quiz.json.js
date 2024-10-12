@@ -1,11 +1,4 @@
-import { parseArgs } from "node:util";
 import { quizes } from '../utils/quizes.js';
-
-const {
-  values: { subject, period }
-} = parseArgs({
-  options: { subject: { type: "string" }, period: { type: "string" } }
-});
 
 function quizQuestions(selectedQuizes) {
   const codesAndUrls = selectedQuizes.flatMap(d => d.codes.map(
@@ -95,7 +88,6 @@ function normalizeImageUrlsToAbsoluteUrls(markdown, segments) {
   return replacedMarkdown;
 }
 
+const data = await quizQuestions(quizes);
 
-const data = await quizQuestions(quizes.filter(d => d.subject === subject && d.period === period));
-
-process.stdout.write(JSON.stringify(Object.fromEntries(data.map(d => [d.code, d]))))
+process.stdout.write(JSON.stringify(Object.fromEntries(data.map(d => [d.code, d]))));

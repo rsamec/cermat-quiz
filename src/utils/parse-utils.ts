@@ -66,10 +66,10 @@ export function chunkByAbbreviationType(tree: Tree, input: string, abbr: Abbrevi
   })
   return chunks.length > 0 ? chunks : [input];
 }
-export type ParsedQuestion = { type?: { name: string }, header: string, content: string, options: Option<string>[] };
+export type ParsedQuestion = { type?: { name: string }, header: string, content: string, contentWithoutOptions: string, options: Option<string>[] };
 export type QuestionHtml = ParsedQuestion & { contentHtml: string }
 export type State = { position: number, type?: { name: string }, header: string, options: Option<string>[], excludeChunks: PositionChunk[] }
-export function chunkHeadingsList(tree: Tree, input: string,{excludeOptions}: {excludeOptions?:boolean}= {excludeOptions: true}) {
+export function chunkHeadingsList(tree: Tree, input: string) {
 
   const children: ParsedQuestion[] = [];
   let lastState: State = { position: 0, header: '', options: [], excludeChunks: [] }
@@ -89,7 +89,8 @@ export function chunkHeadingsList(tree: Tree, input: string,{excludeOptions}: {e
           children.push({
             type: lastState.type,
             header: lastState.header,
-            content: excludeOptions ? excludeChunks(content, computedExcludeChunks()):content ,
+            content,
+            contentWithoutOptions: excludeChunks(content, computedExcludeChunks()),
             options: lastState.options
           })
         }
@@ -112,7 +113,8 @@ export function chunkHeadingsList(tree: Tree, input: string,{excludeOptions}: {e
         children.push({
           type: lastState.type,
           header: lastState.header,
-          content: excludeOptions ?  excludeChunks(content, computedExcludeChunks()): content,
+          content,
+          contentWithoutOptions: excludeChunks(content, computedExcludeChunks()),
           options: lastState.options
         })
       }
@@ -195,46 +197,60 @@ export function countMaxChars(str: string, charToCount: string): number {
   const maxCount = matches.length == 0 ? 0 : Math.max(...matches.map(match => match.length));
   return maxCount;
 }
-
-export function getQuizBuilder(tree: Tree, input: string) {
-  const rawHeadings = chunkHeadingsList(tree, input, {excludeOptions: false});
-
+export type RenderType = "none" | "content" | "contentWithoutOptions";
+export type RenderOptions = { ids?: number[]; rootOnly?: boolean, render?: RenderType }
+export function getQuizBuilder(tree: Tree, input: string, baseRenderOptions: RenderOptions = { render: "content" }) {
+  const rawHeadings = chunkHeadingsList(tree, input);
   function order(name?: string) {
     if (name == Abbreviations.ST) return 1;
     if (name == Abbreviations.H1) return 2;
-    return 3;    
+    return 3;
   }
-  
-  const headingsTree = createTree(rawHeadings.map(data => ({ data })), (child, potentionalParent) => order(child.type?.name) > order(potentionalParent.type?.name));
-  
 
-  const rootQuestions = getNodesWithAncestors({ data: {} as ParsedQuestion, children: headingsTree }, d => d.type?.name == Abbreviations.H1);
+  const headingsTree = createTree(rawHeadings.map(data => ({ data })), (child, potentionalParent) => order(child.type?.name) > order(potentionalParent.type?.name));
+
+
+  const rootQuestions = getNodesWithAncestors({ data: {} as ParsedQuestion, children: headingsTree },
+    d => d.type?.name == Abbreviations.H1,
+    (parent, child) => {
+      //copy some children property bottom up from leafs to its parent
+      if (parent.options?.length === 0 && child.options?.length > 0) {
+        parent.options = child.options;
+      }
+    });
   const isInRange = (number: number, range: [number, number] | null) => range != null ? number >= range[0] && number <= range[1] : false;
-  const toContent = (items: { header: string, content: string }[]) => items.map(d => (d.header ?? "") + (d.content ?? "")).join("");
+  const toContent = (items: { header: string, content: string, contentWithoutOptions: string }[], { renderHeader, render }: { renderHeader: boolean, render: RenderType }) =>
+    items.map(d => (renderHeader ? d.header ?? "" : "") +
+      (render === "content"
+        ? d.content ?? ""
+        : render === "contentWithoutOptions"
+          ? d.contentWithoutOptions ?? ""
+          : "")).join("");
 
   const values = rootQuestions.map(d => {
     const root = d.ancestors[1].data;
-    const id = Math.floor(parseFloat(replaceAll(d.leaf.data.header,"#", "")));
+    const id = Math.floor(parseFloat(replaceAll(d.leaf.data.header, "#", "")));
     const range = root.type?.name == Abbreviations.ST ? extractNumberRange(root.header) : null;
-    
+
     return {
       title: d.leaf.data.header,
       id,
-      content: (selectedIds: number[]) => {
+      content: (selectedIds: number[], renderOptions?: RenderOptions) => {
+        const { rootOnly, render } = renderOptions != null ? { ...baseRenderOptions, ...renderOptions } : baseRenderOptions;
         const children = d.ancestors.slice(-1)[0].children ?? [];
         const items = [d.leaf.data].concat(children.map(d => d.data));
         return isInRange(id, range) && !selectedIds?.some(d => d < id && isInRange(d, range))
-          ? toContent([root].concat(items))
-          : toContent(items)
+          ? toContent([root], { renderHeader: true, render }) + toContent(items, { renderHeader: !rootOnly, render })
+          : toContent(items, { renderHeader: !rootOnly, render })
       },
       options: d.leaf.data.options?.length > 0 ? d.leaf.data.options : d.ancestors[d.ancestors.length - 2].data.options
     }
   })
   const output = {
     questions: values.map(d => ({ id: d.id, title: d.title, options: d.options })),
-    content: (ids: number[]) => {
+    content: (ids: number[], renderOptions?: RenderOptions) => {
       const filteredQuestions = values.filter(d => ids.includes(d.id));
-      return filteredQuestions.map(d => d.content(filteredQuestions.map(d => d.id))).join("")
+      return filteredQuestions.map(d => d.content(renderOptions?.ids ?? ids, renderOptions)).join("")
     }
   }
   return output;
@@ -308,7 +324,7 @@ export interface LeafWithAncestors<T> {
   ancestors: TreeNode<T>[];
 }
 
-export function getAllLeafsWithAncestors<T>(tree: TreeNode<T>, applyChildSetToParent?:(parent:T, child:T) => void): LeafWithAncestors<T>[] {
+export function getAllLeafsWithAncestors<T>(tree: TreeNode<T>, applyChildSetToParent?: (parent: T, child: T) => void): LeafWithAncestors<T>[] {
   const result: LeafWithAncestors<T>[] = [];
 
   function traverse(node: TreeNode<T>, ancestors: TreeNode<T>[] = []) {
@@ -316,9 +332,9 @@ export function getAllLeafsWithAncestors<T>(tree: TreeNode<T>, applyChildSetToPa
 
     if (!node.children || node.children.length === 0) {
       // Node is a leaf
-      
+
       applyChildSetToParent?.(ancestors[ancestors.length - 1].data, node.data);
-      
+
       result.push({ leaf: node, ancestors: currentAncestors });
     } else {
       // Node has children, continue traversal
@@ -331,13 +347,14 @@ export function getAllLeafsWithAncestors<T>(tree: TreeNode<T>, applyChildSetToPa
   return result;
 }
 
-export function getNodesWithAncestors<T>(tree: TreeNode<T>, selector: (node:T) => boolean): LeafWithAncestors<T>[] {
+export function getNodesWithAncestors<T>(tree: TreeNode<T>, selector: (node: T) => boolean, applyChildSetToParent?: (parent: T, child: T) => void): LeafWithAncestors<T>[] {
   const result: LeafWithAncestors<T>[] = [];
 
   function traverse(node: TreeNode<T>, ancestors: TreeNode<T>[] = []) {
     const currentAncestors = [...ancestors, node];
 
-    if ( selector(node.data)){
+    if (selector(node.data)) {
+      applyChildSetToParent?.(ancestors[ancestors.length - 1].data, node.data);
       result.push({ leaf: node, ancestors: currentAncestors });
     }
     else if (!node.children || node.children.length === 0) {

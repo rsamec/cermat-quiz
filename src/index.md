@@ -3,9 +3,45 @@ toc: false
 ---
 
 <div class="hero">
-  <h1>Cermat Quiz</h1>
-  <h2>Welcome to your new app! Edit&nbsp;<code style="font-size: 90%;">src/index.md</code> to change this page.</h2>
+  <h1>Cermat úlohy</h1>
+  <h2>Mimooficiální data banka úloh&nbsp;<code style="font-size: 90%;">src/index.md</code> to change this page.</h2>
   <a href="https://observablehq.com/framework/getting-started">Get started<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+</div>
+
+```js
+import {convertTree, formatSubject, formatPeriod, parseCode, formatCode, categories} from './utils/quiz-utils.js';
+
+const quizLangCategories = await FileAttachment("./data/quiz-lang-categories.json").json();
+const quizGeneratedCategories = await FileAttachment("./data/quiz-categories.json").json();
+const quizCategories = ({
+  ...quizLangCategories,
+  ...quizGeneratedCategories
+})
+
+const quizQuestions = Object.entries(quizCategories).flatMap(([code, value]) =>
+  value.questions.map((d) => {
+    const parsedCode = parseCode(code);
+    return {
+      ...d,
+      code,      
+      period: parsedCode.period,      
+      subject: parsedCode.subject,
+      year: parsedCode.year,
+      Category: categories[parsedCode.subject][d.category],
+    };
+  })
+)
+
+const subjects = ["math","cz","en","de"];
+```
+
+<!-- Cards with big numbers -->
+
+<div class="h-stack h-stack--s">
+ ${subjects.map(subject => html`<div class="card grow">
+    <h2>${formatSubject(subject)}</h2>
+    <span class="big">${quizQuestions.filter((d) => d.subject === subject).length.toLocaleString("en-US")}</span>
+  </div>`)}
 </div>
 
 <div class="grid grid-cols-2" style="grid-auto-rows: 504px;">

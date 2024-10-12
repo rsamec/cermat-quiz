@@ -1,3 +1,5 @@
+/// A lightly modified version of yurivish version https://github.com/yurivish/reactive-htl
+/// https://observablehq.com/@yurivish/reactive-htl
 import { signal, computed, effect, batch, Signal } from '@preact/signals-core';
 
 import {

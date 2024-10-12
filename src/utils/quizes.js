@@ -11,5 +11,5 @@ export const quizes = [
   { subject: 'math', period: '8', codes:generateCode("M5",["A","B"])},
   { subject: 'math', period: '4', codes:generateCode("M9",["A","B","C","D"])},
   { subject: 'math', period: '6', codes:generateCode("M7",["A","B"])},
-  { subject: 'math', period: 'diploma', codes:[]},
+  //{ subject: 'math', period: 'diploma', codes:[]},
 ]
