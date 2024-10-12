@@ -1,9 +1,9 @@
 {
   "type": "module",
-  "private": true,
+  "private": false,
   "scripts": {
     "clean": "rimraf src/.observablehq/cache",
-    "build": "observable build",
+    "build": "observable build",true
     "dev": "observable preview",
     "deploy": "observable deploy",
     "observable": "observable"
