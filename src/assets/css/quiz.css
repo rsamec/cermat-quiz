@@ -5,7 +5,8 @@
 
 @media print {
   #observablehq-center, #observablehq-main,
-  .observablehq-center, .observablehq-main {
+  .observablehq-center, .observablehq-main,
+  .observablehq .observablehq--block {
     margin: 0px;
   }
 }
