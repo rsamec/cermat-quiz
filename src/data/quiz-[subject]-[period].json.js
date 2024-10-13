@@ -1,5 +1,6 @@
 import { parseArgs } from "node:util";
 import { quizes } from '../utils/quizes.js';
+import {normalizeImageUrlsToAbsoluteUrls} from "../utils/quiz-utils.js";
 
 const {
   values: { subject, period }
@@ -85,16 +86,6 @@ function forkJoin(promises) {
     }
   });
 }
-function normalizeImageUrlsToAbsoluteUrls(markdown, segments) {
-  const regex = /\]\((.*?)\)/g;
-  const replacedMarkdown = markdown.replace(regex, (match, imageUrl) => {
-    const modifiedImageUrl = segments.concat(imageUrl.replace('./', '')).join('/');
-    // Reconstruct the markdown with the modified image URL
-    return `](${modifiedImageUrl})`;
-  });
-  return replacedMarkdown;
-}
-
 
 const data = await quizQuestions(quizes.filter(d => d.subject === subject && d.period === period));
 

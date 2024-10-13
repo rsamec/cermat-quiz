@@ -57,6 +57,16 @@ export const categories = ({
   de: langCategories
 })
 
+export function normalizeImageUrlsToAbsoluteUrls(markdown, segments) {
+  const regex = /\]\((.*?)\)/g;
+  const replacedMarkdown = markdown.replace(regex, (match, imageUrl) => {
+    const modifiedImageUrl = segments.concat(imageUrl.replace('./', '')).join('/');
+    // Reconstruct the markdown with the modified image URL
+    return `](${modifiedImageUrl})`;
+  });
+  return replacedMarkdown;
+}
+
 const generateCode = (code, variants ) => [2023,2024].flatMap(year => variants.flatMap(v => `${code}${v}-${year}`));
 export const quizes = [
   { subject: 'en', period: 'diploma', codes: ["AJA-2023", "AJB-2023", "AJA-2024", "AJB-2024"] },
