@@ -1,7 +1,7 @@
-import { Tree } from "npm:@lezer/common";
-import { BlockContext, LeafBlock } from "npm:@lezer/markdown";
 
-
+export type Tree  = any;
+export type BlockContext =  any;
+export type LeafBlock = any;
 export type Option<T> = { name: string, nameHtml?: string, value: T }
 export const Abbreviations = {
   H1: "ATXHeading1",

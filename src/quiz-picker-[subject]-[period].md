@@ -12,6 +12,7 @@ style: /assets/css/quiz.css
 ```js
 import {categories, parseCode, formatCode, formatSubject, formatPeriod} from './utils/quiz-utils.js';
 import {convertQueryParamToQuestions, convertFlagsToQueryParam} from './utils/string-utils.js';
+const quizQuestionsMap = await FileAttachment(`./data/quiz-${observable.params.subject}-${observable.params.period}.json`).json();
 ```
 
 <div class="h-stack">
@@ -31,18 +32,21 @@ const quizCategories = ({
   ...quizGeneratedCategories
 })
 
-const filteredQuizCategories = Object.entries(quizCategories).flatMap(([code, value]) =>
-  value.questions.map((d) => {
-    const parsedCode = parseCode(code);
-    return {
-      ...d,
-      code,
-      year: parsedCode.year,      
-      period: parsedCode.period,      
-      subject: parsedCode.subject,
-      Category: categories[parsedCode.subject][d.category],
-    };
-  })
+const filteredQuizCategories = Object.entries(quizCategories).flatMap(([code, value]) => {
+  const questions = quizQuestionsMap[code]?.q ?? [];
+  return value.questions.map((d,i) => {
+      const parsedCode = parseCode(code);
+      return {
+        ...d,
+        code,
+        title: questions[i],
+        year: parsedCode.year,      
+        period: parsedCode.period,      
+        subject: parsedCode.subject,
+        Category: categories[parsedCode.subject][d.category],
+      };
+    })
+  }
 ).filter(d => d.subject === observable.params.subject && d.period === observable.params.period)
 
 const years = Object.keys(Object.groupBy(filteredQuizCategories, ({year}) => year));
@@ -97,7 +101,8 @@ const search = view(Inputs.search(filtered));
 ```js
 const selectedQuestions = view(Inputs.table(search, {
    columns: [
-    "id",    
+    "id",
+    "title",
     "Category",
     "code",
     "year",    
@@ -106,7 +111,7 @@ const selectedQuestions = view(Inputs.table(search, {
     code: d => formatCode(d)
   }
 }));
-const quizQuestionsMap = await FileAttachment(`./data/quiz-${observable.params.subject}-${observable.params.period}.json`).json();
+
 ```
 
 ```js

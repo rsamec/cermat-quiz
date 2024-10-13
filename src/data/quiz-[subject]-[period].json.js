@@ -1,6 +1,9 @@
 import { parseArgs } from "node:util";
+import { parser } from '@lezer/markdown';
+import { getQuizBuilder } from "../utils/parse-utils.js";
 import { quizes } from '../utils/quizes.js';
-import {normalizeImageUrlsToAbsoluteUrls} from "../utils/quiz-utils.js";
+import { normalizeImageUrlsToAbsoluteUrls } from "../utils/quiz-utils.js";
+
 
 const {
   values: { subject, period }
@@ -21,16 +24,18 @@ function quizQuestions(selectedQuizes) {
         try {
           return d.ok ? d.text() : Promise.resolve('')
         }
-        catch(e) { 
+        catch (e) {
           console.error(e)
-          return '' }
+          return ''
+        }
       }),
       fetch(jsonUrl).then((d) => {
         try {
           return d.ok ? d.json() : Promise.resolve({})
-        } catch(e) { 
+        } catch (e) {
           console.error(e)
-          return {} }
+          return {}
+        }
       }),
     ]))
   ).then(results =>
@@ -87,6 +92,19 @@ function forkJoin(promises) {
   });
 }
 
+const markdownParser = parser.configure([]);
+function makeQuizBuilder(normalizedQuiz) {  
+  const parsedTree = markdownParser.parse(normalizedQuiz);
+  return getQuizBuilder(parsedTree, normalizedQuiz,{});
+}
+
+
 const data = await quizQuestions(quizes.filter(d => d.subject === subject && d.period === period));
 
-process.stdout.write(JSON.stringify(Object.fromEntries(data.map(d => [d.code, d]))))
+const entries = data.map(d => {  
+  const questions = d.rawContent != "" ? makeQuizBuilder(d.rawContent).questions.map(d=>d.title) : [];  
+  return [d.code,{...d, q:questions}]
+});
+//console.log(entries)
+//process.stderr.write(val)
+process.stdout.write(JSON.stringify(Object.fromEntries(entries)));
