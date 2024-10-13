@@ -4,6 +4,7 @@
 @import './stacks.css';
 
 @media print {
+  #observablehq-center, #observablehq-main,
   .observablehq-center, .observablehq-main {
     margin: 0px;
   }

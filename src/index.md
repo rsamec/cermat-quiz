@@ -55,7 +55,7 @@ const subjectWithPeriods = {
     <span class="big">${Object.keys(Object.groupBy(quizQuestions.filter((d) => d.subject === subject), ({code}) => code)).length.toLocaleString("en-US")}</span>
     <span>testů</span>
     <hr/>
-    <div class="h-stack h-stack--m ">
+    <div class="h-stack h-stack--m h-stack--wrap">
     ${subjectWithPeriods[subject].map(period => html`<a class="h-stack h-stack--xs" href="./quiz-picker-${subject}-${period}">${formatPeriod(period)}<span><span>↗︎</span><span></a>
       `)}
       </div>
