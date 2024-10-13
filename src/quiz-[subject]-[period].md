@@ -24,11 +24,13 @@ const parameters = ({
   displayOptions: {...Object.fromEntries(Object.entries(searchParams).map(([key, value]) => ([key,value ==="true" ? true : value === "false"? false: value])))}
 })
 const quizWithControls = renderQuiz(parameters);
-display(renderQuizInCoumns(html`${quizWithControls.map(d=> d)}`));
+display(renderQuizInColumns(html`${quizWithControls.map(d=> d)}`));
 ```
 
 ```js
-function renderQuizInCoumns(content){
-  return html`<style>img { max-width: 100%;height: auto;}</style><div style="columns: 24rem;">${content}</div>`
+function renderQuizInColumns(content){ 
+  const columns= searchParams.columns;
+  return html`<div style="columns:${columns}">${content}</div>`
 }
+
 ```

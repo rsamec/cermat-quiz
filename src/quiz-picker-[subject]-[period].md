@@ -122,18 +122,34 @@ const useAIHelpersInput = Inputs.toggle({ label: "Pomocník AI"});
 const useAIHelpers = Generators.input(useAIHelpersInput);
 const useSolversInput = Inputs.toggle({ label: "Řešení"});
 const useSolvers = Generators.input(useSolversInput);
-const useQuizPerColumnInput = Inputs.toggle({ label: "Test v samostatném sloupci"});
-const useQuizPerColumn = Generators.input(useQuizPerColumnInput);
+
+const columnsOptions = new Map([["Šířka sloupce", false],["Počet sloupců",true]]);
+const columnsInput = Inputs.form({
+  useColumnCount: Inputs.radio(columnsOptions, {value: columnsOptions.get("Šířka sloupce")}),
+  columnWidth: Inputs.range([10,36], {step:1, value: 24, label: "Šířka sloupce"}),
+  columnCount: Inputs.range([1,6], {step:1, value: 2, label:"Počet sloupců"}),  
+  useBreakInside: Inputs.toggle({label:"Nezalamovat v rámci testu"}),  
+  useBreakBefore: Inputs.toggle({label:"Vynucení zalomení v rámci testu"}),
+});
+const columns = Generators.input(columnsInput);
 ```
+
 <div class="card">
   <details>
     <summary>
       Možnosti zobrazení
     </summary>
-  <section>
-    ${useAIHelpersInput}
-    ${useSolversInput}
-    ${useQuizPerColumnInput}
+    <section>
+    <div class="grid grid-cols-2">
+        <div>
+        <b>Více sloupcový layout stránky a možnosti nastavení stránkování v rámci sloupců.</b>
+          ${columnsInput}
+          </div>
+          <div>
+        <b>Zobraz tipy</b>
+        ${useAIHelpersInput}
+        </div>
+    </div>
   </section>
   </details>
 </div>  
@@ -141,10 +157,10 @@ const useQuizPerColumn = Generators.input(useQuizPerColumnInput);
 ```js
 import {renderQuiz} from './components/quiz-form.js';
 ```
-```js
 
-const displayOptions = {useAIHelpers, useQuizPerColumn, useFormControl:true};
-const actionsButton =Inputs.button(["Sdílet","Tisk"].map(d => [d, () => window.open(`./quiz-${observable.params.subject}-${observable.params.period}?q=${queryValue}&${convertFlagsToQueryParam(displayOptions)}&useFormControl=${d ==="Tisk"? false: true}`)]))
+```js
+const displayOptions = {useAIHelpers, useBreakInside: columns.useBreakInside, useBreakBefore:columns.useBreakInside, useFormControl:true};
+const actionsButton =Inputs.button(["Sdílet","Tisk"].map(d => [d, () => window.open(`./quiz-${observable.params.subject}-${observable.params.period}?q=${queryValue}&${convertFlagsToQueryParam(displayOptions)}&columns=${toColumnsStyleValue(columns)}&useFormControl=${d ==="Tisk"? false: true}`)]))
 ```
 
 ```js
@@ -155,10 +171,17 @@ const parameters = ({
   displayOptions
 })
 const quizWithControls = renderQuiz(parameters);
-display(renderQuizInCoumns(html`${quizWithControls.map(d=> d)}`));
+display(renderQuizInColumns(html`${quizWithControls.map(d=> d)}`));
 ```
 ```js
-function renderQuizInCoumns(content){
-  return html`<style>img { max-width: 100%;height: auto;}</style><div style="columns: 24rem;">${content}</div>`
+function toColumnsStyleValue(columns){
+  return columns.useColumnCount === true && columns.columnWidth > 1 
+    ? `${columns.columnCount}` 
+    : columns.useColumnCount === false 
+      ?`${columns.columnWidth}rem`
+      : '';
+}
+function renderQuizInColumns(content){ 
+  return html`<div style="columns:${toColumnsStyleValue(columns)}">${content}</div>`
 }
 ```

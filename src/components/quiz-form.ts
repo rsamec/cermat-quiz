@@ -15,7 +15,7 @@ type QuizParams = {
   questions: string[][],
   quizQuestionsMap: Record<string, { metadata: any, rawContent: string }>,
   subject: string,
-  displayOptions: { useAIHelpers?: boolean, useQuizPerColumn?: boolean, useFormControl?: boolean }
+  displayOptions: { useAIHelpers?: boolean, useBreakInside?: boolean, useBreakBefore?: boolean, columns?: string, useFormControl?: boolean }
 }
 
 export function renderQuiz(params: QuizParams) {
@@ -51,7 +51,7 @@ function chunkMetadataByInputs(metadata, subject, selectedIds = []) {
 }
 
 function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }: QuizParams) {
-  const { useQuizPerColumn, useAIHelpers, useFormControl } = displayOptions;
+  const { useBreakInside, useBreakBefore, useAIHelpers, useFormControl } = displayOptions;
   const inputsStore: Record<string, Record<string, any>> = {}
   return [questions.map(
     ([code, ...id]) => {
@@ -64,7 +64,7 @@ function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }:
       const chunks = chunkMetadataByInputs(quiz.metadata, subject, ids);
       const submit = "Odeslat"
 
-      return html`<div class=${useQuizPerColumn ? 'avoid' : ''}>${chunks.flatMap(([inline, g], i) => {
+      return html`<div class=${useBreakInside ? 'avoid' : ''}>${chunks.flatMap(([inline, g], i) => {
         const codeComponent = i === 0 ? (questionIndex) => questionIndex === 0 ? html`<h0>${formatCode(code)}</h0>` : null : () => null
         if (inline) {
           const ids = g.map(([key, leafs]) => parseInt(key, 10));
