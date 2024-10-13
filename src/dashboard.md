@@ -1,10 +1,12 @@
 ---
 theme: dashboard
-title: Úlohy
+title: Kategorie úloh
+footer: false
+pager: false
 toc: false
 ---
 
-# Data banka úloh 🚀
+# Kategorie úloh 🚀
 
 <!-- Load and transform the data -->
 
@@ -56,14 +58,6 @@ const color = Plot.scale({
   </div>`)}
 </div>
 
-```js
-
-const subjectsAndPeriod = ["math","cz"].flatMap(subject => ["4","6","8"].map(period => ({subject, period}))).concat(subjects.map(subject => ({subject,period:'diploma'})));
-
-
-display(html`<ul>${subjectsAndPeriod.map(d => html`<li><a href="./quiz-picker-${d.subject}-${d.period}">${formatSubject(d.subject)}-${formatPeriod(d.period)}</a></li>`)}</ul>`)
-```
-
 <!-- Plot of questions per category -->
 
 ```js
@@ -106,6 +100,3 @@ ${subjects.map(subject => html`<div class="grid grid-cols-1">
   </div>
 </div>`)}
 </div>
-
-
-Data: Roman Samec, [Neoficiální cermat testy](https://github.com/rsamec/cermat)

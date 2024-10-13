@@ -1,11 +1,11 @@
 ---
-title: Quiz builder
+title: Úlohy
 theme: ["wide"]
 sidebar: true
-header: Quiz builder
+header: false
 footer: false
-pager: true
-toc: true
+pager: false
+toc: false
 style: /assets/css/quiz.css
 ---
 

@@ -4,8 +4,9 @@ toc: false
 
 <div class="hero">
   <h1>Cermat úlohy</h1>
-  <h2>Mimooficiální data banka úloh&nbsp;<code style="font-size: 90%;">src/index.md</code> to change this page.</h2>
-  <a href="https://observablehq.com/framework/getting-started">Get started<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+  <h2>Mimooficiální data banka úloh</h2>
+  <a href="https://cermat.cz/">Data<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+  <a href="https://prijimacky.cermat.cz/files/files/CZVV_pravidla-vyuziti-webstrankyn.pdf">Licence<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
 </div>
 
 ```js
@@ -33,73 +34,58 @@ const quizQuestions = Object.entries(quizCategories).flatMap(([code, value]) =>
 )
 
 const subjects = ["math","cz","en","de"];
+const periods = ["4","6","8", "diploma"];
+const subjectWithPeriods = {
+  math:periods,
+  cz:periods,
+  en:["diploma"],
+  de:["diploma"]
+}
 ```
+
 
 <!-- Cards with big numbers -->
 
-<div class="h-stack h-stack--s">
+<div class="grid grid-cols-4">
  ${subjects.map(subject => html`<div class="card grow">
-    <h2>${formatSubject(subject)}</h2>
+    <h2>${formatSubject(subject)}</h2>    
     <span class="big">${quizQuestions.filter((d) => d.subject === subject).length.toLocaleString("en-US")}</span>
+    <span>úloh</span>
+    <span class="big">&nbsp;/&nbsp;</span>
+    <span class="big">${Object.keys(Object.groupBy(quizQuestions.filter((d) => d.subject === subject), ({code}) => code)).length.toLocaleString("en-US")}</span>
+    <span>testů</span>
+    <hr/>
+    <div class="h-stack h-stack--m ">
+    ${subjectWithPeriods[subject].map(period => html`<a class="h-stack h-stack--xs" href="./quiz-picker-${subject}-${period}">${formatPeriod(period)}<span><span>↗︎</span><span></a>
+      `)}
+      </div>
   </div>`)}
-</div>
-
-<div class="grid grid-cols-2" style="grid-auto-rows: 504px;">
-  <div class="card">${
-    resize((width) => Plot.plot({
-      title: "Your awesomeness over time 🚀",
-      subtitle: "Up and to the right!",
-      width,
-      y: {grid: true, label: "Awesomeness"},
-      marks: [
-        Plot.ruleY([0]),
-        Plot.lineY(aapl, {x: "Date", y: "Close", tip: true})
-      ]
-    }))
-  }</div>
-  <div class="card">${
-    resize((width) => Plot.plot({
-      title: "How big are penguins, anyway? 🐧",
-      width,
-      grid: true,
-      x: {label: "Body mass (g)"},
-      y: {label: "Flipper length (mm)"},
-      color: {legend: true},
-      marks: [
-        Plot.linearRegressionY(penguins, {x: "body_mass_g", y: "flipper_length_mm", stroke: "species"}),
-        Plot.dot(penguins, {x: "body_mass_g", y: "flipper_length_mm", stroke: "species", tip: true})
-      ]
-    }))
-  }</div>
 </div>
 
 ---
 
-## Next steps
+## Další kroky
 
-Here are some ideas of things you could try…
+Zde je několik nápadů, co byste mohli vyzkoušet…
 
 <div class="grid grid-cols-4">
   <div class="card">
-    Chart your own data using <a href="https://observablehq.com/framework/lib/plot"><code>Plot</code></a> and <a href="https://observablehq.com/framework/files"><code>FileAttachment</code></a>. Make it responsive using <a href="https://observablehq.com/framework/javascript#resize(render)"><code>resize</code></a>.
+    Podívat se na oficiální cermat úlohy <a href="https://prijimacky.cermat.cz/">příjmačky</a> a <a href="https://maturita.cermat.cz/">maturita</a>.
   </div>
   <div class="card">
-    Create a <a href="https://observablehq.com/framework/project-structure">new page</a> by adding a Markdown file (<code>whatever.md</code>) to the <code>src</code> folder.
+    Trénovací PWA aplikace <a href="https://www.eforms.cz/">eforms</a> s podporou práce offline a podporou pro řešení úloh pomocí AI nástrojů. Případně oficiální aplikace <a href="https://tau.cermat.cz/">TAU</a>.
   </div>
   <div class="card">
-    Add a drop-down menu using <a href="https://observablehq.com/framework/inputs/select"><code>Inputs.select</code></a> and use it to filter the data shown in a chart.
+    Studovat <a href="https://github.com/rsamec/cermat-quiz">zdrojové kódy</a> k aplikaci. Banka úloh výchází z oficiálních cermat úloh. Použité <a href="https://github.com/rsamec/cermat">formáty dat</a> k testovým úlohám.
   </div>
   <div class="card">
-    Write a <a href="https://observablehq.com/framework/loaders">data loader</a> that queries a local database or API, generating a data snapshot on build.
+     Banka úloh výchází z oficiálních cermat úloh. Použité <a href="https://github.com/rsamec/cermat">formáty dat</a> k testovým úlohám.
   </div>
   <div class="card">
-    Import a <a href="https://observablehq.com/framework/imports">recommended library</a> from npm, such as <a href="https://observablehq.com/framework/lib/leaflet">Leaflet</a>, <a href="https://observablehq.com/framework/lib/dot">GraphViz</a>, <a href="https://observablehq.com/framework/lib/tex">TeX</a>, or <a href="https://observablehq.com/framework/lib/duckdb">DuckDB</a>.
+     <a href="https://observablehq.com/@rsamec/cermat-vysledky-ai">Vizualizace výsledků</a> řešení testových úloh pomocí AI. <a href="https://github.com/rsamec/cermat">Zdrojové kódy</a> k automatizovanému spuštění.
   </div>
   <div class="card">
-    Ask for help, or share your work or ideas, on our <a href="https://github.com/observablehq/framework/discussions">GitHub discussions</a>.
-  </div>
-  <div class="card">
-    Visit <a href="https://github.com/observablehq/framework">Framework on GitHub</a> and give us a star. Or file an issue if you’ve found a bug!
+     Příklady využítí formátů dat. Řešení úloh z <a href="https://observablehq.com/@rsamec/c9a-2024">češtiny</a>. Řešení úloh z <a href="https://observablehq.com/@rsamec/m9c-2024">geometrie</a>. 
   </div>
 </div>
 

@@ -8,7 +8,7 @@ style: /assets/css/quiz.css
 ---
 
 ```js
-import { renderQuiz } from './components/quiz-form.js';
+import { renderQuizWithInputs } from './components/quiz-form.js';
 import { parseCode } from './utils/quiz-utils.js';
 
 
@@ -26,9 +26,15 @@ const parameters = ({
   quizQuestionsMap,
   displayOptions: {useFormControl:true}
 })
-const quizWithControls = renderQuiz(parameters);
+const [quizWithControls, inputsStore] = renderQuizWithInputs(parameters);
+const inputs = inputsStore[code]
+const value = Generators.input(inputs['1']);
+const values = Object.values(inputs).map(d => Generators.input(d));
+
 display(renderQuizInCoumns(html`${quizWithControls.map(d=> d)}`));
 ```
+
+
 
 ```js
 function renderQuizInCoumns(content){

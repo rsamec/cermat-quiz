@@ -1,11 +1,17 @@
 .h-stack {
   display:flex;
 
+  &.h-stack--xs {
+    gap: 2px;
+  }
   &.h-stack--s {
     gap: 5px;
   }
   &.h-stack--m {
-    gap: 10px;
+    gap: 8px;
+  }
+  &.h-stack--l {
+    gap: 16px;
   }
   &.h-stack--wrap {
     flex-wrap: wrap;

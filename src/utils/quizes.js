@@ -13,3 +13,75 @@ export const quizes = [
   { subject: 'math', period: '6', codes:generateCode("M7",["A","B"])},
   //{ subject: 'math', period: 'diploma', codes:[]},
 ]
+
+
+export function parseCode(code){
+  const subject = code[0] === "C" ? 'cz': code[0] === "M" ? 'math' : code[0] === "A" ? 'en' :code[0] === "D" ? 'de' :null;
+  const grade = code[1];
+  const period = grade == 5 ? "8" : grade == 7 ? "6" : grade == 9 ? "4" : "diploma"   
+  const order = code[2];
+  
+  const year = code.slice(-4);
+  return {subject,grade,order, period, year}
+}
+
+export function formatGrade(grade) {
+  switch (grade) {
+    case "9":
+      return "čtyřleté";
+    case "7":
+      return "šestileté";
+    case "5":
+      return "osmileté";
+    default:    
+      return "maturita";
+  }
+}
+
+export function formatSubject(subject) {
+  switch (subject) {
+    case "cz":
+      return "Čeština";
+    case "math":
+      return "Matika";
+    case "en":
+      return "Angličtina";
+    case "de":
+      return "Němčina";
+    default:
+      return subject;
+  }
+}
+
+export function formatPeriod(period) {
+  switch (period) {
+    case '4':
+      return "čtyřleté";
+    case '6':
+      return "šestileté";
+    case '8':
+      return "osmileté";    
+    default:
+      return "maturita";
+  }
+}
+
+export function formatCode(code) {
+  const { subject, grade, order, year, period } = parseCode(code);
+  let version = order;
+  if (period === "diploma") {
+    version = order === "A" ? "jaro" : order === "B" ? "podzim" : order;
+  } else {
+    version =
+      order === "A"
+        ? "1.řádný"
+        : order === "B"
+        ? "2.řádný"
+        : order === "C"
+        ? "1.náhr."
+        : order === "D"
+        ? "2.náhr."
+        : order;
+  }
+  return `${formatSubject(subject)} ${formatGrade(grade)} ${year} ${version}`;
+}

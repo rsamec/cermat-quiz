@@ -15,11 +15,15 @@ type QuizParams = {
   questions: string[][],
   quizQuestionsMap: Record<string, { metadata: any, rawContent: string }>,
   subject: string,
-  displayOptions: { useAIHelpers?: boolean, useQuizPerColumn?: boolean, useFormControl?:boolean }
+  displayOptions: { useAIHelpers?: boolean, useQuizPerColumn?: boolean, useFormControl?: boolean }
 }
 
-export function renderQuiz(params: QuizParams) {  
-  const questionsToRender = params.questions?.length > 0 ? quizQuestions(params): [];
+export function renderQuiz(params: QuizParams) {
+  const questionsToRender = params.questions?.length > 0 ? quizQuestions(params)[0] : [];
+  return questionsToRender;
+}
+export function renderQuizWithInputs(params: QuizParams) {
+  const questionsToRender = params.questions?.length > 0 ? quizQuestions(params) : [];
   return questionsToRender;
 }
 
@@ -47,8 +51,9 @@ function chunkMetadataByInputs(metadata, subject, selectedIds = []) {
 }
 
 function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }: QuizParams) {
-  const {useQuizPerColumn, useAIHelpers, useFormControl } = displayOptions;
-  return questions.map(
+  const { useQuizPerColumn, useAIHelpers, useFormControl } = displayOptions;
+  const inputsStore: Record<string, Record<string, any>> = {}
+  return [questions.map(
     ([code, ...id]) => {
       const ids = id.map(id => parseInt(id, 10));
       const quiz = quizQuestionsMap[code];
@@ -59,7 +64,7 @@ function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }:
       const chunks = chunkMetadataByInputs(quiz.metadata, subject, ids);
       const submit = "Odeslat"
 
-      return html`<div class=${useQuizPerColumn ? 'avoid': ''}>${chunks.flatMap(([inline, g], i) => {
+      return html`<div class=${useQuizPerColumn ? 'avoid' : ''}>${chunks.flatMap(([inline, g], i) => {
         const codeComponent = i === 0 ? (questionIndex) => questionIndex === 0 ? html`<h0>${formatCode(code)}</h0>` : null : () => null
         if (inline) {
           const ids = g.map(([key, leafs]) => parseInt(key, 10));
@@ -91,34 +96,33 @@ function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }:
             })
           )
 
-          return html`<div class="avoid">${codeComponent(0)}${
-          useFormControl 
-            ? toTemplate(quizBuilder.content(ids, { rootOnly: true }), context, (key) => {
-            const metadata = metadataMap[key];
-            const options = optionsMap[key];
+          return html`<div class="avoid">${codeComponent(0)}${useFormControl
+              ? toTemplate(quizBuilder.content(ids, { rootOnly: true }), context, (key) => {
+                const metadata = metadataMap[key];
+                const options = optionsMap[key];
 
-            return (value) => {
-              if (value === null || value === undefined || value == "")
-                return ".........";
-              if (metadata == null || options == null) {
-                return value;
-              }
-              const verifyBy = metadata.verifyBy;
-              const answer = verifyBy.args;
-              const option = options?.find((d) => d.value === answer);
-              const valValue = value.value ?? value;
-              const formattedValue = value.name ?? value;
-              const isCorrect = answer.source
-                ? valValue.match(answer.source)
-                : valValue === answer;
+                return (value) => {
+                  if (value === null || value === undefined || value == "")
+                    return ".........";
+                  if (metadata == null || options == null) {
+                    return value;
+                  }
+                  const verifyBy = metadata.verifyBy;
+                  const answer = verifyBy.args;
+                  const option = options?.find((d) => d.value === answer);
+                  const valValue = value.value ?? value;
+                  const formattedValue = value.name ?? value;
+                  const isCorrect = answer.source
+                    ? valValue.match(answer.source)
+                    : valValue === answer;
 
 
-              return isCorrect
-                ? html`<span class="answer-text--right">${formattedValue}</span>`
-                : html`<span class="answer-text--right">${option?.name ?? answer.source ?? answer}</span> <span class="answer-text--wrong">${formattedValue}</span>`
-            };
-        })
-            : mdPlus.unsafe(quizBuilder.content(ids, { render:'content'}))
+                  return isCorrect
+                    ? html`<span class="answer-text--right">${formattedValue}</span>`
+                    : html`<span class="answer-text--right">${option?.name ?? answer.source ?? answer}</span> <span class="answer-text--wrong">${formattedValue}</span>`
+                };
+              })
+              : mdPlus.unsafe(quizBuilder.content(ids, { render: 'content' }))
             }</div>`;
 
         }
@@ -127,7 +131,7 @@ function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }:
           return g.map(([key, leafs], qIndex) => {
             const ids = [parseInt(key, 10)];
             //const filteredIds = ids.filter(id => id == key);        
-            const rawContent = html`${mdPlus.unsafe(quizBuilder.content(ids, { ids: groupedIds, render: useFormControl ? 'contentWithoutOptions':'content' }))}`;
+            const rawContent = html`${mdPlus.unsafe(quizBuilder.content(ids, { ids: groupedIds, render: useFormControl ? 'contentWithoutOptions' : 'content' }))}`;
             const mathNodeLeafs = leafs.filter(d => d.leaf.data.node.inputBy.kind === "math");
             return html`<div class="avoid">
             ${codeComponent(qIndex)}
@@ -174,6 +178,12 @@ function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }:
                 component.classList.add("form-control");
 
                 const inputValue = useInput(component);
+                const currentStore = inputsStore[code];
+                if (currentStore == null) {
+                  inputsStore[code] = {}
+                }
+                inputsStore[code][labelId] = component
+
 
                 const validator = getVerifyFunction(verifyBy);
 
@@ -189,7 +199,7 @@ function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }:
                 return rhtml`<div class=${answerClass}>${component}</div>`
               }
               ;
-            })}</div>`:''}
+            })}</div>` : ''}
 
             
           </div>`
@@ -197,7 +207,7 @@ function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }:
         }
       })
         }</div>`
-    });
+    }), inputsStore];
 }
 
 function renderSingleInputByType({ inputBy, label, options, submit }) {
