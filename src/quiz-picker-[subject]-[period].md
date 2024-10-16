@@ -10,17 +10,19 @@ style: /assets/css/quiz.css
 ---
 
 ```js
+import tippy from 'tippy.js';
 import {categories, parseCode, formatCode, formatSubject, formatPeriod} from './utils/quiz-utils.js';
 import {convertQueryParamToQuestions, convertFlagsToQueryParam} from './utils/string-utils.js';
 const quizQuestionsMap = await FileAttachment(`./data/quiz-${observable.params.subject}-${observable.params.period}.json`).json();
 ```
+
 
 <div class="h-stack">
   <h2 style="flex:1;">
     ${formatSubject(observable.params.subject)} - ${formatPeriod(observable.params.period)}
   </h2>
     <div class="h-stack h-stack--s">
-      ${actionsButton}
+      ${actionsButton}      
     </div>
 </div>
 
@@ -165,7 +167,31 @@ import {renderQuiz} from './components/quiz-form.js';
 
 ```js
 const displayOptions = {useAIHelpers, useBreakInside: columns.useBreakInside, useBreakBefore:columns.useBreakInside, useFormControl:true};
-const actionsButton =Inputs.button(["Sdílet","Tisk"].map(d => [d, () => window.open(`./quiz-${observable.params.subject}-${observable.params.period}?q=${queryValue}&${convertFlagsToQueryParam(displayOptions)}&columns=${toColumnsStyleValue(columns)}&useFormControl=${d ==="Tisk"? false: true}`)]))
+const actionsButton =Inputs.button(["Otevřít","Tisk"].map(d => [d, () => window.open(`./${getExportUrlPart(d ==="Tisk"? false: true)}`)]))
+
+const getExportUrlPart = (usePrint) => `quiz-${observable.params.subject}-${observable.params.period}?q=${queryValue}&${convertFlagsToQueryParam(displayOptions)}&columns=${toColumnsStyleValue(columns)}&useFormControl=${usePrint}`
+
+const getExportUrl = (usePrint) => `${window.location.origin}/${getExportUrlPart(usePrint)}`
+
+const exportButton =  html`<span>
+  ${toolTipper(
+    html`<button>Export</button>`,
+    () => html`<div class="v-stack v-stack--m" style="padding:10px">
+      <div class="v-stack">
+        <span class="small">Vlož tento HTML tag do libovolné stránky.</span>
+        <pre style="height:60px">
+          <code>
+            <span>${`<iframe width="100%" height="1359" frameborder="0" src="${getExportUrl(true)}"></iframe>`}</span>
+          </code>
+        </pre>
+      </div>
+      <div class="h-stack h-stack--s">
+        ${Inputs.button("Open URL", {value: null, reduce: () => window.open(`./${getExportUrlPart(true)}`)})}
+        ${Inputs.button("Copy URL only", {value: null, reduce: () => navigator.clipboard.writeText(getExportUrl(true))})}
+        ${Inputs.button("Copy", {value: null, reduce: () => navigator.clipboard.writeText(`<iframe width="100%" height="1359" frameborder="0" src="${getExportUrl(true)}"></iframe>`)})}
+      </div>
+    </div>`,   
+  )}</span>`
 ```
 
 ```js
@@ -189,4 +215,32 @@ function toColumnsStyleValue(columns){
 function renderQuizInColumns(content){ 
   return html`<div style="columns:${toColumnsStyleValue(columns)}">${content}</div>`
 }
+```
+
+```js
+function toolTipper(element, contentFunc = () => "", props = {}) {
+  const parent = html`<div>`;
+  // Object.assign(parent.style, {
+  //   position: "relative",
+  //   display: "inline-flex"
+  // });
+  parent.append(element);
+  Object.assign(props, {
+    followCursor: false,
+    allowHTML: true,
+    interactive: true,
+    trigger: "click",
+    placement:'bottom',
+    hideOnClick: "toggle",
+    theme: 'light-border',    
+    content: contentFunc(),
+    onClickOutside: (instance) => instance.hide()
+  });
+  const instance = tippy(parent, props);
+  // element.onmousemove = element.onmouseenter = (e) => {
+  //   instance.setContent(contentFunc(e.offsetX, e.offsetY));
+  // };
+  return parent;
+}
+
 ```

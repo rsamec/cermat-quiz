@@ -12,6 +12,13 @@ export function removeSpaces(value: string) {
     null ? value.replace(/\s+/g, '') : value
 }
 
+function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+export function replaceAll(str, find, replace) {
+  return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+}
 
 export function convertFlagsToQueryParam(obj: Record<string, boolean>){
   return Object.entries(obj).map(([key,value]) => `${key}=${value}`).join('&')

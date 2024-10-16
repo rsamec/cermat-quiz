@@ -18,6 +18,27 @@
   }    
 }
 
+.v-stack {
+  display:flex;
+  flex-direction: column;
+
+  &.v-stack--xs {
+    gap: 2px;
+  }
+  &.v-stack--s {
+    gap: 5px;
+  }
+  &.v-stack--m {
+    gap: 8px;
+  }
+  &.v-stack--l {
+    gap: 16px;
+  }
+  &.v-stack--wrap {
+    flex-wrap: wrap;
+  }    
+}
+
 .grow {
   flex-grow:1
 }

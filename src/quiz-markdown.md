@@ -30,6 +30,11 @@ mdPlus.unsafe(`This is a checkbox, {red}(supported by) combining [markdown-it](h
 
 20 cm^2^
 
+some __underline__ text
+some _underline_ text
+some **bold** text
+some *bold* text
+
 Here is a footnote reference,[^1] and another.[^longnote]
 
 

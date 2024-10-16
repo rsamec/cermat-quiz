@@ -6,7 +6,6 @@ const inlineTextColor = import('https://cdn.skypack.dev/@gerhobbelt/markdown-it-
 import textBgColor from 'https://cdn.jsdelivr.net/npm/markdown-it-color-plus/+esm';
 import html5Media from 'https://cdn.jsdelivr.net/npm/markdown-it-html5-embed/+esm';
 
-
 const ATXRenderer = function () {
   const mapping = {
     h1: "h2",
@@ -75,29 +74,44 @@ const ATXRenderer = function () {
   };
 }
 
-const Markdown = new markdownit({html: false})
-.use(katex.default, {
-  svg: {
-    scale: 2
+const underline = (md) => {
+
+  function renderStrong(tokens, idx, opts, _, self) {
+    var token = tokens[idx];
+    if (token.markup === '__') {
+      token.tag = 'u';
+    }
+    return self.renderToken(tokens, idx, opts);
   }
-})
-.use(sup)
-.use(MarkdownItFootnote)
-.use(textBgColor.default, { inline: false, isMultiLine: true })
-.use(html5Media, {
-  html5embed: {
-    useImageSyntax: false, // Enables video/audio embed with ![]() syntax (default)
-    useLinkSyntax: true // Enables video/audio embed with []() syntax
-  }
-})
-.use(ATXRenderer())
+
+  md.renderer.rules.strong_open = renderStrong;
+  md.renderer.rules.strong_close = renderStrong;
+}
+
+const Markdown = new markdownit({ html: false })
+  .use(underline)  
+  .use(katex.default, {
+    svg: {
+      scale: 2
+    }
+  })
+  .use(sup)  
+  .use(MarkdownItFootnote)
+  .use(textBgColor.default, { inline: false, isMultiLine: true })
+  .use(html5Media, {
+    html5embed: {
+      useImageSyntax: false, // Enables video/audio embed with ![]() syntax (default)
+      useLinkSyntax: true // Enables video/audio embed with []() syntax
+    }
+  })
+  .use(ATXRenderer())
 
 const mdPlus = {
   unsafe(string) {
     var head = document.head || document.getElementsByTagName("head")[0];
     const href =
       "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css";
-    
+
     const existingLink = document.querySelector(`head link[href="${href}"]`);
     if (!existingLink) {
       var link = document.createElement("link");
@@ -111,7 +125,7 @@ const mdPlus = {
     template.innerHTML = Markdown.render(string);
     return template.content.cloneNode(true);
   },
-  renderToString(string){
+  renderToString(string) {
     return Markdown.render(string);
   }
 };

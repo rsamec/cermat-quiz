@@ -284,7 +284,7 @@ function toTemplate(
   const interpolateString = (str) => {
     const maskPlaceholderPattern = /\(\*\*(\d+)\*\*\)\s*(_+)/g;
     return str.replace(maskPlaceholderPattern, (match, maskNumber) => {
-      return `(${maskNumber}) **(formatValue(${maskNumber})(context[${maskNumber}]?.[1].value))}**  \${context[${maskNumber}]?.[0]}`;
+      return `**(${maskNumber})** **(formatValue(${maskNumber})(context[${maskNumber}]?.[1].value))}**  \${context[${maskNumber}]?.[0]}`;
     });
   };
 
