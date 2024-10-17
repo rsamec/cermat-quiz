@@ -35,6 +35,7 @@ export default {
   // The path to the source root.
   root: "src",  
   dynamicPaths:['/components/quiz.ts']
+  .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
   .concat(quizes.map(d => `/quiz-${d.subject}-${d.period}`))
   .concat(quizes.map(d => `/quiz-picker-${d.subject}-${d.period}`))
 };
