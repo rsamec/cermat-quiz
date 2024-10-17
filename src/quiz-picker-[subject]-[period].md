@@ -125,7 +125,7 @@ function convertQuestionToQueryParam(values){
 ```
 
 ```js
-const useAIHelpersInput = Inputs.toggle({ label: "Pomocník AI"});
+const useAIHelpersInput = Inputs.toggle({ label: "Pomocná tlačítka", value: true});
 const useAIHelpers = Generators.input(useAIHelpersInput);
 const useSolversInput = Inputs.toggle({ label: "Řešení"});
 const useSolvers = Generators.input(useSolversInput);
@@ -134,8 +134,9 @@ const columnsOptions = new Map([["Šířka sloupce", false],["Počet sloupců",t
 const columnsInput = Inputs.form({
   useColumnCount: Inputs.radio(columnsOptions, {value: columnsOptions.get("Šířka sloupce")}),
   columnWidth: Inputs.range([10,36], {step:1, value: 24, label: "Šířka sloupce"}),
-  columnCount: Inputs.range([1,6], {step:1, value: 2, label:"Počet sloupců"}),  
-  useBreakInside: Inputs.toggle({label:"Nezalamovat v rámci testu"}),  
+  columnCount: Inputs.range([1,6], {step:1, value: 2, label:"Počet sloupců"}),
+  useCode: Inputs.toggle({label:"Zobrazit název testů", value: true}),
+  useBreakInside: Inputs.toggle({label:"Nezalamovat v rámci testu"}),
   useBreakBefore: Inputs.toggle({label:"Vynucení zalomení v rámci testu"}),
 });
 const columns = Generators.input(columnsInput);
@@ -166,7 +167,7 @@ import {renderQuiz} from './components/quiz-form.js';
 ```
 
 ```js
-const displayOptions = {useAIHelpers, useBreakInside: columns.useBreakInside, useBreakBefore:columns.useBreakInside, useFormControl:true};
+const displayOptions = {...columns, useAIHelpers, useFormControl:true};
 const actionsButton =Inputs.button(["Otevřít","Tisk"].map(d => [d, () => window.open(`./${getExportUrlPart(d ==="Tisk"? false: true)}`)]))
 
 const getExportUrlPart = (usePrint) => `quiz-${observable.params.subject}-${observable.params.period}?q=${queryValue}&${convertFlagsToQueryParam(displayOptions)}&columns=${toColumnsStyleValue(columns)}&useFormControl=${usePrint}`

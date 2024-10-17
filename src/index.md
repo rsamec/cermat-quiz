@@ -6,11 +6,11 @@ toc: false
   <h1>Cermat úlohy</h1>
   <h2>Mimooficiální data banka úloh</h2>
   <a href="https://cermat.cz/">Data<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
-  <a href="https://prijimacky.cermat.cz/files/files/CZVV_pravidla-vyuziti-webstrankyn.pdf">Licence<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+</a>
 </div>
 
 ```js
-import {convertTree, formatSubject, formatPeriod, parseCode, formatCode, categories} from './utils/quiz-utils.js';
+import {convertTree, formatSubject, formatPeriod, parseCode, formatCode, formatVersion, categories} from './utils/quiz-utils.js';
 
 const quizLangCategories = await FileAttachment("./data/quiz-lang-categories.json").json();
 const quizGeneratedCategories = await FileAttachment("./data/quiz-categories.json").json();
@@ -33,13 +33,19 @@ const quizQuestions = Object.entries(quizCategories).flatMap(([code, value]) =>
   })
 )
 
+
 const subjects = ["math","cz","en","de"];
 const periods = ["4","6","8", "diploma"];
+
 const subjectWithPeriods = {
-  math:periods,
-  cz:periods,
-  en:["diploma"],
-  de:["diploma"]
+  math:{periods, codes: codesBy({subject:'math'})},
+  cz:{periods, codes: codesBy({subject:'cz'})},
+  en:{periods:["diploma"],codes: codesBy({subject:'en'})},
+  de:{periods:["diploma"],codes: codesBy({subject:'de'})},
+}
+
+function codesBy({subject, period}){
+  return Object.keys(Object.groupBy(quizQuestions.filter((d) => (subject == null || d.subject === subject) && (period == null || d.period === period)).sort((f,s) => s.year - f.year), ({code}) => code))
 }
 ```
 
@@ -48,19 +54,37 @@ const subjectWithPeriods = {
 
 <div class="grid grid-cols-4">
  ${subjects.map(subject => html`<div class="card grow">
-    <h2>${formatSubject(subject)}</h2>    
-    <span class="big">${quizQuestions.filter((d) => d.subject === subject).length.toLocaleString("en-US")}</span>
-    <span>úloh</span>
-    <span class="big">&nbsp;/&nbsp;</span>
-    <span class="big">${Object.keys(Object.groupBy(quizQuestions.filter((d) => d.subject === subject), ({code}) => code)).length.toLocaleString("en-US")}</span>
-    <span>testů</span>
-    <hr/>
-    <div class="h-stack h-stack--m h-stack--wrap">
-    ${subjectWithPeriods[subject].map(period => html`<a class="h-stack h-stack--xs" href="./quiz-picker-${subject}-${period}">${formatPeriod(period)}<span><span>↗︎</span><span></a>
-      `)}
+    <h2><strong>${formatSubject(subject)}</strong></h2>
+    <div class="v-stack v-stack--l">
+    <div class="v-stack v-stack--s">
+      <div>
+        <span class="big">${quizQuestions.filter((d) => d.subject === subject).length.toLocaleString("en-US")}</span>
+        <span>úloh</span>
       </div>
+      <div class="h-stack h-stack--m h-stack--wrap">
+      ${subjectWithPeriods[subject].periods.map(period => html`<a class="h-stack h-stack--xs" href="./quiz-picker-${subject}-${period}">${formatPeriod(period)}<span><span>↗︎</span><span></a>
+        `)}
+      </div>
+     </div>
+     <div class="v-stack v-stack--s">
+      <div>
+        <span class="big">${subjectWithPeriods[subject].codes.length.toLocaleString("en-US")}</span>
+        <span>testů</span>    
+      </div>
+      <div class="h-stack h-stack--m h-stack--wrap">
+      ${subjectWithPeriods[subject].periods.map(period => html`<div>${formatPeriod(period)}</div>${codesBy({subject,period}).map(code =>{
+          const {period, order, year} = parseCode(code);
+          return html`<a class="h-stack h-stack--xs" href="./form-${code}">${year} ${formatVersion({order, period})}</a>`
+        })}`)
+      }
+      </div>
+    </div>
+    </div>
   </div>`)}
 </div>
+
+
+
 
 ---
 

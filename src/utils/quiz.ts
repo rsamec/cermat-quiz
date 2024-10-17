@@ -1,10 +1,16 @@
-import { createModel, Models } from '@rematch/core'
-import { TreeNode, getAllLeafsWithAncestors } from '../utils/parse-utils.js';
-import { getVerifyFunction, ValidationFunctionSpec } from '../utils/assert.js';
+import { init, createModel } from '@rematch/core'
+import selectPlugin from "@rematch/select";
+import { getAllLeafsWithAncestors } from '../utils/parse-utils.js';
+import { convertTree } from '../utils/quiz-utils.js';
+import { getVerifyFunction } from '../utils/assert.js';
 
-export interface RootModel extends Models<RootModel> {
-  results: typeof results
-}
+export type TreeNode = any;
+
+export type ValidationFunctionSpec = any;
+
+// export interface RootModel extends Models<RootModel> {
+//   results: typeof results
+// }
  
 
 
@@ -70,10 +76,11 @@ const initState: QuizState = {
 
 
 
-const results = createModel<RootModel>()({
+const quiz = createModel<any>()({
   state: { ...initState },
   reducers: {
-    init(state, { tree, answers }: { tree: TreeNode<Answer<any>>, answers: Record<string, any> }) {
+    init(state, { metadata, answers }: { metadata: any, answers: Record<string, any> }) {
+      const tree = convertTree(metadata);
       const questions = getAllLeafsWithAncestors(tree).map((d, i) => d.leaf.data as AnswerMetadataTreeNode<any>)
       const keys = Object.keys(answers);
       const corrections = calculateCorrections(questions.filter(d => keys.indexOf(d.id) != -1), answers);
@@ -131,7 +138,10 @@ const results = createModel<RootModel>()({
   },
   selectors: (slice) => ({
     totalAnswers() {
-      return slice(state => Object.keys(state.answers).length)
+      return slice(state => Object.keys(state?.answers ?? {}).length)
+    },
+    maxTotalAnswers() {
+      return slice(state => state != null ? state.questions.length : 0)
     },
     points() {
       return slice(state => state.tree?.children?.reduce((out, d) => {
@@ -145,8 +155,15 @@ const results = createModel<RootModel>()({
   }),
 });
 
-export const models: RootModel = { results }
+export const models: any = { quiz }
+export const store = init({
+  models,
+  plugins:[selectPlugin()]
+});
 
+export type Store = typeof store;
+// export type Dispatch = RematchDispatch<RootModel>;
+// export type RootState = RematchRootState<RootModel>;
 
 
 // Helper functions

@@ -15,7 +15,7 @@ type QuizParams = {
   questions: string[][],
   quizQuestionsMap: Record<string, { metadata: any, rawContent: string }>,
   subject: string,
-  displayOptions: { useAIHelpers?: boolean, useBreakInside?: boolean, useBreakBefore?: boolean, columns?: string, useFormControl?: boolean }
+  displayOptions: { useCode?: boolean, useAIHelpers?: boolean, useBreakInside?: boolean, useBreakBefore?: boolean, columns?: string, useFormControl?: boolean }
 }
 
 export function renderQuiz(params: QuizParams) {
@@ -51,7 +51,7 @@ function chunkMetadataByInputs(metadata, subject, selectedIds = []) {
 }
 
 function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }: QuizParams) {
-  const { useBreakInside, useBreakBefore, useAIHelpers, useFormControl } = displayOptions;
+  const { useBreakInside, useCode, useAIHelpers, useFormControl } = displayOptions;
   const inputsStore: Record<string, Record<string, any>> = {}
   return [questions.map(
     ([code, ...id]) => {
@@ -65,7 +65,7 @@ function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }:
       const submit = "Odeslat"
 
       return html`<div class=${useBreakInside ? 'avoid' : ''}>${chunks.flatMap(([inline, g], i) => {
-        const codeComponent = i === 0 ? (questionIndex) => questionIndex === 0 ? html`<h0>${formatCode(code)}</h0>` : null : () => null
+        const codeComponent = useCode &&  i === 0 ? (questionIndex) => questionIndex === 0 ? html`<h0>${formatCode(code)}</h0>` : null : () => null
         if (inline) {
           const ids = g.map(([key, leafs]) => parseInt(key, 10));
           const leafs = g.flatMap(([key, leafs]) => leafs);
@@ -138,11 +138,22 @@ function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }:
             <div>
               ${rawContent}
             </div>          
-            ${useAIHelpers ? html`<div class="tip" label="Pomocníci AI">
-                ${mathNodeLeafs.length > 0 ? html`<p>Matematické výrazy - API Microsoft Math${mathSolverButton(rawContent, mathNodeLeafs.map(d => d.leaf.data.id))}</p>` : ''}
-                <p>OpenAI Chat GTP
-                ${Inputs.button(html`<i class="fa-solid fa-comments"></i>`, { value: null, reduce: () => window.open(`https://chat.openai.com/?q=${encodeURIComponent(quizBuilder.content(ids, { render: 'content' }))}`) })}              
-                </p>              
+            ${useAIHelpers ? html`<div class="h-stack h-stack--m h-stack--wrap h-stack--end">
+                ${mathNodeLeafs.length > 0 ? html`<div class="h-stack">
+                ${mathSolverButton(rawContent, mathNodeLeafs.map(d => d.leaf.data.id))}</div>` : ''}
+                <a href="#" onclick=${(e) => {
+                e.preventDefault(); 
+                window.open(`https://chat.openai.com/?q=${encodeURIComponent(quizBuilder.content(ids, { render: 'content' }))}`)
+            }}><img src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white" alt="ChatGPT" /></a>
+            ${html`<a href="#" class="a-button" onclick=${(e) =>  { 
+              e.preventDefault();
+              var el = e.target.querySelector("i") ?? e.target;
+              if (el != null) {
+               el.classList.remove("fa-clipboard");
+               el.classList.add("fa-clipboard-check");
+              }
+              navigator.clipboard.writeText(quizBuilder.content(ids, { render: 'content' }));
+              }}><i class="fa fa-clipboard" aria-hidden="true"></i></a>`}
               </div>`: ''}
           ${useFormControl ? rhtml`<div class="form-group">${leafs.map((data) => {
               const d = data.leaf.data.node;
@@ -515,5 +526,5 @@ function mathSolverButton(node, labels) {
     window.open(hrefWithQuery, '_blank')
   }
 
-  return labels.length > 0 ? Inputs.button(labels.map((d, i) => [html`<i class="fa-brands fa-microsoft"></i> ${d}`, () => handleClick(i)])) : null
+  return labels.map((d, i) => html`<a href="#" class="a-button" onclick=${(e) => {e.preventDefault(); handleClick(i);}}><i class="fa fa-calculator"></i> ${d}</a>`)
 }

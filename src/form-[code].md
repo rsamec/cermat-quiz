@@ -9,7 +9,10 @@ style: /assets/css/quiz.css
 
 ```js
 import { renderQuizWithInputs } from './components/quiz-form.js';
-import { parseCode } from './utils/quiz-utils.js';
+import { parseCode, formatCode } from './utils/quiz-utils.js';
+import { fromEvent, combineLatest } from 'rxjs';
+import { map, startWith, tap } from  'rxjs/operators';
+import { store } from './utils/quiz.js';
 
 
 const metadata = await FileAttachment(`./data/form-${observable.params.code}.json`).json();
@@ -18,6 +21,26 @@ const code = observable.params.code;
 const quizQuestionsMap = {[code]:{rawContent, metadata}};
 const searchParams = Object.fromEntries(new URLSearchParams(location.search));
 ```
+```js
+const state = {
+  ...values.quiz,
+  ...selection(values)
+}
+```
+<div class="h-stack h-stack--m h-stack--wrap h-stack-items--start sticky" style="background:white">
+<div class="big" style="flex:1;">${formatCode(code)}</div>
+<div class="h-stack h-stack--m h-stack--end">
+  <div class="badge">
+    <i class="fa fa-hashtag"></i>
+    <span>${state.totalAnswers}</span>
+  </div>
+  <div class="badge">
+    <i class="fa fa-calculator"></i>
+    <span>${state.totalPoints ?? 0}</span>
+  </div>  
+</div>
+</div>
+
 
 ```js
 const parameters = ({
@@ -29,10 +52,41 @@ const parameters = ({
 const [quizWithControls, inputsStore] = renderQuizWithInputs(parameters);
 const inputs = inputsStore[code]
 const value = Generators.input(inputs['1']);
-const values = Object.values(inputs).map(d => Generators.input(d));
+
+function combineInputValues(inputs) {  
+  const inputObservables = Object.entries(inputs).map(([key,input]) => 
+    fromEvent(input, 'input').pipe(
+      map(event => [key, input.value]),
+      startWith([key,undefined]) // Initialize each input with an empty string
+    )
+  );
+
+  return combineLatest(inputObservables);
+}
+const values$ = combineInputValues(inputs).pipe();
+
+const { dispatch } = store;
+const selection = store.select((models) => ({
+    totalAnswers: models.quiz.totalAnswers,
+    maxTotalAnswers: models.quiz.maxTotalAnswers,
+}));
+
+const values = Generators.observe((notify) => {
+  dispatch.quiz.init({metadata,answers:{}});
+  values$.subscribe({
+    next: value => {
+      dispatch.quiz.submitQuiz(Object.fromEntries(value.filter(([key,v]) => v != null)))
+      notify(store.getState())
+    }
+  });
+  notify([]);
+  return () => values$.unsubscribe();
+});
+
 
 display(renderQuizInCoumns(html`${quizWithControls.map(d=> d)}`));
 ```
+
 
 
 

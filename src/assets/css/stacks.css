@@ -15,7 +15,25 @@
   }
   &.h-stack--wrap {
     flex-wrap: wrap;
-  }    
+  }
+  &.h-stack--start  {
+    justify-content: start;
+  }
+  &.h-stack--center  {
+    justify-content: center;
+  }
+  &.h-stack--end  {
+    justify-content: end;
+  }
+  &.h-stack-items--start  {
+    align-items: start;
+  }
+  &.h-stack-items--center  {
+    align-items: center;
+  }
+  &.h-stack-items--end  {
+    align-items: end;
+  }
 }
 
 .v-stack {
