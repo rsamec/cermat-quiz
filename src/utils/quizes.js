@@ -65,9 +65,13 @@ export function formatPeriod(period) {
       return "maturita";
   }
 }
-
 export function formatCode(code) {
-  const { subject, grade, order, year, period } = parseCode(code);
+  const { subject, grade, order, year, period } = parseCode(code);  
+  return `${formatSubject(subject)} ${formatGrade(grade)} ${year} ${formatVersion({order,period})}`;
+}
+
+export function formatVersion({order,period}={}){
+  
   let version = order;
   if (period === "diploma") {
     version = order === "A" ? "jaro" : order === "B" ? "podzim" : order;
@@ -83,5 +87,5 @@ export function formatCode(code) {
         ? "2.náhr."
         : order;
   }
-  return `${formatSubject(subject)} ${formatGrade(grade)} ${year} ${version}`;
+  return version;
 }

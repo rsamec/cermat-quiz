@@ -15,15 +15,15 @@ type QuizParams = {
   questions: string[][],
   quizQuestionsMap: Record<string, { metadata: any, rawContent: string }>,
   subject: string,
-  displayOptions: { useCode?: boolean, useAIHelpers?: boolean, useBreakInside?: boolean, useBreakBefore?: boolean, columns?: string, useFormControl?: boolean }
+  displayOptions: { useCode?: boolean, useAIHelpers?: boolean, avoidBreakInsideQuestion?: boolean, useFormControl?: boolean }
 }
 
-export function renderQuiz(params: QuizParams) {
-  const questionsToRender = params.questions?.length > 0 ? quizQuestions(params)[0] : [];
-  return questionsToRender;
+export function renderedQuestionsPerQuiz(params: QuizParams) {
+  const questionsToRender = params.questions?.length > 0 ? renderedQuestionsByQuiz(params).renderedQuestions : [];
+  return questionsToRender;  
 }
-export function renderQuizWithInputs(params: QuizParams) {
-  const questionsToRender = params.questions?.length > 0 ? quizQuestions(params) : [];
+export function renderedQuestionsPerQuizWithInputs(params: QuizParams) {
+  const questionsToRender = params.questions?.length > 0 ? renderedQuestionsByQuiz(params) : [];
   return questionsToRender;
 }
 
@@ -50,11 +50,11 @@ function chunkMetadataByInputs(metadata, subject, selectedIds = []) {
   }, []);
 }
 
-function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }: QuizParams) {
-  const { useBreakInside, useCode, useAIHelpers, useFormControl } = displayOptions;
+function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, displayOptions }: QuizParams) {
+  const { avoidBreakInsideQuestion, useCode, useAIHelpers, useFormControl } = displayOptions;
   const inputsStore: Record<string, Record<string, any>> = {}
-  return [questions.map(
-    ([code, ...id]) => {
+  return { renderedQuestions: questions.map(
+    ([code, ...id], index) => {
       const ids = id.map(id => parseInt(id, 10));
       const quiz = quizQuestionsMap[code];
       const quizBuilder = quiz ? makeQuizBuilder(quiz.rawContent) : null;
@@ -64,7 +64,7 @@ function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }:
       const chunks = chunkMetadataByInputs(quiz.metadata, subject, ids);
       const submit = "Odeslat"
 
-      return html`<div class=${useBreakInside ? 'avoid' : ''}>${chunks.flatMap(([inline, g], i) => {
+      return chunks.flatMap(([inline, g], i) => {
         const codeComponent = useCode &&  i === 0 ? (questionIndex) => questionIndex === 0 ? html`<h0>${formatCode(code)}</h0>` : null : () => null
         if (inline) {
           const ids = g.map(([key, leafs]) => parseInt(key, 10));
@@ -96,7 +96,7 @@ function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }:
             })
           )
           const env = {docId:`${code}-${i}`};
-          return html`<div class="avoid">${codeComponent(0)}${useFormControl
+          return html`<div class=${avoidBreakInsideQuestion ? 'break-inside-avoid-column':''}>${codeComponent(0)}${useFormControl
               ? toTemplate(quizBuilder.content(ids, { rootOnly: true }), env, context, (key) => {
                 const metadata = metadataMap[key];
                 const options = optionsMap[key];
@@ -133,7 +133,7 @@ function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }:
             //const filteredIds = ids.filter(id => id == key);        
             const rawContent = html`${mdPlus.unsafe(quizBuilder.content(ids, { ids: groupedIds, render: useFormControl ? 'contentWithoutOptions' : 'content' }), {docId:`${code}-${key}`})}`;
             const mathNodeLeafs = leafs.filter(d => d.leaf.data.node.inputBy.kind === "math");
-            return html`<div class="avoid">
+            return html`<div class=${avoidBreakInsideQuestion ? 'break-inside-avoid-column':''}>
             ${codeComponent(qIndex)}
             <div>
               ${rawContent}
@@ -216,9 +216,10 @@ function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }:
           </div>`
           })
         }
-      })
-        }</div>`
-    }), inputsStore];
+      })        
+    }),
+    inputs: inputsStore
+  };
 }
 
 function renderSingleInputByType({ inputBy, label, options, submit }) {

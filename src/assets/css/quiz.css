@@ -33,9 +33,20 @@ img {
   height: auto;
 }
 
-.avoid {
-  break-inside: avoid;
+
+.break-before-page {
+  break-before: page;
+  orphans: 4;
+  widows: 4;  
 }
+.use-columns {
+  orphans: 4;
+  widows: 4;  
+}
+.break-inside-avoid-column {
+  break-inside: avoid-column;
+}
+
 
 h1,
 h2,
@@ -155,10 +166,10 @@ h3 {
 
 
 
-.button {  
+.button {
   display: inline-block;
-  position: relative; 
-  padding: 2px 5px; 
+  position: relative;
+  padding: 2px 5px;
   font-size: 3rem;
 }
 
@@ -166,16 +177,18 @@ h3 {
   background-color: #fff;
   border: 1px solid gray;
   border-radius: 2px;
-  
- 
+
+
   padding: 1px 3px;
   font-size: 18px;
-  
+
   position: absolute;
+
   &.button__badge--top {
     top: 0;
     right: 0;
   }
+
   &.button__badge--bottom {
     bottom: 0;
     right: 0;
@@ -184,19 +197,19 @@ h3 {
 
 
 .floating-btn {
-	position:fixed;
-	width:60px;
-	height:60px;
-	bottom:40px;
-	right:40px;
-	background-color:#0C9;
-	color:#FFF;
-	border-radius:50px;
-	text-align:center;
-	box-shadow: 2px 2px 3px #999;
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  bottom: 40px;
+  right: 40px;
+  background-color: #0C9;
+  color: #FFF;
+  border-radius: 50px;
+  text-align: center;
+  box-shadow: 2px 2px 3px #999;
 }
 
-.badge {  
+.badge {
   background-color: #fff;
   display: flex;
   gap: 5px;
@@ -206,5 +219,5 @@ h3 {
 
 .sticky {
   position: sticky;
-  top:0px
+  top: 0px
 }

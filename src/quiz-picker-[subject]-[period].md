@@ -12,7 +12,7 @@ style: /assets/css/quiz.css
 ```js
 import tippy from 'tippy.js';
 import {categories, parseCode, formatCode, formatSubject, formatPeriod} from './utils/quiz-utils.js';
-import {convertQueryParamToQuestions, convertFlagsToQueryParam} from './utils/string-utils.js';
+import {convertQueryParamToQuestions, convertFlagsToQueryParam, convertQuestionToQueryParam} from './utils/string-utils.js';
 const quizQuestionsMap = await FileAttachment(`./data/quiz-${observable.params.subject}-${observable.params.period}.json`).json();
 ```
 
@@ -119,27 +119,24 @@ const selectedQuestions = view(Inputs.table(search, {
 ```js
 const queryValue = convertQuestionToQueryParam(selectedQuestions);
 
-function convertQuestionToQueryParam(values){
-  return Object.entries(Object.groupBy(values, ({code}) => code)).map(([code,values]) => [code].concat(values.map(d=> d.id)).join(",")).join("|");
-}
+
 ```
 
 ```js
-const useAIHelpersInput = Inputs.toggle({ label: "Pomocná tlačítka", value: true});
-const useAIHelpers = Generators.input(useAIHelpersInput);
-const useSolversInput = Inputs.toggle({ label: "Řešení"});
-const useSolvers = Generators.input(useSolversInput);
+const controlsInput = Inputs.form({
+  useAIHelpers:Inputs.toggle({ label: "Pomocná tlačítka", value: true}),
+  useFormControl:Inputs.toggle({ label: "Form controls", value: true})
+})
+const controlsSetting = Generators.input(controlsInput);
 
-const columnsOptions = new Map([["Šířka sloupce", false],["Počet sloupců",true]]);
 const columnsInput = Inputs.form({
-  useColumnCount: Inputs.radio(columnsOptions, {value: columnsOptions.get("Šířka sloupce")}),
+  useColumns: Inputs.toggle({label:"Více sloupcový layout stránky", value:true}),
   columnWidth: Inputs.range([10,36], {step:1, value: 24, label: "Šířka sloupce"}),
-  columnCount: Inputs.range([1,6], {step:1, value: 2, label:"Počet sloupců"}),
+  avoidBreakInsideQuestion: Inputs.toggle({label:"Nezalamovat v rámci otázky", value: true}),
+  breakBetweenQuiz: Inputs.toggle({label:"Vynucení zalomení mezi testy"}),
   useCode: Inputs.toggle({label:"Zobrazit název testů", value: true}),
-  useBreakInside: Inputs.toggle({label:"Nezalamovat v rámci testu"}),
-  useBreakBefore: Inputs.toggle({label:"Vynucení zalomení v rámci testu"}),
 });
-const columns = Generators.input(columnsInput);
+const columnsSetting = Generators.input(columnsInput);
 ```
 
 <div class="card">
@@ -149,29 +146,21 @@ const columns = Generators.input(columnsInput);
     </summary>
     <section>
     <div class="grid grid-cols-2">
-        <div>
-        <b>Více sloupcový layout stránky a možnosti nastavení stránkování v rámci sloupců.</b>
-          ${columnsInput}
-          </div>
-          <div>
-        <b>Zobraz tipy</b>
-        ${useAIHelpersInput}
-        </div>
-    </div>
+        ${columnsInput}
+        ${controlsInput}
+      </div>
   </section>
   </details>
 </div>  
 
 ```js
-import {renderQuiz} from './components/quiz-form.js';
+import {renderedQuestionsPerQuiz} from './components/quiz-form.js';
 ```
 
 ```js
-const displayOptions = {...columns, useAIHelpers, useFormControl:true};
-const actionsButton =Inputs.button(["Otevřít","Tisk"].map(d => [d, () => window.open(`./${getExportUrlPart(d ==="Tisk"? false: true)}`)]))
+const actionsButton =Inputs.button(["Otevřít","Tisk"].map(d => [d, () => window.open(`./${getExportUrlPart(d ==="Tisk")}`)]))
 
-const getExportUrlPart = (usePrint) => `quiz-${observable.params.subject}-${observable.params.period}?q=${queryValue}&${convertFlagsToQueryParam(displayOptions)}&columns=${toColumnsStyleValue(columns)}&useFormControl=${usePrint}`
-
+const getExportUrlPart = (usePrint) => `quiz-${observable.params.subject}-${observable.params.period}?q=${queryValue}&${convertFlagsToQueryParam(usePrint? {...columnsSetting}: {...columnsSetting, ...controlsSetting})}`
 const getExportUrl = (usePrint) => `${window.location.origin}/${getExportUrlPart(usePrint)}`
 
 const exportButton =  html`<span>
@@ -200,22 +189,14 @@ const parameters = ({
   questions: convertQueryParamToQuestions(queryValue),
   subject:observable.params.subject,
   quizQuestionsMap,
-  displayOptions
+  displayOptions:{...columnsSetting, ...controlsSetting}
 })
-const quizWithControls = renderQuiz(parameters);
-display(renderQuizInColumns(html`${quizWithControls.map(d=> d)}`));
-```
-```js
-function toColumnsStyleValue(columns){
-  return columns.useColumnCount === true && columns.columnWidth > 1 
-    ? `${columns.columnCount}` 
-    : columns.useColumnCount === false 
-      ?`${columns.columnWidth}rem`
-      : '';
-}
-function renderQuizInColumns(content){ 
-  return html`<div style="columns:${toColumnsStyleValue(columns)}">${content}</div>`
-}
+
+const renderedQuestions = renderedQuestionsPerQuiz(parameters);
+const {breakBetweenQuiz,useColumns,columnWidth} = parameters.displayOptions;
+
+display(html`<div data-testid="root">${renderedQuestions.map((d,index) => html`<div class=${[breakBetweenQuiz && index > 0 ? 'break-before-page' : ''].concat(useColumns? 'use-columns':'').join(' ')}  style=${useColumns ? `columns:${columnWidth ?? 24}rem`:''}>${d}</div>`)}</div>`);
+
 ```
 
 ```js

@@ -8,7 +8,7 @@ style: /assets/css/quiz.css
 ---
 
 ```js
-import { renderQuizWithInputs } from './components/quiz-form.js';
+import { renderedQuestionsPerQuizWithInputs } from './components/quiz-form.js';
 import { parseCode, formatCode } from './utils/quiz-utils.js';
 import { fromEvent, combineLatest } from 'rxjs';
 import { map, startWith, tap } from  'rxjs/operators';
@@ -47,11 +47,9 @@ const parameters = ({
   questions: [[code].concat(Object.keys(metadata.children).map(d => parseInt(d,10)))],
   subject:parseCode(code).subject,
   quizQuestionsMap,
-  displayOptions: {useFormControl:true}
+  displayOptions: {useColumns: true, useFormControl:true, useAIHelpers: true}
 })
-const [quizWithControls, inputsStore] = renderQuizWithInputs(parameters);
-const inputs = inputsStore[code]
-const value = Generators.input(inputs['1']);
+const {renderedQuestions, inputs:inputsStore} = renderedQuestionsPerQuizWithInputs(parameters);
 
 function combineInputValues(inputs) {  
   const inputObservables = Object.entries(inputs).map(([key,input]) => 
@@ -63,7 +61,7 @@ function combineInputValues(inputs) {
 
   return combineLatest(inputObservables);
 }
-const values$ = combineInputValues(inputs).pipe();
+const values$ = combineInputValues(inputsStore[code] ?? {});
 
 const { dispatch } = store;
 const selection = store.select((models) => ({
@@ -83,15 +81,7 @@ const values = Generators.observe((notify) => {
   return () => values$.unsubscribe();
 });
 
+const {useColumns,columnWidth} = parameters.displayOptions;
 
-display(renderQuizInCoumns(html`${quizWithControls.map(d=> d)}`));
-```
-
-
-
-
-```js
-function renderQuizInCoumns(content){
-  return html`<style>img { max-width: 100%;height: auto;}</style><div style="columns: 24rem;">${content}</div>`
-}
+display(html`<div data-testid="root">${renderedQuestions.map(d => html`<div style=${useColumns ? `columns:${columnWidth ?? 24}rem`:''}>${d}</div>`)}</div>`);
 ```
