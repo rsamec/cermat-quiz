@@ -11,7 +11,7 @@ style: /assets/css/quiz.css
 
 ```js
 import { renderedQuestionsPerQuiz } from './components/quiz-form.js';
-import { convertQueryParamToQuestions } from './utils/string-utils.js';
+import { convertQueryParamToQuestions, cls} from './utils/string-utils.js';
 const quizQuestionsMap = await FileAttachment(`./data/quiz-${observable.params.subject}-${observable.params.period}.json`).json();
 const searchParams = Object.fromEntries(new URLSearchParams(location.search));
 ```
@@ -25,8 +25,12 @@ const parameters = ({
 })
 
 const renderedQuestions = renderedQuestionsPerQuiz(parameters);
-const {breakBetweenQuiz,useColumns,columnWidth} = parameters.displayOptions;
+const {breakBetweenQuiz,avoidBreakInsideQuiz, useColumns,columnWidth} = parameters.displayOptions;
 
-display(html`<div data-testid="root">${renderedQuestions.map((d,index) => html`<div class=${[breakBetweenQuiz && index > 0 ? 'break-before-page' : ''].concat(useColumns? 'use-columns':'').join(' ')}  style=${useColumns ? `columns:${columnWidth ?? 24}rem`:''}>${d}</div>`)}</div>`);
+
+const renderedContent = breakBetweenQuiz 
+  ? html`<div data-testid="root">${renderedQuestions.map((d,index) => html`<div class=${cls([(breakBetweenQuiz && index > 0) && 'break-before-page', useColumns && 'use-columns'])} style=${useColumns ? `columns:${columnWidth ?? 24}rem`:''}>${d}</div>`)}</div>`
+  : html`<div data-testid="root" class=${cls([useColumns && 'use-columns'])} style=${useColumns ? `columns:${columnWidth ?? 24}rem`:''}>${renderedQuestions.map((d,index) => html`<div class=${cls([avoidBreakInsideQuiz && 'break-inside-avoid-column'])}>${d}</div>`)}</div>`;
+display(renderedContent);
 
 ```

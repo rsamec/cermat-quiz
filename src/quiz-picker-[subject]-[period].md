@@ -12,7 +12,7 @@ style: /assets/css/quiz.css
 ```js
 import tippy from 'tippy.js';
 import {categories, parseCode, formatCode, formatSubject, formatPeriod} from './utils/quiz-utils.js';
-import {convertQueryParamToQuestions, convertFlagsToQueryParam, convertQuestionToQueryParam} from './utils/string-utils.js';
+import {convertQueryParamToQuestions, convertFlagsToQueryParam, convertQuestionToQueryParam, cls} from './utils/string-utils.js';
 const quizQuestionsMap = await FileAttachment(`./data/quiz-${observable.params.subject}-${observable.params.period}.json`).json();
 ```
 
@@ -130,10 +130,12 @@ const controlsInput = Inputs.form({
 const controlsSetting = Generators.input(controlsInput);
 
 const columnsInput = Inputs.form({
+  
   useColumns: Inputs.toggle({label:"Více sloupcový layout stránky", value:true}),
   columnWidth: Inputs.range([10,36], {step:1, value: 24, label: "Šířka sloupce"}),
-  avoidBreakInsideQuestion: Inputs.toggle({label:"Nezalamovat v rámci otázky", value: true}),
   breakBetweenQuiz: Inputs.toggle({label:"Vynucení zalomení mezi testy"}),
+  avoidBreakInsideQuestion: Inputs.toggle({label:"Nezalamovat v rámci otázky", value: true}),
+  avoidBreakInsideQuiz: Inputs.toggle({label:"Nezalamovat v rámci testu"}),
   useCode: Inputs.toggle({label:"Zobrazit název testů", value: true}),
 });
 const columnsSetting = Generators.input(columnsInput);
@@ -193,9 +195,13 @@ const parameters = ({
 })
 
 const renderedQuestions = renderedQuestionsPerQuiz(parameters);
-const {breakBetweenQuiz,useColumns,columnWidth} = parameters.displayOptions;
+const {breakBetweenQuiz,avoidBreakInsideQuiz, useColumns,columnWidth} = parameters.displayOptions;
 
-display(html`<div data-testid="root">${renderedQuestions.map((d,index) => html`<div class=${[breakBetweenQuiz && index > 0 ? 'break-before-page' : ''].concat(useColumns? 'use-columns':'').join(' ')}  style=${useColumns ? `columns:${columnWidth ?? 24}rem`:''}>${d}</div>`)}</div>`);
+
+const renderedContent = breakBetweenQuiz 
+  ? html`<div data-testid="root">${renderedQuestions.map((d,index) => html`<div class=${cls([(breakBetweenQuiz && index > 0) && 'break-before-page', useColumns && 'use-columns'])} style=${useColumns ? `columns:${columnWidth ?? 24}rem`:''}>${d}</div>`)}</div>`
+  : html`<div data-testid="root" class=${cls([useColumns && 'use-columns'])} style=${useColumns ? `columns:${columnWidth ?? 24}rem`:''}>${renderedQuestions.map((d,index) => html`<div class=${cls([avoidBreakInsideQuiz && 'break-inside-avoid-column'])}>${d}</div>`)}</div>`;
+display(renderedContent);
 
 ```
 

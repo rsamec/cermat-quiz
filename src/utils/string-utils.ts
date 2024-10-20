@@ -25,3 +25,7 @@ export function replaceAll(str, find, replace) {
 export function convertFlagsToQueryParam(obj: Record<string, boolean>){
   return Object.entries(obj).map(([key,value]) => `${key}=${value}`).join('&')
 }
+
+export function cls(input: (string | boolean)[]) {
+  return input.filter((cond: string | boolean) => typeof cond === "string").join(" ")
+}
