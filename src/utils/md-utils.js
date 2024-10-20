@@ -107,7 +107,7 @@ const Markdown = new markdownit({ html: false })
   .use(ATXRenderer())
 
 const mdPlus = {
-  unsafe(string) {
+  unsafe(string, env) {
     var head = document.head || document.getElementsByTagName("head")[0];
     const href =
       "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css";
@@ -122,11 +122,11 @@ const mdPlus = {
     }
 
     const template = document.createElement("template");
-    template.innerHTML = Markdown.render(string);
+    template.innerHTML = Markdown.render(string, env);
     return template.content.cloneNode(true);
   },
-  renderToString(string) {
-    return Markdown.render(string);
+  renderToString(string, env) {
+    return Markdown.render(string,env);
   }
 };
 

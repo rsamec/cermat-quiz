@@ -95,9 +95,9 @@ function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }:
               ];
             })
           )
-
+          const env = {docId:`${code}-${i}`};
           return html`<div class="avoid">${codeComponent(0)}${useFormControl
-              ? toTemplate(quizBuilder.content(ids, { rootOnly: true }), context, (key) => {
+              ? toTemplate(quizBuilder.content(ids, { rootOnly: true }), env, context, (key) => {
                 const metadata = metadataMap[key];
                 const options = optionsMap[key];
 
@@ -122,7 +122,7 @@ function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }:
                     : html`<span class="answer-text--right">${option?.name ?? answer.source ?? answer}</span> <span class="answer-text--wrong">${formattedValue}</span>`
                 };
               })
-              : mdPlus.unsafe(quizBuilder.content(ids, { render: 'content' }))
+              : mdPlus.unsafe(quizBuilder.content(ids, { render: 'content' }),env)
             }</div>`;
 
         }
@@ -131,7 +131,7 @@ function quizQuestions({ questions, quizQuestionsMap, subject, displayOptions }:
           return g.map(([key, leafs], qIndex) => {
             const ids = [parseInt(key, 10)];
             //const filteredIds = ids.filter(id => id == key);        
-            const rawContent = html`${mdPlus.unsafe(quizBuilder.content(ids, { ids: groupedIds, render: useFormControl ? 'contentWithoutOptions' : 'content' }))}`;
+            const rawContent = html`${mdPlus.unsafe(quizBuilder.content(ids, { ids: groupedIds, render: useFormControl ? 'contentWithoutOptions' : 'content' }), {docId:`${code}-${key}`})}`;
             const mathNodeLeafs = leafs.filter(d => d.leaf.data.node.inputBy.kind === "math");
             return html`<div class="avoid">
             ${codeComponent(qIndex)}
@@ -286,6 +286,7 @@ function toTooltipInput(input) {
 }
 function toTemplate(
   template,
+  env,
   context,
   formatValue = (key) => value => value,
 
@@ -300,7 +301,7 @@ function toTemplate(
   };
 
   // Apply the string interpolation
-  const updatedStrings = mdPlus.renderToString(interpolateString(template)).replaceAll("(formatValue(", "\${computed(() => formatValue(")
+  const updatedStrings = mdPlus.renderToString(interpolateString(template), env).replaceAll("(formatValue(", "\${computed(() => formatValue(")
 
 
   // Safely create a template literal using new Function
