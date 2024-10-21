@@ -1,6 +1,6 @@
 
 ```js
-import { quizes, formatVersion, parseCode } from './utils/quizes.js';
+import { quizes, formatShortCode, parseCode } from './utils/quizes.js';
 ```
 ```js
 const paddingInput = Inputs.range([0, 1],{step: 0.01, value:0.01});
@@ -22,9 +22,7 @@ const columns = [...new Array(columnsCount)].map((d,i) => i);
 const p = [1,2];
 const codes = quizes.filter(d => d.subject === "math").flatMap(d => d.codes).sort((f,s) => parseCode(s).year - parseCode(f).year);
 const pages = codes.flatMap(code => {
- const {year, order, period} = parseCode(code);
-  const code2 =  `${year} - ${formatVersion({order, period})}`;
-  return p.flatMap(page => columns.map(column => ({code:code2 ,column, page, period})))
+  return p.flatMap(page => columns.map(column => ({code:formatShortCode(code) ,column, page, period})))
 });
 
 const dia = Plot.plot({
@@ -33,13 +31,10 @@ const dia = Plot.plot({
   width: 200,
   height: codes.length * (landscape ? 30: 60),
   fx: {padding, round: false},  
-  y: { type:'band', padding, domain:codes.map(code => {
-     const {year, order, period} = parseCode(code);
-    return `${year} - ${formatVersion({order, period})}`;
-  }), tickFormat: d => { 
-      const {year, order, period} = parseCode(d);
-      return `${year} - ${formatVersion({order, period})}`
-     }, label:null, stroke: 'green'},
+  y: { type:'band', padding, 
+      domain:codes.map(code => formatShortCode(code)),
+      tickFormat: d => formatShortCode(d),
+      label:null, stroke: 'green'},
   x: { label: null, tickFormat: null},
   marks: [
     Plot.cell(pages, {

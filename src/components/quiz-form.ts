@@ -2,7 +2,7 @@ import { parser, GFM, Subscript, Superscript } from '@lezer/markdown';
 import mdPlus from "../utils/md-utils.js";
 import { html } from "npm:htl";
 import { signal, computed } from '@preact/signals-core';
-import { convertTree, formatCode } from '../utils/quiz-utils.js';
+import { convertTree, formatCode, parseQuestionId } from '../utils/quiz-utils.js';
 import { html as rhtml } from '../utils/reactive-htl.js';
 import tippy from 'tippy.js';
 import { getVerifyFunction } from '../utils/assert.js';
@@ -19,14 +19,13 @@ type QuizParams = {
 }
 
 export function renderedQuestionsPerQuiz(params: QuizParams) {
-  const questionsToRender = params.questions?.length > 0 ? renderedQuestionsByQuiz(params).renderedQuestions : [];
+  const questionsToRender = params.questions?.length > 0 ? renderedQuestionsByQuiz(params).renderedQuestions : [];  
   return questionsToRender;  
 }
 export function renderedQuestionsPerQuizWithInputs(params: QuizParams) {
   const questionsToRender = params.questions?.length > 0 ? renderedQuestionsByQuiz(params) : [];
   return questionsToRender;
 }
-
 
 function chunkMetadataByInputs(metadata, subject, selectedIds = []) {
   const leafs = Object.groupBy(getAllLeafsWithAncestors(convertTree(metadata), (parent: { options: [], id: number }, child) => {
@@ -80,19 +79,27 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
           const context = Object.fromEntries(
             leafs.map((data) => {
               const d = data.leaf.data.node;
-              const label = data.leaf.data.id;
-              const id = parseQuestionId(label, subject);
+              const labelId = data.leaf.data.id;
+              const id = parseQuestionId(labelId, subject);
               const { inputBy, verifyBy } = d;
+
+              const component = inputBy.kind == "options"
+                  ? Inputs.button(
+                    optionsMap[id]?.map((opt) => [opt.name, (value) => opt])
+                  )
+                  : Inputs.text({ submit: true })
+              
+              const currentStore = inputsStore[code];
+              if (currentStore == null) {
+                inputsStore[code] = {}
+              }
+              inputsStore[code][labelId] = component
+
               return [
                 id,
-                toTooltipInput(
-                  inputBy.kind == "options"
-                    ? Inputs.button(
-                      optionsMap[id]?.map((opt) => [opt.name, (value) => opt])
-                    )
-                    : Inputs.text({ submit: true })
-                )
+                toTooltipInput(component)
               ];
+              
             })
           )
           const env = {docId:`${code}-${i}`};
@@ -102,7 +109,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                 const options = optionsMap[key];
 
                 return (value) => {
-                  if (value === null || value === undefined || value == "")
+                  if (isEmptyAnswer(value))
                     return ".........";
                   if (metadata == null || options == null) {
                     return value;
@@ -206,8 +213,23 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                   const error = validator(value);
                   return `answer-${error == null}`;
                 });
-
-                return rhtml`<div class=${answerClass}>${component}</div>`
+                const answerTooltip = computed(() => {
+                  const value = inputValue.value;
+                  const tooltipMessage = isEmptyAnswer(value) ? '': JSON.stringify(validator(value)?.expected);
+                  return tooltipMessage;
+                })
+                const answerTooltipClass = computed(() => {
+                  const value = inputValue.value;
+                  const tooltipClass = isEmptyAnswer(value) || validator(value) == null ? 'hidden': '';
+                  return tooltipClass;
+                })
+                const tooltip = toolTipper(
+                  html`<i class='fa-regular fa-circle-question'></i>`,
+                  () => rhtml`${answerTooltip}`);
+                const wrappedComponent = inputBy.kind === "options" || inputBy.kind ==="bool" 
+                ? rhtml`<div class=${answerClass}>${component}</div>`
+                : rhtml`<div class="h-stack h-stack--s h-stack-items--center"><div class=${answerClass}>${component}</div><div class=${answerTooltipClass}>${tooltip}</div></div>`
+                return wrappedComponent;
               }
               ;
             })}</div>` : ''}
@@ -255,13 +277,6 @@ function makeQuizBuilder(normalizedQuiz) {
   const parsedTree = markdownParser.parse(normalizedQuiz);
   return getQuizBuilder(parsedTree, normalizedQuiz, { render: 'contentWithoutOptions' });
 }
-function parseQuestionId(id, subject) {
-  const parts = id.split(".");
-  return parseInt(
-    (subject === "cz" || subject === "math") ? parts[0] : parts[1],
-    10
-  );
-}
 function toTooltipInput(input) {
 
   const s = useInput(input);
@@ -273,6 +288,7 @@ function toTooltipInput(input) {
 </svg></button>`,
     () => html`${input}`,
     {
+      trigger: "click",
       onShow: (instance) => {
         instance.popper.querySelector("input")?.focus();
         instance.popper.querySelectorAll("button").forEach((el) =>
@@ -325,23 +341,22 @@ function toTemplate(
   // ${finalStrings}`;
 }
 function toolTipper(element, contentFunc = () => "", props = {}) {
-  const parent = rhtml`<div>`;
+  const parent = html`<div>`;
   Object.assign(parent.style, {
     position: "relative",
     display: "inline-flex"
   });
   parent.append(element);
-  Object.assign(props, {
+  const def = {
     followCursor: false,
     allowHTML: true,
     interactive: true,
-    trigger: "click",
     hideOnClick: "toggle",
     theme: 'light-border',
     content: contentFunc(),
     onClickOutside: (instance) => instance.hide()
-  });
-  const instance = tippy(parent, props);
+  };
+  const instance = tippy(parent, {...def,...props});
   // element.onmousemove = element.onmouseenter = (e) => {
   //   instance.setContent(contentFunc(e.offsetX, e.offsetY));
   // };

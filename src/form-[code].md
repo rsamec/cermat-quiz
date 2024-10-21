@@ -9,17 +9,17 @@ style: /assets/css/quiz.css
 
 ```js
 import { renderedQuestionsPerQuizWithInputs } from './components/quiz-form.js';
-import { parseCode, formatCode } from './utils/quiz-utils.js';
+import { getQuestionIds } from './utils/quiz-utils.js';
+import { parseCode, formatShortCode} from './utils/quizes.js';
 import { fromEvent, combineLatest } from 'rxjs';
 import { map, startWith, tap } from  'rxjs/operators';
 import { store } from './utils/quiz.js';
 
-
+ 
 const metadata = await FileAttachment(`./data/form-${observable.params.code}.json`).json();
 const rawContent = await FileAttachment(`./data/form-${observable.params.code}.md`).text();
 const code = observable.params.code;
 const quizQuestionsMap = {[code]:{rawContent, metadata}};
-const searchParams = Object.fromEntries(new URLSearchParams(location.search));
 ```
 ```js
 const state = {
@@ -27,8 +27,8 @@ const state = {
   ...selection(values)
 }
 ```
-<div class="h-stack h-stack--m h-stack--wrap h-stack-items--start sticky" style="background:white">
-<div class="big" style="flex:1;">${formatCode(code)}</div>
+<div class="h-stack h-stack--m h-stack--wrap h-stack-items--start sticky bg-white">
+<div style="flex:1;">${formatShortCode(code)}</div>
 <div class="h-stack h-stack--m h-stack--end">
   <div class="badge">
     <i class="fa fa-hashtag"></i>
@@ -44,7 +44,7 @@ const state = {
 
 ```js
 const parameters = ({
-  questions: [[code].concat(Object.keys(metadata.children).map(d => parseInt(d,10)))],
+  questions: [[code].concat(getQuestionIds(metadata,code))],
   subject:parseCode(code).subject,
   quizQuestionsMap,
   displayOptions: {useColumns: true, useFormControl:true, useAIHelpers: true}

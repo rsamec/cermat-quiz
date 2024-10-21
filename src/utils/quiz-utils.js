@@ -1,15 +1,15 @@
 const langCategories = ({
-  LISTENING_1:"Poslech - volba obrázková",
-  LISTENING_2:"Poslech - volba Ano-Ne",
-  LISTENING_3:"Poslech - krátká odpověď",
-  LISTENING_4:"Poslech - volba textová",
-  READING_5:"Porozumění krátký text",
-  READING_6:"Porozumění informační text",
-  READING_7:"Porozumění dlouhý text",
-  READING_8:"Přirazení textu k jeho významu",
-  GRAMMER_9:"Doplnění slov do textu - volba",
-  GRAMMER_10:"Doplnění slov do textu",
-  
+  LISTENING_1: "Poslech - volba obrázková",
+  LISTENING_2: "Poslech - volba Ano-Ne",
+  LISTENING_3: "Poslech - krátká odpověď",
+  LISTENING_4: "Poslech - volba textová",
+  READING_5: "Porozumění krátký text",
+  READING_6: "Porozumění informační text",
+  READING_7: "Porozumění dlouhý text",
+  READING_8: "Přirazení textu k jeho významu",
+  GRAMMER_9: "Doplnění slov do textu - volba",
+  GRAMMER_10: "Doplnění slov do textu",
+
 })
 export const categories = ({
   cz: {
@@ -66,28 +66,41 @@ export function normalizeImageUrlsToAbsoluteUrls(markdown, segments) {
   });
   return replacedMarkdown;
 }
+export function getQuestionIds(metadata, code) {
+  const { subject } = parseCode(code);
+  return (subject === "cz" || subject === "math")
+    ? Object.keys(metadata.children).map(d => parseInt(d, 10))
+    : Object.values(metadata.children).flatMap(d => Object.keys(d.children ?? {})).map(d => d.split(".")[1]);
+}
+export function parseQuestionId(id, subject) {
+  const parts = id.split(".");
+  return parseInt(
+    (subject === "cz" || subject === "math") ? parts[0] : parts[1],
+    10
+  );
+}
 
-const generateCode = (code, variants ) => [2023,2024].flatMap(year => variants.flatMap(v => `${code}${v}-${year}`));
+const generateCode = (code, variants) => [2023, 2024].flatMap(year => variants.flatMap(v => `${code}${v}-${year}`));
 export const quizes = [
   { subject: 'en', period: 'diploma', codes: ["AJA-2023", "AJB-2023", "AJA-2024", "AJB-2024"] },
   { subject: 'de', period: 'diploma', codes: ["DEA-2023"] },
-  { subject: 'cz', period: '8', codes:generateCode("C5",["A","B"])},
-  { subject: 'cz', period: '4', codes:generateCode("C9",["A","B","C","D"])},
-  { subject: 'cz', period: '6', codes:generateCode("C7",["A","B"])},
-  { subject: 'cz', period: 'diploma', codes:generateCode("CM",["A","B"])},
-  { subject: 'math', period: '8', codes:generateCode("M5",["A","B"])},
-  { subject: 'math', period: '4', codes:generateCode("M9",["A","B","C","D"])},
-  { subject: 'math', period: '6', codes:generateCode("M7",["A","B"])},
-  { subject: 'math', period: 'diploma', codes:[]},
+  { subject: 'cz', period: '8', codes: generateCode("C5", ["A", "B"]) },
+  { subject: 'cz', period: '4', codes: generateCode("C9", ["A", "B", "C", "D"]) },
+  { subject: 'cz', period: '6', codes: generateCode("C7", ["A", "B"]) },
+  { subject: 'cz', period: 'diploma', codes: generateCode("CM", ["A", "B"]) },
+  { subject: 'math', period: '8', codes: generateCode("M5", ["A", "B"]) },
+  { subject: 'math', period: '4', codes: generateCode("M9", ["A", "B", "C", "D"]) },
+  { subject: 'math', period: '6', codes: generateCode("M7", ["A", "B"]) },
+  { subject: 'math', period: 'diploma', codes: [] },
 ]
-export function parseCode(code){
-  const subject = code[0] === "C" ? 'cz': code[0] === "M" ? 'math' : code[0] === "A" ? 'en' :code[0] === "D" ? 'de' :null;
+export function parseCode(code) {
+  const subject = code[0] === "C" ? 'cz' : code[0] === "M" ? 'math' : code[0] === "A" ? 'en' : code[0] === "D" ? 'de' : null;
   const grade = code[1];
-  const period = grade == 5 ? "8" : grade == 7 ? "6" : grade == 9 ? "4" : "diploma"   
+  const period = grade == 5 ? "8" : grade == 7 ? "6" : grade == 9 ? "4" : "diploma"
   const order = code[2];
-  
+
   const year = code.slice(-4);
-  return {subject,grade,order, period, year}
+  return { subject, grade, order, period, year }
 }
 
 export function formatGrade(grade) {
@@ -98,7 +111,7 @@ export function formatGrade(grade) {
       return "šestileté";
     case "5":
       return "osmileté";
-    default:    
+    default:
       return "maturita";
   }
 }
@@ -125,19 +138,19 @@ export function formatPeriod(period) {
     case '6':
       return "šestileté";
     case '8':
-      return "osmileté";    
+      return "osmileté";
     default:
       return "maturita";
   }
 }
 
 export function formatCode(code) {
-  const { subject, grade, order, year, period } = parseCode(code);  
-  return `${formatSubject(subject)} ${formatGrade(grade)} ${year} ${formatVersion({order,period})}`;
+  const { subject, grade, order, year, period } = parseCode(code);
+  return `${formatSubject(subject)} ${formatGrade(grade)} ${year} ${formatVersion({ order, period })}`;
 }
 
-export function formatVersion({order,period}={}){
-  
+export function formatVersion({ order, period } = {}) {
+
   let version = order;
   if (period === "diploma") {
     version = order === "A" ? "jaro" : order === "B" ? "podzim" : order;
@@ -146,12 +159,12 @@ export function formatVersion({order,period}={}){
       order === "A"
         ? "1.řádný"
         : order === "B"
-        ? "2.řádný"
-        : order === "C"
-        ? "1.náhr."
-        : order === "D"
-        ? "2.náhr."
-        : order;
+          ? "2.řádný"
+          : order === "C"
+            ? "1.náhr."
+            : order === "D"
+              ? "2.náhr."
+              : order;
   }
   return version;
 }
@@ -170,7 +183,7 @@ export function convertTree(tree) {
       }
     }
     else {
-      return { data: { id, node }}
+      return { data: { id, node } }
     }
   }
   return traverse("root", tree)

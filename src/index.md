@@ -10,8 +10,8 @@ toc: false
 </div>
 
 ```js
-import {convertTree, formatSubject, formatPeriod, parseCode, formatCode, formatVersion, categories} from './utils/quiz-utils.js';
-
+import {convertTree, categories} from './utils/quiz-utils.js';
+import {formatShortCode, formatSubject, formatPeriod, parseCode} from './utils/quizes.js';
 const quizLangCategories = await FileAttachment("./data/quiz-lang-categories.json").json();
 const quizGeneratedCategories = await FileAttachment("./data/quiz-categories.json").json();
 const quizCategories = ({
@@ -72,10 +72,9 @@ function codesBy({subject, period}){
         <span>testů</span>    
       </div>
       <div class="h-stack h-stack--m h-stack--wrap">
-      ${subjectWithPeriods[subject].periods.map(period => html`<div>${formatPeriod(period)}</div>${codesBy({subject,period}).map(code =>{
-          const {period, order, year} = parseCode(code);
-          return html`<a class="h-stack h-stack--xs" href="./form-${code}">${year} ${formatVersion({order, period})}</a>`
-        })}`)
+      ${subjectWithPeriods[subject].periods.map(period => html`<div>${formatPeriod(period)}</div>${codesBy({subject,period}).map(code =>
+          html`<a class="h-stack h-stack--xs" href="./form-${code}">${formatShortCode(code)}</a>`
+        )}`)
       }
       </div>
     </div>

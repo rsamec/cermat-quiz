@@ -2,9 +2,6 @@
 title: Quiz markdown
 draft: true
 ---
-```js
-//import {renderQuiz} from './components/quiz.js';
-```
 
 <!-- ```js
 const data = await renderQuiz({selectedQuestions:[{code:'AJA-2024',id:1}]})
@@ -14,13 +11,14 @@ display(html`${data}`);
 
 <script type="module">
 
-import {renderQuiz} from "http://127.0.0.1:3000/_import/components/quiz.js";
-const data = await renderQuiz({selectedQuestions:[...Array(60)].map((d,i) => ({code:'AJA-2024',id:i+1}))})
-document.getElementById("rr").appendChild(data[0]);
+
+import {renderedQuestionsPerQuiz} from "http://127.0.0.1:3000/_import/components/quiz-form.js";
+const data = await renderedQuestionsPerQuiz({selectedQuestions:[...Array(60)].map((d,i) => ({code:'AJA-2024',id:i+1}))})
+document.getElementById("iframe-target").appendChild(html`${data}`);
 
 </script>
 
-<div id="rr">aa</div>
+<div id="iframe-target">aa</div>
 
 
 ```js echo
