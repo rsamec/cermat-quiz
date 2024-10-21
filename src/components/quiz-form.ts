@@ -152,7 +152,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                 e.preventDefault(); 
                 window.open(`https://chat.openai.com/?q=${encodeURIComponent(quizBuilder.content(ids, { render: 'content' }))}`)
             }}><img src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white" alt="ChatGPT" /></a>
-            ${html`<a href="#" class="a-button" onclick=${(e) =>  { 
+            ${html`<a href="#" class="a-button a-button--clipboard" onclick=${(e) =>  { 
               e.preventDefault();
               var el = e.target.querySelector("i") ?? e.target;
               if (el != null) {
@@ -211,7 +211,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                     return 'answer';
                   }
                   const error = validator(value);
-                  return `answer-${error == null}`;
+                  return `answer answer-${error == null}`;
                 });
                 const answerTooltip = computed(() => {
                   const value = inputValue.value;
@@ -543,5 +543,5 @@ function mathSolverButton(node, labels) {
     window.open(hrefWithQuery, '_blank')
   }
 
-  return labels.map((d, i) => html`<a href="#" class="a-button" onclick=${(e) => {e.preventDefault(); handleClick(i);}}><i class="fa fa-calculator"></i> ${d}</a>`)
+  return labels.map((d, i) => html`<a href="#" class="a-button a-button--calculator" onclick=${(e) => {e.preventDefault(); handleClick(i);}}><i class="fa fa-calculator"></i> ${d}</a>`)
 }
