@@ -22,6 +22,7 @@ export default {
       name: "Ostatní",
       pages:[
         {name: "Kategorie", path: "/dashboard"},
+        // {name: "Layout", path: "/layout"},
       ]
     }
   ],
@@ -29,6 +30,7 @@ export default {
   // Content to add to the head of the page, e.g. for a favicon:
   head: `<link rel="icon" href="observable.png" type="image/png" sizes="32x32">
          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tippy.js/6.3.7/tippy.min.css">         
          <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light-border.css">
          `,
 
