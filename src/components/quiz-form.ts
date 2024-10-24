@@ -9,7 +9,7 @@ import { getVerifyFunction } from '../utils/assert.js';
 import Sortable from 'sortablejs/modular/sortable.core.esm.js';
 import { getAllLeafsWithAncestors, getQuizBuilder, OptionList, ShortCodeMarker } from '../utils/parse-utils.js';
 import * as Inputs from 'npm:@observablehq/inputs';
-import { isEmptyOrWhiteSpace } from '../utils/string-utils.js';
+import { isEmptyOrWhiteSpace, cls } from '../utils/string-utils.js';
 
 type QuizParams = {
   questions: string[][],
@@ -103,7 +103,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
             })
           )
           const env = {docId:`${code}-${i}`};
-          return html`<div class=${avoidBreakInsideQuestion ? 'break-inside-avoid-column':''}>${codeComponent(0)}${useFormControl
+          return html`<div class=${cls(['q', avoidBreakInsideQuestion ? 'break-inside-avoid-column':''])}>${codeComponent(0)}${useFormControl
               ? toTemplate(quizBuilder.content(ids, { rootOnly: true }), env, context, (key) => {
                 const metadata = metadataMap[key];
                 const options = optionsMap[key];
@@ -140,7 +140,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
             //const filteredIds = ids.filter(id => id == key);        
             const rawContent = html`${mdPlus.unsafe(quizBuilder.content(ids, { ids: groupedIds, render: useFormControl ? 'contentWithoutOptions' : 'content' }), {docId:`${code}-${key}`})}`;
             const mathNodeLeafs = leafs.filter(d => d.leaf.data.node.inputBy.kind === "math");
-            return html`<div class=${avoidBreakInsideQuestion ? 'break-inside-avoid-column':''}>
+            return html`<div class=${cls(['q', `q-${key}`, avoidBreakInsideQuestion ? 'break-inside-avoid-column':''])}>
             ${codeComponent(qIndex)}
             <div>
               ${rawContent}

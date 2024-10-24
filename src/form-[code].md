@@ -47,7 +47,7 @@ const parameters = ({
   questions: [[code].concat(getQuestionIds(metadata,code))],
   subject:parseCode(code).subject,
   quizQuestionsMap,
-  displayOptions: {useColumns: true, useFormControl:true, useAIHelpers: true}
+  displayOptions: {useColumns: false, useFormControl:false, useAIHelpers: false}
 })
 const {renderedQuestions, inputs:inputsStore} = renderedQuestionsPerQuizWithInputs(parameters);
 
@@ -83,5 +83,5 @@ const values = Generators.observe((notify) => {
 
 const {useColumns,columnWidth} = parameters.displayOptions;
 
-display(html`<div data-testid="root">${renderedQuestions.map(d => html`<div style=${useColumns ? `columns:${columnWidth ?? 24}rem`:''}>${d}</div>`)}</div>`);
+display(html`<div data-testid="root">${renderedQuestions.map(d => useColumns ? html`<div style=${ `columns:${columnWidth ?? 24}rem`}>${d}</div>`: html.fragment`${d}`)}</div>`);
 ```
