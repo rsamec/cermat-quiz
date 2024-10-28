@@ -12,25 +12,40 @@ toc: true
 ```html run=false
 <iframe width="100%" height="200" frameborder="0" src="/form-M9A-2024"></iframe>
 ```
+---
 
-### Vložit do stránek pomocí es modulu
+### Vložit do stránek pomocí javascript module
+
+
+<script type="module">
+import {renderQuiz} from "https://rsamec.github.io/cermat-quiz/components/quiz.js";
+const elements = await renderQuiz({selectedQuestions:[{code:'M9A-2024', id:1}, {code:'M9B-2024', id:1}]});
+for (let el of elements){
+  document.querySelector(".quiz-placeholder").append(el);
+}
+</script>
+
+<div class="quiz-placeholder"></div>
 
 ```html run=false
 <script type="module">
-
 import {renderQuiz} from "https://rsamec.github.io/cermat-quiz/components/quiz.js";
-document.body.append(await renderQuiz({selectedQuestions:[{code:'AJA-2024', id:1}]}));
 
+//render elements
+const elements = await renderQuiz({selectedQuestions:[
+  {code:'M9A-2024', id:1},
+  {code:'M9B-2024', id:1}
+]});
+
+//append elements to DOM
+for (let el of elements){
+  document.querySelector(".quiz-placeholder").append(el);
+}
 </script>
+
+<div class="quiz-placeholder"></div>
 ```
-<script type="module">
-
-import {renderQuiz} from "https://rsamec.github.io/cermat-quiz/components/quiz.js";
-const el = await renderQuiz({selectedQuestions:[{code:'M9C-2024', id:3}]});
-console.log("Element", el)
-document.querySelector("main").append(el[0]);
-
-</script>
+---
 
 ### Data
 
