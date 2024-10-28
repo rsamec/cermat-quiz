@@ -1,11 +1,12 @@
-import { parser, GFM, Subscript, Superscript } from '@lezer/markdown';
+
 import { getQuizBuilder, OptionList, ShortCodeMarker } from '../utils/parse-utils.js';
 import mdPlus from "../utils/md-utils.js";
 import { formatCode } from '../utils/quiz-utils.js';
 import { FileAttachment } from "npm:@observablehq/stdlib";
 import { html } from "npm:htl";
+import { parser, GFM, Subscript, Superscript } from 'npm:@lezer/markdown';
 
-export async function renderQuiz(params: { selectedQuestions: { code: string, id: string }[] }) {
+export async function renderQuiz(params) {
   const { selectedQuestions } = params;
   const quizQuestionsMap = await FileAttachment(`../data/quiz.json`).json();
   const questionsToRender = Object.entries(Object.groupBy(selectedQuestions, ({ code }) => code)).map(

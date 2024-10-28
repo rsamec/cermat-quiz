@@ -9,6 +9,39 @@ toc: false
 </a>
 </div>
 
+<div class="grid grid-cols-4"> 
+  <div class="card grow">
+    <h1><strong>Otevřenost a rozšířitelnost</strong></h1>
+    <div class="v-stack v-stack--m">
+      <span>Možnost vložit do vlastních školních stránek. Vytvořit si vlastní grafickou podobu testu. Stavět vlastní aplikace.</span>
+      <a href="/embedding">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+    </div>
+  </div>
+  <div class="card grow">
+    <h1><strong>Vlastní sestavení úloh</strong></h1>
+     <div class="v-stack v-stack--m">
+      <span>Naklikej si jednoduše vlastní porci úloh. Výsledek si vytiskni či používej na online trénování.</span>
+      <a href="/builder">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+    </div>
+  </div>
+  <div class="card grow">
+    <h1><strong>Tisk</strong></h1>
+     <div class="v-stack v-stack--m">
+      <span>Tužka a papír pomáhá přemýšlení, učení a zapamatování. Psaní rukou není rozhodně jen pro milovníky historie. Podrhávejte, používejte zvýrazňovače, rýsujte a počítejte na papír. Papír nebo technologie? Kombinujte obojí.</span>
+      <a href="/printing">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+    </div>
+  </div>
+  <div class="card grow">
+    <h1><strong>Video rozbory a AI</strong></h1>
+     <div class="v-stack v-stack--m">
+      <span>Jeden obrázek vydá za tisíc slov. Dobrá vizualizace usnadňuje pochopení úlohy. AI jako nástroj né jako řešení. V případě nouze použij ChatGTP tlačítko.</span>
+      <a href="/solver">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+    </div>
+  </div> 
+</div>
+
+---
+
 ```js
 import {convertTree, categories} from './utils/quiz-utils.js';
 import {formatShortCode, formatSubject, formatPeriod, parseCode} from './utils/quizes.js';
@@ -53,7 +86,7 @@ function codesBy({subject, period}){
 <!-- Cards with big numbers -->
 
 <div class="grid grid-cols-4">
- ${subjects.map(subject => html`<div class="card grow">
+ ${subjects.map(subject => html`<div class="card">
     <h2><strong>${formatSubject(subject)}</strong></h2>
     <div class="v-stack v-stack--l">
     <div class="v-stack v-stack--s">
