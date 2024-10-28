@@ -18,14 +18,14 @@ toc: true
 ```html run=false
 <script type="module">
 
-import {renderQuiz} from "https://github.com/rsamec/cermat-quiz/components/quiz.js";
+import {renderQuiz} from "https://rsamec.github.io/cermat-quiz/components/quiz.js";
 document.body.append(await renderQuiz({selectedQuestions:[{code:'AJA-2024', id:1}]}));
 
 </script>
 ```
 <script type="module">
 
-import {renderQuiz} from "https://github.com/rsamec/cermat-quiz/components/quiz.js";
+import {renderQuiz} from "https://rsamec.github.io/cermat-quiz/components/quiz.js";
 document.body.append(await renderQuiz({selectedQuestions:[{code:'AJA-2024', id:1}]}));
 
 </script>

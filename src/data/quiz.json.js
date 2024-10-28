@@ -8,7 +8,6 @@ const codesAndUrl = quizes.flatMap(d => d.codes.map(
     code,
     `https://www.eforms.cz/${d.subject}/${d.period}/${code}`]
 ));
-console.log(codesAndUrl)
 forkJoin(
   codesAndUrl.map(([_, mdBaseUrl]) =>
     fetch(`${mdBaseUrl}/index.md`).then((d) => {
@@ -23,8 +22,11 @@ forkJoin(
 ).then(results => {  
   return results.map((md, i) => {
     const rawContent = normalizeImageUrlsToAbsoluteUrls(md, [codesAndUrl[i][1]]);
-    return [codesAndUrl[i][0],rawContent]  
+    return [codesAndUrl[i][0],rawContent]
   }
   )
-}).then(entries => process.stdout.write(JSON.stringify(Object.fromEntries(entries))))
+}).then(entries => {
+  process.stdout.write(JSON.stringify(Object.fromEntries(entries)))
+}
+)
 
