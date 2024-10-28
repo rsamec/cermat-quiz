@@ -237,7 +237,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
             })}</div>` : ''}
 
             ${useFormControl && videoResourceLeafs.length > 0 ? html`<div class="v-stack v-stack--s">
-            ${videoResourceLeafs.map(([id,resources]) => html`<details open><summary class="solution">${id}</summary>${resources.map(r => html`<video src="/assets/${code}/${r.id}.mp4" autoplay muted controls></video>`)}</details>`)}</div>` : ''}
+            ${videoResourceLeafs.map(([id,resources]) => html`<details open><summary class="solution">${id}</summary>${resources.map(r => html`<video src="./assets/${code}/${r.id}.mp4" autoplay muted controls></video>`)}</details>`)}</div>` : ''}
           </div>`
           })
         }
