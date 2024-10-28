@@ -12,7 +12,7 @@ export async function renderQuiz(params) {
   const questionsToRender = Object.entries(Object.groupBy(selectedQuestions, ({ code }) => code)).map(
     ([code, values]) => {
       const quizContent = quizQuestionsMap[code];
-      const quizBuilder = quizContent ? makeQuizBuilder(quizContent.rawContent) : null;
+      const quizBuilder = quizContent ? makeQuizBuilder(quizContent) : null;
 
       return quizContent ? {
         code,

@@ -26,7 +26,9 @@ document.body.append(await renderQuiz({selectedQuestions:[{code:'AJA-2024', id:1
 <script type="module">
 
 import {renderQuiz} from "https://rsamec.github.io/cermat-quiz/components/quiz.js";
-document.body.append(await renderQuiz({selectedQuestions:[{code:'AJA-2024', id:1}]}));
+const el = await renderQuiz({selectedQuestions:[{code:'M9C-2024', id:3}]});
+console.log("Element", el)
+document.querySelector("main").append(el[0]);
 
 </script>
 
