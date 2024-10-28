@@ -1,5 +1,8 @@
 import { quizes, formatSubject,formatPeriod } from './src/utils/quizes.js';
-
+const range = (start, end) => Array.from(
+  Array(Math.abs(end - start) + 1), 
+  (_, i) => start + i
+);
 
 // See https://observablehq.com/framework/config for documentation.
 export default {
@@ -40,4 +43,9 @@ export default {
   .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
   .concat(quizes.map(d => `/quiz-${d.subject}-${d.period}`))
   .concat(quizes.map(d => `/quiz-picker-${d.subject}-${d.period}`))
+  .concat([
+    ['M9C-2023', range(0,9)],
+    ['M9C-2024', range(0,5).concat([8,9,10])]
+    ].flatMap(([code, ids]) => ids.map(id => `/assets/${code}/${id}.mp4`)))
+
 };

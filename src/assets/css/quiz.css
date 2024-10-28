@@ -28,7 +28,7 @@ pre {
   margin: 0px;
 }
 
-img {
+img, video {
   max-width: 100%;
   height: auto;
 }
@@ -321,3 +321,10 @@ h3 {
   grid-column: span 3;
   grid-row: span 1;
 } */
+
+
+.solution
+{
+  padding: 5px 8px;
+  border: 1px solid black
+}

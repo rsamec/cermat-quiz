@@ -139,16 +139,17 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
             const ids = [parseInt(key, 10)];
             //const filteredIds = ids.filter(id => id == key);        
             const rawContent = html`${mdPlus.unsafe(quizBuilder.content(ids, { ids: groupedIds, render: useFormControl ? 'contentWithoutOptions' : 'content' }), {docId:`${code}-${key}`})}`;
-            const mathNodeLeafs = leafs.filter(d => d.leaf.data.node.inputBy.kind === "math");
+            const videoResourceLeafs = leafs
+              .filter(d => d.leaf.data.node.resources?.some(d => d.kind === "video"))
+              .map(d => [d.leaf.data.id, d.leaf.data.node.resources.filter(d => d.kind === 'video')])
             return html`<div class=${cls(['q', `q-${key}`, avoidBreakInsideQuestion ? 'break-inside-avoid-column':''])}>
             ${codeComponent(qIndex)}
             <div>
               ${rawContent}
-            </div>          
+            </div>
+            
             ${useAIHelpers ? html`<div class="h-stack h-stack--m h-stack--wrap h-stack--end">
-                ${mathNodeLeafs.length > 0 ? html`<div class="h-stack">
-                ${mathSolverButton(rawContent, mathNodeLeafs.map(d => d.leaf.data.id))}</div>` : ''}
-                <a href="#" onclick=${(e) => {
+              <a href="#" onclick=${(e) => {
                 e.preventDefault(); 
                 window.open(`https://chat.openai.com/?q=${encodeURIComponent(quizBuilder.content(ids, { render: 'content' }))}`)
             }}><img src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white" alt="ChatGPT" /></a>
@@ -162,6 +163,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
               navigator.clipboard.writeText(quizBuilder.content(ids, { render: 'content' }));
               }}><i class="fa fa-clipboard" aria-hidden="true"></i></a>`}
               </div>`: ''}
+          
           ${useFormControl ? rhtml`<div class="form-group">${leafs.map((data) => {
               const d = data.leaf.data.node;
               const labelId = data.leaf.data.id;
@@ -234,7 +236,8 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
               ;
             })}</div>` : ''}
 
-            
+            ${useFormControl && videoResourceLeafs.length > 0 ? html`<div class="v-stack v-stack--s">
+            ${videoResourceLeafs.map(([id,resources]) => html`<details open><summary class="solution">${id}</summary>${resources.map(r => html`<video src="../assets/${code}/${r.id}.mp4" autoplay muted controls></video>`)}</details>`)}</div>` : ''}
           </div>`
           })
         }

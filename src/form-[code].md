@@ -37,7 +37,7 @@ const state = {
   <div class="badge">
     <i class="fa fa-calculator"></i>
     <span>${state.totalPoints ?? 0}</span>
-  </div>  
+  </div>
 </div>
 </div>
 
@@ -47,7 +47,7 @@ const parameters = ({
   questions: [[code].concat(getQuestionIds(metadata,code))],
   subject:parseCode(code).subject,
   quizQuestionsMap,
-  displayOptions: {useColumns: false, useFormControl:false, useAIHelpers: false}
+  displayOptions: {useFormControl:true, useAIHelpers: true}
 })
 const {renderedQuestions, inputs:inputsStore} = renderedQuestionsPerQuizWithInputs(parameters);
 
@@ -81,7 +81,6 @@ const values = Generators.observe((notify) => {
   return () => values$.unsubscribe();
 });
 
-const {useColumns,columnWidth} = parameters.displayOptions;
 
-display(html`<div data-testid="root">${renderedQuestions.map(d => useColumns ? html`<div style=${ `columns:${columnWidth ?? 24}rem`}>${d}</div>`: html.fragment`${d}`)}</div>`);
+display(html`<div data-testid="root" style="columns:24rem">${renderedQuestions.map(d => html.fragment`${d}`)}</div>`);
 ```
