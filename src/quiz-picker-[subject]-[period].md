@@ -15,6 +15,7 @@ import * as a from "npm:@appnest/masonry-layout";
 import {categories, parseCode, formatCode, formatSubject, formatPeriod} from './utils/quiz-utils.js';
 import {convertQueryParamToQuestions, convertFlagsToQueryParam, convertQuestionToQueryParam, cls} from './utils/string-utils.js';
 const quizQuestionsMap = await FileAttachment(`./data/quiz-${observable.params.subject}-${observable.params.period}.json`).json();
+const resourcesMap = await FileAttachment(`./data/quiz-answers-detail-gpt-4o.json`).json();
 ```
 
 
@@ -126,8 +127,9 @@ const queryValue = convertQuestionToQueryParam(selectedQuestions);
 ```js
 const controlsInput = Inputs.form({
   useAIHelpers:Inputs.toggle({ label: "Pomocná tlačítka", value: true}),
-  useFormControl:Inputs.toggle({ label: "Form controls", value: true}),
-  useCode: Inputs.toggle({label:"Zobrazit název testů", value: true}),
+  useFormControl:Inputs.toggle({ label: "Zobrazit možnost online vyplnění", value: true}),
+  useExplanationResources:Inputs.toggle({ label: "Zobrazit způsoby řešení", value: true}),
+  useCode: Inputs.toggle({label:"Zobrazovat názvy testů", value: true}),
 })
 const controlsSetting = Generators.input(controlsInput);
 
@@ -195,8 +197,9 @@ const exportButton =  html`<span>
 const parameters = ({
   questions: convertQueryParamToQuestions(queryValue),
   subject:observable.params.subject,
-  quizQuestionsMap,
-  displayOptions:{...columnsSetting, ...controlsSetting}
+  quizQuestionsMap,  
+  displayOptions:{...columnsSetting, ...controlsSetting},
+  resourcesMap
 })
 
 const renderedQuestions = renderedQuestionsPerQuiz(parameters);

@@ -13,6 +13,7 @@ style: /assets/css/quiz.css
 import { renderedQuestionsPerQuiz } from './components/quiz-form.js';
 import { convertQueryParamToQuestions, cls} from './utils/string-utils.js';
 const quizQuestionsMap = await FileAttachment(`./data/quiz-${observable.params.subject}-${observable.params.period}.json`).json();
+const resourcesMap = await FileAttachment(`./data/quiz-answers-detail-gpt-4o.json`).json();
 const searchParams = Object.fromEntries(new URLSearchParams(location.search));
 ```
 
@@ -21,7 +22,8 @@ const parameters = ({
   questions: convertQueryParamToQuestions(searchParams.q),
   subject:observable.params.subject,
   quizQuestionsMap,
-  displayOptions: {...Object.fromEntries(Object.entries(searchParams).map(([key, value]) => ([key,value ==="true" ? true : value === "false"? false: value])))}
+  displayOptions: {...Object.fromEntries(Object.entries(searchParams).map(([key, value]) => ([key,value ==="true" ? true : value === "false"? false: value])))},
+  resourcesMap
 })
 
 const renderedQuestions = renderedQuestionsPerQuiz(parameters);

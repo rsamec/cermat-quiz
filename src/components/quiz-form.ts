@@ -9,18 +9,19 @@ import { getVerifyFunction } from '../utils/assert.js';
 import Sortable from 'sortablejs/modular/sortable.core.esm.js';
 import { getAllLeafsWithAncestors, getQuizBuilder, OptionList, ShortCodeMarker } from '../utils/parse-utils.js';
 import * as Inputs from 'npm:@observablehq/inputs';
-import { isEmptyOrWhiteSpace, cls } from '../utils/string-utils.js';
+import { isEmptyOrWhiteSpace, cls, normalizeLatex } from '../utils/string-utils.js';
 
 type QuizParams = {
   questions: string[][],
   quizQuestionsMap: Record<string, { metadata: any, rawContent: string }>,
   subject: string,
   displayOptions: { useCode?: boolean, useAIHelpers?: boolean, avoidBreakInsideQuestion?: boolean, useFormControl?: boolean }
+  resourcesMap?: Record<string, any>
 }
 
 export function renderedQuestionsPerQuiz(params: QuizParams) {
-  const questionsToRender = params.questions?.length > 0 ? renderedQuestionsByQuiz(params).renderedQuestions : [];  
-  return questionsToRender;  
+  const questionsToRender = params.questions?.length > 0 ? renderedQuestionsByQuiz(params).renderedQuestions : [];
+  return questionsToRender;
 }
 export function renderedQuestionsPerQuizWithInputs(params: QuizParams) {
   const questionsToRender = params.questions?.length > 0 ? renderedQuestionsByQuiz(params) : [];
@@ -49,61 +50,64 @@ function chunkMetadataByInputs(metadata, subject, selectedIds = []) {
   }, []);
 }
 
-function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, displayOptions }: QuizParams) {
-  const { avoidBreakInsideQuestion, useCode, useAIHelpers, useFormControl } = displayOptions;
+function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, displayOptions, resourcesMap }: QuizParams) {
+  const { avoidBreakInsideQuestion, useCode, useAIHelpers, useFormControl, useExplanationResources } = displayOptions;
   const inputsStore: Record<string, Record<string, any>> = {}
-  return { renderedQuestions: questions.map(
-    ([code, ...id], index) => {
-      const ids = id.map(id => parseInt(id, 10));
-      const quiz = quizQuestionsMap[code];
-      const quizBuilder = quiz ? makeQuizBuilder(quiz.rawContent) : null;
-      const optionsMap = Object.fromEntries(
-        quizBuilder.questions.map((d) => [d.id, d.options])
-      );
-      const chunks = chunkMetadataByInputs(quiz.metadata, subject, ids);
-      const submit = "Odeslat"
+  return {
+    renderedQuestions: questions.map(
+      ([code, ...id], index) => {
+        const ids = id.map(id => parseInt(id, 10));
+        const quiz = quizQuestionsMap[code];
+        const quizBuilder = quiz ? makeQuizBuilder(quiz.rawContent) : null;
+        const optionsMap = Object.fromEntries(
+          quizBuilder.questions.map((d) => [d.id, d.options])
+        );
+        const chunks = chunkMetadataByInputs(quiz.metadata, subject, ids);
+        const submit = "Odeslat"
 
-      return chunks.flatMap(([inline, g], i) => {
-        const codeComponent = useCode &&  i === 0 ? (questionIndex) => questionIndex === 0 ? html`<h0>${formatCode(code)}</h0>` : null : () => null
-        if (inline) {
-          const ids = g.map(([key, leafs]) => parseInt(key, 10));
-          const leafs = g.flatMap(([key, leafs]) => leafs);
-          const metadataMap = Object.fromEntries(
-            leafs.map((data) => {
-              const d = data.leaf.data.node;
-              const label = data.leaf.data.id;
-              const id = parseQuestionId(label, subject);
-              return [id, d]
-            }))
+        const resource = resourcesMap?.[code];
 
-          const context = Object.fromEntries(
-            leafs.map((data) => {
-              const d = data.leaf.data.node;
-              const labelId = data.leaf.data.id;
-              const id = parseQuestionId(labelId, subject);
-              const { inputBy, verifyBy } = d;
+        return chunks.flatMap(([inline, g], i) => {
+          const codeComponent = useCode && i === 0 ? (questionIndex) => questionIndex === 0 ? html`<h0>${formatCode(code)}</h0>` : null : () => null
+          if (inline) {
+            const ids = g.map(([key, leafs]) => parseInt(key, 10));
+            const leafs = g.flatMap(([key, leafs]) => leafs);
+            const metadataMap = Object.fromEntries(
+              leafs.map((data) => {
+                const d = data.leaf.data.node;
+                const label = data.leaf.data.id;
+                const id = parseQuestionId(label, subject);
+                return [id, d]
+              }))
 
-              const component = inputBy.kind == "options"
+            const context = Object.fromEntries(
+              leafs.map((data) => {
+                const d = data.leaf.data.node;
+                const labelId = data.leaf.data.id;
+                const id = parseQuestionId(labelId, subject);
+                const { inputBy, verifyBy } = d;
+
+                const component = inputBy.kind == "options"
                   ? Inputs.button(
                     optionsMap[id]?.map((opt) => [opt.name, (value) => opt])
                   )
                   : Inputs.text({ submit: true })
-              
-              const currentStore = inputsStore[code];
-              if (currentStore == null) {
-                inputsStore[code] = {}
-              }
-              inputsStore[code][labelId] = component
 
-              return [
-                id,
-                toTooltipInput(component)
-              ];
-              
-            })
-          )
-          const env = {docId:`${code}-${i}`};
-          return html`<div class=${cls(['q', avoidBreakInsideQuestion ? 'break-inside-avoid-column':''])}>${codeComponent(0)}${useFormControl
+                const currentStore = inputsStore[code];
+                if (currentStore == null) {
+                  inputsStore[code] = {}
+                }
+                inputsStore[code][labelId] = component
+
+                return [
+                  id,
+                  toTooltipInput(component)
+                ];
+
+              })
+            )
+            const env = { docId: `${code}-${i}` };
+            return html`<div class=${cls(['q', avoidBreakInsideQuestion ? 'break-inside-avoid-column' : ''])}>${codeComponent(0)}${useFormControl
               ? toTemplate(quizBuilder.content(ids, { rootOnly: true }), env, context, (key) => {
                 const metadata = metadataMap[key];
                 const options = optionsMap[key];
@@ -129,20 +133,20 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                     : html`<span class="answer-text--right">${option?.name ?? answer.source ?? answer}</span> <span class="answer-text--wrong">${formattedValue}</span>`
                 };
               })
-              : mdPlus.unsafe(quizBuilder.content(ids, { render: 'content' }),env)
-            }</div>`;
+              : mdPlus.unsafe(quizBuilder.content(ids, { render: 'content' }), env)
+              }</div>`;
 
-        }
-        else {
-          const groupedIds = g.map(([key]) => [parseInt(key, 10)]);
-          return g.map(([key, leafs], qIndex) => {
-            const ids = [parseInt(key, 10)];
-            //const filteredIds = ids.filter(id => id == key);        
-            const rawContent = html`${mdPlus.unsafe(quizBuilder.content(ids, { ids: groupedIds, render: useFormControl ? 'contentWithoutOptions' : 'content' }), {docId:`${code}-${key}`})}`;
-            const videoResourceLeafs = leafs
-              .filter(d => d.leaf.data.node.resources?.some(d => d.kind === "video"))
-              .map(d => [d.leaf.data.id, d.leaf.data.node.resources.filter(d => d.kind === 'video')])
-            return html`<div class=${cls(['q', `q-${key}`, avoidBreakInsideQuestion ? 'break-inside-avoid-column':''])}>
+          }
+          else {
+            const groupedIds = g.map(([key]) => [parseInt(key, 10)]);
+            return g.map(([key, leafs], qIndex) => {
+              const ids = [parseInt(key, 10)];
+              //const filteredIds = ids.filter(id => id == key);        
+              const rawContent = html`${mdPlus.unsafe(quizBuilder.content(ids, { ids: groupedIds, render: useFormControl ? 'contentWithoutOptions' : 'content' }), { docId: `${code}-${key}` })}`;
+              const videoResourceLeafs = leafs
+                .filter(d => d.leaf.data.node.resources?.some(d => d.kind === "video"))
+                .map(d => [d.leaf.data.id, d.leaf.data.node.resources.filter(d => d.kind === 'video')])
+              return html`<div class=${cls(['q', `q-${key}`, avoidBreakInsideQuestion ? 'break-inside-avoid-column' : ''])}>
             ${codeComponent(qIndex)}
             <div>
               ${rawContent}
@@ -150,99 +154,103 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
             
             ${useAIHelpers ? html`<div class="h-stack h-stack--m h-stack--wrap h-stack--end">
               <a href="#" onclick=${(e) => {
-                e.preventDefault(); 
-                window.open(`https://chat.openai.com/?q=${encodeURIComponent(quizBuilder.content(ids, { render: 'content' }))}`)
-            }}><img src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white" alt="ChatGPT" /></a>
-            ${html`<a href="#" class="a-button a-button--clipboard" onclick=${(e) =>  { 
-              e.preventDefault();
-              var el = e.target.querySelector("i") ?? e.target;
-              if (el != null) {
-               el.classList.remove("fa-clipboard");
-               el.classList.add("fa-clipboard-check");
-              }
-              navigator.clipboard.writeText(quizBuilder.content(ids, { render: 'content' }));
-              }}><i class="fa fa-clipboard" aria-hidden="true"></i></a>`}
+                    e.preventDefault();
+                    window.open(`https://chat.openai.com/?q=${encodeURIComponent(quizBuilder.content(ids, { render: 'content' }))}`)
+                  }}><img src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white" alt="ChatGPT" /></a>
+            ${html`<a href="#" class="a-button a-button--clipboard" onclick=${(e) => {
+                    e.preventDefault();
+                    var el = e.target.querySelector("i") ?? e.target;
+                    if (el != null) {
+                      el.classList.remove("fa-clipboard");
+                      el.classList.add("fa-clipboard-check");
+                    }
+                    navigator.clipboard.writeText(quizBuilder.content(ids, { render: 'content' }));
+                  }}><i class="fa fa-clipboard" aria-hidden="true"></i></a>`}
               </div>`: ''}
           
-          ${useFormControl ? rhtml`<div class="form-group">${leafs.map((data) => {
-              const d = data.leaf.data.node;
-              const labelId = data.leaf.data.id;
-              const id = parseQuestionId(labelId, subject);
+            ${useFormControl ? rhtml`<div class="form-group">${leafs.map((data) => {
+                    const d = data.leaf.data.node;
+                    const labelId = data.leaf.data.id;
+                    const id = parseQuestionId(labelId, subject);
 
-              const { inputBy, verifyBy } = d;
-              const label = leafs.length > 1 && labelId;
-              const options = optionsMap[id] ?? [];
+                    const { inputBy, verifyBy } = d;
+                    const label = leafs.length > 1 && labelId;
+                    const options = optionsMap[id] ?? [];
 
-              if (verifyBy.kind === "selfEvaluate") {
-                const { hint } = verifyBy.args;
-                return ''
-                if (hint.kind == "image") {
-                  return html`<img src=${hint.src}>`
-                }
-                else {
-                  return ''
-                }
-              }
-              else {
+                    if (verifyBy.kind === "selfEvaluate") {
+                      const { hint } = verifyBy.args;
+                      return ''
+                      if (hint.kind == "image") {
+                        return html`<img src=${hint.src}>`
+                      }
+                      else {
+                        return ''
+                      }
+                    }
+                    else {
 
-                const component = Array.isArray(inputBy)
-                  ? toForm(({ template }) => Inputs.form(inputBy.map((inputBy, index) => renderSingleInputByType({ inputBy, label: `${index + 1}.`, submit: false, options })), { submit, template }), { label })
-                  : inputBy.kind != null
-                    ? renderSingleInputByType({ inputBy, label, submit: "Odeslat", options })
-                    : toForm(({ template }) => Inputs.form(Object.entries(inputBy).reduce((out, d) => {
-                      const [key, inputBy] = d;
-                      out[key] = renderSingleInputByType({ inputBy, label: key, submit: false, options });
-                      return out;
-                    }, {}), { submit, template }), { label })
+                      const component = Array.isArray(inputBy)
+                        ? toForm(({ template }) => Inputs.form(inputBy.map((inputBy, index) => renderSingleInputByType({ inputBy, label: `${index + 1}.`, submit: false, options })), { submit, template }), { label })
+                        : inputBy.kind != null
+                          ? renderSingleInputByType({ inputBy, label, submit: "Odeslat", options })
+                          : toForm(({ template }) => Inputs.form(Object.entries(inputBy).reduce((out, d) => {
+                            const [key, inputBy] = d;
+                            out[key] = renderSingleInputByType({ inputBy, label: key, submit: false, options });
+                            return out;
+                          }, {}), { submit, template }), { label })
 
-                component.classList.add("form-control");
+                      component.classList.add("form-control");
 
-                const inputValue = useInput(component);
-                const currentStore = inputsStore[code];
-                if (currentStore == null) {
-                  inputsStore[code] = {}
-                }
-                inputsStore[code][labelId] = component
+                      const inputValue = useInput(component);
+                      const currentStore = inputsStore[code];
+                      if (currentStore == null) {
+                        inputsStore[code] = {}
+                      }
+                      inputsStore[code][labelId] = component
 
 
-                const validator = getVerifyFunction(verifyBy);
+                      const validator = getVerifyFunction(verifyBy);
 
-                const answerClass = computed(() => {
-                  const value = inputValue.value;
-                  if (isEmptyAnswer(value)) {
-                    return 'answer';
-                  }
-                  const error = validator(value);
-                  return `answer answer-${error == null}`;
-                });
-                const answerTooltip = computed(() => {
-                  const value = inputValue.value;
-                  const tooltipMessage = isEmptyAnswer(value) ? '': JSON.stringify(validator(value)?.expected);
-                  return tooltipMessage;
-                })
-                const answerTooltipClass = computed(() => {
-                  const value = inputValue.value;
-                  const tooltipClass = isEmptyAnswer(value) || validator(value) == null ? 'hidden': '';
-                  return tooltipClass;
-                })
-                const tooltip = toolTipper(
-                  html`<i class='fa-regular fa-circle-question'></i>`,
-                  () => rhtml`${answerTooltip}`);
-                const wrappedComponent = inputBy.kind === "options" || inputBy.kind ==="bool" 
-                ? rhtml`<div class=${answerClass}>${component}</div>`
-                : rhtml`<div class="h-stack h-stack--s h-stack-items--center"><div class=${answerClass}>${component}</div><div class=${answerTooltipClass}>${tooltip}</div></div>`
-                return wrappedComponent;
-              }
-              ;
-            })}</div>` : ''}
-
-            ${useFormControl && videoResourceLeafs.length > 0 ? html`<div class="v-stack v-stack--s">
-            ${videoResourceLeafs.map(([id,resources]) => html`<details open><summary class="solution">${id}</summary>${resources.map(r => html`<video src="./assets/${code}/${r.id}.mp4" autoplay muted controls></video>`)}</details>`)}</div>` : ''}
+                      const answerClass = computed(() => {
+                        const value = inputValue.value;
+                        if (isEmptyAnswer(value)) {
+                          return 'answer';
+                        }
+                        const error = validator(value);
+                        return `answer answer-${error == null}`;
+                      });
+                      const answerTooltip = computed(() => {
+                        const value = inputValue.value;
+                        const tooltipMessage = isEmptyAnswer(value) ? '' : JSON.stringify(validator(value)?.expected);
+                        return tooltipMessage;
+                      })
+                      const answerTooltipClass = computed(() => {
+                        const value = inputValue.value;
+                        const tooltipClass = isEmptyAnswer(value) || validator(value) == null ? 'hidden' : '';
+                        return tooltipClass;
+                      })
+                      const tooltip = toolTipper(
+                        html`<i class='fa-regular fa-circle-question'></i>`,
+                        () => rhtml`${answerTooltip}`);
+                      const wrappedComponent = inputBy.kind === "options" || inputBy.kind === "bool"
+                        ? rhtml`<div class=${answerClass}>${component}</div>`
+                        : rhtml`<div class="h-stack h-stack--s h-stack-items--center"><div class=${answerClass}>${component}</div><div class=${answerTooltipClass}>${tooltip}</div></div>`
+                      return wrappedComponent;
+                    }
+                    ;
+                  })}</div>` : ''}
+            <div class="v-stack v-stack--s">
+              ${useExplanationResources && videoResourceLeafs.length > 0 ? html`<details class="solution"><summary>Řešení úlohy - video</summary><div class="v-stack v-stack--s">
+              ${videoResourceLeafs.map(([id, resources]) => html`${resources.map(r => html`<video src="./assets/${code}/${r.id}.mp4" autoplay muted controls></video>`)}`)}</div></details>` : ''}
+              
+              ${useExplanationResources && resource && !isEmptyOrWhiteSpace(resource[ids[0]]) ? html`
+            <details class="solution"><summary>Řešení úlohy</summary><div>${mdPlus.unsafe(normalizeLatex(resource[ids[0]]))}<div></details>` : ''}
+            </div>
           </div>`
-          })
-        }
-      })        
-    }),
+            })
+          }
+        })
+      }),
     inputs: inputsStore
   };
 }
@@ -359,7 +367,7 @@ function toolTipper(element, contentFunc = () => "", props = {}) {
     content: contentFunc(),
     onClickOutside: (instance) => instance.hide()
   };
-  const instance = tippy(parent, {...def,...props});
+  const instance = tippy(parent, { ...def, ...props });
   // element.onmousemove = element.onmouseenter = (e) => {
   //   instance.setContent(contentFunc(e.offsetX, e.offsetY));
   // };
@@ -546,5 +554,5 @@ function mathSolverButton(node, labels) {
     window.open(hrefWithQuery, '_blank')
   }
 
-  return labels.map((d, i) => html`<a href="#" class="a-button a-button--calculator" onclick=${(e) => {e.preventDefault(); handleClick(i);}}><i class="fa fa-calculator"></i> ${d}</a>`)
+  return labels.map((d, i) => html`<a href="#" class="a-button a-button--calculator" onclick=${(e) => { e.preventDefault(); handleClick(i); }}><i class="fa fa-calculator"></i> ${d}</a>`)
 }

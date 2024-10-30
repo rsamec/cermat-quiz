@@ -17,6 +17,7 @@ import { store } from './utils/quiz.js';
 
  
 const metadata = await FileAttachment(`./data/form-${observable.params.code}.json`).json();
+const resourcesMap = await FileAttachment(`./data/quiz-answers-detail-gpt-4o.json`).json();
 const rawContent = await FileAttachment(`./data/form-${observable.params.code}.md`).text();
 const code = observable.params.code;
 const quizQuestionsMap = {[code]:{rawContent, metadata}};
@@ -47,7 +48,8 @@ const parameters = ({
   questions: [[code].concat(getQuestionIds(metadata,code))],
   subject:parseCode(code).subject,
   quizQuestionsMap,
-  displayOptions: {useFormControl:true, useAIHelpers: true}
+  displayOptions: {useFormControl:true, useAIHelpers: true, useExplanationResources: true},
+  resourcesMap
 })
 const {renderedQuestions, inputs:inputsStore} = renderedQuestionsPerQuizWithInputs(parameters);
 
@@ -82,5 +84,5 @@ const values = Generators.observe((notify) => {
 });
 
 
-display(html`<div data-testid="root" style="columns:24rem">${renderedQuestions.map(d => html.fragment`${d}`)}</div>`);
+display(html`<div data-testid="root" style="columns:24rem">${renderedQuestions.map(d => html`<div class="v-stack v-stack--s">${d}</div>`)}</div>`);
 ```
