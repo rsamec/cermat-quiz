@@ -14,6 +14,14 @@ export const quizes = [
   //{ subject: 'math', period: 'diploma', codes:[]},
 ]
 
+export const printedPages =  [2, 3, 4].map(columnsCount => ({ pageSize: 'A4', columnsCount, orientation: 'landscape' }))
+.concat([1, 2, 3].map(columnsCount => ({ pageSize: 'A4', columnsCount, orientation: 'portrait' })))
+.concat([4, 5, 6, 7, 8].map(columnsCount => ({ pageSize: 'A3', columnsCount, orientation: 'landscape' })))
+.concat([3, 4, 5, 6].map(columnsCount => ({ pageSize: 'A3', columnsCount, orientation: 'portrait' })));
+
+export function formatPdfFileName({pageSize, columnsCount, orientation}){
+  return `${pageSize}-sloupce-${columnsCount}${orientation == 'landscape' ? '-landscape':''}`
+}
 
 export function parseCode(code) {
   const subject = code[0] === "C" ? 'cz' : code[0] === "M" ? 'math' : code[0] === "A" ? 'en' : code[0] === "D" ? 'de' : null;

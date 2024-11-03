@@ -1,4 +1,4 @@
-import { quizes, formatSubject,formatPeriod } from './src/utils/quizes.js';
+import { quizes, printedPages, formatSubject,formatPeriod, formatPdfFileName } from './src/utils/quizes.js';
 
 const unique =(value, index, array) =>  array.indexOf(value) === index;
 const range = (start, end) => Array.from(
@@ -60,12 +60,13 @@ export default {
   // The path to the source root.
   root: "src",  
   dynamicPaths:[]
-  // .concat(['/components/quiz.js'])
+// .concat(['/components/quiz.js'])
   .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
   .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))
   .concat(quizes.map(d => `/quiz-${d.subject}-${d.period}`))
   .concat(quizes.map(d => `/quiz-summary-${d.subject}-${d.period}`))
   .concat(quizes.map(d => `/quiz-picker-${d.subject}-${d.period}`))
+  .concat(quizes.flatMap(d => printedPages.map(p => `/assets/pdf/${d.subject}-${d.period}/${formatPdfFileName(p)}.pdf`)))
   .concat([
     ['M9C-2023', range(0,9)],
     ['M9C-2024', range(0,5).concat([8,9,10])]
