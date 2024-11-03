@@ -4,7 +4,7 @@ import { getQuizBuilder, OptionList, ShortCodeMarker } from '../utils/parse-util
 // import { formatCode } from '../utils/quiz-utils.js';
 // import { FileAttachment } from "@observablehq/stdlib";
 
-import { parser, GFM, Subscript, Superscript } from 'npm:@lezer/markdown';
+import { parser, GFM, Subscript, Superscript } from '@lezer/markdown';
 
 // export async function renderQuiz(params) {
 //   const { selectedQuestions } = params;
