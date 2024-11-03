@@ -1,0 +1,64 @@
+:root {
+  --form-color-primary: #3498DB;
+  --form-color-right: lightgreen;
+  --form-color-error: Salmon;
+}
+
+[data-tippy-root] {
+  display: inline;
+}
+
+.form-group {
+  margin: 5px 0px;
+}
+
+.form-group-label {
+  font-size: 13px;
+}
+
+.form-control {
+  display: flex;
+  gap: 5px;
+
+  label>p {
+    padding: 0px;
+    margin: 4px;
+  }
+}
+
+.answer {
+  padding-left: 5px;
+  border-left-width: 2px;
+  border-left-style: solid;
+  border-left-color: var(--form-color-primary);
+
+  &:hover {
+    border-color: brightness(1.75);
+  }
+}
+
+.answer-true {
+  border-left-color: var(--form-color-right);
+
+  &:hover {
+    border-color: brightness(1.75);
+  }
+}
+
+.answer-false {
+  border-left-color: var(--form-color-error);
+
+  &:hover {
+    border-color: brightness(1.75);
+  }
+}
+
+.answer-text--right {
+  background: var(--form-color-right);
+}
+
+.answer-text--wrong {
+  background: var(--form-color-error);
+  text-decoration: line-through;
+  ;
+}

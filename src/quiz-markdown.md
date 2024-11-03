@@ -3,12 +3,6 @@ title: Quiz markdown
 draft: true
 ---
 
-<!-- ```js
-const data = await renderQuiz({selectedQuestions:[{code:'AJA-2024',id:1}]})
-display(html`${data}`);
-``` -->
-
-
 <script type="module">
 
 

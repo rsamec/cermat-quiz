@@ -71,7 +71,7 @@ function plotQuestionsByCategory(data, {width, height, title} = {}) {
       tickFormat: d => formatPeriod(d),
     },
     height,
-    marginLeft:300,    
+    marginLeft:300,
     y: {grid: true, label: "Kategorie"},
     x: {grid: false, label: "Počet úloh"},
     color: {...color, legend: true},

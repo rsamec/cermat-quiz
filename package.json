@@ -6,7 +6,8 @@
     "build": "observable build",
     "dev": "observable preview",
     "deploy": "observable deploy",
-    "observable": "observable"
+    "observable": "observable",
+    "merge-pdf": "node merge-pdf.js ./generated"
   },
   "dependencies": {
     "@lezer/common": "^1.2.2",
@@ -17,6 +18,10 @@
     "@rematch/select": "^3.1.2",
     "d3-dsv": "^3.0.1",
     "d3-time-format": "^4.1.0",
+    "markdown-it-footnote": "^4.0.0",
+    "markdown-it-html5-embed": "^1.0.0",
+    "markdown-it-katex": "^2.0.3",
+    "markdown-it-sup": "^2.0.0",
     "rxjs": "^7.8.1",
     "sortablejs": "^1.15.3",
     "tippy.js": "^6.3.7"
@@ -24,6 +29,7 @@
   "devDependencies": {
     "@playwright/test": "^1.48.1",
     "@types/node": "^22.7.6",
+    "pdf-lib": "^1.17.1",
     "rimraf": "^5.0.5"
   },
   "engines": {

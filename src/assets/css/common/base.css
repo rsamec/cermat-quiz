@@ -1,0 +1,20 @@
+@media print {
+  #observablehq-center,
+  #observablehq-main,
+  .observablehq-center,
+  .observablehq-main,
+  .observablehq .observablehq--block {
+    margin: 0px;
+  }
+
+  audio {
+    display: none;
+  }
+}
+
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}

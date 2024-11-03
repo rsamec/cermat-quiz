@@ -171,26 +171,6 @@ const actionsButton =Inputs.button(["Otevřít","Tisk"].map(d => [d, () => windo
 
 const getExportUrlPart = (usePrint) => `quiz-${observable.params.subject}-${observable.params.period}?q=${queryValue}&${convertFlagsToQueryParam(usePrint? {...columnsSetting}: {...columnsSetting, ...controlsSetting})}`
 const getExportUrl = (usePrint) => `${window.location.origin}/${getExportUrlPart(usePrint)}`
-
-const exportButton =  html`<span>
-  ${toolTipper(
-    html`<button>Export</button>`,
-    () => html`<div class="v-stack v-stack--m" style="padding:10px">
-      <div class="v-stack">
-        <span class="small">Vlož tento HTML tag do libovolné stránky.</span>
-        <pre style="height:60px">
-          <code>
-            <span>${`<iframe width="100%" height="1359" frameborder="0" src="${getExportUrl(true)}"></iframe>`}</span>
-          </code>
-        </pre>
-      </div>
-      <div class="h-stack h-stack--s">
-        ${Inputs.button("Open URL", {value: null, reduce: () => window.open(`./${getExportUrlPart(true)}`)})}
-        ${Inputs.button("Copy URL only", {value: null, reduce: () => navigator.clipboard.writeText(getExportUrl(true))})}
-        ${Inputs.button("Copy", {value: null, reduce: () => navigator.clipboard.writeText(`<iframe width="100%" height="1359" frameborder="0" src="${getExportUrl(true)}"></iframe>`)})}
-      </div>
-    </div>`,   
-  )}</span>`
 ```
 
 ```js

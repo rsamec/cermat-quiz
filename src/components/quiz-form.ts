@@ -138,7 +138,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
 
           }
           else {
-            const groupedIds = g.map(([key]) => [parseInt(key, 10)]);
+            const groupedIds = g.map(([key]) => [parseInt(key, 10)]);            
             return g.map(([key, leafs], qIndex) => {
               const ids = [parseInt(key, 10)];
               //const filteredIds = ids.filter(id => id == key);        
@@ -239,13 +239,14 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                     }
                     ;
                   })}</div>` : ''}
-            <div class="v-stack v-stack--s">
+            ${useExplanationResources ? html`<div class="v-stack v-stack--s">
               ${useExplanationResources && videoResourceLeafs.length > 0 ? html`<details class="solution"><summary>Řešení úlohy - video</summary><div class="v-stack v-stack--s">
               ${videoResourceLeafs.map(([id, resources]) => html`${resources.map(r => html`<video src="./assets/${code}/${r.id}.mp4" autoplay muted controls></video>`)}`)}</div></details>` : ''}
               
               ${useExplanationResources && resource && !isEmptyOrWhiteSpace(resource[ids[0]]) ? html`
-            <details class="solution"><summary>Řešení úlohy</summary><div>${mdPlus.unsafe(normalizeLatex(resource[ids[0]]))}<div></details>` : ''}
+            <details class="solution"><summary>Řešení úlohy</summary><div>${mdPlus.unsafe(normalizeLatex(resource[ids[0]]))}<div></details>` : ''}            
             </div>
+            `:''}
           </div>`
             })
           }

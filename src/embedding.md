@@ -5,7 +5,7 @@ pager: false
 toc: true
 ---
 
-### Vložit do libolných stránek lze pomocí elementu iframe.
+## Vložit do libolných stránek lze pomocí elementu iframe.
 
 <iframe width="100%" height="200" frameborder="0" src="/form-M9A-2024"></iframe>
 
@@ -14,7 +14,7 @@ toc: true
 ```
 ---
 
-### Vložit do stránek pomocí javascript module
+## Vložit do stránek pomocí javascript module
 
 
 <script type="module">

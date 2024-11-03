@@ -1,0 +1,79 @@
+.root {
+  columns: 24rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  padding: 0px;
+  break-inside: avoid;
+  clear: both;
+}
+
+* {
+  clear: both;
+}
+
+blockquote {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 0px;
+  padding-left: 15px;
+  border-left: 1px solid #ccc;
+}
+
+h1 {
+  padding: 5px 0px 2px 0px;
+  text-align: center;
+  border-top: 1px solid rgb(146, 146, 146);
+  border-bottom: 1px solid rgb(146, 146, 146);
+  font-size: 1.5rem;
+}
+
+
+h2>span:first-of-type {
+  float: left;
+  margin-right: 1rem;
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.2rem;
+}
+
+h3 {
+  font-size: 1rem;
+}
+
+h1,
+h2,
+h3,
+blockquote {
+  orphans: 4;
+  widows: 4;
+}
+
+
+h1:not(:first-of-type) {
+  margin-top: 2rem;
+}
+
+h1, h2, h3 {
+  break-after: avoid;
+}
+p + blockquote {
+  break-before: avoid;
+}
+
+ul:not(:has(img)) {
+  break-inside: avoid-column;
+}
+
+.break-before-page {
+  break-before: page;
+  orphans: 4;
+  widows: 4;
+}

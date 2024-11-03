@@ -28,7 +28,7 @@ const state = {
   ...selection(values)
 }
 ```
-<div class="h-stack h-stack--m h-stack--wrap h-stack-items--start sticky bg-white">
+<div class="h-stack h-stack--m h-stack--wrap h-stack-items--start sticky">
 <div style="flex:1;">${formatShortCode(code)}</div>
 <div class="h-stack h-stack--m h-stack--end">
   <div class="badge">
@@ -83,6 +83,6 @@ const values = Generators.observe((notify) => {
   return () => values$.unsubscribe();
 });
 
-
-display(html`<div data-testid="root" style="columns:24rem">${renderedQuestions.map(d => html`<div class="v-stack v-stack--s">${d}</div>`)}</div>`);
+const print =  true;
+display(html`<div data-testid="root" style="columns:24rem">${renderedQuestions.map(d => print ? html.fragment`${d}`: html`<div class="v-stack v-stack--s">${d}</div>`)}</div>`);
 ```

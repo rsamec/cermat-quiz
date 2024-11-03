@@ -1,11 +1,11 @@
-import markdownit from "npm:markdown-it";
-import * as katex from 'https://cdn.skypack.dev/markdown-it-katex@2.0.3?min';
-import MarkdownItFootnote from "npm:markdown-it-footnote";
-import sup from 'npm:markdown-it-sup';
-const inlineTextColor = import('https://cdn.skypack.dev/@gerhobbelt/markdown-it-inline-text-color@1.0.1-1?min');
-import textBgColor from 'https://cdn.jsdelivr.net/npm/markdown-it-color-plus/+esm';
-import html5Media from 'https://cdn.jsdelivr.net/npm/markdown-it-html5-embed/+esm';
-
+import markdownit from "markdown-it";
+import * as katex from 'markdown-it-katex';
+import MarkdownItFootnote from "markdown-it-footnote";
+import sup from 'markdown-it-sup';
+//const inlineTextColor = import('https://cdn.skypack.dev/@gerhobbelt/markdown-it-inline-text-color@1.0.1-1?min');
+//import textBgColor from 'https://cdn.jsdelivr.net/npm/markdown-it-color-plus/+esm';
+import html5Media from 'markdown-it-html5-embed';
+let counter = 1;
 const ATXRenderer = function () {
   const mapping = {
     h1: "h2",
@@ -20,8 +20,7 @@ const ATXRenderer = function () {
   function open(tokens, idx) {
     const token = tokens[idx];
     const tag = getTagName(token);
-
-    return `<${tag}>`;
+    return tag === "h1"? `<${tag} id=${idx+(counter++)}>`:`<${tag}>`;
   }
 
   function close(tokens, idx) {
@@ -97,7 +96,7 @@ const Markdown = new markdownit({ html: false })
   })
   .use(sup)  
   .use(MarkdownItFootnote)
-  .use(textBgColor.default, { inline: false, isMultiLine: true })
+  // .use(textBgColor.default, { inline: false, isMultiLine: true })
   .use(html5Media, {
     html5embed: {
       useImageSyntax: false, // Enables video/audio embed with ![]() syntax (default)
