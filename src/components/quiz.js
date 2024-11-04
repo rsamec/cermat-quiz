@@ -15,7 +15,7 @@ export async function renderQuiz(code, filterIds){
   const baseUrl = `https://www.eforms.cz/${d.subject}/${d.period}/${code}`
   const content = await text(`${baseUrl}/index.md`);
   
-  const quiz = parseQuiz(normalizeImageUrlsToAbsoluteUrls(content));
+  const quiz = parseQuiz(normalizeImageUrlsToAbsoluteUrls(content, [baseUrl]));
   const ids = quiz.questions.map(d => d.id).filter(d => filterIds == null || filterIds.includes(d));  
   return mdPlus.unsafe(quiz.content(ids,{render:'content'}))
 }
