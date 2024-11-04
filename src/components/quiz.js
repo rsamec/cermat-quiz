@@ -2,7 +2,7 @@
 import { parser, GFM, Subscript, Superscript } from 'npm:@lezer/markdown';
 import { getQuizBuilder, OptionList, ShortCodeMarker } from '../utils/parse-utils.js';
 import { normalizeImageUrlsToAbsoluteUrls } from '../utils/quiz-utils.js';
-import mdPlus from "../utils/md-utils.js";
+import mdPlus from "../utils/md-utils-copy.js";
 
 async function text(url) {
   const response = await fetch(url);

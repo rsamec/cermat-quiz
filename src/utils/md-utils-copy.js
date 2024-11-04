@@ -1,10 +1,10 @@
-import markdownit from "markdown-it";
-import * as katex from 'markdown-it-katex';
-import MarkdownItFootnote from "markdown-it-footnote";
-import sup from 'markdown-it-sup';
+import markdownit from "npm:markdown-it";
+import * as katex from 'npm:markdown-it-katex';
+import MarkdownItFootnote from "npm:markdown-it-footnote";
+import sup from 'npm:markdown-it-sup';
 //const inlineTextColor = import('https://cdn.skypack.dev/@gerhobbelt/markdown-it-inline-text-color@1.0.1-1?min');
 //import textBgColor from 'https://cdn.jsdelivr.net/npm/markdown-it-color-plus/+esm';
-import html5Media from 'markdown-it-html5-embed';
+import html5Media from 'npm:markdown-it-html5-embed';
 let counter = 1;
 const ATXRenderer = function () {
   const mapping = {
