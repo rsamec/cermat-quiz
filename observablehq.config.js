@@ -60,7 +60,7 @@ export default {
   // The path to the source root.
   root: "src",  
   dynamicPaths:[]
-// .concat(['/components/quiz.js'])
+  .concat(['/components/quiz.js'])
   .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
   .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))
   .concat(quizes.map(d => `/quiz-${d.subject}-${d.period}`))

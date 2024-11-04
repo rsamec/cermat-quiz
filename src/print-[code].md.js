@@ -1,5 +1,5 @@
 import { parseArgs } from "node:util";
-import { parseQuiz } from './components/quiz.js';
+import { parseQuiz } from './utils/quiz-parser.js';
 import mdPlus from './utils/md-utils.js';
 import { parseCode, normalizeImageUrlsToAbsoluteUrls } from "./utils/quiz-utils.js";
 

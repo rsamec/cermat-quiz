@@ -19,7 +19,7 @@ toc: true
 
 <script type="module">
 import {renderQuiz} from "https://rsamec.github.io/cermat-quiz/components/quiz.js";
-const elements = await renderQuiz({selectedQuestions:[{code:'M9A-2024', id:1}, {code:'M9B-2024', id:1}]});
+const elements = await renderQuiz('M9A-2024');
 for (let el of elements){
   document.querySelector(".quiz-placeholder").append(el);
 }
@@ -32,10 +32,7 @@ for (let el of elements){
 import {renderQuiz} from "https://rsamec.github.io/cermat-quiz/components/quiz.js";
 
 //render elements
-const elements = await renderQuiz({selectedQuestions:[
-  {code:'M9A-2024', id:1},
-  {code:'M9B-2024', id:1}
-]});
+const elements = await renderQuiz('M9A-2024');
 
 //append elements to DOM
 for (let el of elements){

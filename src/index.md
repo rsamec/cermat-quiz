@@ -9,39 +9,6 @@ toc: false
 </a>
 </div>
 
-<div class="grid grid-cols-4"> 
-  <div class="card grow">
-    <h1><strong>Otevřenost a rozšířitelnost</strong></h1>
-    <div class="v-stack v-stack--m">
-      <span>Možnost vložit do vlastních školních stránek. Vytvořit si vlastní grafickou podobu testu. Stavět vlastní aplikace.</span>
-      <a href="/embedding">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
-    </div>
-  </div>
-  <div class="card grow">
-    <h1><strong>Vlastní sestavení úloh</strong></h1>
-     <div class="v-stack v-stack--m">
-      <span>Naklikej si jednoduše vlastní porci úloh. Výsledek si vytiskni či používej na online trénování.</span>
-      <a href="/builder">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
-    </div>
-  </div>
-  <div class="card grow">
-    <h1><strong>Tisk</strong></h1>
-     <div class="v-stack v-stack--m">
-      <span>Tužka a papír pomáhá přemýšlení, učení a zapamatování. Psaní rukou není rozhodně jen pro milovníky historie. Podrhávejte, používejte zvýrazňovače, rýsujte a počítejte na papír. Papír nebo technologie? Kombinujte obojí.</span>
-      <a href="/printing">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
-    </div>
-  </div>
-  <div class="card grow">
-    <h1><strong>Video rozbory a AI</strong></h1>
-     <div class="v-stack v-stack--m">
-      <span>Jeden obrázek vydá za tisíc slov. Dobrá vizualizace usnadňuje pochopení úlohy. AI jako nástroj né jako řešení. V případě nouze použij ChatGTP tlačítko.</span>
-      <a href="/solver">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
-    </div>
-  </div> 
-</div>
-
----
-
 ```js
 import {convertTree, categories} from './utils/quiz-utils.js';
 import {formatShortCode, formatSubject, formatPeriod, parseCode} from './utils/quizes.js';
@@ -94,7 +61,7 @@ function codesBy({subject, period}){
         <span class="big">${quizQuestions.filter((d) => d.subject === subject).length.toLocaleString("en-US")}</span>
         <span>úloh</span>
       </div>
-      <div class="h-stack h-stack--m h-stack--wrap">
+      <div class="h-stack h-stack--l h-stack--wrap">
       ${subjectWithPeriods[subject].periods.map(period => html`<a class="h-stack h-stack--xs" href="./quiz-picker-${subject}-${period}">${formatPeriod(period)}<span><span>↗︎</span><span></a>
         `)}
       </div>
@@ -104,18 +71,47 @@ function codesBy({subject, period}){
         <span class="big">${subjectWithPeriods[subject].codes.length.toLocaleString("en-US")}</span>
         <span>testů</span>    
       </div>
-      <div class="h-stack h-stack--m h-stack--wrap">
-      ${subjectWithPeriods[subject].periods.map(period => html`<div>${formatPeriod(period)}</div>${codesBy({subject,period}).map(code =>
-          html`<a class="h-stack h-stack--xs" href="./form-${code}">${formatShortCode(code)}</a>`
-        )}`)
-      }
+      <div class="h-stack h-stack--l h-stack--wrap">
+      ${subjectWithPeriods[subject].periods.map(period => html`<a class="h-stack h-stack--xs" href="./quiz-summary-${subject}-${period}">${formatPeriod(period)}<span><span>↗︎</span><span></a>
+        `)}
       </div>
     </div>
     </div>
   </div>`)}
 </div>
 
+---
 
+<div class="grid grid-cols-4"> 
+  <div class="card grow">
+    <h1><strong>Přepoužitelnost</strong></h1>
+    <div class="v-stack v-stack--m">
+      <span>Možnost vložit do vlastních školních stránek. Vytvořit si vlastní grafickou podobu testu. Interaktivita v úlohách. Stavět vlastní aplikace.</span>
+      <a href="/embedding">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+    </div>
+  </div>
+  <div class="card grow">
+    <h1><strong>Vlastní sestavení testu</strong></h1>
+     <div class="v-stack v-stack--m">
+      <span>Naklikej si vlastní porci úloh. Výsledek si vytiskni nebo využij na online trénování.</span>
+      <a href="/builder">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+    </div>
+  </div>
+  <div class="card grow">
+    <h1><strong>Tisk</strong></h1>
+     <div class="v-stack v-stack--m">
+      <span>Tužka a papír pomáhá přemýšlení, učení a zapamatování. Psaní rukou není rozhodně jen pro milovníky historie. Podrhávejte, používejte zvýrazňovače, rýsujte a počítejte na papír. Papír nebo technologie?</span>
+      <a href="/printing">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+    </div>
+  </div>
+  <div class="card grow">
+    <h1><strong>Video rozbory a AI</strong></h1>
+     <div class="v-stack v-stack--m">
+      <span>Jeden obrázek vydá za tisíc slov. Dobrá vizualizace usnadňuje pochopení úlohy. AI jako nástroj né jako řešení. V případě nouze použij ChatGTP tlačítko.</span>
+      <a href="/solver">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+    </div>
+  </div> 
+</div>
 
 
 ---
@@ -129,20 +125,14 @@ Zde je několik nápadů, co byste mohli vyzkoušet…
     Podívat se na oficiální cermat úlohy <a href="https://prijimacky.cermat.cz/">příjmačky</a> a <a href="https://maturita.cermat.cz/">maturita</a>.
   </div>
   <div class="card">
-    Trénovací PWA aplikace <a href="https://www.eforms.cz/">eforms</a> s podporou práce offline a podporou pro řešení úloh pomocí AI nástrojů. Případně oficiální aplikace <a href="https://tau.cermat.cz/">TAU</a>.
+    Trénovací PWA aplikace <a href="https://www.eforms.cz/">eforms</a> s podporou práce offline a podporou řešení úloh pomocí AI tlačítka. Případně oficiální trénovací aplikace <a href="https://tau.cermat.cz/">TAU</a>.
   </div>
   <div class="card">
     Studovat <a href="https://github.com/rsamec/cermat-quiz">zdrojové kódy</a> k aplikaci. Banka úloh výchází z oficiálních cermat úloh. Použité <a href="https://github.com/rsamec/cermat">formáty dat</a> k testovým úlohám.
-  </div>
+  </div> 
   <div class="card">
-     Banka úloh výchází z oficiálních cermat úloh. Použité <a href="https://github.com/rsamec/cermat">formáty dat</a> k testovým úlohám.
-  </div>
-  <div class="card">
-     <a href="https://observablehq.com/@rsamec/cermat-vysledky-ai">Vizualizace výsledků</a> řešení testových úloh pomocí AI. <a href="https://github.com/rsamec/cermat">Zdrojové kódy</a> k automatizovanému spuštění.
-  </div>
-  <div class="card">
-     Příklady využítí formátů dat. Řešení úloh z <a href="https://observablehq.com/@rsamec/c9a-2024">češtiny</a>. Řešení úloh z <a href="https://observablehq.com/@rsamec/m9c-2024">geometrie</a>. 
-  </div>
+    <a href="https://observablehq.com/@rsamec/cermat-vysledky-ai">Vizualizace výsledků</a> řešení testových úloh pomocí AI. <a href="https://github.com/rsamec/cermat/blob/main/lib/ai/quiz-solver.ts">Zdrojové kódy</a> k automatizovanému spuštění.
+  </div>  
 </div>
 
 <style>
