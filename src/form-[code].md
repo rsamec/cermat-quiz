@@ -28,7 +28,7 @@ const state = {
   ...selection(values)
 }
 ```
-<div class="h-stack h-stack--m h-stack--wrap h-stack-items--start sticky">
+<div class="h-stack h-stack--m h-stack--wrap h-stack-items--start sticky main-header">
 <div style="flex:1;">${formatShortCode(code)}</div>
 <div class="h-stack h-stack--m h-stack--end">
   <div class="badge">
