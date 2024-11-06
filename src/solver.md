@@ -1,15 +1,15 @@
 ---
 title: Video
 footer: false
-pager: false
+pager: true
 toc: true
 ---
 
 ## Vizualizace
-
+TODO
 ## Video
-
+TODO
 ## AI
-TODO:
+TODO
 
 

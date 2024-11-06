@@ -31,7 +31,6 @@
   padding: 5px 10px;
   border-radius: 10px;
   border-width: 0px;
-
 }
 
 .btn--primary {
@@ -86,4 +85,20 @@ details[open].solution summary {
 
 details.solution div {
   padding: 5px 10px;
+}
+
+h0 {
+  display: block;
+  padding: 10px;
+  /* color: var(--theme-foreground-muted); */
+  border-left-color: var(--theme-foreground-fainter);
+  background-color: var(--theme-background-alt);
+  text-align: center;
+}
+h0:not(:first-of-type){
+  margin-top: 10px 
+}
+
+.root {
+  padding: 20px;
 }

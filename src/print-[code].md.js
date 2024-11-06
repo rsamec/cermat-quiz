@@ -31,7 +31,7 @@ sidebar: false
 header: false
 footer: false
 pager: false
-toc: false
+toc: true
 style: /assets/css/print.css
 ---
 

@@ -77,3 +77,8 @@ ul:not(:has(img)) {
   orphans: 4;
   widows: 4;
 }
+
+.break-inside-avoid-column
+{
+  break-inside: avoid-column;
+}

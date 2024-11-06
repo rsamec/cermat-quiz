@@ -1,6 +1,6 @@
 @media print {
   #observablehq-center,
-  #observablehq-main,
+  #observablehq-main,  
   .observablehq-center,
   .observablehq-main,
   .observablehq .observablehq--block {
@@ -8,6 +8,10 @@
   }
 
   audio {
+    display: none;
+  }
+
+  #observablehq-toc {
     display: none;
   }
 }

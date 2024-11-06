@@ -1,16 +1,15 @@
 ---
-title: Quiz viewer
-theme: ["wide"]
-sidebar: true
-header: false
-footer: false
+title: Výběr testu
+sidebar: true,
 pager: true
-toc: true
-style: /assets/css/quiz.css
+toc: false
 ---
 
+# ${formatSubject(observable.params.subject)} - ${formatPeriod(observable.params.period)}
+
+
 ```js
-import { quizes, formatShortCode, formatPeriod, formatVersion, parseCode } from './utils/quizes.js';
+import { quizes, formatShortCode, formatSubject, formatPeriod, formatVersion, parseCode } from './utils/quizes.js';
 const filteredQuizes = quizes.filter(d => d.subject === observable.params.subject && d.period === observable.params.period).flatMap(d => d.codes)
 const quizesByYear = Object.entries(Object.groupBy(filteredQuizes, (d) => parseCode(d).year));
 
@@ -20,18 +19,21 @@ const pdfs = await FileAttachment(`./data/pdf-${observable.params.subject}-${obs
 
 <!-- Cards with big numbers -->
 
-<div class="grid grid-cols-2">
+<div class="grid grid-cols-4">
  ${quizesByYear.map(([year,codes]) => html`<div class="card">
     <div class="v-stack v-stack--l">
     <div class="v-stack v-stack--s">
       <div>
         <div class="big">${year}</div>
-        <span>${codes.length.toLocaleString("en-US")} testy</span>
+        <!-- <span>${codes.length.toLocaleString("en-US")} testy</span> -->
       </div>
-      <div class="h-stack h-stack--m h-stack--wrap">
+      <div class="v-stack v-stack--m">
         ${codes.map(code => {
           const {order, period,year} = parseCode(code);
-          return html`<a class="h-stack h-stack--xs" href="./form-${code}">${formatVersion({order,period})}</a>`
+          return html`<div class="h-stack h-stack--l">
+              <a class="h-stack h-stack--s" href="./form-${code}"><span>${formatVersion({order,period})}</span><span>↗︎</span></a>
+              <a class="h-stack h-stack--s" href="./print-${code}"><span>tisk</span><i class="fa-solid fa-print"></i></a>
+          <div>`
         })}
       </div>
     </div>
@@ -39,7 +41,7 @@ const pdfs = await FileAttachment(`./data/pdf-${observable.params.subject}-${obs
   )}
 </div>
 
-## PDF - balíčky testů
+## Balíčky testů pro tisk ke stažení - PDF
 
 ```js
 function parseFileKey(value) {
@@ -59,20 +61,27 @@ const pageOrientation = Generators.input(pageOrientationInput);
 view(pageOrientationInput);
 ```
 
-<ul>${Object.entries(pdfs).filter(([key]) => parseFileKey(key).pageSize === pageSize && parseFileKey(key).pageOrientation === pageOrientation).map(([key, values]) => html`<li><a href="./assets/pdf/${observable.params.subject}-${observable.params.period}/${key}.pdf"><i class="fa-solid fa-file-pdf"></i> ${key} (${values.reduce((out,[v,n])=> out+=n,0)} stránek)</a></li>`)}</ul>
-
-### Struktura PDF balíčků dle počtu sloupců a stran
 ```js
 const pdfsData = Object.entries(pdfs).flatMap(([key,value]) => value.map(([code,count]) => ({key, code,count})))
 const filteredData = pdfsData.filter(d =>  parseFileKey(d.key).pageSize === pageSize && parseFileKey(d.key).pageOrientation === pageOrientation).sort((f,s) => parseCode(s.code).year - parseCode(f.code).year);
 
-display(Plot.plot({
-   color: {legend: true, tickFormat: d => formatShortCode(d.substring(0,8))},
-   height: 420,
-   x:{ label: 'Počet sloupců na stránce' },
-   y:{ label:'Počet stran' },
-   marks:[
-    Plot.waffleY(filteredData, Plot.groupX({y:"sum"}, {x: "key", y:"count", fill:'code', tip: true})),
-   ]
-   }))
 ```
+
+<ul>${Object.entries(pdfs).filter(([key]) => parseFileKey(key).pageSize === pageSize && parseFileKey(key).pageOrientation === pageOrientation).map(([key, values]) => html`<li><a href="./assets/pdf/${observable.params.subject}-${observable.params.period}/${key}.pdf"><i class="fa-solid fa-file-pdf"></i> ${key} (${values.reduce((out,[v,n])=> out+=n,0)} stránek)</a></li>`)}</ul>
+
+<details>
+  <summary>
+    Obsah PDF balíčků dle počtu sloupců a stran
+  </summary>
+  ${Plot.plot({
+    color: {legend: true, tickFormat: d => formatShortCode(d.substring(0,8))},
+    height: 420,
+    x:{ label: 'Počet sloupců na stránce' },
+    y:{ label:'Počet stran' },
+    marks:[
+      Plot.waffleY(filteredData, Plot.groupX({y:"sum"}, {x: "key", y:"count", fill:'code', tip: true})),
+    ]
+   })}
+</details>
+
+

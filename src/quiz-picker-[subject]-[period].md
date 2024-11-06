@@ -1,10 +1,8 @@
 ---
-title: Úlohy
+title: Výběr úloh
 theme: ["wide"]
 sidebar: true
-header: false
-footer: false
-pager: false
+pager: true
 toc: false
 style: /assets/css/quiz.css
 ---
@@ -17,15 +15,10 @@ import {convertQueryParamToQuestions, convertFlagsToQueryParam, convertQuestionT
 const quizQuestionsMap = await FileAttachment(`./data/quiz-${observable.params.subject}-${observable.params.period}.json`).json();
 const resourcesMap = await FileAttachment(`./data/quiz-answers-detail-gpt-4o.json`).json();
 ```
+## ${formatSubject(observable.params.subject)} - ${formatPeriod(observable.params.period)}
 
-
-<div class="h-stack">
-  <h2 style="flex:1;">
-    ${formatSubject(observable.params.subject)} - ${formatPeriod(observable.params.period)}
-  </h2>
-    <div class="h-stack h-stack--s">
-      ${actionsButton}      
-    </div>
+<div class="h-stack h-stack--end">
+  ${actionsButton}
 </div>
 
 ```js
@@ -172,6 +165,10 @@ const actionsButton =Inputs.button(["Otevřít","Tisk"].map(d => [d, () => windo
 const getExportUrlPart = (usePrint) => `quiz-${observable.params.subject}-${observable.params.period}?q=${queryValue}&${convertFlagsToQueryParam(usePrint? {...columnsSetting}: {...columnsSetting, ...controlsSetting})}`
 const getExportUrl = (usePrint) => `${window.location.origin}/${getExportUrlPart(usePrint)}`
 ```
+
+<h2>
+  Náhled testu
+</h2>
 
 ```js
 const parameters = ({

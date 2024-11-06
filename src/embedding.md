@@ -1,8 +1,7 @@
 ---
 title: Rozšířitelnost
-header: Embedding
 footer: false
-pager: false
+pager: true
 toc: true
 ---
 
