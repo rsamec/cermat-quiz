@@ -119,9 +119,9 @@ const queryValue = convertQuestionToQueryParam(selectedQuestions);
 
 ```js
 const controlsInput = Inputs.form({
-  useAIHelpers:Inputs.toggle({ label: "Pomocná tlačítka", value: true}),
-  useFormControl:Inputs.toggle({ label: "Zobrazit možnost online vyplnění", value: true}),
-  useExplanationResources:Inputs.toggle({ label: "Zobrazit způsoby řešení", value: true}),
+  useAIHelpers:Inputs.toggle({ label: "Pomocná tlačítka", value: false}),
+  useFormControl:Inputs.toggle({ label: "Zobrazit možnost online vyplnění", value:true}),
+  useExplanationResources:Inputs.toggle({ label: "Zobrazit způsoby řešení", value:false}),
   useCode: Inputs.toggle({label:"Zobrazovat názvy testů", value: true}),
 })
 const controlsSetting = Generators.input(controlsInput);
