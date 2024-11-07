@@ -66,7 +66,7 @@ const state = {
 
 const showInput = Inputs.checkbox(new Map([
   ['AI', ['useAIHelpers',true]],
-  ['Řešení', ['useExplanationResources',true]]
+  ['Řešení', ['useResources',true]]
 ]))
 const displayOptions = Generators.input(showInput);
 

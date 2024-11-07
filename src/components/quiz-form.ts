@@ -15,7 +15,7 @@ type QuizParams = {
   questions: string[][],
   quizQuestionsMap: Record<string, { metadata: any, rawContent: string }>,
   subject: string,
-  displayOptions: { useCode?: boolean, useAIHelpers?: boolean, avoidBreakInsideQuestion?: boolean, useFormControl?: boolean }
+  displayOptions: { useCode?: boolean, useAIHelpers?: boolean, avoidBreakInsideQuestion?: boolean, useFormControl?: boolean, useResources?:boolean }
   resourcesMap?: Record<string, any>
 }
 
@@ -51,7 +51,7 @@ function chunkMetadataByInputs(metadata, subject, selectedIds = []) {
 }
 
 function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, displayOptions, resourcesMap }: QuizParams) {
-  const { avoidBreakInsideQuestion, useCode, useAIHelpers, useFormControl, useExplanationResources } = displayOptions;
+  const { avoidBreakInsideQuestion, useCode, useAIHelpers, useFormControl, useResources } = displayOptions;
   const inputsStore: Record<string, Record<string, any>> = {}
   return {
     renderedQuestions: questions.map(
@@ -239,12 +239,12 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                     }
                     ;
                   })}</div>` : ''}
-            ${useExplanationResources ? html`<div class="v-stack v-stack--s">
-              ${useExplanationResources && videoResourceLeafs.length > 0 ? html`<details class="solution"><summary>Řešení úlohy - video</summary><div class="v-stack v-stack--s">
+            ${useResources ? html`<div class="v-stack v-stack--s">
+              ${useResources && videoResourceLeafs.length > 0 ? html`<details class="solution"><summary>Řešení úlohy</summary><div class="v-stack v-stack--s">
               ${videoResourceLeafs.map(([id, resources]) => html`${resources.map(r => html`<video src="./assets/${code}/${r.id}.mp4" autoplay muted controls></video>`)}`)}</div></details>` : ''}
               
-              ${useExplanationResources && resource && !isEmptyOrWhiteSpace(resource[ids[0]]) ? html`
-            <details class="solution"><summary>Řešení úlohy</summary><div>${mdPlus.unsafe(normalizeLatex(resource[ids[0]]))}<div></details>` : ''}            
+              ${useResources && useAIHelpers && resource && !isEmptyOrWhiteSpace(resource[ids[0]]) ? html`
+            <details class="solution"><summary><span style="margin-right: 1rem;">Řešení úlohy - AI</span><i class="fa-solid fa-circle-exclamation mx-2"></i>může obsahovat chyby<i class="fa-solid fa-circle-exclamation mx-2"></i></i></summary><div>${mdPlus.unsafe(normalizeLatex(resource[ids[0]]))}<div></details>` : ''}
             </div>
             `:''}
           </div>`

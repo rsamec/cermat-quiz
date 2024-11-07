@@ -24,7 +24,7 @@ export default {
       }))
     },
     {
-      open: true,
+      open: false,
       name: "Testy",
       pages: quizes.map(d => ({
         name: `${formatSubject(d.subject)} ${formatPeriod(d.period)}`,
@@ -32,21 +32,16 @@ export default {
       }))
     },
     {
+      open: false,
       name: "Návody",
       pages:[
-        {name: "Tisk", path: "/printing"},
+        {name: "Tisk", path: "/print"},
         {name: "Sestavení úloh", path: "/builder"},
         {name: "Embedding", path: "/embedding"},
         {name: "AI", path: "/solver"},
+        {name: "Kategorie", path: "/dashboard"},
       ]
     },
-    {
-      name: "Ostatní",
-      pages:[
-        {name: "Kategorie", path: "/dashboard"},
-        // {name: "Layout", path: "/layout"},
-      ]
-    }
   ],
   globalStylesheets:['/assets/css/common/stacks.css'],
   // Content to add to the head of the page, e.g. for a favicon:

@@ -1,54 +1,58 @@
+---
+title: Tisk
+footer: false
+pager: true
+toc: true
+---
+
+## Balíčky pdf
 
 ```js
-import { quizes, formatShortCode, parseCode } from './utils/quizes.js';
+import {formatSubject, formatPeriod} from './utils/quizes.js';
+const pdfs = await FileAttachment(`./data/pdf.json`).json();
+
+function formatSubjectAndPeriod (value) {
+  const [subject,period] = value.split('-')
+  return `${formatSubject(subject)} ${formatPeriod(period)}`
+}
+
+const unique = (arr, key) => {
+   const keys = new Set();
+   return arr.filter(el => !keys.has(el[key]) && keys.add(el[key]));
+ };
+
+function parseFileKey(value) {
+  const parts =  value.split('-');
+  return  {
+    pageSize:parts[0],
+    columnsCount: parts[2],
+    pageOrientation: parts.length === 4 ? 'landscape': 'portrait'}
+}
+
+const pageSizeInput = Inputs.radio(['A4','A3'], {value: 'A4', label: 'Velikost stránky'});
+const pageSize = Generators.input(pageSizeInput);
+view(pageSizeInput);
+
+const pageOrientationInput = Inputs.radio(['portrait','landscape'], {value: 'portrait', label:"Orientace", format: d => d == "landscape" ? 'na šířku': 'na výšku'});
+const pageOrientation = Generators.input(pageOrientationInput);
+view(pageOrientationInput);
 ```
+
 ```js
-const paddingInput = Inputs.range([0, 1],{step: 0.01, value:0.01});
-const padding =  Generators.input(paddingInput);
-display(paddingInput)
+const filteredData = pdfs.filter(d =>  parseFileKey(d.file).pageSize === pageSize && parseFileKey(d.file).pageOrientation === pageOrientation); //.sort((f,s) => parseCode(s.code).year - parseCode(f.code).year);
 
-const columnsCountInput = Inputs.range([1, 6],{step: 1, value:2, label:"Columns"});
-const columnsCount =  Generators.input(columnsCountInput);
-display(columnsCountInput)
-
-const landscapeInput = Inputs.toggle({ label:"Landscape"});
-const landscape =  Generators.input(landscapeInput);
-display(landscapeInput)
-
+const groupedByDirectories = Object.entries(Object.groupBy(filteredData, ({directory}) => directory))
 ```
-```js
 
-const columns = [...new Array(columnsCount)].map((d,i) => i);
-const p = [1,2];
-const codes = quizes.filter(d => d.subject === "math").flatMap(d => d.codes).sort((f,s) => parseCode(s).year - parseCode(f).year);
-const pages = codes.flatMap(code => {
-  return p.flatMap(page => columns.map(column => ({code:formatShortCode(code) ,column, page, period})))
-});
+ ${Plot.plot({
+    color: {legend: true, tickFormat: d => formatSubjectAndPeriod(d)},
+    height: 420,
+    x:{ label: 'Počet sloupců na stránce' },
+    y:{ label:'Počet stran' },
+    marks:[
+      Plot.waffleY(filteredData, Plot.groupX({y:"sum"}, {x: "file", y:"count", fill:'directory', tip: true})),
+    ]
+   })}
 
-const dia = Plot.plot({
-  padding: 0,
-  marginLeft: 100,
-  width: 200,
-  height: codes.length * (landscape ? 30: 60),
-  fx: {padding, round: false},  
-  y: { type:'band', padding, 
-      domain:codes.map(code => formatShortCode(code)),
-      tickFormat: d => formatShortCode(d),
-      label:null, stroke: 'green'},
-  x: { label: null, tickFormat: null},
-  marks: [
-    Plot.cell(pages, {
-      y: "code",
-      x: "column",
-      fx: "page",
-      fy: "period",
-      fill: 'transparent',
-      stroke:'black'
-    }),
-    //Plot.text(pages, { y: Plot.identity, x:1, text: (d) => d, fill: "black", title: "title"}),
-    // Plot.tickX(pages, {y: Plot.identity, x: 1, dx: -5 }),
-    // Plot.tickX(pages, {y: Plot.identity, x: 1, dx: 5})
-  ]
-});
-display(dia)
-```
+
+${groupedByDirectories.map(([directory,values]) => html`<h3>${formatSubjectAndPeriod(directory)}</h3> <ul>${unique(values, 'file').map(({file, values}) => html`<li><a href="./assets/pdf/${directory}/${file}.pdf"><i class="fa-solid fa-file-pdf"></i> ${file} (${values.reduce((out,[v,n])=> out+=n,0)} stránek)</a></li>`)}</ul>`)}

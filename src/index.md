@@ -24,8 +24,8 @@ const quizQuestions = Object.entries(quizCategories).flatMap(([code, value]) =>
     const parsedCode = parseCode(code);
     return {
       ...d,
-      code,      
-      period: parsedCode.period,      
+      code,
+      period: parsedCode.period,
       subject: parsedCode.subject,
       year: parsedCode.year,
       Category: categories[parsedCode.subject][d.category],
@@ -69,7 +69,7 @@ function codesBy({subject, period}){
      <div class="v-stack v-stack--s">
       <div>
         <span class="big">${subjectWithPeriods[subject].codes.length.toLocaleString("en-US")}</span>
-        <span>testů</span>    
+        <span>testů</span>
       </div>
       <div class="h-stack h-stack--m h-stack--wrap">
       ${subjectWithPeriods[subject].periods.map(period => html`<a class="h-stack h-stack--xs" href="./quiz-summary-${subject}-${period}">${formatPeriod(period)}<span><span>↗︎</span><span></a>
@@ -101,7 +101,7 @@ function codesBy({subject, period}){
     <h1><strong>Tisk</strong></h1>
      <div class="v-stack v-stack--m">
       <span>Tužka a papír pomáhá přemýšlení, učení a zapamatování. Psaní rukou není rozhodně jen pro milovníky historie. Podrhávejte, používejte zvýrazňovače, rýsujte a počítejte na papír. Papír nebo technologie?</span>
-      <a href="/printing">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+      <a href="/print">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
     </div>
   </div>
   <div class="card grow">

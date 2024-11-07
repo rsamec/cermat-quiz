@@ -102,3 +102,8 @@ h0:not(:first-of-type){
 .root {
   padding: 20px;
 }
+
+.mx-2 {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
