@@ -61,7 +61,7 @@ function codesBy({subject, period}){
         <span class="big">${quizQuestions.filter((d) => d.subject === subject).length.toLocaleString("en-US")}</span>
         <span>úloh</span>
       </div>
-      <div class="h-stack h-stack--l h-stack--wrap">
+      <div class="h-stack h-stack--m h-stack--wrap">
       ${subjectWithPeriods[subject].periods.map(period => html`<a class="h-stack h-stack--xs" href="./quiz-picker-${subject}-${period}">${formatPeriod(period)}<span><span>↗︎</span><span></a>
         `)}
       </div>
