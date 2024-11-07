@@ -244,7 +244,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
               ${videoResourceLeafs.map(([id, resources]) => html`${resources.map(r => html`<video src="./assets/${code}/${r.id}.mp4" autoplay muted controls></video>`)}`)}</div></details>` : ''}
               
               ${useResources && useAIHelpers && resource && !isEmptyOrWhiteSpace(resource[ids[0]]) ? html`
-            <details class="solution"><summary><span style="margin-right: 1rem;">Řešení úlohy - AI</span><i class="fa-solid fa-circle-exclamation mx-2"></i>může obsahovat chyby<i class="fa-solid fa-circle-exclamation mx-2"></i></i></summary><div>${mdPlus.unsafe(normalizeLatex(resource[ids[0]]))}<div></details>` : ''}
+            <details class="solution"><summary><span style="margin-right: 1rem;">Řešení úlohy - AI</span><i class="fa-solid fa-circle-exclamation" title="může obsahovat chyby"></i></summary><div>${mdPlus.unsafe(normalizeLatex(resource[ids[0]]))}<div></details>` : ''}
             </div>
             `:''}
           </div>`
