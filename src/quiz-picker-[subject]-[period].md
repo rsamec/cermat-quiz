@@ -9,17 +9,14 @@ style: /assets/css/quiz.css
 
 ```js
 import tippy from 'tippy.js';
-import * as a from "npm:@appnest/masonry-layout";
 import {categories, parseCode, formatCode, formatSubject, formatPeriod} from './utils/quiz-utils.js';
 import {convertQueryParamToQuestions, convertFlagsToQueryParam, convertQuestionToQueryParam, cls} from './utils/string-utils.js';
+import {renderedQuestionsPerQuiz} from './components/quiz-form.js';
+
 const quizQuestionsMap = await FileAttachment(`./data/quiz-${observable.params.subject}-${observable.params.period}.json`).json();
 const resourcesMap = await FileAttachment(`./data/quiz-answers-detail-gpt-4o.json`).json();
+const questionsMaxLimit = 50;
 ```
-## ${formatSubject(observable.params.subject)} - ${formatPeriod(observable.params.period)}
-
-<div class="h-stack h-stack--end">
-  ${actionsButton}
-</div>
 
 ```js
 const quizLangCategories = await FileAttachment("./data/quiz-lang-categories.json").json();
@@ -57,12 +54,12 @@ const selectedCodes = Generators.input(selectedCodesInput);
 const uniqueCategories = Object.keys(Object.groupBy(filteredQuizCategories, ({Category}) => Category));
 const selectedCategoriesInput = Inputs.select(uniqueCategories,{ multiple:true, label:"Kategorie"});
 const selectedCategories = Generators.input(selectedCategoriesInput);
-
 ```
+
 <div class="card">
   <details>
     <summary>
-    Filtry
+    Filrování úloh
     </summary>
   <section>
     <div class="grid grid-cols-3">
@@ -91,19 +88,21 @@ if (selectedCodes.length > 0){
 if (selectedCategories.length > 0){
   filtered = filtered.filter(d=> selectedCategories.some(category => d.Category === category));
 }
-
-const search = view(Inputs.search(filtered));
-
+const search = view(Inputs.search(filtered,{placeholder: "Vyhledej úlohy…"}));
 ```
+
 ```js
 const selectedQuestions = view(Inputs.table(search, {
    columns: [
-    "id",
     "title",
     "Category",
     "code",
-    "year",    
   ],
+  header: {
+    title: "Úloha",
+    Category: "Kategorie úlohy",
+    code:"Test"
+  },
   format: {
     code: d => formatCode(d)
   }
@@ -113,30 +112,23 @@ const selectedQuestions = view(Inputs.table(search, {
 
 ```js
 const queryValue = convertQuestionToQueryParam(selectedQuestions);
-
-
 ```
 
 ```js
 const controlsInput = Inputs.form({
-  useAIHelpers:Inputs.toggle({ label: "Pomocná tlačítka", value: false}),
-  useFormControl:Inputs.toggle({ label: "Zobrazit možnost online vyplnění", value:true}),
-  useResources:Inputs.toggle({ label: "Zobrazit způsoby řešení", value:false}),
-  useCode: Inputs.toggle({label:"Zobrazovat názvy testů", value: true}),
+  useFormControl:Inputs.toggle({ label: "Formulář", value:true}),
+  useResources:Inputs.toggle({ label: "Řešení", value:false}),
+  useAIHelpers:Inputs.toggle({ label: "AI", value: false}),
 })
 const controlsSetting = Generators.input(controlsInput);
 
 const columnsInput = Inputs.form({
   layoutPerQuiz: Inputs.toggle({label:"Vykreslovat za jednotlivé testy", value: false}),
-  layout: Inputs.radio(
-    new Map([["žádné","none"],["Sloupcový","multiColumn"],["Tabulkový po řádcích","row"],["Tabulkový po sloupcích","column"],[ "Masonry", "masonry"]]),
-    { label:"Rozvržení stránky", value:"multiColumn" }
-  ),  
-  aligned:Inputs.toggle({label:"Zarovnat v rámci tabulky", value: true}),
-
+  useColumns: Inputs.toggle({value:true, label:"Použít sloupce"}),
   columnWidth: Inputs.range([10,36], {step:1, value: 24, label: "Šířka sloupce"}),
   avoidBreakInsideQuestion: Inputs.toggle({label:"Nezalamovat v rámci otázky", value: true}),
-  avoidBreakInsideQuiz: Inputs.toggle({label:"Nezalamovat v rámci testu"})
+  avoidBreakInsideQuiz: Inputs.toggle({label:"Nezalamovat v rámci testu"}),
+  useCode: Inputs.toggle({label:"Zobrazovat názvy testů", value: true}),
 });
 const columnsSetting = Generators.input(columnsInput);
 ```
@@ -156,19 +148,28 @@ const columnsSetting = Generators.input(columnsInput);
 </div>  
 
 ```js
-import {renderedQuestionsPerQuiz} from './components/quiz-form.js';
-```
 
-```js
-const actionsButton =Inputs.button(["Otevřít","Tisk"].map(d => [d, () => window.open(`./${getExportUrlPart(d ==="Tisk")}`)]))
-
-const getExportUrlPart = (usePrint) => `quiz-${observable.params.subject}-${observable.params.period}?q=${queryValue}&${convertFlagsToQueryParam(usePrint? {...columnsSetting}: {...columnsSetting, ...controlsSetting})}`
+const getExportUrlPart = (usePrint) => `./quiz-${observable.params.subject}-${observable.params.period}?q=${queryValue}&${convertFlagsToQueryParam(usePrint? {...columnsSetting}: {...columnsSetting, ...controlsSetting})}`
 const getExportUrl = (usePrint) => `${window.location.origin}/${getExportUrlPart(usePrint)}`
-```
 
-<h2>
-  Náhled testu
-</h2>
+display(html`
+             
+             
+              <div class="tip" label="Sdílejte test s ostatními">
+                <!--<div class="red">${selectedQuestions.length > questionsMaxLimit ? `V náhledu zobrazeno maximálně 
+                ${questionsMaxLimit} úloh.`:''}</div>-->
+                <div class="h-stack h-stack--m h-stack-items--center h-stack--wrap">
+                  <a class="h-stack h-stack--s" href=${getExportUrlPart(false)} target="_blank"><span>Otevřít</span><span>↗︎</span></a>
+                  <a class="h-stack h-stack--s" href=${getExportUrlPart(true)} target="_blank"><span>Tisk</span><i class="fa-solid fa-print"></i></a>
+                  <div>
+                  ${Inputs.button("Copy to clipboard", {value: null, reduce: () => navigator.clipboard.writeText(getExportUrl(false))})}
+                  </div>
+                </div>  
+              </div>
+              <div><h2>Počet otázek # ${selectedQuestions.length}</h2>
+          <div>`)
+
+```
 
 ```js
 const parameters = ({
@@ -180,58 +181,12 @@ const parameters = ({
 })
 
 const renderedQuestions = renderedQuestionsPerQuiz(parameters);
-const {layout,layoutPerQuiz, aligned, avoidBreakInsideQuiz, columnWidth} = parameters.displayOptions;
 
-const maxQuestions = Math.max(...parameters.questions.map(d => d.length)) - 1;
-const useColumns = layout === 'multiColumnPerQuiz' || layout === 'multiColumn';
-const renderedContent = layout === 'column' && layoutPerQuiz
-  ? html`<div data-testid="root" class="grid-column">${renderedQuestions.map((d,index) => html`<div class=${cls(['grid-column-child', aligned && 'grid-column-child--subgrid'])} style=${`grid-row: span ${maxQuestions}`}>${d}</div>`)}</div>`
-  : layout === 'column' && !layoutPerQuiz
-  ? html`<div data-testid="root" class="grid-column-auto">${renderedQuestions.map((d,index) => html.fragment`${d}`)}</div>`
-  : layout === 'row' && layoutPerQuiz
-    ? html`<div data-testid="root" class="grid-row">${renderedQuestions.map((d,index) => html`<div class=${cls(['grid-row-child', aligned && 'grid-row-child--subgrid'])} style=${`grid-column: span ${maxQuestions}`}>${d}</div>`)}</div>`
-    : layout === 'row' && !layoutPerQuiz
-    ? html`<div data-testid="root" class="grid-row-auto">${renderedQuestions.map((d,index) => html.fragment`${d}`)}</div>`
-    : layout === 'multiColumn' && layoutPerQuiz
-      ? html`<div data-testid="root">${renderedQuestions.map((d,index) => html`<div class=${cls([(layout ==='multiColumnPerQuiz' && index > 0) && 'break-before-page', useColumns && 'use-columns'])} style=${useColumns ? `columns:${columnWidth ?? 24}rem`:''}>${d}</div>`)}</div>`
-      : layout === 'multiColumn' && !layoutPerQuiz
-      ?  html`<div data-testid="root" class=${cls([useColumns && 'use-columns'])} style=${useColumns ? `columns:${columnWidth ?? 24}rem`:''}>${renderedQuestions.map((d,index) => html`<div class=${cls([avoidBreakInsideQuiz && 'break-inside-avoid-column'])}>${d}</div>`)}</div>`
-      : layout === 'masonry' && !layoutPerQuiz
-        ? html`<div data-testid="root"><masonry-layout>${renderedQuestions.map((d,index) => html.fragment`${d}`)}<masonry-layout></div>`
-        : layout === 'masonry' && layoutPerQuiz
-          ? html`<div data-testid="root">${renderedQuestions.map((d,index) => html`<masonry-layout>${d}<masonry-layout>`)}</div>`
-          : layoutPerQuiz
-            ? html`<div data-testid="root">${renderedQuestions.map((d,index) => html`${d}`)}</div>`
-            : html`<div data-testid="root">${renderedQuestions.map((d,index) => html.fragment`${d}`)}</div>`;
+const { layoutPerQuiz, columnWidth, avoidBreakInsideQuiz, useColumns} = parameters.displayOptions;
+const renderedContent = layoutPerQuiz
+    ? html`<div>${renderedQuestions.map((d,index) => html`<div class=${cls([(useColumns && index > 0) && 'break-before-page'])} style=${useColumns ? `columns:${columnWidth ?? 24}rem`:''}>${d}</div>`)}</div>`
+    : html`<div style=${useColumns ? `columns:${columnWidth ?? 24}rem`:''}>${renderedQuestions.map((d,index) => html`<div class=${cls([avoidBreakInsideQuiz && 'break-inside-avoid-column'])}>${d}</div>`)}</div>`;
       
 display(renderedContent);
-
-```
-
-```js
-function toolTipper(element, contentFunc = () => "", props = {}) {
-  const parent = html`<div>`;
-  // Object.assign(parent.style, {
-  //   position: "relative",
-  //   display: "inline-flex"
-  // });
-  parent.append(element);
-  Object.assign(props, {
-    followCursor: false,
-    allowHTML: true,
-    interactive: true,
-    trigger: "click",
-    placement:'bottom',
-    hideOnClick: "toggle",
-    theme: 'light-border',    
-    content: contentFunc(),
-    onClickOutside: (instance) => instance.hide()
-  });
-  const instance = tippy(parent, props);
-  // element.onmousemove = element.onmouseenter = (e) => {
-  //   instance.setContent(contentFunc(e.offsetX, e.offsetY));
-  // };
-  return parent;
-}
 
 ```
