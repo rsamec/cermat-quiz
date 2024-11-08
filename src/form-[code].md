@@ -1,5 +1,4 @@
 ---
-theme: ["wide"]
 sidebar: false
 footer: false
 pager: false

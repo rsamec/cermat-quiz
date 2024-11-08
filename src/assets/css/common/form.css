@@ -1,7 +1,7 @@
 :root {
-  --form-color-primary: #3498DB;
-  --form-color-right: lightgreen;
-  --form-color-error: Salmon;
+  --form-color-primary:  var(--theme-foreground-focus);
+  --form-color-right: var(--theme-green); 
+  --form-color-error: var(--theme-red);
 }
 
 [data-tippy-root] {

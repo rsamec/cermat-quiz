@@ -1,29 +1,27 @@
 @import url("observablehq:default.css");
 @import url("observablehq:theme-air.css");
-@import url("observablehq:theme-wide.css");
+@import url("observablehq:theme-near-midnight.css") screen and (prefers-color-scheme: dark);
+@import url("observablehq:theme-wide.css"); 
 
 @import './common/base.css';
-@import './common/form.css';
-
-@import './common/layout.css';
 @import './themes/columns.css';
+
+@import './common/form.css';
+@import './common/layout.css';
+
 
 .a-button {
   height: 28px;
   line-height: 28px;
-  padding: 0px 10px;
-  color: white !important;
-  border-left: 1px solid white;
+  padding: 0px 10px;  
   font-weight: 700;
   font-size: 14px;
+  background: lightgrey;
 }
 
-.a-button--calculator {
-  background: rgb(55, 127, 210);
-}
 
 .a-button--clipboard {
-  background-color: gray;
+  color: black !important;
 }
 
 
@@ -34,8 +32,8 @@
 }
 
 .btn--primary {
+  color: var(--theme-foreground-faintest);
   background-color: var(--form-color-primary);
-  color: white;
 
   &:hover {
     background-color: brightness(1.75);
@@ -67,14 +65,13 @@
 
 
 details.solution {
-  background: #ffffff;
-  border: 1px solid black;
+  background:var(--theme-background);
+  border: 1px solid var(--theme-foreground-fainter);
   /* border-radius: 5px; */
 }
 
 details.solution summary {
-  background-color: #2e2e2e;
-  color: white;
+  background-color: var(--theme-background-alt);
   padding: 5px 10px;
   /* border-radius: 5px; */
 }
@@ -90,8 +87,7 @@ details.solution div {
 h0 {
   display: block;
   padding: 10px;
-  /* color: var(--theme-foreground-muted); */
-  border-left-color: var(--theme-foreground-fainter);
+  border:1px solid var(--theme-foreground-fainter);
   background-color: var(--theme-background-alt);
   text-align: center;
 }
