@@ -59,7 +59,7 @@ const selectedCategories = Generators.input(selectedCategoriesInput);
 <div class="card">
   <details>
     <summary>
-    Filtry úloh
+    Filtrování úloh
     </summary>
   <section>
     <div class="grid grid-cols-3">
