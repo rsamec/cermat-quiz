@@ -59,7 +59,7 @@ const selectedCategories = Generators.input(selectedCategoriesInput);
 <div class="card">
   <details>
     <summary>
-    Filrování úloh
+    Filtry úloh
     </summary>
   <section>
     <div class="grid grid-cols-3">
@@ -103,6 +103,7 @@ const selectedQuestions = view(Inputs.table(search, {
     Category: "Kategorie úlohy",
     code:"Test"
   },
+  required: false,
   format: {
     code: d => formatCode(d)
   }
@@ -152,22 +153,21 @@ const columnsSetting = Generators.input(columnsInput);
 const getExportUrlPart = (usePrint) => `./quiz-${observable.params.subject}-${observable.params.period}?q=${queryValue}&${convertFlagsToQueryParam(usePrint? {...columnsSetting}: {...columnsSetting, ...controlsSetting})}`
 const getExportUrl = (usePrint) => `${window.location.origin}/${getExportUrlPart(usePrint)}`
 
-display(html`
-             
-             
-              <div class="tip" label="Sdílejte test s ostatními">
+display(html`${selectedQuestions.length > 0
+            ? html`<div class="tip" label="Sdílet test">
                 <!--<div class="red">${selectedQuestions.length > questionsMaxLimit ? `V náhledu zobrazeno maximálně 
                 ${questionsMaxLimit} úloh.`:''}</div>-->
-                <div class="h-stack h-stack--m h-stack-items--center h-stack--wrap">
-                  <a class="h-stack h-stack--s" href=${getExportUrlPart(false)} target="_blank"><span>Otevřít</span><span>↗︎</span></a>
-                  <a class="h-stack h-stack--s" href=${getExportUrlPart(true)} target="_blank"><span>Tisk</span><i class="fa-solid fa-print"></i></a>
+                <div class="h-stack h-stack--l h-stack-items--center h-stack--wrap">
+                  <a class="h-stack h-stack--s h-stack-items--center" href=${getExportUrlPart(false)} target="_blank"><span>Otevřít</span><span>↗︎</span></a>
+                  <a class="h-stack h-stack--s h-stack-items--center" href=${getExportUrlPart(true)} target="_blank"><span>Tisk</span><i class="fa-solid fa-print"></i></a>
                   <div>
-                  ${Inputs.button("Copy to clipboard", {value: null, reduce: () => navigator.clipboard.writeText(getExportUrl(false))})}
+                  ${Inputs.button("Kopírovat url", {value: null, reduce: () => navigator.clipboard.writeText(getExportUrl(false))})}
                   </div>
                 </div>  
               </div>
               <div><h2>Počet otázek # ${selectedQuestions.length}</h2>
-          <div>`)
+            <div>`
+          :''}`)
 
 ```
 
