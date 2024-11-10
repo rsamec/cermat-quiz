@@ -73,7 +73,7 @@ function codesBy({subject, period}){
         <span>testů</span>
       </div>
       <div class="h-stack h-stack--m h-stack--wrap">
-      ${subjectWithPeriods[subject].periods.map(period => html`<a class="h-stack h-stack--xs" href="./quiz-summary-${subject}-${period}">${formatPeriod(period)}<span><span>↗︎</span><span></a>
+      ${subjectWithPeriods[subject].periods.map(period => html`<a class="h-stack h-stack--xs" href="./quiz-picker-${subject}-${period}">${formatPeriod(period)}<span><span>↗︎</span><span></a>
         `)}
       </div>
     </div>

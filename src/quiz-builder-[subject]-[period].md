@@ -16,7 +16,7 @@ import {renderedQuestionsPerQuiz} from './components/quiz-form.js';
 
 const quizQuestionsMap = await FileAttachment(`./data/quiz-${observable.params.subject}-${observable.params.period}.json`).json();
 const resourcesMap = await FileAttachment(`./data/quiz-answers-detail-gpt-4o.json`).json();
-const questionsMaxLimit = 50;
+const questionsMaxLimit = 30;
 ```
 
 ```js
@@ -156,8 +156,6 @@ const getExportUrl = (usePrint) => `${window.location.origin}/${getExportUrlPart
 
 display(html`${selectedQuestions.length > 0
             ? html`<div class="tip" label="Sdílet test">
-                <!--<div class="red">${selectedQuestions.length > questionsMaxLimit ? `V náhledu zobrazeno maximálně 
-                ${questionsMaxLimit} úloh.`:''}</div>-->
                 <div class="h-stack h-stack--l h-stack-items--center h-stack--wrap">
                   <a class="h-stack h-stack--s h-stack-items--center" href=${getExportUrlPart(false)} target="_blank"><span>Otevřít</span><span>↗︎</span></a>
                   <a class="h-stack h-stack--s h-stack-items--center" href=${getExportUrlPart(true)} target="_blank"><span>Tisk</span><i class="fa-solid fa-print"></i></a>
@@ -166,15 +164,20 @@ display(html`${selectedQuestions.length > 0
                   </div>
                 </div>  
               </div>
-              <div><h2>Počet otázek # ${selectedQuestions.length}</h2>
+              <div>
+              <h2>Počet otázek # ${selectedQuestions.length}</h2>
+              <span class="red">${selectedQuestions.length > questionsMaxLimit ? `Náhled limit maximálně ${questionsMaxLimit} úloh.`:''}</span>
+                
             <div>`
           :''}`)
 
 ```
 
 ```js
+const filteredQuestions = selectedQuestions.length > questionsMaxLimit ? selectedQuestions.filter((d,i) => i < questionsMaxLimit): selectedQuestions 
+
 const parameters = ({
-  questions: convertQueryParamToQuestions(queryValue),
+  questions: convertQueryParamToQuestions(convertQuestionToQueryParam(filteredQuestions)),
   subject:observable.params.subject,
   quizQuestionsMap,  
   displayOptions:{...columnsSetting, ...controlsSetting},

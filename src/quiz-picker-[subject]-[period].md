@@ -6,9 +6,6 @@ footer: false
 toc: false
 ---
 
-# ${formatSubject(observable.params.subject)} - ${formatPeriod(observable.params.period)}
-
-
 ```js
 import { quizes, formatShortCode, formatSubject, formatPeriod, formatVersion, parseCode } from './utils/quizes.js';
 const filteredQuizes = quizes.filter(d => d.subject === observable.params.subject && d.period === observable.params.period).flatMap(d => d.codes)

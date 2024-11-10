@@ -28,7 +28,7 @@ export default {
       name: "Testy",
       pages: quizes.map(d => ({
         name: `${formatSubject(d.subject)} ${formatPeriod(d.period)}`,
-        path: `/quiz-summary-${d.subject}-${d.period}`,
+        path: `/quiz-picker-${d.subject}-${d.period}`,
       }))
     },
     {
@@ -58,7 +58,7 @@ export default {
   .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
   .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))
   .concat(quizes.map(d => `/quiz-${d.subject}-${d.period}`))
-  .concat(quizes.map(d => `/quiz-summary-${d.subject}-${d.period}`))
+  .concat(quizes.map(d => `/quiz-picker-${d.subject}-${d.period}`))
   .concat(quizes.map(d => `/quiz-builder-${d.subject}-${d.period}`))
   .concat(quizes.flatMap(d => printedPages.map(p => `/assets/pdf/${d.subject}-${d.period}/${formatPdfFileName(p)}.pdf`)))
   .concat([

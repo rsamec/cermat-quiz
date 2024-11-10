@@ -41,7 +41,7 @@ const state = {
 
 <div class="h-stack h-stack--m h-stack--wrap h-stack-items--center sticky main-header">
   <div class="h-stack h-stack--m" style="flex:1;">
-  ${html`<a href="./quiz-summary-${subject}-${period}"><i class="fa-solid fa-left-long"></i></a>`}
+  ${html`<a href="./quiz-picker-${subject}-${period}"><i class="fa-solid fa-left-long"></i></a>`}
   <span>/</span>${formatShortCode(code)}</div>
   <div class="h-stack h-stack--m h-stack--end">
     ${showInput}
