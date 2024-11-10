@@ -192,7 +192,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                       const component = Array.isArray(inputBy)
                         ? toForm(({ template }) => Inputs.form(inputBy.map((inputBy, index) => renderSingleInputByType({ inputBy, label: `${index + 1}.`, submit: false, options })), { submit, template }), { label })
                         : inputBy.kind != null
-                          ? renderSingleInputByType({ inputBy, label, submit: "Odeslat", options })
+                          ? renderSingleInputByType({ inputBy, label, submit, options })
                           : toForm(({ template }) => Inputs.form(Object.entries(inputBy).reduce((out, d) => {
                             const [key, inputBy] = d;
                             out[key] = renderSingleInputByType({ inputBy, label: key, submit: false, options });
@@ -258,7 +258,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
 
 function renderSingleInputByType({ inputBy, label, options, submit }) {
   return inputBy.kind === "sortedOptions"
-    ? toForm(({ footer }) => sortableInput(options, { format: d => d.name, footer }), { submit: "Odeslat" })
+    ? toForm(({ footer }) => sortableInput(options, { format: d => html`<strong>${d.value})</strong> ${d.name}`, footer }), { submit })
     : inputBy.kind === "options"
       ? Inputs.radio(options, {
         format: (d) => mdPlus.unsafe(d.name),
@@ -494,26 +494,16 @@ function toForm(fn, options: any = {}) {
 }
 function sortableInput(array, options: any = {}) {
   let {
-    listStyle = "padding-left:0",
-    itemStyle = `
-       display:inline-block;
-       cursor:move;
-       padding:2px 10px;
-       list-style: none;
-       margin: 2px;
-       border:1px solid #CCC;
-       border-radius: 10px;
-       background: #EEE;`,
     format = d => d,
     footer
   } = options;
 
 
-  let list = html`<ul class=sortable>`;
-  list.style.cssText += listStyle;
+  let list = html`<ul class="sortable sortable__list" >`;
+  
   array.forEach((d, i) => {
-    let li = html`<li value=${i}>${format(d)}</li>`;
-    li.style.cssText += itemStyle;
+    let li = html`<li class="sortable__item" value=${i}>${format(d)}</li>`;
+    //li.style.cssText += itemStyle;
     list.append(li);
   });
 

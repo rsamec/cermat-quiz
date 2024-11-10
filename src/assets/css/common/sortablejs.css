@@ -1,0 +1,14 @@
+.sortable__list {
+  padding-left: 0px;
+}
+.sortable__item {
+  display:inline-block;
+  cursor:move;
+  padding:2px 10px;
+  list-style: none;
+  margin: 2px;
+  border-radius: 5px;
+  background-color: var(--theme-background-alt);
+  border: 1px solid var(--theme-foreground-fainter);
+  color: var(--theme-foreground);
+}
