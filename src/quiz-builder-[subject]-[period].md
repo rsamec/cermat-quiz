@@ -3,6 +3,7 @@ title: Výběr úloh
 theme: ["wide"]
 sidebar: true
 pager: true
+footer: false
 toc: false
 style: /assets/css/quiz.css
 ---
@@ -56,7 +57,7 @@ const selectedCategoriesInput = Inputs.select(uniqueCategories,{ multiple:true, 
 const selectedCategories = Generators.input(selectedCategoriesInput);
 ```
 
-<div class="card">
+
   <details>
     <summary>
     Filtrování úloh
@@ -74,8 +75,8 @@ const selectedCategories = Generators.input(selectedCategoriesInput);
       </div>
     </div>
   </section>
-  </details>
-</div>
+</details>
+
 
 ```js
 let filtered = filteredQuizCategories;
@@ -134,7 +135,7 @@ const columnsInput = Inputs.form({
 const columnsSetting = Generators.input(columnsInput);
 ```
 
-<div class="card">
+<div>
   <details>
     <summary>
       Možnosti zobrazení

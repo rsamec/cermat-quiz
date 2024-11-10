@@ -1,0 +1,17 @@
+.tippy-box[data-theme~='observable'] {
+  background-color: var(--theme-background-alt);
+  border: 1px solid var(--theme-foreground-fainter);
+  color: var(--theme-foreground);
+}
+/* .tippy-box[data-theme~='observable'][data-placement^='top'] > .tippy-arrow::before {
+  border-top-color:var(--theme-background-alt);
+}
+.tippy-box[data-theme~='observable'][data-placement^='bottom'] > .tippy-arrow::before {
+  border-bottom-color:var(--theme-background-alt);
+}
+.tippy-box[data-theme~='observable'][data-placement^='left'] > .tippy-arrow::before {
+  border-left-color:var(--theme-background-alt);
+}
+.tippy-box[data-theme~='observable'][data-placement^='right'] > .tippy-arrow::before {
+  border-right-color:var(--theme-background-alt);
+} */

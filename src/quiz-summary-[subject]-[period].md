@@ -2,6 +2,7 @@
 title: Výběr testu
 sidebar: true,
 pager: true
+footer: false
 toc: false
 ---
 

@@ -364,7 +364,7 @@ function toolTipper(element, contentFunc = () => "", props = {}) {
     allowHTML: true,
     interactive: true,
     hideOnClick: "toggle",
-    theme: 'light-border',
+    theme: 'observable',
     content: contentFunc(),
     onClickOutside: (instance) => instance.hide()
   };

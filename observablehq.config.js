@@ -20,7 +20,7 @@ export default {
       name: "Úlohy",
       pages: quizes.map(d => ({
         name: `${formatSubject(d.subject)} ${formatPeriod(d.period)}`,
-        path: `/quiz-picker-${d.subject}-${d.period}`,
+        path: `/quiz-builder-${d.subject}-${d.period}`,
       }))
     },
     {
@@ -48,7 +48,6 @@ export default {
   head: `<link rel="icon" href="observable.png" type="image/png" sizes="32x32">
          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tippy.js/6.3.7/tippy.min.css">
-         <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light-border.css">
          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
          `,
 
@@ -60,7 +59,7 @@ export default {
   .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))
   .concat(quizes.map(d => `/quiz-${d.subject}-${d.period}`))
   .concat(quizes.map(d => `/quiz-summary-${d.subject}-${d.period}`))
-  .concat(quizes.map(d => `/quiz-picker-${d.subject}-${d.period}`))
+  .concat(quizes.map(d => `/quiz-builder-${d.subject}-${d.period}`))
   .concat(quizes.flatMap(d => printedPages.map(p => `/assets/pdf/${d.subject}-${d.period}/${formatPdfFileName(p)}.pdf`)))
   .concat([
     ['M9C-2023', range(0,9)],

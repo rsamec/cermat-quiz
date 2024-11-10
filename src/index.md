@@ -1,5 +1,6 @@
 ---
 toc: false
+footer: false
 ---
 
 <div class="hero">
@@ -52,7 +53,7 @@ function codesBy({subject, period}){
 
 <!-- Cards with big numbers -->
 
-<div class="grid grid-cols-4">
+<div class="grid grid-cols-4" style="grid-auto-rows: auto;">
  ${subjects.map(subject => html`<div class="card">
     <h2><strong>${formatSubject(subject)}</strong></h2>
     <div class="v-stack v-stack--l">
@@ -62,7 +63,7 @@ function codesBy({subject, period}){
         <span>úloh</span>
       </div>
       <div class="h-stack h-stack--m h-stack--wrap">
-      ${subjectWithPeriods[subject].periods.map(period => html`<a class="h-stack h-stack--xs" href="./quiz-picker-${subject}-${period}">${formatPeriod(period)}<span><span>↗︎</span><span></a>
+      ${subjectWithPeriods[subject].periods.map(period => html`<a class="h-stack h-stack--xs" href="./quiz-builder-${subject}-${period}">${formatPeriod(period)}<span><span>↗︎</span><span></a>
         `)}
       </div>
      </div>
@@ -82,11 +83,11 @@ function codesBy({subject, period}){
 
 ---
 
-<div class="grid grid-cols-4"> 
-  <div class="card grow">
+<div class="grid grid-cols-4" style="grid-auto-rows: auto;"> 
+  <div class="card">
     <h1><strong>Přepoužitelnost</strong></h1>
     <div class="v-stack v-stack--m">
-      <span>Možnost vložit do vlastních školních stránek. Vytvořit si vlastní grafickou podobu testu. Interaktivita v úlohách. Stavět vlastní aplikace.</span>
+      <span>Možnost vložit do vlastních školních stránek. Vytvořit si vlastní grafickou podobu testu. Stavět vlastní aplikace.</span>
       <a href="/embedding">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
     </div>
   </div>

@@ -8,6 +8,7 @@
 
 @import './common/form.css';
 @import './common/layout.css';
+@import './common/tippy-observable-theme.css';
 
 
 .a-button {
@@ -32,7 +33,7 @@
 }
 
 .btn--primary {
-  color: var(--theme-foreground-faintest);
+  color: white;
   background-color: var(--form-color-primary);
 
   &:hover {
