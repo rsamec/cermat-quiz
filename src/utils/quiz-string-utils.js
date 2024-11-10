@@ -1,3 +1,6 @@
+export const baseDomain = "https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main";
+export const baseDomainPublic = `${baseDomain}/public`;
+
 export function formatPdfFileName({pageSize, columnsCount, orientation}){
   return `${pageSize}-sloupce-${columnsCount}${orientation == 'landscape' ? '-landscape':''}`
 }

@@ -1,5 +1,5 @@
 import { parseArgs } from "node:util";
-import { parseCode, normalizeImageUrlsToAbsoluteUrls } from "../utils/quiz-string-utils.js";
+import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls } from "../utils/quiz-string-utils.js";
 
 const {
   values: { code }
@@ -14,6 +14,6 @@ async function text(url) {
   return await response.text();
 }
 const d = parseCode(code);
-const baseUrl = `https://www.eforms.cz/${d.subject}/${d.period}/${code}`
+const baseUrl = `${baseDomainPublic}/${d.subject}/${d.period}/${code}`
 const content = await text(`${baseUrl}/index.md`);
 process.stdout.write(normalizeImageUrlsToAbsoluteUrls(content, [baseUrl]));

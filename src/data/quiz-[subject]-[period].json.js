@@ -3,7 +3,7 @@ import { parser } from '@lezer/markdown';
 import { getQuizBuilder } from "../utils/parse-utils.js";
 import { forkJoin } from "../utils/common-utils.js";
 import { quizes } from "../utils/quiz-utils.js";
-import { normalizeImageUrlsToAbsoluteUrls } from "../utils/quiz-string-utils.js";
+import { baseDomain, baseDomainPublic, normalizeImageUrlsToAbsoluteUrls } from "../utils/quiz-string-utils.js";
 
 
 const {
@@ -16,8 +16,8 @@ function quizQuestions(selectedQuizes) {
   const codesAndUrls = selectedQuizes.flatMap(d => d.codes.map(
     (code) => [
       code,
-      `https://www.eforms.cz/${d.subject}/${d.period}/${code}`,
-      `https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/generated/${code}.json`]
+      `${baseDomainPublic}/${d.subject}/${d.period}/${code}`,
+      `${baseDomain}/generated/${code}.json`]
   ));
   return forkJoin(
     codesAndUrls.map(([_, mdBaseUrl, jsonUrl]) => forkJoin([

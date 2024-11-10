@@ -1,7 +1,7 @@
 
 import { parser, GFM, Subscript, Superscript } from 'npm:@lezer/markdown';
 import { getQuizBuilder, OptionList, ShortCodeMarker } from '../utils/parse-utils.js';
-import { parseCode, normalizeImageUrlsToAbsoluteUrls } from '../utils/quiz-string-utils.js';
+import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls } from '../utils/quiz-string-utils.js';
 
 import mdPlus from "../utils/md-utils-copy.js";
 
@@ -13,7 +13,7 @@ async function text(url) {
 
 export async function renderQuiz(code, filterIds){
   const d = parseCode(code);
-  const baseUrl = `https://www.eforms.cz/${d.subject}/${d.period}/${code}`
+  const baseUrl = `${baseDomainPublic}/${d.subject}/${d.period}/${code}`
   const content = await text(`${baseUrl}/index.md`);
   
   const quiz = parseQuiz(normalizeImageUrlsToAbsoluteUrls(content, [baseUrl]));
