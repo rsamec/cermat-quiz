@@ -11,7 +11,8 @@ toc: false
 <!-- Load and transform the data -->
 
 ```js
-import {convertTree, formatSubject, formatPeriod, parseCode, formatCode, categories} from './utils/quiz-utils.js';
+import {categories} from './utils/quiz-utils.js';
+import {formatSubject, formatPeriod, parseCode, formatCode } from './utils/quiz-string-utils.js'; 
 
 const quizLangCategories = await FileAttachment("./data/quiz-lang-categories.json").json();
 const quizGeneratedCategories = await FileAttachment("./data/quiz-categories.json").json();

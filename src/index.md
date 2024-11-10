@@ -11,8 +11,8 @@ footer: false
 </div>
 
 ```js
-import {convertTree, categories} from './utils/quiz-utils.js';
-import {formatShortCode, formatSubject, formatPeriod, parseCode} from './utils/quizes.js';
+import { categories} from './utils/quiz-utils.js';
+import { formatShortCode, formatSubject, formatPeriod, parseCode } from './utils/quiz-string-utils.js';
 const quizLangCategories = await FileAttachment("./data/quiz-lang-categories.json").json();
 const quizGeneratedCategories = await FileAttachment("./data/quiz-categories.json").json();
 const quizCategories = ({

@@ -2,7 +2,8 @@ import { parser, GFM, Subscript, Superscript } from '@lezer/markdown';
 import mdPlus from "../utils/md-utils.js";
 import { html } from "npm:htl";
 import { signal, computed } from '@preact/signals-core';
-import { convertTree, formatCode, parseQuestionId } from '../utils/quiz-utils.js';
+import { convertTree } from '../utils/quiz-utils.js';
+import { formatCode } from '../utils/quiz-string-utils.js';
 import { html as rhtml } from '../utils/reactive-htl.js';
 import tippy from 'tippy.js';
 import { getVerifyFunction } from '../utils/assert.js';
@@ -18,6 +19,15 @@ type QuizParams = {
   displayOptions: { useCode?: boolean, useAIHelpers?: boolean, avoidBreakInsideQuestion?: boolean, useFormControl?: boolean, useResources?:boolean }
   resourcesMap?: Record<string, any>
 }
+
+function parseQuestionId(id, subject) {
+  const parts = id.split(".");
+  return parseInt(
+    (subject === "cz" || subject === "math") ? parts[0] : parts[1],
+    10
+  );
+}
+
 
 export function renderedQuestionsPerQuiz(params: QuizParams) {
   const questionsToRender = params.questions?.length > 0 ? renderedQuestionsByQuiz(params).renderedQuestions : [];

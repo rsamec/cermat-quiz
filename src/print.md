@@ -8,7 +8,7 @@ toc: true
 ## Balíčky pdf
 
 ```js
-import {formatSubject, formatPeriod} from './utils/quizes.js';
+import {formatSubject, formatPeriod} from './utils/quiz-string-utils.js';
 const pdfs = await FileAttachment(`./data/pdf.json`).json();
 
 function formatSubjectAndPeriod (value) {

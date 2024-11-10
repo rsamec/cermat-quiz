@@ -7,7 +7,8 @@ toc: false
 ---
 
 ```js
-import { quizes, formatShortCode, formatSubject, formatPeriod, formatVersion, parseCode } from './utils/quizes.js';
+import { formatShortCode, formatSubject, formatPeriod, formatVersion, parseCode } from './utils/quiz-string-utils.js';
+import { quizes } from './utils/quiz-utils.js';
 const filteredQuizes = quizes.filter(d => d.subject === observable.params.subject && d.period === observable.params.period).flatMap(d => d.codes)
 const quizesByYear = Object.entries(Object.groupBy(filteredQuizes, (d) => parseCode(d).year));
 

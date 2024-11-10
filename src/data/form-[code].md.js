@@ -1,5 +1,5 @@
 import { parseArgs } from "node:util";
-import {parseCode, normalizeImageUrlsToAbsoluteUrls } from "../utils/quiz-utils.js";
+import { parseCode, normalizeImageUrlsToAbsoluteUrls } from "../utils/quiz-string-utils.js";
 
 const {
   values: { code }

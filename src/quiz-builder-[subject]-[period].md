@@ -10,7 +10,8 @@ style: /assets/css/quiz.css
 
 ```js
 import tippy from 'tippy.js';
-import {categories, parseCode, formatCode, formatSubject, formatPeriod} from './utils/quiz-utils.js';
+import {categories} from './utils/quiz-utils.js';
+import {parseCode, formatCode, formatSubject, formatPeriod} from './utils/quiz-string-utils.js';
 import {convertQueryParamToQuestions, convertFlagsToQueryParam, convertQuestionToQueryParam, cls} from './utils/string-utils.js';
 import {renderedQuestionsPerQuiz} from './components/quiz-form.js';
 

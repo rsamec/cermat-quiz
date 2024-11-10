@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { quizes } from "../utils/quizes.js";
+import { quizes } from "../utils/quiz-utils.js";
 
 async function readJsonFromFile(filePath) {
   try {

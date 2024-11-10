@@ -1,9 +1,9 @@
 import { parseArgs } from "node:util";
 import { parser } from '@lezer/markdown';
 import { getQuizBuilder } from "../utils/parse-utils.js";
-import { quizes } from '../utils/quizes.js';
 import { forkJoin } from "../utils/common-utils.js";
-import { normalizeImageUrlsToAbsoluteUrls } from "../utils/quiz-utils.js";
+import { quizes } from "../utils/quiz-utils.js";
+import { normalizeImageUrlsToAbsoluteUrls } from "../utils/quiz-string-utils.js";
 
 
 const {

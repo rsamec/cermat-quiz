@@ -57,118 +57,6 @@ export const categories = ({
   de: langCategories
 })
 
-export function normalizeImageUrlsToAbsoluteUrls(markdown, segments) {
-  const regex = /\]\((.*?)\)/g;
-  const replacedMarkdown = markdown.replace(regex, (match, imageUrl) => {
-    const modifiedImageUrl = segments.concat(imageUrl.replace('./', '')).join('/');
-    // Reconstruct the markdown with the modified image URL
-    return `](${modifiedImageUrl})`;
-  });
-  return replacedMarkdown;
-}
-export function getQuestionIds(metadata, code) {
-  const { subject } = parseCode(code);
-  return (subject === "cz" || subject === "math")
-    ? Object.keys(metadata.children).map(d => parseInt(d, 10))
-    : Object.values(metadata.children).flatMap(d => Object.keys(d.children ?? {})).map(d => d.split(".")[1]);
-}
-export function parseQuestionId(id, subject) {
-  const parts = id.split(".");
-  return parseInt(
-    (subject === "cz" || subject === "math") ? parts[0] : parts[1],
-    10
-  );
-}
-
-const generateCode = (code, variants) => [2023, 2024].flatMap(year => variants.flatMap(v => `${code}${v}-${year}`));
-export const quizes = [
-  { subject: 'en', period: 'diploma', codes: ["AJA-2023", "AJB-2023", "AJA-2024", "AJB-2024"] },
-  { subject: 'de', period: 'diploma', codes: ["DEA-2023"] },
-  { subject: 'cz', period: '8', codes: generateCode("C5", ["A", "B"]) },
-  { subject: 'cz', period: '4', codes: generateCode("C9", ["A", "B", "C", "D"]) },
-  { subject: 'cz', period: '6', codes: generateCode("C7", ["A", "B"]) },
-  { subject: 'cz', period: 'diploma', codes: generateCode("CM", ["A", "B"]) },
-  { subject: 'math', period: '8', codes: generateCode("M5", ["A", "B"]) },
-  { subject: 'math', period: '4', codes: generateCode("M9", ["A", "B", "C", "D"]) },
-  { subject: 'math', period: '6', codes: generateCode("M7", ["A", "B"]) },
-  { subject: 'math', period: 'diploma', codes: [] },
-]
-export function parseCode(code) {
-  const subject = code[0] === "C" ? 'cz' : code[0] === "M" ? 'math' : code[0] === "A" ? 'en' : code[0] === "D" ? 'de' : null;
-  const grade = code[1];
-  const period = grade == 5 ? "8" : grade == 7 ? "6" : grade == 9 ? "4" : "diploma"
-  const order = code[2];
-
-  const year = code.slice(-4);
-  return { subject, grade, order, period, year }
-}
-
-export function formatGrade(grade) {
-  switch (grade) {
-    case "9":
-      return "čtyřleté";
-    case "7":
-      return "šestileté";
-    case "5":
-      return "osmileté";
-    default:
-      return "maturita";
-  }
-}
-
-export function formatSubject(subject) {
-  switch (subject) {
-    case "cz":
-      return "Čeština";
-    case "math":
-      return "Matika";
-    case "en":
-      return "Angličtina";
-    case "de":
-      return "Němčina";
-    default:
-      return subject;
-  }
-}
-
-export function formatPeriod(period) {
-  switch (period) {
-    case '4':
-      return "čtyřleté";
-    case '6':
-      return "šestileté";
-    case '8':
-      return "osmileté";
-    default:
-      return "maturita";
-  }
-}
-
-export function formatCode(code) {
-  const { subject, grade, order, year, period } = parseCode(code);
-  return `${formatSubject(subject)} ${formatGrade(grade)} ${year} ${formatVersion({ order, period })}`;
-}
-
-export function formatVersion({ order, period } = {}) {
-
-  let version = order;
-  if (period === "diploma") {
-    version = order === "A" ? "jaro" : order === "B" ? "podzim" : order;
-  } else {
-    version =
-      order === "A"
-        ? "1.řádný"
-        : order === "B"
-          ? "2.řádný"
-          : order === "C"
-            ? "1.náhr."
-            : order === "D"
-              ? "2.náhr."
-              : order;
-  }
-  return version;
-}
-
 export function convertTree(tree) {
   const isGroup = node => Object.keys(node?.children ?? {}).length > 0;
   const traverse = (id, node) => {
@@ -188,3 +76,35 @@ export function convertTree(tree) {
   }
   return traverse("root", tree)
 }
+
+const generateCode = (code, variants) =>
+  [2023, 2024].flatMap(year => variants.flatMap(v => `${code}${v}-${year}`));
+
+export const quizes = [
+  { subject: 'en', period: 'diploma', codes: ["AJA-2023", "AJB-2023", "AJA-2024", "AJB-2024"] },
+  { subject: 'de', period: 'diploma', codes: ["DEA-2023"] },
+  { subject: 'cz', period: '8', codes: generateCode("C5", ["A"]).concat("C5B-2023") },
+  { subject: 'cz', period: '4', codes: generateCode("C9", ["A", "B"]).concat("C9C-2023") },
+  { subject: 'cz', period: '6', codes: generateCode("C7", ["A"]) },
+  { subject: 'cz', period: 'diploma', codes: generateCode("CM", ["A", "B"]) },
+  { subject: 'math', period: '8', codes: generateCode("M5", ["A"]) },
+  { subject: 'math', period: '4', codes: generateCode("M9", ["A", "B", "C", "D"]) },
+  { subject: 'math', period: '6', codes: generateCode("M7", ["A"]) },
+  //{ subject: 'math', period: 'diploma', codes:[]},
+]
+// export const quizes = [
+//   { subject: 'en', period: 'diploma', codes: ["AJA-2023", "AJB-2023", "AJA-2024", "AJB-2024"] },
+//   { subject: 'de', period: 'diploma', codes: ["DEA-2023"] },
+//   { subject: 'cz', period: '8', codes: generateCode("C5", ["A", "B"]) },
+//   { subject: 'cz', period: '4', codes: generateCode("C9", ["A", "B", "C", "D"]) },
+//   { subject: 'cz', period: '6', codes: generateCode("C7", ["A", "B"]) },
+//   { subject: 'cz', period: 'diploma', codes: generateCode("CM", ["A", "B"]) },
+//   { subject: 'math', period: '8', codes: generateCode("M5", ["A", "B"]) },
+//   { subject: 'math', period: '4', codes: generateCode("M9", ["A", "B", "C", "D"]) },
+//   { subject: 'math', period: '6', codes: generateCode("M7", ["A", "B"]) },
+//   { subject: 'math', period: 'diploma', codes: [] },
+// ]
+export const printedPages =  [2, 3, 4].map(columnsCount => ({ pageSize: 'A4', columnsCount, orientation: 'landscape' }))
+.concat([1, 2, 3].map(columnsCount => ({ pageSize: 'A4', columnsCount, orientation: 'portrait' })))
+.concat([4, 5, 6, 7, 8].map(columnsCount => ({ pageSize: 'A3', columnsCount, orientation: 'landscape' })))
+.concat([3, 4, 5, 6].map(columnsCount => ({ pageSize: 'A3', columnsCount, orientation: 'portrait' })));

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { getTestUrl } from './test.utils';
-import { quizes } from '../src/utils/quizes.js'
-import {parseCode } from "../src/utils/quiz-utils.js";
+import { quizes } from '../src/utils/quiz-utils.js'
+import { parseCode } from "../src/utils/quiz-string-utils.js";
 
 const viewportSize = { width: 1200, height: 900 };
 const maxViewportSize = { width: 2800, height: 2100 };

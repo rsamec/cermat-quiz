@@ -8,12 +8,17 @@ style: /assets/css/quiz.css
 
 ```js
 import { renderedQuestionsPerQuizWithInputs } from './components/quiz-form.js';
-import { getQuestionIds } from './utils/quiz-utils.js';
-import { parseCode, formatShortCode, formatSubject, formatPeriod} from './utils/quizes.js';
+import { parseCode, formatShortCode, formatSubject, formatPeriod} from './utils/quiz-string-utils.js';
 import { fromEvent, combineLatest } from 'rxjs';
 import { map, startWith, tap } from  'rxjs/operators';
 import { store } from './utils/quiz.js';
 
+function getQuestionIds(metadata, code) {
+  const { subject } = parseCode(code);
+  return (subject === "cz" || subject === "math")
+    ? Object.keys(metadata.children).map(d => parseInt(d, 10))
+    : Object.values(metadata.children).flatMap(d => Object.keys(d.children ?? {})).map(d => d.split(".")[1]);
+}
  
 const metadata = await FileAttachment(`./data/form-${observable.params.code}.json`).json();
 const resourcesMap = await FileAttachment(`./data/quiz-answers-detail-gpt-4o.json`).json();

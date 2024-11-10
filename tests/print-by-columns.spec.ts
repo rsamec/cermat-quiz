@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { getTestUrl } from './test.utils';
 import { calculatePageScale, PageSize, PageOrientation } from './print.utils';
-import { quizes, printedPages, formatPdfFileName } from '../src/utils/quizes.js'
-import { parseCode } from "../src/utils/quiz-utils.js";
+import { parseCode, formatPdfFileName } from '../src/utils/quiz-string-utils.js'
+import { quizes, printedPages } from "../src/utils/quiz-utils.js";
 
 const margin = 16;
 const columnWidth = 24 * 17;

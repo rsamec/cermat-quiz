@@ -1,4 +1,5 @@
-import { quizes, printedPages, formatSubject,formatPeriod, formatPdfFileName } from './src/utils/quizes.js';
+import { formatSubject,formatPeriod, formatPdfFileName } from './src/utils/quiz-string-utils.js';
+import { quizes, printedPages } from './src/utils/quiz-utils.js';
 
 const unique =(value, index, array) =>  array.indexOf(value) === index;
 const range = (start, end) => Array.from(
