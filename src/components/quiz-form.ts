@@ -241,7 +241,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                   })}</div>` : ''}
             ${useResources ? html`<div class="v-stack v-stack--s">
               ${useResources && videoResourceLeafs.length > 0 ? html`<details class="solution"><summary>Řešení úlohy</summary><div class="v-stack v-stack--s">
-              ${videoResourceLeafs.map(([id, resources]) => html`${resources.map(r => html`<video src="./assets/${code}/${r.id}.mp4" autoplay muted controls></video>`)}`)}</div></details>` : ''}
+              ${videoResourceLeafs.map(([id, resources]) => html`${resources.map(r => html`<video src="./assets/${code}/${r.id}.mp4" autoplay playsinline muted controls></video>`)}`)}</div></details>` : ''}
               
               ${useResources && useAIHelpers && resource && !isEmptyOrWhiteSpace(resource[ids[0]]) ? html`
             <details class="solution"><summary><span style="margin-right: 1rem;">Řešení úlohy - AI</span><i class="fa-solid fa-circle-exclamation" title="může obsahovat chyby"></i></summary><div>${mdPlus.unsafe(normalizeLatex(resource[ids[0]]))}<div></details>` : ''}
