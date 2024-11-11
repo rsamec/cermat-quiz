@@ -6,22 +6,6 @@ import * as a from "npm:@appnest/masonry-layout";
 </h2>
 
 ```js
-const columnsInput = Inputs.form({
-  layoutPerQuiz: Inputs.toggle({label:"Vykreslovat za jednotlivé testy", value: false}),
-  layout: Inputs.radio(
-    new Map([["žádné","none"],["Sloupcový","multiColumn"],["Tabulkový po řádcích","row"],["Tabulkový po sloupcích","column"],[ "Masonry", "masonry"]]),
-    { label:"Rozvržení stránky", value:"multiColumn" }
-  ),  
-  aligned:Inputs.toggle({label:"Zarovnat v rámci tabulky", value: true}),
-
-  columnWidth: Inputs.range([10,36], {step:1, value: 24, label: "Šířka sloupce"}),
-  avoidBreakInsideQuestion: Inputs.toggle({label:"Nezalamovat v rámci otázky", value: true}),
-  avoidBreakInsideQuiz: Inputs.toggle({label:"Nezalamovat v rámci testu"})
-});
-const columnsSetting = Generators.input(columnsInput);
-```
-
-```js
 const parameters = ({
   questions: convertQueryParamToQuestions(queryValue),
   subject:observable.params.subject,

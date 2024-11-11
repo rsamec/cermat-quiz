@@ -1,7 +1,8 @@
 import { parseArgs } from "node:util";
 import { parseQuiz } from './utils/quiz-parser.js';
-import mdPlus from './utils/md-utils.js';
+import  mdPlus from './utils/md-utils.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode } from './utils/quiz-string-utils.js';
+import { layoutGenerator } from "./utils/markpress.utils.js";
 
 const {
   values: { code }
@@ -31,8 +32,15 @@ sidebar: false
 header: false
 footer: false
 pager: false
-toc: true
-style: /assets/css/print.css
+toc: false
+style: /assets/css/impress.css
 ---
 
-<div data-testid="root" class="root">${ids.map(id => `${mdPlus.renderToString(quiz.content([id],{ ids, render:'content'}), {docId:`${code}-${id}` })}`).join('')}</div>`)
+<div id="impress">
+    ${ids.map(id => `<div class='step' ${layoutGenerator["random-7d"]().map(d => `data-${d.key}="${d.value}"`).join(' ')}>${mdPlus.renderToString(quiz.content([id],{ ids, render:'content'}), {docId:`${code}-${id}` })}</div>`).join('')}
+</div>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/impress/impress.js@2.0.0/js/impress.js"></script>
+<script>impress().init()</script>
+
+`);
