@@ -170,10 +170,12 @@ export function getQuizBuilder(tree, input, baseRenderOptions = { render: "conte
         return 3;
     }
     const headingsTree = createTree(rawHeadings.map(data => ({ data })), (child, potentionalParent) => order(child.type?.name) > order(potentionalParent.type?.name));
-    const rootQuestions = getNodesWithAncestors({ data: {}, children: headingsTree }, d => d.type?.name == Abbreviations.H1, (parent, child) => {
+    const rootQuestions = getNodesWithAncestors({ data: {}, children: headingsTree }, d => d.type?.name == Abbreviations.H1, (parent, child, node) => {
         //copy some children property bottom up from leafs to its parent
-        if (parent.options?.length === 0 && child.options?.length > 0) {
-            parent.options = child.options;
+        if ((child.options?.length > 0 || (node.children.some(d => d.data.options?.length > 0)))) {
+            //!!! - fallback to reduce options for subquestions - potentional bug...
+            parent.options = child.options?.length > 0 ? child.options : node.children.map(d=> d.data.options).filter(d => d?.length > 0)?.[0];
+            console.log(parent.options);
         }
     });
     const isInRange = (number, range) => range != null ? number >= range[0] && number <= range[1] : false;
@@ -281,7 +283,7 @@ export function getNodesWithAncestors(tree, selector, applyChildSetToParent) {
     function traverse(node, ancestors = []) {
         const currentAncestors = [...ancestors, node];
         if (selector(node.data)) {
-            applyChildSetToParent?.(ancestors[ancestors.length - 1].data, node.data);
+            applyChildSetToParent?.(ancestors[ancestors.length - 1].data, node.data, node);
             result.push({ leaf: node, ancestors: currentAncestors });
         }
         else if (!node.children || node.children.length === 0) {

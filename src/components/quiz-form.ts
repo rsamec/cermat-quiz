@@ -39,12 +39,7 @@ export function renderedQuestionsPerQuizWithInputs(params: QuizParams) {
 }
 
 function chunkMetadataByInputs(metadata, subject, selectedIds = []) {
-  const leafs = Object.groupBy(getAllLeafsWithAncestors(convertTree(metadata), (parent: { options: [], id: number }, child) => {
-    //copy some children property bottom up from leafs to its parent
-    if (parent.options?.length === 0 && child.options?.length > 0) {
-      parent.options = child.options;
-    }
-  }), ({ leaf }) => parseQuestionId(leaf.data.id, subject))
+  const leafs = Object.groupBy(getAllLeafsWithAncestors(convertTree(metadata)), ({ leaf }) => parseQuestionId(leaf.data.id, subject))
   //return leafs;
   return Object.entries(leafs).filter(([key,]) => selectedIds.indexOf(parseInt(key, 10)) !== -1).reduce((out, [key, values]) => {
     const groupKey = values[0].ancestors[1].data.node.metadata?.inline ?? false;
