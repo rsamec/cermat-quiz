@@ -90,6 +90,7 @@ export const quizes = [
   { subject: 'math', period: '8', codes: generateCode("M5", ["A"]) },
   { subject: 'math', period: '4', codes: generateCode("M9", ["A", "B", "C", "D"]) },
   { subject: 'math', period: '6', codes: generateCode("M7", ["A"]) },
+  { subject: 'math', period: 'diploma', codes: ["MMA-2023", "MMB-2023"] },
   //{ subject: 'math', period: 'diploma', codes:[]},
 ]
 // export const quizes = [
