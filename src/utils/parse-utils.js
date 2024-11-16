@@ -174,8 +174,7 @@ export function getQuizBuilder(tree, input, baseRenderOptions = { render: "conte
         //copy some children property bottom up from leafs to its parent
         if ((child.options?.length > 0 || (node.children.some(d => d.data.options?.length > 0)))) {
             //!!! - fallback to reduce options for subquestions - potentional bug...
-            parent.options = child.options?.length > 0 ? child.options : node.children.map(d=> d.data.options).filter(d => d?.length > 0)?.[0];
-            console.log(parent.options);
+            parent.options = child.options?.length > 0 ? child.options : node.children.map(d=> d.data.options).filter(d => d?.length > 0)?.[0]
         }
     });
     const isInRange = (number, range) => range != null ? number >= range[0] && number <= range[1] : false;

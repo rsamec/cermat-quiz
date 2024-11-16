@@ -37,7 +37,7 @@ style: /assets/css/impress.css
 ---
 
 <div id="impress">
-    ${ids.map(id => `<div class='step' ${layoutGenerator["random-7d"]().map(d => `data-${d.key}="${d.value}"`).join(' ')}>${mdPlus.renderToString(quiz.content([id],{ ids, render:'content'}), {docId:`${code}-${id}` })}</div>`).join('')}
+    ${ids.map(id => `<div class='step root' ${layoutGenerator.horizontal().map(d => `data-${d.key}="${d.value}"`).join(' ')}>${mdPlus.renderToString(quiz.content([id],{ ids, render:'content'}), {docId:`${code}-${id}` })}</div>`).join('')}
 </div>
 
 <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/impress/impress.js@2.0.0/js/impress.js"></script>

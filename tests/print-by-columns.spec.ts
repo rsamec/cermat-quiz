@@ -22,7 +22,7 @@ for (const code of codes) {
     const printRequests = printRequestsMap[code];
     for (const { pageSize, columnsCount, orientation } of printRequests) {
       let pageScale = calculatePageScale(pageSize, orientation, columnWidth, columnsCount, margin);
-      console.log(`${columnsCount}-> ${pageScale}`);
+      console.log(`${pageSize} ${orientation}, ${columnsCount}-> ${pageScale}`);
       await page.pdf({
         scale: pageScale > 1 ? 1 : pageScale,
         format: pageSize,
