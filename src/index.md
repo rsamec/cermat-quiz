@@ -106,10 +106,10 @@ function codesBy({subject, period}){
     </div>
   </div>
   <div class="card grow">
-    <h1><strong>Video rozbory a AI</strong></h1>
+    <h1><strong>AI, video rozbory</strong></h1>
      <div class="v-stack v-stack--m">
       <span>Jeden obrázek vydá za tisíc slov. Dobrá vizualizace usnadňuje pochopení úlohy. AI jako nástroj né jako řešení. V případě nouze použij ChatGTP tlačítko.</span>
-      <a href="/solver">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+      <a href="/ai">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
     </div>
   </div> 
 </div>
@@ -129,11 +129,8 @@ Zde je několik nápadů, co byste mohli vyzkoušet…
     Trénovací PWA aplikace <a href="https://www.eforms.cz/">eforms</a> s podporou práce offline a podporou řešení úloh pomocí AI tlačítka. Případně oficiální trénovací aplikace <a href="https://tau.cermat.cz/">TAU</a>.
   </div>
   <div class="card">
-    Studovat <a href="https://github.com/rsamec/cermat-quiz">zdrojové kódy</a> k aplikaci. Banka úloh výchází z oficiálních cermat úloh. Použité <a href="https://github.com/rsamec/cermat">formáty dat</a> k testovým úlohám.
+     Mrkněte na <a href="https://github.com/rsamec/cermat-quiz">zdrojové kódy</a> k aplikaci. Banka úloh výchází z oficiálních cermat úloh. Použité <a href="https://github.com/rsamec/cermat">formáty dat</a> k testovým úlohám.
   </div> 
-  <div class="card">
-    <a href="https://observablehq.com/@rsamec/cermat-vysledky-ai">Vizualizace výsledků</a> řešení testových úloh pomocí AI. <a href="https://github.com/rsamec/cermat/blob/main/lib/ai/quiz-solver.ts">Zdrojové kódy</a> k automatizovanému spuštění.
-  </div>  
 </div>
 
 <style>

@@ -29,6 +29,7 @@ some *bold* text
 
 Here is a footnote reference,[^1] and another.[^longnote]
 
+inline latex $\\vec{u}=(3;\\vec{u}_{2}) \\backslash \\{0\\}$
 
 $$
 \\frac{\\frac{2}{3}-1}{\\frac{8}{9}}

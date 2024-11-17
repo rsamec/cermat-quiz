@@ -39,8 +39,8 @@ export default {
         {name: "Tisk", path: "/print"},
         {name: "Sestavení úloh", path: "/builder"},
         {name: "Embedding", path: "/embedding"},
-        {name: "AI", path: "/solver"},
-        {name: "Kategorie", path: "/dashboard"},
+        {name: "AI", path: "/ai"},
+        {name: "Kategorie", path: "/categories"},
       ]
     },
   ],

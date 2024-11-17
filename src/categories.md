@@ -14,6 +14,8 @@ toc: false
 import {categories} from './utils/quiz-utils.js';
 import {formatSubject, formatPeriod, parseCode, formatCode } from './utils/quiz-string-utils.js'; 
 
+const quizResults = await FileAttachment("./data/quiz-results-gpt-4o.json").json();
+
 const quizLangCategories = await FileAttachment("./data/quiz-lang-categories.json").json();
 const quizGeneratedCategories = await FileAttachment("./data/quiz-categories.json").json();
 const quizCategories = ({
