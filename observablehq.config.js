@@ -40,7 +40,10 @@ export default {
         {name: "Sestavení úloh", path: "/builder"},
         {name: "Embedding", path: "/embedding"},
         {name: "AI", path: "/ai"},
+        {name: "Vstupy", path: "/inputs"},
+        {name: "Matika", path: "/math"},
         {name: "Kategorie", path: "/categories"},
+        // {name: "Inline md", path: "/quiz-markdown"},
       ]
     },
   ],
@@ -59,6 +62,7 @@ export default {
   .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
   .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))
   .concat(quizes.flatMap(d => d.codes).map(code => `/impress-${code}`))
+  .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-${code}`))
   .concat(quizes.map(d => `/quiz-${d.subject}-${d.period}`))
   .concat(quizes.map(d => `/quiz-picker-${d.subject}-${d.period}`))
   .concat(quizes.map(d => `/quiz-builder-${d.subject}-${d.period}`))

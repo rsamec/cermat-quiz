@@ -1,15 +1,10 @@
 
 import { parser, GFM, Subscript, Superscript } from 'npm:@lezer/markdown';
 import { getQuizBuilder, OptionList, ShortCodeMarker } from '../utils/parse-utils.js';
-import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls } from '../utils/quiz-string-utils.js';
+import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, text } from '../utils/quiz-string-utils.js';
 
 import mdPlus from "../utils/md-utils-copy.js";
 
-async function text(url) {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
-  return await response.text();
-}
 
 export async function renderQuiz(code, filterIds){
   const d = parseCode(code);

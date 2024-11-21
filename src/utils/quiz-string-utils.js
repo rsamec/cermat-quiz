@@ -97,3 +97,21 @@ export function formatVersion({ order, period } = {}) {
   }
   return version;
 }
+
+export async function text(url) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
+  return await response.text();
+}
+export async function json(url, data) {
+  const response = await fetch(url,
+    {
+      headers: {
+        'content-type': 'application/json'
+      },
+      method: "POST",
+      body: JSON.stringify(data)
+    });
+  if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
+  return await response.json();
+}

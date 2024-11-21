@@ -1,7 +1,7 @@
 import { parseArgs } from "node:util";
 import { parseQuiz } from './utils/quiz-parser.js';
 import  mdPlus from './utils/md-utils.js';
-import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode } from './utils/quiz-string-utils.js';
+import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text } from './utils/quiz-string-utils.js';
 import { layoutGenerator } from "./utils/markpress.utils.js";
 
 const {
@@ -11,11 +11,6 @@ const {
 });
 
 
-async function text(url) {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
-  return await response.text();
-}
 const d = parseCode(code);
 const baseUrl = `${baseDomainPublic}/${d.subject}/${d.period}/${code}`
 const content = await text(`${baseUrl}/index.md`);

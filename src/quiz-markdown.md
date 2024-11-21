@@ -31,6 +31,17 @@ Here is a footnote reference,[^1] and another.[^longnote]
 
 inline latex $\\vec{u}=(3;\\vec{u}_{2}) \\backslash \\{0\\}$
 
+$$a+b=-1$$
+ $$ab=-2$$ 
+
+$x=-1$ <br/> $x=2$
+
+$$
+x=\\frac{-\\left(-1\\right)±\\sqrt{1+8}}{2}
+$$
+
+$$\\frac{-b+\sqrt{b^{2}-4ac}}{2a}$$
+
 $$
 \\frac{\\frac{2}{3}-1}{\\frac{8}{9}}
 $$

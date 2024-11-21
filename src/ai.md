@@ -178,11 +178,6 @@ function pointsToMaxPointsByCategories({ subject }) {
 }
 ```
 
-- Vstupem jsou testová zadání v markdown formátu. [Vstupy](https://github.com/rsamec/cermat)
-- Výstupem jsou AI odpovědi na otázky obsažené v testu uložené ve formátu json. [Výstup AI](https://github.com/rsamec/cermat/blob/main/generated/quiz-answers-gpt-4o.json)
-- Vstupem k vyhodnocení jsou metadata k testovému zadání ve formátu json. [Vstupy](https://github.com/rsamec/cermat)
-
-
 # Detailní výsledky dle testů 
 *Pro zobrazení konkrétních odpovědí zvolte test v tabulce níže.*
 
@@ -340,7 +335,12 @@ view(html`<div style='display:flex;flex-direction:column;gap:20px'>${tables}<div
 
 
 # Metodika
-- využit model gpt-4o-2024-08-06
+
+Vstupy - [Vstupy](./inputs)
+- testová zadání v markdown formátu
+- metadata k testovému zadání ve formátu json
+
+Byl použit model gpt-4o-2024-08-06
 
 <div class="tip">
   Vyzkoušejte sami. Postup schématicky níže.
