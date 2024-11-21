@@ -334,17 +334,9 @@ view(html`<div style='display:flex;flex-direction:column;gap:20px'>${tables}<div
 
 
 
-# Metodika
+# Jak je to uděláno
 
-Vstupy - [Vstupy](./inputs)
-- testová zadání v markdown formátu
-- metadata k testovému zadání ve formátu json
-
-Byl použit model gpt-4o-2024-08-06
-
-<div class="tip">
-  Vyzkoušejte sami. Postup schématicky níže.
-</div>
+Vstupem jsou [data](./inputs). Byl použit model 'gpt-4o-2024-08-06'.
 
 ```js run=false
   //load quiz content

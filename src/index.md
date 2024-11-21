@@ -6,7 +6,7 @@ footer: false
 <div class="hero">
   <h1>Cermat úlohy</h1>
   <h2>Mimooficiální data banka úloh</h2>
-  <a href="https://cermat.cz/">Data<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+  <a href="./inputs">Data</a>
 </a>
 </div>
 
@@ -63,7 +63,7 @@ function codesBy({subject, period}){
         <span>úloh</span>
       </div>
       <div class="h-stack h-stack--m h-stack--wrap">
-      ${subjectWithPeriods[subject].periods.map(period => html`<a class="h-stack h-stack--xs" href="./quiz-builder-${subject}-${period}">${formatPeriod(period)}<span><span>↗︎</span><span></a>
+      ${subjectWithPeriods[subject].periods.map(period => html`<a class="h-stack h-stack--xs" href="./quiz-builder-${subject}-${period}">${formatPeriod(period)}<span><span></a>
         `)}
       </div>
      </div>
@@ -73,7 +73,7 @@ function codesBy({subject, period}){
         <span>testů</span>
       </div>
       <div class="h-stack h-stack--m h-stack--wrap">
-      ${subjectWithPeriods[subject].periods.map(period => html`<a class="h-stack h-stack--xs" href="./quiz-picker-${subject}-${period}">${formatPeriod(period)}<span><span>↗︎</span><span></a>
+      ${subjectWithPeriods[subject].periods.map(period => html`<a class="h-stack h-stack--xs" href="./quiz-picker-${subject}-${period}">${formatPeriod(period)}<span><span></a>
         `)}
       </div>
     </div>
@@ -88,28 +88,28 @@ function codesBy({subject, period}){
     <h1><strong>Přepoužitelnost</strong></h1>
     <div class="v-stack v-stack--m">
       <span>Možnost vložit do vlastních školních stránek. Vytvořit si vlastní grafickou podobu testu. Stavět vlastní aplikace.</span>
-      <a href="/embedding">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+      <a href="/embedding">Více informací</a>
     </div>
   </div>
   <div class="card grow">
     <h1><strong>Vlastní sestavení testu</strong></h1>
      <div class="v-stack v-stack--m">
       <span>Naklikej si vlastní porci úloh. Výsledek si vytiskni nebo využij na online trénování.</span>
-      <a href="/builder">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+      <a href="/builder">Více informací</a>
     </div>
   </div>
   <div class="card grow">
     <h1><strong>Tisk</strong></h1>
      <div class="v-stack v-stack--m">
       <span>Tužka a papír pomáhá přemýšlení, učení a zapamatování. Psaní rukou není rozhodně jen pro milovníky historie. Podrhávejte, používejte zvýrazňovače, rýsujte a počítejte na papír. Papír nebo technologie?</span>
-      <a href="/print">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+      <a href="/print">Více informací</a>
     </div>
   </div>
   <div class="card grow">
     <h1><strong>AI, video rozbory</strong></h1>
      <div class="v-stack v-stack--m">
       <span>Jeden obrázek vydá za tisíc slov. Dobrá vizualizace usnadňuje pochopení úlohy. AI jako nástroj né jako řešení. V případě nouze použij ChatGTP tlačítko.</span>
-      <a href="/ai">Více informací<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+      <a href="/ai">Více informací</a>
     </div>
   </div> 
 </div>
@@ -129,7 +129,7 @@ Zde je několik nápadů, co byste mohli vyzkoušet…
     Trénovací PWA aplikace <a href="https://www.eforms.cz/">eforms</a> s podporou práce offline a podporou řešení úloh pomocí AI tlačítka. Případně oficiální trénovací aplikace <a href="https://tau.cermat.cz/">TAU</a>.
   </div>
   <div class="card">
-     Mrkněte na <a href="https://github.com/rsamec/cermat-quiz">zdrojové kódy</a> k aplikaci. Banka úloh výchází z oficiálních cermat úloh. Použité <a href="https://github.com/rsamec/cermat">formáty dat</a> k testovým úlohám.
+     Mrkněte na <a href="https://github.com/rsamec/cermat-quiz">zdrojové kódy</a> k aplikaci. Banka úloh výchází z oficiálních cermat úloh. Použité <a href="./inputs">formáty dat</a> k testovým úlohám.
   </div> 
 </div>
 

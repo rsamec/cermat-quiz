@@ -38,10 +38,10 @@ export default {
       pages:[
         {name: "Tisk", path: "/print"},
         {name: "Sestavení úloh", path: "/builder"},
-        {name: "Embedding", path: "/embedding"},
+        {name: "Přepoužitelnost", path: "/embedding"},
         {name: "AI", path: "/ai"},
-        {name: "Vstupy", path: "/inputs"},
-        {name: "Matika", path: "/math"},
+        {name: "Data", path: "/inputs"},
+        {name: "Řešení mat. výrazů", path: "/math"},
         {name: "Kategorie", path: "/categories"},
         // {name: "Inline md", path: "/quiz-markdown"},
       ]
