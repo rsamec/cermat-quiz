@@ -150,11 +150,13 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
               const ids = [parseInt(key, 10)];
               //const filteredIds = ids.filter(id => id == key);        
               const rawContent = html`${mdPlus.unsafe(quizBuilder.content(ids, { ids: groupedIds, render: useFormControl ? 'contentWithoutOptions' : 'content' }), { docId: `${code}-${key}` })}`;              
-              const mathResourceLeafs = leafs
+              const mathResourceEntries = leafs
                 .flatMap(d => {
-                  //console.log(d.leaf.data.id,mathResource[d.leaf.data.id]?.results)
-                  return (mathResource[d.leaf.data.id]?.results ?? []).flatMap(x => x.TemplateSteps ?? []).map((x,i) => ([d.leaf.data.id,x]));
+                  return (mathResource[d.leaf.data.id]?.results ?? [])
+                    .flatMap((x) => (x.TemplateSteps ?? []).map((x,i) => ({x,i})))
+                    .map(({x,i}) => ([d.leaf.data.id,x,i]));
                 })
+              console.log(mathResourceEntries)
               return html`<div class=${cls(['q', `q-${key}`, avoidBreakInsideQuestion ? 'break-inside-avoid-column' : ''])}>
             ${codeComponent(qIndex)}
             <div>
@@ -249,8 +251,8 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                     ;
                   })}</div>` : ''}
             ${useResources ? html`<div class="v-stack v-stack--s">
-              ${useResources && mathResourceLeafs.length > 0 ? html`<details class="solution"><summary>Řešení úlohy</summary><div class="v-stack v-stack--s">
-              ${mathResourceLeafs.map(([key,value],i) => html.fragment`<div class="h-stack h-stack--s">
+              ${useResources && mathResourceEntries.length > 0 ? html`<details class="solution"><summary>Řešení úlohy</summary><div class="v-stack v-stack--s">
+              ${mathResourceEntries.map(([key,value,i]) => html.fragment`<div class="h-stack h-stack--s">
                 <span style="flex:1">${key} - ${value.Name}</span>
                 <a href="./math-${code}"><i class="fa-solid fa-square-up-right"></i></a>
               </div>
