@@ -17,6 +17,7 @@ import {renderedQuestionsPerQuiz} from './components/quiz-form.js';
 
 const quizQuestionsMap = await FileAttachment(`./data/quiz-${observable.params.subject}-${observable.params.period}.json`).json();
 const resourcesMap = await FileAttachment(`./data/quiz-answers-detail-gpt-4o.json`).json();
+const mathResourcesMap = await FileAttachment(`./data/math-answers.json`).json();
 const questionsMaxLimit = 30;
 ```
 
@@ -182,7 +183,8 @@ const parameters = ({
   subject:observable.params.subject,
   quizQuestionsMap,  
   displayOptions:{...columnsSetting, ...controlsSetting},
-  resourcesMap
+  resourcesMap,
+  mathResourcesMap,
 })
 
 const renderedQuestions = renderedQuestionsPerQuiz(parameters);

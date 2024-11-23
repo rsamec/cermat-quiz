@@ -22,6 +22,7 @@ function getQuestionIds(metadata, code) {
  
 const metadata = await FileAttachment(`./data/form-${observable.params.code}.json`).json();
 const resourcesMap = await FileAttachment(`./data/quiz-answers-detail-gpt-4o.json`).json();
+const mathResourcesMap = await FileAttachment(`./data/math-answers.json`).json();
 const rawContent = await FileAttachment(`./data/form-${observable.params.code}.md`).text();
 const code = observable.params.code;
 const quizQuestionsMap = {[code]:{rawContent, metadata}};
@@ -82,7 +83,8 @@ const parameters = ({
   subject:parseCode(code).subject,
   quizQuestionsMap,
   displayOptions: {useFormControl:true, ...Object.fromEntries(displayOptions)},
-  resourcesMap
+  resourcesMap,
+  mathResourcesMap,
 })
 const {renderedQuestions, inputs:inputsStore} = renderedQuestionsPerQuizWithInputs(parameters);
 

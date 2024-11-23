@@ -45,13 +45,18 @@ function normalizeMath(value){
     .replace(/±/g, `\\pm`)
     .replace(/\$\$(\s+)\$\$/g, '$$$\n$$$');
 }
-function renderResult({Name, Answer, TemplateSteps}){
+function renderResult(key, {Name, Answer, TemplateSteps}){
   return html`<div>
   <h3>${Name}</h3>
   <div class="card">
     ${mdPlus.unsafe(normalizeMath(Answer))}
   </div>
-  <div class="v-stack v-stack--m">${TemplateSteps.map(d => renderTemplateSteps(d))}</div>
+  <div class="v-stack v-stack--m">${TemplateSteps.map((d,i) => 
+    html`<div class="v-stack v-stack--s">
+      <video src="./assets/math/${observable.params.code}/${key}-${i}.mp4" autoplay playsinline muted controls></video>
+      ${renderTemplateSteps(d)}
+      
+    </div>`)}</div>
   </div>`
 }
 function renderTemplateSteps({Name, Steps}){
@@ -77,6 +82,6 @@ function renderStep({Step, Hint, Expression}, index){
 html`${entries.map(([key, value]) => html`<div>
   <h2>${mdPlus.unsafe(normalizeMath(value.header))}</h2>
   ${mdPlus.unsafe(normalizeMath(`$${value.mathContent}$`))}
-  ${(value.results ?? []).map(d =>  renderResult(d))}
+  ${(value.results ?? []).map(d =>  renderResult(key, d))}
 </div><hr/>` )}`
 ```

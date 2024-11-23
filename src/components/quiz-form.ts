@@ -18,6 +18,7 @@ type QuizParams = {
   subject: string,
   displayOptions: { useCode?: boolean, useAIHelpers?: boolean, avoidBreakInsideQuestion?: boolean, useFormControl?: boolean, useResources?:boolean }
   resourcesMap?: Record<string, any>
+  mathResourcesMap?: Record<string, any>
 }
 
 function parseQuestionId(id, subject) {
@@ -55,7 +56,7 @@ function chunkMetadataByInputs(metadata, subject, selectedIds = []) {
   }, []);
 }
 
-function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, displayOptions, resourcesMap }: QuizParams) {
+function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, displayOptions, resourcesMap, mathResourcesMap }: QuizParams) {
   const { avoidBreakInsideQuestion, useCode, useAIHelpers, useFormControl, useResources } = displayOptions;
   const inputsStore: Record<string, Record<string, any>> = {}
   return {
@@ -71,6 +72,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
         const submit = "Odeslat"
 
         const resource = resourcesMap?.[code];
+        const mathResource = mathResourcesMap?.[code];
 
         return chunks.flatMap(([inline, g], i) => {
           const codeComponent = useCode && i === 0 ? (questionIndex) => questionIndex === 0 ? html`<h0>${formatCode(code)}</h0>` : null : () => null
@@ -147,10 +149,12 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
             return g.map(([key, leafs], qIndex) => {
               const ids = [parseInt(key, 10)];
               //const filteredIds = ids.filter(id => id == key);        
-              const rawContent = html`${mdPlus.unsafe(quizBuilder.content(ids, { ids: groupedIds, render: useFormControl ? 'contentWithoutOptions' : 'content' }), { docId: `${code}-${key}` })}`;
-              const videoResourceLeafs = leafs
-                .filter(d => d.leaf.data.node.resources?.some(d => d.kind === "video"))
-                .map(d => [d.leaf.data.id, d.leaf.data.node.resources.filter(d => d.kind === 'video')])
+              const rawContent = html`${mdPlus.unsafe(quizBuilder.content(ids, { ids: groupedIds, render: useFormControl ? 'contentWithoutOptions' : 'content' }), { docId: `${code}-${key}` })}`;              
+              const mathResourceLeafs = leafs
+                .flatMap(d => {
+                  //console.log(d.leaf.data.id,mathResource[d.leaf.data.id]?.results)
+                  return (mathResource[d.leaf.data.id]?.results ?? []).flatMap(x => x.TemplateSteps ?? []).map((x,i) => ([d.leaf.data.id,x]));
+                })
               return html`<div class=${cls(['q', `q-${key}`, avoidBreakInsideQuestion ? 'break-inside-avoid-column' : ''])}>
             ${codeComponent(qIndex)}
             <div>
@@ -245,8 +249,12 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                     ;
                   })}</div>` : ''}
             ${useResources ? html`<div class="v-stack v-stack--s">
-              ${useResources && videoResourceLeafs.length > 0 ? html`<details class="solution"><summary>Řešení úlohy</summary><div class="v-stack v-stack--s">
-              ${videoResourceLeafs.map(([id, resources]) => html`${resources.map(r => html`<video src="./assets/${code}/${r.id}.mp4" autoplay playsinline muted controls></video>`)}`)}</div></details>` : ''}
+              ${useResources && mathResourceLeafs.length > 0 ? html`<details class="solution"><summary>Řešení úlohy</summary><div class="v-stack v-stack--s">
+              ${mathResourceLeafs.map(([key,value],i) => html.fragment`<div class="h-stack h-stack--s">
+                <span style="flex:1">${key} - ${value.Name}</span>
+                <a href="./math-${code}"><i class="fa-solid fa-square-up-right"></i></a>
+              </div>
+              <video src="./assets/math/${code}/${key}-${i}.mp4" autoplay playsinline muted controls></video>`)}</div></details>` : ''}
               
               ${useResources && useAIHelpers && resource && !isEmptyOrWhiteSpace(resource[ids[0]]) ? html`
             <details class="solution"><summary><span style="margin-right: 1rem;">Řešení úlohy - AI</span><i class="fa-solid fa-circle-exclamation" title="může obsahovat chyby"></i></summary><div>${mdPlus.unsafe(normalizeLatex(resource[ids[0]]))}<div></details>` : ''}
@@ -532,23 +540,4 @@ function sortableInput(array, options: any = {}) {
   });
 
   return form;
-}
-
-function mathSolverButton(node, labels) {
-  const baseUrl = "https://math.rsamec.workers.dev"
-  const handleClick = (index) => {
-    const elements = node.querySelectorAll('.katex-display');
-    const element = elements.item(index);
-    if (!element) {
-      return;
-    }
-    const latexExp = element.querySelector('math semantics annotation')?.textContent;
-    if (!latexExp) {
-      return;
-    }
-    const hrefWithQuery = `${baseUrl}/?q=${encodeURIComponent(latexExp)}`
-    window.open(hrefWithQuery, '_blank')
-  }
-
-  return labels.map((d, i) => html`<a href="#" class="a-button a-button--calculator" onclick=${(e) => { e.preventDefault(); handleClick(i); }}><i class="fa fa-calculator"></i> ${d}</a>`)
 }

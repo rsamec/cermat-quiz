@@ -82,7 +82,7 @@ details[open].solution summary {
   /* border-radius: 5px 5px 0 0; */
 }
 
-details.solution div {
+details.solution > div{
   padding: 5px 10px;
 }
 
