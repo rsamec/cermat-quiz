@@ -156,7 +156,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                     .flatMap((x) => (x.TemplateSteps ?? []).map((x,i) => ({x,i})))
                     .map(({x,i}) => ([d.leaf.data.id,x,i]));
                 })
-              console.log(mathResourceEntries)
+              //console.log(mathResourceEntries)
               return html`<div class=${cls(['q', `q-${key}`, avoidBreakInsideQuestion ? 'break-inside-avoid-column' : ''])}>
             ${codeComponent(qIndex)}
             <div>

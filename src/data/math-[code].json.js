@@ -1,4 +1,6 @@
 import { parseArgs } from "node:util";
+import fs from 'fs/promises';
+import path from 'path';
 import markdownit from "markdown-it";
 import * as katex from 'markdown-it-katex';
 import { toArray, from, concatMap, catchError, of } from 'rxjs';
@@ -65,43 +67,80 @@ function parseResults(input) {
 
 
 const d = parseCode(code);
-const baseUrl = `${baseDomainPublic}/${d.subject}/${d.period}/${code}`
-const content = await text(`${baseUrl}/index.md`);
-const tokens = Markdown.parse(content, {});
-
-let currentHeader = null;
-const mathBlocksWithHeaders = [];
-// Process tokens
-tokens.forEach(token => {
-  if (token.type === 'heading_open') {
-    // Capture the current header
-    const nextToken = tokens[tokens.indexOf(token) + 1];
-    if (nextToken && nextToken.type === 'inline') {         
-      currentHeader = nextToken.content;
-    }
-  } else if (token.type === 'math_block') {
-    // Associate the math_block with the current header
-    mathBlocksWithHeaders.push({
-      header: currentHeader,
-      mathContent: token.content,
-    });
-  }
-});
 
 
-from(mathBlocksWithHeaders).pipe(
-  concatMap(d => from(solveLatex(d)).pipe(
-    // Catch fetch error, log it, and return undefined for that item
-    catchError(error => {
-      //console.error(`Error fetching ${d.header}:${d.mathContent}`, error);
-      return of(undefined); // Continue with undefined on error
-    })
-  )),
-  toArray()
-)
-  .subscribe(results => {
-    const parResults = Object.fromEntries(results.map(([d, result]) => [d.header.split(" ").shift(), {...d, results: parseResults(result)}]));
-    process.stdout.write(JSON.stringify(parResults, null, 2));
-  }, (error) => {
+async function readJsonFromFile(filePath) {
+  try {
+    // Read the file content
+    const data = await fs.readFile(filePath, 'utf8');
+
+    // Parse JSON string into an object
+    const jsonData = JSON.parse(data);
+    return jsonData;
+  } catch (error) {
     throw error;
-  })
+  }
+}
+
+async function fileExists(filePath) {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+const fileLocation = path.resolve('./src/data/math-answers.json');
+
+if (await fileExists(fileLocation)) {
+  const outputData = await readJsonFromFile(fileLocation)
+  const parResults = outputData[code];
+  if (parResults != null) {
+    process.stdout.write(JSON.stringify(parResults, null, 2));
+  }
+  else {
+    throw `${fileLocation} does not exists code: ${code}`;
+  }
+}
+else {
+  const baseUrl = `${baseDomainPublic}/${d.subject}/${d.period}/${code}`
+  const content = await text(`${baseUrl}/index.md`);
+  const tokens = Markdown.parse(content, {});
+
+  let currentHeader = null;
+  const mathBlocksWithHeaders = [];
+  // Process tokens
+  tokens.forEach(token => {
+    if (token.type === 'heading_open') {
+      // Capture the current header
+      const nextToken = tokens[tokens.indexOf(token) + 1];
+      if (nextToken && nextToken.type === 'inline') {
+        currentHeader = nextToken.content;
+      }
+    } else if (token.type === 'math_block') {
+      // Associate the math_block with the current header
+      mathBlocksWithHeaders.push({
+        header: currentHeader,
+        mathContent: token.content,
+      });
+    }
+  });
+
+
+  from(mathBlocksWithHeaders).pipe(
+    concatMap(d => from(solveLatex(d)).pipe(
+      // Catch fetch error, log it, and return undefined for that item
+      catchError(error => {
+        //console.error(`Error fetching ${d.header}:${d.mathContent}`, error);
+        return of(undefined); // Continue with undefined on error
+      })
+    )),
+    toArray()
+  )
+    .subscribe(results => {
+      const parResults = Object.fromEntries(results.map(([d, result]) => [d.header.split(" ").shift(), { ...d, results: parseResults(result) }]));
+      process.stdout.write(JSON.stringify(parResults, null, 2));
+    }, (error) => {
+      throw error;
+    })
+}
