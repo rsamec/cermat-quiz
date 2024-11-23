@@ -79,6 +79,7 @@ const selectedCategories = Generators.input(selectedCategoriesInput);
   </section>
 </details>
 
+*Pro sestavení vlastního testu zvolte úlohy v tabulce níže.*
 
 ```js
 let filtered = filteredQuizCategories;

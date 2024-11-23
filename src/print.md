@@ -7,7 +7,7 @@ toc: true
 
 # Balíčky PDF
 
-K dispozici stažení kompletních balíčků všech úloh data banky v pdf dle varianty studia. 
+K dispozici stažení kompletních balíčků všech úloh data banky v pdf dle varianty studia.
 
 ```js
 import {formatSubject, formatPeriod} from './utils/quiz-string-utils.js';

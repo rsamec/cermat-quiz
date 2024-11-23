@@ -241,7 +241,10 @@ function totalP() {
   })
 }
 ```
-# Počet bodů z maximálního počtu bodů
+# Počet bodů
+
+Získáný počet bodů z maximálního počtu možných bodů dle předmětů. Vstupem jsou všechny úlohy z data banky.
+
 ${
   totalP(50)
 }

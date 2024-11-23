@@ -17,9 +17,7 @@ Použití <a href="https://math.microsoft.com/"><i class="fa-brands fa-microsoft
 Hlavní přidanou hodnotou je krokové vysvětlení řešení, které pomáhá uživateli pochopit problematiku hlouběji. Na základě kroků řešení jsou generována i vysvětlující videa.
 
 
-## Řešení výrazů v testech
-
-Přehled matematických výrazů v jednotlivých testech a jejich řešení
+*Pro zobrazení řešení úloh vyberte odkaz na test ze seznamu*
 
 ${quizes.filter(d => d.subject == 'math').map(({subject, period, codes}) => html`<h3>${formatSubject(subject)} ${formatPeriod(period)}</h3> <ul>${
   codes.map(code => html`<li>${formatShortCode(code)}<ul><li><a class="h-stack h-stack--s h-stack-items--center" href="./math-${code}"><i class="fa-solid fa-square-root-variable"></i>řešení výrazů</a></li></ul></li>`
