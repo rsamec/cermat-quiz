@@ -39,7 +39,7 @@ const range = (start, end) => Array.from(
   Array(Math.abs(end - start) + 1), 
   (_, i) => start + i
 );
-const assetsFiles = getFilesRecursive(`./src/assets/math`)
+const assetsFiles = getFilesRecursive(`./src/assets/math`).map(d => d.replace("src",""))
 
 console.log("--------------------------------")
 console.log(assetsFiles);
