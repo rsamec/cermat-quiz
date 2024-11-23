@@ -5,7 +5,9 @@ pager: true
 toc: true
 ---
 
-## Balíčky pdf
+# Balíčky PDF
+
+K dispozici stažení kompletních balíčků všech úloh data banky v pdf dle varianty studia. 
 
 ```js
 import {formatSubject, formatPeriod} from './utils/quiz-string-utils.js';
@@ -43,7 +45,7 @@ const filteredData = pdfs.filter(d =>  parseFileKey(d.file).pageSize === pageSiz
 
 const groupedByDirectories = Object.entries(Object.groupBy(filteredData, ({directory}) => directory))
 ```
-
+## Struktura balíčků dle varianty studia
  ${Plot.plot({
     color: {legend: true, tickFormat: d => formatSubjectAndPeriod(d)},
     height: 420,
@@ -53,6 +55,8 @@ const groupedByDirectories = Object.entries(Object.groupBy(filteredData, ({direc
       Plot.waffleY(filteredData, Plot.groupX({y:"sum"}, {x: "file", y:"count", fill:'directory', tip: true})),
     ]
    })}
+
+## Seznam dle varianty studia
 
 
 ${groupedByDirectories.map(([directory,values]) => html`<h3>${formatSubjectAndPeriod(directory)}</h3> <ul>${unique(values, 'file').map(({file, values}) => html`<li><a href="./assets/pdf/${directory}/${file}.pdf"><i class="fa-solid fa-file-pdf"></i> ${file} (${values.reduce((out,[v,n])=> out+=n,0)} stránek)</a></li>`)}</ul>`)}

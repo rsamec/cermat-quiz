@@ -258,7 +258,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
               <video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`)}</div></details>` : ''}
               
               ${useResources && useAIHelpers && resource && !isEmptyOrWhiteSpace(resource[ids[0]]) ? html`
-            <details class="solution"><summary><span style="margin-right: 1rem;">Řešení úlohy - AI</span><i class="fa-solid fa-circle-exclamation" title="může obsahovat chyby"></i></summary><div>${mdPlus.unsafe(normalizeLatex(resource[ids[0]]))}<div></details>` : ''}
+            <details class="solution"><summary><span style="margin-right: 1rem;">AI řešení - <span class='yellow'><i class="fa-solid fa-circle-exclamation"></i> může být chybně <i class="fa-solid fa-circle-exclamation"></i></span></span></summary><div>${mdPlus.unsafe(normalizeLatex(resource[ids[0]]))}<div></details>` : ''}
             </div>
             `:''}
           </div>`

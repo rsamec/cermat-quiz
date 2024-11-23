@@ -5,14 +5,15 @@ pager: true
 toc: true
 ---
 
-V data bance úloh lze vybrat jednoltivé úlohy a sestavit si vlastní test, nasdílet přes url a použít pro online trénování.
+V data bance úloh lze vybrat jednoltivé úlohy a sestavit si vlastní test. Ten si následně vytisknout nebo nasdílet přes url a použít pro online trénování. Jdi do sekce Úlohy a naklikej si vlastní porci úloh.
 
-Pro sestavení testu lze filtrovat až na úroveň jednotlivých úloh.
 
 <div class="tip" label="Filtrování">
+  Sestavení testu lze provést až na úroveň jednotlivých úloh.
   <p>Jednotlivé úlohy lze filterovat podle <strong>roku, varianty testu, kategorie úlohy</strong>. </p>
 </div>
 
+# Příklady vlastního sestavení testů
 
 ```js
 const baseUrl = "https://rsamec.github.io/cermat-quiz";

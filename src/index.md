@@ -101,12 +101,12 @@ function codesBy({subject, period}){
   <div class="card grow">
     <h1><strong>Tisk</strong></h1>
      <div class="v-stack v-stack--m">
-      <span>Tužka a papír pomáhá přemýšlení, učení a zapamatování. Psaní rukou není rozhodně jen pro milovníky historie. Podrhávejte, používejte zvýrazňovače, rýsujte a počítejte na papír. Papír nebo technologie?</span>
+      <span>Tužka a papír pomáhá přemýšlení, učení a zapamatování. Psaní rukou není rozhodně jen pro milovníky historie. Podrhávejte, používejte zvýrazňovače, rýsujte a počítejte na papír. Papír nebo technologie? Kompaktní tisk pdf balíčků</span>
       <a href="/print">Více informací</a>
     </div>
   </div>
   <div class="card grow">
-    <h1><strong>AI, video rozbory</strong></h1>
+    <h1><strong>AI, videa, vizualizace, automatizace</strong></h1>
      <div class="v-stack v-stack--m">
       <span>Jeden obrázek vydá za tisíc slov. Dobrá vizualizace usnadňuje pochopení úlohy. AI jako nástroj né jako řešení. V případě nouze použij ChatGTP tlačítko.</span>
       <a href="/ai">Více informací</a>
@@ -126,7 +126,7 @@ Zde je několik nápadů, co byste mohli vyzkoušet…
     Podívat se na oficiální cermat úlohy <a href="https://prijimacky.cermat.cz/">příjmačky</a> a <a href="https://maturita.cermat.cz/">maturita</a>.
   </div>
   <div class="card">
-    Trénovací PWA aplikace <a href="https://www.eforms.cz/">eforms</a> s podporou práce offline a podporou řešení úloh pomocí AI tlačítka. Případně oficiální trénovací aplikace <a href="https://tau.cermat.cz/">TAU</a>.
+    Trénovací PWA aplikace <a href="https://www.eforms.cz/">eforms</a> s podporou práce offline. Případně oficiální trénovací aplikace <a href="https://tau.cermat.cz/">TAU</a>.
   </div>
   <div class="card">
      Mrkněte na <a href="https://github.com/rsamec/cermat-quiz">zdrojové kódy</a> k aplikaci. Banka úloh výchází z oficiálních cermat úloh. Použité <a href="./inputs">formáty dat</a> k testovým úlohám.

@@ -1,14 +1,13 @@
 ---
-theme: dashboard
 title: Kategorie úloh
 footer: false
-pager: false
-toc: false
+pager: true
+toc: true
 ---
 
 # Kategorie úloh 🚀
 
-<!-- Load and transform the data -->
+
 
 ```js
 import {categories} from './utils/quiz-utils.js';
@@ -103,3 +102,7 @@ ${subjects.map(subject => html`<div class="grid grid-cols-1">
   </div>
 </div>`)}
 </div>
+
+
+## Jak je to uděláno?
+@TODO

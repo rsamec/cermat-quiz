@@ -41,8 +41,6 @@ const range = (start, end) => Array.from(
 );
 const assetsFiles = getFilesRecursive(`./src/assets/math`).map(d => d.replace("src",""))
 
-console.log("--------------------------------")
-console.log(assetsFiles);
 // See https://observablehq.com/framework/config for documentation.
 export default {
   // The app’s title; used in the sidebar and webpage titles.
@@ -72,12 +70,12 @@ export default {
       open: false,
       name: "Návody",
       pages:[
+        {name: "Data", path: "/inputs"},
         {name: "Tisk", path: "/print"},
         {name: "Sestavení úloh", path: "/builder"},
         {name: "Přepoužitelnost", path: "/embedding"},
         {name: "AI", path: "/ai"},
-        {name: "Data", path: "/inputs"},
-        {name: "Řešení mat. výrazů", path: "/math"},
+        {name: "Matika automatizace", path: "/math"},
         {name: "Kategorie", path: "/categories"},
         // {name: "Inline md", path: "/quiz-markdown"},
       ]

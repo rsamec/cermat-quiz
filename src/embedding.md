@@ -5,7 +5,7 @@ pager: true
 toc: true
 ---
 
-## iframe
+## iframe vložení
 
 vložit do www stránek lze pomocí elementu iframe.
 
@@ -45,7 +45,7 @@ document.querySelector("#quiz").append(fragment);
 ```
 ---
 
-## custom styles
+## vlastní styly
 
 ```js
 const theme = view(Inputs.button([
@@ -252,10 +252,9 @@ document.querySelector("#quiz-with-custom-style").append(fragment);
 ```
 ---
 
+## observableHQ playground
 
-
-
-## observable playground
+Příklady využití banky úloh v prostředí [ObservableHQ](https://observablehq.com).
 
 <iframe width="100%" height="300" frameborder="0"
   src="https://observablehq.com/embed/@rsamec/c9a-2024@428?cells=q6%2Cq15%2Cq18%2Cq25%2Cstyles"></iframe>
@@ -264,3 +263,6 @@ document.querySelector("#quiz-with-custom-style").append(fragment);
   src="https://observablehq.com/embed/@rsamec/m9c-2024?cells=q9%2Csteps9%2Cq10%2Csteps10"></iframe>
 
 
+## vytvoření vlastní aplikace
+
+Data banku úloh využívá např. trénovací PWA aplikace [eforms](https://www.eforms.cz).

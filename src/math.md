@@ -14,7 +14,7 @@ import mdPlus from './utils/md-utils.js';
 
 Použití <a href="https://math.microsoft.com/"><i class="fa-brands fa-microsoft"></i> Microsoft Math</a> API k automatickému řešení matematických výrazů.
 
-Hlavní přidanou hodnotou je krokové vysvětlení řešení, které pomáhá uživateli pochopit problematiku hlouběji.
+Hlavní přidanou hodnotou je krokové vysvětlení řešení, které pomáhá uživateli pochopit problematiku hlouběji. Na základě kroků řešení jsou generována i vysvětlující videa.
 
 
 ## Řešení výrazů v testech
