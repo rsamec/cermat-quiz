@@ -150,13 +150,12 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
               const ids = [parseInt(key, 10)];
               //const filteredIds = ids.filter(id => id == key);        
               const rawContent = html`${mdPlus.unsafe(quizBuilder.content(ids, { ids: groupedIds, render: useFormControl ? 'contentWithoutOptions' : 'content' }), { docId: `${code}-${key}` })}`;              
-              const mathResourceEntries = leafs
+              const mathResourceEntries = mathResource != null ? leafs
                 .flatMap(d => {
                   return (mathResource[d.leaf.data.id]?.results ?? [])
                     .flatMap((x) => (x.TemplateSteps ?? []).map((x,i) => ({x,i})))
                     .map(({x,i}) => ([d.leaf.data.id,x,i]));
-                })
-              //console.log(mathResourceEntries)
+                }):[]
               return html`<div class=${cls(['q', `q-${key}`, avoidBreakInsideQuestion ? 'break-inside-avoid-column' : ''])}>
             ${codeComponent(qIndex)}
             <div>
