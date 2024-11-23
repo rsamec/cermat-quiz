@@ -72,7 +72,7 @@ function sparkbar(max) {
     justify-content: end;">${x.toLocaleString("en")}`
 }
 
-function pointsSummary({ subject, grade, year}, totalPoints = 50) {
+function pointsSummary({ subject, grade, year}, totalPoints = 50, ) {
   const filteredData = data.filter(
     (d) => d.subject == subject && (grade == null || d.grade == grade) && (year == null || d.year == year)
   );
@@ -176,7 +176,76 @@ function pointsToMaxPointsByCategories({ subject }) {
     ]
   });
 }
+
+function totalP() {
+  const groupedData = [...d3.rollup(data, v => ({totalPoints:d3.sum(v, d => d.totalPoints), maxTotalPoints: d3.sum(v, d => d.maxTotalPoints)}), d => d.subject)].map(([subject,value]) => ({...value, subject})).sort((f,s) => f.maxTotalPoints - s.maxTotalPoints);
+  console.log(groupedData)
+  return Plot.plot({
+    grid: true,
+    axis: null,
+    label: null,
+    width,
+    height: 260,
+    marginTop: 50,
+    marginBottom: 70,
+    marks: [
+      Plot.axisFx({
+        lineWidth: 10,
+        anchor: "bottom",
+        dy: 30,
+        fontSize: 16,
+        text: (d) => formatSubject(d),
+      }),
+      Plot.waffleY(groupedData, { y: "maxTotalPoints", fx:"subject", fillOpacity: 0.4, rx: "100%" }),
+      Plot.waffleY(groupedData, {
+        fx: "subject",
+        y: "totalPoints",
+        rx: "100%",
+        fill: "orange",
+        sort: { fx: "y", reverse: true }
+      }),
+      Plot.text(groupedData, {
+        fx: "subject",
+        text: (d) =>
+          (d.totalPoints / d.maxTotalPoints).toLocaleString("en-US", {
+            style: "percent"
+          }),
+        frameAnchor: "bottom",
+        lineAnchor: "top",
+        dy: 6,
+        fill: "orange",
+        fontSize: 30,
+        fontWeight: "bold"
+      }),
+      Plot.text(groupedData, {
+        fx: "subject",
+        text: (d) => `${d.totalPoints}`,
+        frameAnchor: "top",
+        lineAnchor: "bottom",
+        dy: -25,
+        fill: "orange",
+        fontSize: 30,
+        fontWeight: "bold"
+      }),
+      Plot.text(groupedData, {
+        fx: "subject",
+        text: (d) => `(${d.maxTotalPoints})`,
+        frameAnchor: "top",
+        lineAnchor: "bottom",
+        dy: -5,
+        fontSize: 16,
+        fontWeight: "bold"
+      }),
+      
+    ]
+  })
+}
 ```
+# Počet bodů z maximálního počtu bodů
+${
+  totalP(50)
+}
+
 
 # Detailní výsledky dle testů 
 *Pro zobrazení konkrétních odpovědí zvolte test v tabulce níže.*
@@ -334,7 +403,7 @@ view(html`<div style='display:flex;flex-direction:column;gap:20px'>${tables}<div
 
 
 
-# Jak je to uděláno
+# Jak je to uděláno?
 
 Vstupem jsou [data](./inputs). Byl použit model 'gpt-4o-2024-08-06'.
 
