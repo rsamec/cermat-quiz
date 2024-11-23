@@ -256,7 +256,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                 <span style="flex:1">${key} - ${value.Name}</span>
                 <a href="./math-${code}"><i class="fa-solid fa-square-up-right"></i></a>
               </div>
-              <video src="./assets/math/${code}/${key}-${i}.mp4" autoplay playsinline muted controls></video>`)}</div></details>` : ''}
+              <video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`)}</div></details>` : ''}
               
               ${useResources && useAIHelpers && resource && !isEmptyOrWhiteSpace(resource[ids[0]]) ? html`
             <details class="solution"><summary><span style="margin-right: 1rem;">Řešení úlohy - AI</span><i class="fa-solid fa-circle-exclamation" title="může obsahovat chyby"></i></summary><div>${mdPlus.unsafe(normalizeLatex(resource[ids[0]]))}<div></details>` : ''}
