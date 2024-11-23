@@ -3091,7 +3091,8 @@
           "Answer": "",
           "TemplateSteps": [
               {
-                "Name": "Postup řešení"
+                "Name": "Postup řešení",
+                "Steps":[]
               }
           ]
         }
@@ -3105,7 +3106,8 @@
           "Answer": "",
           "TemplateSteps": [
               {
-                "Name": "Postup řešení"
+                "Name": "Postup řešení",
+                "Steps":[]
               }
           ]
         }
