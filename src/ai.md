@@ -62,7 +62,8 @@ function uniqueColumns(data){
 }
 function sparkbar(max) {
   return x => htl.html`<div style="
-    background: lightblue;
+    background: var(--theme-background-alt);
+    border: 1px solid var(--theme-foreground-fainter);
     width: ${100 * x / max}%;
     float: right;
     padding-right: 3px;
@@ -179,7 +180,6 @@ function pointsToMaxPointsByCategories({ subject }) {
 
 function totalP() {
   const groupedData = [...d3.rollup(data, v => ({totalPoints:d3.sum(v, d => d.totalPoints), maxTotalPoints: d3.sum(v, d => d.maxTotalPoints)}), d => d.subject)].map(([subject,value]) => ({...value, subject})).sort((f,s) => f.maxTotalPoints - s.maxTotalPoints);
-  console.log(groupedData)
   return Plot.plot({
     grid: true,
     axis: null,
@@ -243,7 +243,7 @@ function totalP() {
 ```
 # Počet bodů
 
-Získáný počet bodů z maximálního počtu možných bodů dle předmětů. Vstupem jsou všechny úlohy z data banky.
+Počet bodů z maximálního počtu možných bodů dle předmětů. Vstupem jsou všechny úlohy z data banky.
 
 ${
   totalP(50)
