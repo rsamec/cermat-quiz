@@ -1,6 +1,5 @@
 ---
 toc: false
-footer: false
 ---
 
 <div class="hero">

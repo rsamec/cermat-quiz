@@ -46,6 +46,8 @@ export default {
   // The app’s title; used in the sidebar and webpage titles.
   title: "Banka úloh",
   header: ({title,data, path}) => title,
+  footer: ({title, data, path}) => `<a href="https://github.com/rsamec/cermat-quiz"><i class="fa-brands fa-github"></i></a>`,
+
   // The pages and sections in the sidebar. If you don’t specify this option,
   // all pages will be listed in alphabetical order. Listing pages explicitly
   // lets you organize them into sections and have unlisted pages.
