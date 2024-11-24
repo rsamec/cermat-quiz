@@ -231,7 +231,11 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                       });
                       const answerTooltip = computed(() => {
                         const value = inputValue.value;
-                        const tooltipMessage = isEmptyAnswer(value) ? '' : JSON.stringify(validator(value)?.expected);
+                        const tooltipMessage = isEmptyAnswer(value) 
+                          ? ''
+                          : verifyBy?.kind == "matchObjectValues" 
+                            ? JSON.stringify(verifyBy?.source)
+                            : JSON.stringify(validator(value)?.expected);
                         return tooltipMessage;
                       })
                       const answerTooltipClass = computed(() => {

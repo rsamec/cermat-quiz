@@ -1,6 +1,7 @@
 import { removeSpaces, isEmptyOrWhiteSpace } from "./string-utils.js"
 
 export type Option<T> = { name: string, value: T }
+
 export type ValidationFunctionArgs<T> = { args: T }
 export type EqualValidator<T> = ValidationFunctionArgs<T> & {
   kind: "equal"
@@ -9,6 +10,10 @@ export type EqualValidator<T> = ValidationFunctionArgs<T> & {
 export type JsonRegExp = { source: string, flags: string }
 export type MatchValidator = ValidationFunctionArgs<JsonRegExp> & {
   kind: "match"
+}
+export type MatchObjectValuesValidator = ValidationFunctionArgs<Record<string, JsonRegExp>> & {
+  kind: "matchObjectValues"
+  source: Record<string, string>
 }
 
 export type EqualRatioValidator<T> = ValidationFunctionArgs<T> & {
@@ -53,7 +58,7 @@ export type SelfEvaluateValidator = ValidationFunctionArgs<{ options: Option<num
   kind: "selfEvaluate"
 }
 export type ValidationFunctionSpec<T> = EqualValidator<T> | EqualRatioValidator<T> | EqualOptionValidator<T> | SelfEvaluateValidator | EqualMathOptionValidator
-  | EqualMathEquationValidator | EqualStringCollectionValidator | EqualNumberCollectionValidator | EqualSortedOptionsValidator | MatchValidator | EqualLatexExpressionValidator;
+  | EqualMathEquationValidator | EqualStringCollectionValidator | EqualNumberCollectionValidator | EqualSortedOptionsValidator | MatchValidator | MatchObjectValuesValidator | EqualLatexExpressionValidator;
 
 export class CoreVerifyiers {
   static EqualTo<T>(value: T) {
@@ -129,6 +134,18 @@ export class CoreVerifyiers {
       return options[options.length - 1].value == control?.value ? null : { expected: options, actual: control, errorCount: null }
     }
   }
+
+
+  static MatchObjectValues(patterns: Record<string,JsonRegExp>) {
+    return (control: Record<string, string>) => {
+    
+      const controlValues = Object.values(control ?? {});
+      const match = Object.values(patterns).map(pattern => new RegExp(pattern.source,pattern.flags)).every((d,i) => d.test(controlValues[i]));
+      
+      return match ? undefined : { 'expected': patterns, 'actual': control, errorCount: null }
+    }
+  }
+
 }
 
 
@@ -157,11 +174,12 @@ export function getVerifyFunction<T>(spec: ValidationFunctionSpec<T>)
       return CoreVerifyiers.SelfEvaluateTo(spec.args);
     case 'equalSortedOptions':
       return CoreVerifyiers.SortedOptionsEqualTo(spec.args);
+    case 'matchObjectValues':
+      return CoreVerifyiers.MatchObjectValues(spec.args);
     default:
       throw new Error(`Function ${spec} not supported.`);
   }
 }
-
 function intersection<T>(arr1: T[], arr2: T[]) {
   // Use Set to eliminate duplicates and filter to find common elements
   const set1 = new Set(arr1);
