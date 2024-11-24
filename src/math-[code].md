@@ -32,9 +32,9 @@ toc: false
 </style>
 ```js
 import mdPlus from './utils/md-utils.js';
-
 import { isEmptyOrWhiteSpace } from './utils/string-utils.js';
 import { formatCode } from './utils/quiz-string-utils.js';
+
 const metadata = await FileAttachment(`./data/math-${observable.params.code}.json`).json();
 const entries = Object.entries(metadata);
 function normalizeMath(value){
@@ -48,14 +48,13 @@ function normalizeMath(value){
 function renderResult(key, {Name, Answer, TemplateSteps}){
   return html`<div>
   <h3>${Name}</h3>
-  <div class="card">
+  ${Answer != null ? html`<div class="card">
     ${mdPlus.unsafe(normalizeMath(Answer))}
-  </div>
+  </div>`:''}
   <div class="v-stack v-stack--m">${TemplateSteps.map((d,i) => 
     html`<div class="v-stack v-stack--s">
       <video src="./assets/math/${observable.params.code}/${key}-${i}.mp4" playsinline muted controls></video>
-      ${renderTemplateSteps(d)}
-      
+      ${d.Steps?.length > 0 ? renderTemplateSteps(d):''}
     </div>`)}</div>
   </div>`
 }

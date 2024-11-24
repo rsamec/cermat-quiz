@@ -3085,10 +3085,10 @@
     },
     "9":{
       "header":"9 Sestrojte zbývající vrcholy B, C a D lichoběžníku ABCD, označte je písmeny a lichoběžník narýsujte.",
+      "mathContent":"",
       "results":[
         {          
           "Name": "Sestrojit",
-          "Answer": "",
           "TemplateSteps": [
               {
                 "Name": "Postup řešení",
@@ -3100,14 +3100,14 @@
     },
     "10":{
       "header":"10 Sestrojte lichoběžník ABCD.",
+      "mathContent":"",
       "results":[
         {          
           "Name": "Sestrojit",
-          "Answer": "",
           "TemplateSteps": [
               {
                 "Name": "Postup řešení",
-                "Steps":[]
+                "Steps": []
               }
           ]
         }
