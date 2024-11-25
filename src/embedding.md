@@ -10,10 +10,10 @@ toc: true
 vložit do www stránek lze pomocí elementu iframe.
 
 ---
-<iframe width="100%" height="200" frameborder="0" src="https://rsamec.github.io/cermat-quiz/form-M9A-2024"></iframe>
+<iframe width="100%" height="200" frameborder="0" src="https://www.cermatdata.cz/form-M9A-2024"></iframe>
 
 ```html run=false
-<iframe width="100%" height="200" frameborder="0" src="https://rsamec.github.io/cermat-quiz/form-M9A-2024"></iframe>
+<iframe width="100%" height="200" frameborder="0" src="https://www.cermatdata.cz/form-M9A-2024"></iframe>
 ```
 
 ## javascript module
@@ -22,7 +22,7 @@ vložit do www stránek pomocí javascript module
 
 
 <script type="module">
-import {renderQuiz} from "https://rsamec.github.io/cermat-quiz/components/quiz.js";
+import {renderQuiz} from "https://www.cermatdata.cz/components/quiz.js";
 const fragment = await renderQuiz('M9A-2024',[1,2,7]);
 document.querySelector("#quiz").append(fragment);
 </script>
@@ -32,7 +32,7 @@ document.querySelector("#quiz").append(fragment);
 
 ```html run=false
 <script type="module">
-import {renderQuiz} from "https://rsamec.github.io/cermat-quiz/components/quiz.js";
+import {renderQuiz} from "https://www.cermatdata.cz/components/quiz.js";
 
 //render elements
 const fragment = await renderQuiz('M9A-2024',[1,2,7]);
@@ -56,7 +56,7 @@ const theme = view(Inputs.button([
 ], {value: 0, label: "Toggle styles"}));
 ```
 <script type="module">
-import {renderQuiz} from "https://rsamec.github.io/cermat-quiz/components/quiz.js";
+import {renderQuiz} from "https://www.cermatdata.cz/components/quiz.js";
 const fragment = await renderQuiz('CMA-2024');
 document.querySelector("#quiz-with-custom-style").append(fragment);
 </script>

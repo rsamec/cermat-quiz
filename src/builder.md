@@ -16,7 +16,7 @@ V data bance úloh lze vybrat jednoltivé úlohy a sestavit si vlastní test. Te
 # Příklady vlastního sestavení testů
 
 ```js
-const baseUrl = "https://rsamec.github.io/cermat-quiz";
+const baseUrl = "https://www.cermatdata.cz";
 
 function renderQuizEx(url){
   return html`<div class="v-stack v-stack--s">
