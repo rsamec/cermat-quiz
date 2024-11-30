@@ -13,6 +13,16 @@
   &.h-stack--l {
     gap: 16px;
   }
+  &.h-stack--xl {
+    gap: 24px;
+  }
+  &.h-stack--xl {
+    gap: 32px;
+  }
+  &.h-stack--xl {
+    gap: 40px;
+  }
+
   &.h-stack--wrap {
     flex-wrap: wrap;
   }
@@ -51,6 +61,15 @@
   }
   &.v-stack--l {
     gap: 16px;
+  }
+  &.v-stack--xl {
+    gap: 24px;
+  }
+  &.v-stack--xxl {
+    gap: 32px;
+  }
+  &.v-stack--xxxl {
+    gap: 40px;
   }
   &.v-stack--wrap {
     flex-wrap: wrap;

@@ -57,7 +57,7 @@ export default {
       name: "Úlohy",
       pages: quizes.map(d => ({
         name: `${formatSubject(d.subject)} ${formatPeriod(d.period)}`,
-        path: `/quiz-builder-${d.subject}-${d.period}`,
+        path: `/quiz-sel-${d.subject}-${d.period}`,
       }))
     },
     {
@@ -80,6 +80,7 @@ export default {
         {name: "Matika automatizace", path: "/math"},
         {name: "Kategorie", path: "/categories"},
         // {name: "Inline md", path: "/quiz-markdown"},
+        // {name: "Rozvržení stránky", path: "/layout"},
       ]
     },
   ],
@@ -101,7 +102,9 @@ export default {
   .concat(quizes.flatMap(d => d.codes).map(code => `/impress-${code}`))
   .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-${code}`))
   .concat(quizes.map(d => `/quiz-${d.subject}-${d.period}`))
+  .concat(quizes.map(d => `/quiz-print-${d.subject}-${d.period}`))
   .concat(quizes.map(d => `/quiz-picker-${d.subject}-${d.period}`))
+  .concat(quizes.map(d => `/quiz-sel-${d.subject}-${d.period}`))
   .concat(quizes.map(d => `/quiz-builder-${d.subject}-${d.period}`))
   .concat(quizes.flatMap(d => printedPages.map(p => `/assets/pdf/${d.subject}-${d.period}/${formatPdfFileName(p)}.pdf`)))  
 

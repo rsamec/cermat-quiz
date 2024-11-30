@@ -199,11 +199,12 @@ export function getQuizBuilder(tree, input, baseRenderOptions = { render: "conte
                     ? toContent([root], { renderHeader: true, render }) + toContent(items, { renderHeader: !rootOnly, render })
                     : toContent(items, { renderHeader: !rootOnly, render });
             },
+            groupKey: isInRange(id, range) && range != null ? `${range[0]}`:id,
             options: d.leaf.data.options?.length > 0 ? d.leaf.data.options : d.ancestors[d.ancestors.length - 2].data.options
         };
     });
     const output = {
-        questions: values.map(d => ({ id: d.id, title: d.title, options: d.options })),
+        questions: values.map(d => ({ id: d.id, title: d.title, options: d.options, groupKey: d.groupKey })),
         content: (ids, renderOptions) => {
             const filteredQuestions = values.filter(d => ids.includes(d.id));
             return filteredQuestions.map(d => d.content(renderOptions?.ids ?? ids, renderOptions)).join("");

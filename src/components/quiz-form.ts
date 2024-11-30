@@ -16,7 +16,7 @@ type QuizParams = {
   questions: string[][],
   quizQuestionsMap: Record<string, { metadata: any, rawContent: string }>,
   subject: string,
-  displayOptions: { useCode?: boolean, useAIHelpers?: boolean, avoidBreakInsideQuestion?: boolean, useFormControl?: boolean, useResources?:boolean }
+  displayOptions: {useAIHelpers?: boolean, questionCustomClass?: string, useFormControl?: boolean, useResources?:boolean }
   resourcesMap?: Record<string, any>
   mathResourcesMap?: Record<string, any>
 }
@@ -57,7 +57,7 @@ function chunkMetadataByInputs(metadata, subject, selectedIds = []) {
 }
 
 function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, displayOptions, resourcesMap, mathResourcesMap }: QuizParams) {
-  const { avoidBreakInsideQuestion, useCode, useAIHelpers, useFormControl, useResources } = displayOptions;
+  const { questionCustomClass, useAIHelpers, useFormControl, useResources } = displayOptions;
   const inputsStore: Record<string, Record<string, any>> = {}
   return {
     renderedQuestions: questions.map(
@@ -65,8 +65,8 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
         const ids = id.map(id => parseInt(id, 10));
         const quiz = quizQuestionsMap[code];
         const quizBuilder = quiz ? makeQuizBuilder(quiz.rawContent) : null;
-        const optionsMap = Object.fromEntries(
-          quizBuilder.questions.map((d) => [d.id, d.options])
+        const questionsMap = Object.fromEntries(
+          quizBuilder.questions.map((d) => [d.id, d])
         );
         const chunks = chunkMetadataByInputs(quiz.metadata, subject, ids);
         const submit = "Odeslat"
@@ -75,7 +75,6 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
         const mathResource = mathResourcesMap?.[code];
 
         return chunks.flatMap(([inline, g], i) => {
-          const codeComponent = useCode && i === 0 ? (questionIndex) => questionIndex === 0 ? html`<h0>${formatCode(code)}</h0>` : null : () => null
           if (inline) {
             const ids = g.map(([key, leafs]) => parseInt(key, 10));
             const leafs = g.flatMap(([key, leafs]) => leafs);
@@ -96,7 +95,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
 
                 const component = inputBy.kind == "options"
                   ? Inputs.button(
-                    optionsMap[id]?.map((opt) => [opt.name, (value) => opt])
+                    questionsMap[id].options?.map((opt) => [opt.name, (value) => opt])
                   )
                   : Inputs.text({ submit: true })
 
@@ -114,10 +113,10 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
               })
             )
             const env = { docId: `${code}-${i}` };
-            return html`<div class=${cls(['q', avoidBreakInsideQuestion ? 'break-inside-avoid-column' : ''])}>${codeComponent(0)}${useFormControl
+            return html`<div class=${cls(['q',`q-${i}`, questionCustomClass])}>${useFormControl
               ? toTemplate(quizBuilder.content(ids, { rootOnly: true }), env, context, (key) => {
                 const metadata = metadataMap[key];
-                const options = optionsMap[key];
+                const options = questionsMap[key].options;
 
                 return (value) => {
                   if (isEmptyAnswer(value))
@@ -145,22 +144,20 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
 
           }
           else {
-            const groupedIds = g.map(([key]) => [parseInt(key, 10)]);            
+            const groupedIds = g.map(([key]) => [parseInt(key, 10)]);
             return g.map(([key, leafs], qIndex) => {
               const ids = [parseInt(key, 10)];
-              //const filteredIds = ids.filter(id => id == key);        
-              const rawContent = html`${mdPlus.unsafe(quizBuilder.content(ids, { ids: groupedIds, render: useFormControl ? 'contentWithoutOptions' : 'content' }), { docId: `${code}-${key}` })}`;              
+              const rawContent = html.fragment`${mdPlus.unsafe(quizBuilder.content(ids, { ids: groupedIds, render: useFormControl ? 'contentWithoutOptions' : 'content' }), { docId: `${code}-${key}` })}`;              
               const mathResourceEntries = mathResource != null ? leafs
                 .flatMap(d => {
                   return (mathResource[d.leaf.data.id]?.results ?? [])
                     .flatMap((x) => (x.TemplateSteps ?? []).map((x,i) => ({x,i})))
                     .map(({x,i}) => ([d.leaf.data.id,x,i]));
                 }):[]
-              return html`<div class=${cls(['q', `q-${key}`, avoidBreakInsideQuestion ? 'break-inside-avoid-column' : ''])}>
-            ${codeComponent(qIndex)}
-            <div>
+              return html`<div class=${cls(['q', `q-${key}`, `group-${questionsMap[ids[0]].groupKey}`, questionCustomClass ])}>
+            
               ${rawContent}
-            </div>
+
             
             ${useAIHelpers ? html`<div class="h-stack h-stack--m h-stack--wrap h-stack--end">
               <a href="#" onclick=${(e) => {
@@ -185,7 +182,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
 
                     const { inputBy, verifyBy } = d;
                     const label = leafs.length > 1 && labelId;
-                    const options = optionsMap[id] ?? [];
+                    const options = questionsMap[id].options ?? [];
 
                     if (verifyBy.kind === "selfEvaluate") {
                       const { hint } = verifyBy.args;
@@ -255,7 +252,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                   })}</div>` : ''}
             ${useResources ? html`<div class="v-stack v-stack--s">
               ${useResources && mathResourceEntries.length > 0 ? html`<details class="solution"><summary>Řešení úlohy</summary><div class="v-stack v-stack--s">
-              ${mathResourceEntries.map(([key,value,i]) => html.fragment`<div class="h-stack h-stack--s">
+              ${mathResourceEntries.map(([key,value,i]) => html`<div class="h-stack h-stack--s">
                 <span style="flex:1">${key} - ${value.Name}</span>
                 <a href="./math-${code}"><i class="fa-solid fa-square-up-right"></i></a>
               </div>
@@ -287,9 +284,9 @@ function renderSingleInputByType({ inputBy, label, options, submit }) {
           format: (d) => d.name,
           label,
         })
-        : inputBy.kind === "number"
+        : (inputBy.kind === "number"
           ? Inputs.number({ submit, label })
-          : Inputs.text({ submit, label });
+          : Inputs.text({ submit, label }));
 }
 function useInput(input) {
   const s = signal(input.value);

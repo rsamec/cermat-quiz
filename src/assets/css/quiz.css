@@ -105,3 +105,23 @@ h0:not(:first-of-type){
   margin-left: 0.5rem;
   margin-right: 0.5rem;
 }
+
+
+
+h1,h2,h3,h4,h5,h6 {
+  color: inherit;
+}
+
+.multi-column {
+  columns:24rem;
+}
+
+.multi-column,
+masonry-layout,
+.grid-column-auto {
+  .q { 
+    padding: 12px;
+    border-radius:16px;
+    box-sizing: border-box;
+  }
+}

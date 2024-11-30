@@ -9,6 +9,7 @@ style: /assets/css/quiz.css
 ---
 
 ```js
+
 import tippy from 'tippy.js';
 import {categories} from './utils/quiz-utils.js';
 import {parseCode, formatCode, formatSubject, formatPeriod} from './utils/quiz-string-utils.js';
@@ -134,6 +135,7 @@ const columnsInput = Inputs.form({
   avoidBreakInsideQuestion: Inputs.toggle({label:"Nezalamovat v rámci otázky", value: true}),
   avoidBreakInsideQuiz: Inputs.toggle({label:"Nezalamovat v rámci testu"}),
   useCode: Inputs.toggle({label:"Zobrazovat názvy testů", value: true}),
+  theme: Inputs.radio(['none','2-gray-stripped', '3-gray-stripped', '4-gray-stripped'],{value: 'none'})
 });
 const columnsSetting = Generators.input(columnsInput);
 ```
@@ -153,7 +155,6 @@ const columnsSetting = Generators.input(columnsInput);
 </div>  
 
 ```js
-
 const getExportUrlPart = (usePrint) => `./quiz-${observable.params.subject}-${observable.params.period}?q=${queryValue}&${convertFlagsToQueryParam(usePrint? {...columnsSetting}: {...columnsSetting, ...controlsSetting})}`
 const getExportUrl = (usePrint) => `${window.location.origin}/${getExportUrlPart(usePrint)}`
 
@@ -183,18 +184,27 @@ const parameters = ({
   questions: convertQueryParamToQuestions(convertQuestionToQueryParam(filteredQuestions)),
   subject:observable.params.subject,
   quizQuestionsMap,  
-  displayOptions:{...columnsSetting, ...controlsSetting},
+  displayOptions:{ 
+    ...(columnsSetting.avoidBreakInsideQuestion && {questionCustomClass:'break-inside-avoid-column'}),
+    ...columnsSetting,
+    ...controlsSetting
+  },
   resourcesMap,
   mathResourcesMap,
 })
 
 const renderedQuestions = renderedQuestionsPerQuiz(parameters);
 
-const { layoutPerQuiz, columnWidth, avoidBreakInsideQuiz, useColumns} = parameters.displayOptions;
+const { useCode, theme, layoutPerQuiz, columnWidth, avoidBreakInsideQuiz, useColumns} = parameters.displayOptions;
+
+const questions = parameters.questions;
+const codeComponent = (i) => useCode ? html`<h0>${formatCode(questions[i][0])}</h0>`: null
+
 const renderedContent = layoutPerQuiz
-    ? html`<div>${renderedQuestions.map((d,index) => html`<div class=${cls([(useColumns && index > 0) && 'break-before-page'])} style=${useColumns ? `columns:${columnWidth ?? 24}rem`:''}>${d}</div>`)}</div>`
-    : html`<div style=${useColumns ? `columns:${columnWidth ?? 24}rem`:''}>${renderedQuestions.map((d,index) => html`<div class=${cls([avoidBreakInsideQuiz && 'break-inside-avoid-column'])}>${d}</div>`)}</div>`;
-      
+    ? html.fragment`${renderedQuestions.map((d,index) => html`${codeComponent(index)}<div class=${cls([(useColumns && index > 0) && 'break-before-page'])} style=${useColumns ? `columns:${columnWidth ?? 24}rem`:''}>${d}</div>`)}`
+    : html`<div style=${useColumns ? `columns:${columnWidth ?? 24}rem`:''}>${renderedQuestions.map((d,index) => html`<div class=${cls([avoidBreakInsideQuiz && 'break-inside-avoid-column'])}>${codeComponent(index)}${d}</div>`)}</div>`;
+
 display(renderedContent);
 
 ```
+
