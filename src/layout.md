@@ -14,8 +14,6 @@ import {cls, convertQueryParamToQuestions} from "./utils/string-utils.js";
 import {renderedQuestionsPerQuiz} from './components/quiz-form.js';
 import invert from 'invert-color';
 const quizQuestionsMap = await FileAttachment(`./data/quiz-math-4.json`).json();
-const resourcesMap = await FileAttachment(`./data/quiz-answers-detail-gpt-4o.json`).json();
-const mathResourcesMap = await FileAttachment(`./data/math-answers.json`).json();
 import { debounce } from './utils/debounce.js';
 
 ```
@@ -76,8 +74,6 @@ const parameters = ({
   subject,
   quizQuestionsMap,  
   displayOptions:{...columnsSetting, ...controlsSetting},
-  resourcesMap,
-  mathResourcesMap
 })
 
 const renderedQuestions = renderedQuestionsPerQuiz(parameters);

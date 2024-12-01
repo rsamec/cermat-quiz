@@ -14,7 +14,6 @@ import { renderedQuestionsPerQuiz } from './components/quiz-form.js';
 import { convertQueryParamToQuestions, cls} from './utils/string-utils.js';
 import { formatCode } from './utils/quiz-string-utils.js';
 const quizQuestionsMap = await FileAttachment(`./data/quiz-${observable.params.subject}-${observable.params.period}.json`).json();
-const resourcesMap = await FileAttachment(`./data/quiz-answers-detail-gpt-4o.json`).json();
 const searchParams = Object.fromEntries(new URLSearchParams(location.search));
 ```
 
@@ -25,8 +24,7 @@ const parameters = ({
   quizQuestionsMap,
   displayOptions: {
     questionCustomClass:'break-inside-avoid-column',
-    ...Object.fromEntries(Object.entries(searchParams).map(([key, value]) => ([key,value ==="true" ? true : value === "false"? false: value])))},
-  resourcesMap
+    ...Object.fromEntries(Object.entries(searchParams).map(([key, value]) => ([key,value ==="true" ? true : value === "false"? false: value])))},  
 })
 
 const renderedQuestions = renderedQuestionsPerQuiz(parameters);

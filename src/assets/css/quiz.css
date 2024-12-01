@@ -116,7 +116,6 @@ h1,h2,h3,h4,h5,h6 {
   columns:24rem;
 }
 
-.multi-column,
 masonry-layout,
 .grid-column-auto {
   .q { 
@@ -128,4 +127,12 @@ masonry-layout {
   .q { 
     border-radius:16px;
   }
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+}
+details.quiz-selector::details-content {
+  margin-top: 10px;  
 }

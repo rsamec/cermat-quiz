@@ -3,7 +3,6 @@ import mdPlus from "../utils/md-utils.js";
 import { html } from "npm:htl";
 import { signal, computed } from '@preact/signals-core';
 import { convertTree } from '../utils/quiz-utils.js';
-import { formatCode } from '../utils/quiz-string-utils.js';
 import { html as rhtml } from '../utils/reactive-htl.js';
 import tippy from 'tippy.js';
 import { getVerifyFunction } from '../utils/assert.js';
