@@ -113,8 +113,8 @@ const uniqueCategories = Object.keys(Object.groupBy(filteredQuizCategories, ({Ca
 const selectedCategoriesInput = Inputs.select(uniqueCategories,{ multiple:true, label:"Kategorie"});
 const selectedCategories = Generators.input(selectedCategoriesInput);
 
-const toBadge = (selected, selectedInput) => selected.length > 0 ? html`<div class="badge">
-${selected.join(", ")}
+const toBadge = (selected, selectedInput, label) => selected.length > 0 ? html`<div class="badge">
+  ${label != null ? `${label}: ${selected.length}`: `${selected.join(", ")}` }
   <i class="fa-solid fa-xmark" onClick=${() => resetValue(selectedInput, [])}></i>
 </div>`: ''
 
@@ -139,8 +139,8 @@ ${selected.join(", ")}
 </details>
 <div class="h-stack h-stack--l h-stack--wrap">
   ${toBadge(selectedYears, selectedYearsInput)}
-  ${toBadge(selectedCodes, selectedCodesInput)}
-  ${toBadge(selectedCategories, selectedCategoriesInput)}
+  ${toBadge(selectedCodes, selectedCodesInput,"Testy")}
+  ${toBadge(selectedCategories, selectedCategoriesInput, "Kategorie")}
 </div>
 
 ```js

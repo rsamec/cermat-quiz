@@ -7,7 +7,9 @@ const styles = [...Array(50).keys()].map((d,i) => `.group-${d} {
   background-color:${color(d)}; color:${invert(color(d), { black: '#3a3a3a', white: '#fafafa' })};
 }
 form {
-  color: var(--theme-foreground);
+  input[type="text"],input[type="number"],textarea { 
+    color: var(--theme-foreground);
+  }
 }  
 `).join("\n");
 
