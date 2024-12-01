@@ -9,10 +9,10 @@
 
 
 .sel-q.active > .q {
-  border-width: 8px
+  border-width: 6px
 }
 .q { 
-  padding: 16px;
+  padding: 12px;
   border: 1px solid var(--theme-foreground);
   border-radius:16px;
   box-sizing: border-box;
@@ -32,4 +32,19 @@ h1,h2,h3,h4,h5,h6 {
   .sel-q > .q {
     height: 100%;
   }
+}
+.title {
+  font-size: 24px;
+  font-weight: 700;
+}
+details.quiz-selector::details-content {
+  margin-top: 10px;
+  
+}
+
+.badge {
+  border-radius: 16px;
+  padding: 0px 8px;
+  background-color: var(--theme-foreground);
+  color: var(--theme-background);
 }

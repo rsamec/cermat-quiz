@@ -65,7 +65,7 @@ import {categories} from './utils/quiz-utils.js';
 import { fromEvent, combineLatest, from, startWith, map} from 'rxjs';
 import {parseCode, formatCode, formatSubject, formatPeriod} from './utils/quiz-string-utils.js';
 import {convertQueryParamToQuestions, convertFlagsToQueryParam, convertQuestionToQueryParam, cls} from './utils/string-utils.js';
-import {renderedQuestionsPerQuiz} from './components/quiz-form.js';
+import {renderedQuestionsPerQuizWithInputs} from './components/quiz-form.js';
 
 const quizLangCategories = await FileAttachment("./data/quiz-lang-categories.json").json();
 const quizGeneratedCategories = await FileAttachment("./data/quiz-categories.json").json();
@@ -97,6 +97,10 @@ const filteredQuizCategories = Object.entries(quizCategories).flatMap(([code, va
   }
 ).filter(d => d.subject === observable.params.subject && d.period === observable.params.period)
 
+const resetValue = (input, defaultValue) => {
+  input.value = defaultValue;
+  input.dispatchEvent(new Event("input", {bubbles: true}));
+}
 const years = Object.keys(Object.groupBy(filteredQuizCategories, ({year}) => year));
 const selectedYearsInput = Inputs.select(years,{ multiple:true, label:"Rok"});
 const selectedYears = Generators.input(selectedYearsInput);
@@ -108,6 +112,12 @@ const selectedCodes = Generators.input(selectedCodesInput);
 const uniqueCategories = Object.keys(Object.groupBy(filteredQuizCategories, ({Category}) => Category));
 const selectedCategoriesInput = Inputs.select(uniqueCategories,{ multiple:true, label:"Kategorie"});
 const selectedCategories = Generators.input(selectedCategoriesInput);
+
+const toBadge = (selected, selectedInput) => selected.length > 0 ? html`<div class="badge">
+${selected.join(", ")}
+  <i class="fa-solid fa-xmark" onClick=${() => resetValue(selectedInput, [])}></i>
+</div>`: ''
+
 ```
 <details>
     <summary>
@@ -127,6 +137,11 @@ const selectedCategories = Generators.input(selectedCategoriesInput);
     </div>
   </section>
 </details>
+<div class="h-stack h-stack--l h-stack--wrap">
+  ${toBadge(selectedYears, selectedYearsInput)}
+  ${toBadge(selectedCodes, selectedCodesInput)}
+  ${toBadge(selectedCategories, selectedCategoriesInput)}
+</div>
 
 ```js
 let filtered = filteredQuizCategories;
@@ -139,7 +154,10 @@ if (selectedCodes.length > 0){
 if (selectedCategories.length > 0){
   filtered = filtered.filter(d=> selectedCategories.some(category => d.Category === category));
 }
+
 const search = view(Inputs.search(filtered,{placeholder: "Vyhledej úlohy…"}));
+
+
 ```
 
 <details>
@@ -182,14 +200,15 @@ const queryValue = selectedQuestions.map(([code,values]) => values?.length > 0 ?
 const getExportUrlPart = (usePrint) => `./${usePrint ? 'quiz-print':'quiz'}-${observable.params.subject}-${observable.params.period}?q=${queryValue}&${convertFlagsToQueryParam(usePrint? {useCode: controlsSetting.useCode}: {...columnsSetting, ...controlsSetting})}`
 const getExportUrl = (usePrint) => `${window.location.origin}/${getExportUrlPart(usePrint)}`
 const selectedQuestionsCount = selectedQuestions.flatMap(d => d[1]).length;
+
 display(html`${selectedQuestionsCount > 0
             ? html`<div class="tip" label="Sdílet test">
               <div class="h-stack" h-stack--wrap">
-                <h2 style="flex:1;">Počet otázek # ${selectedQuestionsCount}</h2>
+                <h2 style="flex:1;">${selectedQuestionsCount} vybráno</h2>
                 <div class="h-stack h-stack--l h-stack-items--center h-stack--wrap">
-                  <a class="h-stack h-stack--s h-stack-items--center" href=${getExportUrlPart(false)} target="_blank"><span>Otevřít</span><span>↗︎</span></a>
-                  <a class="h-stack h-stack--s h-stack-items--center" href=${getExportUrlPart(true)} target="_blank"><span>Tisk</span><i class="fa-solid fa-print"></i></a>
-                  <button onClick=${() => navigator.clipboard.writeText(getExportUrl(false))}>Kopírovat url</button>
+                  <a class="h-stack h-stack--s h-stack-items--center" href=${getExportUrlPart(false)} target="_blank" title="Sdílet"><i class="fa-solid fa-share"></i></a>
+                  <a class="h-stack h-stack--s h-stack-items--center" href=${getExportUrlPart(true)} target="_blank" title="Tisk"><i class="fa-solid fa-print"></i></a>
+                  <button class="icon-button" onClick=${() => navigator.clipboard.writeText(getExportUrl(false))}><i class="fa-regular fa-copy"></i></button>
                 </div>  
               </div>
             <div>`
@@ -213,39 +232,35 @@ const parameters = ({
   },
 })
 
-const renderedQuestions = renderedQuestionsPerQuiz(parameters);
+const {renderedQuestions, indexMap} = renderedQuestionsPerQuizWithInputs(parameters);
 const gap = 10;
 const questions = parameters.questions;
 
 const selections = renderedQuestions.map((d,index) => {
-  const ids = questions[index].slice(1);
+  const code = questions[index][0];
+  const ids = indexMap[code];
   const component = selectable({
       multiple:true,
       options:d.map((content,i) => ({value:ids[i], content }))
     });
-    const input = [questions[index][0],component];
+    const input = [code,component];
   return {
     component,
     input
   }
 })
 
-const selectAllButton = (selected) =>  html`<button class="a-button" onclick=${(e) => selected.component.selectAll()}>Vybrat vše</button>`
-const codeComponent = (i) => html`<div class="h-stack h-stack-align-items h-stack--s h-stack--wrap"><h2>${formatCode(questions[i][0])}</h2>${selectAllButton(selections[i])}</div>`
+const selectAllButton = (selected) =>  html`<button class="a-button" onclick=${(e) => selected.component.toggleSelectAll()}>Vybrat vše</button>`
+const codeComponent = (i) => html`<span class="title">${formatCode(questions[i][0])} ${selectAllButton(selections[i])}</span>`
 
 display(
-  html`<div class="v-stack v-stack--xxxl">${(layout === "grid-column") 
-      ? selections.map((d,index) => html`<div>
-         ${codeComponent(index)}
-         <div class="grid-column-auto">${d.component}</div>
-      </div>`)  
-    : (layout === "masonry")
-      ? selections.map((d,index) => html`<div>
-        <summary>${codeComponent(index)}</summary>
-        <section><masonry-layout gap=${gap}>${d.component}<masonry-layout></section>
-      </div>`)
-      :selections.map((d,index) => html`${codeComponent(index)}<div class="multi-column">${d.component}</div>`)
-   }
+  html`<div class="v-stack v-stack--xl">
+        ${(layout === "grid-column") 
+          ? selections.map((d,index) => html`<details class="quiz-selector" open><summary>${codeComponent(index)}</summary><div class="grid-column-auto">${d.component}</div></details>`)
+        : (layout === "masonry")
+          ? selections.map((d,index) => html`<details class="quiz-selector" open><summary>${codeComponent(index)}</summary><masonry-layout gap=${gap}>${d.component}<masonry-layout></details>`)
+          :selections.map((d,index) => html`<details class="quiz-selector" open><summary>${codeComponent(index)}</summary><div class="multi-column">${d.component}</div></details>`)
+        }
   </div>`)
 ```
 
@@ -300,13 +315,16 @@ function selectable(config={}) {
 
   const div = html.fragment`${buttons}`
     
-  const selectAll = () => {    
+  const toggleSelectAll = () => {
+    const isAllSelected = buttons.every((button, index) => _options[index].selected);
+    
+    
     buttons.forEach((button,index) => {
       const option = options[index];
-      handleClick(button, option.value, index)
+      handleClick(button, option.value, index, isAllSelected ? false : true)
     })
   }
-  div.selectAll = selectAll;
+  div.toggleSelectAll = toggleSelectAll;
   if (multiple) {
     div.value = []
   } else {

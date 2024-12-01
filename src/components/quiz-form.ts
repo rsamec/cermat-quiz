@@ -30,12 +30,12 @@ function parseQuestionId(id, subject) {
 }
 
 
-export function renderedQuestionsPerQuiz(params: QuizParams) {
+export function renderedQuestionsPerQuiz(params: QuizParams) {  
   const questionsToRender = params.questions?.length > 0 ? renderedQuestionsByQuiz(params).renderedQuestions : [];
   return questionsToRender;
 }
 export function renderedQuestionsPerQuizWithInputs(params: QuizParams) {
-  const questionsToRender = params.questions?.length > 0 ? renderedQuestionsByQuiz(params) : [];
+  const questionsToRender = params.questions?.length > 0 ? renderedQuestionsByQuiz(params) : {renderedQuestions:[]};
   return questionsToRender;
 }
 
@@ -59,6 +59,7 @@ function chunkMetadataByInputs(metadata, subject, selectedIds = []) {
 function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, displayOptions, resourcesMap, mathResourcesMap }: QuizParams) {
   const { questionCustomClass, useAIHelpers, useFormControl, useResources } = displayOptions;
   const inputsStore: Record<string, Record<string, any>> = {}
+  const indexMap: Record<string,number[][]> = {}
   return {
     renderedQuestions: questions.map(
       ([code, ...id], index) => {
@@ -74,9 +75,15 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
         const resource = resourcesMap?.[code];
         const mathResource = mathResourcesMap?.[code];
 
+        let currentIndex = indexMap[code];
+        if (currentIndex == null) {
+          currentIndex = indexMap[code] = []
+        }
+
         return chunks.flatMap(([inline, g], i) => {
           if (inline) {
             const ids = g.map(([key, leafs]) => parseInt(key, 10));
+            currentIndex.push(ids);
             const leafs = g.flatMap(([key, leafs]) => leafs);
             const metadataMap = Object.fromEntries(
               leafs.map((data) => {
@@ -147,6 +154,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
             const groupedIds = g.map(([key]) => [parseInt(key, 10)]);
             return g.map(([key, leafs], qIndex) => {
               const ids = [parseInt(key, 10)];
+              currentIndex.push(ids);
               const rawContent = html.fragment`${mdPlus.unsafe(quizBuilder.content(ids, { ids: groupedIds, render: useFormControl ? 'contentWithoutOptions' : 'content' }), { docId: `${code}-${key}` })}`;              
               const mathResourceEntries = mathResource != null ? leafs
                 .flatMap(d => {
@@ -267,7 +275,8 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
           }
         })
       }),
-    inputs: inputsStore
+    inputs: inputsStore,
+    indexMap
   };
 }
 

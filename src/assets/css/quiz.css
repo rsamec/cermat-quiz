@@ -121,7 +121,11 @@ masonry-layout,
 .grid-column-auto {
   .q { 
     padding: 12px;
+  }
+}
+
+masonry-layout {
+  .q { 
     border-radius:16px;
-    box-sizing: border-box;
   }
 }
