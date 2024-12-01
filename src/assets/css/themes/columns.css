@@ -93,3 +93,8 @@ ul:not(:has(img)) {
 {
   break-inside: avoid-column;
 }
+
+.multi-column {
+  columns: 24rem;
+  /* gap: 5px; */
+}

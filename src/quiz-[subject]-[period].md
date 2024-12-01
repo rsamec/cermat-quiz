@@ -5,7 +5,7 @@ sidebar: false
 header: false
 footer: false
 pager: false
-toc: true
+toc: false
 style: /assets/css/quiz.css
 ---
 

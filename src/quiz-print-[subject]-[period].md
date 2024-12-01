@@ -5,7 +5,7 @@ sidebar: false
 header: false
 footer: false
 pager: false
-toc: true
+toc: false
 style: /assets/css/print.css
 ---
 
@@ -23,15 +23,15 @@ const parameters = ({
   subject:observable.params.subject,
   quizQuestionsMap,
   displayOptions: {
-    questionCustomClass:'break-inside-avoid-column',
+    //questionCustomClass:'break-inside-avoid-column',
     ...Object.fromEntries(Object.entries(searchParams).map(([key, value]) => ([key,value ==="true" ? true : value === "false"? false: value])))},  
 })
 
 const renderedQuestions = renderedQuestionsPerQuiz(parameters);
 const { useCode, avoidBreakInsideQuiz } = parameters.displayOptions;
 const renderedContent = useCode
-    ? html`<div>${renderedQuestions.map((d,index) => html`<div class=${cls([index > 0 && 'break-before-page'])} style="columns:24rem">${d}</div>`)}</div>`
-    : html`<div style="columns:24rem">${renderedQuestions.map((d,index) => html`<div class=${cls([avoidBreakInsideQuiz && 'break-inside-avoid-column'])}>${d}</div>`)}</div>`;
+    ? html`<div>${renderedQuestions.map((d,index) => html`<div class=${cls(['multi-column',index > 0 && 'break-before-page'])}>${d}</div>`)}</div>`
+    : html`<div class="multi-column">${renderedQuestions.map((d,index) => html`<div class=${cls([avoidBreakInsideQuiz && 'break-inside-avoid-column'])}>${d}</div>`)}</div>`;
 
 
 
