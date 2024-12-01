@@ -8,7 +8,7 @@ ${i%5 === 0 ? `.group-${d} { background-color: color-mix(in srgb, var(--theme-fo
 
 const common = `
 .q { padding: 12px; }
-.multi-column { gap: 0px; columns:24rem;}
+.multi-column { columns:24rem;}
 masonry-layout .q { border-radius:16px;}
 `
  process.stdout.write(styles + '\n' + common);

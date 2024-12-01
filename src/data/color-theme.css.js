@@ -15,7 +15,7 @@ form {
 
 const common = `
 .q { padding: 12px; }
-.multi-column { gap: 0px; columns:24rem;}
+.multi-column { columns:24rem;}
 masonry-layout .q { border-radius:16px;}
 h1,h2,h3,h4,h5,h6 { color: inherit;}
 `
