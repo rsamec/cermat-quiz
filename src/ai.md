@@ -241,13 +241,28 @@ function totalP() {
   })
 }
 ```
-# Počet bodů
+# Úspěšnost dle předmětů
 
-Počet bodů z maximálního počtu možných bodů dle předmětů. Vstupem jsou všechny úlohy z data banky.
+Procento vyjadřuje **počet bodů z maximálního počtu možných bodů**. Vstupem jsou všechny úlohy z data banky.
 
 ${
   totalP(50)
 }
+
+# Úspěšnost dle kategorií
+
+<div class="grid grid-cols-1">
+  <div class="card">
+    ${pointsToMaxPointsByCategories({subject:'cz'})}
+  </div>
+</div>
+
+
+<div class="grid grid-cols-1">
+  <div class="card">
+    ${pointsToMaxPointsByCategories({subject:'math'})}
+  </div>
+</div>
 
 
 # Detailní výsledky dle testů 
@@ -304,8 +319,9 @@ const selectedResult = view(Inputs.table(answers,{
 view(html`<div style='display:flex;flex-direction:column;gap:20px'>${tables}<div>`)
 ```
 
-# Přehled výsledky dle předmětů 
-*Procento vyjadřuje počet získaných bodů z maximálního počtu možných bodů*
+# Úspěšnost dle jednotlivých testů 
+Procento vyjadřuje počet získaných bodů z maximálního počtu možných bodů.
+
 ## Čeština
 
 <div class="grid grid-cols-2">
@@ -386,21 +402,6 @@ view(html`<div style='display:flex;flex-direction:column;gap:20px'>${tables}<div
 <div class="grid grid-cols-2" style="grid-auto-rows: auto;">
   <div class="card">
     ${pointsSummary({subject:'de', grade:'diploma', year:2023}, 100)}
-  </div>
-</div>
-
-# Výsledky dle kategorií
-
-<div class="grid grid-cols-1">
-  <div class="card">
-    ${pointsToMaxPointsByCategories({subject:'cz'})}
-  </div>
-</div>
-
-
-<div class="grid grid-cols-1">
-  <div class="card">
-    ${pointsToMaxPointsByCategories({subject:'math'})}
   </div>
 </div>
 

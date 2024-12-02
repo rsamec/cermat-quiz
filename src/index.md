@@ -100,15 +100,15 @@ function codesBy({subject, period}){
   <div class="card grow">
     <h1><strong>Tisk</strong></h1>
      <div class="v-stack v-stack--m">
-      <span>Tužka a papír pomáhá přemýšlení, učení a zapamatování. Psaní rukou není rozhodně jen pro milovníky historie. Podrhávejte, používejte zvýrazňovače, rýsujte a počítejte na papír. Papír nebo technologie? Kompaktní tisk pdf balíčků</span>
+      <span>Tužka a papír pomáhá přemýšlení, učení a zapamatování. Psaní rukou není rozhodně jen pro milovníky historie. Podrhávejte, používejte zvýrazňovače, rýsujte a počítejte na papír. Papír nebo technologie?</span>
       <a href="/print">Více informací</a>
     </div>
   </div>
   <div class="card grow">
-    <h1><strong>AI, videa, vizualizace, automatizace</strong></h1>
+    <h1><strong>Videa, vizualizace, automatizace, AI</strong></h1>
      <div class="v-stack v-stack--m">
       <span>Jeden obrázek vydá za tisíc slov. Dobrá vizualizace usnadňuje pochopení úlohy. AI jako nástroj né jako řešení. V případě nouze použij ChatGTP tlačítko.</span>
-      <a href="/ai">Více informací</a>
+      <a href="/math">Více informací</a>
     </div>
   </div> 
 </div>
@@ -126,6 +126,9 @@ Zde je několik nápadů, co byste mohli vyzkoušet…
   </div>
   <div class="card">
     Trénovací PWA aplikace <a href="https://www.eforms.cz/">eforms</a> s podporou práce offline. Případně oficiální trénovací aplikace <a href="https://tau.cermat.cz/">TAU</a>.
+  </div>
+  <div class="card">
+    Jaké výsledky má AI při řešení testů? Podívejte se na <a href="./ai">výsledky </a> všech úloh z data banky řešení.
   </div>
   <div class="card">
      Mrkněte na <a href="https://github.com/rsamec/cermat-quiz">zdrojové kódy</a> k aplikaci. Banka úloh výchází z oficiálních cermat úloh. Použité <a href="./inputs">formáty dat</a> k testovým úlohám.
