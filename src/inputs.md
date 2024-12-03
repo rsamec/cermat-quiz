@@ -11,7 +11,7 @@ import { quizes } from "./utils/quiz-utils.js";
 
 # Datové formáty
 
-Banka úloh výchází z oficiálních cermat úloh. Použité formáty dat k testovým úlohám.
+Databanka úloh výchází z oficiálních cermat úloh. Použité formáty dat k testovým úlohám.
 - markdown - testové zadání
 - json - meta data - klíč správných řešení, body, ...
 
@@ -19,7 +19,7 @@ Banka úloh výchází z oficiálních cermat úloh. Použité formáty dat k te
   Využití dat je limitováno doržením <a href="https://prijimacky.cermat.cz/files/files/CZVV_pravidla-vyuziti-webstrankyn.pdf">CERMAT licence</a>.
 </div>
 <div class="tip" label="Hlášení chyb">
-  Data banka je spravována na <a href="https://github.com/rsamec/cermat"><i class="fa-brands fa-github"></i> github</a>.
+  Databanka je spravována na <a href="https://github.com/rsamec/cermat"><i class="fa-brands fa-github"></i> github</a>.
   V případě že narazíte na chybu v úloze, opravte chybu svépomocí <a href="https://github.com/rsamec/cermat/pulls" target="_blank">PR</a> nebo nahlaste <a href="https://github.com/rsamec/cermat/issues">chybu</>.
 </div>
 

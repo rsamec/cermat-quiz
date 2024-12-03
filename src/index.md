@@ -4,7 +4,7 @@ toc: false
 
 <div class="hero">
   <h1>Cermat úlohy</h1>
-  <h2>Mimooficiální data banka úloh</h2>
+  <h2>Mimooficiální databanka úloh</h2>
   <a href="./inputs">Data</a>
 </a>
 </div>
@@ -128,10 +128,10 @@ Zde je několik nápadů, co byste mohli vyzkoušet…
     Trénovací PWA aplikace <a href="https://www.eforms.cz/">eforms</a> s podporou práce offline. Případně oficiální trénovací aplikace <a href="https://tau.cermat.cz/">TAU</a>.
   </div>
   <div class="card">
-    Jak dopadla AI při řešení testů? Podívejte se na <a href="./ai">výsledky </a> všech úloh z data banky.
+    Jak dopadla AI při řešení testů? Podívejte se na <a href="./ai">výsledky </a> všech úloh z databanky.
   </div>
   <div class="card">
-     Mrkněte na <a href="https://github.com/rsamec/cermat-quiz">zdrojové kódy</a> k aplikaci. Banka úloh výchází z oficiálních cermat úloh. Použité <a href="./inputs">formáty dat</a> k testovým úlohám.
+     Mrkněte na <a href="https://github.com/rsamec/cermat-quiz">zdrojové kódy</a> k aplikaci. Databanka úloh výchází z oficiálních cermat úloh. Použité <a href="./inputs">formáty dat</a> k testovým úlohám.
   </div> 
 </div>
 

@@ -243,7 +243,7 @@ function totalP() {
 ```
 # Úspěšnost dle předmětů
 
-Procento vyjadřuje **počet bodů z maximálního počtu možných bodů**. Vstupem jsou všechny úlohy z data banky.
+Procento vyjadřuje **počet bodů z maximálního počtu možných bodů**. Vstupem jsou všechny úlohy z databanky.
 
 ${
   totalP(50)

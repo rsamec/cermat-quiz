@@ -254,7 +254,7 @@ document.querySelector("#quiz-with-custom-style").append(fragment);
 
 ## observableHQ playground
 
-Příklady využití banky úloh v prostředí [ObservableHQ](https://observablehq.com).
+Příklady využití databanky úloh v prostředí [ObservableHQ](https://observablehq.com).
 
 <iframe width="100%" height="300" frameborder="0"
   src="https://observablehq.com/embed/@rsamec/c9a-2024@428?cells=q6%2Cq15%2Cq18%2Cq25%2Cstyles"></iframe>
@@ -265,4 +265,4 @@ Příklady využití banky úloh v prostředí [ObservableHQ](https://observable
 
 ## vytvoření vlastní aplikace
 
-Data banku úloh využívá např. trénovací PWA aplikace [eforms](https://www.eforms.cz).
+Databanku úloh využívá např. trénovací PWA aplikace [eforms](https://www.eforms.cz).
