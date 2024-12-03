@@ -128,7 +128,7 @@ Zde je několik nápadů, co byste mohli vyzkoušet…
     Trénovací PWA aplikace <a href="https://www.eforms.cz/">eforms</a> s podporou práce offline. Případně oficiální trénovací aplikace <a href="https://tau.cermat.cz/">TAU</a>.
   </div>
   <div class="card">
-    Jaké výsledky má AI při řešení testů? Podívejte se na <a href="./ai">výsledky </a> všech úloh z data banky řešení.
+    Jak dopadla AI při řešení testů? Podívejte se na <a href="./ai">výsledky </a> všech úloh z data banky.
   </div>
   <div class="card">
      Mrkněte na <a href="https://github.com/rsamec/cermat-quiz">zdrojové kódy</a> k aplikaci. Banka úloh výchází z oficiálních cermat úloh. Použité <a href="./inputs">formáty dat</a> k testovým úlohám.
