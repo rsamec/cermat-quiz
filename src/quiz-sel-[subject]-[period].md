@@ -206,9 +206,9 @@ display(html`${selectedQuestionsCount > 0
               <div class="h-stack" h-stack--wrap">
                 <h2 style="flex:1;">${selectedQuestionsCount} vybráno</h2>
                 <div class="h-stack h-stack--l h-stack-items--center h-stack--wrap">
-                  <a class="h-stack h-stack--s h-stack-items--center" href=${getExportUrlPart(false)} target="_blank" title="Sdílet"><i class="fa-solid fa-share"></i></a>
-                  <a class="h-stack h-stack--s h-stack-items--center" href=${getExportUrlPart(true)} target="_blank" title="Tisk"><i class="fa-solid fa-print"></i></a>
-                  <button class="icon-button" onClick=${() => navigator.clipboard.writeText(getExportUrl(false))}><i class="fa-regular fa-copy"></i></button>
+                  <a class="h-stack h-stack--s h-stack-items--center" href=${getExportUrlPart(false)} target="_blank" title="Sdílet" aria-label="share"><i class="fa-solid fa-share"></i></a>
+                  <a class="h-stack h-stack--s h-stack-items--center" href=${getExportUrlPart(true)} target="_blank" title="Tisk" aria-label="export"><i class="fa-solid fa-print"></i></a>
+                  <button class="icon-button" onClick=${() => navigator.clipboard.writeText(getExportUrl(false))} aria-label="copy"><i class="fa-regular fa-copy"></i></button>
                 </div>  
               </div>
             <div>`
@@ -250,8 +250,11 @@ const selections = renderedQuestions.map((d,index) => {
   }
 })
 
-const selectAllButton = (selected) =>  html`<button class="a-button" onclick=${(e) => selected.component.toggleSelectAll()}>Vybrat vše</button>`
-const codeComponent = (i) => html`<span class="title">${formatCode(questions[i][0])} ${selectAllButton(selections[i])}</span>`
+const selectAllButton = (selected, code) =>  html`<button class="a-button" data-testid=${code} onclick=${(e) => selected.component.toggleSelectAll()}>Vybrat vše</button>`
+const codeComponent = (i) => {
+  const code = questions[i][0];
+  return html`<span class="title">${formatCode(code)} ${selectAllButton(selections[i], code)}</span>`
+}
 
 display(
   html`<div class="v-stack v-stack--xl">

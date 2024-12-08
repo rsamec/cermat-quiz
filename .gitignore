@@ -7,3 +7,4 @@ yarn-error.log
 /blob-report/
 /playwright/.cache/
 /generated/
+/gen-screenshots/

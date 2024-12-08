@@ -3,7 +3,7 @@ sidebar: false
 footer: false
 pager: false
 toc: false
-style: /assets/css/quiz.css
+style: /assets/css/quiz-form.css
 ---
 
 ```js

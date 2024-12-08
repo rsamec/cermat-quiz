@@ -1,11 +1,15 @@
 ---
 toc: false
 ---
-
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
 <div class="hero">
   <h1>Cermat úlohy</h1>
   <h2>Mimooficiální databanka úloh</h2>
   <a href="./inputs">Data</a>
+
+  <video src="./assets/databanka.mp4" autoplay playsinline muted controls style="width: 100%;"></video>
 </a>
 </div>
 

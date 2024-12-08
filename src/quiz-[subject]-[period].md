@@ -46,7 +46,7 @@ if (themeLink != null){
   themeLink.disabled = false;
 }
 const codeComponent = (i) => useCode ? html`<span class="title">${formatCode(parameters.questions[i][0])}</span>`: null
-const renderedContent =  html`<div class="v-stack v-stack--l">
+const renderedContent =  html`<div data-testid="root" class="v-stack v-stack--l">
         ${(layout === "grid-column") 
           ? renderedQuestions.map((d,index) => html`<details class="quiz-selector" open><summary>${codeComponent(index)}</summary><div class="grid-column-auto">${d}</div></details>`)
         : (layout === "masonry")

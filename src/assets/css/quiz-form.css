@@ -1,0 +1,126 @@
+@import url("observablehq:default.css");
+@import url("observablehq:theme-air.css");
+@import url("observablehq:theme-near-midnight.css") screen and (prefers-color-scheme: dark);
+@import url("observablehq:theme-wide.css"); 
+
+@import './common/base.css';
+@import './themes/columns.css';
+
+@import './common/form.css';
+@import './common/layout.css';
+@import './common//sortablejs.css';
+@import './common/tippy-observable-theme.css';
+
+#observablehq-center,
+  #observablehq-main,  
+  .observablehq-center,
+  .observablehq-main,
+  .observablehq .observablehq--block {
+    margin: 0px;
+  }
+
+.a-button {
+  height: 28px;
+  line-height: 28px;
+  padding: 0px 10px;  
+  font-weight: 700;
+  font-size: 14px;
+  background: lightgrey;
+}
+
+
+.a-button--clipboard {
+  color: black !important;
+}
+
+
+.btn {
+  padding: 5px 10px;
+  border-radius: 10px;
+  border-width: 0px;
+}
+
+.btn--primary {
+  color: white;
+  background-color: var(--form-color-primary);
+
+  &:hover {
+    background-color: brightness(1.75);
+  }
+}
+
+.badge {
+  display: flex;
+  gap: 5px;
+  font-size: 1rem;
+  align-items: center;
+}
+
+.sticky {
+  position: sticky;
+  top: 0px;
+  z-index: 10;
+}
+.main-header {
+  background: black;
+  color: white;
+  fill: white;
+  padding: 5px 5px;
+}
+
+.hidden {
+  display: none;
+}
+
+
+details.solution {
+  background:var(--theme-background);
+  border: 1px solid var(--theme-foreground-fainter);
+  /* border-radius: 5px; */
+}
+
+details.solution summary {
+  background-color: var(--theme-background-alt);
+  padding: 5px 10px;
+  /* border-radius: 5px; */
+}
+
+details[open].solution summary {
+  /* border-radius: 5px 5px 0 0; */
+}
+
+details.solution > div{
+  padding: 5px 10px;
+}
+
+h0 {
+  display: block;
+  padding: 10px;
+  border:1px solid var(--theme-foreground-fainter);
+  background-color: var(--theme-background-alt);
+  text-align: center;
+}
+h0:not(:first-of-type){
+  margin-top: 10px 
+}
+
+.root {
+  padding: 20px;
+}
+
+.mx-2 {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.multi-column {
+  columns:24rem;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+}
+details.quiz-selector::details-content {
+  margin-top: 10px;  
+}

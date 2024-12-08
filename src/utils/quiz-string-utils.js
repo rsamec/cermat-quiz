@@ -115,3 +115,9 @@ export async function json(url, data) {
   if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
   return await response.json();
 }
+export function getQuestionIds(metadata, code) {
+  const { subject } = parseCode(code);
+  return (subject === "cz" || subject === "math")
+    ? Object.keys(metadata.children).map(d => parseInt(d, 10))
+    : Object.values(metadata.children).flatMap(d => Object.keys(d.children ?? {})).map(d => d.split(".")[1]);
+}
