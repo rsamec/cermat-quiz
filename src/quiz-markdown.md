@@ -31,6 +31,11 @@ Here is a footnote reference,[^1] and another.[^longnote]
 
 inline latex $\\vec{u}=(3;\\vec{u}_{2}) \\backslash \\{0\\}$
 
+
+$\\frac{3}{4} \\times 24 = 18 \\text{ litru}$
+
+$\\text{ litru}$
+
 $$a+b=-1$$
  $$ab=-2$$ 
 

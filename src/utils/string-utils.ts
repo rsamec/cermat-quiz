@@ -29,11 +29,3 @@ export function convertFlagsToQueryParam(obj: Record<string, boolean>) {
 export function cls(input: (string | boolean)[]) {
   return input.filter((cond: string | boolean) => typeof cond === "string").join(" ")
 }
-
-export function normalizeLatex(result: string) {
-  const val = result.replace(/\\\[/g, '$$$')
-  .replace(/\\\]/g, '$$$')
-  .replace(/\\\(\s*/g, '$')
-  .replace(/\s*\\\)/g, '$');
-  return val;
-}

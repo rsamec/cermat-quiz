@@ -21,18 +21,19 @@
 
 .a-button {
   height: 28px;
+  width: 28px;
+  text-align: center;
   line-height: 28px;
-  padding: 0px 10px;  
+  padding: 2px 5px;  
   font-weight: 700;
-  font-size: 14px;
-  background: lightgrey;
+  font-size: 16px;
+  /* border: 2px solid var(--theme-background-alt); */
+  color: var(--theme-background) !important;
+  background: var(--theme-foreground);
 }
-
-
-.a-button--clipboard {
-  color: black !important;
+.a-button--secondary {
+  background: var(--theme-foreground-fainter);
 }
-
 
 .btn {
   padding: 5px 10px;

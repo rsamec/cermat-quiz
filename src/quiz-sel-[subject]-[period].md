@@ -24,7 +24,6 @@ style: /assets/css/builder.css
   let newLink = Array.from(links).find((link) => link.getAttribute('data-theme').includes(newStyle));
   if (newLink){
     newLink.disabled = false;
-    console.log(newLink.disabled)
   }
   }
 

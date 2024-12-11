@@ -32,6 +32,7 @@ const pdfs = await FileAttachment(`./data/pdf-${observable.params.subject}-${obs
           return html`<div class="h-stack h-stack--l">
               <a class="h-stack h-stack--s" href="./form-${code}"><span>${formatVersion({order,period})}</span><span>↗︎</span></a>
               <a class="h-stack h-stack--s" href="./print-${code}"><span>tisk</span><i class="fa-solid fa-print"></i></a>
+              <a class="h-stack h-stack--s" href="./ai-${code}"><span>AI</span><i class="fa-solid fa-comment-nodes"></i></a>
           <div>`
         })}
       </div>

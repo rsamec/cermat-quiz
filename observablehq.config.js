@@ -79,7 +79,7 @@ export default {
         {name: "AI", path: "/ai"},
         {name: "Matika automatizace", path: "/math"},
         // {name: "Kategorie", path: "/categories"},
-        // {name: "Inline md", path: "/quiz-markdown"},
+        {name: "Inline md", path: "/quiz-markdown"},
         // {name: "Rozvržení stránky", path: "/layout"},
       ]
     },
@@ -87,7 +87,7 @@ export default {
   globalStylesheets:['/assets/css/common/stacks.css'],
   // Content to add to the head of the page, e.g. for a favicon:
   head: `<link rel="icon" href="observable.png" type="image/png" sizes="32x32">
-         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css">
          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tippy.js/6.3.7/tippy.min.css">
          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
          `,
@@ -99,7 +99,7 @@ export default {
   .concat(['/components/quiz.js'])
   .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
   .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))
-  .concat(quizes.flatMap(d => d.codes).map(code => `/impress-${code}`))
+  .concat(quizes.flatMap(d => d.codes).map(code => `/ai-${code}`))
   .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-${code}`))
   .concat(quizes.map(d => `/quiz-${d.subject}-${d.period}`))
   .concat(quizes.map(d => `/quiz-print-${d.subject}-${d.period}`))

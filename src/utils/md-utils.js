@@ -87,9 +87,10 @@ const underline = (md) => {
   md.renderer.rules.strong_close = renderStrong;
 }
 
-const Markdown = new markdownit({ html: false })
+const Markdown = new markdownit({ html: false, })
   .use(underline)  
   .use(katex.default, {
+    // unicodeTextInMathMode:true,
     svg: {
       scale: 2
     }

@@ -9,7 +9,7 @@ import { getVerifyFunction } from '../utils/assert.js';
 import Sortable from 'sortablejs/modular/sortable.core.esm.js';
 import { getAllLeafsWithAncestors, getQuizBuilder, OptionList, ShortCodeMarker } from '../utils/parse-utils.js';
 import * as Inputs from 'npm:@observablehq/inputs';
-import { isEmptyOrWhiteSpace, cls, normalizeLatex } from '../utils/string-utils.js';
+import { isEmptyOrWhiteSpace, cls } from '../utils/string-utils.js';
 
 type QuizParams = {
   questions: string[][],
@@ -166,12 +166,13 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
               ${rawContent}
 
             
-            ${useAIHelpers ? html`<div class="h-stack h-stack--m h-stack--wrap h-stack--end">
-              <a href="#" onclick=${(e) => {
+            ${useAIHelpers ? html`<div class="h-stack h-stack-items--center h-stack--m h-stack--wrap h-stack--end">              
+              <a style="height:34px;" href="#" onclick=${(e) => {
                     e.preventDefault();
                     window.open(`https://chat.openai.com/?q=${encodeURIComponent(quizBuilder.content(ids, { render: 'content' }))}`)
-                  }}><img src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white" alt="ChatGPT" /></a>
-            ${html`<a href="#" class="a-button a-button--clipboard" onclick=${(e) => {
+                  }}><img style="height:34px;" src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white" alt="ChatGPT" /></a>
+              <a class="a-button" href="./ai-${code}#s-${ids[0]}" target="_blank" title="Otevřít AI řešení v novém okně" ><i class="fa-solid fa-comment-nodes"></i></a> 
+            ${html`<a href="#" class="a-button a-button--secondary" onclick=${(e) => {
                     e.preventDefault();
                     var el = e.target.querySelector("i") ?? e.target;
                     if (el != null) {
@@ -179,7 +180,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                       el.classList.add("fa-clipboard-check");
                     }
                     navigator.clipboard.writeText(quizBuilder.content(ids, { render: 'content' }));
-                  }}><i class="fa fa-clipboard" aria-hidden="true"></i></a>`}
+                  }} title="Zkopírovat do schránky"><i class="fa-solid fa-clipboard"></i></a>`}
               </div>`: ''}
           
             ${useFormControl ? rhtml`<div class="form-group">${leafs.map((data) => {
@@ -263,10 +264,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                 <span style="flex:1">${key} - ${value.Name}</span>
                 <a href="./math-${code}"><i class="fa-solid fa-square-up-right"></i></a>
               </div>
-              <video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`)}</div></details>` : ''}
-              
-              ${useResources && useAIHelpers && resource && !isEmptyOrWhiteSpace(resource[ids[0]]) ? html`
-            <details class="solution"><summary><span style="margin-right: 1rem;">AI řešení - <span class='yellow'><i class="fa-solid fa-circle-exclamation"></i> může být chybně <i class="fa-solid fa-circle-exclamation"></i></span></span></summary><div>${mdPlus.unsafe(normalizeLatex(resource[ids[0]]))}<div></details>` : ''}
+              <video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`)}</div></details>` : ''}            
             </div>
             `:''}
           </div>`

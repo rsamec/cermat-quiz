@@ -121,3 +121,20 @@ export function getQuestionIds(metadata, code) {
     ? Object.keys(metadata.children).map(d => parseInt(d, 10))
     : Object.values(metadata.children).flatMap(d => Object.keys(d.children ?? {})).map(d => d.split(".")[1]);
 }
+
+function removeDiacritics(input) {
+  return input
+      .normalize("NFD") // Normalize the string into decomposed form
+      .replace(/[\u0300-\u036f]/g, ""); // Remove diacritical marks
+}
+export function normalizeLatex(result) {
+  const val = result
+  .replace(/\\\[/g, '$$$')
+  .replace(/\\\]/g, '$$$')
+  .replace(/\\\(\s*/g, '$')
+  .replace(/\s*\\\)/g, '$')
+  .replace(/\\text\{([^}]*)\}/g, (match, group) => {
+      return `\\text{${removeDiacritics(group)}}`;
+  })
+  return val;
+}

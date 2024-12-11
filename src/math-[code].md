@@ -38,9 +38,6 @@ import { formatCode } from './utils/quiz-string-utils.js';
 const metadata = await FileAttachment(`./data/math-${observable.params.code}.json`).json();
 const entries = Object.entries(metadata);
 function normalizeMath(value){
-  if (value.match(/\$\$(\s+)\$\$/g)){
-    console.log(value, value.replace(/\$\$/g, '\n\$\$\$\n'));
-  }
   return value
     .replace(/±/g, `\\pm`)
     .replace(/\$\$(\s+)\$\$/g, '$$$\n$$$');
