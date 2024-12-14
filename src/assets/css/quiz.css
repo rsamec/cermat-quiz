@@ -7,40 +7,11 @@
 @import './themes/columns.css';
 
 @import './common/form.css';
+@import './common/button.css';
 @import './common/layout.css';
 @import './common//sortablejs.css';
 @import './common/tippy-observable-theme.css';
 
-
-.a-button {
-  height: 28px;
-  line-height: 28px;
-  padding: 0px 10px;  
-  font-weight: 700;
-  font-size: 14px;
-  background: lightgrey;
-}
-
-
-.a-button--clipboard {
-  color: black !important;
-}
-
-
-.btn {
-  padding: 5px 10px;
-  border-radius: 10px;
-  border-width: 0px;
-}
-
-.btn--primary {
-  color: white;
-  background-color: var(--form-color-primary);
-
-  &:hover {
-    background-color: brightness(1.75);
-  }
-}
 
 .badge {
   display: flex;

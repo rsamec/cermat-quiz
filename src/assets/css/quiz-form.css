@@ -7,6 +7,7 @@
 @import './themes/columns.css';
 
 @import './common/form.css';
+@import './common/button.css';
 @import './common/layout.css';
 @import './common//sortablejs.css';
 @import './common/tippy-observable-theme.css';
@@ -19,36 +20,6 @@
     margin: 0px;
   }
 
-.a-button {
-  height: 28px;
-  width: 28px;
-  text-align: center;
-  line-height: 28px;
-  padding: 2px 5px;  
-  font-weight: 700;
-  font-size: 16px;
-  /* border: 2px solid var(--theme-background-alt); */
-  color: var(--theme-background) !important;
-  background: var(--theme-foreground);
-}
-.a-button--secondary {
-  background: var(--theme-foreground-fainter);
-}
-
-.btn {
-  padding: 5px 10px;
-  border-radius: 10px;
-  border-width: 0px;
-}
-
-.btn--primary {
-  color: white;
-  background-color: var(--form-color-primary);
-
-  &:hover {
-    background-color: brightness(1.75);
-  }
-}
 
 .badge {
   display: flex;
