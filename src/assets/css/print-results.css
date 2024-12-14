@@ -1,0 +1,13 @@
+@import url("observablehq:default.css");
+@import url("observablehq:theme-air.css");
+@import url("observablehq:theme-wide.css");
+@import './common/base.css';
+@import './themes/columns.css';
+@import './common/badges.css';
+
+details > summary {
+  font-size: 24px;
+}
+details > summary > h1, h2 {
+    display:inline-block;
+}

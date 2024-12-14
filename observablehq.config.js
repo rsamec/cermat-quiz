@@ -79,7 +79,7 @@ export default {
         {name: "AI", path: "/ai"},
         {name: "Matika automatizace", path: "/math"},
         // {name: "Kategorie", path: "/categories"},
-        {name: "Inline md", path: "/quiz-markdown"},
+        // {name: "Inline md", path: "/quiz-markdown"},
         // {name: "Rozvržení stránky", path: "/layout"},
       ]
     },
@@ -95,7 +95,7 @@ export default {
   // The path to the source root.
   root: "src",  
   dynamicPaths:[]
-  .concat(assetsFiles)
+  .concat(assetsFiles.concat("/assets/css/print-results.css"))
   .concat(['/components/quiz.js'])
   .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
   .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))

@@ -1,0 +1,17 @@
+.badge {
+  border-radius: 16px;
+  padding: 0px 8px;
+  font-weight: 700;
+  background-color: var(--theme-foreground);
+  color: var(--theme-background);
+}
+
+.badge--warning {
+  background-color: color-mix(in srgb, var(--theme-yellow), var(--theme-background) 90%);
+  color: var(--theme-yellow);
+}
+
+.badge--danger {
+  background-color: color-mix(in srgb, var(--theme-red), var(--theme-background) 90%);
+  color: var(--theme-red);
+}

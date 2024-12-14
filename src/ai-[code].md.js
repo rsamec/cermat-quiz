@@ -34,6 +34,18 @@ toc: true
 style: /assets/css/print.css
 ---
 <style>
+.badge {
+  border-radius: 16px;
+  padding: 0px 8px;
+  font-weight: 900;
+  background-color: var(--theme-foreground);
+  color: var(--theme-background);
+}
+.badge--danger {
+    background-color: color-mix(in srgb, var(--theme-red), var(--theme-background) 90%);
+    color: var(--theme-red);
+  }
+
 details > summary {
   font-size: 24px;
 }
@@ -41,18 +53,21 @@ details > summary > h1, h2 {
     display:inline-block;
 }
 </style>
-<div class="caution" label="Řešení může obshovat chyby">
-  Řešení generovány pomocí AI. Doporučujeme kontrolovat důležité informace.
+<div class="caution" label="Řešení může obsahovat chyby">
+  Generováno pomocí AI. Doporučujeme kontrolovat důležité informace.
 </div>
 ${answers == null ? ` <div class="warning" label="Upozornění">
-  K tomuto testu v tuto chvíli neexistují řešení.
+  K tomuto testu v tuto chvíli neexistují žádná řešení.
 </div>`:''}
 <div class="root">${ids.map(id => `
 ${mdPlus.renderToString(quiz.content([id],{ ids, render:'content'}), {docId:`${code}-${id}` })}
+
 ${answers != null ? `
-<h2 id="s-${id}">Řešení úloha ${id}</h2>
+<details open>
+<summary><h2 style="flex:1;" id="s-${id}">Řešení úloha ${id}</h2></summary>
 <div class="card break-inside-avoid-column">
+<div class="h-stack h-stack--end"><div class="badge badge--danger">Neověřeno</div></div>
 ${answers[id] != null ? mdPlus.renderToString(normalizeLatex(answers[id])): 'N/A'}
-</div>`:''}
+</div></details>`:''}
 `).join('')}
 </div>`)
