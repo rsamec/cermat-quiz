@@ -46,10 +46,8 @@ style: /assets/css/print.css
     color: var(--theme-red);
   }
 
-details > summary {
-  font-size: 24px;
-}
-details > summary > h1, h2 {
+
+details.solutions > summary > h1, h2 {
     display:inline-block;
 }
 </style>
@@ -63,7 +61,7 @@ ${answers == null ? ` <div class="warning" label="Upozornění">
 ${mdPlus.renderToString(quiz.content([id],{ ids, render:'content'}), {docId:`${code}-${id}` })}
 
 ${answers != null ? `
-<details open>
+<details class="solutions" open>
 <summary><h2 style="flex:1;" id="s-${id}">Řešení úloha ${id}</h2></summary>
 <div class="card break-inside-avoid-column">
 <div class="h-stack h-stack--end"><div class="badge badge--danger">Neověřeno</div></div>
