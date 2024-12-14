@@ -22,7 +22,7 @@ function getQuestionIds(metadata, code) {
  
 const metadata = await FileAttachment(`./data/form-${observable.params.code}.json`).json();
 //const resourcesMap = await FileAttachment(`./data/quiz-answers-detail-gpt-4o.json`).json();
-const mathResourcesMap = await FileAttachment(`./data/math-resulsts.json`).json();
+const mathResourcesMap = await FileAttachment(`./data/math-results.json`).json();
 const rawContent = await FileAttachment(`./data/form-${observable.params.code}.md`).text();
 const code = observable.params.code;
 const quizQuestionsMap = {[code]:{rawContent, metadata}};
