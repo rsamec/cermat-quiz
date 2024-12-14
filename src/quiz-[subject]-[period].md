@@ -19,7 +19,7 @@ import { convertQueryParamToQuestions, cls} from './utils/string-utils.js';
 import { formatCode } from './utils/quiz-string-utils.js';
 const quizQuestionsMap = await FileAttachment(`./data/quiz-${observable.params.subject}-${observable.params.period}.json`).json();
 //const resourcesMap = await FileAttachment(`./data/quiz-answers-detail-gpt-4o.json`).json();
-const mathResourcesMap = await FileAttachment(`./data/math-answers.json`).json();
+const mathResourcesMap = await FileAttachment(`./data/math-results.json`).json();
 const searchParams = Object.fromEntries(new URLSearchParams(location.search));
 ```
 

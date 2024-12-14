@@ -1,0 +1,124 @@
+{
+  "M9A-2024": {
+    "9": {
+      "header": "9 Sestrojte vrcholy A,B rovnostranného trojúhelníku ABC a trojúhleník narýsujte.",
+      "results":[{
+        "Name": "Sestrojit",
+        "TemplateSteps": [
+          {
+            "Name": "Postup řešení",
+            "Steps": []
+          }
+        ]
+      }]
+    },
+    "10": {
+      "header": "10 Sestrojte vrcholy B,C,D obdelníku ABCD, označte je písmeny a obdelník narýsujte.",
+      "results":[{
+        "Name": "Sestrojit",
+        "TemplateSteps": [
+          {
+            "Name": "Postup řešení",
+            "Steps": []
+          }
+        ]
+      }]
+    }
+  },
+  "M5A-2023": {},
+  "M5A-2024": {},
+  "M9A-2023": {},
+  "M9B-2023": {},
+  "M9C-2023": {},
+  "M9D-2023": {},
+  "M9B-2024": {
+    "9": {
+      "header": "9 Sestrojte kosočtverec ABCD.",
+      "results":[{
+        "Name": "Sestrojit",
+        "TemplateSteps": [
+          {
+            "Name": "Postup řešení",
+            "Steps": []
+          }
+        ]
+      }]
+    },
+    "10": {
+      "header": "10 Sestrojte rovnoramenný trojúhelník KLM, leží-li bod M na kružnici k.",
+      "results":[{
+        "Name": "Sestrojit",
+        "TemplateSteps": [
+          {
+            "Name": "Postup řešení",
+            "Steps": []
+          }
+        ]
+      }]
+    }
+  },
+  "M9C-2024": {
+    "9": {
+      "header": "9 Sestrojte zbývající vrcholy B, C a D lichoběžníku ABCD, označte je písmeny a lichoběžník narýsujte.",
+      "results": [
+        {
+          "Name": "Sestrojit",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": []
+            }
+          ]
+        }
+      ]
+    },
+    "10": {
+      "header": "10 Sestrojte lichoběžník ABCD.",
+      "results": [
+        {
+          "Name": "Sestrojit",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": []
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "M9D-2024": {
+    "9": {
+      "header": "9 Sestrojte obdélník ABCD.",
+      "results": [
+        {
+          "Name": "Sestrojit",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": []
+            }
+          ]
+        }
+      ]
+    },
+    "10": {
+      "header": "10 Sestrojte pravoúhlý trojúhelník ABC.",
+      "results": [
+        {
+          "Name": "Sestrojit",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": []
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "M7A-2023": {},
+  "M7A-2024": {},
+  "MMA-2023": {},
+  "MMB-2023": {}
+}
