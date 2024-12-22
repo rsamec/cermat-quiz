@@ -1,0 +1,22 @@
+.proof {
+  display: inline-flex;
+	flex-direction: column;
+}
+.premises {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  justify-content: center;
+  border-bottom: 1px solid var(--theme-foreground);
+}
+.conclusion {
+  display: inline-flex;
+  margin-bottom: -2px;
+}
+
+.ct {
+  padding: 2px 0px;
+}
+.le,.ri {
+  flex-grow: 1;
+}

@@ -78,6 +78,7 @@ export default {
         {name: "Přepoužitelnost", path: "/embedding"},
         {name: "AI", path: "/ai"},
         {name: "Matika automatizace", path: "/math"},
+        {name: "Matika dedukce", path: "/math-deduction"},
         // {name: "Kategorie", path: "/categories"},
         // {name: "Inline md", path: "/quiz-markdown"},
         // {name: "Rozvržení stránky", path: "/layout"},

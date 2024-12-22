@@ -20,6 +20,7 @@
     "d3-scale": "^4.0.2",
     "d3-scale-chromatic": "^3.1.0",
     "d3-time-format": "^4.1.0",
+    "htl": "^0.3.1",
     "invert-color": "^2.0.0",
     "markdown-it-footnote": "^4.0.0",
     "markdown-it-html5-embed": "^1.0.0",
