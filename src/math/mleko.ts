@@ -1,8 +1,7 @@
 import { html } from "htl";
-import type { Container } from "../utils/math.js";
 import { cont, inferenceRule, ratio, comp } from "../utils/math.js";
 import { deduce, } from "../utils/deduce.js";
-import { relativePartsDiff, formatNode as format, inputLabel, deduceLabel, outputLabel, bold } from "../utils/deduce-components.js";
+import { relativePartsDiff, formatNode as format, inputLabel, deduceLabel, outputLabel, highlight } from "../utils/deduce-components.js";
 
 interface MlekoParams {
   zdrazeni: number;
@@ -46,8 +45,8 @@ export default function build({ input }: {
 
 
   const template = html`
-  ${inputLabel(1)}${bold`Mléko zdražilo o ${input.zdrazeni} %.`}
-  ${inputLabel(2)}${bold`Za 2 litry teď zaplatíme o ${input.rozdil} méně než před zdražením za 3 litry.`}.<br />
+  ${inputLabel(1)}${highlight`Mléko zdražilo o ${input.zdrazeni} %.`}
+  ${inputLabel(2)}${highlight`Za 2 litry teď zaplatíme o ${input.rozdil} méně než před zdražením za 3 litry.`}.<br />
   ${outputLabel(3)}<strong> Kolik stál 1 litr mléka před zdražením?</strong>`;
 
   return { deductionTree, template }

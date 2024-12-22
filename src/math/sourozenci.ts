@@ -2,7 +2,7 @@ import { html } from "htl";
 import type { Predicate } from "../utils/math.js";
 import { cont, sum, inferenceRule } from "../utils/math.js";
 import { deduce } from "../utils/deduce.js";
-import { formatNode as format, inputLabel, deduceLabel, outputLabel } from "../utils/deduce-components.js";
+import { formatNode as format, inputLabel, deduceLabel, outputLabel, highlight } from "../utils/deduce-components.js";
 
 interface SourozenciParams {
   evaPodil;
@@ -46,9 +46,9 @@ export default function build({ input }: {
   )
 
   const template = html`
-  ${inputLabel(1)}Dva sourozenci Eva a Michal šetří společně na dárek pro rodiče.
-  ${inputLabel(2)}Eva našetřila ${input.evaPodil} % potřebné částky, ${inputLabel(3)}Michal o ${input.michalPlus} korun více než Eva.
-  ${inputLabel(4)}Sourozencům zbývá našetřit ${input.zbyvaNasporit} korun.<br/>
+  ${inputLabel(1)}${highlight`Dva sourozenci Eva a Michal šetří společně na dárek pro rodiče.`}
+  ${inputLabel(2)}${highlight`Eva našetřila ${input.evaPodil} % potřebné částky, ${inputLabel(3)}Michal o ${input.michalPlus} korun více než Eva.`}
+  ${inputLabel(4)}${highlight`Sourozencům zbývá našetřit ${input.zbyvaNasporit} korun.`}<br/>
   ${outputLabel(5)} <strong> Kolik korun stojí dárek?</strong>`;
 
   return { deductionTree, data, template }

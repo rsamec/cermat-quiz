@@ -22,7 +22,6 @@ export function partion(items, options) {
     },
     x: { label: null, ticks: [] },
     ...(width && { width }),
-    ...(width && { maxWidth: width }),
     ...(height && { height }),
     marginBottom: showAbsoluteValues ? 20 : 0,
     marginTop: showRelativeValues ? 20 : 0,
@@ -79,10 +78,10 @@ export function relativePartsDiffData(d, { first, second } = {}) {
 }
 
 export function relativeParts(d, options) {
-  return partion(relativePartsData(d, options), { width: 150, height:50,  showAbsoluteValues: false })
+  return partion(relativePartsData(d, options), { width: 160, height:50,  showAbsoluteValues: false })
 }
 export function relativePartsDiff(d, options) {
-  return partion(relativePartsDiffData(d, options), { width: 150, height: 70, showRelativeValues: false, unit:1 })
+  return partion(relativePartsDiffData(d, options), { width: 180, height: 70, showRelativeValues: false, unit:1 })
 }
 
 function label(d) {
@@ -122,11 +121,11 @@ export function outputLabel(id) {
   return label({ id, kind: 'output' })
 }
 
-export function bold(strings, ...substitutions) {
+export function highlight(strings, ...substitutions) {
   const formattedString = strings.reduce((acc, curr, i) => {
       const substitution = substitutions[i];
       const res = substitution
-      ? html`${curr}<span class="bold">${substitution.toLocaleString("cs-CZ")}</span>`
+      ? html`${curr}<span class="highlight">${substitution}</span>`
       : curr;
       return html`${acc}${res}`;
   }, '');

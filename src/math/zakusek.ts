@@ -2,7 +2,7 @@ import { html } from "htl";
 import type { Container } from "../utils/math.js";
 import { cont, inferenceRule, ratio, comp, sum } from "../utils/math.js";
 import { deduce } from "../utils/deduce.js";
-import { relativeParts, relativePartsDiff , formatNode as format, inputLabel, deduceLabel, outputLabel } from "../utils/deduce-components.js";
+import { relativeParts, relativePartsDiff , formatNode as format, inputLabel, deduceLabel, outputLabel, highlight } from "../utils/deduce-components.js";
 
 interface ZakuseParams {
   cena: number;
@@ -81,9 +81,9 @@ export default function build({ input }: {
 
   const template = html`
   Maminka koupila v cukrárně tři různé zákusky.
-  ${inputLabel(1)}První zákusek stál ${input.cena} korun.
-  ${inputLabel(2)}Druhý zákusek byl o čtvrtinu levnější než první.
-  ${inputLabel(3)}Cena třetího zákusku byla třetinou celkové ceny všech tří zákusků.<br/>
+  ${inputLabel(1)}${highlight`První zákusek stál ${input.cena} korun.`}
+  ${inputLabel(2)}${highlight`Druhý zákusek byl o čtvrtinu levnější než první.`}
+  ${inputLabel(3)}${highlight`Cena třetího zákusku byla třetinou celkové ceny všech tří zákusků.`}<br/>
   ${inputLabel(4)}<strong>O kolik korun byl třetí zákusek dražší než druhý?</strong>`;
 
   return { deductionTree, data, template, fig1, }

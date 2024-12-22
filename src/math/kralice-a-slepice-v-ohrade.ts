@@ -1,7 +1,7 @@
 import { html } from "htl";
 import { cont, inferenceRule, ratio, diff, comp, rate } from "../utils/math.js";
 import { deduce} from "../utils/deduce.js";
-import { formatNode as format, inputLabel, deduceLabel, outputLabel } from "../utils/deduce-components.js";
+import { formatNode as format, inputLabel, deduceLabel, outputLabel, highlight } from "../utils/deduce-components.js";
 
 interface ZvirataVOhradeParams {
   pocetHlav: number;
@@ -54,9 +54,9 @@ export default function build({ input }: {
   )
 
   const template = html`
-  ${inputLabel(1)}V ohradě pobíhali králíci a slepice.
-  ${inputLabel(2)}Králíků bylo o ${input.kralikuMene} méně.
-  ${inputLabel(3)}Králíci a slepice měli dohromady ${nohy} nohou a ${input.pocetHlav} hlav.<br/>
+  ${inputLabel(1)}${highlight`V ohradě pobíhali králíci a slepice.`}
+  ${inputLabel(2)}${highlight`Králíků bylo o ${input.kralikuMene} méně.`}
+  ${inputLabel(3)}${highlight`Králíci a slepice měli dohromady ${nohy} nohou a ${input.pocetHlav} hlav.`}<br/>
   ${outputLabel(4)}<strong> Kolik bylo v ohradě slepic?</strong>`;
 
   return { deductionTree, data, template }

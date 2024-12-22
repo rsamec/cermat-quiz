@@ -1,7 +1,7 @@
 import { html } from "htl";
 import { cont, inferenceRule, ratio, diff } from "../utils/math.js";
 import { deduce } from "../utils/deduce.js";
-import { formatNode as format, inputLabel, deduceLabel, outputLabel, bold } from "../utils/deduce-components.js";
+import { formatNode as format, inputLabel, deduceLabel, outputLabel, highlight } from "../utils/deduce-components.js";
 
 
 interface PocetObyvatelParams {
@@ -35,8 +35,8 @@ export default function build({ input }: {
   )
 
   const template = html`
-    ${inputLabel(1)}${bold`Města Jihlava a Třebíč mají dohromady ${input.celkem} obyvatel.`}
-    ${inputLabel(2)}${bold`Jihlava má o ${input.jihlavaPlus} více`}.<br/>
+    ${inputLabel(1)}${highlight`Města Jihlava a Třebíč mají dohromady ${input.celkem.toLocaleString("cs-CZ")} obyvatel.`}
+    ${inputLabel(2)}${highlight`Jihlava má o ${input.jihlavaPlus.toLocaleString("cs-CZ")} více`}.<br/>
     ${outputLabel(3)}<strong> Kolik obyvatel má Třebíč?</strong>`;
 
   return { deductionTree, data, template }
