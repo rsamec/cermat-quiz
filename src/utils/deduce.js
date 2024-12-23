@@ -23,11 +23,11 @@ export function deduce(...ts) {
   let width = ts.reduce((out,t) => out+=t._statistics?.width ?? 1, 0);
   ts.forEach((t, i) => {
     // add premiss
-    prem.appendChild(t);
+    prem.appendChild(html`<div class="node${!t._proof ? ' leaf':''}">${t}</div>`);
 
     // if the premiss is a sub-tree, white-out parts of the horizontal bar for aesthetic reasons
     if (t._proof) {
-      depth = Math.max(t._statistics?.depth ?? 0, depth);      
+      depth = Math.max(t._statistics?.depth ?? 0, depth);
       if (i == 0) {
         // '.proof > .conclusion > .le'
         //t.children[1].children[0].style['border-bottom'] = '2px solid var(--theme-foreground)';
@@ -36,10 +36,9 @@ export function deduce(...ts) {
         //t.children[1].children[2].style['border-bottom'] = '2px solid var(--theme-foreground)';
       }
     }
-
     // add a bit of spacing between premises
     if (i + 1 < ts.length) {
-      prem.appendChild(html`<div class="premiss space" style="width: 2em;"></div>`);
+      prem.appendChild(html`<div class="premiss"></div>`);
     }
   });
 

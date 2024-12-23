@@ -50,7 +50,7 @@ export default function build({ input }: {
             format(p1, inputLabel(1)),
             deduce(
               format(p1p2, inputLabel(2)),
-              format(fig1),
+              fig1,
               format(p2Ratio, deduceLabel(1)),
             ),
             format(dd1, deduceLabel(2))
@@ -60,7 +60,7 @@ export default function build({ input }: {
         ),
         deduce(
           format(oneThird, inputLabel(3)),
-          format(fig2),
+          fig2,
           format(p3Ratio, deduceLabel(4)),
         ),
         format(dd3, deduceLabel(5))
@@ -74,9 +74,9 @@ export default function build({ input }: {
   const celkemVse = dd3.kind === "cont" ? dd3.quantity : 0;
 
   const data = [
-    { agent: "č.1", value: input.cena, label: inputLabel(1) },
-    { agent: "č.2", value: zak2, label: deduceLabel(2) },
-    { agent: "č.3", value: celkemVse - (input.cena + zak2), label: outputLabel(4) }
+    { agent: "č.1", value: input.cena},
+    { agent: "č.2", value: zak2},
+    { agent: "č.3", value: celkemVse - (input.cena + zak2) }
   ];
 
   const template = html`
@@ -84,7 +84,7 @@ export default function build({ input }: {
   ${inputLabel(1)}${highlight`První zákusek stál ${input.cena} korun.`}
   ${inputLabel(2)}${highlight`Druhý zákusek byl o čtvrtinu levnější než první.`}
   ${inputLabel(3)}${highlight`Cena třetího zákusku byla třetinou celkové ceny všech tří zákusků.`}<br/>
-  ${inputLabel(4)}<strong>O kolik korun byl třetí zákusek dražší než druhý?</strong>`;
+  ${outputLabel(4)}<strong>O kolik korun byl třetí zákusek dražší než druhý?</strong>`;
 
   return { deductionTree, data, template, fig1, }
 }

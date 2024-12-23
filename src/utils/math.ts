@@ -231,7 +231,7 @@ export function inferenceRule(a: Predicate | Container[], b: Predicate, c?: { ki
     return containerWithCompareRule(a, b);
   }
   else if (a.kind === "comp" && b.kind === "ratio") {
-    return ///b.wholeAgent == a.agentA ? partRule(a, toggleRatio) : wholeRule(a, toggleRatio)
+    //return b.wholeAgent == a.agentA ? partRule(a, b) : wholeRule(a, b)
   }
   else if (a.kind === "cont" && b.kind == "cont") {
     return c?.kind === "ratio"

@@ -23,7 +23,7 @@ export function partion(items, options) {
     x: { label: null, ticks: [] },
     ...(width && { width }),
     ...(height && { height }),
-    marginBottom: showAbsoluteValues ? 20 : 0,
+    marginBottom: 0,
     marginTop: showRelativeValues ? 20 : 0,
     marks: [
       Plot.waffleX(data, { x: 'value', fill: 'agent', ...(unit && { unit}), fy: "fy", opacity: d => d.opacity ?? 1 }),
@@ -78,10 +78,10 @@ export function relativePartsDiffData(d, { first, second } = {}) {
 }
 
 export function relativeParts(d, options) {
-  return partion(relativePartsData(d, options), { width: 160, height:50,  showAbsoluteValues: false })
+  return partion(relativePartsData(d, options), { width: 180, height:50,  showAbsoluteValues: false })
 }
 export function relativePartsDiff(d, options) {
-  return partion(relativePartsDiffData(d, options), { width: 180, height: 70, showRelativeValues: false, unit:1 })
+  return partion(relativePartsDiffData(d, options), { width: 200, height: 70, showRelativeValues: false, unit:1 })
 }
 
 function label(d) {

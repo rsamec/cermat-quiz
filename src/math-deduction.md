@@ -15,22 +15,28 @@ import pocetOb from './math/pocet-obyvatel.js';
 import vOhrade from './math/kralice-a-slepice-v-ohrade.js';
 import zakusky from './math/zakusek.js';
 import milkExample from './math/mleko.js';
+import vek from './math/vek.js';
 
 
 function renderExample({example, unit}={}){
   const {depth, width} = example.deductionTree._statistics;
   return html`
-  <div class="">
+  <div class="v-stack v-stack--l">
     <div class="card">${example.template}</div>
     <div class="h-stack h-stack--m">
-      <h3 style="flex:1">Dedukce problému</h3>
-      <div class="badge">Hloubka: ${depth}</div>
-      <div class="badge">Šířka: ${width}</div>
+      <h3 style="flex:1">Dedukční strom</h3>
+      <div class="h-stack h-stack--m" style="align-items: flex-start;">
+        <div class="badge">Hloubka: ${depth}</div>
+        <div class="badge">Šířka: ${width}</div>
+      </div>
     </div>
-    <div></div>
-
-    ${example.deductionTree}
-    ${example.data != null ? partion(example.data, {unit}):''}
+    <div>
+      ${example.deductionTree}
+    </div>
+    ${example.data != null ? html`<div>
+      <h3>Zobrazení situace</h3>
+      ${partion(example.data, {unit})}
+    </div>`:''}
   </div>`
 }
 ```
@@ -99,7 +105,29 @@ const zakusek = Generators.input(zakusekForm);
 
 ${renderExample({example:zakusky({input:zakusek})})}
 
+
 ----------------------
+
+```js
+const sourozenciInputForm = Inputs.form({
+  evaPodil: Inputs.range([1, 40], {step: 1, value:40, label: "Eva - naspořený podíl (%)"}),
+  michalPlus: Inputs.range([1, 100], {step: 1, value: 24, label: "Michal naspořil navíc (Kč)"}),
+  zbyvaNasporit: Inputs.range([1, 100], {step: 1, value: 72, label: "Zbývá naspořit"})
+});
+const sourozenciInput = Generators.input(sourozenciInputForm);
+```
+
+## Šetření souurozenců na dárek
+
+<details>
+  <summary>Parametrizace</summary>
+  ${sourozenciInputForm}
+</details>
+
+${renderExample({example:sourozenci({input:sourozenciInput})})}
+
+----------------------
+
 
 ```js
 const milkForm = Inputs.form({
@@ -127,25 +155,11 @@ ${renderExample({example:milkExample({input:milkInput})})}
   const wholeDeduce = deduce(part, r, inferenceRule(part, r));
 
 ```
-
 ----------------------
 
 ```js
-const sourozenciInputForm = Inputs.form({
-  evaPodil: Inputs.range([1, 40], {step: 1, value:40, label: "Eva - naspořený podíl (%)"}),
-  michalPlus: Inputs.range([1, 100], {step: 1, value: 24, label: "Michal naspořil navíc (Kč)"}),
-  zbyvaNasporit: Inputs.range([1, 100], {step: 1, value: 72, label: "Zbývá naspořit"})
+const vekForm = Inputs.form({
+  vekRozdil: Inputs.range([6, 50], {step: 2, value:6, label: "Věkový rozdíl"}),
 });
-const sourozenciInput = Generators.input(sourozenciInputForm);
+const vekInput = Generators.input(vekForm);
 ```
-
-## Šetření souurozenců na dárek
-
-<details>
-  <summary>Parametrizace</summary>
-  ${sourozenciInputForm}
-</details>
-
-${renderExample({example:sourozenci({input:sourozenciInput})})}
-
-----------------------
