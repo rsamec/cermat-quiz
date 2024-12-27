@@ -1,7 +1,7 @@
 import { html } from "htl";
 import { cont, inferenceRule, ratio, comp } from "../utils/math.js";
 import { deduce, } from "../utils/deduce.js";
-import { relativePartsDiff, formatNode as format, inputLabel, deduceLabel, outputLabel, highlight } from "../utils/deduce-components.js";
+import { relativePartsDiff, formatNode as format, inputLabel, deduceLabel, highlight } from "../utils/deduce-components.js";
 
 interface MlekoParams {
   zdrazeni: number;
@@ -14,17 +14,19 @@ export default function build({ input }: {
   const firstYear = "letos";
   const secondYear = "loni";
 
-  const currencyEntity = "Kč";
+  const entity = "litr";
+  
 
   const firstToSecond = comp(firstYear, secondYear, input.zdrazeni, "")
-  const second = ratio(secondYear, firstYear, 1 + input.zdrazeni);
+  
+  const second = ratio({agent:secondYear, entity:entity}, {agent:firstYear, entity: entity}, 1 + input.zdrazeni);
   const fig1 = relativePartsDiff(input.zdrazeni, { first: firstYear, second: secondYear });
 
-  const milkEntity = "litr";
-  const a = cont(secondYear, 2, milkEntity);
-  const b = cont(secondYear, 3, milkEntity);
+  
+  const a = cont(secondYear, 2, entity);
+  const b = cont(secondYear, 3, entity);
 
-  const milk = comp(firstYear, secondYear, -1 * input.rozdil, currencyEntity);
+  const milk = comp(firstYear, secondYear, -1 * input.rozdil, "Kč");
 
   const dd2 = inferenceRule(a, second, { kind: 'ratio' });
   const dd3 = inferenceRule(dd2, b);
@@ -40,14 +42,14 @@ export default function build({ input }: {
       format(dd3, deduceLabel(3)),
     ),
     format(milk, inputLabel(3)),
-    format(dd4,outputLabel(4))
+    format(dd4,deduceLabel(4))
   )
 
 
   const template = html`
   ${inputLabel(1)}${highlight`Mléko zdražilo o ${input.zdrazeni} %.`}
   ${inputLabel(2)}${highlight`Za 2 litry teď zaplatíme o ${input.rozdil} méně než před zdražením za 3 litry.`}.<br />
-  ${outputLabel(3)}<strong> Kolik stál 1 litr mléka před zdražením?</strong>`;
+  ${deduceLabel(4)}<strong> Kolik stál 1 litr mléka před zdražením?</strong>`;
 
   return { deductionTree, template }
 }

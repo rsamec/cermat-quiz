@@ -1,5 +1,5 @@
 ---
-title: Matimatika - dedukce
+title: Matematika - dedukce
 footer: false
 pager: true
 toc: true
@@ -8,8 +8,10 @@ style: /assets/css/math-deduce.css
 
 ```js
 import {deduce} from './utils/deduce.js';
-import {partion, relativeParts} from './utils/deduce-components.js';
+import {partion, relativeParts, formatPredicate, relativePartsDiff} from './utils/deduce-components.js';
 import {inferenceRule,cont,sum, comp, ratio} from './utils/math.js';
+
+import allRules from './utils/inference-rules.js';
 import sourozenci from './math/sourozenci.js';
 import pocetOb from './math/pocet-obyvatel.js';
 import vOhrade from './math/kralice-a-slepice-v-ohrade.js';
@@ -17,6 +19,15 @@ import zakusky from './math/zakusek.js';
 import milkExample from './math/mleko.js';
 import vek from './math/vek.js';
 
+import proportionInverse from './math/proportion/proportion-inverse.js';
+import proportion from './math/proportion/proportion.js';
+import proportionCombined from './math/proportion/proportion-combined.js';
+
+import percentPart from './math/percent/part.js';
+import percentBase from './math/percent/base.js';
+import percentPercentage from './math/percent/percentage.js';
+
+import svadleny from './math/svadleny.js';
 
 function renderExample({example, unit}={}){
   const {depth, width} = example.deductionTree._statistics;
@@ -39,7 +50,23 @@ function renderExample({example, unit}={}){
     </div>`:''}
   </div>`
 }
+
+function renderRules(rules){
+  return rules.map(rule  => {
+    const ddRule = inferenceRule(...rule.premises);
+    return html`<div class="v-stack h-stack--m">    
+      <div class="card">
+      ${deduce(...rule.premises.map(d => formatPredicate(d)),formatPredicate(ddRule))}
+      </div>
+     
+    </div>`
+  })
+}
+
+const rules = allRules();
 ```
+
+# Příklady
 
 ```js
 const pocetObyvatelForm = Inputs.form({
@@ -56,7 +83,7 @@ const pocetObyvatel = Generators.input(pocetObyvatelForm);
   ${pocetObyvatelForm}
 </details>
     
-${renderExample({example:pocetOb({input:pocetObyvatel}), unit: 1000})}
+<div>${renderExample({example:pocetOb({input:pocetObyvatel}), unit: 1000})}</div>
 
 ----------------------
 
@@ -75,18 +102,7 @@ const ohrada = Generators.input(ohradaForm);
   ${ohradaForm}
 </details>
 
-${renderExample({example:vOhrade({input:ohrada})})}
-
-```js
-  const whole = cont("zaci", 50, "hlava");
-  const part = cont("divky", 20,"hlava");
-  const r = ratio("zaci", "divky", 1/3, "hlava");
-
-  const dd1 = inferenceRule(whole, r);
-  const partDeduce = deduce(whole, r, dd1);
-  const wholeDeduce = deduce(part, r, inferenceRule(part, r));
-
-```
+<div>${renderExample({example:vOhrade({input:ohrada})})}</div>
 
 ----------------------
 
@@ -103,7 +119,7 @@ const zakusek = Generators.input(zakusekForm);
   ${zakusekForm}
 </details>
 
-${renderExample({example:zakusky({input:zakusek})})}
+<div>${renderExample({example:zakusky({input:zakusek})})}</div>
 
 
 ----------------------
@@ -117,14 +133,14 @@ const sourozenciInputForm = Inputs.form({
 const sourozenciInput = Generators.input(sourozenciInputForm);
 ```
 
-## Šetření souurozenců na dárek
+## Šetření sourozenců na dárek
 
 <details>
   <summary>Parametrizace</summary>
   ${sourozenciInputForm}
 </details>
 
-${renderExample({example:sourozenci({input:sourozenciInput})})}
+<div>${renderExample({example:sourozenci({input:sourozenciInput})})}</div>
 
 ----------------------
 
@@ -143,18 +159,8 @@ const milkInput = Generators.input(milkForm);
   ${milkForm}
 </details>
 
-${renderExample({example:milkExample({input:milkInput})})}
+<div>${renderExample({example:milkExample({input:milkInput})})}</div>
 
-```js
-  const whole = cont("zaci", 50, "hlava");
-  const part = cont("divky", 20,"hlava");
-  const r = ratio("zaci", "divky", 1/3, "hlava");
-
-  const dd1 = inferenceRule(whole, r);
-  const partDeduce = deduce(whole, r, dd1);
-  const wholeDeduce = deduce(part, r, inferenceRule(part, r));
-
-```
 ----------------------
 
 ```js
@@ -163,3 +169,225 @@ const vekForm = Inputs.form({
 });
 const vekInput = Generators.input(vekForm);
 ```
+
+```js
+const workersForms = Inputs.form({
+  previousWorker: Inputs.range([5, 10], {step: 1, value:5, label: "Původní počet švadlen"}),
+  previousHours: Inputs.range([1, 50], {step: 1, value:24, label: "Původní počet hodin"}),
+  currentWorker: Inputs.range([2, 4], {step: 1, value:4, label: "Nový počet švadlen"}),
+});
+const workersInput = Generators.input(workersForms);
+```
+
+## Švadleny
+
+<details>
+  <summary>Parametrizace</summary>
+  ${workersForms}
+</details>
+
+<div>${renderExample({example:svadleny({input:workersInput})})}</div>
+
+```js
+  const entity = "hlava";
+  const whole = cont("zaci", 50, entity);
+  const part = cont("divky", 20,entity);
+  const r = ratio({agent:"zaci",entity} , {agent:"divky", entity}, 1/3, entity);
+
+  const dd1 = inferenceRule(whole, r);
+  const partDeduce = deduce(whole, r, dd1);
+  const wholeDeduce = deduce(part, r, inferenceRule(part, r));
+
+```
+--------------------------------
+
+# Jak je to uděláno
+
+```js
+```
+
+## Základní odvozovací pravidla
+
+### Porovnání rozdílem - o kolik je větší / menší
+${partion([
+    {value: 2, agent:"Alice"},
+    {value: 2, agent:"Bob"},
+    {value: 4, agent:"Bob"},
+  ],
+  {unit:1, showSeparate: true, showRelativeValues: false })
+}
+
+${renderRules(rules.compare)}
+
+### Porovnání podílem - kolikrát je větší / menší
+${partion([
+    {value: 2, agent:"Alice"},
+    {value: 2, agent:"Bob"},
+    {value: 2, agent:"Bob"},
+    {value: 2, agent:"Bob"},
+  ],
+  {unit:2, showSeparate: true, showRelativeValues: false })
+}
+${renderRules(rules.ratioCompare)}
+
+### Porovnávání - část z celku
+
+${partion([
+    {value: 30, agent:"chlapci", label:{ hidePercent: true, hideFraction: false} },
+    {value: 90, agent:"dívky", label:{ hidePercent: true, hideFraction: false}},
+  ],
+  {unit:1, showRelativeValues: true, multiple:5 })
+}
+${renderRules(rules.partToWholeRatio)}
+
+### Porovnávání - poměry část ku časti
+
+${partion([
+    {value: 30, agent:"chlapci", label:{ hidePercent: true, hideFraction: false} },
+    {value: 90, agent:"dívky", label:{ hidePercent: true, hideFraction: false}},
+  ],
+  {unit:1, showRelativeValues: true, multiple:5 })
+}
+${renderRules(rules.partToPartRatio)}
+
+### Rozdělování
+
+${renderRules(rules.rate)}
+
+----------------------
+
+## Základní odvozovací vzory
+
+```js
+```
+
+```js
+const percentForm = Inputs.form({
+  percentage: Inputs.range([1, 100], {step: 1, value: 20, label: "Procenta (%)"}),
+  base: Inputs.range([500, 3000], {step: 50, value: 2000, label: "Základ"}),
+  part: Inputs.range([1, 3000], {step: 1, value: 400, label: "Procentní část"}),
+});
+const percentInput = Generators.input(percentForm);
+```
+## Procenta
+
+<details>
+  <summary>Parametrizace</summary>
+  ${percentForm}
+</details>
+
+### Výpočet procentní části
+
+<div>${renderExample({example:percentPart({input:percentInput})})}</div>
+<div class="h-stack h-stack--wrap">
+${partion([
+    {value: 100, agent:"vypůjčeno (základ)" },
+    {value: percentInput.percentage, agent:"úrok (procetní část)"},
+  ],
+  {unit:1, showSeparate:true, showRelativeValues:false,  multiple:5,  width: 300, height: 100})
+}
+${partion([
+    {value: percentInput.base, agent:"vypůjčeno (základ)" },
+    {value: percentInput.percentage/100 * percentInput.base, agent:"úrok (procetní část)"},
+  ],
+  {unit:20, showSeparate:true, showRelativeValues:false,  multiple:5,  width: 300, height: 100})
+}
+</div>
+
+
+### Výpočet základu
+
+<div>${renderExample({example:percentBase({input:percentInput})})}</div>
+<div class="h-stack h-stack--wrap">
+${partion([
+    {value: 100, agent:"vypůjčeno (základ)" },
+    {value: percentInput.percentage, agent:"úrok (procetní část)"},
+  ],
+  {unit:1, showSeparate:true, showRelativeValues:false,  multiple:5,  width: 300, height: 100})
+}
+${partion([
+    {value: percentInput.part / percentInput.percentage * 100 , agent:"vypůjčeno (základ)" },
+    {value: percentInput.part, agent:"úrok (procetní část)"},
+  ],
+  {unit:20, showSeparate:true, showRelativeValues:false,  multiple:5,  width: 300, height: 100})
+}
+</div>
+
+
+### Výpočet procent
+
+<div>${renderExample({example:percentPercentage({input:percentInput})})}</div>
+
+----------------------
+
+
+```js
+const propForm = Inputs.form({
+  currentMachine: Inputs.range([2, 4], {step: 1, value: 4, label: "Nový počet strojů"}),
+  previousMachine: Inputs.range([5, 50], {step: 1, value: 6, label: "Původní počet strojů"}),
+  previousCount: Inputs.range([1, 50], {step: 1, value: 9, label: "Původní počet výrobků"}),
+});
+const propInput = Generators.input(propForm);
+```
+## Přímá úměrnost
+
+<details>
+  <summary>Parametrizace</summary>
+  ${propForm}
+</details>
+
+<div>${renderExample({example:proportion({input:propInput})})}</div>
+
+----------------------
+
+```js
+const proportionInverseForm = Inputs.form({
+  currentMachine: Inputs.range([2, 4], {step: 1, value:4, label: "Nový počet strojů"}),
+  previousMachine: Inputs.range([5, 50], {step: 1, value:6, label: "Původní počet strojů"}),
+  previousHours: Inputs.range([1, 50], {step: 1, value:8, label: "Původní počet hodin"}),
+});
+const proportionInverseInput = Generators.input(proportionInverseForm);
+```
+
+## Nepřímá úměrnost
+
+<details>
+  <summary>Parametrizace</summary>
+  ${proportionInverseForm}
+</details>
+
+<div>${renderExample({example:proportionInverse({input:proportionInverseInput})})}</div>
+
+----------------------
+
+```js
+const proportionCombinedForms = Inputs.form({
+  previousWorkers: Inputs.range([1, 10], {step: 1, value:6, label: "Původní počet dělníků"}),
+  previousHours: Inputs.range([1, 10], {step: 1, value:9, label: "Původní počet hodin"}),
+  currentWorkers: Inputs.range([10, 20], {step: 1, value:12, label: "Nový počet dělníků"}),
+  previousGoods: Inputs.range([100, 1000], {step: 1, value:400, label: "Původní počet výrobků"}),
+  currentGoods: Inputs.range([1000, 2000], {step: 1, value:1_600, label: "Nový počet výrobků"}),
+  
+});
+const proportionCombinedInput = Generators.input(proportionCombinedForms);
+```
+
+## Kombinovaná přímá a nepřímá úměrnost
+
+<details>
+  <summary>Parametrizace</summary>
+  ${proportionCombinedForms}
+</details>
+
+<div>${renderExample({example:proportionCombined({input:proportionCombinedInput})})}</div>
+
+
+
+## Porovnání s relativním rozdílem
+
+
+${relativePartsDiff(1/4,{first:"letos", second:"loni", asPercent: false})}
+${relativePartsDiff(-1/4,{first:"letos", second:"loni", asPercent: false})}
+
+
+-------------------------

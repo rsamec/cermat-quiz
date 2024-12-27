@@ -2,6 +2,7 @@
   display: inline-flex;
   flex-direction: column;
   gap: 2px;
+  container:inline-size;
 }
 
 .node {
@@ -12,7 +13,7 @@
   padding-left: 5px;
 }
 
-@media (min-width: 1200px) {
+@container (min-width: 1200px) {
   .node {
     padding-left: 0px;
   }
@@ -26,7 +27,7 @@
   justify-content: center;
   border-left: 1px solid var(--theme-foreground);
 }
-@media (min-width: 1200px) {
+@container (min-width: 1200px) {
   .premises {
     flex-direction: row;
     align-items: flex-end;
@@ -40,12 +41,18 @@
   padding-left: 5px;
   display: inline-flex;
 }
+@container (min-width: 1200px) {
+  .conclusion {
+    border: none;
+    border-top: 1px solid var(--theme-foreground);
+  }
+}
 
 .ri {
   flex-grow: 1;
 }
 
-@media (min-width: 1200px) {
+@container (min-width: 1200px) {
    .le {
     flex-grow: 1;
   }

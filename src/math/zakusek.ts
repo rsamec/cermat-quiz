@@ -2,13 +2,14 @@ import { html } from "htl";
 import type { Container } from "../utils/math.js";
 import { cont, inferenceRule, ratio, comp, sum } from "../utils/math.js";
 import { deduce } from "../utils/deduce.js";
-import { relativeParts, relativePartsDiff , formatNode as format, inputLabel, deduceLabel, outputLabel, highlight } from "../utils/deduce-components.js";
+import { relativeParts, relativePartsDiff, formatNode as format, inputLabel, deduceLabel, highlight } from "../utils/deduce-components.js";
 
 interface ZakuseParams {
   cena: number;
 }
 export default function build({ input }: {
-  input: ZakuseParams}) {
+  input: ZakuseParams
+}) {
 
 
   const piece1 = '1.zákusek';
@@ -23,11 +24,11 @@ export default function build({ input }: {
   const partTotalPrice = "1.zák.+2.zák";
 
 
-  const p1p2 = comp(piece2, piece1, -1/4, "")
+  const p1p2 = comp(piece2, piece1, -1 / 4, "")
   const p1 = cont(piece1, input.cena, entity)
-  const p2Ratio = ratio(piece1, piece2, 3 / 4);
-  const p3Ratio = ratio(totalPrice, partTotalPrice, 2 / 3);
-  const oneThird = ratio(totalPrice, piece3, 1 / 3)
+  const p2Ratio = ratio({ agent: piece1, entity }, { agent: piece2, entity }, 3 / 4);
+  const p3Ratio = ratio({ agent: totalPrice, entity }, { agent: partTotalPrice, entity }, 2 / 3);
+  const oneThird = ratio({ agent: totalPrice, entity }, { agent: piece3, entity }, 1 / 3)
 
   const soucet = sum(partTotalPrice, [], "Kč", "Kč");
   //const p2 = comp(piece2, piece1, , entity)
@@ -66,7 +67,7 @@ export default function build({ input }: {
         format(dd3, deduceLabel(5))
       ),
       format(oneThird, inputLabel(3)),
-      format(dd4, outputLabel(4))
+      format(dd4, deduceLabel(6))
     )
 
 
@@ -74,8 +75,8 @@ export default function build({ input }: {
   const celkemVse = dd3.kind === "cont" ? dd3.quantity : 0;
 
   const data = [
-    { agent: "č.1", value: input.cena},
-    { agent: "č.2", value: zak2},
+    { agent: "č.1", value: input.cena },
+    { agent: "č.2", value: zak2 },
     { agent: "č.3", value: celkemVse - (input.cena + zak2) }
   ];
 
@@ -84,7 +85,7 @@ export default function build({ input }: {
   ${inputLabel(1)}${highlight`První zákusek stál ${input.cena} korun.`}
   ${inputLabel(2)}${highlight`Druhý zákusek byl o čtvrtinu levnější než první.`}
   ${inputLabel(3)}${highlight`Cena třetího zákusku byla třetinou celkové ceny všech tří zákusků.`}<br/>
-  ${outputLabel(4)}<strong>O kolik korun byl třetí zákusek dražší než druhý?</strong>`;
+  ${deduceLabel(6)}<strong>O kolik korun byl třetí zákusek dražší než druhý?</strong>`;
 
   return { deductionTree, data, template, fig1, }
 }

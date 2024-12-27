@@ -20,11 +20,16 @@
   background-color: var(--theme-foreground);
   color: var(--theme-background);
 }
+
+.badge--input {
+  background-color: color-mix(in srgb, var(--theme-blue), var(--theme-background) 70%);
+  color: var(--theme-blue);
+}
 .badge--deduce {
     background-color: color-mix(in srgb, var(--theme-green), var(--theme-background) 70%);
     color: var(--theme-green);
 }
 .badge--output {
-  background-color: color-mix(in srgb, var(--theme-red), var(--theme-background) 70%);
-  color: var(--theme-red);
+  background-color: color-mix(in srgb, var(--theme-yellow), var(--theme-background) 70%);
+  color: var(--theme-yellow);
 }

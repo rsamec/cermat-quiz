@@ -1,24 +1,33 @@
 import { html } from "npm:htl";
 import * as Plot from "npm:@observablehq/plot";
 import Fraction from 'npm:fraction.js';
+import { isSameEntity } from "../utils/math.js";
 
 export function partion(items, options) {
   const total = items.reduce((out, d) => out += d.value, 0);
   const data = items.map(d => ({ ...d, ratio: d.value / total }))
 
-  const { width, height, unit, showAbsoluteValues, showRelativeValues } = {
+  const { width, height, unit, multiple, showLegend, showTicks, showSeparate, formatAsFraction, showAbsoluteValues, showRelativeValues, fill } = {
     ...{
       height: 150,
       showRelativeValues: true,
       showAbsoluteValues: true,
+      showLegend: true,
+      showTicks: false,
+      showSeparate: false,
+      formatAsFraction: false,
+      fill: 'agent'
     },
     ...options
   }
   return Plot.plot({
-    fy: { label: null, ticks: [] },
+    ...(showSeparate && {
+      fy: { label: null, ticks: showTicks ? undefined : [], marginLeft: 0 },
+    }),
     y: { label: null },
     color: {
-      legend: true
+      type: "categorical",
+      legend: showLegend
     },
     x: { label: null, ticks: [] },
     ...(width && { width }),
@@ -26,29 +35,35 @@ export function partion(items, options) {
     marginBottom: 0,
     marginTop: showRelativeValues ? 20 : 0,
     marks: [
-      Plot.waffleX(data, { x: 'value', fill: 'agent', ...(unit && { unit}), fy: "fy", opacity: d => d.opacity ?? 1 }),
+      Plot.waffleX(data, {
+        x: 'value',
+        fill,
+        ...(unit && { unit }),
+        ...(multiple && { multiple }),
+        ...(showSeparate && { fy: "agent" }),
+        opacity: d => d.opacity ?? 1
+      }),
       ...(showAbsoluteValues ? [
         Plot.textX(data, Plot.stackX({
           x: "value",
-          text: (d, i) => `${d.fy != 99 ? d.value.toLocaleString('cs-CZ') : ''}`,
+          text: (d, i) => `${formatAsFraction ? new Fraction(d.value).toFraction() : d.value.toLocaleString('cs-CZ', { maximumFractionDigits: 1 })}`,
           fontSize: 16,
-          fontWeight: 900,
+          fontWeight: 500,
           textAnchor: 'middle',
           lineAnchor: "middle",
           frameAnchor: "middle",
-          dy: 0,
-          fy: "fy"
+          ...(showSeparate && { fy: "agent" })
         }))] : []),
       ...(showRelativeValues ? [
         Plot.textX(data, Plot.stackX({
           x: "value",
           text: (d, i) => {
             const { hidePercent, hideFraction } = { ...{ hideFraction: true }, ...d.label };
-            const percent = !hidePercent ? `${(d.ratio * 100).toLocaleString('cs-CZ', { maximumFractionDigits: 2 })} %` : null;
+            const percent = !hidePercent ? `${(d.ratio * 100).toLocaleString('cs-CZ', { maximumFractionDigits: 1 })} %` : null;
             const fraction = !hideFraction ? `${new Fraction(d.ratio).toFraction()}` : null;
             return [percent, fraction].filter(Boolean).join(" | ");
           },
-          fy: "fy",
+          ...(showSeparate && { fy: "agent" }),
           fontSize: 16,
           textAnchor: 'middle',
           lineAnchor: "bottom",
@@ -59,56 +74,77 @@ export function partion(items, options) {
   })
 };
 
-export function relativePartsData(d, { first, second } = {}) {
-  const label = { hideValue: true, hidePercent: true, hideFraction: false };
+export function relativePartsData(value, { first, second, asPercent } = {}) {
+  const d = asPercent ? value * 100 : value;
+  const whole = asPercent ? 100 : 1;
+
   return [
-    { agent: second, value: 1 - d, label },
-    { agent: first, value: d, label },
+    { agent: first, value: d },
+    { agent: second, value: whole - d },
   ]
 }
-export function relativePartsDiffData(d, { first, second } = {}) {
-  const label = { hideValue: true, hidePercent: true, hideFraction: false };
-  
+export function relativePartsDiffData(value, { first, second, asPercent } = {}) {
+  const d = asPercent ? value * 100 : value;
+  const whole = asPercent ? 100 : 1;
+
+
   return [
-    { agent: first, value: d > 0 ? 1 :  1 + d, label, fy: 0 },
-    ...(d > 0 ? [{ agent: first, value: d, label, fy: 0 }]:[]),
-    { agent: second, value: 1 - Math.abs(d), label, fy: 1 },
-    ...(d != 0 ? [{ agent: second, value: Math.abs(d), fy: 1, label }]:[])
-  ]
+    { agent: first, value: d > 0 ? whole : whole + d },
+    ...(d != 0 ? [{ agent: first, value: Math.abs(d), opacity: 0.2 }] : []),
+    { agent: second, value: whole }]
 }
 
 export function relativeParts(d, options) {
-  return partion(relativePartsData(d, options), { width: 180, height:50,  showAbsoluteValues: false })
+  return partion(relativePartsData(d, options), { width: 300, height: 50, formatAsFraction: !options.asPercent, showRelativeValues: false, unit: 1, multiple: options.asPercent ? 5 : undefined })
 }
 export function relativePartsDiff(d, options) {
-  return partion(relativePartsDiffData(d, options), { width: 200, height: 70, showRelativeValues: false, unit:1 })
+  return partion(relativePartsDiffData(d, options), { width: 300, height: 100, formatAsFraction: !options.asPercent, showRelativeValues: false, unit: 1, multiple: options.asPercent ? 5 : undefined, showSeparate: true })
 }
 
 function label(d) {
   return html`<div class=${`badge badge--${d.kind}`} >${d.id}</div>`
 }
 export function formatNode(t, label) {
-  return html`${label != null ? label: ''}&nbsp;${t?.kind !=null ? formatPredicate(t): t}`
+  return html`${label != null ? label : ''}&nbsp;${t?.kind != null ? formatPredicate(t) : t}`
 }
-function formatPredicate(d){ 
-  const formatEntity = (d, absolute) => 
-    html`${(absolute ? Math.abs(d.quantity): d.quantity ).toLocaleString('cs-CZ')}&nbsp;${d.entity}${d.unit!=null ? `&nbps;${d.unit}`: ''}`
-  switch (d.kind){
-    case "cont":
-      return html`${d.agent}=${formatEntity(d)}`;
-    case "comp":
-      return html`${d.agentA} ${d.quantity > 0 ? 'více':'méně'} než ${d.agentB} o ${formatEntity(d,true)}`
-    case "diff":
-      return html`rozdíl=${formatEntity(d)}`
-    case "ratio":
-      return html`${d.partAgent} z ${d.wholeAgent}=${new Fraction(d.ratio).toFraction()}`;
-    case "sum":
-      return html`součet ${d.partAgents.join("+")}`;
-    case "rate":
-      return html`${d.quantity} ${d.entityA.entity} per ${d.entityB.entity}`
-    default:
-      return html`${d.kind}`;
+export function formatPredicate(d) {
+  const formatQuantity = (d, absolute) => (absolute ? Math.abs(d.quantity) : d.quantity).toLocaleString('cs-CZ')
+  const formatEntity = (d) => d.entity
+  const formatQuantityWithEntity = (d, absolute) =>
+    html`${formatQuantity(d, absolute)} ${formatEntity(d)}`
+  if ((d.kind == "ratio" || d.kind === "comp-r" || d.kind === "rate") && (d.quantity == null && d.ratio == null)) {
+    return html`<div class="badge">${d.kind?.toUpperCase()}</div>`
   }
+  switch (d.kind) {
+    case "cont":
+      return html`<div class="badge">C</div> ${d.agent}=${formatQuantityWithEntity(d)}`;
+    case "comp":
+      return html`<div class="badge">COMP</div> ${d.agentA} ${d.quantity > 0 ? 'více' : 'méně'} než ${d.agentB} o ${formatQuantityWithEntity(d, true)}`
+    case "comp-r":
+      return html`<div class="badge">COMP-R</div> ${d.agentA} ${formatQuantity(d, true)} krát ${d.quantity > 0 ? 'více' : 'méně'} ${formatEntity(d)} než ${d.agentB} `
+    case "diff":
+      return html`<div class="badge">DIFF</div> ${formatQuantityWithEntity(d)}`
+    case "ratio":
+      return html`<div class="badge">RATIO</div> ${formatAgentEntity(d)}=${new Fraction(d.ratio).toFraction()}`;
+    case "sum":
+      return html`<div class="badge">SUM</div> ${d.partAgents.join("+")}`;
+    case "rate":
+      return html`<div class="badge">RATE</div> ${d.quantity} ${d.entityA?.entity} per ${d.entityB?.entity}`
+    case "common-sense":
+      return html`<div class="badge">C-SENSE</div> ${d.agent}`
+    default:
+      return html`<div class="badge">${d.kind?.toUpperCase()}</div>`;
+  }
+}
+
+function formatAgentEntity(ratio) {
+  const isSame = isSameEntity(ratio);
+  const to = d => d?.agent != null
+    ? isSame
+      ? d.agent
+      : `${d.agent}(${d.entity})`
+    : d
+  return `${to(ratio.part)} z ${to(ratio.whole)}`;
 }
 
 export function inputLabel(id) {
@@ -123,11 +159,11 @@ export function outputLabel(id) {
 
 export function highlight(strings, ...substitutions) {
   const formattedString = strings.reduce((acc, curr, i) => {
-      const substitution = substitutions[i];
-      const res = substitution
+    const substitution = substitutions[i];
+    const res = substitution
       ? html`${curr}<span class="highlight">${substitution}</span>`
       : curr;
-      return html`${acc}${res}`;
+    return html`${acc}${res}`;
   }, '');
 
   return formattedString;

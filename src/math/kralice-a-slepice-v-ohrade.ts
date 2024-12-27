@@ -1,7 +1,7 @@
 import { html } from "htl";
 import { cont, inferenceRule, ratio, diff, comp, rate } from "../utils/math.js";
-import { deduce} from "../utils/deduce.js";
-import { formatNode as format, inputLabel, deduceLabel, outputLabel, highlight } from "../utils/deduce-components.js";
+import { deduce } from "../utils/deduce.js";
+import { formatNode as format, inputLabel, deduceLabel, highlight } from "../utils/deduce-components.js";
 
 interface ZvirataVOhradeParams {
   pocetHlav: number;
@@ -29,11 +29,11 @@ export default function build({ input }: {
   const slepice = "slepice";
   const kralik = "králík";
 
-  const total = cont(celkem, input.pocetHlav,hlava)
+  const total = cont(celkem, input.pocetHlav, hlava)
   const perHlava = rate(celkem, 1, hlava, entity);
   const plus = diff(celkem, partCelkem, input.kralikuMene, entity)
-  const pomer = ratio(partCelkem, kralik, 1 / 2);
-  const slepicePlus = comp(kralik,slepice,-input.kralikuMene, entity)
+  const pomer = ratio({ agent: partCelkem, entity }, { agent: kralik, entity }, 1 / 2);
+  const slepicePlus = comp(kralik, slepice, -input.kralikuMene, entity)
 
   const dd1 = inferenceRule(total, perHlava)
   const dd2 = inferenceRule(dd1, plus);
@@ -42,7 +42,7 @@ export default function build({ input }: {
   const deductionTree = deduce(
     deduce(
       deduce(
-        deduce(format(total, inputLabel(1)), format(perHlava),format(dd1, deduceLabel(1))),
+        deduce(format(total, inputLabel(1)), format(perHlava), format(dd1, deduceLabel(1))),
         format(plus, inputLabel(2)),
         format(dd2, deduceLabel(2))
       ),
@@ -50,14 +50,14 @@ export default function build({ input }: {
       format(dd3, deduceLabel(3)),
     ),
     format(slepicePlus, inputLabel(2)),
-    format(dd4, outputLabel(4)),
+    format(dd4, deduceLabel(4)),
   )
 
   const template = html`
   ${inputLabel(1)}${highlight`V ohradě pobíhali králíci a slepice.`}
   ${inputLabel(2)}${highlight`Králíků bylo o ${input.kralikuMene} méně.`}
   ${inputLabel(3)}${highlight`Králíci a slepice měli dohromady ${nohy} nohou a ${input.pocetHlav} hlav.`}<br/>
-  ${outputLabel(4)}<strong> Kolik bylo v ohradě slepic?</strong>`;
+  ${deduceLabel(4)}<strong> Kolik bylo v ohradě slepic?</strong>`;
 
   return { deductionTree, data, template }
 }
