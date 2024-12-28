@@ -29,6 +29,7 @@ export default function build({ input }: {
   const dd1 = inferenceRule(aPrevious, aCurrent, { kind: 'comp-r' });
 
   const cc1 = commonSense("nepřímá úměrnost, obracený poměr veličin")
+  const cc2 = commonSense("přímá úměrnost, stejný poměr veličin")
   const dd2 = ratioComp(agentPrevious, agentCurrent, dd1.kind == "comp-r" ? dd1.quantity : 0, entityB)
   const bPrevious = cont(agentPrevious, input.previousHours, entityB);
   const dd3 = inferenceRule(dd2, bPrevious);
@@ -55,6 +56,7 @@ export default function build({ input }: {
     ),
     deduce(
       deduce(format(c1), format(c2), format(dd4, deduceLabel(4))),
+      format(cc1),
       format(comp, inputLabel(4))),
     format(dd5, deduceLabel(5))
   )

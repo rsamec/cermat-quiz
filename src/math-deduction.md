@@ -18,6 +18,7 @@ import vOhrade from './math/kralice-a-slepice-v-ohrade.js';
 import zakusky from './math/zakusek.js';
 import milkExample from './math/mleko.js';
 import vek from './math/vek.js';
+import slepice from './math/slepice.js';
 
 import proportionInverse from './math/proportion/proportion-inverse.js';
 import proportion from './math/proportion/proportion.js';
@@ -425,7 +426,26 @@ ${deduce(formatPredicate(total), formatPredicate(comparison), formatPredicate(pa
 ${relativePartsDiff(1/4,{first:"letos", second:"loni", asPercent: false})}
 ${relativePartsDiff(-1/4,{first:"letos", second:"loni", asPercent: false})}
 
-
-
-
 -------------------------
+
+
+```js
+const slepiceForms = Inputs.form({
+  previousWorkers: Inputs.range([0.5, 10], {step: 0.5, value:1.5, label: "Původní počet slepic"}),
+  previousEggs: Inputs.range([0.5, 10], {step: 0.5, value:1.5, label: "Původní počet vajec"}),
+  previousDays: Inputs.range([0.5, 10], {step: 0.5, value:1.5, label: "Původní počet dní"}),
+  currentWorkers: Inputs.range([0.5, 10], {step: 0.5, value:3, label: "Nový počet slepic"}),
+  currentDays: Inputs.range([0.5, 10], {step: 0.5, value:3, label: "Nový počet dní"}),
+  
+});
+const slepiceInput = Generators.input(slepiceForms);
+```
+
+## Slepice hádanka
+
+<details>
+  <summary>Parametrizace</summary>
+  ${slepiceForms}
+</details>
+
+<div>${renderExample({example:slepice({input:slepiceInput})})}</div>
