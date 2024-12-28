@@ -14,8 +14,8 @@ export default function build({ input }: {
 }) {
 
   const agentPrevious = "původní zakázka";
-  const agentCurrent = "zakázka";
-  const agentNew = "nová zakázka";
+  const agentCurrent = "nová zakázka (změna švadlen)";
+  const agentNew = "nová zakázka (změna švadlen,hodin)";
   const entityA = "švadlen";
   const entityB = "hodin";
 
@@ -25,15 +25,19 @@ export default function build({ input }: {
   const aCurrent = cont(agentCurrent, input.currentWorker, entityA)
   const dd1 = inferenceRule(aCurrent, aPrevious, { kind: 'comp-r' });
 
-  const cc1 = commonSense("nepřímá úměrnost")
+  const cc1 = commonSense("nepřímá úměrnost, obracený poměr veličin")
+  const cc2 = commonSense("přímá úměrnost")
   const dd2 = ratioComp(agentCurrent, agentPrevious, dd1.kind == "comp-r" ? dd1.quantity : 0, entityB)
   const bPrevious = cont(agentPrevious, input.previousHours, entityB);
   const dd3 = inferenceRule(dd2, bPrevious);
 
-  const comp = ratioComp(agentNew, agentCurrent, 3 / 2, "hodin")
-  const dd4 = inferenceRule(comp, dd3);
+  const comp = ratioComp(agentNew, agentCurrent, 3 / 2, "množství")
+  const dd4 = ratioComp(agentNew, agentCurrent, 3 / 2, "hodin")
+  const dd5 = inferenceRule(dd4, dd3);
+
 
   const deductionTree = deduce(
+
     deduce(
       deduce(
         deduce(
@@ -47,8 +51,13 @@ export default function build({ input }: {
       format(bPrevious, inputLabel(2)),
       format(dd3, deduceLabel(3)),
     ),
-    format(comp, inputLabel(4)),
-    format(dd4, deduceLabel(4))
+    deduce(
+      format(comp, inputLabel(4)),
+      format(cc2),
+      format(comp, deduceLabel(4)),
+    ),
+
+    format(dd5, deduceLabel(5))
 
 
   )
