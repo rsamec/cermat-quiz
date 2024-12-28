@@ -1,6 +1,6 @@
 import { html } from "htl";
 import type { Comparison, ComparisonDiff, Container, Rate, RatioComparison } from "./math.js";
-import { cont, inferenceRule, ratio, comp, sum, rate, ratios, ratioComp, diff } from "./math.js";
+import { cont, ratio, comp, rate, ratios, ratioComp } from "./math.js";
 
 export default function rules() {
 
@@ -114,8 +114,8 @@ export default function rules() {
   return {
     compare: [toCompareRule(a, b), compareRule(a), compareRule(b)],
     ratioCompare: [toRatioCompareRule(a, b), ratioCompareRule(a), ratioCompareRule(b)],
-    partToWholeRatio: [partToWholeRatioRules(cont("třída", 100, "studenti")), partToWholeRatioRules(cont("třída", 25, "chlapec"))],
-    partToPartRatio: [partToPartRatioRules(cont("třída", 100, "studenti")), partToPartRatioRules(cont("třída", 75, "dívka"))],
+    partToWholeRatio: [partToWholeRatioRules(cont("třída", 120, "studenti")), partToWholeRatioRules(cont("třída", 30, "chlapec"))],
+    partToPartRatio: [partToPartRatioRules(cont("třída", 120, "studenti")), partToPartRatioRules(cont("třída", 90, "dívka"))],
     rate: [
       fairDivision(cont("Petr", 20, "Kč"), cont("Petr", 5, "rohlík")),
       rateCompute(cont("Petr", 20, "Kč")),

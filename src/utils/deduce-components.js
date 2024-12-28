@@ -126,6 +126,8 @@ export function formatPredicate(d) {
       return html`<div class="badge">DIFF</div> ${formatQuantityWithEntity(d)}`
     case "ratio":
       return html`<div class="badge">RATIO</div> ${formatAgentEntity(d)}=${new Fraction(d.ratio).toFraction()}`;
+    case "ratios":
+      return html`<div class="badge">RATIOS</div>${d.parts.join(":")} v poměru ${d.ratios.join(":")} z ${d.whole}`;  
     case "sum":
       return html`<div class="badge">SUM</div> ${d.partAgents.join("+")}`;
     case "rate":

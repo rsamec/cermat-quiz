@@ -29,7 +29,7 @@ import percentPercentage from './math/percent/percentage.js';
 
 import svadleny from './math/svadleny.js';
 
-function renderExample({example, unit}={}){
+function renderExample({example, unit, showRelativeValues}={}){
   const {depth, width} = example.deductionTree._statistics;
   return html`
   <div class="v-stack v-stack--l">
@@ -46,7 +46,7 @@ function renderExample({example, unit}={}){
     </div>
     ${example.data != null ? html`<div>
       <h3>Zobrazení situace</h3>
-      ${partion(example.data, {unit})}
+      ${partion(example.data, {unit, showRelativeValues})}
     </div>`:''}
   </div>`
 }
@@ -83,7 +83,7 @@ const pocetObyvatel = Generators.input(pocetObyvatelForm);
   ${pocetObyvatelForm}
 </details>
     
-<div>${renderExample({example:pocetOb({input:pocetObyvatel}), unit: 1000})}</div>
+<div>${renderExample({example:pocetOb({input:pocetObyvatel}), unit: 1000, showRelativeValues: false})}</div>
 
 ----------------------
 
