@@ -9,7 +9,7 @@ style: /assets/css/math-deduce.css
 ```js
 import {deduce} from './utils/deduce.js';
 import {partion, relativeParts, formatPredicate, relativePartsDiff} from './utils/deduce-components.js';
-import {inferenceRule,cont,sum, comp, ratio} from './utils/math.js';
+import {inferenceRule,cont,sum, comp, ratio, diff} from './utils/math.js';
 
 import allRules from './utils/inference-rules.js';
 import sourozenci from './math/sourozenci.js';
@@ -250,6 +250,10 @@ ${partion([
 }
 ${renderRules(rules.partToPartRatio)}
 
+### Rozdíl
+
+${renderRules(rules.substract)}
+
 ### Rozdělování
 
 ${renderRules(rules.rate)}
@@ -381,6 +385,38 @@ const proportionCombinedInput = Generators.input(proportionCombinedForms);
 
 <div>${renderExample({example:proportionCombined({input:proportionCombinedInput})})}</div>
 
+## Porovnávání s absolutním rozdílem
+
+```js
+const pribram = "Příbram";
+const tabor = "Tábor" 
+const entity = "obyvatel"
+
+
+const celkem = "Tábor a Příbram";
+const zbytek = "zbytek"
+
+const total = cont(celkem, 75000, entity);
+const difference = diff(celkem, zbytek, 4000, entity);
+const comparison = comp(pribram, tabor, 4000, entity);
+const dTree1 = inferenceRule(total,difference);
+
+const eqRatio = ratio({agent:zbytek, entity}, {agent:tabor, entity}, 1/2, entity )
+const dTree2 = inferenceRule(dTree1, eqRatio)
+
+const partEqPredicate = {kind:'part-eq'}
+const dTree0 = inferenceRule(total, comparison, partEqPredicate )
+
+```
+
+${deduce(
+  deduce(formatPredicate(total), formatPredicate(difference), formatPredicate(dTree1)),
+  formatPredicate(eqRatio), formatPredicate(dTree2)
+)}
+
+lze zjedušit pomocí ${formatPredicate(partEqPredicate)}
+
+${deduce(formatPredicate(total), formatPredicate(comparison), formatPredicate(partEqPredicate), formatPredicate(dTree0))}
 
 
 ## Porovnání s relativním rozdílem
@@ -388,6 +424,8 @@ const proportionCombinedInput = Generators.input(proportionCombinedForms);
 
 ${relativePartsDiff(1/4,{first:"letos", second:"loni", asPercent: false})}
 ${relativePartsDiff(-1/4,{first:"letos", second:"loni", asPercent: false})}
+
+
 
 
 -------------------------

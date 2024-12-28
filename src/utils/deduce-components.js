@@ -112,7 +112,7 @@ export function formatPredicate(d) {
   const formatEntity = (d) => d.entity
   const formatQuantityWithEntity = (d, absolute) =>
     html`${formatQuantity(d, absolute)} ${formatEntity(d)}`
-  if ((d.kind == "ratio" || d.kind === "comp-r" || d.kind === "rate") && (d.quantity == null && d.ratio == null)) {
+  if ((d.kind == "ratio" || d.kind === "comp-r" || d.kind === "rate" || d.kind ==="diff" || d.kind === "part-eq") && (d.quantity == null && d.ratio == null)) {
     return html`<div class="badge">${d.kind?.toUpperCase()}</div>`
   }
   switch (d.kind) {
@@ -123,7 +123,7 @@ export function formatPredicate(d) {
     case "comp-r":
       return html`<div class="badge">COMP-R</div> ${d.agentA} ${formatQuantity(d, true)} krát ${d.quantity > 0 ? 'více' : 'méně'} ${formatEntity(d)} než ${d.agentB} `
     case "diff":
-      return html`<div class="badge">DIFF</div> ${formatQuantityWithEntity(d)}`
+      return html`<div class="badge">DIFF</div> ${d.agentMinuend} - ${d.agentSubtrahend}=${formatQuantityWithEntity(d)}`
     case "ratio":
       return html`<div class="badge">RATIO</div> ${formatAgentEntity(d)}=${new Fraction(d.ratio).toFraction()}`;
     case "ratios":

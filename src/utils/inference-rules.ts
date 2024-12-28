@@ -1,6 +1,6 @@
 import { html } from "htl";
 import type { Comparison, ComparisonDiff, Container, Rate, RatioComparison } from "./math.js";
-import { cont, ratio, comp, rate, ratios, ratioComp } from "./math.js";
+import { cont, ratio, comp, rate, ratios, ratioComp, diff } from "./math.js";
 
 export default function rules() {
 
@@ -17,6 +17,15 @@ export default function rules() {
 
     return {
       premises: [a, b],
+      inputTemplate: html`${a.agent} má ${a.quantity} ${a.entity}.${b.agent} má ${b.quantity} ${b.entity}.`,
+      outputTemplate: (predicate: Comparison) => html`${predicate.agentA} má o ${Math.abs(predicate.quantity)} ${Math.abs(predicate.quantity) > 0 ? "více" : "méně"} než ${predicate.agentB}.`
+    }
+  }
+
+  const toDiffRule = (a: Container, b: Container) => {
+
+    return {
+      premises: [a, b, { kind: 'diff' }],
       inputTemplate: html`${a.agent} má ${a.quantity} ${a.entity}.${b.agent} má ${b.quantity} ${b.entity}.`,
       outputTemplate: (predicate: Comparison) => html`${predicate.agentA} má o ${Math.abs(predicate.quantity)} ${Math.abs(predicate.quantity) > 0 ? "více" : "méně"} než ${predicate.agentB}.`
     }
@@ -51,6 +60,16 @@ export default function rules() {
     }
   }
 
+  const substractRule = (container: Container) => {
+    const diffRule = diff("třída", "chlapci", 4, "žák");
+
+    return {
+      premises: [container, diffRule],
+      inputTemplate: html`${container.agent} má ${container.quantity} ${container.entity}.`,
+      outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
+    }
+  }
+
   const fairDivision = (whole: Container, groupCount: Container) => {
     return {
       premises: [whole, groupCount, { kind: 'rate' }],
@@ -60,7 +79,7 @@ export default function rules() {
   }
 
   const partToWholeRatioRules = (container: Container) => {
-    const r = ratio("studenti", "chlapec", 1 / 4);    
+    const r = ratio("studenti", "chlapec", 1 / 4);
     return {
       premises: [container, r],
       inputTemplate: html`${container.agent} má ${container.quantity} ${container.entity}. ${r.part} z ${r.whole} = ${r.ratio}`,
@@ -119,7 +138,8 @@ export default function rules() {
     rate: [
       fairDivision(cont("Petr", 20, "Kč"), cont("Petr", 5, "rohlík")),
       rateCompute(cont("Petr", 20, "Kč")),
-      rateCompute(cont("Petr", 5, "rohlík"))]
+      rateCompute(cont("Petr", 5, "rohlík"))],
+    substract: [toDiffRule(cont("třída", 12, "žák"), cont("chlapci", 8, "žák")), substractRule(cont("třída", 12, "žák")), substractRule(cont("chlapci", 8, "žák"))]
 
   }
 
