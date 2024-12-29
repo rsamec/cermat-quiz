@@ -1,6 +1,6 @@
 import { html } from "htl";
 import type { Comparison, ComparisonDiff, Container, Rate, RatioComparison } from "./math.js";
-import { cont, ratio, comp, rate, ratios, ratioComp, diff } from "./math.js";
+import { cont, ratio, comp, rate, ratios, ratioComp, diff, sum } from "./math.js";
 
 export default function rules() {
 
@@ -25,7 +25,7 @@ export default function rules() {
   const toDiffRule = (a: Container, b: Container) => {
 
     return {
-      premises: [a, b, { kind: 'diff' }],
+      premises: [a, b, { kind: "comp-diff" }],
       inputTemplate: html`${a.agent} má ${a.quantity} ${a.entity}.${b.agent} má ${b.quantity} ${b.entity}.`,
       outputTemplate: (predicate: Comparison) => html`${predicate.agentA} má o ${Math.abs(predicate.quantity)} ${Math.abs(predicate.quantity) > 0 ? "více" : "méně"} než ${predicate.agentB}.`
     }
@@ -44,7 +44,7 @@ export default function rules() {
   const toRatioCompareRule = (a: Container, b: Container) => {
 
     return {
-      premises: [a, b, { kind: 'comp-r' }],
+      premises: [a, b, { kind: 'comp-ratio' }],
       inputTemplate: html`${a.agent} má ${a.quantity} ${a.entity}.${b.agent} má ${b.quantity} ${b.entity}.`,
       outputTemplate: (predicate: RatioComparison) => html`${predicate.agentA} má o ${Math.abs(predicate.quantity)} ${Math.abs(predicate.quantity) > 0 ? "více" : "méně"} než ${predicate.agentB}.`
     }
@@ -55,13 +55,13 @@ export default function rules() {
 
     return {
       premises: [container, pricePerBox],
-      inputTemplate: html`${container.agent} má ${container.quantity} ${container.entity}. Každá ${pricePerBox.agent} ${pricePerBox.entityB.entity} je ${Math.abs(pricePerBox.quantity)} ${pricePerBox.entityA.entity}.`,
+      inputTemplate: html`${container.agent} má ${container.quantity} ${container.entity}. Každá ${pricePerBox.agent} ${pricePerBox.entityBase.entity} je ${Math.abs(pricePerBox.quantity)} ${pricePerBox.entity.entity}.`,
       outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
     }
   }
 
   const substractRule = (container: Container) => {
-    const diffRule = diff("třída", "chlapci", 4, "žák");
+    const diffRule = diff("Ája a Honzík", "Honzík", 6, "sešity");
 
     return {
       premises: [container, diffRule],
@@ -70,11 +70,21 @@ export default function rules() {
     }
   }
 
+  const sumRule = (a, b) => {
+    const sumRule = sum("dohromady", ["Ája", "Honzík"], "sešity", "sešity");
+
+    return {
+      premises: [[a, b], sumRule],
+      inputTemplate: html`Ája a Honzík dají sešity dohromady.`,
+      outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
+    }
+  }
+
   const fairDivision = (whole: Container, groupCount: Container) => {
     return {
       premises: [whole, groupCount, { kind: 'rate' }],
       inputTemplate: html`${whole.agent} má ${whole.quantity} ${whole.entity}. ${groupCount.agent} má ${groupCount.quantity} ${groupCount.entity}. Rozděl rovnoměrně na ${groupCount.quantity} skupiny.`,
-      outputTemplate: (predicate: Rate) => html`Každá ${predicate.agent} ${predicate.entityB.entity} je ${Math.abs(predicate.quantity)} ${predicate.entityA.entity}.`
+      outputTemplate: (predicate: Rate) => html`Každá ${predicate.agent} ${predicate.entityBase.entity} je ${Math.abs(predicate.quantity)} ${predicate.entity.entity}.`
     }
   }
 
@@ -139,7 +149,8 @@ export default function rules() {
       fairDivision(cont("Petr", 20, "Kč"), cont("Petr", 5, "rohlík")),
       rateCompute(cont("Petr", 20, "Kč")),
       rateCompute(cont("Petr", 5, "rohlík"))],
-    substract: [toDiffRule(cont("třída", 12, "žák"), cont("chlapci", 8, "žák")), substractRule(cont("třída", 12, "žák")), substractRule(cont("chlapci", 8, "žák"))]
+    substract: [toDiffRule(cont("Ája a Honzík", 8, "sešity"), b), substractRule(cont("Ája a Honzík", 8, "sešity")), substractRule(b)],
+    sum: [sumRule(a, b)]
 
   }
 

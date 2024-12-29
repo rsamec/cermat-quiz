@@ -85,7 +85,7 @@ function codesBy({subject, period}){
 
 <div class="grid grid-cols-4" style="grid-auto-rows: auto;"> 
   <div class="card">
-    <h1><strong>Přepoužitelnost</strong></h1>
+    <h1><strong>Strukturovná data</strong></h1>
     <div class="v-stack v-stack--m">
       <span>Možnost vložit do vlastních školních stránek. Vytvořit si vlastní grafickou podobu testu. Stavět vlastní aplikace.</span>
       <a href="/embedding">Více informací</a>
@@ -106,12 +106,20 @@ function codesBy({subject, period}){
     </div>
   </div>
   <div class="card grow">
-    <h1><strong>Videa, vizualizace, automatizace, AI</strong></h1>
+    <h1><strong>Rozbory úloh, vizualizace, videa</strong></h1>
      <div class="v-stack v-stack--m">
-      <span>Jeden obrázek vydá za tisíc slov. Dobrá vizualizace usnadňuje pochopení úlohy. AI jako nástroj né jako řešení. V případě nouze použij ChatGTP tlačítko.</span>
-      <a href="/math">Více informací</a>
+      <span>Rozbory řešení na úroveň jednotlivých kroků, strukturované myšlení pomocí dedukčních stromů. Jeden obrázek vydá za tisíc slov. Dobrá vizualizace usnadňuje pochopení úlohy.</span>
+      <a href="/math-deduction">Více informací</a>
     </div>
   </div> 
+  <div class="card grow">
+    <h1><strong>AI a automatizace</strong></h1>
+     <div class="v-stack v-stack--m">
+      <span>AI jako nástroj né jako řešení. V případě nouze použij ChatGTP tlačítko. Automatické řešení úloh pomocí AI.</span>
+      <a href="/ai">Více informací</a>
+    </div>
+  </div> 
+
 </div>
 
 

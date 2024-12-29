@@ -25,11 +25,11 @@ export default function build({ input }: {
   const diffComp = comp(jihlava, trebic, input.jihlavaPlus, entity)
 
 
-  const dd1 = inferenceRule(total, diffComp, { kind: 'part-eq' });
+  const dd1 = inferenceRule(total, diffComp, { kind: 'comp-part-eq' });
   const deductionTree = deduce(
       format(total, inputLabel(1)),
       format(diffComp, inputLabel(2)),
-      format({kind:'part-eq'}),
+      format({kind:'comp-part-eq'}),
       format(dd1, deduceLabel(1))
   )
 

@@ -23,14 +23,14 @@ export type Comparison = EntityBase & {
 }
 
 export type RatioComparison = EntityBase & {
-  kind: 'comp-r'
+  kind: 'comp-ratio'
   agentA: string,
   agentB: string,
   quantity: number
 }
 
 export type ComparisonDiff = EntityBase & {
-  kind: 'diff'
+  kind: "comp-diff"
   agentMinuend: string,
   agentSubtrahend: string,
   quantity: number
@@ -46,8 +46,8 @@ export type Transfer = EntityBase & {
 export type Rate = {
   kind: 'rate'
   agent: string,
-  entityA: EntityBase,
-  entityB: EntityBase,
+  entity: EntityBase,
+  entityBase: EntityBase,
   quantity: number
 }
 
@@ -98,10 +98,10 @@ export function comp(agentA: string, agentB: string, quantity: number, entity: s
   return { kind: 'comp', agentA, agentB, quantity, entity }
 }
 export function ratioComp(agentA: string, agentB: string, quantity: number, entity: string): RatioComparison {
-  return { kind: 'comp-r', agentA, agentB, quantity, entity }
+  return { kind: 'comp-ratio', agentA, agentB, quantity, entity }
 }
 export function diff(agentMinuend: string, agentSubtrahend: string, quantity: number, entity: string): ComparisonDiff {
-  return { kind: 'diff', agentMinuend, agentSubtrahend, quantity, entity }
+  return { kind: "comp-diff", agentMinuend, agentSubtrahend, quantity, entity }
 }
 export function ratio(whole: EntityMatcher, part: EntityMatcher, ratio: number): PartWholeRatio {
   return { kind: 'ratio', whole, part, ratio }
@@ -109,8 +109,8 @@ export function ratio(whole: EntityMatcher, part: EntityMatcher, ratio: number):
 export function sum(wholeAgent: string, partAgents: string[], wholeEntity: string, partEntity: string): Combine {
   return { kind: 'sum', wholeAgent, partAgents, wholeEntity: { entity: wholeEntity }, partEntity: { entity: partEntity } }
 }
-export function rate(agent: string, quantity: number, entityA: string, entityB: string): Rate {
-  return { kind: 'rate', agent, quantity, entityA: { entity: entityA }, entityB: { entity: entityB } }
+export function rate(agent: string, quantity: number, entity: string, entityBase: string): Rate {
+  return { kind: 'rate', agent, quantity, entity: { entity: entity }, entityBase: { entity: entityBase } }
 }
 export function ratios(whole: EntityMatcher, parts: EntityMatcher[], ratios: number[]): PartToPartRatio {
   return { kind: 'ratios', parts, whole, ratios };
@@ -169,13 +169,13 @@ function partToWholeRule(a: Container, b: PartWholeRatio): Container {
     : { kind: 'cont', ...toAgentEntity(b.whole, a, isSame), quantity: a.quantity / b.ratio }
 }
 function rateRule(a: Container, rate: Rate): Container {
-  if (!(a.entity === rate.entityA.entity || a.entity === rate.entityB.entity)) {
-    throw `Mismatch entity ${a.entity} any of ${rate.entityA.entity}, ${rate.entityB.entity}`
+  if (!(a.entity === rate.entity.entity || a.entity === rate.entityBase.entity)) {
+    throw `Mismatch entity ${a.entity} any of ${rate.entity.entity}, ${rate.entityBase.entity}`
   }
   return {
-    kind: 'cont', agent: a.agent, entity: a.entity == rate.entityA.entity
-      ? rate.entityB.entity
-      : rate.entityA.entity, quantity: a.entity == rate.entityA.entity
+    kind: 'cont', agent: a.agent, entity: a.entity == rate.entity.entity
+      ? rate.entityBase.entity
+      : rate.entity.entity, quantity: a.entity == rate.entity.entity
         ? a.quantity / rate.quantity
         : a.quantity * rate.quantity
   }
@@ -219,7 +219,7 @@ function toRatioComparison(a: Container, b: Container): RatioComparison {
   if (a.entity != b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`
   }
-  return { kind: 'comp-r', agentB: a.agent, agentA: b.agent, quantity: b.quantity / a.quantity, entity: a.entity }
+  return { kind: 'comp-ratio', agentB: a.agent, agentA: b.agent, quantity: b.quantity / a.quantity, entity: a.entity }
 }
 
 function compareToCompareRule(a: Comparison, b: Comparison): Rate {
@@ -227,8 +227,8 @@ function compareToCompareRule(a: Comparison, b: Comparison): Rate {
     kind: 'rate',
     agent: a.agentA,
     quantity: Math.abs(a.quantity) / Math.abs(b.quantity),
-    entityA: { entity: a.entity },
-    entityB: { entity: b.entity }
+    entity: { entity: a.entity },
+    entityBase: { entity: b.entity }
 
   }
 }
@@ -237,7 +237,7 @@ function toDiff(a: Container, b: Container): ComparisonDiff {
     throw `Mismatch entity ${a.entity}, ${b.entity}`
   }
   return {
-    kind: 'diff',
+    kind: "comp-diff",
     agentMinuend: a.agent,
     agentSubtrahend: b.agent,
     quantity: a.quantity - b.quantity,
@@ -253,10 +253,10 @@ function toRate(a: Container, b: Container): Rate {
     kind: 'rate',
     agent: a.agent,
     quantity: a.quantity / b.quantity,
-    entityA: {
+    entity: {
       entity: a.entity
     },
-    entityB: {
+    entityBase: {
       entity: b.entity
     }
   }
@@ -309,17 +309,17 @@ function partEqual(a: Comparison, b: Container) {
   }
 
 }
-export function inferenceRule(a: Predicate | Container[], b: Predicate, c?: { kind: 'ratio' | 'comp-r' | 'rate' | 'diff' | 'part-eq' }) {
+export function inferenceRule(a: Predicate | Container[], b: Predicate, c?: { kind: 'ratio' | 'comp-ratio' | 'rate' | "comp-diff" | 'comp-part-eq' }) {
   if (Array.isArray(a)) {
     return b.kind == "sum" ? sumRule(a, b) : null
   }
   else if (a.kind === "cont" && b.kind == "cont") {
     const kind = c?.kind;
-    return kind === "diff"
+    return kind === "comp-diff"
       ? toDiff(a,b)
       : kind === "rate"
         ? toRate(a, b)
-        : kind === "comp-r"
+        : kind === "comp-ratio"
           ? toRatioComparison(a, b)
           : kind === "ratio"
             ? toPartWholeRatio(a, b)
@@ -327,11 +327,11 @@ export function inferenceRule(a: Predicate | Container[], b: Predicate, c?: { ki
   }
   else if (a.kind === "comp" && b.kind === "cont") {
     const kind = c?.kind;
-    return kind === "part-eq" ? partEqual(a, b) : compareRule(b, a);
+    return kind === "comp-part-eq" ? partEqual(a, b) : compareRule(b, a);
   }
   else if (a.kind === "cont" && b.kind === "comp") {
     const kind = c?.kind;
-    return kind === "part-eq" ? partEqual(b, a) : compareRule(a, b);
+    return kind === "comp-part-eq" ? partEqual(b, a) : compareRule(a, b);
   }
   else if (a.kind === "cont" && b.kind == "rate") {
     return rateRule(a, b)
@@ -339,10 +339,10 @@ export function inferenceRule(a: Predicate | Container[], b: Predicate, c?: { ki
   else if (a.kind === "rate" && b.kind == "cont") {
     return rateRule(b, a)
   }
-  else if (a.kind === "comp-r" && b.kind === "cont") {
+  else if (a.kind === "comp-ratio" && b.kind === "cont") {
     return ratioCompareRule(b, a);
   }
-  else if (a.kind === "cont" && b.kind === "comp-r") {
+  else if (a.kind === "cont" && b.kind === "comp-ratio") {
     return ratioCompareRule(a, b);
   }
   else if (a.kind === "cont" && b.kind === "ratio") {
@@ -357,10 +357,10 @@ export function inferenceRule(a: Predicate | Container[], b: Predicate, c?: { ki
   else if (a.kind === "ratios" && b.kind == "cont") {
     return partToPartRule(b, a)
   }
-  else if (a.kind === "cont" && b.kind === "diff") {
+  else if (a.kind === "cont" && b.kind === "comp-diff") {
     return diffRule(a, b);
   }
-  else if (a.kind === "diff" && b.kind === "cont") {
+  else if (a.kind === "comp-diff" && b.kind === "cont") {
     return diffRule(b, a);
   }
   else if (a.kind === "cont" && b.kind === "transfer") {

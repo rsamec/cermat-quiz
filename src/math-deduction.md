@@ -1,5 +1,5 @@
 ---
-title: Matematika - dedukce
+title: Matematizace - dedukční stromy
 footer: false
 pager: true
 toc: true
@@ -12,13 +12,8 @@ import {partion, relativeParts, formatPredicate, relativePartsDiff} from './util
 import {inferenceRule,cont,sum, comp, ratio, diff} from './utils/math.js';
 
 import allRules from './utils/inference-rules.js';
-import sourozenci from './math/sourozenci.js';
-import pocetOb from './math/pocet-obyvatel.js';
-import vOhrade from './math/kralice-a-slepice-v-ohrade.js';
-import zakusky from './math/zakusek.js';
-import milkExample from './math/mleko.js';
-import vek from './math/vek.js';
 import slepice from './math/slepice.js';
+
 
 import proportionInverse from './math/proportion/proportion-inverse.js';
 import proportion from './math/proportion/proportion.js';
@@ -53,215 +48,204 @@ function renderExample({example, unit, showRelativeValues}={}){
 }
 
 function renderRules(rules){
-  return rules.map(rule  => {
-    const ddRule = inferenceRule(...rule.premises);
-    return html`<div class="v-stack h-stack--m">    
+  return html`<div  class="grid grid-cols-3">${rules.map(rule  => {
+    const ddRule = inferenceRule(...rule.premises);    
+    return html`<div> 
       <div class="card">
-      ${deduce(...rule.premises.map(d => formatPredicate(d)),formatPredicate(ddRule))}
+      
+      ${deduce(...rule.premises.flatMap(d => d).map(d => formatPredicate(d)),formatPredicate(ddRule))}
       </div>
      
     </div>`
-  })
+  })}</div>`
 }
 
 const rules = allRules();
+const opacity = 0.3;
 ```
 
-# Příklady
+
+Řešení matematického problému je formou __deduktivního usuzování__. Logicky správná dedukce má podobu posloupnosti kroků. Jsou-li __předpoklady__ (premises) pravdivé, je pravdivý i závěr.
+
+Popis řešení ve formě __dedukčního stromu__.
+
+- zadání úlohy je potřeba převést (text comprehension) na sadu __predikátů__ (pravdivé tvrzení)
+- na základě __predikátů__ (axioms) aplikujeme __odvozovací pravidla__ (inference rules)
 
 ```js
-const pocetObyvatelForm = Inputs.form({
-  celkem: Inputs.range([50_000, 100_000], {step: 10, value:86_200, label: "Jihlava + Třebíč"}),
-  jihlavaPlus: Inputs.range([10_000, 30_000], {step: 2, value: 16_200, label: "Jihlava více o"}),
+const slepiceForms = Inputs.form({
+  previousWorkers: Inputs.range([0.5, 10], {step: 0.5, value:1.5, label: "Původní počet slepic"}),
+  previousEggs: Inputs.range([0.5, 10], {step: 0.5, value:1.5, label: "Původní počet vajec"}),
+  previousDays: Inputs.range([0.5, 10], {step: 0.5, value:1.5, label: "Původní počet dní"}),
+  currentWorkers: Inputs.range([0.5, 10], {step: 0.5, value:3, label: "Nový počet slepic"}),
+  currentDays: Inputs.range([0.5, 10], {step: 0.5, value:3, label: "Nový počet dní"}),
+  
 });
-const pocetObyvatel = Generators.input(pocetObyvatelForm);
+const slepiceInput = Generators.input(slepiceForms);
 ```
 
-## Počet obyvatel
+# Příklad - slepičí hádanka
 
 <details>
   <summary>Parametrizace</summary>
-  ${pocetObyvatelForm}
-</details>
-    
-<div>${renderExample({example:pocetOb({input:pocetObyvatel}), unit: 1000, showRelativeValues: false})}</div>
-
-----------------------
-
-```js
-const ohradaForm = Inputs.form({
-  pocetHlav: Inputs.range([21, 101], {step: 2, value:37, label: "Počet hlave (králíci, slepice)"}),
-  kralikuMene: Inputs.range([5, 21], {step: 2, value: 5, label: "králíků méně o"}),
-});
-const ohrada = Generators.input(ohradaForm);
-```
-
-## Králíci a slepice v ohradě
-
-<details>
-  <summary>Parametrizace</summary>
-  ${ohradaForm}
+  ${slepiceForms}
 </details>
 
-<div>${renderExample({example:vOhrade({input:ohrada})})}</div>
-
-----------------------
-
-```js
-const zakusekForm = Inputs.form({
-  cena: Inputs.range([30, 200], {step: 2, value:86, label: "Cena zákusku č.1"}),
-});
-const zakusek = Generators.input(zakusekForm);
-```
-## Cena zákusků
-
-<details>
-  <summary>Parametrizace</summary>
-  ${zakusekForm}
-</details>
-
-<div>${renderExample({example:zakusky({input:zakusek})})}</div>
+<div>${renderExample({example:slepice({input:slepiceInput})})}</div>
 
 
-----------------------
+# Predikáty
 
-```js
-const sourozenciInputForm = Inputs.form({
-  evaPodil: Inputs.range([1, 40], {step: 1, value:40, label: "Eva - naspořený podíl (%)"}),
-  michalPlus: Inputs.range([1, 100], {step: 1, value: 24, label: "Michal naspořil navíc (Kč)"}),
-  zbyvaNasporit: Inputs.range([1, 100], {step: 1, value: 72, label: "Zbývá naspořit"})
-});
-const sourozenciInput = Generators.input(sourozenciInputForm);
-```
+<table>
+  <thead>
+    <tr>
+      <td>Predikát</td>
+      <td>Vlastnosti</td>
+      <td>Příklad</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><div class="badge">C</div> container</td>
+      <td>(agent=Ája,</br>quantity=2,</br>entity=sešity)</td>
+      <td>Ája má 2 sešity</td>
+    </tr>
+    <tr>
+      <td><div class="badge">COMP</div> comparison</td>
+      <td>(agentA=Ája,</br>agentB=Honzík,</br>quantity=7,</br>entity=sešity)</td>
+      <td>Ája má o 7 sešitů více než Honzík </td>
+    </tr>
+    <tr>
+      <td><div class="badge">COMP RATIO</div> comparison by ratio</td>
+      <td>(agentA=Ája,</br>agentB=Honzík,</br>quantity=7,</br>entity=sešity)</td>
+      <td>Ája má 7 krát více sešitů než Honzík</td>
+    </tr>
+    <tr>
+      <td><div class="badge">COMP DIFF</div> comparison by difference</td>
+      <td>(agentMinuend=celkem,</br>agentSubtrahend=Honzík,</br>quantity=7,</br>entity=sešity)</td>
+      <td>Rozdíl mezi sešity celkem a Honzíkem jsou 7 sešitů</td>
+    </tr>
+    <tr>
+      <td><div class="badge">RATIO</div> part to whole comparison</td>
+      <td>(whole={agent:třída,entity:žáci},</br> part=chlapci,</br>ratio=1/4)</td>
+      <td>Ve třídě je 1/4 chlapců ze všech žáků.</td>
+    </tr>
+    <tr>
+      <td><div class="badge">RATIOS</div> part to part comparison</td>
+      <td>(whole={agent:třída,entity:žáci},</br> parts=[chlapci,dívky],</br>ratios=[1,3])</td>
+      <td>Poměr chlapců a dívek ve třídě je 1:3 (1 chlapec ku 3 dívkám).</td>
+    </tr>
+    <tr>
+      <td><div class="badge">RATE</div>rate</td>
+      <td>(agent=Ája,</br>quantity=3,</br>entity=Kč,</br>entityBase=rohlík)</td>
+      <td>Každý rohlík, který má Ája, stojí 3 Kč.</td>
+    </tr>
+    <tr>
+      <td><div class="badge">SUM</div>sumation</td>
+      <td>(agentWhole=třída,</br>partAgents=[chlapci,dívky],</br>entityWhole=žáků)</td>
+      <td>Počet chlapců a dívek dohromady dává počet žáků ve třídě.</td>
+    </tr>
+    <tr>
+      <td><div class="badge">COMMON SENSE</div> common sense</td>
+      <td>(description=...)</td>
+      <td>Nepřímá uměrnost. Je vztah mezi veličinami, kde je obracený poměr veličin.</td>
+    </tr>
+  </tbody>
+</table>
 
-## Šetření sourozenců na dárek
-
-<details>
-  <summary>Parametrizace</summary>
-  ${sourozenciInputForm}
-</details>
-
-<div>${renderExample({example:sourozenci({input:sourozenciInput})})}</div>
-
-----------------------
-
-
-```js
-const milkForm = Inputs.form({
-  rozdil: Inputs.range([2, 50], {step: 1, value:5, label: "2 litry stojí méně o než 3 litry"}),
-  zdrazeni: Inputs.range([0, 0.49], {step: 0.01, value:1/4, label: "Zdražení mléka o"}),
-});
-const milkInput = Generators.input(milkForm);
-```
-## Zdražení mléka
-
-<details>
-  <summary>Parametrizace</summary>
-  ${milkForm}
-</details>
-
-<div>${renderExample({example:milkExample({input:milkInput})})}</div>
-
-----------------------
-
-```js
-const vekForm = Inputs.form({
-  vekRozdil: Inputs.range([6, 50], {step: 2, value:6, label: "Věkový rozdíl"}),
-});
-const vekInput = Generators.input(vekForm);
-```
-
-```js
-const workersForms = Inputs.form({
-  previousWorker: Inputs.range([5, 10], {step: 1, value:5, label: "Původní počet švadlen"}),
-  previousHours: Inputs.range([1, 50], {step: 1, value:24, label: "Původní počet hodin"}),
-  currentWorker: Inputs.range([2, 4], {step: 1, value:4, label: "Nový počet švadlen"}),
-});
-const workersInput = Generators.input(workersForms);
-```
-
-## Švadleny
-
-<details>
-  <summary>Parametrizace</summary>
-  ${workersForms}
-</details>
-
-<div>${renderExample({example:svadleny({input:workersInput})})}</div>
-
-```js
-  const entity = "hlava";
-  const whole = cont("zaci", 50, entity);
-  const part = cont("divky", 20,entity);
-  const r = ratio({agent:"zaci",entity} , {agent:"divky", entity}, 1/3, entity);
-
-  const dd1 = inferenceRule(whole, r);
-  const partDeduce = deduce(whole, r, dd1);
-  const wholeDeduce = deduce(part, r, inferenceRule(part, r));
-
-```
---------------------------------
-
-# Jak je to uděláno
+# Odvozovací pravidla 
 
 ```js
 ```
 
-## Základní odvozovací pravidla
+## Porovnávání
 
-### Porovnání rozdílem - o kolik je větší / menší
+### Porovnání - o kolik je větší / menší?
+
+<div class="badge badge--large">COMP</div>
+
 ${partion([
-    {value: 2, agent:"Alice"},
-    {value: 2, agent:"Bob"},
-    {value: 4, agent:"Bob"},
+    {value: 2, agent:"Aja", opacity},
+    {value: 2, agent:"Honzík", opacity},
+    {value: 4, agent:"Honzík"},
   ],
   {unit:1, showSeparate: true, showRelativeValues: false })
 }
 
-${renderRules(rules.compare)}
+<div>${renderRules(rules.compare)}</div>
 
-### Porovnání podílem - kolikrát je větší / menší
+### Porovnání podílem - kolikrát je větší / menší?
+
+<div class="badge badge--large">COMP-RATIO</div>
+
 ${partion([
-    {value: 2, agent:"Alice"},
-    {value: 2, agent:"Bob"},
-    {value: 2, agent:"Bob"},
-    {value: 2, agent:"Bob"},
+    {value: 2, agent:"Aja", opacity},
+    {value: 2, agent:"Honzík"},
+    {value: 2, agent:"Honzík"},
+    {value: 2, agent:"Honzík"},
   ],
   {unit:2, showSeparate: true, showRelativeValues: false })
 }
-${renderRules(rules.ratioCompare)}
+
+<div>${renderRules(rules.ratioCompare)}</div>
+
+### Porovnání rozdílem - kolik je rozdíl?
+
+<div class="badge badge--large">COMP-DIFF</div>
+
+${partion([
+    {value: 2, agent:"Aja", opacity},
+    {value: 4, agent:"Honzík", opacity},
+    {value: 2, agent:"Honzík"},
+  ],
+  {unit:1, showSeparate: false, showRelativeValues: false })
+}
+
+<div>${renderRules(rules.substract)}</div>
+
 
 ### Porovnávání - část z celku
 
+<div class="badge badge--large">RATIO</div>
+
 ${partion([
     {value: 30, agent:"chlapci", label:{ hidePercent: true, hideFraction: false} },
     {value: 90, agent:"dívky", label:{ hidePercent: true, hideFraction: false}},
   ],
   {unit:1, showRelativeValues: true, multiple:5 })
 }
-${renderRules(rules.partToWholeRatio)}
+<div>${renderRules(rules.partToWholeRatio)}</div>
 
 ### Porovnávání - poměry část ku časti
 
+<div class="badge badge--large">RATIOS</div>
+
 ${partion([
     {value: 30, agent:"chlapci", label:{ hidePercent: true, hideFraction: false} },
     {value: 90, agent:"dívky", label:{ hidePercent: true, hideFraction: false}},
   ],
   {unit:1, showRelativeValues: true, multiple:5 })
 }
-${renderRules(rules.partToPartRatio)}
 
-### Rozdíl
+<div>${renderRules(rules.partToPartRatio)}</div>
 
-${renderRules(rules.substract)}
 
-### Rozdělování
+## Rozdělování
 
-${renderRules(rules.rate)}
+<div class="badge badge--large">RATIO</div>
+
+<div>${renderRules(rules.rate)}</div>
+
+
+## Spojování
+
+<div class="badge badge--large">SUM</div>
+
+<div>${renderRules(rules.sum)}</div>
 
 ----------------------
 
-## Základní odvozovací vzory
+# Základní odvozovací vzory
 
 ```js
 ```
@@ -334,7 +318,9 @@ const propForm = Inputs.form({
 });
 const propInput = Generators.input(propForm);
 ```
-## Přímá úměrnost
+
+## Úměrnosti
+### Přímá úměrnost
 
 <details>
   <summary>Parametrizace</summary>
@@ -354,7 +340,7 @@ const proportionInverseForm = Inputs.form({
 const proportionInverseInput = Generators.input(proportionInverseForm);
 ```
 
-## Nepřímá úměrnost
+### Nepřímá úměrnost
 
 <details>
   <summary>Parametrizace</summary>
@@ -377,7 +363,7 @@ const proportionCombinedForms = Inputs.form({
 const proportionCombinedInput = Generators.input(proportionCombinedForms);
 ```
 
-## Kombinovaná přímá a nepřímá úměrnost
+### Kombinovaná přímá a nepřímá úměrnost
 
 <details>
   <summary>Parametrizace</summary>
@@ -405,7 +391,7 @@ const dTree1 = inferenceRule(total,difference);
 const eqRatio = ratio({agent:zbytek, entity}, {agent:tabor, entity}, 1/2, entity )
 const dTree2 = inferenceRule(dTree1, eqRatio)
 
-const partEqPredicate = {kind:'part-eq'}
+const partEqPredicate = {kind:'comp-part-eq'}
 const dTree0 = inferenceRule(total, comparison, partEqPredicate )
 
 ```
@@ -426,26 +412,3 @@ ${deduce(formatPredicate(total), formatPredicate(comparison), formatPredicate(pa
 ${relativePartsDiff(1/4,{first:"letos", second:"loni", asPercent: false})}
 ${relativePartsDiff(-1/4,{first:"letos", second:"loni", asPercent: false})}
 
--------------------------
-
-
-```js
-const slepiceForms = Inputs.form({
-  previousWorkers: Inputs.range([0.5, 10], {step: 0.5, value:1.5, label: "Původní počet slepic"}),
-  previousEggs: Inputs.range([0.5, 10], {step: 0.5, value:1.5, label: "Původní počet vajec"}),
-  previousDays: Inputs.range([0.5, 10], {step: 0.5, value:1.5, label: "Původní počet dní"}),
-  currentWorkers: Inputs.range([0.5, 10], {step: 0.5, value:3, label: "Nový počet slepic"}),
-  currentDays: Inputs.range([0.5, 10], {step: 0.5, value:3, label: "Nový počet dní"}),
-  
-});
-const slepiceInput = Generators.input(slepiceForms);
-```
-
-## Slepice hádanka
-
-<details>
-  <summary>Parametrizace</summary>
-  ${slepiceForms}
-</details>
-
-<div>${renderExample({example:slepice({input:slepiceInput})})}</div>

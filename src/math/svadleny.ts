@@ -23,11 +23,11 @@ export default function build({ input }: {
 
   const aPrevious = cont(agentPrevious, input.previousWorker, entityA);
   const aCurrent = cont(agentCurrent, input.currentWorker, entityA)
-  const dd1 = inferenceRule(aCurrent, aPrevious, { kind: 'comp-r' });
+  const dd1 = inferenceRule(aCurrent, aPrevious, { kind: 'comp-ratio' });
 
   const cc1 = commonSense("nepřímá úměrnost, obracený poměr veličin")
   const cc2 = commonSense("přímá úměrnost")
-  const dd2 = ratioComp(agentCurrent, agentPrevious, dd1.kind == "comp-r" ? dd1.quantity : 0, entityB)
+  const dd2 = ratioComp(agentCurrent, agentPrevious, dd1.kind == "comp-ratio" ? dd1.quantity : 0, entityB)
   const bPrevious = cont(agentPrevious, input.previousHours, entityB);
   const dd3 = inferenceRule(dd2, bPrevious);
 

@@ -34,3 +34,7 @@
   background-color: color-mix(in srgb, var(--theme-yellow), var(--theme-background) 70%);
   color: var(--theme-yellow);
 }
+
+.badge--large {
+  font-size: 24px;
+}

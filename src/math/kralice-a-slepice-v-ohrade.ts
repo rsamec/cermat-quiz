@@ -35,13 +35,13 @@ export default function build({ input }: {
   const slepicePlus = comp(kralik, slepice, -input.kralikuMene, entity)
 
   const dd1 = inferenceRule(total, perHlava)
-  const dd2 = inferenceRule(dd1, slepicePlus, { kind: 'part-eq' });
+  const dd2 = inferenceRule(dd1, slepicePlus, { kind: 'comp-part-eq' });
   const dd3 = inferenceRule(dd2, slepicePlus);
   const deductionTree = deduce(
     deduce(
         deduce(format(total, inputLabel(1)), format(perHlava), format(dd1, deduceLabel(1))),
         format(slepicePlus, inputLabel(2)),
-        format({ kind: 'part-eq' }),
+        format({ kind: 'comp-part-eq' }),
         format(dd2, deduceLabel(2))
     ),
     format(slepicePlus, inputLabel(2)),

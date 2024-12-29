@@ -110,33 +110,49 @@ export function formatNode(t, label) {
 export function formatPredicate(d) {
   const formatQuantity = (d, absolute) => (absolute ? Math.abs(d.quantity) : d.quantity).toLocaleString('cs-CZ')
   const formatEntity = (d) => d.entity
-  const formatQuantityWithEntity = (d, absolute) =>
-    html`${formatQuantity(d, absolute)} ${formatEntity(d)}`
-  if ((d.kind == "ratio" || d.kind === "comp-r" || d.kind === "rate" || d.kind ==="diff" || d.kind === "part-eq") && (d.quantity == null && d.ratio == null)) {
-    return html`<div class="badge">${d.kind?.toUpperCase()}</div>`
+  const formatQuantityWithEntity = (d, absolute) => html`${formatQuantity(d, absolute)}&nbsp;${formatEntity(d)}`;
+
+  if ((d.kind == "ratio" || d.kind === "comp-ratio" || d.kind === "rate" || d.kind === "comp-diff" || d.kind === "comp-part-eq") && (d.quantity == null && d.ratio == null)) {
+    return formatToBadge(d);
   }
+
+  let result = ''
   switch (d.kind) {
     case "cont":
-      return html`<div class="badge">C</div> ${d.agent}=${formatQuantityWithEntity(d)}`;
+      result = html`${d.agent}=${formatQuantityWithEntity(d)}`;
+      break;
     case "comp":
-      return html`<div class="badge">COMP</div> ${d.agentA} ${d.quantity > 0 ? 'více' : 'méně'} než ${d.agentB} o ${formatQuantityWithEntity(d, true)}`
-    case "comp-r":
-      return html`<div class="badge">COMP-R</div> ${d.agentA} ${formatQuantity(d, true)} krát ${d.quantity > 0 ? 'více' : 'méně'} ${formatEntity(d)} než ${d.agentB} `
-    case "diff":
-      return html`<div class="badge">DIFF</div> ${d.agentMinuend} - ${d.agentSubtrahend}=${formatQuantityWithEntity(d)}`
+      result = html`${d.agentA} ${d.quantity > 0 ? 'více' : 'méně'} než ${d.agentB} o ${formatQuantityWithEntity(d, true)}`
+      break;
+    case "comp-ratio":
+      result = html`${d.agentA} ${formatQuantity(d, true)} krát ${d.quantity > 0 ? 'více' : 'méně'}&nbsp;${formatEntity(d)} než ${d.agentB} `
+      break;
+    case "comp-diff":
+      result = html`${d.agentMinuend} - ${d.agentSubtrahend}=${formatQuantityWithEntity(d)}`
+      break;
     case "ratio":
-      return html`<div class="badge">RATIO</div> ${formatAgentEntity(d)}=${new Fraction(d.ratio).toFraction()}`;
+      result = html`${formatAgentEntity(d)}=${new Fraction(d.ratio).toFraction()}`;
+      break;
     case "ratios":
-      return html`<div class="badge">RATIOS</div>${d.parts.join(":")} v poměru ${d.ratios.join(":")} z ${d.whole}`;  
+      result = `${d.parts.join(":")} v poměru ${d.ratios.join(":")} z ${d.whole}`;
+      break;
     case "sum":
-      return html`<div class="badge">SUM</div> ${d.partAgents.join("+")}`;
+      result = `${d.partAgents.join("+")}`;
+      break;
     case "rate":
-      return html`<div class="badge">RATE</div> ${d.quantity} ${d.entityA?.entity} per ${d.entityB?.entity}`
+      result = `${d.quantity} ${d.entity?.entity} per ${d.entityBase?.entity}`
+      break;
     case "common-sense":
-      return html`<div class="badge">C-SENSE</div> ${d.agent}`
+      result = `${d.agent}`
+      break;
     default:
-      return html`<div class="badge">${d.kind?.toUpperCase()}</div>`;
+      break;
   }
+  return html`${formatToBadge(d)} ${result}`;
+}
+
+function formatToBadge({ kind } = {}) {
+  return html`<div class="badge">${kind === "cont" ? "C" : kind.toUpperCase()}</div>`
 }
 
 function formatAgentEntity(ratio) {
@@ -159,9 +175,24 @@ export function outputLabel(id) {
   return label({ id, kind: 'output' })
 }
 
+export function highlightLabel(startNumber = 1) {
+  return (strings, ...substitutions) => {
+    const formattedString = strings.reduce((acc, curr, i) => {
+      const substitution = substitutions[i];
+
+      const res = substitution
+        ? html`${curr}<span class="highlight">${inputLabel(startNumber + i)} ${substitution}</span>`
+        : curr;
+      return html`${acc}${res}`;
+    }, '');
+
+    return formattedString;
+  }
+}
 export function highlight(strings, ...substitutions) {
   const formattedString = strings.reduce((acc, curr, i) => {
     const substitution = substitutions[i];
+
     const res = substitution
       ? html`${curr}<span class="highlight">${substitution}</span>`
       : curr;

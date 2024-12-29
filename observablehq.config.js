@@ -77,8 +77,10 @@ export default {
         {name: "Sestavení úloh", path: "/builder"},
         {name: "Přepoužitelnost", path: "/embedding"},
         {name: "AI", path: "/ai"},
-        {name: "Matika automatizace", path: "/math"},
-        {name: "Matika dedukce", path: "/math-deduction"},
+        {name: "Matematizace", path: "/math-deduction"},
+        {name: "Matika - slovní úlohy", path: "/math-deduction-examples"},
+        {name: "Matika - výrazy", path: "/math"},
+        
         // {name: "Kategorie", path: "/categories"},
         // {name: "Inline md", path: "/quiz-markdown"},
         // {name: "Rozvržení stránky", path: "/layout"},
