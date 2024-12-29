@@ -1,6 +1,6 @@
 import { html } from "htl";
 import type { Comparison, ComparisonDiff, Container, Rate, RatioComparison } from "./math.js";
-import { cont, ratio, comp, rate, ratios, ratioComp, diff, sum } from "./math.js";
+import { cont, ratio, comp, rate, ratios, ratioComp, diff, sum, lcd, gcd } from "./math.js";
 
 export default function rules() {
 
@@ -80,6 +80,27 @@ export default function rules() {
     }
   }
 
+  const lcdRule = (a, b) => {
+    const sumRule = lcd("nejmenší možná skupina", "osob");
+
+    return {
+      premises: [[a, b], sumRule],
+      inputTemplate: html`Ája a Honzík dají sešity dohromady.`,
+      outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
+    }
+  }
+
+  const gcdRule = (a, b) => {
+    const sumRule = gcd("největší možná tyč", "délka (m)");
+
+    return {
+      premises: [[a, b], sumRule],
+      inputTemplate: html`Ája a Honzík dají sešity dohromady.`,
+      outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
+    }
+  }
+
+
   const fairDivision = (whole: Container, groupCount: Container) => {
     return {
       premises: [whole, groupCount, { kind: 'rate' }],
@@ -138,6 +159,8 @@ export default function rules() {
   }
 
 
+
+
   const a = cont("Ája", 2, "sešity");
   const b = cont("Honzík", 6, "sešity");
   return {
@@ -150,7 +173,9 @@ export default function rules() {
       rateCompute(cont("Petr", 20, "Kč")),
       rateCompute(cont("Petr", 5, "rohlík"))],
     substract: [toDiffRule(cont("Ája a Honzík", 8, "sešity"), b), substractRule(cont("Ája a Honzík", 8, "sešity")), substractRule(b)],
-    sum: [sumRule(a, b)]
+    sum: [sumRule(a, b)],
+    gcd: [gcdRule(cont("tyč", 24, "délka (m)"),cont("tyč", 16, "délka (m)"))],
+    lcd: [lcdRule(cont("dvojice", 2, "osob"),cont("trojice", 3, "osob"))]
 
   }
 

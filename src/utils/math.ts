@@ -65,6 +65,17 @@ export type Combine = {
   wholeEntity: EntityBase
   partEntity: EntityBase
 }
+export type GCD = EntityBase & {
+  kind: 'gcd'
+  agent: string
+}
+
+export type LCD = EntityBase & {
+  kind: 'lcd'
+  agent: string
+}
+
+
 
 export type PartToPartRatio = {
   kind: 'ratios'
@@ -89,7 +100,7 @@ export type CommonSense = {
   agent: string
 }
 
-export type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | Combine | PartWholeRatio | PartToPartRatio | ComparisonDiff | CommonSense;
+export type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | Combine | PartWholeRatio | PartToPartRatio | ComparisonDiff | CommonSense | GCD | LCD;
 
 export function cont(agent: string, quantity: number, entity: string): Container {
   return { kind: 'cont', agent, quantity, entity };
@@ -109,6 +120,13 @@ export function ratio(whole: EntityMatcher, part: EntityMatcher, ratio: number):
 export function sum(wholeAgent: string, partAgents: string[], wholeEntity: string, partEntity: string): Combine {
   return { kind: 'sum', wholeAgent, partAgents, wholeEntity: { entity: wholeEntity }, partEntity: { entity: partEntity } }
 }
+export function gcd(agent: string, entity: string): GCD {
+  return { kind: 'gcd', agent, entity }
+}
+export function lcd(agent: string, entity: string): LCD {
+  return { kind: 'lcd', agent, entity }
+}
+
 export function rate(agent: string, quantity: number, entity: string, entityBase: string): Rate {
   return { kind: 'rate', agent, quantity, entity: { entity: entity }, entityBase: { entity: entityBase } }
 }
@@ -206,6 +224,12 @@ function diffRule(a: Container, b: ComparisonDiff): Container {
 
 function sumRule(items: Container[], b: Combine): Container {
   return { kind: 'cont', agent: b.wholeAgent, quantity: items.reduce((out, d) => out += d.quantity, 0), entity: b.partEntity.entity }
+}
+function gcdRule(items: Container[], b: GCD): Container {
+  return { kind: 'cont', agent: b.agent, quantity: gcdCalc(items.map(d => d.quantity)), entity: b.entity }
+}
+function lcdRule(items: Container[], b: LCD): Container {
+  return { kind: 'cont', agent: b.agent, quantity: lcdCalc(items.map(d => d.quantity)), entity: b.entity }
 }
 
 
@@ -311,12 +335,18 @@ function partEqual(a: Comparison, b: Container) {
 }
 export function inferenceRule(a: Predicate | Container[], b: Predicate, c?: { kind: 'ratio' | 'comp-ratio' | 'rate' | "comp-diff" | 'comp-part-eq' }) {
   if (Array.isArray(a)) {
-    return b.kind == "sum" ? sumRule(a, b) : null
+    return b.kind === "gcd"
+      ? gcdRule(a, b) 
+      : b.kind === "lcd"
+        ? lcdRule(a, b)
+        : b.kind === "sum"
+          ? sumRule(a, b)
+          : null
   }
   else if (a.kind === "cont" && b.kind == "cont") {
     const kind = c?.kind;
     return kind === "comp-diff"
-      ? toDiff(a,b)
+      ? toDiff(a, b)
       : kind === "rate"
         ? toRate(a, b)
         : kind === "comp-ratio"
@@ -375,7 +405,7 @@ export function inferenceRule(a: Predicate | Container[], b: Predicate, c?: { ki
 }
 
 
-export function gcd(numbers) {
+function gcdCalc(numbers: number[]) {
   let num = 2, res = 1;
   while (num <= Math.min(...numbers)) {
     if (numbers.every(n => n % num === 0)) {
@@ -384,6 +414,12 @@ export function gcd(numbers) {
     num++;
   }
   return res;
+}
+function lcdCalcEx(a,b){
+  return Math.abs(a * b) / gcdCalc([a, b]);
+}
+function lcdCalc(numbers: number[]) {
+  return numbers.reduce((acc, num) => lcdCalcEx(acc, num), 1);  
 }
 
 export function globalNormalize(

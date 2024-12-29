@@ -65,12 +65,13 @@ const opacity = 0.3;
 ```
 
 
-Řešení matematického problému je formou __deduktivního usuzování__. Logicky správná dedukce má podobu posloupnosti kroků. Jsou-li __předpoklady__ (premises) pravdivé, je pravdivý i závěr.
+Řešení matematického problému je formou __deduktivního usuzování__. Logicky správná dedukce má podobu posloupnosti kroků. Popis řešení ve formě __dedukčního stromu__.
 
-Popis řešení ve formě __dedukčního stromu__.
-
-- zadání úlohy je potřeba převést (text comprehension) na sadu __predikátů__ (pravdivé tvrzení)
-- na základě __predikátů__ (axioms) aplikujeme __odvozovací pravidla__ (inference rules)
+- zadání úlohy je potřeba převést (text comprehension) na sadu __predikátů__ (axioms)
+- použít __odvozovací pravidla__ (inference rules) 
+  - vstupem - seznam  __predikátů__, resp. __předpokladů__ (premises)
+  - výstupem - jeden __predikát__
+- aplikací __odvozovacích pravidel__ získáme pravdivý výsledek 
 
 ```js
 const slepiceForms = Inputs.form({
@@ -94,6 +95,10 @@ const slepiceInput = Generators.input(slepiceForms);
 <div>${renderExample({example:slepice({input:slepiceInput})})}</div>
 
  <a href="/math-deduce-examples">Více příkladů</a>
+
+<div class="tip" label="Hloubka a šířka stromu">
+Parametry dedukčního stromu může sloužit jako míra složitosti úlohy.
+</div>
 
 # Predikáty
 
@@ -146,6 +151,16 @@ const slepiceInput = Generators.input(slepiceForms);
       <td>(agentWhole=třída,</br>partAgents=[chlapci,dívky],</br>entityWhole=žáků)</td>
       <td>Počet chlapců a dívek dohromady dává počet žáků ve třídě.</td>
     </tr>
+    <tr>
+      <td><div class="badge">GCD</div> Greatest Common Denominator</td>
+      <td>(agent=tyč,</br>entity=délka (m))</td>
+      <td>Největší možná délka (m) tyče.</td>
+    </tr>
+    <tr>
+      <td><div class="badge">LCD</div> Least Common Denominator</td>
+      <td>(agent=skupina,</br>entity=osob)</td>
+      <td>Nejmenší možná skupina osob.</td>
+    </tr>    
     <tr>
       <td><div class="badge">COMMON SENSE</div> common sense</td>
       <td>(description=...)</td>
@@ -239,10 +254,16 @@ ${partion([
 
 
 ## Spojování
-
 <div class="badge badge--large">SUM</div>
-
 <div>${renderRules(rules.sum)}</div>
+
+## Největší společný dělitel
+<div class="badge badge--large">GCD</div>
+<div>${renderRules(rules.gcd)}</div>
+
+## Nejmenší společný násobek
+<div class="badge badge--large">LCD</div>
+<div>${renderRules(rules.lcd)}</div>
 
 ----------------------
 

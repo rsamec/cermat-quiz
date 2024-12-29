@@ -9,7 +9,7 @@ style: /assets/css/math-deduce.css
 ```js
 import {deduce} from './utils/deduce.js';
 import {partion, relativeParts, formatPredicate, relativePartsDiff} from './utils/deduce-components.js';
-import {inferenceRule,cont,sum, comp, ratio, diff} from './utils/math.js';
+import {inferenceRule, cont, sum, comp, ratio, diff} from './utils/math.js';
 
 import sourozenci from './math/sourozenci.js';
 import pocetOb from './math/pocet-obyvatel.js';
@@ -19,6 +19,8 @@ import milkExample from './math/mleko.js';
 import vek from './math/vek.js';
 import slepice from './math/slepice.js';
 import kolo from './math/M9A-2024/kolo.js';
+import cetar from './math/M7A-2023/cetar.js';
+import sportovci from './math/M7A-2023/pocet-sportovcu.js';
 
 
 import svadleny from './math/svadleny.js';
@@ -68,6 +70,34 @@ const koloInput = Generators.input(koloForm);
 </details>
     
 <div>${renderExample({example:kolo({input:koloInput}), unit: 1000, showRelativeValues: false})}</div>
+
+----------------------
+
+```js
+const cetarForm = Inputs.form({
+  kapitan: Inputs.range([1, 5], {step: 1, value:1, label: "Počet kapitánů"}),
+  porucik: Inputs.range([1, 10], {step: 1, value:4, label: "Počet poručíků"}),
+  cetarPerPorucik: Inputs.range([1,20], {step: 1, value:3, label: "Četařů za každého kapitán"}),
+  vojinPerCetar: Inputs.range([1, 20], {step: 1, value:10, label: "Vojínů za každého četaře"}),
+});
+const cetarInput = Generators.input(cetarForm);
+```
+
+## Rota
+
+<details>
+  <summary>Parametrizace</summary>
+  ${cetarForm}
+</details>
+    
+<div>${renderExample({example:cetar({input:cetarInput})})}</div>
+
+----------------------
+
+## Sportovci
+
+    
+<div>${renderExample({example:sportovci({input:{}})})}</div>
 
 ----------------------
 
