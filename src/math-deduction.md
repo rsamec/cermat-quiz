@@ -93,6 +93,7 @@ const slepiceInput = Generators.input(slepiceForms);
 
 <div>${renderExample({example:slepice({input:slepiceInput})})}</div>
 
+ <a href="/math-deduce-examples">Více příkladů</a>
 
 # Predikáty
 
@@ -123,7 +124,7 @@ const slepiceInput = Generators.input(slepiceForms);
     <tr>
       <td><div class="badge">COMP DIFF</div> comparison by difference</td>
       <td>(agentMinuend=celkem,</br>agentSubtrahend=Honzík,</br>quantity=7,</br>entity=sešity)</td>
-      <td>Rozdíl mezi sešity celkem a Honzíkem jsou 7 sešitů</td>
+      <td>Rozdíl mezi sešity celkem a Honzíkem je 7 sešitů./td>
     </tr>
     <tr>
       <td><div class="badge">RATIO</div> part to whole comparison</td>
@@ -136,12 +137,12 @@ const slepiceInput = Generators.input(slepiceForms);
       <td>Poměr chlapců a dívek ve třídě je 1:3 (1 chlapec ku 3 dívkám).</td>
     </tr>
     <tr>
-      <td><div class="badge">RATE</div>rate</td>
+      <td><div class="badge">RATE</div> rate</td>
       <td>(agent=Ája,</br>quantity=3,</br>entity=Kč,</br>entityBase=rohlík)</td>
       <td>Každý rohlík, který má Ája, stojí 3 Kč.</td>
     </tr>
     <tr>
-      <td><div class="badge">SUM</div>sumation</td>
+      <td><div class="badge">SUM</div> sumation</td>
       <td>(agentWhole=třída,</br>partAgents=[chlapci,dívky],</br>entityWhole=žáků)</td>
       <td>Počet chlapců a dívek dohromady dává počet žáků ve třídě.</td>
     </tr>

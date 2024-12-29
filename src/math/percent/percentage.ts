@@ -38,8 +38,8 @@ export default function build({ input }: {
 
 
   const template = html`
-    ${inputLabel(1)}${highlight`Zaplaceno na úrocích ${input.part} Kč za jeden rok.`}.
-    ${inputLabel(2)}${highlight`Půjčeno ${input.base} Kč.`}.<br/>
+    ${inputLabel(1)}${highlight`Zaplaceno na úrocích ${input.part} Kč za jeden rok.`}
+    ${inputLabel(2)}${highlight`Půjčeno ${input.base} Kč.`}<br/>
     ${deduceLabel(2)}<strong> ${highlight`Kolik procent činí úrok?`}</strong>`;
 
   return { deductionTree, template }

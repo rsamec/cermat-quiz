@@ -76,10 +76,10 @@ export default {
         {name: "Tisk", path: "/print"},
         {name: "Sestavení úloh", path: "/builder"},
         {name: "Přepoužitelnost", path: "/embedding"},
-        {name: "AI", path: "/ai"},
         {name: "Matematizace", path: "/math-deduction"},
         {name: "Matika - slovní úlohy", path: "/math-deduction-examples"},
         {name: "Matika - výrazy", path: "/math"},
+        {name: "AI", path: "/ai"},
         
         // {name: "Kategorie", path: "/categories"},
         // {name: "Inline md", path: "/quiz-markdown"},
