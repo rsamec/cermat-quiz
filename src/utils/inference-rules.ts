@@ -61,7 +61,7 @@ export default function rules() {
   }
 
   const substractRule = (container: Container) => {
-    const diffRule = diff("Ája a Honzík", "Honzík", 6, "sešity");
+    const diffRule = diff("Ája a Honzík", "Honzík", 2, "sešity");
 
     return {
       premises: [container, diffRule],
@@ -174,9 +174,8 @@ export default function rules() {
       rateCompute(cont("Petr", 5, "rohlík"))],
     substract: [toDiffRule(cont("Ája a Honzík", 8, "sešity"), b), substractRule(cont("Ája a Honzík", 8, "sešity")), substractRule(b)],
     sum: [sumRule(a, b)],
-    gcd: [gcdRule(cont("tyč", 24, "délka (m)"),cont("tyč", 16, "délka (m)"))],
-    lcd: [lcdRule(cont("dvojice", 2, "osob"),cont("trojice", 3, "osob"))]
-
+    gcd: [gcdRule(cont("tyč", 24, "délka (m)"), cont("tyč", 16, "délka (m)"))],
+    lcd: [lcdRule(cont("dvojice", 2, "osob"), cont("trojice", 3, "osob"))]
   }
 
 

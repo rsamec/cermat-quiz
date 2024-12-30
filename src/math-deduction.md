@@ -210,9 +210,8 @@ ${partion([
 <div class="badge badge--large">COMP-DIFF</div>
 
 ${partion([
-    {value: 2, agent:"Aja", opacity},
-    {value: 4, agent:"Honzík", opacity},
-    {value: 2, agent:"Honzík"},
+    {value: 2, agent:"Aja"},
+    {value: 6, agent:"Honzík", opacity},
   ],
   {unit:1, showSeparate: false, showRelativeValues: false })
 }
