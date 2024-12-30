@@ -1,6 +1,6 @@
 import { html } from "htl";
-import type { Container } from "../utils/math.js";
-import { cont, inferenceRule, ratio, comp, sum } from "../utils/math.js";
+import type { Container } from "../components/math.js";
+import { cont, inferenceRule, ratio, comp, sum } from "../components/math.js";
 import { deduce } from "../utils/deduce.js";
 import { relativeParts, relativePartsDiff, formatNode as format, inputLabel, deduceLabel, highlight } from "../utils/deduce-components.js";
 

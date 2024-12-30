@@ -1,5 +1,5 @@
 import { html } from "htl";
-import { cont, inferenceRule, ratioComp, commonSense } from "../../utils/math.js";
+import { cont, inferenceRule, ratioComp, commonSense } from "../../components/math.js";
 import { deduce } from "../../utils/deduce.js";
 import { formatNode as format, inputLabel, deduceLabel, highlightLabel } from "../../utils/deduce-components.js";
 

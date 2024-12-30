@@ -100,6 +100,7 @@ export default {
   dynamicPaths:[]
   .concat(assetsFiles.concat("/assets/css/print-results.css"))
   .concat(['/components/quiz.js'])
+  .concat(['/components/math.js'])
   .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
   .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))
   .concat(quizes.flatMap(d => d.codes).map(code => `/ai-${code}`))

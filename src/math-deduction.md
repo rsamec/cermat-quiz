@@ -65,13 +65,13 @@ const opacity = 0.3;
 ```
 
 
-Řešení matematického problému je formou __deduktivního usuzování__. Logicky správná dedukce má podobu posloupnosti kroků. Popis řešení ve formě __dedukčního stromu__.
+Řešení matematického problému je formou __deduktivního usuzování__. Řešení úlohy má podobu posloupnosti kroků ve formě __dedukčního stromu__.
 
-- zadání úlohy je potřeba převést (text comprehension) na sadu __predikátů__ (axioms)
+- zadání úlohy je potřeba převést (text comprehension) na sadu __predikátů__ (formalizované pravdivé tvrzení)
 - použít __odvozovací pravidla__ (inference rules) 
   - vstupem - seznam  __predikátů__, resp. __předpokladů__ (premises)
   - výstupem - jeden __predikát__
-- aplikací __odvozovacích pravidel__ získáme pravdivý výsledek 
+- výseledek úlohy získáme __průchodem stromu__ do hloubky (post-order), tj. aplikujeme __odvozovací pravidla__ až poté, co známe všechny vstupy (premises)
 
 ```js
 const slepiceForms = Inputs.form({
@@ -101,6 +101,8 @@ Parametry dedukčního stromu může sloužit jako míra složitosti úlohy.
 </div>
 
 # Predikáty
+
+Jde o vytvoření situačního modelu úlohy. Predikáty jsou určitou formalizaci zápisu situace.
 
 <table>
   <thead>
@@ -152,7 +154,7 @@ Parametry dedukčního stromu může sloužit jako míra složitosti úlohy.
       <td>Počet chlapců a dívek dohromady dává počet žáků ve třídě.</td>
     </tr>
     <tr>
-      <td><div class="badge">GCD</div> Greatest Common Denominator</td>
+      <td><div class="badge">GCD</div> Greatest Common Divisor</td>
       <td>(agent=tyč,</br>entity=délka (m))</td>
       <td>Největší možná délka (m) tyče.</td>
     </tr>
@@ -432,4 +434,35 @@ ${deduce(formatPredicate(total), formatPredicate(comparison), formatPredicate(pa
 
 ${relativePartsDiff(1/4,{first:"letos", second:"loni", asPercent: false})}
 ${relativePartsDiff(-1/4,{first:"letos", second:"loni", asPercent: false})}
+
+
+
+# Jak je to uděláno?
+
+
+
+<script type="module">
+
+import {cont, inferenceRule} from "https://www.cermatdata.cz/utils/math.js";
+console.log(cont, inferenceRule);
+</script>
+
+```html run=false
+<script type="module">
+import {cont, inferennceRule} from "https://www.cermatdata.cz/components/math.js";
+
+const entity = "%"
+
+const percent = cont("úrok", 20, entity);
+const base = cont("půjčka", 100, entity);
+const deduceStep1 = inferenceRule(percent, base, { kind: 'ratio' });
+
+const part = cont("půjčka", 300, entity);
+const deduceStep2 = inferenceRule(base, dd1);
+
+console.log(`Výsledek = ${deduceStep2.quantity}`)
+
+</script>
+```
+
 

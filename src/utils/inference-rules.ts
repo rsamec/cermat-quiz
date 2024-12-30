@@ -1,6 +1,6 @@
 import { html } from "htl";
-import type { Comparison, ComparisonDiff, Container, Rate, RatioComparison } from "./math.js";
-import { cont, ratio, comp, rate, ratios, ratioComp, diff, sum, lcd, gcd } from "./math.js";
+import type { Comparison, ComparisonDiff, Container, Rate, RatioComparison } from "../components/math.js";
+import { cont, ratio, comp, rate, ratios, ratioComp, diff, sum, lcd, gcd } from "../components/math.js";
 
 export default function rules() {
 
