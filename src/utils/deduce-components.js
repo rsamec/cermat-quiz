@@ -1,7 +1,7 @@
 import { html } from "npm:htl";
 import * as Plot from "npm:@observablehq/plot";
 import Fraction from 'npm:fraction.js';
-import { isSameEntity } from "../utils/math.js";
+import { isSameEntity } from "../components/math.js";
 
 export function partion(items, options) {
   const total = items.reduce((out, d) => out += d.value, 0);

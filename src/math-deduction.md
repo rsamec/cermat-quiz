@@ -9,7 +9,7 @@ style: /assets/css/math-deduce.css
 ```js
 import {deduce} from './utils/deduce.js';
 import {partion, relativeParts, formatPredicate, relativePartsDiff} from './utils/deduce-components.js';
-import {inferenceRule,cont,sum, comp, ratio, diff} from './utils/math.js';
+import {inferenceRule,cont,sum, comp, ratio, diff} from './components/math.js';
 
 import allRules from './utils/inference-rules.js';
 import slepice from './math/slepice.js';
@@ -443,13 +443,13 @@ ${relativePartsDiff(-1/4,{first:"letos", second:"loni", asPercent: false})}
 
 <script type="module">
 
-import {cont, inferenceRule} from "https://www.cermatdata.cz/utils/math.js";
+import {cont, inferenceRule} from "https://www.cermatdata.cz/components/math.js";
 console.log(cont, inferenceRule);
 </script>
 
 ```html run=false
 <script type="module">
-import {cont, inferennceRule} from "https://www.cermatdata.cz/components/math.js";
+import {cont, inferenceRule} from "https://www.cermatdata.cz/components/math.js";
 
 const entity = "%"
 
@@ -457,7 +457,7 @@ const percent = cont("úrok", 20, entity);
 const base = cont("půjčka", 100, entity);
 const deduceStep1 = inferenceRule(percent, base, { kind: 'ratio' });
 
-const part = cont("půjčka", 300, entity);
+const part = cont("půjčka", 300, "Kč");
 const deduceStep2 = inferenceRule(base, dd1);
 
 console.log(`Výsledek = ${deduceStep2.quantity}`)

@@ -9,7 +9,7 @@ style: /assets/css/math-deduce.css
 ```js
 import {deduce} from './utils/deduce.js';
 import {partion, relativeParts, formatPredicate, relativePartsDiff} from './utils/deduce-components.js';
-import {inferenceRule, cont, sum, comp, ratio, diff} from './utils/math.js';
+import {inferenceRule, cont, sum, comp, ratio, diff} from './components/math.js';
 
 import sourozenci from './math/sourozenci.js';
 import pocetOb from './math/pocet-obyvatel.js';
