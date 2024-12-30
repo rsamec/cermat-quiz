@@ -1,5 +1,5 @@
 import { html } from "htl";
-import { cont, inferenceRule, ratioComp, commonSense } from "../../components/math.js";
+import { cont, inferenceRule, compRatio, commonSense } from "../../components/math.js";
 import { deduce } from "../../utils/deduce.js";
 import { formatNode as format, inputLabel, deduceLabel, highlightLabel } from "../../utils/deduce-components.js";
 
@@ -30,14 +30,14 @@ export default function build({ input }: {
 
   const cc1 = commonSense("nepřímá úměrnost, obracený poměr veličin")
   const cc2 = commonSense("přímá úměrnost, stejný poměr veličin")
-  const dd2 = ratioComp(agentPrevious, agentCurrent, dd1.kind == "comp-ratio" ? dd1.quantity : 0, entityB)
+  const dd2 = compRatio(agentPrevious, agentCurrent, dd1.kind == "comp-ratio" ? dd1.quantity : 0, entityB)
   const bPrevious = cont(agentPrevious, input.previousHours, entityB);
   const dd3 = inferenceRule(dd2, bPrevious);
 
   const c1 = cont(agentCurrent, input.previousGoods, entityC);
   const c2 = cont(agentNew, input.currentGoods, entityC);
   const dd4 = inferenceRule(c1, c2, { kind: 'comp-ratio' });
-  const comp = ratioComp(agentNew, agentCurrent, dd4.kind == "comp-ratio" ? dd4.quantity : 0, "hodin")
+  const comp = compRatio(agentNew, agentCurrent, dd4.kind == "comp-ratio" ? dd4.quantity : 0, "hodin")
   const dd5 = inferenceRule(comp, dd3);
 
   const deductionTree = deduce(

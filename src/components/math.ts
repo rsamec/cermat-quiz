@@ -108,14 +108,17 @@ export function cont(agent: string, quantity: number, entity: string): Container
 export function comp(agentA: string, agentB: string, quantity: number, entity: string): Comparison {
   return { kind: 'comp', agentA, agentB, quantity, entity }
 }
-export function ratioComp(agentA: string, agentB: string, quantity: number, entity: string): RatioComparison {
+export function compRatio(agentA: string, agentB: string, quantity: number, entity: string): RatioComparison {
   return { kind: 'comp-ratio', agentA, agentB, quantity, entity }
 }
-export function diff(agentMinuend: string, agentSubtrahend: string, quantity: number, entity: string): ComparisonDiff {
+export function compDiff(agentMinuend: string, agentSubtrahend: string, quantity: number, entity: string): ComparisonDiff {
   return { kind: "comp-diff", agentMinuend, agentSubtrahend, quantity, entity }
 }
 export function ratio(whole: EntityMatcher, part: EntityMatcher, ratio: number): PartWholeRatio {
   return { kind: 'ratio', whole, part, ratio }
+}
+export function ratios(whole: EntityMatcher, parts: EntityMatcher[], ratios: number[]): PartToPartRatio {
+  return { kind: 'ratios', parts, whole, ratios };
 }
 export function sum(wholeAgent: string, partAgents: string[], wholeEntity: string, partEntity: string): Combine {
   return { kind: 'sum', wholeAgent, partAgents, wholeEntity: { entity: wholeEntity }, partEntity: { entity: partEntity } }
@@ -130,12 +133,9 @@ export function lcd(agent: string, entity: string): LCD {
 export function rate(agent: string, quantity: number, entity: string, entityBase: string): Rate {
   return { kind: 'rate', agent, quantity, entity: { entity: entity }, entityBase: { entity: entityBase } }
 }
-export function ratios(whole: EntityMatcher, parts: EntityMatcher[], ratios: number[]): PartToPartRatio {
-  return { kind: 'ratios', parts, whole, ratios };
-}
 
-export function commonSense(agent: string): CommonSense {
-  return { kind: 'common-sense', agent }
+export function commonSense(description: string): CommonSense {
+  return { kind: 'common-sense', agent: description }
 }
 
 function compareRule(a: Container, b: Comparison): Container {
@@ -326,7 +326,7 @@ function formatAgentEntity(d: EntityMatcher) {
   return isAgentEntity(d) ? [d.agent, d.entity].join() : d
 }
 function partEqual(a: Comparison, b: Container) {
-  const rest = diffRule(b, diff(b.agent, a.quantity > 0 ? a.agentB : a.agentA, Math.abs(a.quantity), a.entity));
+  const rest = diffRule(b, compDiff(b.agent, a.quantity > 0 ? a.agentB : a.agentA, Math.abs(a.quantity), a.entity));
   return {
     ...rest,
     quantity: rest.quantity / 2
@@ -419,32 +419,5 @@ function lcdCalcEx(a,b){
   return Math.abs(a * b) / gcdCalc([a, b]);
 }
 function lcdCalc(numbers: number[]) {
-  return numbers.reduce((acc, num) => lcdCalcEx(acc, num), 1);  
+  return numbers.reduce((acc, num) => lcdCalcEx(acc, num), 1);
 }
-
-export function globalNormalize(
-  arr: number[],
-  [targetMin, targetMax]: [targetMin: number, targetMax: number]
-): number[] {
-  // Check if any number exceeds the threshold
-  console.log(arr, targetMin, targetMax)
-  const maxValue = Math.max(...arr);
-  const threshold = targetMax;
-  if (maxValue > threshold) {
-    const minValue = Math.min(...arr);
-
-    // Avoid division by zero
-    if (maxValue === minValue) {
-      return arr.map(() => targetMin);
-    }
-
-    // Normalize the entire array
-    return arr.map(
-      (x) => targetMin + ((x - minValue) * (targetMax - targetMin)) / (maxValue - minValue)
-    );
-  }
-
-  // Return the array unchanged if no number exceeds the threshold
-  return arr;
-}
-

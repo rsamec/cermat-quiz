@@ -1,6 +1,6 @@
 import { html } from "htl";
 
-import { cont, diff, inferenceRule, lcd } from "../../components/math.js";
+import { cont, compDiff, inferenceRule, lcd } from "../../components/math.js";
 import { deduce } from "../../utils/deduce.js";
 import { formatNode as format, inputLabel, deduceLabel, highlightLabel } from "../../utils/deduce-components.js";
 
@@ -23,7 +23,7 @@ export default function build({ input }: {
   const nasobek = lcd(lcdLabel, entity);
   const dd1 = inferenceRule([dvojice, trojice, ctverice, petice], nasobek);
 
-  const rozdil = diff("počet sportovců", lcdLabel, 1, entity)
+  const rozdil = compDiff("počet sportovců", lcdLabel, 1, entity)
   const dd2 = inferenceRule(dd1, rozdil)
 
   const deductionTree = deduce(

@@ -9,11 +9,10 @@ style: /assets/css/math-deduce.css
 ```js
 import {deduce} from './utils/deduce.js';
 import {partion, relativeParts, formatPredicate, relativePartsDiff} from './utils/deduce-components.js';
-import {inferenceRule,cont,sum, comp, ratio, diff} from './components/math.js';
+import {inferenceRule,cont,sum, comp, ratio, compDiff} from './components/math.js';
 
 import allRules from './utils/inference-rules.js';
 import slepice from './math/slepice.js';
-
 
 import proportionInverse from './math/proportion/proportion-inverse.js';
 import proportion from './math/proportion/proportion.js';
@@ -64,14 +63,14 @@ const rules = allRules();
 const opacity = 0.3;
 ```
 
-
-Řešení matematického problému je formou __deduktivního usuzování__. Řešení úlohy má podobu posloupnosti kroků ve formě __dedukčního stromu__.
+Řešení úlohy má podobu posloupnosti kroků ve formě __dedukčního stromu__.
 
 - zadání úlohy je potřeba převést (text comprehension) na sadu __predikátů__ (formalizované pravdivé tvrzení)
 - použít __odvozovací pravidla__ (inference rules) 
   - vstupem - seznam  __predikátů__, resp. __předpokladů__ (premises)
   - výstupem - jeden __predikát__
-- výseledek úlohy získáme __průchodem stromu__ do hloubky (post-order), tj. aplikujeme __odvozovací pravidla__ až poté, co známe všechny vstupy (premises)
+- výsledek úlohy získáme __průchodem stromu__ do hloubky (post-order), tj. aplikujeme __odvozovací pravidla__ až poté, co známe všechny vstupy (premises)
+
 
 ```js
 const slepiceForms = Inputs.form({
@@ -94,15 +93,15 @@ const slepiceInput = Generators.input(slepiceForms);
 
 <div>${renderExample({example:slepice({input:slepiceInput})})}</div>
 
- <a href="/math-deduce-examples">Více příkladů</a>
-
 <div class="tip" label="Hloubka a šířka stromu">
 Parametry dedukčního stromu může sloužit jako míra složitosti úlohy.
 </div>
 
+<a href="/math-deduce-examples">Více příkladů</a>
+
 # Predikáty
 
-Jde o vytvoření situačního modelu úlohy. Predikáty jsou určitou formalizaci zápisu situace.
+Predikáty umožňují formalní zápis situačního modelu úlohy.
 
 <table>
   <thead>
@@ -407,7 +406,7 @@ const celkem = "Tábor a Příbram";
 const zbytek = "zbytek"
 
 const total = cont(celkem, 75000, entity);
-const difference = diff(celkem, zbytek, 4000, entity);
+const difference = compDiff(celkem, zbytek, 4000, entity);
 const comparison = comp(pribram, tabor, 4000, entity);
 const dTree1 = inferenceRule(total,difference);
 
@@ -439,30 +438,69 @@ ${relativePartsDiff(-1/4,{first:"letos", second:"loni", asPercent: false})}
 
 # Jak je to uděláno?
 
+Inspirováno prací [MathGAP](https://arxiv.org/pdf/2410.13502).
 
+Můžete použít jako javascript module.
 
 <script type="module">
-
 import {cont, inferenceRule} from "https://www.cermatdata.cz/components/math.js";
-console.log(cont, inferenceRule);
+
+const result = inferenceRule(
+  cont("půjčka", 300, "Kč"),
+  inferenceRule(
+    cont("úrok", 20, "%"),
+    cont("půjčka", 100, "%"),
+    { kind: 'ratio' }
+  )
+);
+
+console.log(`Výsledek: ${result.agent} = ${result.quantity} ${result.entity}`)
+
+
 </script>
 
 ```html run=false
+
 <script type="module">
 import {cont, inferenceRule} from "https://www.cermatdata.cz/components/math.js";
 
-const entity = "%"
+const result = inferenceRule(
+  cont("půjčka", 300, "Kč"),
+  inferenceRule(
+    cont("úrok", 20, "%"),
+    cont("půjčka", 100, "%"),
+    { kind: 'ratio' }
+  )
+);
 
-const percent = cont("úrok", 20, entity);
-const base = cont("půjčka", 100, entity);
-const deduceStep1 = inferenceRule(percent, base, { kind: 'ratio' });
-
-const part = cont("půjčka", 300, "Kč");
-const deduceStep2 = inferenceRule(base, dd1);
-
-console.log(`Výsledek = ${deduceStep2.quantity}`)
+//Výsledek: úrok = 60 Kč
+console.log(`Výsledek: ${result.agent} = ${result.quantity} ${result.entity}`)
 
 </script>
 ```
+## API 
 
+### Predicates
 
+```typescript
+export declare type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | Combine | PartWholeRatio | PartToPartRatio | ComparisonDiff | CommonSense | GCD | LCD;
+export declare function cont(agent: string, quantity: number, entity: string): Container;
+export declare function comp(agentA: string, agentB: string, quantity: number, entity: string): Comparison;
+export declare function compRatio(agentA: string, agentB: string, quantity: number, entity: string): RatioComparison;
+export declare function compDiff(agentMinuend: string, agentSubtrahend: string, quantity: number, entity: string): ComparisonDiff;
+export declare function ratio(whole: EntityMatcher, part: EntityMatcher, ratio: number): PartWholeRatio;
+export declare function ratios(whole: EntityMatcher, parts: EntityMatcher[], ratios: number[]): PartToPartRatio;
+export declare function sum(wholeAgent: string, partAgents: string[], wholeEntity: string, partEntity: string): Combine;
+export declare function gcd(agent: string, entity: string): GCD;
+export declare function lcd(agent: string, entity: string): LCD;
+export declare function rate(agent: string, quantity: number, entity: string, entityBase: string): Rate;
+export declare function commonSense(description: string): CommonSense;
+```
+
+### Inference rule
+
+```typescript
+export declare function inferenceRule(a: Predicate | Container[], b: Predicate, c?: {
+    kind: 'ratio' | 'comp-ratio' | 'rate' | "comp-diff" | 'comp-part-eq';
+})
+```

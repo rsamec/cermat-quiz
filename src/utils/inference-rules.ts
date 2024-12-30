@@ -1,6 +1,6 @@
 import { html } from "htl";
 import type { Comparison, ComparisonDiff, Container, Rate, RatioComparison } from "../components/math.js";
-import { cont, ratio, comp, rate, ratios, ratioComp, diff, sum, lcd, gcd } from "../components/math.js";
+import { cont, ratio, comp, rate, ratios, compRatio, compDiff, sum, lcd, gcd } from "../components/math.js";
 
 export default function rules() {
 
@@ -32,7 +32,7 @@ export default function rules() {
   }
 
   const ratioCompareRule = (container: Container) => {
-    const a = ratioComp("Honzík", "Ája", 3, "sešity");
+    const a = compRatio("Honzík", "Ája", 3, "sešity");
 
     return {
       premises: [container, a],
@@ -61,7 +61,7 @@ export default function rules() {
   }
 
   const substractRule = (container: Container) => {
-    const diffRule = diff("Ája a Honzík", "Honzík", 2, "sešity");
+    const diffRule = compDiff("Ája a Honzík", "Honzík", 2, "sešity");
 
     return {
       premises: [container, diffRule],

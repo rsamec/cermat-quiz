@@ -1,6 +1,6 @@
 import { html } from "htl";
 
-import { cont, diff, inferenceRule, ratio, sum } from "../../components/math.js";
+import { cont, compDiff, inferenceRule, ratio, sum } from "../../components/math.js";
 import { deduce } from "../../utils/deduce.js";
 import { formatNode as format, inputLabel, deduceLabel, highlight } from "../../utils/deduce-components.js";
 
@@ -27,7 +27,7 @@ export default function build({ input }: {
   const percentBase = cont(agentPercentBase, input.base, entity);
   const dd2 = inferenceRule(percentBase, dd1);
 
-  const sleva = diff(agentPercentBase, "cena po slevě", dd2.kind === 'cont' && dd2.quantity, entity)
+  const sleva = compDiff(agentPercentBase, "cena po slevě", dd2.kind === 'cont' && dd2.quantity, entity)
   const dd3 = inferenceRule(sleva, percentBase);
 
   const dd4 = inferenceRule(dd3, dd1Up);
