@@ -22,7 +22,6 @@ import percentPart from './math/percent/part.js';
 import percentBase from './math/percent/base.js';
 import percentPercentage from './math/percent/percentage.js';
 
-import svadleny from './math/svadleny.js';
 
 function renderExample({example, unit, showRelativeValues}={}){
   const {depth, width} = example.deductionTree._statistics;
@@ -36,7 +35,7 @@ function renderExample({example, unit, showRelativeValues}={}){
         <div class="badge">Šířka: ${width}</div>
       </div>
     </div>
-    <div>
+    <div class="flexible">
       ${example.deductionTree}
     </div>
     ${example.data != null ? html`<div>

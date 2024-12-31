@@ -1,4 +1,6 @@
 .badge {
+  display:inline;
+  white-space: nowrap;
   border-radius: 16px;
   padding: 0px 8px;
   font-weight: 700;
@@ -14,4 +16,22 @@
 .badge--danger {
   background-color: color-mix(in srgb, var(--theme-red), var(--theme-background) 90%);
   color: var(--theme-red);
+}
+
+
+.badge--input {
+  background-color: color-mix(in srgb, var(--theme-blue), var(--theme-background) 70%);
+  color: var(--theme-blue);
+}
+.badge--deduce {
+    background-color: color-mix(in srgb, var(--theme-green), var(--theme-background) 70%);
+    color: var(--theme-green);
+}
+.badge--output {
+  background-color: color-mix(in srgb, var(--theme-yellow), var(--theme-background) 70%);
+  color: var(--theme-yellow);
+}
+
+.badge--large {
+  font-size: 24px;
 }

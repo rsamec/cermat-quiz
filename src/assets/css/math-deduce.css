@@ -3,38 +3,6 @@
 @import url("observablehq:theme-near-midnight.css") screen and (prefers-color-scheme: dark);
 @import url("observablehq:theme-wide.css");
 @import './common/base.css';
+@import './common/badge.css';
 @import './common/deduce.css';
 
-.proof figure {
-  margin: 0px;
-}
-.highlight {  
-  font-weight: 900;
-  color:var(--theme-foreground-focus);
-}
-.badge {
-  display:inline;
-  white-space: nowrap;
-  border-radius: 16px;
-  padding: 0px 8px;
-  font-weight: 900;
-  background-color: var(--theme-foreground);
-  color: var(--theme-background);
-}
-
-.badge--input {
-  background-color: color-mix(in srgb, var(--theme-blue), var(--theme-background) 70%);
-  color: var(--theme-blue);
-}
-.badge--deduce {
-    background-color: color-mix(in srgb, var(--theme-green), var(--theme-background) 70%);
-    color: var(--theme-green);
-}
-.badge--output {
-  background-color: color-mix(in srgb, var(--theme-yellow), var(--theme-background) 70%);
-  color: var(--theme-yellow);
-}
-
-.badge--large {
-  font-size: 24px;
-}

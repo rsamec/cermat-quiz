@@ -11,11 +11,13 @@ import { getAllLeafsWithAncestors, getQuizBuilder, OptionList, ShortCodeMarker }
 import * as Inputs from 'npm:@observablehq/inputs';
 import { isEmptyOrWhiteSpace, cls } from '../utils/string-utils.js';
 
+import wordProblems from '../math/word-problems.js';
+
 type QuizParams = {
   questions: string[][],
   quizQuestionsMap: Record<string, { metadata: any, rawContent: string }>,
   subject: string,
-  displayOptions: {useAIHelpers?: boolean, questionCustomClass?: string, useFormControl?: boolean, useResources?:boolean }
+  displayOptions: { useAIHelpers?: boolean, questionCustomClass?: string, useFormControl?: boolean, useResources?: boolean }
   resourcesMap?: Record<string, any>
   mathResourcesMap?: Record<string, any>
 }
@@ -29,12 +31,12 @@ function parseQuestionId(id, subject) {
 }
 
 
-export function renderedQuestionsPerQuiz(params: QuizParams) {  
+export function renderedQuestionsPerQuiz(params: QuizParams) {
   const questionsToRender = params.questions?.length > 0 ? renderedQuestionsByQuiz(params).renderedQuestions : [];
   return questionsToRender;
 }
 export function renderedQuestionsPerQuizWithInputs(params: QuizParams) {
-  const questionsToRender = params.questions?.length > 0 ? renderedQuestionsByQuiz(params) : {renderedQuestions:[]};
+  const questionsToRender = params.questions?.length > 0 ? renderedQuestionsByQuiz(params) : { renderedQuestions: [] };
   return questionsToRender;
 }
 
@@ -58,7 +60,7 @@ function chunkMetadataByInputs(metadata, subject, selectedIds = []) {
 function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, displayOptions, resourcesMap, mathResourcesMap }: QuizParams) {
   const { questionCustomClass, useAIHelpers, useFormControl, useResources } = displayOptions;
   const inputsStore: Record<string, Record<string, any>> = {}
-  const indexMap: Record<string,number[][]> = {}
+  const indexMap: Record<string, number[][]> = {}
   return {
     renderedQuestions: questions.map(
       ([code, ...id], index) => {
@@ -73,6 +75,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
 
         const resource = resourcesMap?.[code];
         const mathResource = mathResourcesMap?.[code];
+        const wordProblem = wordProblems[code];
 
         let currentIndex = indexMap[code];
         if (currentIndex == null) {
@@ -119,7 +122,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
               })
             )
             const env = { docId: `${code}-${i}` };
-            return html`<div class=${cls(['q',`q-${i}`, questionCustomClass])}>${useFormControl
+            return html`<div class=${cls(['q', `q-${i}`, questionCustomClass])}>${useFormControl
               ? toTemplate(quizBuilder.content(ids, { rootOnly: true }), env, context, (key) => {
                 const metadata = metadataMap[key];
                 const options = questionsMap[key].options;
@@ -154,14 +157,19 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
             return g.map(([key, leafs], qIndex) => {
               const ids = [parseInt(key, 10)];
               currentIndex.push(ids);
-              const rawContent = html.fragment`${mdPlus.unsafe(quizBuilder.content(ids, { ids: groupedIds, render: useFormControl ? 'contentWithoutOptions' : 'content' }), { docId: `${code}-${key}` })}`;              
+              const rawContent = html.fragment`${mdPlus.unsafe(quizBuilder.content(ids, { ids: groupedIds, render: useFormControl ? 'contentWithoutOptions' : 'content' }), { docId: `${code}-${key}` })}`;
               const mathResourceEntries = mathResource != null ? leafs
                 .flatMap(d => {
                   return (mathResource[d.leaf.data.id]?.results ?? [])
-                    .flatMap((x) => (x.TemplateSteps ?? []).map((x,i) => ({x,i})))
-                    .map(({x,i}) => ([d.leaf.data.id,x,i]));
-                }):[]
-              return html`<div class=${cls(['q', `q-${key}`, `group-${questionsMap[ids[0]].groupKey}`, questionCustomClass ])}>
+                    .flatMap((x) => (x.TemplateSteps ?? []).map((x, i) => ({ x, i })))
+                    .map(({ x, i }) => ([d.leaf.data.id, x, i]));
+                }) : [];
+
+              const wordProblemEntries = wordProblem != null ? leafs
+                .map((d, i) => wordProblem[d.leaf.data.id] != null ? [d.leaf.data.id,wordProblem[d.leaf.data.id]()] : null).filter(Boolean)
+                : []
+
+              return html`<div class=${cls(['q', `q-${key}`, `group-${questionsMap[ids[0]].groupKey}`, questionCustomClass])}>
             
               ${rawContent}
 
@@ -236,9 +244,9 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                       });
                       const answerTooltip = computed(() => {
                         const value = inputValue.value;
-                        const tooltipMessage = isEmptyAnswer(value) 
+                        const tooltipMessage = isEmptyAnswer(value)
                           ? ''
-                          : verifyBy?.kind == "matchObjectValues" 
+                          : verifyBy?.kind == "matchObjectValues"
                             ? JSON.stringify(verifyBy?.source)
                             : JSON.stringify(validator(value)?.expected);
                         return tooltipMessage;
@@ -259,14 +267,26 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                     ;
                   })}</div>` : ''}
             ${useResources ? html`<div class="v-stack v-stack--s">
-              ${useResources && mathResourceEntries.length > 0 ? html`<details class="solution"><summary>Řešení úlohy</summary><div class="v-stack v-stack--s">
-              ${mathResourceEntries.map(([key,value,i]) => html`<div class="h-stack h-stack--s">
+              ${useResources && mathResourceEntries.length > 0 || wordProblemEntries.length > 0 ? html`<details class="solution break-inside-avoid-column"><summary>Řešení úlohy</summary><div class="v-stack v-stack--s">
+              ${mathResourceEntries.map(([key, value, i]) => html`<div class="h-stack h-stack--s">
                 <span style="flex:1">${key} - ${value.Name}</span>
                 <a href="./math-${code}"><i class="fa-solid fa-square-up-right"></i></a>
               </div>
-              <video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`)}</div></details>` : ''}            
+              <video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`)}
+              
+              ${wordProblemEntries.map(([key,d]) => html`<div class="h-stack h-stack--s">
+                <span style="flex:1">${d.template}</span>
+                <a href="./math-${code}"><i class="fa-solid fa-square-up-right"></i></a>
+              </div>
+              ${html.fragment`${d.deductionTree}`}
+              `)}
+              
+              </div></details>` : ''}
+                           
+
+
             </div>
-            `:''}
+            `: ''}
           </div>`
             })
           }
@@ -521,7 +541,7 @@ function sortableInput(array, options: any = {}) {
 
 
   let list = html`<ul class="sortable sortable__list" >`;
-  
+
   array.forEach((d, i) => {
     let li = html`<li class="sortable__item" value=${i}>${format(d)}</li>`;
     //li.style.cssText += itemStyle;

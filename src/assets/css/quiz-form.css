@@ -11,6 +11,8 @@
 @import './common/layout.css';
 @import './common//sortablejs.css';
 @import './common/tippy-observable-theme.css';
+@import './common/badge.css';
+@import './common/deduce.css';
 
 #observablehq-center,
   #observablehq-main,  
@@ -19,14 +21,6 @@
   .observablehq .observablehq--block {
     margin: 0px;
   }
-
-
-.badge {
-  display: flex;
-  gap: 5px;
-  font-size: 1rem;
-  align-items: center;
-}
 
 .sticky {
   position: sticky;

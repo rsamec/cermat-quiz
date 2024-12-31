@@ -11,14 +11,9 @@
 @import './common/layout.css';
 @import './common//sortablejs.css';
 @import './common/tippy-observable-theme.css';
+@import './common/deduce.css';
+@import './common/badge.css';
 
-
-.badge {
-  display: flex;
-  gap: 5px;
-  font-size: 1rem;
-  align-items: center;
-}
 
 .sticky {
   position: sticky;

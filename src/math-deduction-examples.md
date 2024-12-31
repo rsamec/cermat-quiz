@@ -40,7 +40,7 @@ function renderExample({example, unit, showRelativeValues}={}){
         <div class="badge">Šířka: ${width}</div>
       </div>
     </div>
-    <div>
+    <div class="flexible">
       ${example.deductionTree}
     </div>
     ${example.data != null ? html`<div>
