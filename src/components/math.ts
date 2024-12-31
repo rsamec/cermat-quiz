@@ -331,7 +331,6 @@ function partEqual(a: Comparison, b: Container) {
     ...rest,
     quantity: rest.quantity / 2
   }
-
 }
 export function inferenceRule(a: Predicate | Container[], b: Predicate, c?: { kind: 'ratio' | 'comp-ratio' | 'rate' | "comp-diff" | 'comp-part-eq' }) {
   if (Array.isArray(a)) {

@@ -11,19 +11,22 @@ import {deduce} from './utils/deduce.js';
 import {partion, relativeParts, formatPredicate, relativePartsDiff} from './utils/deduce-components.js';
 import {inferenceRule, cont, sum, comp, ratio} from './components/math.js';
 
-import sourozenci from './math/sourozenci.js';
-import pocetOb from './math/pocet-obyvatel.js';
-import vOhrade from './math/kralice-a-slepice-v-ohrade.js';
-import zakusky from './math/zakusek.js';
-import milkExample from './math/mleko.js';
-import vek from './math/vek.js';
-import slepice from './math/slepice.js';
-import kolo from './math/M9A-2024/kolo.js';
+//import milkExample from './math/mleko.js';
+
 import cetar from './math/M7A-2023/cetar.js';
-import sportovci from './math/M7A-2023/pocet-sportovcu.js';
+import zakusky from './math/M7A-2023/zakusek.js';
+
+import sportovci from './math/M7A-2024/pocet-sportovcu.js';
+import tabor from './math/M7A-2024/letni-tabor.js';
+import vOhrade from './math/M7A-2024/kralice-a-slepice-v-ohrade.js';
+
+import svadleny from './math/M9A-2024/svadleny.js';
+import kolo from './math/M9A-2024/kolo.js';
+
+import sourozenci from './math/M9C-2024/sourozenci.js';
+import pocetOb from './math/M9C-2024/pocet-obyvatel.js';
 
 
-import svadleny from './math/svadleny.js';
 
 function renderExample({example, unit, showRelativeValues}={}){
   const {depth, width} = example.deductionTree._statistics;
@@ -93,6 +96,31 @@ const cetarInput = Generators.input(cetarForm);
 <div>${renderExample({example:cetar({input:cetarInput})})}</div>
 
 ----------------------
+
+```js
+const taborForm = Inputs.form({
+  zdravotnik: Inputs.range([1, 5], {step: 1, value:1, label: "Počet zdravotníků"}),
+  kucharPerZdravotnik: Inputs.range([1, 10], {step: 1, value:4, label: "Kuchařek na každého zdravotníka"}),
+  vedouciPerKuchar: Inputs.range([1,10], {step: 1, value:2, label: "Vedoucí za každou kuchařku"}),
+  instruktorPerVedouci: Inputs.range([1,10], {step: 1, value:2, label: "Instruktorů za každého vedoucího"}),
+  ditePerInstruktor: Inputs.range([1, 10], {step: 1, value:4, label: "Dětí za každého instruktora"}),
+});
+const taborInput = Generators.input(taborForm);
+```
+
+## Letni tabor
+
+<details>
+  <summary>Parametrizace</summary>
+  ${taborForm}
+</details>
+    
+<div>${renderExample({example:tabor({input:taborInput})[0]})}</div>
+<div>${renderExample({example:tabor({input:taborInput})[1]})}</div>
+<div>${renderExample({example:tabor({input:taborInput})[2]})}</div>
+
+----------------------
+
 
 ## Sportovci
 
@@ -179,24 +207,6 @@ const sourozenciInput = Generators.input(sourozenciInputForm);
 
 
 ```js
-const milkForm = Inputs.form({
-  rozdil: Inputs.range([2, 50], {step: 1, value:5, label: "2 litry stojí méně o než 3 litry"}),
-  zdrazeni: Inputs.range([0, 0.49], {step: 0.01, value:1/4, label: "Zdražení mléka o"}),
-});
-const milkInput = Generators.input(milkForm);
-```
-## Zdražení mléka
-
-<details>
-  <summary>Parametrizace</summary>
-  ${milkForm}
-</details>
-
-<div>${renderExample({example:milkExample({input:milkInput})})}</div>
-
-----------------------
-
-```js
 const vekForm = Inputs.form({
   vekRozdil: Inputs.range([6, 50], {step: 2, value:6, label: "Věkový rozdíl"}),
 });
@@ -220,4 +230,14 @@ const workersInput = Generators.input(workersForms);
 </details>
 
 <div>${renderExample({example:svadleny({input:workersInput})})}</div>
+
+----------------------
+
+```js
+const milkForm = Inputs.form({
+  rozdil: Inputs.range([2, 50], {step: 1, value:5, label: "2 litry stojí méně o než 3 litry"}),
+  zdrazeni: Inputs.range([0, 0.49], {step: 0.01, value:1/4, label: "Zdražení mléka o"}),
+});
+const milkInput = Generators.input(milkForm);
+```
 

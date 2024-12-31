@@ -1,7 +1,7 @@
 import { html } from "htl";
-import { cont, inferenceRule, compRatio, commonSense } from "../components/math.js";
-import { deduce } from "../utils/deduce.js";
-import { formatNode as format, inputLabel, deduceLabel, highlight } from "../utils/deduce-components.js";
+import { cont, inferenceRule, compRatio, commonSense } from "../../components/math.js";
+import { deduce } from "../../utils/deduce.js";
+import { formatNode as format, inputLabel, deduceLabel, highlight } from "../../utils/deduce-components.js";
 
 
 interface InversProportionParams {
