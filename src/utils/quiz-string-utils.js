@@ -138,3 +138,7 @@ export function normalizeLatex(result) {
   })
   return val;
 }
+
+export function isEmptyOrWhiteSpace(value) {
+  return value == null || (typeof value === 'string' && value.trim() === '');
+};
