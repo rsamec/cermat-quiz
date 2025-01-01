@@ -270,13 +270,13 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
               ${useResources && mathResourceEntries.length > 0 || wordProblemEntries.length > 0 ? html`<details class="solution break-inside-avoid-column"><summary>Řešení úlohy</summary><div class="v-stack v-stack--s">
               ${mathResourceEntries.map(([key, value, i]) => html`<div class="h-stack h-stack--s">
                 <span style="flex:1">${key} - ${value.Name}</span>
-                <a href="./math-${code}"><i class="fa-solid fa-square-up-right"></i></a>
+                <a href="./solution-${code}#s-${ids[0]}" target="_blank"><i class="fa-solid fa-square-up-right"></i></a>
               </div>
               <video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`)}
               
               ${wordProblemEntries.map(([key,d]) => html`<div class="h-stack h-stack--s">
                 <span style="flex:1">${d.template}</span>
-                <a href="./math-${code}"><i class="fa-solid fa-square-up-right"></i></a>
+                <a href="./solution-${code}#s-${ids[0]}" target="_blank"><i class="fa-solid fa-square-up-right"></i></a>
               </div>
               ${html.fragment`${d.deductionTree}`}
               `)}
