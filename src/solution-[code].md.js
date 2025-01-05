@@ -4,9 +4,12 @@ import mdPlus from './utils/md-utils.js';
 import { parseQuiz } from './utils/quiz-parser.js';
 import { readJsonFromFile } from './utils/file.utils.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, isEmptyOrWhiteSpace } from './utils/quiz-string-utils.js';
-import wordProblems from './math/word-problems.js';
-import { isPredicate } from "./utils/deduce-utils.js";
+// import wordProblems from './math/word-problems.js';
+// import { isPredicate } from "./utils/deduce-utils.js";
 import Fraction from 'fraction.js';
+
+const wordProblems = {}
+const isPredicate = () => true;
 
 const {
   values: { code }
@@ -64,7 +67,7 @@ ${answers == null ? `<div class="warning" label="Upozornění">
   K tomuto testu v tuto chvíli neexistují žádná řešení.
 </div>`: ''}
 <div class="root">${ids.map(id => {
-  const values = (answers[id] != null || wordProblem[id] != null) ? [[id, answers[id] ?? wordProblem[id]]] : [1, 2, 3].map(i => answers?.[`${id}.${i}`]).filter(Boolean).map((d, index) => [`${id}.${index + 1}`, d])
+  const values = (answers[id] != null) ? [[id, answers[id] ?? wordProblem[id]]] : [1, 2, 3].map(i => answers?.[`${id}.${i}`]).filter(Boolean).map((d, index) => [`${id}.${index + 1}`, d])
 
 
   return `${mdPlus.renderToString(quiz.content([id], { ids, render: 'content' }), { docId: `${code}-${id}` })}
