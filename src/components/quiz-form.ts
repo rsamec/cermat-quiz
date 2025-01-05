@@ -167,7 +167,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                 }) : [];
 
               const wordProblemEntries = wordProblem != null ? leafs
-                .map((d, i) => wordProblem[d.leaf.data.id] != null ? [d.leaf.data.id, wordProblem[d.leaf.data.id]()] : null).filter(Boolean)
+                .map((d, i) => wordProblem[d.leaf.data.id] != null ? [d.leaf.data.id, wordProblem[d.leaf.data.id]] : null).filter(Boolean)
                 : []
 
               return html`<div class=${cls(['q', `q-${key}`, `group-${questionsMap[ids[0]].groupKey}`, questionCustomClass])}>

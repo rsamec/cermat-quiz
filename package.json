@@ -7,7 +7,8 @@
     "dev": "observable preview",
     "deploy": "observable deploy",
     "observable": "observable",
-    "merge-pdf": "node merge-pdf.js ./generated"
+    "merge-pdf": "node merge-pdf.js ./generated",
+    "build:word-problems": "tsc ./src/math/word-problems.ts --outfile word-problems.js --allowJs"
   },
   "dependencies": {
     "@lezer/common": "^1.2.2",
@@ -20,6 +21,7 @@
     "d3-scale": "^4.0.2",
     "d3-scale-chromatic": "^3.1.0",
     "d3-time-format": "^4.1.0",
+    "fraction.js": "^5.2.1",
     "htl": "^0.3.1",
     "invert-color": "^2.0.0",
     "markdown-it-footnote": "^4.0.0",

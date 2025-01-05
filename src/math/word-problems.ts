@@ -21,7 +21,7 @@ const letniTaborInput = {
 }
 export default {
   "M7A-2023": {
-    3.3: () => cetar({
+    3.3: cetar({
       input: {
         kapitan: 1,
         porucik: 4,
@@ -29,18 +29,18 @@ export default {
         vojinPerCetar: 10
       }
     }),
-    14: () => zakusek({
+    14: zakusek({
       input: {
         cena: 72
       }
     })
   },
   "M7A-2024": {
-    6: () => pocetSportovcu({ input: {} }),
-    10.1: () => letniTabor(letniTaborInput)[0],
-    10.2: () => letniTabor(letniTaborInput)[1],
-    10.3: () => letniTabor(letniTaborInput)[2],
-    11: () => kraliciASlepice({
+    6: pocetSportovcu({ input: {} }),
+    10.1: letniTabor(letniTaborInput)[0],
+    10.2: letniTabor(letniTaborInput)[1],
+    10.3: letniTabor(letniTaborInput)[2],
+    11: kraliciASlepice({
       input: {
         kralikuMene: 5,
         pocetHlav: 37
@@ -48,11 +48,11 @@ export default {
     })
   },
   "M9A-2024": {
-    1: () => svadleny({ input: { currentWorker: 4, previousWorker: 5, previousHours: 24 } }),
-    16.3: () => kolo({ input: { base: 20_000, percentageDown: 10, percentageNewUp: 10 } }),
+    1: svadleny({ input: { currentWorker: 4, previousWorker: 5, previousHours: 24 } }),
+    16.3: kolo({ input: { base: 20_000, percentageDown: 10, percentageNewUp: 10 } }),
   },
   "M9C-2024": {
-    1: () => pocetObyvatel({ input: { celkem: 86_200, jihlavaPlus: 16_000 } }),
-    12: () => sourozenci({ input: { evaPodil: 40, michalPlus: 24, zbyvaNasporit: 72 } }),
+    1: pocetObyvatel({ input: { celkem: 86_200, jihlavaPlus: 16_000 } }),
+    12: sourozenci({ input: { evaPodil: 40, michalPlus: 24, zbyvaNasporit: 72 } }),
   },
 }

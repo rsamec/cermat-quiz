@@ -1,5 +1,5 @@
 import { cont, compDiff, inferenceRule, lcd } from "../../components/math.js";
-import { axiomInput, deduce, type DeduceTemplate } from "../../utils/deduce-utils.js";
+import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 interface SportovciParams {
 
@@ -33,7 +33,7 @@ export default function build({ input }: {
       ),
     rozdil)
 
-  const template = (highlight: DeduceTemplate) => highlight`Počet sportovců na závodech byl více než 1 a zároveň méně než 90.
+  const template = highlight => highlight`Počet sportovců na závodech byl více než 1 a zároveň méně než 90. 
   Pořadatel chtěl sportovce seřadit do slavnostního průvodu, ale ať je rozděloval do ${'dvojic'}, ${'trojic'}, ${'čtveřic'} nebo ${'pětic'}, vždy mu ${'jeden'} sportovec zbyl.
   ${html => html`<br/><strong>Kolik sportovců se sešlo na závodech?</strong>`}`;
 

@@ -6,11 +6,11 @@
 }
 
 .node {
-  padding-left: 20px;
+  padding-left: 5px;
 }
 
-.node.leaf {
-  padding-left: 5px;
+.node:has(:not(.node.leaf)) {
+  padding-left: 20px;
 }
 
 @container (min-width: 1200px) {

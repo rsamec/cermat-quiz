@@ -1,5 +1,5 @@
 import { html } from "htl";
-import { cont, inferenceRule, ratio, comp } from "../components/math.js";
+import { cont, inferenceRule, ratio, comp, ctor } from "../components/math.js";
 import { deduce, } from "../utils/deduce.js";
 import { relativePartsDiff, formatNode as format, inputLabel, deduceLabel, highlight } from "../utils/deduce-components.js";
 
@@ -28,7 +28,7 @@ export default function build({ input }: {
 
   const milk = comp(firstYear, secondYear, -1 * input.rozdil, "Kč");
 
-  const dd2 = inferenceRule(a, second, { kind: 'ratio' });
+  const dd2 = inferenceRule(a, second, ctor('ratio'));
   const dd3 = inferenceRule(dd2, b);
   const dd4 = inferenceRule(dd3, milk);
 

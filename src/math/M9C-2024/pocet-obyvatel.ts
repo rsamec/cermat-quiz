@@ -1,6 +1,6 @@
 
 import { cont, comp, ctor } from "../../components/math.js";
-import { axiomInput, deduce, type DeduceTemplate } from "../../utils/deduce-utils.js";
+import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 
 interface PocetObyvatelParams {
@@ -30,7 +30,7 @@ export default function build({ input }: {
     ctor('comp-part-eq'),
   )
 
-  const template = (highlight: DeduceTemplate) => highlight
+  const template = highlight => highlight
     `Města Jihlava a Třebíč mají dohromady ${input.celkem.toLocaleString("cs-CZ")} obyvatel.
     Jihlava má o ${input.jihlavaPlus.toLocaleString("cs-CZ")} více.
   ${html => html`<br/>

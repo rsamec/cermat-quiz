@@ -1,6 +1,6 @@
 
 import { cont, inferenceRule, rate, sum, ctor } from "../../components/math.js";
-import { axiomInput, deduce, deduceLbl, to, type DeduceTemplate } from "../../utils/deduce-utils.js";
+import { axiomInput, deduce, deduceLbl, to } from "../../utils/deduce-utils.js";
 
 
 interface PercentPartParams {
@@ -77,7 +77,7 @@ export default function build({ input }: {
 
 
 
-  const templateBase = (highlight: DeduceTemplate) =>
+  const templateBase = (highlight) =>
     highlight`Na letním táboře jsou kromě dětí také instruktoři, vedoucí, kuchařky a ${input.zdravotnik} zdravotník.
      Počet zdravotníků a počet kuchařek je v poměru ${`1:${input.kucharPerZdravotnik}`},
      počet kuchařek a vedoucích ${`1:${input.vedouciPerKuchar}`},
@@ -97,8 +97,8 @@ export default function build({ input }: {
     <strong>Na táboře je celkem ${tree3dd4.kind == "cont" && tree3dd4.quantity} dětí?</strong>`;
 
   return [
-    { deductionTree: dTree1, template: (highlight: DeduceTemplate) => highlight`${() => templateBase(highlight)}${template1}` },
-    { deductionTree: dTree2, template: (highlight: DeduceTemplate) => highlight`${() => templateBase(highlight)}${template2}` },
-    { deductionTree: dTree3, template: (highlight: DeduceTemplate) => highlight`${() => templateBase(highlight)}${template3}` },
+    { deductionTree: dTree1, template: highlight => highlight`${() => templateBase(highlight)}${template1}` },
+    { deductionTree: dTree2, template: highlight => highlight`${() => templateBase(highlight)}${template2}` },
+    { deductionTree: dTree3, template: highlight => highlight`${() => templateBase(highlight)}${template3}` },
   ]
 }
