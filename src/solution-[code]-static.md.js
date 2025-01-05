@@ -74,7 +74,8 @@ ${answers == null ? `<div class="warning" label="Upozornění">
 ${values?.length > 0
       ? `<details class="solutions" open>
 <summary><h2 style="flex:1;" id="s-${id}">Řešení úloha ${id}</h2></summary>
-${values.map(([key, value]) => `<div class="card break-inside-avoid-column">${(value.results ?? []).map(d => renderResult(key, d)).join('')}${value.template != null ? value.template(highlight) : ''}
+${values.map(([key, value]) => `<div class="card break-inside-avoid-column">${(value.results ?? []).map(d => renderResult(key, d)).join('')}
+${value.template != null ? value.template(highlight) : ''}
 <div>
 ${value.deductionTree != null ? deduceTraverse(value.deductionTree) : ''}
 </div>
