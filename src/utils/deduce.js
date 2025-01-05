@@ -1,6 +1,6 @@
 ///modified version from https://observablehq.com/@kelleyvanevert/deduction-trees
 import { html } from "npm:htl";
-export function deduce(...ts) {
+export function deduce(...ts) {  
   ts = ts.map(t => (t._proof || t.nodeName) ? t : html`${t}`);
   const proof = html`<div class="proof">
 	  <div class="premises">
@@ -19,15 +19,12 @@ export function deduce(...ts) {
 
   // add premises
   const prem = proof.children[0];
-  let depth = 0;
-  let width = ts.reduce((out,t) => out+=t._statistics?.width ?? 1, 0);
   ts.forEach((t, i) => {
     // add premiss
     prem.appendChild(html`<div class="node${!t._proof ? ' leaf':''}">${t}</div>`);
 
     // if the premiss is a sub-tree, white-out parts of the horizontal bar for aesthetic reasons
     if (t._proof) {
-      depth = Math.max(t._statistics?.depth ?? 0, depth);
       if (i == 0) {
         // '.proof > .conclusion > .le'
         //t.children[1].children[0].style['border-bottom'] = '2px solid var(--theme-foreground)';
@@ -44,9 +41,5 @@ export function deduce(...ts) {
 
   // so that future runs of this function can check that the node is a proof tree
   proof._proof = true;
-  proof._statistics = {
-    depth: depth + 1,
-    width,
-  }
   return proof;
 }

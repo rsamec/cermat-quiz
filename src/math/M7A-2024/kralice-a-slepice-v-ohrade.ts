@@ -1,7 +1,6 @@
-import { html } from "htl";
-import { cont, inferenceRule, ratio, comp, rate } from "../../components/math.js";
-import { deduce } from "../../utils/deduce.js";
-import { formatNode as format, inputLabel, deduceLabel, highlight } from "../../utils/deduce-components.js";
+
+import { cont, ratio, comp, rate, ctor } from "../../components/math.js";
+import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 interface ZvirataVOhradeParams {
   pocetHlav: number;
@@ -29,30 +28,24 @@ export default function build({ input }: {
   const slepice = "slepice";
   const kralik = "králík";
 
-  const total = cont(celkem, input.pocetHlav, hlava)
+  const total = axiomInput(cont(celkem, input.pocetHlav, hlava), 1)
   const perHlava = rate(celkem, 1, hlava, entity);
   const pomer = ratio({ agent: partCelkem, entity }, { agent: kralik, entity }, 1 / 2);
-  const slepicePlus = comp(kralik, slepice, -input.kralikuMene, entity)
+  const slepicePlus = axiomInput(comp(kralik, slepice, -input.kralikuMene, entity), 2)
 
-  const dd1 = inferenceRule(total, perHlava)
-  const dd2 = inferenceRule(dd1, slepicePlus, { kind: 'comp-part-eq' });
-  const dd3 = inferenceRule(dd2, slepicePlus);
   const deductionTree = deduce(
     deduce(
-        deduce(format(total, inputLabel(1)), format(perHlava), format(dd1, deduceLabel(1))),
-        format(slepicePlus, inputLabel(2)),
-        format({ kind: 'comp-part-eq' }),
-        format(dd2, deduceLabel(2))
+      deduce(total, perHlava),
+      slepicePlus,
+      ctor('comp-part-eq'),
     ),
-    format(slepicePlus, inputLabel(2)),
-    format(dd3, deduceLabel(3)),
+    slepicePlus
   )
 
-  const template = html`
-  ${inputLabel(1)}${highlight`V ohradě pobíhali králíci a slepice.`}
-  ${inputLabel(2)}${highlight`Králíků bylo o ${input.kralikuMene} méně.`}
-  ${inputLabel(3)}${highlight`Králíci a slepice měli dohromady ${nohy} nohou a ${input.pocetHlav} hlav.`}<br/>
-  ${deduceLabel(3)}<strong> Kolik bylo v ohradě slepic?</strong>`;
+  const template = highlight => highlight`V ohradě pobíhali králíci a slepice.
+  Králíků bylo o ${input.kralikuMene} méně.
+  Králíci a slepice měli dohromady ${nohy} nohou a ${input.pocetHlav} hlav.
+  ${html => html`<br/><strong> Kolik bylo v ohradě slepic?</strong>`}`
 
   return { deductionTree, data, template }
 }

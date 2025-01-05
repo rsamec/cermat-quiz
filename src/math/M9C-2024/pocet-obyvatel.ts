@@ -1,7 +1,6 @@
-import { html } from "htl";
-import { cont, inferenceRule,comp } from "../../components/math.js";
-import { deduce } from "../../utils/deduce.js";
-import { formatNode as format, inputLabel, deduceLabel, highlight } from "../../utils/deduce-components.js";
+
+import { cont, comp, ctor } from "../../components/math.js";
+import { axiomInput, deduce, type DeduceTemplate } from "../../utils/deduce-utils.js";
 
 
 interface PocetObyvatelParams {
@@ -20,23 +19,22 @@ export default function build({ input }: {
   const celkem = 'Jihlava a Třebíč';
   const entity = "obyvatel";
 
-  const total = cont(celkem, input.celkem, entity)
+  const total = axiomInput(cont(celkem, input.celkem, entity), 1)
   //const plus = diff(celkem, partCelkem, input.jihlavaPlus, entity)
-  const diffComp = comp(jihlava, trebic, input.jihlavaPlus, entity)
+  const diffComp = axiomInput(comp(jihlava, trebic, input.jihlavaPlus, entity), 2)
 
 
-  const dd1 = inferenceRule(total, diffComp, { kind: 'comp-part-eq' });
   const deductionTree = deduce(
-      format(total, inputLabel(1)),
-      format(diffComp, inputLabel(2)),
-      format({kind:'comp-part-eq'}),
-      format(dd1, deduceLabel(1))
+    total,
+    diffComp,
+    ctor('comp-part-eq'),
   )
 
-  const template = html`
-    ${inputLabel(1)}${highlight`Města Jihlava a Třebíč mají dohromady ${input.celkem.toLocaleString("cs-CZ")} obyvatel.`}
-    ${inputLabel(2)}${highlight`Jihlava má o ${input.jihlavaPlus.toLocaleString("cs-CZ")} více`}.<br/>
-    ${deduceLabel(1)}<strong> Kolik obyvatel má Třebíč?</strong>`;
+  const template = (highlight: DeduceTemplate) => highlight
+    `Města Jihlava a Třebíč mají dohromady ${input.celkem.toLocaleString("cs-CZ")} obyvatel.
+    Jihlava má o ${input.jihlavaPlus.toLocaleString("cs-CZ")} více.
+  ${html => html`<br/>
+    <strong> Kolik obyvatel má Třebíč?</strong>`}`;
 
   return { deductionTree, data, template }
 }

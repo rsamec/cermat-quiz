@@ -74,7 +74,7 @@ export default function rules() {
     const sumRule = sum("dohromady", ["Ája", "Honzík"], "sešity", "sešity");
 
     return {
-      premises: [[a, b], sumRule],
+      premises: [a, b, sumRule],
       inputTemplate: html`Ája a Honzík dají sešity dohromady.`,
       outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
     }
@@ -84,7 +84,7 @@ export default function rules() {
     const sumRule = lcd("nejmenší možná skupina", "osob");
 
     return {
-      premises: [[a, b], sumRule],
+      premises: [a, b, sumRule],
       inputTemplate: html`Ája a Honzík dají sešity dohromady.`,
       outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
     }
@@ -94,7 +94,7 @@ export default function rules() {
     const sumRule = gcd("největší možná tyč", "délka (m)");
 
     return {
-      premises: [[a, b], sumRule],
+      premises: [a, b, sumRule],
       inputTemplate: html`Ája a Honzík dají sešity dohromady.`,
       outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
     }

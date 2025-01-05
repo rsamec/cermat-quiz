@@ -8,8 +8,9 @@ style: /assets/css/math-deduce.css
 
 ```js
 import {deduce} from './utils/deduce.js';
-import {partion, relativeParts, formatPredicate, relativePartsDiff} from './utils/deduce-components.js';
+import {partion, relativeParts, formatPredicate, relativePartsDiff, deduceTraverse, highlightLabel} from './utils/deduce-components.js';
 import {inferenceRule, cont, sum, comp, ratio} from './components/math.js';
+import {computeTreeMetrics} from './utils/deduce-utils.js';
 
 //import milkExample from './math/mleko.js';
 
@@ -29,10 +30,11 @@ import pocetOb from './math/M9C-2024/pocet-obyvatel.js';
 
 
 function renderExample({example, unit, showRelativeValues}={}){
-  const {depth, width} = example.deductionTree._statistics;
+  const tree = deduceTraverse(example.deductionTree);
+  const {depth, width} = computeTreeMetrics(example.deductionTree);
   return html`
   <div class="v-stack v-stack--l">
-    <div class="card">${example.template}</div>
+    <div class="card">${example.template(highlightLabel())}</div>
     <div class="h-stack h-stack--m">
       <h3 style="flex:1">Dedukční strom</h3>
       <div class="h-stack h-stack--m" style="align-items: flex-start;">
@@ -41,7 +43,7 @@ function renderExample({example, unit, showRelativeValues}={}){
       </div>
     </div>
     <div class="flexible">
-      ${example.deductionTree}
+      ${tree}
     </div>
     ${example.data != null ? html`<div>
       <h3>Zobrazení situace</h3>

@@ -12,6 +12,7 @@ import * as Inputs from 'npm:@observablehq/inputs';
 import { isEmptyOrWhiteSpace, cls } from '../utils/string-utils.js';
 
 import wordProblems from '../math/word-problems.js';
+import { deduceTraverse, highlightLabel } from '../utils/deduce-components.js';
 
 type QuizParams = {
   questions: string[][],
@@ -166,7 +167,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                 }) : [];
 
               const wordProblemEntries = wordProblem != null ? leafs
-                .map((d, i) => wordProblem[d.leaf.data.id] != null ? [d.leaf.data.id,wordProblem[d.leaf.data.id]()] : null).filter(Boolean)
+                .map((d, i) => wordProblem[d.leaf.data.id] != null ? [d.leaf.data.id, wordProblem[d.leaf.data.id]()] : null).filter(Boolean)
                 : []
 
               return html`<div class=${cls(['q', `q-${key}`, `group-${questionsMap[ids[0]].groupKey}`, questionCustomClass])}>
@@ -274,11 +275,11 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
               </div>
               <video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`)}
               
-              ${wordProblemEntries.map(([key,d]) => html`<div class="h-stack h-stack--s">
-                <span style="flex:1">${d.template}</span>
+              ${wordProblemEntries.map(([key, d]) => html`<div class="h-stack h-stack--s">
+                <span style="flex:1">${d.template(highlightLabel())}</span>
                 <a href="./solution-${code}#s-${ids[0]}" target="_blank"><i class="fa-solid fa-square-up-right"></i></a>
               </div>
-              ${html.fragment`${d.deductionTree}`}
+              ${html.fragment`${deduceTraverse(d.deductionTree)}`}
               `)}
               
               </div></details>` : ''}

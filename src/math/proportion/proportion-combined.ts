@@ -1,5 +1,5 @@
 import { html } from "htl";
-import { cont, inferenceRule, compRatio, commonSense } from "../../components/math.js";
+import { cont, inferenceRule, compRatio, commonSense, ctor } from "../../components/math.js";
 import { deduce } from "../../utils/deduce.js";
 import { formatNode as format, inputLabel, deduceLabel, highlightLabel } from "../../utils/deduce-components.js";
 
@@ -26,7 +26,7 @@ export default function build({ input }: {
 
   const aPrevious = cont(agentPrevious, input.previousWorkers, entityA);
   const aCurrent = cont(agentCurrent, input.currentWorkers, entityA)
-  const dd1 = inferenceRule(aPrevious, aCurrent, { kind: 'comp-ratio' });
+  const dd1 = inferenceRule(aPrevious, aCurrent, ctor('comp-ratio'));
 
   const cc1 = commonSense("nepřímá úměrnost, obracený poměr veličin")
   const cc2 = commonSense("přímá úměrnost, stejný poměr veličin")
@@ -36,7 +36,7 @@ export default function build({ input }: {
 
   const c1 = cont(agentCurrent, input.previousGoods, entityC);
   const c2 = cont(agentNew, input.currentGoods, entityC);
-  const dd4 = inferenceRule(c1, c2, { kind: 'comp-ratio' });
+  const dd4 = inferenceRule(c1, c2, ctor('comp-ratio'));
   const comp = compRatio(agentNew, agentCurrent, dd4.kind == "comp-ratio" ? dd4.quantity : 0, "hodin")
   const dd5 = inferenceRule(comp, dd3);
 

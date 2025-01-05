@@ -1,8 +1,7 @@
-import { html } from "htl";
-import type { Container } from "../../components/math.js";
+
 import { cont, inferenceRule, ratio, comp, sum } from "../../components/math.js";
-import { deduce } from "../../utils/deduce.js";
-import { relativeParts, relativePartsDiff, formatNode as format, inputLabel, deduceLabel, highlight } from "../../utils/deduce-components.js";
+import { axiomInput, deduce, to } from "../../utils/deduce-utils.js";
+import { relativeParts, relativePartsDiff } from "../../utils/deduce-components.js";
 
 interface ZakuseParams {
   cena: number;
@@ -24,50 +23,47 @@ export default function build({ input }: {
   const partTotalPrice = "1.zák.+2.zák";
 
 
-  const p1p2 = comp(piece2, piece1, -1 / 4, "")
-  const p1 = cont(piece1, input.cena, entity)
+  const p1p2 = axiomInput(comp(piece2, piece1, -1 / 4, ""),2);
+  const p1 = axiomInput(cont(piece1, input.cena, entity),1)
   const p2Ratio = ratio({ agent: piece1, entity }, { agent: piece2, entity }, 3 / 4);
   const p3Ratio = ratio({ agent: totalPrice, entity }, { agent: partTotalPrice, entity }, 2 / 3);
-  const oneThird = ratio({ agent: totalPrice, entity }, { agent: piece3, entity }, 1 / 3)
+  const oneThird = axiomInput(ratio({ agent: totalPrice, entity }, { agent: piece3, entity }, 1 / 3),3);
 
   const soucet = sum(partTotalPrice, [], "Kč", "Kč");
   //const p2 = comp(piece2, piece1, , entity)
 
 
-  const dd1 = inferenceRule(p1, p2Ratio, { kind: 'ratio' }) as Container;
-  const dd2 = inferenceRule([p1, dd1], soucet);
+  const dd1 = inferenceRule(p1, p2Ratio)
+  const dd2 = inferenceRule(p1, dd1, soucet);
   const dd3 = inferenceRule(dd2, p3Ratio);
-  const dd4 = inferenceRule(dd3, oneThird);
+  // const dd4 = inferenceRule(dd3, oneThird);
 
   const fig1 = relativePartsDiff(-1 / 4, { first: piece2, second: piece1 });
   const fig2 = relativeParts(1 / 3, { first: piece3, second: partTotalPrice });
+
 
   const deductionTree =
     deduce(
       deduce(
         deduce(
-          format(p1, inputLabel(1)),
+          p1,
           deduce(
-            format(p1, inputLabel(1)),
-            deduce(
-              format(p1p2, inputLabel(2)),
+            p1,
+            to(
+              p1p2,
               fig1,
-              format(p2Ratio, deduceLabel(1)),
+              p2Ratio,
             ),
-            format(dd1, deduceLabel(2))
           ),
-          format(soucet),
-          format(dd2, deduceLabel(3)),
+          soucet
         ),
-        deduce(
-          format(oneThird, inputLabel(3)),
+        to(
+          oneThird,
           fig2,
-          format(p3Ratio, deduceLabel(4)),
+          p3Ratio,
         ),
-        format(dd3, deduceLabel(5))
       ),
-      format(oneThird, inputLabel(3)),
-      format(dd4, deduceLabel(6))
+      oneThird,
     )
 
 
@@ -80,12 +76,12 @@ export default function build({ input }: {
     { agent: "č.3", value: celkemVse - (input.cena + zak2) }
   ];
 
-  const template = html`
+  const template = highlight => highlight`
   Maminka koupila v cukrárně tři různé zákusky.
-  ${inputLabel(1)}${highlight`První zákusek stál ${input.cena} korun.`}
-  ${inputLabel(2)}${highlight`Druhý zákusek byl o čtvrtinu levnější než první.`}
-  ${inputLabel(3)}${highlight`Cena třetího zákusku byla třetinou celkové ceny všech tří zákusků.`}<br/>
-  ${deduceLabel(6)}<strong>O kolik korun byl třetí zákusek dražší než druhý?</strong>`;
+  První zákusek stál ${input.cena} korun.
+  Druhý zákusek byl o ${'čtvrtinu levnější než první'}.
+  Cena třetího zákusku byla ${'třetinou celkové ceny všech tří zákusků'}.
+  ${html => html `<br/><strong>O kolik korun byl třetí zákusek dražší než druhý?</strong>`}`;
 
-  return { deductionTree, data, template, fig1, }
+  return { deductionTree, data, template }
 }

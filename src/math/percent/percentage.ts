@@ -1,5 +1,5 @@
 import { html } from "htl";
-import { cont, inferenceRule } from "../../components/math.js";
+import { cont, ctor, inferenceRule } from "../../components/math.js";
 import { deduce } from "../../utils/deduce.js";
 import { formatNode as format, inputLabel, deduceLabel, highlight } from "../../utils/deduce-components.js";
 
@@ -21,7 +21,7 @@ export default function build({ input }: {
 
   const percentPart = cont(agentPercentPart, input.part, entity);
   const percentBase = cont(agentPercentBase, input.base, entity);
-  const dd1 = inferenceRule(percentPart, percentBase, { kind: 'ratio' });
+  const dd1 = inferenceRule(percentPart, percentBase, ctor('ratio'));
 
   const celek = cont(agentPercentBase, 100, entityPercent);
   const dd2 = inferenceRule(celek, dd1);

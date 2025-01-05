@@ -1,7 +1,6 @@
-import { html } from "htl";
-import { cont, inferenceRule, compRatio, commonSense } from "../../components/math.js";
-import { deduce } from "../../utils/deduce.js";
-import { formatNode as format, inputLabel, deduceLabel, highlight } from "../../utils/deduce-components.js";
+
+import { cont, inferenceRule, compRatio, commonSense, ctor } from "../../components/math.js";
+import { axiomInput, deduce, to } from "../../utils/deduce-utils.js";
 
 
 interface InversProportionParams {
@@ -21,14 +20,14 @@ export default function build({ input }: {
 
 
 
-  const aPrevious = cont(agentPrevious, input.previousWorker, entityA);
-  const aCurrent = cont(agentCurrent, input.currentWorker, entityA)
-  const dd1 = inferenceRule(aCurrent, aPrevious, { kind: 'comp-ratio' });
+  const aPrevious = axiomInput(cont(agentPrevious, input.previousWorker, entityA), 1);
+  const aCurrent = axiomInput(cont(agentCurrent, input.currentWorker, entityA), 3)
+  const dd1 = inferenceRule(aPrevious, aCurrent, ctor('comp-ratio'));
 
-  const cc1 = commonSense("nepřímá úměrnost, obracený poměr veličin")
-  const cc2 = commonSense("přímá úměrnost")
-  const dd2 = compRatio(agentCurrent, agentPrevious, dd1.kind == "comp-ratio" ? dd1.quantity : 0, entityB)
-  const bPrevious = cont(agentPrevious, input.previousHours, entityB);
+  const cc1 = commonSense("nepřímá úměrnost (více švadlen - méně hodin)")
+  const cc2 = commonSense("přímá úměrnost (více množství - více hodin)")
+  const dd2 = compRatio(agentCurrent, agentPrevious, dd1.kind == "comp-ratio" ? 1 / dd1.quantity : 0, entityB)
+  const bPrevious = axiomInput(cont(agentPrevious, input.previousHours, entityB), 2);
   const dd3 = inferenceRule(dd2, bPrevious);
 
   const comp = compRatio(agentNew, agentCurrent, 3 / 2, "množství")
@@ -39,33 +38,26 @@ export default function build({ input }: {
   const deductionTree = deduce(
 
     deduce(
-      deduce(
+      to(
         deduce(
-          format(aPrevious, inputLabel(1)),
-          format(aCurrent, inputLabel(3)),
-          format(dd1, deduceLabel(1))
+          aPrevious,
+          aCurrent,
+          ctor('comp-ratio')
         ),
-        format(cc1),
-        format(dd2, deduceLabel(2))
+        cc1,
+        dd2
       ),
-      format(bPrevious, inputLabel(2)),
-      format(dd3, deduceLabel(3)),
+      bPrevious,
     ),
-    deduce(
-      format(comp, inputLabel(4)),
-      format(cc2),
-      format(comp, deduceLabel(4)),
-    ),
-
-    format(dd5, deduceLabel(5))
-
-
+    to(
+      comp,
+      cc2,
+      dd4),
   )
 
-  const template = html`
-    ${inputLabel(1)}${highlight`${input.previousWorker} švadlen, které šijí oblečení, pracují stejným tempem.`}
-    ${inputLabel(2)}${highlight`Tyto švadleny splní danou zakázku za ${input.previousHours} hodin.`}.<br/>
-    ${deduceLabel(4)}<strong>${highlight`Za jakou dobu splní o polovinu větší zakázku ${input.currentWorker} švadleny?`}</strong>`;
+  const template = highlight => highlight`${input.previousWorker} švadlen, které šijí oblečení, pracují stejným tempem.
+    Tyto švadleny splní danou zakázku za ${input.previousHours} hodin.
+    Za jakou dobu splní o polovinu větší zakázku ${input.currentWorker} švadleny?`;
 
   return { deductionTree, template }
 }

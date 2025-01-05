@@ -1,9 +1,6 @@
-import { html } from "htl";
-
-import { cont, compDiff, inferenceRule, rate, ratio, sum } from "../../components/math.js";
-import { deduce } from "../../utils/deduce.js";
-import { formatNode as format, inputLabel, deduceLabel, highlightLabel } from "../../utils/deduce-components.js";
-
+import { cont, inferenceRule, rate, sum } from "../../components/math.js";
+import { axiomInput, deduce, deduceLbl} from "../../utils/deduce-utils.js";
+import type { DeduceTemplate } from "../../utils/deduce-utils.js";
 
 interface PercentPartParams {
   kapitan: number;
@@ -22,45 +19,42 @@ export default function build({ input }: {
   const vojinLabel = "vojín";
   const entity = "osob";
 
-
-  const kapitan = cont(agent, input.kapitan, kapitanLabel);
-  const porucik = cont(agent, input.porucik, porucikLabel);
-  const cetarPerPorucik = rate(agent, input.cetarPerPorucik, cetarLabel, porucikLabel);
-  const vojinPerCetar = rate(agent, input.vojinPerCetar, vojinLabel, cetarLabel);
+  const kapitan = axiomInput(cont(agent, input.kapitan, kapitanLabel), 1);
+  const porucik = axiomInput(cont(agent, input.porucik, porucikLabel), 2);
+  const cetarPerPorucik = axiomInput(rate(agent, input.cetarPerPorucik, cetarLabel, porucikLabel), 3);
+  const vojinPerCetar = axiomInput(rate(agent, input.vojinPerCetar, vojinLabel, cetarLabel), 4);
 
   const dd1 = inferenceRule(porucik, cetarPerPorucik) as any;
-  const dd2 = inferenceRule(dd1, vojinPerCetar) as any;
 
   const vydaneRozkazy = sum("vydané rozkazy", [kapitanLabel, porucikLabel, cetarLabel, vojinLabel], entity, entity);
   const dostaneRozkazy = sum("přijaté rozkazy", [porucikLabel, cetarLabel, vojinLabel], entity, entity);
-  const dd3 = inferenceRule([porucik, dd1, dd2], dostaneRozkazy)
 
 
   const dTree1 = deduce(
-    format(porucik, inputLabel(2)),
+    porucik,
+    { ...dd1, ...deduceLbl(1) },
     deduce(
       deduce(
-        format(porucik, inputLabel(2)),
-        format(cetarPerPorucik, inputLabel(3)),
-        format(dd1, deduceLabel(1))
+        porucik,
+        cetarPerPorucik,
       ),
-      format(vojinPerCetar, inputLabel(4)),
-      format(dd2, deduceLabel(2))
+      vojinPerCetar,
     ),
-    format(dd1, deduceLabel(1)),
-    format(dd3, deduceLabel(3))
+    dostaneRozkazy
   )
 
 
-  const template = html`
-  ${highlightLabel()`V rotě je ${input.kapitan} kapitán a má pod sebou ${input.porucik} poručíky. Každý poručík má pod sebou ${input.cetarPerPorucik} své četaře
+  const template1 = (html) => html`<br/><strong>Kolik osob v rotě dostalo rozkaz k nástupu?</strong>`;
+
+  const template = (highlight: DeduceTemplate) =>
+    highlight`V rotě je ${input.kapitan} kapitán a má pod sebou ${input.porucik} poručíky.Každý poručík má pod sebou ${input.cetarPerPorucik} své četaře
 a každý četař má pod sebou ${input.vojinPerCetar} svých vojínů. (Další osoby v rotě nejsou.)
-Kapitán se rozhodl svolat celou rotu k nástupu. Rozkaz k nástupu se předával tak, že
+Kapitán se rozhodl svolat celou rotu k nástupu.Rozkaz k nástupu se předával tak, že
 kapitán vydal rozkaz všem poručíkům, z nichž každý vydal tento rozkaz svým četařům
-a každý četař jej vydal svým vojínům. Poté celá rota nastoupila.`}`
+a každý četař jej vydal svým vojínům.Poté celá rota nastoupila.
+  ${template1}`
 
-  const template1 = html`${template}<br/>
-    ${deduceLabel(3)}<strong>Kolik osob v rotě dostalo rozkaz k nástupu?</strong>`;
 
-  return { deductionTree: dTree1, template: template1 }
+
+  return { deductionTree: dTree1, template: template }
 }

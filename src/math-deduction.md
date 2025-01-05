@@ -8,8 +8,9 @@ style: /assets/css/math-deduce.css
 
 ```js
 import {deduce} from './utils/deduce.js';
-import {partion, relativeParts, formatPredicate, relativePartsDiff} from './utils/deduce-components.js';
+import {partion, relativeParts, formatPredicate, relativePartsDiff, highlightLabel, deduceTraverse} from './utils/deduce-components.js';
 import {inferenceRule,cont,sum, comp, ratio, compDiff} from './components/math.js';
+import {computeTreeMetrics} from './utils/deduce-utils.js';
 
 import allRules from './utils/inference-rules.js';
 import slepice from './math/slepice.js';
@@ -22,17 +23,36 @@ import percentPart from './math/percent/part.js';
 import percentBase from './math/percent/base.js';
 import percentPercentage from './math/percent/percentage.js';
 
+function renderEx({example, unit, showRelativeValues}={}){
+  const tree = deduceTraverse(example.deductionTree);
+  const {depth, width} = computeTreeMetrics(example.deductionTree);
+  return html`
+  <div class="v-stack v-stack--l">
+    <div class="card">${example.template(highlightLabel())}</div>
+    <div class="h-stack h-stack--m">
+      <h3 style="flex:1">Dedukční strom</h3>
+      <div class="h-stack h-stack--m" style="align-items: flex-start;">
+        <div class="badge">Hloubka: ${depth}</div>
+        <div class="badge">Šířka: ${width}</div>
+      </div>
+    </div>
+    <div class="flexible">
+      ${tree}
+    </div>
+    ${example.data != null ? html`<div>
+      <h3>Zobrazení situace</h3>
+      ${partion(example.data, {unit, showRelativeValues})}
+    </div>`:''}
+  </div>`
+}
 
-function renderExample({example, unit, showRelativeValues}={}){
-  const {depth, width} = example.deductionTree._statistics;
+function renderExample({example, unit, showRelativeValues}={}){  
   return html`
   <div class="v-stack v-stack--l">
     <div class="card">${example.template}</div>
     <div class="h-stack h-stack--m">
       <h3 style="flex:1">Dedukční strom</h3>
       <div class="h-stack h-stack--m" style="align-items: flex-start;">
-        <div class="badge">Hloubka: ${depth}</div>
-        <div class="badge">Šířka: ${width}</div>
       </div>
     </div>
     <div class="flexible">
@@ -90,7 +110,7 @@ const slepiceInput = Generators.input(slepiceForms);
   ${slepiceForms}
 </details>
 
-<div>${renderExample({example:slepice({input:slepiceInput})})}</div>
+<div>${renderEx({example:slepice({input:slepiceInput})})}</div>
 
 <div class="tip" label="Hloubka a šířka stromu">
 Parametry dedukčního stromu může sloužit jako míra složitosti úlohy.

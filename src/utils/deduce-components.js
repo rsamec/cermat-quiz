@@ -2,6 +2,8 @@ import { html } from "npm:htl";
 import * as Plot from "npm:@observablehq/plot";
 import Fraction from 'npm:fraction.js';
 import { isSameEntity } from "../components/math.js";
+import { isPredicate } from "../utils/deduce-utils.js";
+import { deduce } from "./deduce.js";
 
 export function partion(items, options) {
   const total = items.reduce((out, d) => out += d.value, 0);
@@ -125,7 +127,10 @@ export function formatPredicate(d) {
       result = html`${d.agentA} ${d.quantity > 0 ? 'více' : 'méně'} než ${d.agentB} o ${formatQuantityWithEntity(d, true)}`
       break;
     case "comp-ratio":
-      result = html`${d.agentA} ${formatQuantity(d, true)} krát ${d.quantity > 0 ? 'více' : 'méně'}&nbsp;${formatEntity(d)} než ${d.agentB} `
+      const between = (d.quantity > -1 && d.quantity < 1);
+      result = between 
+        ? html`${d.agentA}  ${d.quantity > 0 ? 'méně' : 'více'} ${new Fraction(Math.abs(d.quantity)).toFraction()}&nbsp;${formatEntity(d)} než ${d.agentB} `
+        : html`${d.agentA} ${formatQuantity(d, true)} krát ${d.quantity > 0 ? 'více' : 'méně'}&nbsp;${formatEntity(d)} než ${d.agentB} `
       break;
     case "comp-diff":
       result = html`${d.agentMinuend} - ${d.agentSubtrahend}=${formatQuantityWithEntity(d)}`
@@ -179,10 +184,12 @@ export function highlightLabel(startNumber = 1) {
   return (strings, ...substitutions) => {
     const formattedString = strings.reduce((acc, curr, i) => {
       const substitution = substitutions[i];
-
-      const res = substitution
-        ? html`${curr}<span class="highlight">${inputLabel(startNumber + i)} ${substitution}</span>`
-        : curr;
+      
+      const res = substitution && typeof substitution === "function"
+        ? html`${curr}${substitution(html)}`
+        : substitution
+          ? html`${curr}<span class="highlight">${inputLabel(startNumber + i)} ${substitution}</span>`
+          : html`${curr}`;
       return html`${acc}${res}`;
     }, '');
 
@@ -200,4 +207,42 @@ export function highlight(strings, ...substitutions) {
   }, '');
 
   return formattedString;
+}
+
+
+export function deduceTraverse(node) {
+  let counter = 1;
+  function deduceTraverseEx(node) {
+    
+    // Base case: if the node is a leaf, add it to the result  
+    if (isPredicate(node)) {
+      return formatNode(node, node.labelKind === "input"
+        ? inputLabel(node.label)
+        : node.labelKind === "deduce"
+          ? deduceLabel(node.label)
+          : null);
+    }
+    
+    if (node.tagName === "FIGURE") {
+      return node;
+    }
+
+    const args = []
+    // Recursive case: traverse each child
+    if (node.children) {
+      let i = 0;
+      for (const child of node.children) {
+        const isLast = node.children.length === ++i;
+        const newChild = isLast && isPredicate(child) ? {...child, ...{ labelKind: 'deduce', label: counter++ }} : child
+        args.push(deduceTraverseEx(newChild))
+      }
+    }
+    
+    // You can process the current node itself here if needed
+    // For example, add something from the node to `result`.
+
+    const res = deduce(...args)
+    return res;
+  }
+  return deduceTraverseEx(node)
 }

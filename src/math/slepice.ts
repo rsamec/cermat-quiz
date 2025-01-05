@@ -1,7 +1,5 @@
-import { html } from "htl";
-import { cont, inferenceRule, comp, commonSense, compRatio } from "../components/math.js";
-import { deduce } from "../utils/deduce.js";
-import { formatNode as format, inputLabel, deduceLabel, highlightLabel } from "../utils/deduce-components.js";
+import { cont, inferenceRule, commonSense, compRatio, ctor } from "../components/math.js";
+import { axiomInput, deduce, to, type DeduceTemplate } from "../utils/deduce-utils.js";
 
 
 interface InversProportionParams {
@@ -24,46 +22,45 @@ export default function build({ input }: {
 
 
 
-  const aPrevious = cont(agentPrevious, input.previousWorkers, entityA);
-  const aCurrent = cont(agentCurrent, input.currentWorkers, entityA)
-  const dd1 = inferenceRule(aPrevious, aCurrent, { kind: 'comp-ratio' });
+  const aPrevious = axiomInput(cont(agentPrevious, input.previousWorkers, entityA), 1)
+  const aCurrent = axiomInput(cont(agentCurrent, input.currentWorkers, entityA), 4)
+  const dd1 = inferenceRule(aPrevious, aCurrent, ctor('comp-ratio'));
 
   const cc1 = commonSense("přímá úměrnost, stejný poměr veličin")
   const dd2 = compRatio(agentCurrent, agentPrevious, dd1.kind == "comp-ratio" ? dd1.quantity : 0, entityB)
-  const bPrevious = cont(agentPrevious, input.previousEggs, entityB);
+  const bPrevious = axiomInput(cont(agentPrevious, input.previousEggs, entityB), 3);
   const dd3 = inferenceRule(dd2, bPrevious);
 
-  const c1 = cont(agentCurrent, input.previousDays, entityC);
-  const c2 = cont(agentNew, input.currentDays, entityC);
-  const dd4 = inferenceRule(c1, c2, { kind: 'comp-ratio' });
-  const comp = compRatio(agentNew, agentCurrent, dd4.kind == "comp-ratio" ? dd4.quantity : 0, entityB)
-  const dd5 = inferenceRule(comp, dd3);
+  const c1 = axiomInput(cont(agentCurrent, input.previousDays, entityC), 2);
+  const c2 = axiomInput(cont(agentNew, input.currentDays, entityC), 5);
+  const dd4 = inferenceRule(c1, c2, ctor('comp-ratio'));
+  const dd5 = compRatio(agentNew, agentCurrent, dd4.kind == "comp-ratio" ? dd4.quantity : 0, entityB)
+  const dd6 = inferenceRule(dd5, dd3);
 
   const deductionTree = deduce(
     deduce(
-      deduce(
+      to(
         deduce(
-          format(aPrevious, inputLabel(1)),
-          format(aCurrent, inputLabel(4)),
-          format(dd1, deduceLabel(1))
+          aPrevious,
+          aCurrent,
+          ctor('comp-ratio')
         ),
-        format(cc1),
-        format(dd2, deduceLabel(2))
+        cc1,
+        dd2
       ),
-      format(bPrevious, inputLabel(3)),
-      format(dd3, deduceLabel(3)),
+      bPrevious,
     ),
-    deduce(
-      deduce(format(c1, inputLabel(2)), format(c2, inputLabel(5)), format(dd4, deduceLabel(4))),
-      format(cc1),
-      format(comp, deduceLabel(5))),
-    format(dd5, deduceLabel(6))
-  )
+    to(
+      deduce(c1, c2, ctor('comp-ratio')),
+      cc1,
+      dd5))
 
 
-  const template = html`
-    ${highlightLabel(1)`Když v průměru ${input.previousWorkers} slepice za ${input.previousDays} dne snese ${input.previousEggs} vejce.`}
-    ${deduceLabel(6)}<strong>${highlightLabel(4)`Kolik vajec pak snesou ${input.currentWorkers} slepic za ${input.currentDays} dny?`}</strong>`;
+
+
+  const template = (highlight: DeduceTemplate) =>
+    highlight`Když v průměru ${input.previousWorkers} slepice za ${input.previousDays} dne snese ${input.previousEggs} vejce.
+    ${html => html`</br><strong>${highlight`Kolik vajec pak snesou ${input.currentWorkers} slepic za ${input.currentDays} dny?`}</strong>`}`
 
 
   return { deductionTree, template }

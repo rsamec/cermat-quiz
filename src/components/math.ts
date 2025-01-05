@@ -100,7 +100,15 @@ export type CommonSense = {
   agent: string
 }
 
-export type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | Combine | PartWholeRatio | PartToPartRatio | ComparisonDiff | CommonSense | GCD | LCD;
+export type CompareAndPartEqual = {
+  kind: 'comp-part-eq'
+}
+
+export type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | Combine | PartWholeRatio | PartToPartRatio | ComparisonDiff | CommonSense | GCD | LCD | CompareAndPartEqual;
+
+export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | "comp-diff" | 'comp-part-eq') {
+  return { kind } as Predicate
+}
 
 export function cont(agent: string, quantity: number, entity: string): Container {
   return { kind: 'cont', agent, quantity, entity };
@@ -332,18 +340,22 @@ function partEqual(a: Comparison, b: Container) {
     quantity: rest.quantity / 2
   }
 }
-export function inferenceRule(a: Predicate | Container[], b: Predicate, c?: { kind: 'ratio' | 'comp-ratio' | 'rate' | "comp-diff" | 'comp-part-eq' }) {
-  if (Array.isArray(a)) {
-    return b.kind === "gcd"
-      ? gcdRule(a, b) 
-      : b.kind === "lcd"
-        ? lcdRule(a, b)
-        : b.kind === "sum"
-          ? sumRule(a, b)
+export function inferenceRule(...args: Predicate[]) {
+  const [a, b, ...rest] = args;
+  const last = rest?.length > 0 ? rest[rest.length - 1] : null;
+
+  if (last?.kind === "sum" || last?.kind === "lcd" || last?.kind === "gcd") {
+    const arr = [a, b].concat(rest.slice(0,-1)) as Container[];
+    return last.kind === "gcd"
+      ? gcdRule(arr, last)
+      : last.kind === "lcd"
+        ? lcdRule(arr, last)
+        : last.kind === "sum"
+          ? sumRule(arr, last)
           : null
   }
   else if (a.kind === "cont" && b.kind == "cont") {
-    const kind = c?.kind;
+    const kind = last?.kind;
     return kind === "comp-diff"
       ? toDiff(a, b)
       : kind === "rate"
@@ -355,11 +367,11 @@ export function inferenceRule(a: Predicate | Container[], b: Predicate, c?: { ki
             : toComparison(a, b)
   }
   else if (a.kind === "comp" && b.kind === "cont") {
-    const kind = c?.kind;
+    const kind = last?.kind;
     return kind === "comp-part-eq" ? partEqual(a, b) : compareRule(b, a);
   }
   else if (a.kind === "cont" && b.kind === "comp") {
-    const kind = c?.kind;
+    const kind = last?.kind;
     return kind === "comp-part-eq" ? partEqual(b, a) : compareRule(a, b);
   }
   else if (a.kind === "cont" && b.kind == "rate") {
@@ -414,7 +426,7 @@ function gcdCalc(numbers: number[]) {
   }
   return res;
 }
-function lcdCalcEx(a,b){
+function lcdCalcEx(a, b) {
   return Math.abs(a * b) / gcdCalc([a, b]);
 }
 function lcdCalc(numbers: number[]) {
