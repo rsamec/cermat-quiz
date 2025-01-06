@@ -10,7 +10,8 @@ style: /assets/css/math-deduce.css
 import {deduce} from './utils/deduce.js';
 import {partion, relativeParts, formatPredicate, relativePartsDiff, deduceTraverse, highlightLabel} from './utils/deduce-components.js';
 import {inferenceRule, cont, sum, comp, ratio} from './components/math.js';
-import {computeTreeMetrics} from './utils/deduce-utils.js';
+import {computeTreeMetrics, jsonToMarkdownTree, highlight} from './utils/deduce-utils.js';
+import mdPlus from './utils/md-utils.js';
 
 //import milkExample from './math/mleko.js';
 
@@ -27,19 +28,62 @@ import kolo from './math/M9A-2024/kolo.js';
 import sourozenci from './math/M9C-2024/sourozenci.js';
 import pocetOb from './math/M9C-2024/pocet-obyvatel.js';
 
+function renderChatButton(label, query){
+  return html`<a style="height:34px;" href="#" onclick=${(e) => {
+                    e.preventDefault();
+                    window.open(`https://chat.openai.com/?q=${encodeURIComponent(query)}`)
+                  }}><img style="height:34px;" src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white&label=${encodeURIComponent(label)}" alt="ChatGPT" /></a>`
+}
 
 
 function renderExample({example, unit, showRelativeValues}={}){
   const tree = deduceTraverse(example.deductionTree);
   const {depth, width} = computeTreeMetrics(example.deductionTree);
+
+  const message =  `
+Zadání úlohy je 
+
+${example.template(highlight)}
+
+Řešení úlohy je pomocí úvahy dle tohoto dedukčního stromu. Správný výsledek je kořen dedukčního stromu.
+Výsledek úlohy získáme průchodem stromu do hloubky (post-order), tj. aplikujeme odvozovací pravidla až poté, co známe všechny vstupy.
+
+${jsonToMarkdownTree(example.deductionTree).join("")}`
+
+const explainSolution = `${message}
+Můžeš vysvětlit podrobné řešení krok po kroku v češtině. Pro postup řešení použíj údaje z dedukčního stromu.
+`
+
+const vizualizeSolution = `${message}
+Můžeš vytvořit vizualizaci ve formě obrázku. Např. ve formě přehledné infografiky. Pro vytvoření vizualizace použíj údaje z dedukčního stromu.
+`
+const generateMoreQuizes = `${message}
+Můžeš vymyslet novou úlohu v jiné doméně, která půjde řešit stejným dedukčním stromem, tj. zachovat vztahy v dedukčním stromě, ale změnit
+- změnit agent - identifikovány pomocí markdown bold **
+- změna entit - identifikace pomocí markdown bold __
+- změnu parametry úlohy - identifikovány pomocí italic *
+
+Změn agenty, entity a parametry úlohy tak aby byly z jiné, pokud možno netradiční domény.
+Vygeneruj 3 různé úlohy v češtině spolu s výsledkem. Nevracej způsob řešení, kroky řešení.`
+
+
+
   return html`
   <div class="v-stack v-stack--l">
     <div class="card">${example.template(highlightLabel())}</div>
-    <div class="h-stack h-stack--m">
-      <h3 style="flex:1">Dedukční strom</h3>
-      <div class="h-stack h-stack--m" style="align-items: flex-start;">
+    <div class="h-stack h-stack--m h-stack--wrap">
+      <div  class="h-stack h-stack--m h-stack--wrap" style="flex:1">
+        <h3>
+          Dedukční strom
+        </h3>
         <div class="badge">Hloubka: ${depth}</div>
         <div class="badge">Šířka: ${width}</div>
+      </div>
+      <div class="h-stack h-stack--m h-stack--wrap" style="align-items: flex-start;">
+        ${renderChatButton("Vysvětli", explainSolution)}
+        ${renderChatButton("Vizualizuj", vizualizeSolution)}
+        ${renderChatButton("Generuj více příkladů", generateMoreQuizes)}
+
       </div>
     </div>
     <div class="flexible">

@@ -221,8 +221,7 @@ export function deduceTraverse(node) {
         : node.labelKind === "deduce"
           ? deduceLabel(node.label)
           : null);
-    }
-    
+    }    
     if (node.tagName === "FIGURE") {
       return node;
     }
