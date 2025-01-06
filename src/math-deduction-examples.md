@@ -215,7 +215,7 @@ const ohrada = Generators.input(ohradaForm);
 
 ```js
 const zakusekForm = Inputs.form({
-  cena: Inputs.range([30, 200], {step: 2, value:86, label: "Cena zákusku č.1"}),
+  cena: Inputs.range([30, 200], {step: 2, value:72, label: "Cena zákusku č.1"}),
 });
 const zakusek = Generators.input(zakusekForm);
 ```

@@ -1,6 +1,6 @@
 
 import { cont, inferenceRule, ratio, comp, sum } from "../../components/math.js";
-import { axiomInput, deduce, to } from "../../utils/deduce-utils.js";
+import { axiomInput, deduce, deduceLbl, to } from "../../utils/deduce-utils.js";
 import { relativeParts, relativePartsDiff } from "../../utils/deduce-components.js";
 
 interface ZakuseParams {
@@ -23,11 +23,11 @@ export default function build({ input }: {
   const partTotalPrice = "1.zák.+2.zák";
 
 
-  const p1p2 = axiomInput(comp(piece2, piece1, -1 / 4, ""),2);
-  const p1 = axiomInput(cont(piece1, input.cena, entity),1)
+  const p1p2 = axiomInput(comp(piece2, piece1, -1 / 4, ""), 2);
+  const p1 = axiomInput(cont(piece1, input.cena, entity), 1)
   const p2Ratio = ratio({ agent: piece1, entity }, { agent: piece2, entity }, 3 / 4);
   const p3Ratio = ratio({ agent: totalPrice, entity }, { agent: partTotalPrice, entity }, 2 / 3);
-  const oneThird = axiomInput(ratio({ agent: totalPrice, entity }, { agent: piece3, entity }, 1 / 3),3);
+  const oneThird = axiomInput(ratio({ agent: totalPrice, entity }, { agent: piece3, entity }, 1 / 3), 3);
 
   const soucet = sum(partTotalPrice, [], "Kč", "Kč");
   //const p2 = comp(piece2, piece1, , entity)
@@ -44,26 +44,28 @@ export default function build({ input }: {
 
   const deductionTree =
     deduce(
+      { ...dd1, ...deduceLbl(2) },
       deduce(
         deduce(
-          p1,
           deduce(
             p1,
-            to(
-              p1p2,
-              fig1,
-              p2Ratio,
+            deduce(
+              p1,
+              to(
+                p1p2,
+                fig1,
+                p2Ratio,
+              ),
             ),
+            soucet
           ),
-          soucet
+          to(
+            oneThird,
+            fig2,
+            p3Ratio,
+          ),
         ),
-        to(
-          oneThird,
-          fig2,
-          p3Ratio,
-        ),
-      ),
-      oneThird,
+        oneThird)
     )
 
 
@@ -81,7 +83,7 @@ export default function build({ input }: {
   První zákusek stál ${input.cena} korun.
   Druhý zákusek byl o ${'čtvrtinu levnější než první'}.
   Cena třetího zákusku byla ${'třetinou celkové ceny všech tří zákusků'}.
-  ${html => html `<br/><strong>O kolik korun byl třetí zákusek dražší než druhý?</strong>`}`;
+  ${html => html`<br/><strong>O kolik korun byl třetí zákusek dražší než druhý?</strong>`}`;
 
   return { deductionTree, data, template }
 }
