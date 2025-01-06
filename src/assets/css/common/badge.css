@@ -2,10 +2,11 @@
   display:inline;
   white-space: nowrap;
   border-radius: 16px;
-  padding: 0px 8px;
+  padding: 2px 8px;
   font-weight: 700;
   background-color: var(--theme-foreground);
   color: var(--theme-background);
+  height: max-content;
 }
 
 .badge--warning {

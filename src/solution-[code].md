@@ -46,12 +46,12 @@ const result = Object.keys(geometry).reduce((merged, key) => {
 const answers = result[code];
 const ids = quiz.questions.map(d => d.id);
 
-const wordProblem = wordProblems[code];
+const wordProblem = wordProblems[code] ?? {};
 const output = ids.map(id => {
-   const values = (answers[id] != null || wordProblem[id] != null)
+   const values = (answers?.[id] != null || wordProblem[id] != null)
    ? [[id, answers[id] ?? wordProblem[id]]] 
    : [1, 2, 3]
-    .map(i => answers?.[`${id}.${i}`] ?? wordProblem?.[`${id}.${i}`])
+    .map(i => answers?.[`${id}.${i}`] ?? wordProblem[`${id}.${i}`])
     .filter(Boolean)
     .map((d, index) => [`${id}.${index +1}`, d])
   
@@ -80,7 +80,7 @@ function renderResult(key, { Name, Answer, TemplateSteps }) {
     ${mdPlus.unsafe(normalizeMath(Answer))}
   </div>`: ''}
 <div class="v-stack v-stack--m">${TemplateSteps.map((d, i) =>
-    html`<div class="v-stack v-stack--s">
+    html`<div class="v-stack v-stack--l">
       <video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>
       ${d.Steps?.length > 0 ? renderTemplateSteps(d) : ''}
   </div>`)}
@@ -99,7 +99,7 @@ function renderStep({ Step, Hint, Expression }, index) {
   return html`<div class="card">
   <div class="h-stack h-stack--m"><span style="font-size:60px">${index + 1}</span>${mdPlus.unsafe(normalizeMath(Step))}</div>  
   <div>${mdPlus.unsafe(normalizeMath(Expression))}</div>
-  ${!isEmptyOrWhiteSpace(Hint) ? `<div class="tip">${Hint}</div>` : ''}
+  ${!isEmptyOrWhiteSpace(Hint) ? html`<div class="tip">${Hint}</div>` : ''}
   </div>`
 }
 ```
