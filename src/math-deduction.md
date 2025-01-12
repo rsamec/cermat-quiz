@@ -20,6 +20,7 @@ import proportion from './math/proportion/proportion.js';
 import proportionCombined from './math/proportion/proportion-combined.js';
 
 import measureScale from './math/scale/measuring-scale.js';
+import rectangle from './math/shapes/rectangle.js';
 
 import percentPart from './math/percent/part.js';
 import percentBase from './math/percent/base.js';
@@ -496,6 +497,24 @@ const measureScaleInput = Generators.input(measureScaleForm);
 ## Obsah, objem
 
 
+```js
+const rectangleForm = Inputs.form({
+  length: Inputs.range([1, 10], {step: 1, value:4, label: "délka"}),
+  width: Inputs.range([1, 10], {step: 1, value:3, label: "šířka"}),  
+  height: Inputs.range([1, 10], {step: 1, value:2, label: "výška"}),
+});
+const rectangleInput = Generators.input(rectangleForm);
+```
+
+
+<details>
+  <summary>Parametrizace</summary>
+  ${rectangleForm}
+</details>
+
+<div>${renderEx({example:rectangle({input:rectangleInput})[0]})}</div>
+<div>${renderEx({example:rectangle({input:rectangleInput})[1]})}</div>
+<div>${renderEx({example:rectangle({input:rectangleInput})[2]})}</div>
 
 
 # Jak je to uděláno?

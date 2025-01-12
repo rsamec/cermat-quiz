@@ -1,6 +1,6 @@
 
-import { cont, comp, ctor, compDiff, sum, commonSense, rate, ctorRatios, gcd } from "../../components/math.js";
-import { axiomInput, deduce, to } from "../../utils/deduce-utils.js";
+import { cont, ctor, gcd } from "../../components/math.js";
+import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 
 interface Params {
@@ -60,6 +60,6 @@ export default function build({ input }: {
   return [
     { deductionTree: dTree1, template: highlight => highlight`${() => templateBase(highlight)}${template1}` },
     { deductionTree: dTree2, template: highlight => highlight`${() => templateBase(highlight)}${template2}` },
-    //{ deductionTree: dTree3, template: highlight => highlight`${() => templateBase(highlight)}${template3}` }
+    { deductionTree: dTree3, template: highlight => highlight`${() => templateBase(highlight)}${template3}` }
   ]
 }

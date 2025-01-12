@@ -167,7 +167,7 @@ export default function rules() {
     lcd: [deduceRule(cont("dvojice", 2, "osob"), cont("trojice", 3, "osob"), lcd("nejmenší možná skupina", "osob"))],
     aritmeticSequence: [...nthRule(arithmetic, tenthTerm)],
     quadraticSequence: [...nthRule(quadratic, tenthTerm)],
-    geometricSequence: [...nthRule(geometric, tenthTerm)],
+    geometricSequence: [...nthRule(geometric, tenthTerm)],   
   }
 
 
