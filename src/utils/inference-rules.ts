@@ -1,6 +1,6 @@
 import { html } from "htl";
-import type { Comparison, ComparisonDiff, Container, Rate, RatioComparison } from "../components/math.js";
-import { cont, ratio, comp, rate, ratios, compRatio, compDiff, sum, lcd, gcd } from "../components/math.js";
+import type { Comparison, Container, Predicate, Rate, RatioComparison } from "../components/math.js";
+import { cont, ratio, comp, rate, ratios, compRatio, compDiff, sum, lcd, gcd, ctor, inferenceRule, nth, quota, product, ctorRatios } from "../components/math.js";
 
 export default function rules() {
 
@@ -50,61 +50,56 @@ export default function rules() {
     }
   }
 
-  const rateCompute = (container: Container) => {
-    const pricePerBox = rate("Petr", 4, "Kč", "rohlík");
+  const deduceRule = (...premises: Predicate[]) => {
 
     return {
-      premises: [container, pricePerBox],
-      inputTemplate: html`${container.agent} má ${container.quantity} ${container.entity}. Každá ${pricePerBox.agent} ${pricePerBox.entityBase.entity} je ${Math.abs(pricePerBox.quantity)} ${pricePerBox.entity.entity}.`,
-      outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
-    }
-  }
-
-  const substractRule = (container: Container) => {
-    const diffRule = compDiff("Ája a Honzík", "Honzík", 2, "sešity");
-
-    return {
-      premises: [container, diffRule],
-      inputTemplate: html`${container.agent} má ${container.quantity} ${container.entity}.`,
-      outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
-    }
-  }
-
-  const sumRule = (a, b) => {
-    const sumRule = sum("dohromady", ["Ája", "Honzík"], "sešity", "sešity");
-
-    return {
-      premises: [a, b, sumRule],
-      inputTemplate: html`Ája a Honzík dají sešity dohromady.`,
-      outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
-    }
-  }
-
-  const lcdRule = (a, b) => {
-    const sumRule = lcd("nejmenší možná skupina", "osob");
-
-    return {
-      premises: [a, b, sumRule],
-      inputTemplate: html`Ája a Honzík dají sešity dohromady.`,
-      outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
-    }
-  }
-
-  const gcdRule = (a, b) => {
-    const sumRule = gcd("největší možná tyč", "délka (m)");
-
-    return {
-      premises: [a, b, sumRule],
-      inputTemplate: html`Ája a Honzík dají sešity dohromady.`,
-      outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
+      premises,
+      inputTemplate: html``,
+      outputTemplate: (predicate: Container) => html``
     }
   }
 
 
-  const fairDivision = (whole: Container, groupCount: Container) => {
+
+  const nthRule = (args, nthPosition: Container) => {
+    const seq = inferenceRule(...args, ctor('sequence'));
+    const nthTerm = inferenceRule(seq, nthPosition)
+
+
+    return [
+
+      {
+        premises: [...args, ctor('sequence')],
+        inputTemplate: html`Ája a Honzík dají sešity dohromady.`,
+        outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
+      },
+      {
+        premises: [seq, nthPosition],
+        inputTemplate: html`Ája a Honzík dají sešity dohromady.`,
+        outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
+      },
+
+      {
+        premises: [seq, nthTerm, nth('pozice')],
+        inputTemplate: html`Ája a Honzík dají sešity dohromady.`,
+        outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
+      },
+
+    ]
+  }
+
+
+  const toFairDivision = (whole: Container, groupCount: Container) => {
     return {
       premises: [whole, groupCount, { kind: 'rate' }],
       inputTemplate: html`${whole.agent} má ${whole.quantity} ${whole.entity}. ${groupCount.agent} má ${groupCount.quantity} ${groupCount.entity}. Rozděl rovnoměrně na ${groupCount.quantity} skupiny.`,
+      outputTemplate: (predicate: Rate) => html`Každá ${predicate.agent} ${predicate.entityBase.entity} je ${Math.abs(predicate.quantity)} ${predicate.entity.entity}.`
+    }
+  }
+  const toQuotaDivision = (whole: Container, quotaContainer: Container) => {
+    return {
+      premises: [whole, quotaContainer, { kind: 'quota' }],
+      inputTemplate: html`${whole.agent} má ${whole.quantity} ${whole.entity}. ${quotaContainer.agent} má ${quotaContainer.quantity} ${quotaContainer.entity}. Rozděl rovnoměrně na ${quotaContainer.quantity} skupiny.`,
       outputTemplate: (predicate: Rate) => html`Každá ${predicate.agent} ${predicate.entityBase.entity} je ${Math.abs(predicate.quantity)} ${predicate.entity.entity}.`
     }
   }
@@ -119,7 +114,7 @@ export default function rules() {
   }
 
   const partToPartRatioRules = (container: Container) => {
-    const r = ratios("studenti", ["chlapec", "dívka"], [1, 3]);
+    const r = ratios({ agent: "třída", entity: "studenti" }, ["chlapec", "dívka"], [1, 3]);
     return {
       premises: [container, r],
       inputTemplate: html`${container.agent} má ${container.quantity} ${container.entity}. ${r.parts.join(":")} v poměru ${r.ratios.join(":")} z ${r.whole}`,
@@ -128,54 +123,51 @@ export default function rules() {
   }
 
 
-  const partToPartCompareRules = (r: Comparison) => {
-    const container = cont("loni", 1, "")
-    return {
-      premises: [container, r],
-      inputTemplate: html`${container.agent} má ${container.quantity} ${container.entity}. ${r.agentA} má o ${Math.abs(r.quantity)} ${Math.abs(r.quantity) > 0 ? "více" : "méně"} než ${r.agentB}.`,
-      outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
-
-    }
-  }
-  const partToPartRatioCompareRules = (r: RatioComparison) => {
-    const container = cont("loni", 1, "")
-    return {
-      premises: [container, r],
-      inputTemplate: html`${container.agent} má ${container.quantity} ${container.entity}. ${r.agentA} má o ${Math.abs(r.quantity)} ${Math.abs(r.quantity) > 0 ? "více" : "méně"} než ${r.agentB}.`,
-      outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
-
-    }
-  }
-
-  const partToPartDiffRules = (r: ComparisonDiff) => {
-    const container = cont("loni", 1, "")
-
-    return {
-      premises: [container, r],
-      inputTemplate: html`${container.agent} má ${container.quantity} ${container.entity}.`,
-      outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
-
-    }
-  }
-
-
-
-
   const a = cont("Ája", 2, "sešity");
   const b = cont("Honzík", 6, "sešity");
+
+  const arithmetic = [2, 4, 6, 8, 10].map((d, i) => cont(`č. ${i + 1}`, d, "čtverec"));
+  const geometric = [2, 4, 8, 16, 32].map((d, i) => cont(`č. ${i + 1}`, d, "čtverec"));
+  const quadratic = [1, 4, 9, 16, 25].map((d, i) => cont(`č. ${i + 1}`, d, "čtverec"));
+  const tenthTerm = cont("č.10", 10, "pozice");
   return {
     compare: [toCompareRule(a, b), compareRule(a), compareRule(b)],
     ratioCompare: [toRatioCompareRule(a, b), ratioCompareRule(a), ratioCompareRule(b)],
     partToWholeRatio: [partToWholeRatioRules(cont("třída", 120, "studenti")), partToWholeRatioRules(cont("třída", 30, "chlapec"))],
-    partToPartRatio: [partToPartRatioRules(cont("třída", 120, "studenti")), partToPartRatioRules(cont("třída", 90, "dívka"))],
+    partToPartRatio: [
+
+      partToPartRatioRules(cont("třída", 120, "studenti")), partToPartRatioRules(cont("třída", 90, "dívka")),
+      deduceRule(cont("třída", 30, "chlapec"), cont("třída", 90, "dívka"), ctorRatios("třída"))
+    ],
     rate: [
-      fairDivision(cont("Petr", 20, "Kč"), cont("Petr", 5, "rohlík")),
-      rateCompute(cont("Petr", 20, "Kč")),
-      rateCompute(cont("Petr", 5, "rohlík"))],
-    substract: [toDiffRule(cont("Ája a Honzík", 8, "sešity"), b), substractRule(cont("Ája a Honzík", 8, "sešity")), substractRule(b)],
-    sum: [sumRule(a, b)],
-    gcd: [gcdRule(cont("tyč", 24, "délka (m)"), cont("tyč", 16, "délka (m)"))],
-    lcd: [lcdRule(cont("dvojice", 2, "osob"), cont("trojice", 3, "osob"))]
+      toFairDivision(cont("Petr", 20, "Kč"), cont("Petr", 5, "rohlík")),
+      deduceRule(cont("Petr", 20, "Kč"), rate("Petr", 4, "Kč", "rohlík")),
+      deduceRule(cont("Petr", 5, "rohlík"), rate("Petr", 4, "Kč", "rohlík")),
+
+      // fairDivision(cont("tyč", 10, "m"), cont("tyč", 5, "kus")),
+      // simpleCompute(cont("tyč", 10, "m"), rate("tyč", 2, "m", "kus")),
+      // simpleCompute(cont("tyč", 5, "kus"), rate("tyč", 2, "m", "kus")),
+
+      toQuotaDivision(cont("tyč", 10, "m"), cont("kus", 2, "m")),
+      deduceRule(cont("tyč", 10, "m"), quota("tyč", "kus", 5)),
+      deduceRule(cont("kus", 2, "m"), quota("tyč", "kus", 5)),
+
+    ],
+
+    substract: [
+      toDiffRule(cont("Ája a Honzík", 8, "sešity"), b),
+      deduceRule(cont("Ája a Honzík", 8, "sešity"), compDiff("Ája a Honzík", "Honzík", 2, "sešity")),
+      deduceRule(b, compDiff("Ája a Honzík", "Honzík", 2, "sešity"))
+    ],
+    sum: [
+      deduceRule(a, b, cont("Pepa", 4, "sešity"), sum("dohromady", ["Ája", "Honzík", "Pepa"], "sešity", "sešity")),
+      deduceRule(cont("šířka", 2, "metr"), cont("délka", 3, "metr"), cont("výška", 4, "metr"), product("objem", ["délka", "šířka", "výška"], "metr krychlový", "metr"))
+    ],
+    gcd: [deduceRule(cont("tyč", 24, "m"), cont("tyč", 16, "m"), gcd("největší možná délka tyče", "m"))],
+    lcd: [deduceRule(cont("dvojice", 2, "osob"), cont("trojice", 3, "osob"), lcd("nejmenší možná skupina", "osob"))],
+    aritmeticSequence: [...nthRule(arithmetic, tenthTerm)],
+    quadraticSequence: [...nthRule(quadratic, tenthTerm)],
+    geometricSequence: [...nthRule(geometric, tenthTerm)],
   }
 
 

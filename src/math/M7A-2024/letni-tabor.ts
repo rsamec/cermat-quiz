@@ -58,8 +58,8 @@ export default function build({ input }: {
 
 
   const tree2dd4 = inferenceRule(
-    { ...dd1, agent: dd1.entity, entity: 'osob' },
-    { ...dd3, agent: dd3.entity, entity: 'osob' },
+    { ...dd1, entity: dd1.entity, entity: 'osob' },
+    { ...dd3, entity: dd3.entity, entity: 'osob' },
     ctor('comp-ratio')
   );
   const dTree2 = to(

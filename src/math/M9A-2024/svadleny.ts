@@ -13,8 +13,8 @@ export default function build({ input }: {
 }) {
 
   const agentPrevious = "původní zakázka";
-  const agentCurrent = "nová zakázka (změna švadlen)";
-  const agentNew = "nová zakázka (změna švadlen,hodin)";
+  const agentCurrent = "nová zakázka";
+  const agentNew = "rozšířená nová zakázka";
   const entityA = "švadlen";
   const entityB = "hodin";
 
@@ -24,7 +24,7 @@ export default function build({ input }: {
   const aCurrent = axiomInput(cont(agentCurrent, input.currentWorker, entityA), 3)
   const dd1 = inferenceRule(aPrevious, aCurrent, ctor('comp-ratio'));
 
-  const cc1 = commonSense("nepřímá úměrnost (více švadlen - méně hodin)")
+  const cc1 = commonSense("nepřímá úměrnost (méně švadlen - více hodin)")
   const cc2 = commonSense("přímá úměrnost (více množství - více hodin)")
   const dd2 = compRatio(agentCurrent, agentPrevious, dd1.kind == "comp-ratio" ? 1 / dd1.quantity : 0, entityB)
   const bPrevious = axiomInput(cont(agentPrevious, input.previousHours, entityB), 2);

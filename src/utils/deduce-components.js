@@ -1,7 +1,7 @@
 import { html } from "npm:htl";
 import * as Plot from "npm:@observablehq/plot";
 import Fraction from 'npm:fraction.js';
-import { isSameEntity } from "../components/math.js";
+import { isSameEntity, nthQuadraticElements } from "../components/math.js";
 import { isPredicate } from "../utils/deduce-utils.js";
 import { deduce } from "./deduce.js";
 
@@ -109,12 +109,34 @@ function label(d) {
 export function formatNode(t, label) {
   return html`${label != null ? label : ''}&nbsp;${t?.kind != null ? formatPredicate(t) : t}`
 }
+
+function formatSequence(type) {
+  const simplify = (d, op = '') => d !== 1 ? `${d}${op}` : ''
+
+  if (type.kind === "arithmetic")
+    return html`${type.sequence.join()} => a<sub>n</sub> = ${type.sequence[0]} + ${type.commonDifference}(n-1)`;
+  if (type.kind === "quadratic") {
+    const [first, second] = type.sequence;
+    const { A, B, C } = nthQuadraticElements(first, second, type.secondDifference);
+    const parts = [html`${simplify(A)}n<sup>2</sup>`];
+    if (B !== 0) {
+      parts.concat(`${simplify(B)}n`)
+    }
+    if (C !== 0) {
+      parts.concat(`${simplify(C)}n`)
+    }
+    return html`${type.sequence.join()} => a<sub>n</sub> = ${parts.map((d, i) => html`${i !== 0 ? ' + ' : ''}${d}`)}`;
+  }
+  if (type.kind === "geometric") {
+    return html`${type.sequence.join()} => a<sub>n</sub> = ${simplify(type.sequence[0], '*')}${type.commonRatio}<sup>(n-1)</sup>`;
+  }
+}
 export function formatPredicate(d) {
-  const formatQuantity = (d, absolute) => (absolute ? Math.abs(d.quantity) : d.quantity).toLocaleString('cs-CZ')
+  const formatQuantity = (d, absolute) => (absolute ? Math.abs(d.quantity) : d.quantity).toLocaleString('cs-CZ',)
   const formatEntity = (d) => d.entity
   const formatQuantityWithEntity = (d, absolute) => html`${formatQuantity(d, absolute)}&nbsp;${formatEntity(d)}`;
 
-  if ((d.kind == "ratio" || d.kind === "comp-ratio" || d.kind === "rate" || d.kind === "comp-diff" || d.kind === "comp-part-eq") && (d.quantity == null && d.ratio == null)) {
+  if ((d.kind == "ratio" || d.kind === "comp-ratio" || d.kind === "rate" || d.kind === "quota" || d.kind === "comp-diff" || d.kind === "comp-part-eq") && (d.quantity == null && d.ratio == null)) {
     return formatToBadge(d);
   }
 
@@ -128,7 +150,7 @@ export function formatPredicate(d) {
       break;
     case "comp-ratio":
       const between = (d.quantity > -1 && d.quantity < 1);
-      result = between 
+      result = between
         ? html`${d.agentA}  ${d.quantity > 0 ? 'méně' : 'více'} ${new Fraction(Math.abs(d.quantity)).toFraction()}&nbsp;${formatEntity(d)} než ${d.agentB} `
         : html`${d.agentA} ${formatQuantity(d, true)} krát ${d.quantity > 0 ? 'více' : 'méně'}&nbsp;${formatEntity(d)} než ${d.agentB} `
       break;
@@ -136,16 +158,28 @@ export function formatPredicate(d) {
       result = html`${d.agentMinuend} - ${d.agentSubtrahend}=${formatQuantityWithEntity(d)}`
       break;
     case "ratio":
-      result = html`${formatAgentEntity(d)}=${new Fraction(d.ratio).toFraction()}`;
+      result = html`${formatRatio(d)}=${new Fraction(d.ratio).toFraction()}`;
       break;
     case "ratios":
-      result = `${d.parts.join(":")} v poměru ${d.ratios.join(":")} z ${d.whole}`;
+      result = d.parts != null ? formatRatios(d) : d.whole != null ? d.whole : '';
       break;
     case "sum":
-      result = `${d.partAgents.join("+")}`;
+      result = `${d.partAgents?.join(" + ")}`;
+      break;
+    case "product":
+      result = `${d.partAgents?.join(" * ")}`;
       break;
     case "rate":
       result = `${d.quantity} ${d.entity?.entity} per ${d.entityBase?.entity}`
+      break;
+    case "quota":
+      result = `${d.agent} rozděleno na ${d.quantity} ${d.agentQuota} ${d.restQuantity !== 0 ? ` se zbytkem ${d.restQuantity}` : ''}`
+      break;
+    case "sequence":
+      result = d.type != null ? formatSequence(d.type) : ''
+      break;
+    case "nth":
+      result = d.entity;
       break;
     case "common-sense":
       result = `${d.agent}`
@@ -160,14 +194,21 @@ function formatToBadge({ kind } = {}) {
   return html`<div class="badge">${kind === "cont" ? "C" : kind.toUpperCase()}</div>`
 }
 
-function formatAgentEntity(ratio) {
-  const isSame = isSameEntity(ratio);
-  const to = d => d?.agent != null
-    ? isSame
-      ? d.agent
-      : `${d.agent}(${d.entity})`
-    : d
-  return `${to(ratio.part)} z ${to(ratio.whole)}`;
+function formatRatio(ratio) {
+  const args = { isSameEntity: isSameEntity(ratio) };
+  return `${formatAgentEntity(ratio.part, args)} z ${formatAgentEntity(ratio.whole, args)}`;
+}
+function formatRatios(d) {
+  const isSameAgent = d.parts[0]?.agent === d.parts[1]?.agent;
+  const isSameEntity = d.parts[0]?.entity === d.parts[1]?.entity;
+  return `${d.whole != null ? formatAgentEntity(d.whole, false) : ''} ${d.parts.map(d => formatAgentEntity(d, { isSameAgent, isSameEntity })).join(":")} v poměru ${d.ratios.join(":")}`
+}
+
+function formatAgentEntity(d, { isSameEntity, isSameAgent } = {}) {
+  if (d?.agent == null) return d;
+  if (isSameAgent) return d.entity;
+  if (isSameEntity) return d.agent;
+  return `${d.agent}(${d.entity})`;
 }
 
 export function inputLabel(id) {
@@ -184,7 +225,7 @@ export function highlightLabel(startNumber = 1) {
   return (strings, ...substitutions) => {
     const formattedString = strings.reduce((acc, curr, i) => {
       const substitution = substitutions[i];
-      
+
       const res = substitution && typeof substitution === "function"
         ? html`${curr}${substitution(html)}`
         : substitution
@@ -213,7 +254,7 @@ export function highlight(strings, ...substitutions) {
 export function deduceTraverse(node) {
   let counter = 1;
   function deduceTraverseEx(node) {
-    
+
     // Base case: if the node is a leaf, add it to the result  
     if (isPredicate(node)) {
       return formatNode(node, node.labelKind === "input"
@@ -221,7 +262,7 @@ export function deduceTraverse(node) {
         : node.labelKind === "deduce"
           ? deduceLabel(node.label)
           : null);
-    }    
+    }
     if (node.tagName === "FIGURE") {
       return node;
     }
@@ -232,11 +273,11 @@ export function deduceTraverse(node) {
       let i = 0;
       for (const child of node.children) {
         const isLast = node.children.length === ++i;
-        const newChild = isLast && isPredicate(child) ? {...child, ...{ labelKind: 'deduce', label: counter++ }} : child
+        const newChild = isLast && isPredicate(child) ? { ...child, ...{ labelKind: 'deduce', label: counter++ } } : child
         args.push(deduceTraverseEx(newChild))
       }
     }
-    
+
     // You can process the current node itself here if needed
     // For example, add something from the node to `result`.
 

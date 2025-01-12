@@ -5,10 +5,15 @@ import letniTabor from './M7A-2024/letni-tabor.js';
 import kraliciASlepice from './M7A-2024/kralice-a-slepice-v-ohrade.js';
 
 import svadleny from './M9A-2024/svadleny.js';
+import tridaSkupiny from './M9A-2024/trida-skupiny.js';
+import dumMeritko from './M9A-2024/dum-meritko.js';
 import kolo from './M9A-2024/kolo.js';
 
 import pocetObyvatel from './M9C-2024/pocet-obyvatel.js';
 import sourozenci from './M9C-2024/sourozenci.js';
+
+import trojuhelnik from './M9A-2023/trojuhelnik.js';
+import ctvercovaSit from './M9B-2023/ctvercova-sit.js';
 
 const letniTaborInput = {
   input: {
@@ -17,6 +22,22 @@ const letniTaborInput = {
     vedouciPerKuchar: 2,
     instruktorPerVedouci: 2,
     ditePerInstruktor: 2
+  }
+}
+
+const tridaSkupinyParams = {
+  input: {
+    chlapci: 14,
+    anglictinaChlapci: 5,
+    nemcinaDivky: 4
+  }
+}
+
+const dumMeritkoParams = {
+  input: {
+    sirkaM: 10,
+    planSirkaCM: 10,
+    planDelkaDM: 2,
   }
 }
 export default {
@@ -47,8 +68,23 @@ export default {
       }
     })
   },
+  "M9A-2023": {
+    16.1: trojuhelnik({ input: {} })[0],
+    16.2: trojuhelnik({ input: {} })[1],
+    16.3: trojuhelnik({ input: {} })[2],
+  },
+  "M9B-2023": {
+    16.1: ctvercovaSit({ input: {} })[0],
+    16.2: ctvercovaSit({ input: {} })[1],
+    16.3: ctvercovaSit({ input: {} })[2],
+  },
   "M9A-2024": {
     1: svadleny({ input: { currentWorker: 4, previousWorker: 5, previousHours: 24 } }),
+    7.1: tridaSkupiny(tridaSkupinyParams)[0],
+    7.2: tridaSkupiny(tridaSkupinyParams)[1],
+    15.1: dumMeritko(dumMeritkoParams)[0],
+    15.2: dumMeritko(dumMeritkoParams)[1],
+    15.3: dumMeritko(dumMeritkoParams)[2],
     16.3: kolo({ input: { base: 20_000, percentageDown: 10, percentageNewUp: 10 } }),
   },
   "M9C-2024": {

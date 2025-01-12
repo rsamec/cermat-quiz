@@ -19,6 +19,8 @@ import proportionInverse from './math/proportion/proportion-inverse.js';
 import proportion from './math/proportion/proportion.js';
 import proportionCombined from './math/proportion/proportion-combined.js';
 
+import measureScale from './math/scale/measuring-scale.js';
+
 import percentPart from './math/percent/part.js';
 import percentBase from './math/percent/base.js';
 import percentPercentage from './math/percent/percentage.js';
@@ -267,13 +269,16 @@ ${partion([
 
 ## Rozdělování
 
-<div class="badge badge--large">RATIO</div>
+<div class="badge badge--large">RATE</div>
+<div class="badge badge--large">QUOTA</div>
 
 <div>${renderRules(rules.rate)}</div>
 
 
 ## Spojování
 <div class="badge badge--large">SUM</div>
+<div class="badge badge--large">PRODUCT</div>
+
 <div>${renderRules(rules.sum)}</div>
 
 ## Největší společný dělitel
@@ -283,6 +288,20 @@ ${partion([
 ## Nejmenší společný násobek
 <div class="badge badge--large">LCD</div>
 <div>${renderRules(rules.lcd)}</div>
+
+## Posloupnosti
+<div class="badge badge--large">SEQUENCE</div>
+
+### Aritmetická
+<div>${renderRules(rules.aritmeticSequence)}</div>
+
+### Kvadratická
+<div>${renderRules(rules.quadraticSequence)}</div>
+
+### Geometrická
+<div>${renderRules(rules.geometricSequence)}</div>
+
+
 
 ----------------------
 
@@ -398,8 +417,7 @@ const proportionCombinedForms = Inputs.form({
   previousHours: Inputs.range([1, 10], {step: 1, value:9, label: "Původní počet hodin"}),
   currentWorkers: Inputs.range([10, 20], {step: 1, value:12, label: "Nový počet dělníků"}),
   previousGoods: Inputs.range([100, 1000], {step: 1, value:400, label: "Původní počet výrobků"}),
-  currentGoods: Inputs.range([1000, 2000], {step: 1, value:1_600, label: "Nový počet výrobků"}),
-  
+  currentGoods: Inputs.range([1000, 2000], {step: 1, value:1_600, label: "Nový počet výrobků"}),  
 });
 const proportionCombinedInput = Generators.input(proportionCombinedForms);
 ```
@@ -452,6 +470,31 @@ ${deduce(formatPredicate(total), formatPredicate(comparison), formatPredicate(pa
 
 ${relativePartsDiff(1/4,{first:"letos", second:"loni", asPercent: false})}
 ${relativePartsDiff(-1/4,{first:"letos", second:"loni", asPercent: false})}
+
+
+## Měřítko
+
+```js
+const measureScaleForm = Inputs.form({
+  skutecnost: Inputs.range([1, 10], {step: 1, value:6, label: "Skutečná vzdálenost (km)"}),
+  plan: Inputs.range([1, 10], {step: 1, value:3, label: "Velikost úsečky na mapě (cm)"}),
+
+});
+const measureScaleInput = Generators.input(measureScaleForm);
+```
+
+
+<details>
+  <summary>Parametrizace</summary>
+  ${measureScaleForm}
+</details>
+
+<div>${renderEx({example:measureScale({input:measureScaleInput})[0]})}</div>
+<div>${renderEx({example:measureScale({input:measureScaleInput})[1]})}</div>
+<div>${renderEx({example:measureScale({input:measureScaleInput})[2]})}</div>
+
+## Obsah, objem
+
 
 
 
