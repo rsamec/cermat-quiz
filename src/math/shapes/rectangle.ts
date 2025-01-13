@@ -17,11 +17,12 @@ export default function build({ input }: {
   const lengthLabel = "délka"
   const heightLabel = "výška"
   const entity = "cm"
-  const entity2D = "cm čtverečních"
+  const entity2D = "čtverečků"
+  const entity3D = "krychliček"
 
   const width = axiomInput(cont(widthLabel, input.width, entity), 1);
   const length = axiomInput(cont(lengthLabel, input.length, entity), 2);
-  const height = axiomInput(cont(lengthLabel, input.length, entity), 3);
+  const height = axiomInput(cont(lengthLabel, input.height, entity), 3);
 
 
 
@@ -38,26 +39,36 @@ export default function build({ input }: {
     length,
     width,
     height,
-    product("objem", [lengthLabel, widthLabel, heightLabel], "cm krychlových", entity)
+    product("objem", [lengthLabel, widthLabel, heightLabel], entity3D, entity)
   )
 
-  const dTree3 = deduce(
-    cont("počet stěn", 2, ""),
+  const protilehlaStana = cont("počet stěn", 2, "");
+
+  const dTree3 =
     deduce(
-      dBase,
       deduce(
-        width,
-        height,
-        product("boční stěna", [widthLabel, heightLabel], entity2D, entity)
-      ),
+        dBase,
+        protilehlaStana,
+        product("spodní a horní stěna", [], entity2D, entity)),
       deduce(
-        width,
-        height,
-        product("přední stěna", [lengthLabel, heightLabel], entity2D, entity)
-      ),
-      sum("obsah pláště", [], entity2D, entity2D)),
-    product("vsechny steny", [], entity2D, entity)
-  )
+        deduce(
+          width,
+          height,
+          product("boční stěna", [widthLabel, heightLabel], entity2D, entity)
+        ),
+        protilehlaStana,
+        product("obě boční stěny", [], entity2D, entity)),
+      deduce(
+        deduce(
+          length,
+          height,
+          product("přední stěna", [lengthLabel, heightLabel], entity2D, entity)
+        ),
+        protilehlaStana,
+        product("přední a zadní stěna", [], entity2D, entity)),
+      sum("obsah pláště", [], entity2D, entity2D)
+    )
+
 
 
   const templateBase = highlight => highlight

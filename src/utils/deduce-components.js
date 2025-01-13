@@ -48,7 +48,7 @@ export function partion(items, options) {
       ...(showAbsoluteValues ? [
         Plot.textX(data, Plot.stackX({
           x: "value",
-          text: (d, i) => `${formatAsFraction ? new Fraction(d.value).toFraction() : d.value.toLocaleString('cs-CZ', { maximumFractionDigits: 1 })}`,
+          text: (d, i) => `${formatAsFraction ? new Fraction(d.value).toFraction() : d.value.toLocaleString('cs-CZ')}`,
           fontSize: 16,
           fontWeight: 500,
           textAnchor: 'middle',
@@ -201,7 +201,7 @@ function formatRatio(ratio) {
 function formatRatios(d) {
   const isSameAgent = d.parts[0]?.agent === d.parts[1]?.agent;
   const isSameEntity = d.parts[0]?.entity === d.parts[1]?.entity;
-  return `${d.whole != null ? formatAgentEntity(d.whole, false) : ''} ${d.parts.map(d => formatAgentEntity(d, { isSameAgent, isSameEntity })).join(":")} v poměru ${d.ratios.join(":")}`
+  return `${d.whole != null ? formatAgentEntity(d.whole, false) : ''} ${d.parts.map(d => formatAgentEntity(d, { isSameAgent, isSameEntity })).join(":")} v poměru ${d.ratios.map(d => d.toLocaleString('cs-CZ')).join(":")}`
 }
 
 function formatAgentEntity(d, { isSameEntity, isSameAgent } = {}) {

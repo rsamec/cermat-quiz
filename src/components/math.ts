@@ -140,6 +140,9 @@ export function ctorRatios(whole: EntityMatcher) {
 export function cont(agent: string, quantity: number, entity: string): Container {
   return { kind: 'cont', agent, quantity, entity };
 }
+export function pi(): Container {
+  return { kind: 'cont', agent: "PI", quantity: 3.14, entity: '' }
+}
 export function comp(agentA: string, agentB: string, quantity: number, entity: string): Comparison {
   return { kind: 'comp', agentA, agentB, quantity, entity }
 }
@@ -555,12 +558,10 @@ export function inferenceRule(...args: Predicate[]) {
   }
   else if (a.kind === "cont" && b.kind == "ratios") {
     const kind = last?.kind;
-    if (kind !== "simplify") console.log(partToPartRule(a, b));
     return kind === "simplify" ? mapRatiosByFactor(b, 1 / a.quantity) : partToPartRule(a, b);
   }
   else if (a.kind === "ratios" && b.kind == "cont") {
     const kind = last?.kind;
-    if (kind !== "simplify") console.log(partToPartRule(b, a));
     return kind === "simplify" ? mapRatiosByFactor(a, 1 / b.quantity) : partToPartRule(b, a);
 
   }

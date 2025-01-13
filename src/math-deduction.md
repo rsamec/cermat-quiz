@@ -21,6 +21,8 @@ import proportionCombined from './math/proportion/proportion-combined.js';
 
 import measureScale from './math/scale/measuring-scale.js';
 import rectangle from './math/shapes/rectangle.js';
+import cylinder from './math/shapes/cylinder.js';
+import prism from './math/shapes/prism.js';
 
 import percentPart from './math/percent/part.js';
 import percentBase from './math/percent/base.js';
@@ -494,8 +496,9 @@ const measureScaleInput = Generators.input(measureScaleForm);
 <div>${renderEx({example:measureScale({input:measureScaleInput})[1]})}</div>
 <div>${renderEx({example:measureScale({input:measureScaleInput})[2]})}</div>
 
-## Obsah, objem
+## Tělesa
 
+### Kvádr
 
 ```js
 const rectangleForm = Inputs.form({
@@ -515,6 +518,50 @@ const rectangleInput = Generators.input(rectangleForm);
 <div>${renderEx({example:rectangle({input:rectangleInput})[0]})}</div>
 <div>${renderEx({example:rectangle({input:rectangleInput})[1]})}</div>
 <div>${renderEx({example:rectangle({input:rectangleInput})[2]})}</div>
+
+### Válec
+
+```js
+const cylinderForm = Inputs.form({
+  diameter: Inputs.range([1, 10], {step: 1, value:4, label: "průměr podstavy"}),
+  height: Inputs.range([1, 10], {step: 1, value:2, label: "výška"}),
+});
+const cylinderInput = Generators.input(cylinderForm);
+```
+
+
+<details>
+  <summary>Parametrizace</summary>
+  ${cylinderForm}
+</details>
+
+<div>${renderEx({example:cylinder({input:cylinderInput})[0]})}</div>
+<div>${renderEx({example:cylinder({input:cylinderInput})[1]})}</div>
+<div>${renderEx({example:cylinder({input:cylinderInput})[2]})}</div>
+
+
+### Trojboký hranol
+
+```js
+const triangleForm = Inputs.form({
+  a: Inputs.range([1, 10], {step: 1, value:2, label: "strana a"}),
+  b: Inputs.range([1, 10], {step: 1, value:3, label: "strana b"}),
+  c: Inputs.range([1, 10], {step: 1, value:4, label: "strana c"}),
+  aHeight: Inputs.range([1, 10], {step: 1, value:4, label: "výška ke straně a"}),
+  height: Inputs.range([1, 10], {step: 1, value:2, label: "výška"}),
+});
+const triangleInput = Generators.input(triangleForm);
+```
+
+
+<details>
+  <summary>Parametrizace</summary>
+  ${triangleForm}
+</details>
+
+<div>${renderEx({example:prism({input:triangleInput})[0]})}</div>
+<div>${renderEx({example:prism({input:triangleInput})[1]})}</div>
+<div>${renderEx({example:prism({input:triangleInput})[2]})}</div>
 
 
 # Jak je to uděláno?

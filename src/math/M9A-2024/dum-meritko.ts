@@ -1,5 +1,5 @@
 
-import { cont, comp, ctor, compDiff, sum, commonSense, rate, ctorRatios, gcd } from "../../components/math.js";
+import { cont, comp, ctor, compDiff, sum, commonSense, rate, ctorRatios, gcd, product, inferenceRule } from "../../components/math.js";
 import { axiomInput, deduce, to } from "../../utils/deduce-utils.js";
 
 
@@ -14,31 +14,21 @@ export default function build({ input }: {
 }) {
   const skutecnost = "skutečnost"
   const plan = "plán"
+  const widthLabel = "šířka"
+  const lengthLabel = "délka"
   const entity = "cm"
+  const entity2D = "cm ctverecni"
   const meritkoLabel = "dum"
 
+  const width = axiomInput(cont(skutecnost, input.sirkaM * 100, entity), 1);
+  const widthOnPlan = axiomInput(cont(plan, input.planSirkaCM, entity), 2);
+  const lengthOnPlan = axiomInput(cont(plan, input.planDelkaDM * 10, entity), 3);
 
 
-
-
-
-  const s = axiomInput(cont(skutecnost, input.sirkaM * 100, entity), 1);
-  const sPlan = axiomInput(cont(plan, input.planSirkaCM, entity), 2);
-  const dPlan = axiomInput(cont(plan, input.planDelkaDM * 10, entity), 3);
-
-
-  const oneD = "délka"
-  const twoD = "šířka"
-  const threeD = "výška"
-
-
-  const obsah = rate("obsah", 5, twoD, oneD)
-  const objem = rate("objem", 7, threeD, twoD)
-
-  const dBase =  
+  const dBase =
     deduce(
-      sPlan,
-      s,
+      widthOnPlan,
+      width,
       ctor('ratios')
     )
 
@@ -46,23 +36,38 @@ export default function build({ input }: {
 
   const dTree1 = deduce(
     dBase,
-    deduce(sPlan,s,gcd("největší společný násobek",entity)),
+    deduce(widthOnPlan, width, gcd("největší společný násobek", entity)),
     ctor("simplify")
   )
-    
+
 
   const dTree2 = deduce(
     cont(plan, 20, entity),
     dBase,
   )
 
-  // const dTree3 = deduce(
-  //   deduce(
-  //     cont("pocet", 4, oneD),
-  //     obsah),
-  //   objem
+  const ddSkutecnost = deduce(
+    dTree2,
+    width,
+    product(`${skutecnost} obsah`, [lengthLabel, widthLabel], entity2D, entity)
+  )
+  const ddPlan = deduce(
+    lengthOnPlan,
+    widthOnPlan,
+    product(`${plan} obsah`, [lengthLabel, widthLabel], entity2D, entity)
+  )
 
-  // )
+
+  const dTree3 = 
+  deduce(
+    deduce(
+      ddPlan,
+      ddSkutecnost,
+      ctor('ratios')
+    ),
+    deduce(ddPlan.children[3], ddSkutecnost.children[3], gcd("největší společný násobek", entity)),
+    ctor("simplify")
+  )
 
 
 
@@ -84,6 +89,6 @@ export default function build({ input }: {
   return [
     { deductionTree: dTree1, template: highlight => highlight`${() => templateBase(highlight)}${template1}` },
     { deductionTree: dTree2, template: highlight => highlight`${() => templateBase(highlight)}${template2}` },
-    { deductionTree: dTree2, template: highlight => highlight`${() => templateBase(highlight)}${template3}` }
+    { deductionTree: dTree3, template: highlight => highlight`${() => templateBase(highlight)}${template3}` }
   ]
 }
