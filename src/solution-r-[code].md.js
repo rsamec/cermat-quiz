@@ -4,12 +4,9 @@ import mdPlus from './utils/md-utils.js';
 import { parseQuiz } from './utils/quiz-parser.js';
 import { readJsonFromFile } from './utils/file.utils.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, isEmptyOrWhiteSpace } from './utils/quiz-string-utils.js';
-// import wordProblems from './math/word-problems.js';
-// import { isPredicate } from "./utils/deduce-utils.js";
+import wordProblems from '../word-problems.js';
 import Fraction from 'fraction.js';
 
-const wordProblems = {}
-const isPredicate = () => true;
 
 const {
   values: { code }
@@ -17,7 +14,9 @@ const {
   options: { code: { type: "string" } }
 });
 
-
+function isPredicate(node){
+  return node.kind != null;
+}
 const d = parseCode(code);
 const baseUrl = `${baseDomainPublic}/${d.subject}/${d.period}/${code}`
 const content = await text(`${baseUrl}/index.md`);
@@ -47,7 +46,6 @@ const answers = result[code];
 const ids = quiz.questions.map(d => d.id);
 
 const wordProblem = wordProblems[code];
-
 process.stdout.write(`---
 title: ${formatCode(code)}
 sidebar: true
@@ -67,20 +65,24 @@ ${answers == null ? `<div class="warning" label="Upozornění">
   K tomuto testu v tuto chvíli neexistují žádná řešení.
 </div>`: ''}
 <div class="root">${ids.map(id => {
-  const values = (answers[id] != null) ? [[id, answers[id] ?? wordProblem[id]]] : [1, 2, 3].map(i => answers?.[`${id}.${i}`]).filter(Boolean).map((d, index) => [`${id}.${index + 1}`, d])
-
+  const values = (answers?.[id] != null || wordProblem[id] != null)
+   ? [[id, answers[id] ?? wordProblem[id]]] 
+   : [1, 2, 3]
+    .map(i => `${id}.${i}`)
+    .map(subId => answers?.[subId] ?? wordProblem[subId])
+    .filter(Boolean)
+    .map((d, index) => [`${id}.${index +1}`, d])
+  
 
   return `${mdPlus.renderToString(quiz.content([id], { ids, render: 'content' }), { docId: `${code}-${id}` })}
 ${values?.length > 0
-      ? `<details class="solutions" open>
-<summary><h2 style="flex:1;" id="s-${id}">Řešení úloha ${id}</h2></summary>
-${values.map(([key, value]) => `<div class="card break-inside-avoid-column">${(value.results ?? []).map(d => renderResult(key, d)).join('')}
-${value.template != null ? value.template(highlight) : ''}
+      ? 
+`${values.map(([key, value]) => `<h2 id="s-${id}">Řešení úloha ${id}</h2><div class="card break-inside-avoid-column">${(value.results ?? []).map(d => renderResult(key, d)).join('')}
 <div>
 ${value.deductionTree != null ? deduceTraverse(value.deductionTree) : ''}
 </div>
 </div>`).join("")}
-</details>`: ''}
+`: ''}
 `}).join('')}`)
 
 
@@ -152,21 +154,20 @@ function deduce(...ts) {
   const premises = ts.slice(0, -1);
   const conclusion = ts.slice(-1);
 
-
-  const proof = `<div class="proof">
-	  <div class="premises">
-      ${premises.map(t => `<div class="node leaf">${t}</div>`).join('')}
-	  </div>
-	  <div class="conclusion">
-      <div class="le"></div>
-      <div class="ct">
-      ${conclusion}
-      </div>
-      <div class="ri"></div>
-	  </div>
-	</div>`;
-
-  return proof;
+  const proof = 
+`<div class="proof">
+<div class="premises">
+${premises.map(t => `<div class="node leaf">${t}</div>`).join('')}
+</div>
+<div class="conclusion">
+<div class="le"></div>
+<div class="ct">
+${conclusion}
+</div>
+<div class="ri"></div>
+</div>
+</div>`;
+return proof;
 
 }
 
@@ -212,6 +213,7 @@ function formatNode(t, label) {
   return `${label != null ? label : ''}&nbsp;${t?.kind != null ? formatPredicate(t) : t}`
 }
 function formatPredicate(d) {
+  
   const formatQuantity = (d, absolute) => (absolute ? Math.abs(d.quantity) : d.quantity).toLocaleString('cs-CZ')
   const formatEntity = (d) => d.entity
   const formatQuantityWithEntity = (d, absolute) => `${formatQuantity(d, absolute)}&nbsp;${formatEntity(d)}`;
@@ -241,7 +243,7 @@ function formatPredicate(d) {
       result = `${formatAgentEntity(d)}=${new Fraction(d.ratio).toFraction()}`;
       break;
     case "ratios":
-      result = `${d.parts.join(":")} v poměru ${d.ratios.join(":")} z ${d.whole}`;
+      result = `${d.parts?.join(":")} v poměru ${d.ratios?.join(":")} z ${d.whole}`;
       break;
     case "sum":
       result = `${d.partAgents.join("+")}`;
@@ -270,4 +272,7 @@ function deduceLabel(id) {
 }
 function label(d) {
   return `<div class="badge badge--${d.kind}">${d.id}</div>`
+}
+function formatAgentEntity(){
+  return ''
 }

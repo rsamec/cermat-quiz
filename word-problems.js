@@ -33,6 +33,9 @@ function compDiff(agentMinuend, agentSubtrahend, quantity, entity2) {
 function ratio(whole, part, ratio4) {
   return { kind: "ratio", whole, part, ratio: ratio4 };
 }
+function ratios(whole, parts, ratios2) {
+  return { kind: "ratios", parts, whole, ratios: ratios2 };
+}
 function sum(wholeAgent, partAgents, wholeEntity, partEntity) {
   return { kind: "sum", wholeAgent, partAgents, wholeEntity: { entity: wholeEntity }, partEntity: { entity: partEntity } };
 }
@@ -1182,6 +1185,42 @@ function example({ input }) {
   return { deductionTree };
 }
 
+// src/math/M9A-2024/obrazec.ts
+function example4({ input }) {
+  const ramenoLabel = "rameno";
+  const zakladnaLabel = "z\xE1kladna";
+  const obvodLabel = "obvod troj\xFAheln\xEDku";
+  const entity2 = "cm";
+  const obvod = axiomInput(cont(obvodLabel, 30, entity2), 1);
+  const ramenoCount = axiomInput(cont("po\u010Det ramen", 4, ""), 2);
+  const zakladnaCount = axiomInput(cont("po\u010Det z\xE1kladen", 3, ""), 3);
+  const rameno = deduce(
+    to(
+      commonSense("rameno troj\xFAheln\xEDku je p\u016Fleno vrcholem jin\xE9ho troj\xFAheln\xEDku"),
+      ratios({ agent: obvodLabel, entity: entity2 }, [{ agent: zakladnaLabel, entity: entity2 }, { agent: ramenoLabel, entity: entity2 }, { agent: ramenoLabel, entity: entity2 }], [1, 2, 2])
+    ),
+    obvod
+  );
+  const zakladna = deduce(
+    last(rameno),
+    compRatio(ramenoLabel, zakladnaLabel, 2)
+  );
+  const deductionTree = deduce(
+    deduce(
+      rameno,
+      ramenoCount,
+      product("obvod obrazce (ramena)", ["d\xE9lka ramena", "po\u010Det stran"], entity2, entity2)
+    ),
+    deduce(
+      zakladna,
+      zakladnaCount,
+      product("obvod obrazce (zakladny)", ["d\xE9lka z\xE1kladny", "po\u010Det stran"], entity2, entity2)
+    ),
+    sum("obvod obrazce", [], entity2, entity2)
+  );
+  return { deductionTree };
+}
+
 // src/math/M9C-2024/pocet-obyvatel.ts
 function build11({ input }) {
   const rozdil = input.celkem - input.jihlavaPlus;
@@ -1445,6 +1484,7 @@ var word_problems_default = {
     7.1: build7(tridaSkupinyParams)[0],
     7.2: build7(tridaSkupinyParams)[1],
     8.1: build10({ input: { tangaWidth: 20 } }),
+    12: example4({ input: { obvod: 30 } }),
     13: example({ input: { rozdilObvod: 6, obdelnikCtvAStrana: 1 / 2, obdelnikCtvBStrana: 1 / 5 } }),
     15.1: build8(dumMeritkoParams)[0],
     15.2: build8(dumMeritkoParams)[1],

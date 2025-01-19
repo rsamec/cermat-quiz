@@ -103,7 +103,7 @@ export function relativeParts(d, options) {
   return partion(relativePartsData(d, options), { width: 300, height: 50, formatAsFraction: !options.asPercent, showRelativeValues: false, unit: 1, multiple: options.asPercent ? 5 : undefined })
 }
 export function relativePartsDiff(d, options) {
-  return partion(relativePartsDiffData(d, options), { width: 300, height: 100, formatAsFraction: !options.asPercent, showRelativeValues: false, unit: 1, multiple: options.asPercent ? 5 : undefined, showSeparate: true })
+  return partion(relativePartsDiffData(d, options), { width: 300, height: 60, formatAsFraction: !options.asPercent, showRelativeValues: false, unit: 1, multiple: options.asPercent ? 5 : undefined, showSeparate: true })
 }
 
 function label(d) {

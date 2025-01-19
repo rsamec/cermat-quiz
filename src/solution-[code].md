@@ -51,21 +51,20 @@ const output = ids.map(id => {
    const values = (answers?.[id] != null || wordProblem[id] != null)
    ? [[id, answers[id] ?? wordProblem[id]]] 
    : [1, 2, 3]
-    .map(i => answers?.[`${id}.${i}`] ?? wordProblem[`${id}.${i}`])
+    .map(i => `${id}.${i}`)
+    .map(subId => answers?.[subId] ?? wordProblem[subId])
     .filter(Boolean)
     .map((d, index) => [`${id}.${index +1}`, d])
   
   return html.fragment`
   ${mdPlus.unsafe(quiz.content([id], { ids, render: 'content' }), { docId: `${code}-${id}` })}
   ${values?.length > 0
-      ? html`<details class="solutions" open>
-<summary><h2 style="flex:1;" id="s-${id}">Řešení úloha ${id}</h2></summary>
+      ? html.fragment`
   ${values.map(([key, value]) => html`<div class="card break-inside-avoid-column">
   ${(value.results ?? []).map(d => renderResult(key, d))}
-  ${value.template != null ? value.template(highlightLabel()) : ''}
   ${value.deductionTree != null ? deduceTraverse(value.deductionTree) : ''}
 </div>`)}
-</details>`: ''}`
+`: ''}`
 })
   
 
