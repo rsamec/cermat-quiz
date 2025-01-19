@@ -1,5 +1,5 @@
 import cetar from './M7A-2023/cetar.js';
-//import zakusek from './M7A-2023/zakusek.js';
+import zakusek from './M7A-2023/zakusek.js';
 import pocetSportovcu from './M7A-2024/pocet-sportovcu.js';
 import letniTabor from './M7A-2024/letni-tabor.js';
 import kraliciASlepice from './M7A-2024/kralice-a-slepice-v-ohrade.js';
@@ -11,13 +11,14 @@ import { example1, example2, example3 } from './M9A-2024/kolo.js';
 import tezitko from './M9A-2024/tezitko.js';
 import tanga from './M9A-2024/tanga.js';
 import dvaCtverce from './M9A-2024/dva-ctverce.js';
+import obrazec from './M9A-2024/obrazec.js';
 
 import pocetObyvatel from './M9C-2024/pocet-obyvatel.js';
-//import sourozenci from './M9C-2024/sourozenci.js';
+import sourozenci from './M9C-2024/sourozenci.js';
 
 import trojuhelnik from './M9A-2023/trojuhelnik.js';
 import ctvercovaSit from './M9B-2023/ctvercova-sit.js';
-import { inputLbl } from '../utils/deduce-utils.js';
+
 
 const letniTaborInput = {
   input: {
@@ -54,11 +55,11 @@ export default {
         vojinPerCetar: 10
       }
     }),
-    // 14: zakusek({
-    //   input: {
-    //     cena: 72
-    //   }
-    // })
+    14: zakusek({
+      input: {
+        cena: 72
+      }
+    })
   },
   "M7A-2024": {
     6: pocetSportovcu({ input: {} }),
@@ -99,6 +100,7 @@ export default {
     7.1: tridaSkupiny(tridaSkupinyParams)[0],
     7.2: tridaSkupiny(tridaSkupinyParams)[1],
     8.1: tanga({ input: { tangaWidth: 20 } }),
+    12: obrazec({ input: { obvod: 30 } }),
     13: dvaCtverce({ input: { rozdilObvod: 6, obdelnikCtvAStrana: 1 / 2, obdelnikCtvBStrana: 1 / 5 } }),
     15.1: dumMeritko(dumMeritkoParams)[0],
     15.2: dumMeritko(dumMeritkoParams)[1],
@@ -109,6 +111,6 @@ export default {
   },
   "M9C-2024": {
     1: pocetObyvatel({ input: { celkem: 86_200, jihlavaPlus: 16_000 } }),
-    //12: sourozenci({ input: { evaPodil: 40, michalPlus: 24, zbyvaNasporit: 72 } }),
+    12: sourozenci({ input: { evaPodil: 40, michalPlus: 24, zbyvaNasporit: 72 } }),
   },
 }

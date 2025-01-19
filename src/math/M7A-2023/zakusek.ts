@@ -1,6 +1,6 @@
 
-import { cont, inferenceRule, ratio, comp, sum } from "../../components/math.js";
-import { axiomInput, deduce, deduceLbl, to } from "../../utils/deduce-utils.js";
+import { cont, inferenceRule, ratio, sum, compRelative, ctor, ctorPartToWholeDiff } from "../../components/math.js";
+import { axiomInput, deduce, deduceLbl } from "../../utils/deduce-utils.js";
 
 interface ZakuseParams {
   cena: number;
@@ -22,20 +22,19 @@ export default function build({ input }: {
   const partTotalPrice = "1.zák.+2.zák";
 
 
-  const p1p2 = axiomInput(comp(piece2, piece1, -1 / 4, ""), 2);
+  const p1p2 = axiomInput(compRelative(piece2, piece1, -1 / 4), 2);
   const p1 = axiomInput(cont(piece1, input.cena, entity), 1)
   const p2Ratio = ratio({ agent: piece1, entity }, { agent: piece2, entity }, 3 / 4);
   const p3Ratio = ratio({ agent: totalPrice, entity }, { agent: partTotalPrice, entity }, 2 / 3);
   const oneThird = axiomInput(ratio({ agent: totalPrice, entity }, { agent: piece3, entity }, 1 / 3), 3);
 
   const soucet = sum(partTotalPrice, [], "Kč", "Kč");
-  //const p2 = comp(piece2, piece1, , entity)
+
 
 
   const dd1 = inferenceRule(p1, p2Ratio)
   const dd2 = inferenceRule(p1, dd1, soucet);
   const dd3 = inferenceRule(dd2, p3Ratio);
-  // const dd4 = inferenceRule(dd3, oneThird);
 
 
   const deductionTree =
@@ -47,18 +46,16 @@ export default function build({ input }: {
             p1,
             deduce(
               p1,
-              to(
+              deduce(
                 p1p2,
-                fig1,
-                p2Ratio,
+                ctor('ratio')
               ),
             ),
             soucet
           ),
-          to(
+          deduce(
             oneThird,
-            fig2,
-            p3Ratio,
+            ctorPartToWholeDiff({ agent:partTotalPrice, entity }),
           ),
         ),
         oneThird)

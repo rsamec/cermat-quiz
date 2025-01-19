@@ -157,9 +157,9 @@ export function formatPredicate(d) {
       result = html`${d.agentA} ${d.quantity > 0 ? 'více' : 'méně'} než ${d.agentB} o ${formatQuantityWithEntity(d, true)}`
       break;
     case "comp-ratio":
-      const between = (d.quantity > -1 && d.quantity < 1);
+      const between = (d.quantity > 0 && d.quantity < 2);
       result = between
-        ? html`${d.agentA}  ${d.quantity > 0 ? 'méně' : 'více'} ${new Fraction(Math.abs(d.quantity)).toFraction()}&nbsp;${formatEntity(d)} než ${d.agentB} `
+        ? html`${d.agentA} ${d.quantity < 1 ? 'méně' : 'více'} o ${new Fraction(d.quantity > 1 ? d.quantity - 1 : 1 - d.quantity).toFraction()}&nbsp;${formatEntity(d)} než ${d.agentB} `
         : html`${d.agentA} ${formatQuantity(d, true)} krát ${d.quantity > 0 ? 'více' : 'méně'}&nbsp;${formatEntity(d)} než ${d.agentB} `
       break;
     case "comp-diff":
@@ -302,7 +302,7 @@ export function deduceTraverse(node) {
             args.push(relativeParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
           }
           else if ((newChild?.kind === "comp" || newChild?.kind === "comp-ratio") && newChild?.entity === RelativeEntity) {
-            args.push(relativePartsDiff(newChild?.kind === "comp" ? newChild.quantity: newChild.quantity > 0 ? (1 * newChild.quantity) - 1:  -(1 + (1 /newChild.quantity)), { first: newChild.agentA, second: newChild.agentB }))
+            args.push(relativePartsDiff(newChild?.kind === "comp" ? newChild.quantity : newChild.quantity > 0 ? newChild.quantity - 1 : -(1 + (1 / newChild.quantity)), { first: newChild.agentA, second: newChild.agentB }))
           }
         }
       }

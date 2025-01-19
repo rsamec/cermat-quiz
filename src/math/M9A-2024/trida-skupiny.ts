@@ -11,23 +11,24 @@ interface Params {
 export default function build({ input }: {
   input: Params,
 }) {
-  const skupinaEN = "angličtina"
+  const skupinaEN = "angličtina celkem"
   const skupinaDE = "němčina"
+
+  const celkemAgent = "chlapců celkem"
   const entityChlapci = "chlapci"
   const entityDivky = "divky"
   const entity = "zaci"
-  const agent = "skupina";
 
-  const chlapci = axiomInput(cont(agent, input.chlapci, entityChlapci), 1);
-  const en = axiomInput(compDiff(agent, skupinaDE, input.anglictinaChlapci, entityChlapci), 2);
+
+  const chlapci = axiomInput(cont(celkemAgent, input.chlapci, entityChlapci), 1);
+  const chlapciDiff  = axiomInput(compDiff(celkemAgent, skupinaDE, input.anglictinaChlapci, entityChlapci),2)
   const de = axiomInput(cont(skupinaDE, input.nemcinaDivky, entityDivky), 3);
 
 
   //const data = [{ value: halfTotal, agent: skupinaDE }, { value: halfTotal, agent: skupinaDE }, { value: input.jihlavaPlus, agent: jihlava, opacity: 0.6, }]
   const dBase = deduce(
-    deduce(
-      chlapci,
-      en,
+    deduce(chlapci,
+      chlapciDiff
     ),
     de,
     sum(skupinaDE, [], entity, entity)
@@ -42,6 +43,7 @@ export default function build({ input }: {
       ),
       compDiff(skupinaEN, entityDivky, input.anglictinaChlapci, entity)
     )
+
 
   const dTree2 =
   to(

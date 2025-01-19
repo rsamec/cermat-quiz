@@ -276,7 +276,6 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
               <video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`)}
               
               ${wordProblemEntries.map(([key, d]) => html`<div class="h-stack h-stack--s">
-                <span style="flex:1">${d.template(highlightLabel())}</span>
                 <a href="./solution-${code}#s-${ids[0]}" target="_blank"><i class="fa-solid fa-square-up-right"></i></a>
               </div>
               ${html.fragment`${deduceTraverse(d.deductionTree)}`}

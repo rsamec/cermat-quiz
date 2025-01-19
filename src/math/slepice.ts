@@ -14,8 +14,8 @@ export default function build({ input }: {
   input: InversProportionParams,
 }) {
   const agentPrevious = "původně sneseno";
-  const agentCurrent = "nově sneseno (více slepic)";
-  const agentNew = "nově sneseno (více slepic, více dní)";
+  const agentCurrent = "nově sneseno";
+  const agentNew = "nově sneseno delší období";
   const entityA = "slepice";
   const entityB = "vejce";
   const entityC = "den"

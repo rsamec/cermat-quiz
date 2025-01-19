@@ -1,4 +1,4 @@
-import { cont, sum, inferenceRule, ratio, ctor } from "../../components/math.js";
+import { cont, sum, inferenceRule, ratio, ctor, ctorPartToPartDiff, ctorPartToWholeDiff } from "../../components/math.js";
 import { relativeParts } from "../../utils/deduce-components.js";
 import { axiomInput, deduce, to } from "../../utils/deduce-utils.js";
 
@@ -28,22 +28,14 @@ export default function build({ input }: {
   const celek = cont("celek", 100, "%")
 
 
-
-
-  const dd1 = inferenceRule(eva, michal, spolecne);
-  const dd2 = inferenceRule(dd1, celek,ctor('ratio'));
-  const fig1 = relativeParts(dd2.kind === 'ratio' && dd2.ratio, { first: "Eva + Michal", second: "Michal+zbývá" });
-  const dd3 = ratio({ agent: "dárek", entity }, { agent: 'Michal+zbývá', entity }, dd2.kind === 'ratio' && 1 - dd2.ratio)
-  const dd4 = inferenceRule(michalPlus, zbyva, penize);
-  const dd5 = inferenceRule(dd3, dd4);
   const deductionTree = deduce(
-    to(
+    deduce(
       deduce(
         deduce(eva, michal, spolecne),
         celek,
+        ctor('ratio')
       ),
-      fig1,
-      dd3,
+      ctorPartToWholeDiff({ agent: "Michal+zbývá", entity }),
     ),
     deduce(michalPlus, zbyva, penize),
   )

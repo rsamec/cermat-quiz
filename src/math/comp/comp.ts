@@ -1,5 +1,5 @@
 
-import { cont, ratio, ctorPartToPartDiff, ctorPartToWholeDiff, ctor, comp, compRelative, compRatioRelative } from "../../components/math.js";
+import { cont, ratio, ctorPartToPartDiff, ctorPartToWholeDiff, ctor, comp, compRelative, compRatio, RelativeEntity } from "../../components/math.js";
 import type { Comparison, PartWholeRatio, Container, RatioComparison } from "../../components/math.js";
 import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
@@ -110,15 +110,15 @@ export function exampleComparePartToWhole({ input }: {
 
   const part = axiomInput(cont(agentPart, input.part, entity), 1);
   const compare = axiomInput(compRelative(agentPart, agentRestPart, input.partRatio), 2);
-  const compareRatio = axiomInput(compRatioRelative(agentPart, agentRestPart, input.partRatio), 2);
+  const compareRatio = axiomInput(compRatio(agentPart, agentRestPart, input.partRatio), 2);
 
   const template = highlight => highlight`
     Cena výrobek A je ${input.part} Kč.
     Výrobek A je relativně o ${Math.abs(input.partRatio)} ${input.partRatio > 0 ? 'dražší' : 'levnější'} než výrobek B.
     Kolik stojí výrobek B?`;
 
-  return [
-    { deductionTree: compToPartToWhole({ compare, part }), template },
+  return [    
+    { deductionTree: compRatioToPartToWhole({ compare, part }), template },
     { deductionTree: compRatioToPartToWhole({ compare: compareRatio, part }), template },
 
   ]
