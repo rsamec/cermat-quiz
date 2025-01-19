@@ -1,69 +1,155 @@
 
-import { cont, pi, product, ratio, sum } from "../../components/math.js";
-import { axiomInput, deduce, deduceLbl, highlight } from "../../utils/deduce-utils.js";
+import { cont, type Container, pi, product, ratio, sum } from "../../components/math.js";
+import { axiomInput, connectTo, deduce, last, type TreeNode } from "../../utils/deduce-utils.js";
 
+
+export interface CylinderOut {
+  volume: TreeNode
+  surface: TreeNode
+  baseCircumference: TreeNode
+  surfaceBaseArea: TreeNode
+}
+export interface CylinderLabels {
+  radiusLabel?: string
+  entity?: string
+  surfaceBaseAreaLabel?: string,
+  entity2D?: string,
+  baseCircumferenceLabel?: string,
+
+}
+
+export function surfaceBaseArea(
+  { radius }: { radius: Container },
+  options?: {
+    radiusLabel?: string
+    entity2D?: string
+    surfaceBaseAreaLabel?: string,
+  }) {
+  const { radiusLabel, entity2D, surfaceBaseAreaLabel } = {
+    ...{
+      radiusLabel: "poloměr",
+      entity2D: "čtverečků",
+      surfaceBaseAreaLabel: "obsah podstavy",
+    },
+    ...options ?? {}
+  }
+
+  return deduce(
+    radius,
+    radius,
+    pi(),
+    product(surfaceBaseAreaLabel, [radiusLabel, radiusLabel, "PI"], entity2D, radius.entity)
+  )
+}
+export function baseCircumference(
+  { radius }: { radius: Container },
+  options?: {
+    radiusLabel?: string
+    baseCircumferenceLabel?: string,
+  }) {
+  const { radiusLabel, baseCircumferenceLabel } = {
+    ...{
+      radiusLabel: "poloměr",
+      baseCircumferenceLabel: "obvod podstavy",
+    },
+    ...options ?? {}
+  }
+
+  return deduce(
+    cont("2 * PI", 2 * pi().quantity, ""),
+    radius,
+    product(baseCircumferenceLabel, ["2 * PI", radiusLabel], radius.entity, radius.entity)
+  )
+}
+
+export function cylinder(
+  { radius, height }: { radius: Container, height: Container },
+  options?: CylinderLabels) {
+  const { radiusLabel, entity2D, entity3D, surfaceBaseAreaLabel, heightLabel, baseCircumferenceLabel } = {
+    ...{
+      radiusLabel: "poloměr",
+      entity2D: "čtverečků",
+      entity3D: "krychliček",
+      surfaceBaseAreaLabel: "obsah podstavy",
+      baseCircumferenceLabel: "obvod podstavy",
+      heightLabel: "výška"
+    },
+    ...options ?? {}
+  }
+
+  const entity = radius.entity;
+
+  const surfaceBaseAreaTree = surfaceBaseArea({ radius }, { entity2D, radiusLabel, surfaceBaseAreaLabel })
+
+  const volume = deduce(
+    surfaceBaseAreaTree,
+    height,
+    product("objem válce", ["obsah podstavy", heightLabel], entity3D, entity)
+  )
+
+  const baseCircumferenceTree = baseCircumference({ radius }, { radiusLabel, baseCircumferenceLabel })
+
+  const protilehlaStana = cont("počet stěn", 2, "");
+  const surface = deduce(
+    deduce(
+      surfaceBaseAreaTree,
+      protilehlaStana,
+      product("spodní a horní stěna", [], entity2D, entity)
+    ),
+    deduce(
+      baseCircumferenceTree,
+      height,
+      product("obsah bočního pláště", ["obvod podstavy", heightLabel], entity2D, entity)
+    ),
+    sum("obsah pláště", [], entity2D, entity2D)
+  )
+
+  return {
+    volume,
+    surface,
+    baseCircumference: baseCircumferenceTree,
+    surfaceBaseArea: surfaceBaseAreaTree
+  }
+}
+
+export function surfaceBaseAreaIn({ input }: { input: TreeNode}, labels: CylinderLabels = {}) {
+  return connectTo(surfaceBaseArea({ radius: last(input) }, labels), input);
+}
+
+export function volumeIn({ input, height }: { input: TreeNode, height: Container }, labels: CylinderLabels = {}) {
+  return connectTo(cylinder({ radius: last(input), height }, labels).volume, input);
+}
+export function surfaceIn({ input, height }: { input: TreeNode, height: Container }, labels: CylinderLabels = {}) {
+  return connectTo(cylinder({ radius: last(input), height }, labels).surface, input);
+}
 
 interface Params {
   diameter: number
   height: number
 }
 
-export default function build({ input }: {
+export function examples({ input }: {
   input: Params,
 }) {
-  const area = "obsah"
   const diameterLabel = "průměr"
   const radiusLabel = "poloměr"
   const heightLabel = "výška"
-  const entity = "cm"
-  const entity2D = "čtverečků"
-  const entity3D = "krychliček"
+  const entity = "cm";
 
   const diameter = axiomInput(cont(diameterLabel, input.diameter, entity), 1);
   const height = axiomInput(cont(heightLabel, input.height, entity), 2);
-
-
   const dRadius = deduce(
     diameter,
-    ratio({ agent: diameterLabel, entity }, { agent: radiusLabel, entity }, 1 / 2),
+    ratio({ agent: diameterLabel, entity }, { agent: radiusLabel, entity }, 1 / 2)
   )
 
-  const dCircleArea =
-    deduce(
-      dRadius,
-      { ...dRadius.children[2], ...deduceLbl(1) },
-      pi(),
-      product("obsah podstavy", [radiusLabel, radiusLabel, "PI"], entity2D, entity)
-    )
 
-  const dTree1 = dCircleArea;
 
-  const dTree2 = deduce(
-    dCircleArea,
-    height,
-    product("objem válce", ["obsah podstavy", heightLabel], entity3D, entity)
-  )
+  const dTree1 = surfaceBaseAreaIn({ input: dRadius })
 
-  const dCirclePerimetr = deduce(
-    cont("2xPI", 2 * pi().quantity, ""),
-    { ...dRadius.children[2], ...deduceLbl(1) },
-    product("obvod podstavy", ["2 * PI", radiusLabel], entity, entity)
-  )
+  const dTree2 = volumeIn({ input: dRadius, height });
 
-  const protilehlaStana = cont("počet stěn", 2, "");
-  const dTree3 = deduce(
-    deduce(
-      dCircleArea,
-      protilehlaStana,
-      product("spodní a horní stěna", [], entity2D, entity)
-    ),
-    deduce(
-      dCirclePerimetr,
-      height,
-      product("obsah bočního pláště", ["obvod podstavy", heightLabel], entity2D, entity)
-    ),
-    sum("obsah pláště", [], entity2D, entity2D)
-  )
+  const dTree3 = surfaceIn({ input: dRadius, height });
 
   const templateBase = highlight => highlight
     `Válec, který má průměr podstavy ${input.diameter} cm a výšku ${input.height} cm.`

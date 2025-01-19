@@ -23,7 +23,7 @@ import tabor from './math/M7A-2024/letni-tabor.js';
 import vOhrade from './math/M7A-2024/kralice-a-slepice-v-ohrade.js';
 
 import svadleny from './math/M9A-2024/svadleny.js';
-import kolo from './math/M9A-2024/kolo.js';
+import {example3} from './math/M9A-2024/kolo.js';
 
 import sourozenci from './math/M9C-2024/sourozenci.js';
 import pocetOb from './math/M9C-2024/pocet-obyvatel.js';
@@ -118,7 +118,7 @@ const koloInput = Generators.input(koloForm);
   ${koloForm}
 </details>
     
-<div>${renderExample({example:kolo({input:koloInput}), unit: 1000, showRelativeValues: false})}</div>
+<div>${renderExample({example:example3({input:koloInput}), unit: 1000, showRelativeValues: false})}</div>
 
 ----------------------
 

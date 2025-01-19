@@ -1,44 +1,40 @@
-import { html } from "htl";
-import { cont, ctor, inferenceRule } from "../../components/math.js";
-import { deduce } from "../../utils/deduce.js";
-import { formatNode as format, inputLabel, deduceLabel, highlight } from "../../utils/deduce-components.js";
 
+import { cont, ctor, type Container } from "../../components/math.js";
+import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
-interface PercentBaseParams {
-  part: number;
-  percentage: number;
+export function percentBase({ part, percentage }: { part: Container, percentage: Container },
+  labels: { baseAgent?: string } = {}) {
+  const { baseAgent } = { ...{ baseAgent: "základ" }, ...labels }
+  const celek = cont(baseAgent, 100, percentage.entity);
+  return deduce(
+    deduce(
+      percentage,
+      celek,
+      ctor('ratio')
+    ),
+    part
+  )
 }
-export default function build({ input }: {
-  input: PercentBaseParams,
-}) {
 
-  const agentPercentBase = "vypůjčeno";
+
+export function example({ input }: {
+  input: {
+    part: number;
+    percentage: number;
+  }
+}) {
   const agentPercentPart = "úrok";
   const entity = "Kč";
   const entityPercent = "%"
 
-  const percent = cont(agentPercentPart, input.percentage, entityPercent);
-  const celek = cont(agentPercentBase, 100, entityPercent);
-  const dd1 = inferenceRule(percent, celek, ctor('ratio'));
-
-  const percentPart = cont(agentPercentPart, input.part, entity);
-  const dd2 = inferenceRule(percentPart, dd1);
-
-  const deductionTree = deduce(
-    deduce(
-      format(percent, inputLabel(2)),
-      format(celek),
-      format(dd1, deduceLabel(1))
-    ),
-    format(percentPart, inputLabel(1)),
-    format(dd2, deduceLabel(2))
-  )
+  const percentage = axiomInput(cont(agentPercentPart, input.percentage, entityPercent), 2);
+  const part = axiomInput(cont(agentPercentPart, input.part, entity), 1);
 
 
-  const template = html`
-    ${inputLabel(1)}${highlight`Zaplaceno na úrocích ${input.part} Kč za jeden rok.`}.
-    ${inputLabel(2)}${highlight`Úrok ${input.percentage} % na jeden rok.`}.<br/>
-    ${deduceLabel(2)}<strong> ${highlight`Kolik bylo půjčeno před rokem v Kč?`}</strong>`;
+  const template = highlight => highlight`
+    Zaplaceno na úrocích ${input.part} Kč za jeden rok.
+    Úrok ${input.percentage} % na jeden rok.
+    Kolik bylo půjčeno před rokem v Kč?`;
 
-  return { deductionTree, template }
+  return { deductionTree: percentBase({ part, percentage },{baseAgent:'vypůjčeno'}), template }
 }

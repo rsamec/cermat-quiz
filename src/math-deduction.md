@@ -20,13 +20,15 @@ import proportion from './math/proportion/proportion.js';
 import proportionCombined from './math/proportion/proportion-combined.js';
 
 import measureScale from './math/scale/measuring-scale.js';
-import rectangle from './math/shapes/rectangle.js';
-import cylinder from './math/shapes/cylinder.js';
-import prism from './math/shapes/prism.js';
+import {examples as rectangleExamples} from './math/shapes/rectangle.js';
+import {examples as cylinderExamples} from './math/shapes/cylinder.js';
+import {examples as prismExamples} from './math/shapes/prism.js';
 
-import percentPart from './math/percent/part.js';
-import percentBase from './math/percent/base.js';
-import percentPercentage from './math/percent/percentage.js';
+import {example as percentPart} from './math/percent/part.js';
+import {example as percentBase} from './math/percent/base.js';
+import {example as percentPercentage} from './math/percent/percentage.js';
+
+import  {examplePartToWhole, examplePartToPart, exampleComparePartToWhole, examplePartEq}  from './math/comp/comp.js'
 
 function renderEx({example, unit, showRelativeValues}={}){
   const tree = deduceTraverse(example.deductionTree);
@@ -35,7 +37,7 @@ function renderEx({example, unit, showRelativeValues}={}){
   <div class="v-stack v-stack--l">
     <div class="card">${example.template(highlightLabel())}</div>
     <div class="h-stack h-stack--m">
-      <h3 style="flex:1">Dedukční strom</h3>
+      <h3 style="flex:1"></h3>
       <div class="h-stack h-stack--m" style="align-items: flex-start;">
         <div class="badge">Hloubka: ${depth}</div>
         <div class="badge">Šířka: ${width}</div>
@@ -304,8 +306,6 @@ ${partion([
 ### Geometrická
 <div>${renderRules(rules.geometricSequence)}</div>
 
-
-
 ----------------------
 
 # Základní odvozovací vzory
@@ -330,7 +330,7 @@ const percentInput = Generators.input(percentForm);
 
 ### Výpočet procentní části
 
-<div>${renderExample({example:percentPart({input:percentInput})})}</div>
+<div>${renderEx({example:percentPart({input:percentInput})})}</div>
 <div class="h-stack h-stack--wrap">
 ${partion([
     {value: 100, agent:"vypůjčeno (základ)" },
@@ -349,7 +349,7 @@ ${partion([
 
 ### Výpočet základu
 
-<div>${renderExample({example:percentBase({input:percentInput})})}</div>
+<div>${renderEx({example:percentBase({input:percentInput})})}</div>
 <div class="h-stack h-stack--wrap">
 ${partion([
     {value: 100, agent:"vypůjčeno (základ)" },
@@ -368,7 +368,7 @@ ${partion([
 
 ### Výpočet procent
 
-<div>${renderExample({example:percentPercentage({input:percentInput})})}</div>
+<div>${renderEx({example:percentPercentage({input:percentInput})})}</div>
 
 ----------------------
 
@@ -437,42 +437,56 @@ const proportionCombinedInput = Generators.input(proportionCombinedForms);
 ## Porovnávání s absolutním rozdílem
 
 ```js
-const pribram = "Příbram";
-const tabor = "Tábor" 
-const entity = "obyvatel"
-
-
-const celkem = "Tábor a Příbram";
-const zbytek = "zbytek"
-
-const total = cont(celkem, 75000, entity);
-const difference = compDiff(celkem, zbytek, 4000, entity);
-const comparison = comp(pribram, tabor, 4000, entity);
-const dTree1 = inferenceRule(total,difference);
-
-const eqRatio = ratio({agent:zbytek, entity}, {agent:tabor, entity}, 1/2, entity )
-const dTree2 = inferenceRule(dTree1, eqRatio)
-
-const partEqPredicate = {kind:'comp-part-eq'}
-const dTree0 = inferenceRule(total, comparison, partEqPredicate )
-
+const compPartEqForm = Inputs.form({
+  diff: Inputs.range([-50, 50], {step: 1, value:25, label: "cena výrobku A než výrobek B"}),
+  whole: Inputs.range([100, 1000], {step: 1, value:100, label: "celkem (Kč)"}),
+});
+const compPartEqInput = Generators.input(compPartEqForm);
 ```
 
-${deduce(
-  deduce(formatPredicate(total), formatPredicate(difference), formatPredicate(dTree1)),
-  formatPredicate(eqRatio), formatPredicate(dTree2)
-)}
+<details>
+  <summary>Parametrizace</summary>
+  ${compPartEqForm}
+</details>
 
-lze zjedušit pomocí ${formatPredicate(partEqPredicate)}
-
-${deduce(formatPredicate(total), formatPredicate(comparison), formatPredicate(partEqPredicate), formatPredicate(dTree0))}
+<div>${renderEx({example:examplePartEq({input:compPartEqInput})[0]})}</div>
 
 
 ## Porovnání s relativním rozdílem
 
+```js
+const compRatioForm = Inputs.form({
+  partRatio: Inputs.range([-5, 5], {step: 0.05, value:0.25, label: "cena výrobku A než výrobek B"}),
+  part: Inputs.range([1,100], {step: 1, value:10, label: "Výrobek A (Kč)"}),
+});
+const compRatioInput = Generators.input(compRatioForm);
+```
 
-${relativePartsDiff(1/4,{first:"letos", second:"loni", asPercent: false})}
-${relativePartsDiff(-1/4,{first:"letos", second:"loni", asPercent: false})}
+<details>
+  <summary>Parametrizace</summary>
+  ${compRatioForm}
+</details>
+
+<div>${renderEx({example:exampleComparePartToWhole({input:compRatioInput})[0]})}</div>
+<div>${renderEx({example:exampleComparePartToWhole({input:compRatioInput})[1]})}</div>
+
+```js
+const compDiffForm = Inputs.form({
+  partRatio: Inputs.range([0, 2], {step: 0.05, value:0.25, label: "relativní cena výrobku A z celkem"}),
+  whole: Inputs.range([1,100], {step: 1, value:10, label: "Celkem (Kč)"}),
+});
+const compDiffInput = Generators.input(compDiffForm);
+```
+
+<details>
+  <summary>Parametrizace</summary>
+  ${compDiffForm}
+</details>
+
+
+<div>${renderEx({example:examplePartToWhole({input:compDiffInput})[0]})}</div>
+<div>${renderEx({example:examplePartToPart({input:compDiffInput})[0]})}</div>
+
 
 
 ## Měřítko
@@ -515,9 +529,9 @@ const rectangleInput = Generators.input(rectangleForm);
   ${rectangleForm}
 </details>
 
-<div>${renderEx({example:rectangle({input:rectangleInput})[0]})}</div>
-<div>${renderEx({example:rectangle({input:rectangleInput})[1]})}</div>
-<div>${renderEx({example:rectangle({input:rectangleInput})[2]})}</div>
+<div>${renderEx({example:rectangleExamples({input:rectangleInput})[0]})}</div>
+<div>${renderEx({example:rectangleExamples({input:rectangleInput})[1]})}</div>
+<div>${renderEx({example:rectangleExamples({input:rectangleInput})[2]})}</div>
 
 ### Válec
 
@@ -535,9 +549,9 @@ const cylinderInput = Generators.input(cylinderForm);
   ${cylinderForm}
 </details>
 
-<div>${renderEx({example:cylinder({input:cylinderInput})[0]})}</div>
-<div>${renderEx({example:cylinder({input:cylinderInput})[1]})}</div>
-<div>${renderEx({example:cylinder({input:cylinderInput})[2]})}</div>
+<div>${renderEx({example:cylinderExamples({input:cylinderInput})[0]})}</div>
+<div>${renderEx({example:cylinderExamples({input:cylinderInput})[1]})}</div>
+<div>${renderEx({example:cylinderExamples({input:cylinderInput})[2]})}</div>
 
 
 ### Trojboký hranol
@@ -559,9 +573,9 @@ const triangleInput = Generators.input(triangleForm);
   ${triangleForm}
 </details>
 
-<div>${renderEx({example:prism({input:triangleInput})[0]})}</div>
-<div>${renderEx({example:prism({input:triangleInput})[1]})}</div>
-<div>${renderEx({example:prism({input:triangleInput})[2]})}</div>
+<div>${renderEx({example:prismExamples({input:triangleInput})[0]})}</div>
+<div>${renderEx({example:prismExamples({input:triangleInput})[1]})}</div>
+<div>${renderEx({example:prismExamples({input:triangleInput})[2]})}</div>
 
 
 # Jak je to uděláno?

@@ -1,9 +1,9 @@
 import { inferenceRule, isSameEntity } from "../components/math.js"
-import type { Predicate } from "../components/math.js"
+import type { Predicate, Container } from "../components/math.js"
 
 type PredicateLabel = { labelKind?: 'input' | 'deduce', label?: number }
 
-export function axiomInput(predicate: Predicate, label: number): Predicate & PredicateLabel {
+export function axiomInput<T extends Predicate>(predicate: T, label: number): T & PredicateLabel {
   return {
     ...predicate,
     ...{
@@ -28,34 +28,16 @@ export function deduceLbl(value: number) {
 }
 
 
-type Node = TreeNode | Predicate
-type TreeNode = {
+export type Node = TreeNode | Predicate
+export type TreeNode = {
   children?: Node[]
 }
 export function isPredicate(node: Node): node is Predicate {
   return (node as any).kind != null
 }
-
-function infererenceRuleEx(node: Node): any {
-  // Base case: if the node is a leaf (a string), add it to the result  
-  if (isPredicate(node)) {
-    return node;
-  }
-
-  const args = []
-  // Recursive case: traverse each child
-  if (node.children) {
-    for (const child of node.children) {
-      args.push(infererenceRuleEx(child))
-    }
-  }
-
-  // You can process the current node itself here if needed
-  // For example, add something from the node to `result`.
-  const res = inferenceRule(...args)
-  return res;
+export function last(input: TreeNode) {
+  return input.children[input.children.length - 1] as Container;
 }
-
 export function deduce(...children: Node[]): TreeNode {
   return to(...children.concat(inferenceRule.apply(null, children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]))));
 }
@@ -63,6 +45,37 @@ export function to(...children: Node[]): TreeNode {
   return { children: children }
 }
 
+export function connectTo(node: any, input: TreeNode) {  
+  let inputState = {
+    node: { children: input.children.map(d => ({ ...d}))},
+    used: false
+  };
+  const connect = function (node: any, input: TreeNode) {
+    // Base case: If the node is a leaf
+    if (isPredicate(node)) {
+      if (node === input.children[input.children.length - 1]) {
+        const newNode = inputState.used ? inputState.node.children[inputState.node.children.length - 1]: inputState.node
+        inputState.used = true;
+        
+        return  newNode;
+      }
+      return node;
+    }
+
+    // Recursive case: Process children and calculate depth
+    if (node.children && Array.isArray(node.children)) {
+
+      let newChildren = [];
+      for (const child of node.children) {
+        const newChild = connect(child, input);
+        newChildren.push(newChild);
+      }
+      node.children = newChildren;
+    }
+    return node;
+  }
+  return connect(node, input)
+}
 
 
 type TreeMetrics = {
@@ -177,7 +190,7 @@ function formatAgent(d: string) {
   return `**${d}**`
 }
 function formatEntity(d: { entity: string }) {
-  return d.entity != null && d.entity != '' ? `__${d.entity}__`: '';
+  return d.entity != null && d.entity != '' ? `__${d.entity}__` : '';
 }
 function formatAgentEntity(ratio) {
   const isSame = isSameEntity(ratio);

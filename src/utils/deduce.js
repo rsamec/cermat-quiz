@@ -1,12 +1,14 @@
 ///modified version from https://observablehq.com/@kelleyvanevert/deduction-trees
 import { html } from "npm:htl";
-export function deduce(...ts) {  
-  ts = ts.map(t => (t._proof || t.nodeName) ? t : html`${t}`);
-  const proof = html`<div class="proof">
+export function deduce(...ts) {    
+  ts = ts.map(t => (t._proof || t.nodeName) ? t : html.fragment`${t}`);
+  const collapsible = ts[ts.length - 1]?._collapsible;
+    
+  const proof = html`<div class="proof${collapsible && collapsible.collapsed === true ? ' hidden':''}">
 	  <div class="premises">
 	  </div>
 	  <div class="conclusion">
-      <div class="le"></div>
+      <div class="le">${collapsible ? html`<button onclick=${(e) => proof.classList.toggle('hidden')}></button>`:''}</div>
       <div class="ct"></div>
       <div class="ri"></div>
 	  </div>
@@ -19,12 +21,13 @@ export function deduce(...ts) {
 
   // add premises
   const prem = proof.children[0];
+  
   ts.forEach((t, i) => {
     // add premiss
     prem.appendChild(html`<div class="node${!t._proof ? ' leaf':''}">${t}</div>`);
-
     // if the premiss is a sub-tree, white-out parts of the horizontal bar for aesthetic reasons
-    if (t._proof) {
+    if (t._proof) {     
+     
       if (i == 0) {
         // '.proof > .conclusion > .le'
         //t.children[1].children[0].style['border-bottom'] = '2px solid var(--theme-foreground)';

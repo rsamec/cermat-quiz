@@ -36,7 +36,7 @@ export default function build({ input }: {
 
   const dTree1 = deduce(
     dBase,
-    deduce(widthOnPlan, width, gcd("největší společný násobek", entity)),
+    deduce(widthOnPlan, width, gcd("nejmenší společný násobek", entity)),
     ctor("simplify")
   )
 
@@ -65,7 +65,7 @@ export default function build({ input }: {
       ddSkutecnost,
       ctor('ratios')
     ),
-    deduce(ddPlan.children[3], ddSkutecnost.children[3], gcd("největší společný násobek", entity)),
+    deduce(ddPlan.children[3], ddSkutecnost.children[3], gcd("nejmenší společný násobek", entity)),
     ctor("simplify")
   )
 

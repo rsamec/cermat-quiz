@@ -8,7 +8,7 @@
     "deploy": "observable deploy",
     "observable": "observable",
     "merge-pdf": "node merge-pdf.js ./generated",
-    "build:word-problems": "tsc ./src/math/word-problems.ts --outfile word-problems.js --allowJs"
+    "build:word-problems":"esbuild ./src/math/word-problems.ts --bundle --platform=neutral --outfile=word-problems.js"
   },
   "dependencies": {
     "@lezer/common": "^1.2.2",

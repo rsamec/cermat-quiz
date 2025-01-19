@@ -1,14 +1,18 @@
-import { cont, compDiff, inferenceRule, ratio, sum, ctor } from "../../components/math.js";
-import { to, deduce, inputLbl, deduceLbl } from "../../utils/deduce-utils.js";
-import type { DeduceTemplate } from "../../utils/deduce-utils.js";
+import { cont, compDiff, inferenceRule, ratio, sum, ctor, type Container } from "../../components/math.js";
+import { to, deduce, inputLbl, deduceLbl, axiomInput } from "../../utils/deduce-utils.js";
+import { percentPart } from "../percent/part.js";
 
-interface PercentPartParams {
-  base: number;
-  percentageDown: number;
-  percentageNewUp: number;
-}
-export default function build({ input }: {
-  input: PercentPartParams,
+
+const entity = "Kč";
+const entityPercent = "%"
+
+
+export function example3({ input }: {
+  input: {
+    base: number;
+    percentageDown: number;
+    percentageNewUp: number;
+  },
 }) {
 
   const agentPercentBase = "cena";
@@ -32,7 +36,6 @@ export default function build({ input }: {
   const soucet = sum("konečná cena", ["cena po slevě", "zdraženo"], entity, entity);
   const dd5 = inferenceRule(dd3, dd4, soucet)
 
-
   const deductionTree =
     deduce(
       deduce(
@@ -54,12 +57,63 @@ export default function build({ input }: {
       soucet,
     )
 
-
-  const template = (highlightLabel: DeduceTemplate) =>
-    highlightLabel`Kolo v obchodě stálo ${input.base.toLocaleString("cs-CZ")} Kč.
+  const template = highlightLabel => highlightLabel`Kolo v obchodě stálo ${input.base.toLocaleString("cs-CZ")} Kč.
     Nejdříve bylo zlevněno o ${input.percentageDown} % z původní ceny.
     Po měsíci bylo zdraženo o ${input.percentageNewUp} % z nové ceny.
     ${(html) => html`<br/><strong>Jaká byla výsledná cena kola po zlevnění i zdražení?</strong>`}`;
 
   return { deductionTree, template }
+
+}
+
+export function example1({ input }: {
+  input: {
+    base: number,
+    percentage: number
+  }
+}) {
+  const template = highlightLabel => highlightLabel`
+  Pan Novák si vypůjčil ${input.base.toLocaleString("cs-CZ")} Kč na jeden rok.
+  Po roce vrátí věřiteli vypůjčenou částku, a navíc mu zaplatí úrok ve výši ${input.percentage} % z vypůjčené částky.
+  Kolik korun celkem věřiteli vrátí?`
+
+  const vypujceno = axiomInput(cont("vypůjčeno", 20_000, entity), 1);
+  const urok = axiomInput(cont("úrok", 13.5, '%'), 2);
+
+  const deductionTree = deduce(
+    percentPart({ base: vypujceno, percentage: urok }),
+    vypujceno,
+    sum("vráceno", ["úrok", "vypůjčeno"], entity, entity)
+  )
+
+  return { deductionTree, template }
+}
+
+export function example2({ input }: {
+  input: {
+    vlozeno: number,
+    urokPercentage: number
+    danPercentage: number
+  }
+}) {
+  const template = highlightLabel => highlightLabel`
+  Paní Dlouhá na začátku roku vložila do banky ${input.vlozeno.toLocaleString('cs-CZ')} Kč s roční úrokovou sazbou ${input.urokPercentage} %.
+  Výnosy z úroků jsou zdaněny srážkovou daní.
+  Kolik korun získá paní Dlouhá navíc ke svému vkladu za jeden rok, bude-li jí odečtena daň z úroků ${input.urokPercentage} %?`
+
+  const vlozeno = axiomInput(cont("vklad", input.vlozeno, entity), 1);
+  const výnos = axiomInput(cont("výnos", input.urokPercentage, entityPercent), 2);
+  const dan = axiomInput(cont("daň", input.danPercentage, entityPercent), 3);
+
+  const dBase = percentPart({ base: vlozeno, percentage: výnos })
+  const deductionTree = deduce(
+    dBase,
+    percentPart({ base: {...dBase.children[dBase.children.length - 1] as Container,...deduceLbl(2)}, percentage: dan }),
+  )
+
+
+
+
+  return { deductionTree, template }
+
 }

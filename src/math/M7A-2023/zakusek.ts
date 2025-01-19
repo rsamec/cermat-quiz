@@ -1,7 +1,6 @@
 
 import { cont, inferenceRule, ratio, comp, sum } from "../../components/math.js";
 import { axiomInput, deduce, deduceLbl, to } from "../../utils/deduce-utils.js";
-import { relativeParts, relativePartsDiff } from "../../utils/deduce-components.js";
 
 interface ZakuseParams {
   cena: number;
@@ -37,9 +36,6 @@ export default function build({ input }: {
   const dd2 = inferenceRule(p1, dd1, soucet);
   const dd3 = inferenceRule(dd2, p3Ratio);
   // const dd4 = inferenceRule(dd3, oneThird);
-
-  const fig1 = relativePartsDiff(-1 / 4, { first: piece2, second: piece1 });
-  const fig2 = relativeParts(1 / 3, { first: piece3, second: partTotalPrice });
 
 
   const deductionTree =

@@ -1,7 +1,7 @@
 import { html } from "npm:htl";
 import * as Plot from "npm:@observablehq/plot";
 import Fraction from 'npm:fraction.js';
-import { isSameEntity, nthQuadraticElements } from "../components/math.js";
+import { isSameEntity, nthQuadraticElements, RelativeEntity } from "../components/math.js";
 import { isPredicate } from "../utils/deduce-utils.js";
 import { deduce } from "./deduce.js";
 
@@ -43,7 +43,10 @@ export function partion(items, options) {
         ...(unit && { unit }),
         ...(multiple && { multiple }),
         ...(showSeparate && { fy: "agent" }),
-        opacity: d => d.opacity ?? 1
+        opacity: d => d.opacity ?? 1,
+        sort: {
+          x: { order: null }
+        }
       }),
       ...(showAbsoluteValues ? [
         Plot.textX(data, Plot.stackX({
@@ -107,7 +110,12 @@ function label(d) {
   return html`<div class=${`badge badge--${d.kind}`} >${d.id}</div>`
 }
 export function formatNode(t, label) {
-  return html`${label != null ? label : ''}&nbsp;${t?.kind != null ? formatPredicate(t) : t}`
+  const res = html`${label != null ? label : ''}&nbsp;${t?.kind != null ? formatPredicate(t) : t}`
+  if (t.collapsible) {
+    res._collapsible = t.collapsible
+  }
+
+  return res;
 }
 
 function formatSequence(type) {
@@ -161,7 +169,7 @@ export function formatPredicate(d) {
       result = html`${formatRatio(d)}=${new Fraction(d.ratio).toFraction()}`;
       break;
     case "ratios":
-      result = d.parts != null ? formatRatios(d) : d.whole != null ? d.whole : '';
+      result = d.parts != null ? formatRatios(d) : d.whole != null ? formatAgentEntity(d.whole) : '';
       break;
     case "sum":
       result = `${d.partAgents?.join(" + ")}`;
@@ -253,6 +261,7 @@ export function highlight(strings, ...substitutions) {
 
 export function deduceTraverse(node) {
   let counter = 1;
+  const deduceMap = new Map();
   function deduceTraverseEx(node) {
 
     // Base case: if the node is a leaf, add it to the result  
@@ -273,8 +282,29 @@ export function deduceTraverse(node) {
       let i = 0;
       for (const child of node.children) {
         const isLast = node.children.length === ++i;
-        const newChild = isLast && isPredicate(child) ? { ...child, ...{ labelKind: 'deduce', label: counter++ } } : child
-        args.push(deduceTraverseEx(newChild))
+        let newChild;
+        if (isLast && isPredicate(child) && !deduceMap.has(child)) {
+          newChild = { ...child, ...{ labelKind: 'deduce', label: counter++ } }
+          deduceMap.set(child, newChild)
+        }
+        else {
+          newChild = deduceMap.has(child) ? deduceMap.get(child) : child;
+        }
+
+        const res = deduceTraverseEx(newChild);
+        args.push(res)
+
+        if (!isLast) {
+          if (newChild?.kind === "ratio" && newChild?.ratio != null) {
+            args.push(relativePartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole) }))
+          }
+          else if (newChild?.kind === "ratios" && newChild?.ratios?.length === 2) {
+            args.push(relativeParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
+          }
+          else if ((newChild?.kind === "comp" || newChild?.kind === "comp-ratio") && newChild?.entity === RelativeEntity) {
+            args.push(relativePartsDiff(newChild?.kind === "comp" ? newChild.quantity: newChild.quantity > 0 ? (1 * newChild.quantity) - 1:  -(1 + (1 /newChild.quantity)), { first: newChild.agentA, second: newChild.agentB }))
+          }
+        }
       }
     }
 
@@ -285,4 +315,7 @@ export function deduceTraverse(node) {
     return res;
   }
   return deduceTraverseEx(node)
+}
+function toAgent(d) {
+  return d?.agent ?? d;
 }

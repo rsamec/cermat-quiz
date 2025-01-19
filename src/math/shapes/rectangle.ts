@@ -7,9 +7,10 @@ interface Params {
   width: number
   length: number
   height: number
-
 }
-export default function build({ input }: {
+
+
+export function examples({ input }: {
   input: Params,
 }) {
   const area = "obsah"

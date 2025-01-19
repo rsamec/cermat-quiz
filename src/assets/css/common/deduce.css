@@ -12,6 +12,9 @@
 .node.leaf {
   padding-left: 5px;
 }
+.node >.opacity {
+  opacity: 0.3;
+}
 
 @container (min-width: 1200px) {
   .flexible .node {
@@ -26,6 +29,15 @@
   align-items: flex-start;
   justify-content: center;
   border-left: 1px solid var(--theme-foreground);
+}
+.proof.hidden > .premises {
+  display:none;
+}
+.proof > .conclusion button::before{
+  content: '-';
+}
+.proof.hidden > .conclusion button::before {
+  content: '+';
 }
 @container (min-width: 1200px) {
   .flexible .premises {

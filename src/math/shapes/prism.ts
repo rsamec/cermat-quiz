@@ -11,7 +11,7 @@ interface Params {
   height: number
 
 }
-export default function build({ input }: {
+export function examples({ input }: {
   input: Params,
 }) {
   const area = "obsah"
