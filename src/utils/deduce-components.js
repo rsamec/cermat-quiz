@@ -1,7 +1,7 @@
 import { html } from "npm:htl";
 import * as Plot from "npm:@observablehq/plot";
 import Fraction from 'npm:fraction.js';
-import { isSameEntity, nthQuadraticElements, RelativeEntity } from "../components/math.js";
+import { isSameEntity, nthQuadraticElements } from "../components/math.js";
 import { isPredicate } from "../utils/deduce-utils.js";
 import { deduce } from "./deduce.js";
 
@@ -157,10 +157,10 @@ export function formatPredicate(d) {
       result = html`${d.agentA} ${d.quantity > 0 ? 'více' : 'méně'} než ${d.agentB} o ${formatQuantityWithEntity(d, true)}`
       break;
     case "comp-ratio":
-      const between = (d.quantity > 0 && d.quantity < 2);
+      const between = (d.ratio > 0 && d.ratio < 2);
       result = between
-        ? html`${d.agentA} ${d.quantity < 1 ? 'méně' : 'více'} o ${new Fraction(d.quantity > 1 ? d.quantity - 1 : 1 - d.quantity).toFraction()}&nbsp;${formatEntity(d)} než ${d.agentB} `
-        : html`${d.agentA} ${formatQuantity(d, true)} krát ${d.quantity > 0 ? 'více' : 'méně'}&nbsp;${formatEntity(d)} než ${d.agentB} `
+        ? html`${d.agentA} ${d.ratio < 1 ? 'méně' : 'více'} o ${new Fraction(d.ratio > 1 ? d.ratio - 1 : 1 - d.ratio).toFraction()}&nbsp;${formatEntity(d)} než ${d.agentB} `
+        : html`${d.agentA} ${formatQuantity(d, true)} krát ${d.ratio > 0 ? 'více' : 'méně'}&nbsp;${formatEntity(d)} než ${d.agentB} `
       break;
     case "comp-diff":
       result = html`${d.agentMinuend} - ${d.agentSubtrahend}=${formatQuantityWithEntity(d)}`
@@ -296,13 +296,13 @@ export function deduceTraverse(node) {
 
         if (!isLast) {
           if (newChild?.kind === "ratio" && newChild?.ratio != null) {
-            args.push(relativePartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole) }))
+            args.push(relativePartsDiff(-(1 - newChild.ratio), {  first: toAgent(newChild.part), second: toAgent(newChild.whole)}))
           }
           else if (newChild?.kind === "ratios" && newChild?.ratios?.length === 2) {
             args.push(relativeParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
           }
-          else if ((newChild?.kind === "comp" || newChild?.kind === "comp-ratio") && newChild?.entity === RelativeEntity) {
-            args.push(relativePartsDiff(newChild?.kind === "comp" ? newChild.quantity : newChild.quantity > 0 ? newChild.quantity - 1 : -(1 + (1 / newChild.quantity)), { first: newChild.agentA, second: newChild.agentB }))
+          else if (newChild?.kind === "comp-ratio" && newChild?.ratio != null) {
+            args.push(relativePartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: newChild.agentB }))
           }
         }
       }

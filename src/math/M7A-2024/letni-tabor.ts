@@ -90,7 +90,7 @@ export default function build({ input }: {
      <strong>Na táboře je dohromady ${tree1dd4.kind == "cont" && tree1dd4.quantity} vedoucích a instruktorů?</strong>`;
 
   const template2 = (html) => html`<br/>
-     <strong>Instruktorů je ${tree2dd4.kind == "comp-ratio" && tree2dd4.quantity} krát více než kuchařek.?</strong>`;
+     <strong>Instruktorů je ${tree2dd4.kind == "comp-ratio" && tree2dd4.ratio} krát více než kuchařek.?</strong>`;
 
 
   const template3 = (html) => html`<br/>

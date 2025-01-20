@@ -26,7 +26,7 @@ export default function build({ input }: {
 
   const cc1 = commonSense("nepřímá úměrnost (méně švadlen - více hodin)")
   const cc2 = commonSense("přímá úměrnost (více množství - více hodin)")
-  const dd2 = compRatio(agentCurrent, agentPrevious, dd1.kind == "comp-ratio" ? 1 / dd1.quantity : 0, entityB)
+  const dd2 = compRatio(agentCurrent, agentPrevious, dd1.kind == "comp-ratio" ? 1 / dd1.ratio : 0, entityB)
   const bPrevious = axiomInput(cont(agentPrevious, input.previousHours, entityB), 2);
   const dd3 = inferenceRule(dd2, bPrevious);
 

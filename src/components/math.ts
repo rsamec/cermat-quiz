@@ -1,4 +1,3 @@
-export const RelativeEntity = " ";
 type CountableUnit = '';
 type Unit = CountableUnit;
 
@@ -22,11 +21,11 @@ export type Comparison = EntityBase & {
   quantity: number
 }
 
-export type RatioComparison = EntityBase & {
+export type RatioComparison = {
   kind: 'comp-ratio'
   agentA: string,
   agentB: string,
-  quantity: number
+  ratio: number
 }
 
 export type ComparisonDiff = EntityBase & {
@@ -165,14 +164,14 @@ export function pi(): Container {
 export function comp(agentA: string, agentB: string, quantity: number, entity: string): Comparison {
   return { kind: 'comp', agentA, agentB, quantity, entity }
 }
-export function compRelative(agentA: string, agentB: string, quantity: number): RatioComparison {
-  if (quantity <= -1 && quantity >= 1) {
+export function compRelative(agentA: string, agentB: string, ratio: number): RatioComparison {
+  if (ratio <= -1 && ratio >= 1) {
     throw 'Relative compare should be between (-1,1).'
   }
-  return compRatio(agentA, agentB, 1 + quantity);
+  return compRatio(agentA, agentB, 1 + ratio);
 }
-export function compRatio(agentA: string, agentB: string, quantity: number, entity?: string): RatioComparison {
-  return { kind: 'comp-ratio', agentA, agentB, quantity, entity: entity ?? RelativeEntity }
+export function compRatio(agentA: string, agentB: string, ratio: number): RatioComparison {
+  return { kind: 'comp-ratio', agentA, agentB, ratio }
 }
 export function compDiff(agentMinuend: string, agentSubtrahend: string, quantity: number, entity: string): ComparisonDiff {
   return { kind: "comp-diff", agentMinuend, agentSubtrahend, quantity, entity }
@@ -225,18 +224,14 @@ function compareRule(a: Container, b: Comparison): Container {
   }
 }
 function ratioCompareRule(a: Container, b: RatioComparison): Container {
-  //check
-  // if (a.entity != b.entity) {
-  //   throw `Mismatch entity ${a.entity}, ${b.entity}`
-  // }
   if (!(a.agent == b.agentA || a.agent == b.agentB)) {
     throw `Mismatch agent ${a.agent} any of ${b.agentA}, ${b.agentB}`
   }
   if (a.agent == b.agentB) {
-    return { kind: 'cont', agent: b.agentA, quantity: a.quantity * b.quantity, entity: a.entity }
+    return { kind: 'cont', agent: b.agentA, quantity: b.ratio >= 0 ? a.quantity * b.ratio : a.quantity / Math.abs(b.ratio), entity: a.entity }
   }
   else if (a.agent == b.agentA) {
-    return { kind: 'cont', agent: b.agentB, quantity: a.quantity / b.quantity, entity: a.entity }
+    return { kind: 'cont', agent: b.agentB, quantity: b.ratio > 0 ? a.quantity / b.ratio : a.quantity * Math.abs(b.ratio), entity: a.entity }
   }
 }
 
@@ -281,23 +276,14 @@ function compPartToWholeRule(a: Comparison, b: { kind: 'ratio' }): PartWholeRati
     part: { agent: a.agentA, entity: a.entity }
   }
 }
-function compRatioPartToWholeRule(a: RatioComparison, b: { kind: 'ratio' }): PartWholeRatio {
-  const quantity = Math.abs(a.quantity)
-  return {
-    kind: 'ratio',
-    whole: { agent: a.agentB, entity: a.entity },
-    ratio: a.quantity > 0 ? 1 * quantity : 1 / quantity,
-    part: { agent: a.agentA, entity: a.entity }
-  }
-}
 
 
-function compRatioToCompRule(a: RatioComparison, b: Comparison): Container {  
+function compRatioToCompRule(a: RatioComparison, b: Comparison): Container {
   return {
     kind: 'cont',
     agent: b.agentA,
     entity: b.entity,
-    quantity: a.quantity * (b.quantity > 0 ? (b.quantity -1): 1 + 1 / b.quantity)
+    quantity: a.ratio * (b.quantity >= 0 ? (b.quantity - 1) : 1 + 1 / b.quantity)
   }
 }
 
@@ -393,7 +379,7 @@ function toRatioComparison(a: Container, b: Container): RatioComparison {
   if (a.entity != b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`
   }
-  return { kind: 'comp-ratio', agentB: a.agent, agentA: b.agent, quantity: b.quantity / a.quantity, entity: a.entity }
+  return { kind: 'comp-ratio', agentB: a.agent, agentA: b.agent, ratio: b.quantity / a.quantity }
 }
 function compareToCompareRule(a: Comparison, b: Comparison): Rate {
   return {
@@ -516,7 +502,7 @@ function toAgent(d: EntityMatcher) {
   return isAgentEntity(d) ? d.agent : d;
 }
 
-function matchEntity(entity: EntityMatcher, value: Container, isSameEntity = false) {    
+function matchEntity(entity: EntityMatcher, value: Container, isSameEntity = false) {
   //if (!isAgentEntity(entity)) return value.agent === entity;
   const d = toAgentEntity(entity, value)
   return (isSameEntity || value.entity === d.entity) && value.agent === d.agent;
@@ -626,12 +612,6 @@ export function inferenceRule(...args: Predicate[]) {
   }
   else if (a.kind === "comp" && b.kind == "ratio") {
     return compPartToWholeRule(a, b)
-  }
-  else if (a.kind === "ratio" && b.kind == "comp-ratio") {
-    return compRatioPartToWholeRule(b, a)
-  }
-  else if (a.kind === "comp-ratio" && b.kind == "ratio") {
-    return compRatioPartToWholeRule(a, b)
   }
   else if (a.kind === "comp" && b.kind == "comp-ratio") {
     return compRatioToCompRule(b, a)

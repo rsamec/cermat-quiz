@@ -455,9 +455,11 @@ const compPartEqInput = Generators.input(compPartEqForm);
 ## Porovnání s relativním rozdílem
 
 ```js
-const compForm = Inputs.form({
-  partRatio: Inputs.range([-0.95, 1], {step: 0.05, value:0.25, label: "O kolik je výrobku A dražší (levnější) než výrobek B"}),
-  part: Inputs.range([1,100], {step: 1, value:10, label: "Výrobek A (Kč)"}),
+const compForm = Inputs.form({  
+  second: Inputs.radio(new Map([["A", false],["B", true]]), {label:"Výrobek", value:false }),
+  part: Inputs.range([1,100], {step: 1, value:10, label: "Cena výrobku (Kč)"}),
+  partRatio: Inputs.range([-1, 1], {step: 0.05, value:0.25, label: "O kolik je výrobek A dražší (levnější) než výrobek B"}),
+  
 });
 const compInput = Generators.input(compForm);
 ```
@@ -471,9 +473,10 @@ const compInput = Generators.input(compForm);
 
 
 ```js
-const compRatioForm = Inputs.form({
-  partRatio: Inputs.range([-5, 5], {step: 0.05, value:0.25, label: "Kolikrát je výrobek A dražší (levnější) než výrobek B"}),
+const compRatioForm = Inputs.form({  
+  second: Inputs.radio(new Map([["A", false],["B", true]]), {label:"Výrobek", value:false }),
   part: Inputs.range([1,100], {step: 1, value:10, label: "Výrobek A (Kč)"}),
+  partRatio: Inputs.range([-10, 10], {step: 1, value:5, label: "Kolikrát je výrobek A dražší (levnější) než výrobek B"}),
 });
 const compRatioInput = Generators.input(compRatioForm);
 ```

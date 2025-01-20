@@ -36,7 +36,7 @@ export default function rules() {
 
     return {
       premises: [container, a],
-      inputTemplate: html`${container.agent} má ${container.quantity} ${container.entity}. ${a.agentA} má o ${Math.abs(a.quantity)} ${Math.abs(a.quantity) > 0 ? "více" : "méně"} než ${a.agentB}.`,
+      inputTemplate: html`${container.agent} má ${container.quantity} ${container.entity}. ${a.agentA} má o ${Math.abs(a.ratio)} ${Math.abs(a.ratio) > 0 ? "více" : "méně"} než ${a.agentB}.`,
       outputTemplate: (predicate: Container) => html`${predicate.agent} má ${predicate.quantity} ${predicate.entity}.`
     }
   }
@@ -46,7 +46,7 @@ export default function rules() {
     return {
       premises: [a, b, { kind: 'comp-ratio' }],
       inputTemplate: html`${a.agent} má ${a.quantity} ${a.entity}.${b.agent} má ${b.quantity} ${b.entity}.`,
-      outputTemplate: (predicate: RatioComparison) => html`${predicate.agentA} má o ${Math.abs(predicate.quantity)} ${Math.abs(predicate.quantity) > 0 ? "více" : "méně"} než ${predicate.agentB}.`
+      outputTemplate: (predicate: RatioComparison) => html`${predicate.agentA} má o ${Math.abs(predicate.ratio)} ${Math.abs(predicate.ratio) > 0 ? "více" : "méně"} než ${predicate.agentB}.`
     }
   }
 
