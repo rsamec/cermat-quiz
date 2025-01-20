@@ -23,7 +23,7 @@ export default function build({ input }: {
   const dd1 = inferenceRule(aCurrent, aPrevious, ctor('comp-ratio'));
 
   const cc1 = commonSense("nepřímá úměrnost, obracený poměr veličin")
-  const compB = compRatio(agentCurrent, agentPrevious, dd1.kind == "comp-ratio" ? dd1.ratio : 0, entityB)
+  const compB = compRatio(agentCurrent, agentPrevious, dd1.kind == "comp-ratio" ? dd1.ratio : 0)
   const bPrevious = cont(agentPrevious, input.previousHours, entityB);
 
   const dd3 = inferenceRule(compB, bPrevious);

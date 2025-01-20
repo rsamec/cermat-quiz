@@ -1,29 +1,27 @@
 
-import { cont, ratio, ctorPartToPartDiff, ctorPartToWholeDiff, ctor, comp, compRelative, compRatio } from "../../components/math.js";
+import { cont, ratio, ctor, comp, compRelative, compRatio, ctorRatio, ctorRatios } from "../../components/math.js";
 import type { PartWholeRatio, Container } from "../../components/math.js";
 import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 
 
 export function diffPartToWhole({ partRatio, whole }: { partRatio: PartWholeRatio, whole: Container },
-  labels: { partDiffAgent?: { agent: string, entity: string } } = {}) {
-  const { partDiffAgent } = { ...{ partDiffAgent: "zbytek" }, ...labels }
+  partDiffAgent?: string) {
   return deduce(
     deduce(
       partRatio,
-      ctorPartToWholeDiff(partDiffAgent),
+      ctorRatio(partDiffAgent ?? "zbytek"),
     ),
     whole
   )
 }
 
 export function diffPartToPart({ partRatio, whole }: { partRatio: PartWholeRatio, whole: Container },
-  labels: { partDiffAgent?: { agent: string, entity: string } } = {}) {
-  const { partDiffAgent } = { ...{ partDiffAgent: "zbytek" }, ...labels }
+  partDiffAgent?: string) {
   return deduce(
     deduce(
       partRatio,
-      ctorPartToPartDiff(partDiffAgent),
+      ctorRatios(partDiffAgent ?? "zbytek"),
     ),
     whole
   )
@@ -67,7 +65,7 @@ export function examplePartToWhole({ input }: {
   const entity = "Kč";
 
   const whole = axiomInput(cont(agentWhole, input.whole, entity), 1);
-  const partRatio = axiomInput(ratio({ agent: "celkem", entity }, agentPart, input.partRatio), 2);
+  const partRatio = axiomInput(ratio("celkem", agentPart, input.partRatio), 2);
 
   const template = highlight => highlight`
     Cena za výrobek A a B je celkem ${input.whole} Kč.
@@ -75,7 +73,7 @@ export function examplePartToWhole({ input }: {
     Kolik stojí výrobek B?`;
 
   return [
-    { deductionTree: diffPartToWhole({ partRatio, whole }, { partDiffAgent: { agent: agentRestPart, entity } }), template },
+    { deductionTree: diffPartToWhole({ partRatio, whole }, agentRestPart), template },
   ]
 }
 
@@ -90,7 +88,7 @@ export function exampleComparePartToWhole({ input }: {
   const agentSecond = "výrobek B"
   const entity = "Kč";
 
-  const part = axiomInput(cont(input.second ? agentSecond: agentFirst, input.part, entity), 1);
+  const part = axiomInput(cont(input.second ? agentSecond : agentFirst, input.part, entity), 1);
 
   const template1 = highlight => highlight`
     Cena ${`${input.second ? agentSecond : agentFirst} je ${input.part}`} Kč.
@@ -103,7 +101,7 @@ export function exampleComparePartToWhole({ input }: {
     Kolik stojí druhý výrobek?`;
 
   return [
-    { deductionTree: deduce(axiomInput(compRelative(agentFirst, agentSecond, input.partRatio), 2), part), template:template1 },
+    { deductionTree: deduce(axiomInput(compRelative(agentFirst, agentSecond, input.partRatio), 2), part), template: template1 },
     { deductionTree: deduce(axiomInput(compRatio(agentFirst, agentSecond, input.partRatio), 2), part), template: template2 },
 
   ]
@@ -121,8 +119,7 @@ export function examplePartToPart({ input }: {
   const entity = "Kč";
 
   const whole = axiomInput(cont(agentWhole, input.whole, entity), 1);
-  const partRatio = axiomInput(ratio({ agent: "celkem", entity }, agentPart, input.partRatio), 2);
-  const compare = axiomInput(comp(agentPart, agentRestPart, input.partRatio, entity), 2);
+  const partRatio = axiomInput(ratio(agentWhole, agentPart, input.partRatio), 2);
 
   const template = highlight => highlight`
     Cena za výrobek A a B je celkem ${input.whole} Kč.
@@ -130,6 +127,6 @@ export function examplePartToPart({ input }: {
     Kolik stojí druhý výrobek?`;
 
   return [
-    { deductionTree: diffPartToPart({ partRatio, whole }, { partDiffAgent: { agent: agentRestPart, entity } }), template }]
+    { deductionTree: diffPartToPart({ partRatio, whole }, agentRestPart), template }]
 
 }

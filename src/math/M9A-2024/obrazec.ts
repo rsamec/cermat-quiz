@@ -19,7 +19,7 @@ export default function example({ input }: {
   const rameno = deduce(
     to(
       commonSense("rameno trojúhelníku je půleno vrcholem jiného trojúhelníku"),
-      ratios({ agent: obvodLabel, entity }, [{ agent: zakladnaLabel, entity }, { agent: ramenoLabel, entity }, { agent: ramenoLabel, entity }], [1, 2, 2])
+      ratios(obvodLabel, [zakladnaLabel, ramenoLabel, ramenoLabel], [1, 2, 2])
     ),
     obvod
   );

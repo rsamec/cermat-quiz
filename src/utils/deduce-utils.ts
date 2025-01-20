@@ -1,4 +1,4 @@
-import { inferenceRule, isSameEntity } from "../components/math.js"
+import { inferenceRule } from "../components/math.js"
 import type { Predicate, Container } from "../components/math.js"
 
 type PredicateLabel = { labelKind?: 'input' | 'deduce', label?: number }
@@ -193,7 +193,7 @@ function formatEntity(d: { entity: string }) {
   return d.entity != null && d.entity != '' ? `__${d.entity}__` : '';
 }
 function formatAgentEntity(ratio) {
-  const isSame = isSameEntity(ratio);
+  const isSame = false;//isSameEntity(ratio);
   const to = d => d?.agent != null
     ? isSame
       ? formatAgent(d.agent)

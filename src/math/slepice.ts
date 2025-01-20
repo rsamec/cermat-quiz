@@ -27,14 +27,14 @@ export default function build({ input }: {
   const dd1 = inferenceRule(aPrevious, aCurrent, ctor('comp-ratio'));
 
   const cc1 = commonSense("přímá úměrnost, stejný poměr veličin")
-  const dd2 = compRatio(agentCurrent, agentPrevious, dd1.kind == "comp-ratio" ? dd1.ratio : 0, entityB)
+  const dd2 = compRatio(agentCurrent, agentPrevious, dd1.kind == "comp-ratio" ? dd1.ratio : 0)
   const bPrevious = axiomInput(cont(agentPrevious, input.previousEggs, entityB), 3);
   const dd3 = inferenceRule(dd2, bPrevious);
 
   const c1 = axiomInput(cont(agentCurrent, input.previousDays, entityC), 2);
   const c2 = axiomInput(cont(agentNew, input.currentDays, entityC), 5);
   const dd4 = inferenceRule(c1, c2, ctor('comp-ratio'));
-  const dd5 = compRatio(agentNew, agentCurrent, dd4.kind == "comp-ratio" ? dd4.ratio : 0, entityB)
+  const dd5 = compRatio(agentNew, agentCurrent, dd4.kind == "comp-ratio" ? dd4.ratio : 0)
   const dd6 = inferenceRule(dd5, dd3);
 
   const deductionTree = deduce(

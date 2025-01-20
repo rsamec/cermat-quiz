@@ -24,7 +24,7 @@ export default function build({ input }: {
   const dd1 = inferenceRule(aCurrent, aPrevious, ctor('comp-ratio'));
 
   const cc1 = commonSense("přímá úměrnost, stejný poměru veličin")
-  const compB = compRatio(agentPrevious, agentCurrent, dd1.kind == "comp-ratio" ? dd1.ratio : 0, entityB)
+  const compB = compRatio(agentPrevious, agentCurrent, dd1.kind == "comp-ratio" ? dd1.ratio : 0)
   const bPrevious = cont(agentPrevious, input.previousCount, entityB);
 
   const dd3 = inferenceRule(compB, bPrevious);

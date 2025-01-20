@@ -1,6 +1,5 @@
-import { cont, sum, inferenceRule, ratio, ctor, ctorPartToPartDiff, ctorPartToWholeDiff } from "../../components/math.js";
-import { relativeParts } from "../../utils/deduce-components.js";
-import { axiomInput, deduce, to } from "../../utils/deduce-utils.js";
+import { cont, sum, ctor, ctorRatio } from "../../components/math.js";
+import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 interface SourozenciParams {
   evaPodil;
@@ -35,7 +34,7 @@ export default function build({ input }: {
         celek,
         ctor('ratio')
       ),
-      ctorPartToWholeDiff({ agent: "Michal+zbývá", entity }),
+      ctorRatio("Michal+zbývá"),
     ),
     deduce(michalPlus, zbyva, penize),
   )

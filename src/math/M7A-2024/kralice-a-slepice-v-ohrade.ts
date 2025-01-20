@@ -1,5 +1,5 @@
 
-import { cont, ratio, comp, rate, ctor } from "../../components/math.js";
+import { cont, comp, rate, ctor } from "../../components/math.js";
 import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 interface ZvirataVOhradeParams {
@@ -21,7 +21,7 @@ export default function build({ input }: {
 
   const hlava = "hlava";
   const celkem = 'slepice a králíci';
-  const partCelkem = "zbytek";
+
   const entity = "zvíře";
 
 
@@ -30,7 +30,6 @@ export default function build({ input }: {
 
   const total = axiomInput(cont(celkem, input.pocetHlav, hlava), 1)
   const perHlava = rate(celkem, 1, hlava, entity);
-  const pomer = ratio({ agent: partCelkem, entity }, { agent: kralik, entity }, 1 / 2);
   const slepicePlus = axiomInput(comp(kralik, slepice, -input.kralikuMene, entity), 2)
 
   const deductionTree = deduce(

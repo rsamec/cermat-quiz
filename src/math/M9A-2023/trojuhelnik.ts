@@ -1,5 +1,5 @@
 
-import { comp, cont, ctor, inferenceRule, nth, sum } from "../../components/math.js";
+import { cont, ctor, inferenceRule, nth, sum } from "../../components/math.js";
 import { deduce, deduceLbl } from "../../utils/deduce-utils.js";
 
 

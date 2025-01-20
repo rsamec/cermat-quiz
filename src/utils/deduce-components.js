@@ -1,7 +1,7 @@
 import { html } from "npm:htl";
 import * as Plot from "npm:@observablehq/plot";
 import Fraction from 'npm:fraction.js';
-import { isSameEntity, nthQuadraticElements } from "../components/math.js";
+import { nthQuadraticElements } from "../components/math.js";
 import { isPredicate } from "../utils/deduce-utils.js";
 import { deduce } from "./deduce.js";
 
@@ -141,6 +141,7 @@ function formatSequence(type) {
 }
 export function formatPredicate(d) {
   const formatQuantity = (d, absolute) => (absolute ? Math.abs(d.quantity) : d.quantity).toLocaleString('cs-CZ',)
+  const formatRatioValue = (d, absolute) => (absolute ? Math.abs(d.ratio) : d.ratio).toLocaleString('cs-CZ',)
   const formatEntity = (d) => d.entity
   const formatQuantityWithEntity = (d, absolute) => html`${formatQuantity(d, absolute)}&nbsp;${formatEntity(d)}`;
 
@@ -160,7 +161,7 @@ export function formatPredicate(d) {
       const between = (d.ratio > 0 && d.ratio < 2);
       result = between
         ? html`${d.agentA} ${d.ratio < 1 ? 'méně' : 'více'} o ${new Fraction(d.ratio > 1 ? d.ratio - 1 : 1 - d.ratio).toFraction()}&nbsp;${formatEntity(d)} než ${d.agentB} `
-        : html`${d.agentA} ${formatQuantity(d, true)} krát ${d.ratio > 0 ? 'více' : 'méně'}&nbsp;${formatEntity(d)} než ${d.agentB} `
+        : html`${d.agentA} ${formatRatioValue(d, true)} krát ${d.ratio > 0 ? 'více' : 'méně'}&nbsp;${formatEntity(d)} než ${d.agentB} `
       break;
     case "comp-diff":
       result = html`${d.agentMinuend} - ${d.agentSubtrahend}=${formatQuantityWithEntity(d)}`
@@ -169,7 +170,7 @@ export function formatPredicate(d) {
       result = html`${formatRatio(d)}=${new Fraction(d.ratio).toFraction()}`;
       break;
     case "ratios":
-      result = d.parts != null ? formatRatios(d) : d.whole != null ? formatAgentEntity(d.whole) : '';
+      result = d.parts != null ? formatRatios(d) : d.whole != null ? d.whole : '';
       break;
     case "sum":
       result = `${d.partAgents?.join(" + ")}`;
@@ -190,7 +191,7 @@ export function formatPredicate(d) {
       result = d.entity;
       break;
     case "common-sense":
-      result = `${d.agent}`
+      result = `${d.description}`
       break;
     default:
       break;
@@ -202,21 +203,12 @@ function formatToBadge({ kind } = {}) {
   return html`<div class="badge">${kind === "cont" ? "C" : kind.toUpperCase()}</div>`
 }
 
+
 function formatRatio(ratio) {
-  const args = { isSameEntity: isSameEntity(ratio) };
-  return `${formatAgentEntity(ratio.part, args)} z ${formatAgentEntity(ratio.whole, args)}`;
+  return `${ratio.part} z ${ratio.whole}`;
 }
 function formatRatios(d) {
-  const isSameAgent = d.parts[0]?.agent === d.parts[1]?.agent;
-  const isSameEntity = d.parts[0]?.entity === d.parts[1]?.entity;
-  return `${d.whole != null ? formatAgentEntity(d.whole, false) : ''} ${d.parts.map(d => formatAgentEntity(d, { isSameAgent, isSameEntity })).join(":")} v poměru ${d.ratios.map(d => d.toLocaleString('cs-CZ')).join(":")}`
-}
-
-function formatAgentEntity(d, { isSameEntity, isSameAgent } = {}) {
-  if (d?.agent == null) return d;
-  if (isSameAgent) return d.entity;
-  if (isSameEntity) return d.agent;
-  return `${d.agent}(${d.entity})`;
+  return `${d.whole != null ? d.whole : ''} ${d.parts.join(":")} v poměru ${d.ratios.map(d => d.toLocaleString('cs-CZ')).join(":")}`
 }
 
 export function inputLabel(id) {

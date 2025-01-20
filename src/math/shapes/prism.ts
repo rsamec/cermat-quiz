@@ -1,5 +1,5 @@
 
-import { compRatio, cont, product, ratio, sum } from "../../components/math.js";
+import { compRatio, cont, product, sum } from "../../components/math.js";
 import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 
@@ -36,7 +36,7 @@ export function examples({ input }: {
         aHeight,
         product("obsah obdelník", [sizeLabel, heightLabel], entity2D, entity)
       ),
-      compRatio("obsah obdelník", "obsah trojúhelník", 2, entity2D),
+      compRatio("obsah obdelník", "obsah trojúhelník", 2),
     )
 
   const dTree1 = dBaseArea;

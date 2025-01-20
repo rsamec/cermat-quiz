@@ -140,7 +140,7 @@ export function examples({ input }: {
   const height = axiomInput(cont(heightLabel, input.height, entity), 2);
   const dRadius = deduce(
     diameter,
-    ratio({ agent: diameterLabel, entity }, { agent: radiusLabel, entity }, 1 / 2)
+    ratio(diameterLabel,radiusLabel, 1 / 2)
   )
 
 

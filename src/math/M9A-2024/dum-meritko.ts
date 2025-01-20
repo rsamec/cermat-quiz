@@ -1,6 +1,6 @@
 
-import { cont, comp, ctor, compDiff, sum, commonSense, rate, ctorRatios, gcd, product, inferenceRule } from "../../components/math.js";
-import { axiomInput, deduce, to } from "../../utils/deduce-utils.js";
+import { cont, ctor, gcd, product } from "../../components/math.js";
+import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 
 interface Params {
@@ -18,7 +18,7 @@ export default function build({ input }: {
   const lengthLabel = "délka"
   const entity = "cm"
   const entity2D = "cm ctverecni"
-  const meritkoLabel = "dum"
+
 
   const width = axiomInput(cont(skutecnost, input.sirkaM * 100, entity), 1);
   const widthOnPlan = axiomInput(cont(plan, input.planSirkaCM, entity), 2);

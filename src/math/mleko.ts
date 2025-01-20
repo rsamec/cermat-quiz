@@ -19,7 +19,7 @@ export default function build({ input }: {
 
   const firstToSecond = comp(firstYear, secondYear, input.zdrazeni, "")
   
-  const second = ratio({agent:secondYear, entity:entity}, {agent:firstYear, entity: entity}, 1 + input.zdrazeni);
+  const second = ratio(secondYear,firstYear, 1 + input.zdrazeni);
   const fig1 = relativePartsDiff(input.zdrazeni, { first: firstYear, second: secondYear });
 
   

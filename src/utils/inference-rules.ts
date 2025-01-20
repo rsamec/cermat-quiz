@@ -32,7 +32,7 @@ export default function rules() {
   }
 
   const ratioCompareRule = (container: Container) => {
-    const a = compRatio("Honzík", "Ája", 3, "sešity");
+    const a = compRatio("Honzík", "Ája", 3);
 
     return {
       premises: [container, a],
@@ -105,7 +105,7 @@ export default function rules() {
   }
 
   const partToWholeRatioRules = (container: Container) => {
-    const r = ratio("studenti", "chlapec", 1 / 4);
+    const r = ratio("třída", "chlapci", 1 / 4);
     return {
       premises: [container, r],
       inputTemplate: html`${container.agent} má ${container.quantity} ${container.entity}. ${r.part} z ${r.whole} = ${r.ratio}`,
@@ -114,7 +114,7 @@ export default function rules() {
   }
 
   const partToPartRatioRules = (container: Container) => {
-    const r = ratios({ agent: "třída", entity: "studenti" }, ["chlapec", "dívka"], [1, 3]);
+    const r = ratios("třída", ["chlapci", "dívky"], [1, 3]);
     return {
       premises: [container, r],
       inputTemplate: html`${container.agent} má ${container.quantity} ${container.entity}. ${r.parts.join(":")} v poměru ${r.ratios.join(":")} z ${r.whole}`,
@@ -133,11 +133,11 @@ export default function rules() {
   return {
     compare: [toCompareRule(a, b), compareRule(a), compareRule(b)],
     ratioCompare: [toRatioCompareRule(a, b), ratioCompareRule(a), ratioCompareRule(b)],
-    partToWholeRatio: [partToWholeRatioRules(cont("třída", 120, "studenti")), partToWholeRatioRules(cont("třída", 30, "chlapec"))],
+    partToWholeRatio: [partToWholeRatioRules(cont("třída", 120, "")), partToWholeRatioRules(cont("chlapci", 30, ""))],
     partToPartRatio: [
 
-      partToPartRatioRules(cont("třída", 120, "studenti")), partToPartRatioRules(cont("třída", 90, "dívka")),
-      deduceRule(cont("třída", 30, "chlapec"), cont("třída", 90, "dívka"), ctorRatios("třída"))
+      partToPartRatioRules(cont("třída", 120, "")), partToPartRatioRules(cont("dívky", 90, "")),
+      deduceRule(cont("chlapci", 30, ""), cont("dívky", 90, ""), ctorRatios("třída"))
     ],
     rate: [
       toFairDivision(cont("Petr", 20, "Kč"), cont("Petr", 5, "rohlík")),

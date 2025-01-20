@@ -1,5 +1,5 @@
-import { cont, compDiff, inferenceRule, ratio, sum, ctor, type Container, comp } from "../../components/math.js";
-import { to, deduce, inputLbl, deduceLbl, axiomInput } from "../../utils/deduce-utils.js";
+import { cont, inferenceRule, ratio, sum, ctor, type Container, comp } from "../../components/math.js";
+import { to, deduce, deduceLbl, axiomInput } from "../../utils/deduce-utils.js";
 import { percentPart } from "../percent/part.js";
 
 
@@ -23,7 +23,7 @@ export function example3({ input }: {
   const percent = cont(agentPercentPart, input.percentageDown, entityPercent)
   const celek = cont(agentPercentBase, 100, entityPercent);
   const dd1 = inferenceRule(percent, celek, ctor('ratio'));
-  const dd1Up = axiomInput(ratio({ agent: "cena po slevě", entity }, { agent: "zdraženo", entity }, input.percentageNewUp / 100), 3)
+  const dd1Up = axiomInput(ratio("cena po slevě", "zdraženo", input.percentageNewUp / 100), 3)
 
   const percentBase = cont(agentPercentBase, input.base, entity)
   const dd2 = inferenceRule(percentBase, dd1);
