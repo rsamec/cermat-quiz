@@ -52,7 +52,7 @@ export default function build({ input }: {
           deduce(
             oneThird,
             ctorRatio(partTotalPrice),
-          ),
+          )
         ),
         oneThird)
     )

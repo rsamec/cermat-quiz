@@ -14,7 +14,7 @@ import { parseQuiz } from './utils/quiz-parser.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, isEmptyOrWhiteSpace } from './utils/quiz-string-utils.js';
 import wordProblems from './math/word-problems.js';
 import { isPredicate } from "./utils/deduce-utils.js";
-import { deduceTraverse, highlightLabel } from './utils/deduce-components.js';
+import { deduceTraverse, highlightLabel, renderChat } from './utils/deduce-components.js';
 import Fraction from 'fraction.js';
 
 const code = observable.params.code;
@@ -62,7 +62,7 @@ const output = ids.map(id => {
       ? html.fragment`
   ${values.map(([key, value]) => html`<div class="card break-inside-avoid-column">
   ${(value.results ?? []).map(d => renderResult(key, d))}
-  ${value.deductionTree != null ? deduceTraverse(value.deductionTree) : ''}
+  ${value.deductionTree != null ? renderChat(value.deductionTree) : ''}  
 </div>`)}
 `: ''}`
 })

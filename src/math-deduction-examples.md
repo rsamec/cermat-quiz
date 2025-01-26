@@ -8,11 +8,11 @@ style: /assets/css/math-deduce.css
 
 ```js
 import {deduce} from './utils/deduce.js';
-import {partion, relativeParts, formatPredicate, relativePartsDiff, deduceTraverse, highlightLabel} from './utils/deduce-components.js';
+import {partion, relativeParts, relativePartsDiff, deduceTraverse, highlightLabel} from './utils/deduce-components.js';
+import { renderChatStepper } from './utils/deduce-chat.js';
 import {inferenceRule, cont, sum, comp, ratio} from './components/math.js';
 import {computeTreeMetrics, jsonToMarkdownTree, highlight} from './utils/deduce-utils.js';
 import mdPlus from './utils/md-utils.js';
-
 //import milkExample from './math/mleko.js';
 
 import cetar from './math/M7A-2023/cetar.js';
@@ -28,6 +28,10 @@ import {example3} from './math/M9A-2024/kolo.js';
 import sourozenci from './math/M9C-2024/sourozenci.js';
 import pocetOb from './math/M9C-2024/pocet-obyvatel.js';
 
+```
+
+```js
+
 function renderChatButton(label, query){
   return html`<a style="height:34px;" href="#" onclick=${(e) => {
                     e.preventDefault();
@@ -35,9 +39,8 @@ function renderChatButton(label, query){
                   }}><img style="height:34px;" src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white&label=${encodeURIComponent(label)}" alt="ChatGPT" /></a>`
 }
 
-
 function renderExample({example, unit, showRelativeValues}={}){
-  const tree = deduceTraverse(example.deductionTree);
+  const tree = deduceTraverse(example.deductionTree);  
   const {depth, width} = computeTreeMetrics(example.deductionTree);
 
   const message =  `
@@ -73,11 +76,6 @@ Vygeneruj 3 různé úlohy v češtině spolu s výsledkem. Nevracej způsob ře
     <div class="card">${example.template(highlightLabel())}</div>
     <div class="h-stack h-stack--m h-stack--wrap">
       <div  class="h-stack h-stack--m h-stack--wrap" style="flex:1">
-        <h3>
-          Dedukční strom
-        </h3>
-        <div class="badge">Hloubka: ${depth}</div>
-        <div class="badge">Šířka: ${width}</div>
       </div>
       <div class="h-stack h-stack--m h-stack--wrap" style="align-items: flex-start;">
         ${renderChatButton("Vysvětli", explainSolution)}
@@ -86,16 +84,9 @@ Vygeneruj 3 různé úlohy v češtině spolu s výsledkem. Nevracej způsob ře
 
       </div>
     </div>
-    <div class="flexible">
-      ${tree}
-    </div>
-    ${example.data != null ? html`<div>
-      <h3>Zobrazení situace</h3>
-      ${partion(example.data, {unit, showRelativeValues})}
-    </div>`:''}
+    ${renderChatStepper(example.deductionTree)}
   </div>`
 }
-
 ```
 
 # Slovní úlohy

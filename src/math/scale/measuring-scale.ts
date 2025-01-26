@@ -1,6 +1,6 @@
 
-import { cont, ctor, gcd } from "../../components/math.js";
-import { axiomInput, deduce } from "../../utils/deduce-utils.js";
+import { cont, ctor, gcd, nthPart } from "../../components/math.js";
+import { axiomInput, deduce, last } from "../../utils/deduce-utils.js";
 
 
 interface Params {
@@ -34,13 +34,15 @@ export default function build({ input }: {
   const dTree2 =
     deduce(
       cont(mapa, 3, entity),
-      dBase
+      last(dBase),
+      nthPart(skutecnost)
     )
 
   const dTree3 =
     deduce(
       cont(skutecnost, 5_000_000, entity),
-      dBase
+      last(dBase),
+      nthPart(mapa)
     )
 
 

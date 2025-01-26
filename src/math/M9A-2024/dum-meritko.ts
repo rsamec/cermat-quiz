@@ -1,6 +1,6 @@
 
-import { cont, ctor, gcd, product } from "../../components/math.js";
-import { axiomInput, deduce } from "../../utils/deduce-utils.js";
+import { commonSense, cont, ctor, ctorRatios, gcd, nthPart, type PartToPartRatio, product, ratios } from "../../components/math.js";
+import { axiomInput, deduce, deduceLbl, last, to } from "../../utils/deduce-utils.js";
 
 
 interface Params {
@@ -20,19 +20,19 @@ export default function build({ input }: {
   const entity2D = "cm ctverecni"
 
 
-  const width = axiomInput(cont(skutecnost, input.sirkaM * 100, entity), 1);
-  const widthOnPlan = axiomInput(cont(plan, input.planSirkaCM, entity), 2);
-  const lengthOnPlan = axiomInput(cont(plan, input.planDelkaDM * 10, entity), 3);
+  const width = axiomInput(cont(`${skutecnost} ${widthLabel}`, input.sirkaM * 100, entity), 1);
+  const widthOnPlan = axiomInput(cont(`${plan} ${widthLabel}`, input.planSirkaCM, entity), 2);
+  const lengthOnPlan = axiomInput(cont(`${plan} ${lengthLabel}`, input.planDelkaDM * 10, entity), 3);
 
 
   const dBase =
     deduce(
       widthOnPlan,
       width,
-      ctor('ratios')
+      ctorRatios("měřítko"),
     )
 
-
+  console.log(dBase);
 
   const dTree1 = deduce(
     dBase,
@@ -40,10 +40,15 @@ export default function build({ input }: {
     ctor("simplify")
   )
 
-
+  const meritko = {...last(dBase) as unknown as PartToPartRatio,...deduceLbl(3)}
   const dTree2 = deduce(
-    cont(plan, 20, entity),
-    dBase,
+    lengthOnPlan,
+    to(
+      meritko,
+      commonSense("měřítko plánu platí pro celý plán, stejně pro šírku a délku domu"),
+      ratios("měřítko", [`${plan} ${lengthLabel}`, `${skutecnost} ${lengthLabel}`], meritko.ratios)
+    ),
+    nthPart(`${skutecnost} ${lengthLabel}`)
   )
 
   const ddSkutecnost = deduce(
@@ -58,16 +63,16 @@ export default function build({ input }: {
   )
 
 
-  const dTree3 = 
-  deduce(
+  const dTree3 =
     deduce(
-      ddPlan,
-      ddSkutecnost,
-      ctor('ratios')
-    ),
-    deduce(ddPlan.children[3], ddSkutecnost.children[3], gcd("nejmenší společný násobek", entity)),
-    ctor("simplify")
-  )
+      deduce(
+        ddPlan,
+        ddSkutecnost,
+        ctorRatios("měřítko"),
+      ),
+      deduce(ddPlan.children[3], ddSkutecnost.children[3], gcd("nejmenší společný násobek", entity)),
+      ctor("simplify")
+    )
 
 
 

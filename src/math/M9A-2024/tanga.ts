@@ -1,7 +1,7 @@
 
 import { commonSense, compRatio, cont, product, type Container } from "../../components/math.js";
-import { axiomInput, deduce, to } from "../../utils/deduce-utils.js";
-import { surfaceBaseAreaIn, surfaceIn } from "../shapes/cylinder.js"
+import { axiomInput, deduce, last, to } from "../../utils/deduce-utils.js";
+import { surfaceBaseArea, surfaceBaseAreaIn, surfaceIn } from "../shapes/cylinder.js"
 
 
 interface Params {
@@ -22,11 +22,11 @@ export default function build({ input }: {
 
 
   const width = axiomInput(cont(`tanga šířka`, input.tangaWidth, entity), 1)
-  const ratio = compRatio(`tanga šířka`, radiusLabel, 2, entity)
+  const ratio = compRatio(`tanga šířka`, radiusLabel, 2)
   const dRadius = deduce(width, ratio);
 
 
-  const dCircle = surfaceBaseAreaIn({ input: dRadius }, {
+  const dCircle = surfaceBaseArea({ radius: last(dRadius) }, {
     surfaceBaseAreaLabel: circleLabel,
     entity2D: entity2d
   });
@@ -44,7 +44,7 @@ export default function build({ input }: {
       cont(`2 krát ${circelPartLabel}`, 2, ""),
       deduce(
         dCircle,
-        compRatio(circleLabel, circelPartLabel, 4, entity2d)),
+        compRatio(circleLabel, circelPartLabel, 4)),
 
       product(`dvojice ${circelPartLabel}`, [], entity2d, entity2d)
     )

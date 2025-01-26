@@ -31,28 +31,26 @@ export function example3({ input }: {
   const sleva = comp(agentPercentBase, "cena po slevě", dd2.kind === 'cont' && dd2.quantity, entity)
   const dd3 = inferenceRule(sleva, percentBase);
 
-  const dd4 = inferenceRule(dd3, dd1Up);
 
   const soucet = sum("konečná cena", ["cena po slevě", "zdraženo"], entity, entity);
-  const dd5 = inferenceRule(dd3, dd4, soucet)
 
 
+  const percentage = axiomInput(cont(agentPercentPart, input.percentageDown, entityPercent), 2);
+  const base = axiomInput(cont(agentPercentBase, input.base, entity), 1);
 
-  const percentage1 = axiomInput(cont(agentPercentPart, input.percentageDown, entityPercent), 2);
-  const base1 = axiomInput(cont(agentPercentBase, input.base, entity), 1);
+  const slevaPart = percentPart({ base: base, percentage: percentage });
 
-  const dBase1 = percentPart({ base: base1, percentage: percentage1 });
-
+  //const deductionTree = to(slevaPart, sleva);
 
   const deductionTree =
     deduce(
       deduce(
         deduce(
           to(
-            dBase1,
+            slevaPart,
             sleva
           ),
-          base1,
+          base,
         ),
         dd1Up,
       ),

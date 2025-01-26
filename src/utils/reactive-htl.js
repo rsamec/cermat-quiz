@@ -149,7 +149,6 @@ function processSpecial(process, node, name, value, fragment) {
           }),
         );
       } else if (isForEachExpr(value)) {
-        console.log("For.....")
         const insertionMarker = node.parentNode.insertBefore(document.createComment(' '), node);
         const { forEachExpr: signalExpr, template } = value;
         let lastValue = [];
@@ -158,12 +157,8 @@ function processSpecial(process, node, name, value, fragment) {
         removeEffects.push(
           effect(() => {
             const currentValue = signalExpr.value;
-            //console.log(currentValue);
-            //console.log(map);
             if (Array.isArray(currentValue) && Array.isArray(lastValue)) {
               const actions = listDiff(lastValue, currentValue);
-              //console.log(actions)
-              console.log(actions, lastValue, currentValue);
 
               for (let action of actions) {
                 if (action.type == "add") {
@@ -224,7 +219,6 @@ function refreshIndexMap(map, current) {
   for(let i=0; i!=current.length;i++){
     map.get(current[i]).value = i;
   }
-  console.log(map);
 }
 
 function isForEachExpr(value) {

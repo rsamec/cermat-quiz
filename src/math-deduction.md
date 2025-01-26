@@ -8,9 +8,9 @@ style: /assets/css/math-deduce.css
 
 ```js
 import {deduce} from './utils/deduce.js';
-import {partion, relativeParts, formatPredicate, relativePartsDiff, highlightLabel, deduceTraverse} from './utils/deduce-components.js';
+import {partion, relativeParts, relativePartsDiff, highlightLabel, deduceTraverse, formatting} from './utils/deduce-components.js';
 import {inferenceRule,cont,sum, comp, ratio, compDiff} from './components/math.js';
-import {computeTreeMetrics} from './utils/deduce-utils.js';
+import {computeTreeMetrics, formatPredicate} from './utils/deduce-utils.js';
 
 import allRules from './utils/inference-rules.js';
 import slepice from './math/slepice.js';
@@ -74,11 +74,11 @@ function renderExample({example, unit, showRelativeValues}={}){
 
 function renderRules(rules){
   return html`<div  class="grid grid-cols-3">${rules.map(rule  => {
-    const ddRule = inferenceRule(...rule.premises);    
+    const ddRule = inferenceRule(...rule.premises);
     return html`<div> 
       <div class="card">
       
-      ${deduce(...rule.premises.flatMap(d => d).map(d => formatPredicate(d)),formatPredicate(ddRule))}
+      ${deduce(...rule.premises.flatMap(d => d).map(d => formatPredicate(d,formatting)),formatPredicate(ddRule,formatting))}
       </div>
      
     </div>`

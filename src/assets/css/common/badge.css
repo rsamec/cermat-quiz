@@ -19,6 +19,12 @@
   color: var(--theme-red);
 }
 
+.badge--success {
+  background-color: color-mix(in srgb, var(--theme-green), var(--theme-background) 90%);
+  color: var(--theme-green);
+}
+
+
 
 .badge--input {
   background-color: color-mix(in srgb, var(--theme-blue), var(--theme-background) 70%);

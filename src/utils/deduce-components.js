@@ -1,8 +1,8 @@
 import { html } from "npm:htl";
 import * as Plot from "npm:@observablehq/plot";
 import Fraction from 'npm:fraction.js';
-import { nthQuadraticElements } from "../components/math.js";
-import { isPredicate } from "../utils/deduce-utils.js";
+import { inferenceRuleWithQuestion, nthQuadraticElements } from "../components/math.js";
+import { isPredicate, formatPredicate } from "../utils/deduce-utils.js";
 import { deduce } from "./deduce.js";
 
 export function partion(items, options) {
@@ -109,8 +109,19 @@ export function relativePartsDiff(d, options) {
 function label(d) {
   return html`<div class=${`badge badge--${d.kind}`} >${d.id}</div>`
 }
-export function formatNode(t, label) {
-  const res = html`${label != null ? label : ''}&nbsp;${t?.kind != null ? formatPredicate(t) : t}`
+
+export const formatting = {
+  compose: (strings, ...args) => concatHtml(strings, ...args),
+  formatKind: d => html`<div class="badge">${d.kind === "cont" ? "C" : d.kind.toUpperCase()}</div>`,
+  formatQuantity: d => d.toLocaleString('cs-CZ'),
+  formatRatio: d => new Fraction(d).toFraction(),
+  formatEntity: d => d,
+  formatAgent: d => html`<b>${d}</b>`,
+  formatSequence: d => `${d.type}`
+}
+
+export function formatNode(t, label, format= formatting) {
+  const res = html`${label != null ? label : ''} ${t?.kind != null ? formatPredicate(t, format) : t}`
   if (t.collapsible) {
     res._collapsible = t.collapsible
   }
@@ -139,77 +150,8 @@ function formatSequence(type) {
     return html`${type.sequence.join()} => a<sub>n</sub> = ${simplify(type.sequence[0], '*')}${type.commonRatio}<sup>(n-1)</sup>`;
   }
 }
-export function formatPredicate(d) {
-  const formatQuantity = (d, absolute) => (absolute ? Math.abs(d.quantity) : d.quantity).toLocaleString('cs-CZ',)
-  const formatRatioValue = (d, absolute) => (absolute ? Math.abs(d.ratio) : d.ratio).toLocaleString('cs-CZ',)
-  const formatEntity = (d) => d.entity
-  const formatQuantityWithEntity = (d, absolute) => html`${formatQuantity(d, absolute)}&nbsp;${formatEntity(d)}`;
-
-  if ((d.kind == "ratio" || d.kind === "comp-ratio" || d.kind === "rate" || d.kind === "quota" || d.kind === "comp-diff" || d.kind === "comp-part-eq") && (d.quantity == null && d.ratio == null)) {
-    return formatToBadge(d);
-  }
-
-  let result = ''
-  switch (d.kind) {
-    case "cont":
-      result = html`${d.agent}=${formatQuantityWithEntity(d)}`;
-      break;
-    case "comp":
-      result = html`${d.agentA} ${d.quantity > 0 ? 'více' : 'méně'} než ${d.agentB} o ${formatQuantityWithEntity(d, true)}`
-      break;
-    case "comp-ratio":
-      const between = (d.ratio > 0 && d.ratio < 2);
-      result = between
-        ? html`${d.agentA} ${d.ratio < 1 ? 'méně' : 'více'} o ${new Fraction(d.ratio > 1 ? d.ratio - 1 : 1 - d.ratio).toFraction()}&nbsp;${formatEntity(d)} než ${d.agentB} `
-        : html`${d.agentA} ${formatRatioValue(d, true)} krát ${d.ratio > 0 ? 'více' : 'méně'}&nbsp;${formatEntity(d)} než ${d.agentB} `
-      break;
-    case "comp-diff":
-      result = html`${d.agentMinuend} - ${d.agentSubtrahend}=${formatQuantityWithEntity(d)}`
-      break;
-    case "ratio":
-      result = html`${formatRatio(d)}=${new Fraction(d.ratio).toFraction()}`;
-      break;
-    case "ratios":
-      result = d.parts != null ? formatRatios(d) : d.whole != null ? d.whole : '';
-      break;
-    case "sum":
-      result = `${d.partAgents?.join(" + ")}`;
-      break;
-    case "product":
-      result = `${d.partAgents?.join(" * ")}`;
-      break;
-    case "rate":
-      result = `${d.quantity} ${d.entity?.entity} per ${d.entityBase?.entity}`
-      break;
-    case "quota":
-      result = `${d.agent} rozděleno na ${d.quantity} ${d.agentQuota} ${d.restQuantity !== 0 ? ` se zbytkem ${d.restQuantity}` : ''}`
-      break;
-    case "sequence":
-      result = d.type != null ? formatSequence(d.type) : ''
-      break;
-    case "nth":
-      result = d.entity;
-      break;
-    case "common-sense":
-      result = `${d.description}`
-      break;
-    default:
-      break;
-  }
-  return html`${formatToBadge(d)} ${result}`;
-}
-
-function formatToBadge({ kind } = {}) {
-  return html`<div class="badge">${kind === "cont" ? "C" : kind.toUpperCase()}</div>`
-}
 
 
-function formatRatio(ratio) {
-  return `${ratio.part} z ${ratio.whole}`;
-}
-function formatRatios(d) {
-  return `${d.whole != null ? d.whole : ''} ${d.parts.join(":")} v poměru ${d.ratios.map(d => d.toLocaleString('cs-CZ')).join(":")}`
-}
 
 export function inputLabel(id) {
   return label({ id, kind: 'input' })
@@ -237,6 +179,7 @@ export function highlightLabel(startNumber = 1) {
     return formattedString;
   }
 }
+
 export function highlight(strings, ...substitutions) {
   const formattedString = strings.reduce((acc, curr, i) => {
     const substitution = substitutions[i];
@@ -245,6 +188,19 @@ export function highlight(strings, ...substitutions) {
       ? html`${curr}<span class="highlight">${substitution}</span>`
       : curr;
     return html`${acc}${res}`;
+  }, '');
+
+  return formattedString;
+}
+
+function concatHtml(strings, ...substitutions) {
+  const formattedString = strings.reduce((acc, curr, i) => {
+    const substitution = substitutions[i];
+
+    const res = substitution
+      ? html.fragment`${curr}${substitution}`
+      : curr;
+    return html.fragment`${acc}${res}`;
   }, '');
 
   return formattedString;
@@ -288,11 +244,11 @@ export function deduceTraverse(node) {
 
         if (!isLast) {
           if (newChild?.kind === "ratio" && newChild?.ratio != null) {
-            args.push(relativePartsDiff(-(1 - newChild.ratio), {  first: toAgent(newChild.part), second: toAgent(newChild.whole)}))
+            args.push(relativePartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole) }))
           }
-          else if (newChild?.kind === "ratios" && newChild?.ratios?.length === 2) {
-            args.push(relativeParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
-          }
+          // else if (newChild?.kind === "ratios" && newChild?.ratios?.length === 2) {
+          //   args.push(relativeParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
+          // }
           else if (newChild?.kind === "comp-ratio" && newChild?.ratio != null) {
             args.push(relativePartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: newChild.agentB }))
           }
@@ -308,6 +264,118 @@ export function deduceTraverse(node) {
   }
   return deduceTraverseEx(node)
 }
+
+export function stepsTraverse(node) {
+  let counter = 1;
+  const deduceMap = new Map();
+
+  const flatStructure = [];
+  function traverseEx(node) {
+
+    // Base case: if the node is a leaf, add it to the result  
+    if (isPredicate(node)) {
+      return formatNode(node, node.labelKind === "input"
+        ? inputLabel(node.label)
+        : node.labelKind === "deduce"
+          ? deduceLabel(node.label)
+          : null, {...formatting,formatKind: d => ''});
+    }
+    if (node.tagName === "FIGURE") {
+      return node;
+    }
+
+    const args = []
+    let question = null
+    // Recursive case: traverse each child
+    if (node.children) {
+      let i = 0;
+      for (const child of node.children) {
+        const isLast = node.children.length === ++i;
+        let newChild;
+        if (isLast && isPredicate(child) && !deduceMap.has(child)) {
+          newChild = { ...child, ...{ labelKind: 'deduce', label: counter++ } }
+          deduceMap.set(child, newChild)
+        }
+        else {
+          newChild = deduceMap.has(child) ? deduceMap.get(child) : child;
+        }
+
+        if (isLast) {
+          const children = node.children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]);
+          const result = children.length > 2 ? inferenceRuleWithQuestion(...children.slice(0, -1)): null;
+          question = result;
+        }
+        else {
+          question = null;
+        }
+
+        const res = traverseEx(newChild);
+
+
+        args.push(res)
+        //args.push(Array.isArray(res) && res.length > 1 ? {premises: res.slice(0, -1), conlusion:res[res.length - 1]} : res);
+
+        if (!isLast) {
+          if (newChild?.kind === "ratio" && newChild?.ratio != null) {
+            args.push(relativePartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole) }))
+          }
+          // else if (newChild?.kind === "ratios" && newChild?.ratios?.length === 2) {
+          //   args.push(relativeParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
+          // }
+          else if (newChild?.kind === "comp-ratio" && newChild?.ratio != null) {
+            args.push(relativePartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: newChild.agentB }))
+          }
+        }
+
+      }
+
+      // Add a group containing the parent and its children
+      const arr = normalizeToArray(args).map(d => {
+        return Array.isArray(d) ? d[d.length - 1]: d
+    });
+      
+      const premises = arr.slice(0,-1);
+      //const questions = premises.filter(d => d?.result != null)
+      const conclusion = arr[arr.length -1];
+      flatStructure.push({premises,conclusion, questions:[question]});
+
+    }
+
+    // You can process the current node itself here if needed
+    // For example, add something from the node to `result`.
+    return args; //html`<div class="v-stack v-stack--l"><div>${args.slice(0, args.length - 1).map(d => html.fragment`${d}`)}</div> <div style="opacity:0.4">${args[args.length - 1]}</div></div>`;
+  }
+  traverseEx(node)
+  return flatStructure;
+}
+function normalizeToArray(d) {
+  return Array.isArray(d) ? d : [d]
+}
 function toAgent(d) {
   return d?.agent ?? d;
+}
+
+
+
+export function renderChat(deductionTree){
+  const steps = stepsTraverse(deductionTree).map((d,i) => ({...d, index:i}));
+
+  return html`<div class="chat">${
+    steps.map(({premises, conclusion, questions}, i) => {
+      const q = questions[0];
+      const answer = q?.options?.find(d => d.ok)
+      return html`<div class="messages">
+        <div class='message v-stack v-stack--s'>${premises.map(d => d)}</div>
+        ${q != null ? html`<div class='message agent v-stack v-stack--s'>
+          <div>${q?.question}</div>
+          ${answer != null ? html`<div>${answer.tex} = ${answer.result}</div>`:''}
+        </div>`:''
+        }
+        ${steps.length == i + 1 ? html`<div class='message'>${conclusion}</div>`:''}
+      </div>
+    </div>`
+  }
+)
+  }`
+
 }

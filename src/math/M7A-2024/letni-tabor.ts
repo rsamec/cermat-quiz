@@ -1,6 +1,6 @@
 
-import { cont, inferenceRule, rate, sum, ctor } from "../../components/math.js";
-import { axiomInput, deduce, deduceLbl, to } from "../../utils/deduce-utils.js";
+import { cont, inferenceRule, rate, sum, ctor, type RatioComparison } from "../../components/math.js";
+import { axiomInput, deduce, deduceLbl, last, to } from "../../utils/deduce-utils.js";
 
 
 interface PercentPartParams {
@@ -20,7 +20,6 @@ export default function build({ input }: {
   const vedouciLabel = "vedoucí";
   const instruktorLabel = "instruktor";
   const diteLabel = "dítě";
-  const stanLabel = "stanLabel";
   const entity = "osob";
 
 
@@ -30,51 +29,41 @@ export default function build({ input }: {
   const instruktorPerVedouci = axiomInput(rate(agent, input.instruktorPerVedouci, instruktorLabel, vedouciLabel), 4);
   const ditePerInstruktor = axiomInput(rate(agent, input.ditePerInstruktor, diteLabel, instruktorLabel), 5);
 
-  const dd1 = inferenceRule(zdravotnik, kucharPerZdravotnik) as any;
-  const dd2 = inferenceRule(dd1, vedouciPerKuchar) as any;
-  const dd3 = inferenceRule(dd2, instruktorPerVedouci) as any;
 
 
-  const instruktorAVedouci = sum("vedoucích a instruktorů", [vedouciLabel, instruktorLabel], entity, entity);
-
-
-  const ddBase = () => deduce(
-    deduce(
-      deduce(
-        zdravotnik,
-        kucharPerZdravotnik,
-      ),
-      vedouciPerKuchar,
-    ),
+  const kuchari = deduce(
+    zdravotnik,
+    kucharPerZdravotnik,
+  )
+  const vedouci = deduce(
+    kuchari,
+    vedouciPerKuchar,
+  )
+  const instruktori = deduce(
+    vedouci,
     instruktorPerVedouci,
   )
 
-  const tree1dd4 = inferenceRule(dd3, dd2, instruktorAVedouci);
   const dTree1 = deduce(
-    ddBase(),
-    { ...dd2, ...deduceLbl(2) },
-    instruktorAVedouci)
-
-
-
-  const tree2dd4 = inferenceRule(
-    { ...dd1, entity: 'osob' },
-    { ...dd3, entity: 'osob' },
-    ctor('comp-ratio')
-  );
-  const dTree2 = to(
-    {...dd1, ...deduceLbl(1)},
-    ddBase(),
-    tree2dd4,
-
+    instruktori,
+    last(vedouci),
+    sum("vedoucích a instruktorů", [vedouciLabel, instruktorLabel], entity, entity)
   )
+  const dTree1Result = last(dTree1);
 
-  const tree3dd4 = inferenceRule(dd3, ditePerInstruktor)
+  const dTree2 = deduce(
+    last(kuchari),
+    instruktori,
+    ctor('comp-ratio')
+  )
+  const dTree2Result = last(dTree2) as unknown as RatioComparison;
+
+
   const dTree3 = deduce(
-    ddBase(),
+    instruktori,
     ditePerInstruktor,
   )
-
+  const dTree3Result = last(dTree3);
 
 
   const templateBase = (highlight) =>
@@ -87,14 +76,14 @@ export default function build({ input }: {
 
 
   const template1 = (html) => html`<br/>
-     <strong>Na táboře je dohromady ${tree1dd4.kind == "cont" && tree1dd4.quantity} vedoucích a instruktorů?</strong>`;
+     <strong>Na táboře je dohromady ${dTree1Result.quantity} vedoucích a instruktorů?</strong>`;
 
   const template2 = (html) => html`<br/>
-     <strong>Instruktorů je ${tree2dd4.kind == "comp-ratio" && tree2dd4.ratio} krát více než kuchařek.?</strong>`;
+     <strong>Instruktorů je ${dTree2Result.ratio} krát více než kuchařek.?</strong>`;
 
 
   const template3 = (html) => html`<br/>
-    <strong>Na táboře je celkem ${tree3dd4.kind == "cont" && tree3dd4.quantity} dětí?</strong>`;
+    <strong>Na táboře je celkem ${dTree3Result.quantity} dětí?</strong>`;
 
   return [
     { deductionTree: dTree1, template: highlight => highlight`${() => templateBase(highlight)}${template1}` },
