@@ -485,13 +485,36 @@ function productRule(items: Container[], b: ProductCombine): Question {
 }
 
 
-function gcdRule(items: Container[], b: GCD): Container {
+function gcdRuleEx(items: Container[], b: GCD): Container {
   return { kind: 'cont', agent: b.agent, quantity: gcdCalc(items.map(d => d.quantity)), entity: b.entity }
 }
-function lcdRule(items: Container[], b: LCD): Container {
+function gcdRule(items: Container[], b: GCD): Question {
+  const result = gcdRuleEx(items, b)
+  const factors = primeFactorization(items.map(d =>d.quantity))
+  return {
+    question: combineQuestion(result),
+    result,
+    options: [
+      { tex: gcdFromPrimeFactors(factors).join(" * "), result: formatNumber(result.quantity), ok: true },
+      { tex: lcdFromPrimeFactors(factors).join(" * "), result: formatNumber(lcdFromPrimeFactors(factors).reduce((out,d) => out+=d,0)), ok: false },
+    ]
+  }
+}
+function lcdRuleEx(items: Container[], b: LCD): Container {
   return { kind: 'cont', agent: b.agent, quantity: lcdCalc(items.map(d => d.quantity)), entity: b.entity }
 }
-
+function lcdRule(items: Container[], b: GCD): Question {
+  const result = lcdRuleEx(items, b)
+  const factors = primeFactorization(items.map(d =>d.quantity))
+  return {
+    question: combineQuestion(result),
+    result,
+    options: [
+      { tex: lcdFromPrimeFactors(factors).join(" * "), result: formatNumber(result.quantity), ok: true },
+      { tex: gcdFromPrimeFactors(factors).join(" * "), result: formatNumber(gcdFromPrimeFactors(factors).reduce((out,d) => out+=d,0)), ok: false },
+    ]
+  }
+}
 function sequenceRule(items: Container[]): Sequence {
   if (new Set(items.map(d => d.entity)).size > 1) {
     throw `Mismatch entity ${items.map(d => d.entity).join()}`
@@ -685,8 +708,18 @@ function partToPartRule(a: Container, parts: PartToPartRatio, nth?: NthPart): Qu
   }
 }
 
-function mapRatiosByFactor(multi: PartToPartRatio, quantity: number) {
+function mapRatiosByFactorEx(multi: PartToPartRatio, quantity: number) {
   return { ...multi, ratios: multi.ratios.map(d => d * quantity) }
+}
+function mapRatiosByFactor(multi: PartToPartRatio, quantity: number): Question {
+  const result = mapRatiosByFactorEx(multi, quantity)
+
+  return {
+    question: "Zjednoduš",
+    result,
+    options: []
+      
+  }
 }
 
 function matchAgent(d: AgentMatcher, a: Container) {
@@ -1010,7 +1043,7 @@ function findPositionInQuadraticSequence(
 }
 
 function formatNumber(d: number) {
-  return d.toLocaleString("cs-Cz")
+  return d.toLocaleString("cs-CZ")
 }
 
 function formatRatio(d: number) {
@@ -1028,4 +1061,77 @@ function combineQuestion(d: Container) {
 
 function toGenerAgent(a: Container, entity: string = "") {
   return cont(a.entity, a.quantity, entity);
+}
+
+export function primeFactorization(numbers: number[]): number[][] {
+  const getPrimeFactors = (num: number): number[] => {
+    const factors: number[] = [];
+    let divisor = 2;
+
+    while (num >= 2) {
+      while (num % divisor === 0) {
+        factors.push(divisor);
+        num = num / divisor;
+      }
+      divisor++;
+    }
+
+    return factors;
+  };
+
+  return numbers.map(getPrimeFactors);
+}
+
+function gcdFromPrimeFactors(primeFactors: number[][]): number[] {
+  const intersection = (arr1: number[], arr2: number[]): number[] => {
+    const result: number[] = [];
+    const countMap = new Map<number, number>();
+
+    // Count occurrences of elements in the first array
+    for (const num of arr1) {
+      countMap.set(num, (countMap.get(num) || 0) + 1);
+    }
+
+    // For each element in the second array, check if it exists in the map
+    for (const num of arr2) {
+      if (countMap.get(num)) {
+        result.push(num);
+        countMap.set(num, countMap.get(num)! - 1); // Decrement the count
+      }
+    }
+
+    return result;
+  };
+
+  // Reduce the arrays by applying the intersection function iteratively
+  return primeFactors.reduce((acc, curr) => intersection(acc, curr), primeFactors[0] || []);
+}
+
+function lcdFromPrimeFactors(primeFactors: number[][]): number[] {
+  const union = (arr1: number[], arr2: number[]): number[] => {
+    const result: number[] = [];
+    const countMap = new Map<number, number>();
+
+    // Count the occurrences of elements in the first array
+    for (const num of arr1) {
+      countMap.set(num, (countMap.get(num) || 0) + 1);
+    }
+
+    // Update the map with the maximum count from the second array
+    for (const num of arr2) {
+      countMap.set(num, Math.max(countMap.get(num) || 0, (countMap.get(num) || 0) + 1));
+    }
+
+    // Add the prime factors with their maximum occurrences to the result
+    for (const [num, count] of countMap.entries()) {
+      for (let i = 0; i < count; i++) {
+        result.push(num);
+      }
+    }
+
+    return result;
+  };
+
+  // Reduce the arrays by applying the union function iteratively
+  return primeFactors.reduce((acc, curr) => union(acc, curr), []);
 }

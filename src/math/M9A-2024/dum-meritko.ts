@@ -40,7 +40,7 @@ export default function build({ input }: {
     ctor("simplify")
   )
 
-  const meritko = {...last(dBase) as unknown as PartToPartRatio,...deduceLbl(3)}
+  const meritko = {...last(dTree1) as unknown as PartToPartRatio,...deduceLbl(3)}
   const dTree2 = deduce(
     lengthOnPlan,
     to(

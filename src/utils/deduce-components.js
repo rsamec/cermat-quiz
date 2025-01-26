@@ -1,7 +1,7 @@
 import { html } from "npm:htl";
 import * as Plot from "npm:@observablehq/plot";
 import Fraction from 'npm:fraction.js';
-import { inferenceRuleWithQuestion, nthQuadraticElements } from "../components/math.js";
+import { inferenceRuleWithQuestion, nthQuadraticElements, primeFactorization } from "../components/math.js";
 import { isPredicate, formatPredicate } from "../utils/deduce-utils.js";
 import { deduce } from "./deduce.js";
 
@@ -249,6 +249,10 @@ export function deduceTraverse(node) {
           // else if (newChild?.kind === "ratios" && newChild?.ratios?.length === 2) {
           //   args.push(relativeParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
           // }
+          if (newChild?.kind === "gcd" || newChild?.kind === "lcd") {
+            const numbers = node.children.slice(0,-2).map(d => d.quantity);            
+            args.push(html`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d,i) => html`<div>${numbers[i]} = ${d.join()}</div>`)}</div>`)
+          }
           else if (newChild?.kind === "comp-ratio" && newChild?.ratio != null) {
             args.push(relativePartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: newChild.agentB }))
           }
@@ -322,6 +326,10 @@ export function stepsTraverse(node) {
           // else if (newChild?.kind === "ratios" && newChild?.ratios?.length === 2) {
           //   args.push(relativeParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
           // }
+          if (newChild?.kind === "gcd" || newChild?.kind === "lcd") {
+            const numbers = node.children.slice(0,-2).map(d => d.quantity);            
+            args.push(html`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d,i) => html`<div>${formatNumber(numbers[i])} = ${d.join()}</div>`)}</div>`)
+          }
           else if (newChild?.kind === "comp-ratio" && newChild?.ratio != null) {
             args.push(relativePartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: newChild.agentB }))
           }
@@ -354,7 +362,9 @@ function normalizeToArray(d) {
 function toAgent(d) {
   return d?.agent ?? d;
 }
-
+function formatNumber(d){
+  return d.toLocaleString("cs-CZ")
+}
 
 
 export function renderChat(deductionTree){
