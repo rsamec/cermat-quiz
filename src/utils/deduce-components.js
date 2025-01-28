@@ -120,7 +120,7 @@ export const formatting = {
   formatSequence: d => `${d.type}`
 }
 
-export function formatNode(t, label, format= formatting) {
+export function formatNode(t, label, format = formatting) {
   const res = html`${label != null ? label : ''} ${t?.kind != null ? formatPredicate(t, format) : t}`
   if (t.collapsible) {
     res._collapsible = t.collapsible
@@ -250,8 +250,8 @@ export function deduceTraverse(node) {
           //   args.push(relativeParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
           // }
           if (newChild?.kind === "gcd" || newChild?.kind === "lcd") {
-            const numbers = node.children.slice(0,-2).map(d => d.quantity);            
-            args.push(html`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d,i) => html`<div>${numbers[i]} = ${d.join()}</div>`)}</div>`)
+            const numbers = node.children.slice(0, -2).map(d => d.quantity);
+            args.push(html`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d, i) => html`<div>${numbers[i]} = ${d.join()}</div>`)}</div>`)
           }
           else if (newChild?.kind === "comp-ratio" && newChild?.ratio != null) {
             args.push(relativePartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: newChild.agentB }))
@@ -282,7 +282,7 @@ export function stepsTraverse(node) {
         ? inputLabel(node.label)
         : node.labelKind === "deduce"
           ? deduceLabel(node.label)
-          : null, {...formatting,formatKind: d => ''});
+          : null, { ...formatting, formatKind: d => '' });
     }
     if (node.tagName === "FIGURE") {
       return node;
@@ -306,7 +306,7 @@ export function stepsTraverse(node) {
 
         if (isLast) {
           const children = node.children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]);
-          const result = children.length > 2 ? inferenceRuleWithQuestion(...children.slice(0, -1)): null;
+          const result = children.length > 2 ? inferenceRuleWithQuestion(...children.slice(0, -1)) : null;
           question = result;
         }
         else {
@@ -327,8 +327,8 @@ export function stepsTraverse(node) {
           //   args.push(relativeParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
           // }
           if (newChild?.kind === "gcd" || newChild?.kind === "lcd") {
-            const numbers = node.children.slice(0,-2).map(d => d.quantity);
-            args.push(html`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d,i) => html`<div>${formatNumber(numbers[i])} = ${d.join()}</div>`)}</div>`)
+            const numbers = node.children.slice(0, -2).map(d => d.quantity);
+            args.push(html`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d, i) => html`<div>${formatNumber(numbers[i])} = ${d.join()}</div>`)}</div>`)
           }
           else if (newChild?.kind === "comp-ratio" && newChild?.ratio != null) {
             args.push(relativePartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: newChild.agentB }))
@@ -339,13 +339,13 @@ export function stepsTraverse(node) {
 
       // Add a group containing the parent and its children
       const arr = normalizeToArray(args).map(d => {
-        return Array.isArray(d) ? d[d.length - 1]: d
-    });
-      
-      const premises = arr.slice(0,-1);
+        return Array.isArray(d) ? d[d.length - 1] : d
+      });
+
+      const premises = arr.slice(0, -1);
       //const questions = premises.filter(d => d?.result != null)
-      const conclusion = arr[arr.length -1];
-      flatStructure.push({premises,conclusion, questions:[question]});
+      const conclusion = arr[arr.length - 1];
+      flatStructure.push({ premises, conclusion, questions: [question] });
 
     }
 
@@ -362,30 +362,26 @@ function normalizeToArray(d) {
 function toAgent(d) {
   return d?.agent ?? d;
 }
-function formatNumber(d){
+function formatNumber(d) {
   return d.toLocaleString("cs-CZ")
 }
 
 
-export function renderChat(deductionTree){
-  const steps = stepsTraverse(deductionTree).map((d,i) => ({...d, index:i}));
+export function renderChat(deductionTree) {
+  const steps = stepsTraverse(deductionTree).map((d, i) => ({ ...d, index: i }));
 
-  return html`<div class="chat">${
-    steps.map(({premises, conclusion, questions}, i) => {
-      const q = questions[0];
-      const answer = q?.options?.find(d => d.ok)
-      return html`<div class="messages">
+  return html`<div class="chat">${steps.map(({ premises, conclusion, questions }, i) => {
+    const q = questions[0];
+    const answer = q?.options?.find(d => d.ok)
+    return html`<div class="messages">
         <div class='message v-stack v-stack--s'>${premises.map(d => d)}</div>
         ${q != null ? html`<div class='message agent v-stack v-stack--s'>
           <div>${q?.question}</div>
-          ${answer != null ? html`<div>${answer.tex} = ${answer.result}</div>`:''}
-        </div>`:''
-        }
-        ${steps.length == i + 1 ? html`<div class='message'>${conclusion}</div>`:''}
+          ${answer != null ? html`<div>${answer.tex} = ${answer.result}</div>` : ''}
+        </div>`: ''
+      }
+        ${steps.length == i + 1 ? html`<div class='message'>${conclusion}</div>` : ''}
       </div>
     </div>`
-  }
-)
-  }`
-
+  })}`
 }

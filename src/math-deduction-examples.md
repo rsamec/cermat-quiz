@@ -11,7 +11,7 @@ import {deduce} from './utils/deduce.js';
 import {partion, relativeParts, relativePartsDiff, deduceTraverse, highlightLabel} from './utils/deduce-components.js';
 import { renderChatStepper } from './utils/deduce-chat.js';
 import {inferenceRule, cont, sum, comp, ratio} from './components/math.js';
-import {computeTreeMetrics, jsonToMarkdownTree, highlight} from './utils/deduce-utils.js';
+import {computeTreeMetrics, jsonToMarkdownTree, jsonToMarkdownChat, highlight} from './utils/deduce-utils.js';
 import mdPlus from './utils/md-utils.js';
 //import milkExample from './math/mleko.js';
 
@@ -53,21 +53,33 @@ Výsledek úlohy získáme průchodem stromu do hloubky (post-order), tj. apliku
 
 ${jsonToMarkdownTree(example.deductionTree).join("")}`
 
-const explainSolution = `${message}
-Můžeš vysvětlit podrobné řešení krok po kroku v češtině. Pro postup řešení použíj údaje z dedukčního stromu.
-`
+  const alternateMessage = `
+Zadání úlohy je 
 
-const vizualizeSolution = `${message}
-Můžeš vytvořit vizualizaci ve formě obrázku. Např. ve formě přehledné infografiky. Pro vytvoření vizualizace použíj údaje z dedukčního stromu.
-`
-const generateMoreQuizes = `${message}
-Můžeš vymyslet novou úlohu v jiné doméně, která půjde řešit stejným dedukčním stromem, tj. zachovat vztahy v dedukčním stromě, ale změnit
+${example.template(highlight)}
+
+Řešení úlohy je popsáno heslovitě po jednotlivých krocích. Správný výsledek je uveden jako poslední krok.
+
+${jsonToMarkdownChat(example.deductionTree).join("\n---\n")}`
+
+
+const explainSolution = `${alternateMessage}
+Můžeš vysvětlit podrobné řešení krok po kroku v češtině.`
+
+const vizualizeSolution = `${alternateMessage}
+Můžeš vytvořit vizualizaci, která popisuje situaci, resp. řešení ve formě obrázku. Např. ve formě přehledné infografiky.`
+
+const generateMoreQuizes = `${alternateMessage}
+Můžeš vymyslet novou úlohu v jiné doméně, která půjde řešit stejným postupem řešení 
 - změnit agent - identifikovány pomocí markdown bold **
 - změna entit - identifikace pomocí markdown bold __
 - změnu parametry úlohy - identifikovány pomocí italic *
 
 Změn agenty, entity a parametry úlohy tak aby byly z jiné, pokud možno netradiční domény.
-Vygeneruj 3 různé úlohy v češtině spolu s výsledkem. Nevracej způsob řešení, kroky řešení.`
+Vygeneruj 3 různé úlohy v češtině spolu s výsledkem. 
+Použij jiné vstupní parametry tak, aby výsledek byl jiná hodnota, která je možná a pravděpodobná v reálném světě. 
+Nevracej způsob řešení, kroky řešení.`
+
 
 
 

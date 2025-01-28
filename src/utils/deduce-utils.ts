@@ -1,5 +1,6 @@
-import { inferenceRule } from "../components/math.js"
+import { inferenceRule, inferenceRuleWithQuestion } from "../components/math.js"
 import type { Predicate, Container, Rate } from "../components/math.js"
+import { isEmptyOrWhiteSpace } from "./string-utils.js"
 
 type PredicateLabel = { labelKind?: 'input' | 'deduce', label?: number }
 
@@ -118,7 +119,7 @@ export function jsonToMarkdownTree(node, level = 0) {
 
   // Add node details if they exist
   if (isPredicate(node)) {
-    markdown.push(`${indent}- ${formatPredicate(node,mdFormatting)}\n`);
+    markdown.push(`${indent}- ${formatPredicate(node, mdFormatting)}\n`);
     return markdown;
   }
 
@@ -136,118 +137,176 @@ export function jsonToMarkdownTree(node, level = 0) {
 
   return markdown
 }
+export function jsonToMarkdownChat(node, level = 0) {
 
+  const flatStructure = [];
+  function traverseEx(node) {
+    const args = []
+    // Add node details if they exist
+    if (isPredicate(node)) {
+      return formatPredicate(node, {...mdFormatting, formatKind: () =>  ``});
+    }
 
-const mdFormatting = {
-  compose: (strings: TemplateStringsArray, ...args) => concatString(strings, ...args),
-  formatKind: d => `${d.kind.toUpperCase()}`,
-  formatQuantity: d => d.toLocaleString('cs-CZ'),
-  formatRatio: d => d.toLocaleString('cs-CZ'),
-  formatEntity: d => d != null && d != '' ? `__${d}__` : '',
-  formatAgent: d => `**${d}**`,
-  formatSequence: d => `${d.type}`
+    let q = null
+    // Process children recursively
+    if (node.children && Array.isArray(node.children)) {
+
+      for (let i = 0; i!= node.children.length;i++) {
+        const child = node.children[i];
+        const isConclusion = i === node.children.length - 1;
+
+        if (isConclusion) {
+          const children = node.children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]);
+          const result = children.length > 2 ? inferenceRuleWithQuestion(...children.slice(0, -1)) : null;
+          q = result;
+        }
+        else {
+          q = null;
+        }
+        const res = traverseEx(child);
+        args.push(res)
+
+      }
+      // Add a group containing the parent and its children
+      const arr = normalizeToArray(args).map(d => {
+        return Array.isArray(d) ? d[d.length - 1] : d
+      });
+
+      
+
+      const premises = arr.slice(0, -1);
+      //const questions = premises.filter(d => d?.result != null)
+      const conclusion = arr[arr.length - 1];
+      
+      const answer = q?.options?.find(d => d.ok)
+      flatStructure.push((q != null 
+        ? q.question + `\n` + `${premises.filter(d => !isEmptyOrWhiteSpace(d)).map(d => `- ${d}`).join("\n")} ` + '\n\n' +  (answer != null ? `Výpočet: ${answer.tex} = ${answer.result}`: '')
+      : `${premises.filter(d => !isEmptyOrWhiteSpace(d)).map(d => `- ${d}`).join("\n")}`)  + '\n\n' + `Závěr:${conclusion}` + "\n\n");
+    }
+
+    return args
+  }
+  traverseEx(node)  
+  return flatStructure;
+
 }
 
-const formatting = {
-  compose: (strings: TemplateStringsArray, ...args) => concatString(strings, ...args),
-  formatKind: d => `[${d.kind.toUpperCase()}]`,
-  formatQuantity: d => d.toLocaleString('cs-CZ'),
-  formatRatio: d => d.toLocaleString('cs-CZ'),
-  formatEntity: d => d != null ? d : '',
-  formatAgent: d => d,
-  formatSequence: d => d.type
-}
 
-export function formatPredicate(d: Predicate, formatting: any) {
-  const { formatKind, formatAgent, formatEntity, formatQuantity, formatRatio, formatSequence, compose } =  {...mdFormatting, ...formatting}
-  if ((d.kind == "ratio" || d.kind === "comp-ratio" || d.kind === "rate" || d.kind === "quota" || d.kind === "comp-diff" || d.kind === "comp-part-eq" || d.kind === 'ratio-c' || d.kind === 'ratios-c') && (d.quantity == null && d.ratio == null)) {
-    return formatKind(d);
+  const mdFormatting = {
+    compose: (strings: TemplateStringsArray, ...args) => concatString(strings, ...args),
+    formatKind: d => `${d.kind.toUpperCase()}`,
+    formatQuantity: d => d.toLocaleString('cs-CZ'),
+    formatRatio: d => d.toLocaleString('cs-CZ'),
+    formatEntity: d => d != null && d != '' ? `__${d}__` : '',
+    formatAgent: d => `**${d}**`,
+    formatSequence: d => `${d.type}`
   }
 
-  let result = ''
-  switch (d.kind) {
-    case "cont":
-      result = compose`${formatAgent(d.agent)}=${formatQuantity(d.quantity)} ${formatEntity(d.entity)}`;
-      break;
-    case "comp":
-      result = compose`${formatAgent(d.agentA)} ${d.quantity > 0 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} o ${formatQuantity(Math.abs(d.quantity))} ${formatEntity(d.entity)}`
-      break;
-    case "comp-ratio":
-      const between = (d.ratio > 0 && d.ratio < 2);
-      result = between
-        ? compose`${formatAgent(d.agentA)} ${d.ratio < 1 ? 'méně' : 'více'} o ${formatRatio(d.ratio > 1 ? d.ratio - 1 : 1 - d.ratio)} než ${formatAgent(d.agentB)} `
-        : compose`${formatAgent(d.agentA)} ${formatRatio(Math.abs(d.ratio))} krát ${d.ratio > 0 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} `
-      break;
-    case "comp-diff":
-      result = compose`${formatAgent(d.agentMinuend)} - ${formatAgent(d.agentSubtrahend)}=${formatQuantity(d.quantity)} ${formatEntity(d.entity)}`
-      break;
-    case "ratio":
-      result = compose`${formatAgent(d.part)} z ${formatAgent(d.whole)}=${formatRatio(d.ratio)}`;
-      break;
-    case "ratios":
-      result = compose`${formatAgent(d.whole)} ${joinArray(d.parts?.map(d => formatAgent(d)),":")} v poměru ${joinArray(d.ratios?.map(d => formatQuantity(d)),":")}`;
-      break;
-    case "sum":
-      result = compose`${joinArray(d.partAgents?.map(d => formatAgent(d))," + ")}`;
-      break;
-    case "product":
-      result = compose`${joinArray(d.partAgents?.map(d => formatAgent(d))," * ")}`;
-      break;
-    case "rate":
-      result = compose`${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity)} per ${formatEntity(d.entityBase.entity)}`
-      break;
-    case "quota":
-      result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${d.restQuantity !== 0 ? ` se zbytkem ${formatAgent(d.restQuantity)}` : ''}`
-      break;
-    case "sequence":
-      result = compose`${d.type != null ? formatSequence(d.type) : ''}`
-      break;
-    case "nth":
-      result = compose`${formatEntity(d.entity)}`;
-      break;
-    case "common-sense":
-      result = compose`${d.description}`
-      break;
-    default:
-      break;
+  const formatting = {
+    compose: (strings: TemplateStringsArray, ...args) => concatString(strings, ...args),
+    formatKind: d => `[${d.kind.toUpperCase()}]`,
+    formatQuantity: d => d.toLocaleString('cs-CZ'),
+    formatRatio: d => d.toLocaleString('cs-CZ'),
+    formatEntity: d => d != null ? d : '',
+    formatAgent: d => d,
+    formatSequence: d => d.type
   }
-  return compose`${formatKind(d)} ${result}`;
-}
 
-function joinArray(arr:string[], sep: string){
-  return arr?.flatMap((d, index) => 
-    index < arr.length - 1 ? [d, sep] : [d]
-  )
-}
+  export function formatPredicate(d: Predicate, formatting: any) {
+    const { formatKind, formatAgent, formatEntity, formatQuantity, formatRatio, formatSequence, compose } = { ...mdFormatting, ...formatting }
+    if ((d.kind == "ratio" || d.kind === "comp-ratio" || d.kind === "rate" || d.kind === "quota" || d.kind === "comp-diff" || d.kind === "comp-part-eq" || d.kind === 'ratio-c' || d.kind === 'ratios-c') && (d.quantity == null && d.ratio == null)) {
+      return formatKind(d);
+    }
 
-export function highlight(strings, ...substitutions) {
+    let result = ''
+    switch (d.kind) {
+      case "cont":
+        result = compose`${formatAgent(d.agent)}=${formatQuantity(d.quantity)} ${formatEntity(d.entity)}`;
+        break;
+      case "comp":
+        result = compose`${formatAgent(d.agentA)} ${d.quantity > 0 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} o ${formatQuantity(Math.abs(d.quantity))} ${formatEntity(d.entity)}`
+        break;
+      case "comp-ratio":
+        const between = (d.ratio > 0 && d.ratio < 2);
+        result = between
+          ? compose`${formatAgent(d.agentA)} ${d.ratio < 1 ? 'méně' : 'více'} o ${formatRatio(d.ratio > 1 ? d.ratio - 1 : 1 - d.ratio)} než ${formatAgent(d.agentB)} `
+          : compose`${formatAgent(d.agentA)} ${formatRatio(Math.abs(d.ratio))} krát ${d.ratio > 0 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} `
+        break;
+      case "comp-diff":
+        result = compose`${formatAgent(d.agentMinuend)} - ${formatAgent(d.agentSubtrahend)}=${formatQuantity(d.quantity)} ${formatEntity(d.entity)}`
+        break;
+      case "ratio":
+        result = compose`${formatAgent(d.part)} z ${formatAgent(d.whole)}=${formatRatio(d.ratio)}`;
+        break;
+      case "ratios":
+        result = compose`${formatAgent(d.whole)} ${joinArray(d.parts?.map(d => formatAgent(d)), ":")} v poměru ${joinArray(d.ratios?.map(d => formatQuantity(d)), ":")}`;
+        break;
+      case "sum":
+        result = compose`${joinArray(d.partAgents?.map(d => formatAgent(d)), " + ")}`;
+        break;
+      case "product":
+        result = compose`${joinArray(d.partAgents?.map(d => formatAgent(d)), " * ")}`;
+        break;
+      case "rate":
+        result = compose`${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity)} per ${formatEntity(d.entityBase.entity)}`
+        break;
+      case "quota":
+        result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${d.restQuantity !== 0 ? ` se zbytkem ${formatAgent(d.restQuantity)}` : ''}`
+        break;
+      case "sequence":
+        result = compose`${d.type != null ? formatSequence(d.type) : ''}`
+        break;
+      case "nth":
+        result = compose`${formatEntity(d.entity)}`;
+        break;
+      case "common-sense":
+        result = compose`${d.description}`
+        break;
+      default:
+        break;
+    }
+    return compose`${formatKind(d)} ${result}`;
+  }
 
-  const formattedString = strings.reduce((acc, curr, i) => {
-    const substitution = substitutions[i];
+  function joinArray(arr: string[], sep: string) {
+    return arr?.flatMap((d, index) =>
+      index < arr.length - 1 ? [d, sep] : [d]
+    )
+  }
 
-    const res = substitution && typeof substitution === "function"
-      ? `${curr}${substitution(concatString)}`
-      : substitution
-        ? `${curr}*${substitution}*`
-        : `${curr}`;
-    return `${acc}${res}`;
-  }, '');
+  export function highlight(strings, ...substitutions) {
 
-  return formattedString;
-}
+    const formattedString = strings.reduce((acc, curr, i) => {
+      const substitution = substitutions[i];
 
-function concatString(strings, ...substitutions) {
-  const formattedString = strings.reduce((acc, curr, i) => {
-    const substitution = substitutions[i];
+      const res = substitution && typeof substitution === "function"
+        ? `${curr}${substitution(concatString)}`
+        : substitution
+          ? `${curr}*${substitution}*`
+          : `${curr}`;
+      return `${acc}${res}`;
+    }, '');
 
-    const res = substitution
-      ? `${curr}${substitution}`
-      : curr;
-    return `${acc}${res}`;
-  }, '');
+    return formattedString;
+  }
 
-  return formattedString;
-}
+  function concatString(strings, ...substitutions) {
+    const formattedString = strings.reduce((acc, curr, i) => {
+      const substitution = substitutions[i];
+
+      const res = substitution
+        ? `${curr}${substitution}`
+        : curr;
+      return `${acc}${res}`;
+    }, '');
+
+    return formattedString;
+  }
 
 
-export type DeduceTemplate = (strings: TemplateStringsArray, ...substitutions: (number | string | Function)[]) => any
+  export type DeduceTemplate = (strings: TemplateStringsArray, ...substitutions: (number | string | Function)[]) => any
+
+  function normalizeToArray(d: any | any[]) {
+    return Array.isArray(d) ? d : [d]
+  }
+  

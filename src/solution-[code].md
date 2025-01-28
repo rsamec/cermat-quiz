@@ -13,7 +13,7 @@ import mdPlus from './utils/md-utils.js';
 import { parseQuiz } from './utils/quiz-parser.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, isEmptyOrWhiteSpace } from './utils/quiz-string-utils.js';
 import wordProblems from './math/word-problems.js';
-import { isPredicate } from "./utils/deduce-utils.js";
+import { isPredicate, jsonToMarkdownChat } from "./utils/deduce-utils.js";
 import { deduceTraverse, highlightLabel, renderChat } from './utils/deduce-components.js';
 import Fraction from 'fraction.js';
 
@@ -66,7 +66,37 @@ const output = ids.map(id => {
 </div>`)}
 `: ''}`
 })
-  
+
+const message  = ids.map(id => [id, (wordProblem[id] != null)
+   ? [[id, wordProblem[id]]] 
+   : [1, 2, 3]
+    .map(i => `${id}.${i}`)
+    .map(subId => wordProblem[subId])
+    .filter(Boolean)
+    .map((d, index) => [`${id}.${index +1}`, d])]).filter(([id,d]) =>  d.length > 0).slice(2,4      
+    ).map(([id,values]) => {
+
+  return `${quiz.content([id], { ids, render: 'content' })}
+${values.map(([key,value]) => `
+Řešení : ${key}
+
+${jsonToMarkdownChat(value.deductionTree).join("\n\n")}
+`).join("")}`}).join("\n---\n");
+
+const quizQuestions = `Níže je uvedeno zadání testu a řešení jednotlivých úloh.
+Řešení úloh je popsáno heslovitě po jednotlivých krocích. Správný výsledek je uveden jako poslední krok.
+Jednotlivé úlohy jsou odděleny horizontální čárou.
+
+${message}
+
+Můžeš vymyslet obdobný test v jiné doméně, která půjde řešit stejným postupem řešení 
+- změnit agent - identifikovány pomocí markdown bold **
+- změna entit - identifikace pomocí markdown bold __
+- změnu parametry úlohy - identifikovány pomocí italic *
+
+Změn agenty, entity a parametry úlohy tak aby byly z jiné, pokud možno netradiční domény.
+Použij jiné vstupní parametry tak, aby výsledek byl jiná hodnota.
+Vrať pouze zadání testu a nevracej způsob řešení, resp. kroky řešení.`  
 
 function normalizeMath(value) {
   return value
@@ -101,6 +131,16 @@ function renderStep({ Step, Hint, Expression }, index) {
   ${!isEmptyOrWhiteSpace(Hint) ? html`<div class="tip">${Hint}</div>` : ''}
   </div>`
 }
+
+function renderChatButton(label, query){
+  return html`<a style="height:34px;" href="#" onclick=${(e) => {
+                    e.preventDefault();
+                    window.open(`https://chat.openai.com/?q=${encodeURIComponent(query)}`)
+                  }}><img style="height:34px;" src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white&label=${encodeURIComponent(label)}" alt="ChatGPT" /></a>`
+}
+
+
+
 ```
 
 <style>
@@ -111,7 +151,6 @@ details.solutions > summary > h1, h2 {
 </style>
 
 ## ${formatCode(code)}
-
 ${answers == null ? html`<div class="warning" label="Upozornění">K tomuto testu v tuto chvíli neexistují žádná řešení.</div>`:''}
 
 
