@@ -327,7 +327,7 @@ export function stepsTraverse(node) {
           //   args.push(relativeParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
           // }
           if (newChild?.kind === "gcd" || newChild?.kind === "lcd") {
-            const numbers = node.children.slice(0,-2).map(d => d.quantity);            
+            const numbers = node.children.slice(0,-2).map(d => d.quantity);
             args.push(html`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d,i) => html`<div>${formatNumber(numbers[i])} = ${d.join()}</div>`)}</div>`)
           }
           else if (newChild?.kind === "comp-ratio" && newChild?.ratio != null) {

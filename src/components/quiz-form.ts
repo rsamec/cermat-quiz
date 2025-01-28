@@ -12,7 +12,7 @@ import * as Inputs from 'npm:@observablehq/inputs';
 import { isEmptyOrWhiteSpace, cls } from '../utils/string-utils.js';
 
 import wordProblems from '../math/word-problems.js';
-import { deduceTraverse, highlightLabel } from '../utils/deduce-components.js';
+import {renderChatStepper} from '../utils/deduce-chat.js';
 
 type QuizParams = {
   questions: string[][],
@@ -276,9 +276,9 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
               <video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`)}
               
               ${wordProblemEntries.map(([key, d]) => html`<div class="h-stack h-stack--s">
-                <a href="./solution-${code}#s-${ids[0]}" target="_blank"><i class="fa-solid fa-square-up-right"></i></a>
+                ${key.indexOf(".") !== -1 ? html`<span style="flex:1">${key}</span>`:''}
               </div>
-              ${html.fragment`${deduceTraverse(d.deductionTree)}`}
+              ${html.fragment`${renderChatStepper(d.deductionTree)}`}
               `)}
               
               </div></details>` : ''}

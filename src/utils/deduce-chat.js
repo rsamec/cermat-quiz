@@ -16,9 +16,8 @@ export function renderChatStepper(deductionTree){
 
   return rhtml`<div class="chat">
       ${forEach(computed(() => steps$.value),(row,i) => {
-        let rowId = row.id;
         return rhtml`<div>
-          ${computed(() => renderStep(row,steps$,addStep,answers$, steps$.value.length))}
+          ${computed(() => renderStep(row,steps$,addStep,answers$, steps.length))}
         <div>`
         }
       )}
@@ -26,6 +25,7 @@ export function renderChatStepper(deductionTree){
 }
 
 function renderStep({premises, conclusion, questions, index}, steps$, addStep, answers$, stepsCount){
+
   const q = questions[0];
   const options = q?.options ?? [{tex:'Dále', ok: 1}];
   const qInput = Inputs.button(options.map(d => ([d.tex,value => {
@@ -38,11 +38,29 @@ function renderStep({premises, conclusion, questions, index}, steps$, addStep, a
 
   return rhtml`<div class="messages">
     <div class='message v-stack'>${premises.map(d => d)}</div>
-    <div class='message agent'>
+    <div class='message agent v-stack'>
       ${q != null ? q.question:''}
       <div class="${computed(() => steps$.value.length === index + 1 ? '':'hidden')}">${qInput}</div>
-      ${options.map(d => rhtml`<div class="badge ${computed(() => answers$.value[index] === d ? (d.ok ? 'badge--success': 'badge--danger') : 'hidden')}">${d.tex} = ${d.result}</div>`)}
+      ${options.map(d => rhtml`<span class="badge ${computed(() => answers$.value[index] === d ? (d.ok ? 'badge--success': 'badge--danger') : 'hidden')}" style="align-self:flex-start;">${d.tex} = ${d.result}</span>`)}
     </div>
+    ${stepsCount == index + 1 && answers$.value[index]?.ok === true ? rhtml`<div class="message">${conclusion}</div>`:''}
   </div>
   `
+}
+
+function shuffle(array) {
+  let currentIndex = array.length;
+
+  // While there remain elements to shuffle...
+  while (currentIndex != 0) {
+
+    // Pick a remaining element...
+    let randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+  return array;
 }

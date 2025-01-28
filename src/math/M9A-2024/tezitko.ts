@@ -27,8 +27,8 @@ export default function build({ input }: {
   const inRadius = axiomInput(cont(`${agentIn} poloměr`, input.in.radius, entity), 3);
   const inHeight = axiomInput(cont(`${agentIn} výška`, input.in.height, entity), 4);
 
-  const outCylinder = cylinder({ radius: outRadius, height: outHeight });
-  const inCylinder = cylinder({ radius: inRadius, height: inHeight });
+  const outCylinder = cylinder({ radius: outRadius, height: outHeight }, {volumeLabel:'objem vnějšího válce'});
+  const inCylinder = cylinder({ radius: inRadius, height: inHeight }, {volumeLabel: "objem vnitřního válce"});
 
 
   const deductionTree = deduce(

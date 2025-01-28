@@ -240,8 +240,8 @@ function compareRule(a: Container, b: Comparison): Question {
     question: `Vypočti ${a.agent == b.agentB ? b.agentA : b.agentB}  (${result.entity})?`,
     result,
     options: [
-      { tex: `${formatNumber(a.quantity)} + ${formatNumber(b.quantity)}`, result: `${formatNumber(a.quantity + b.quantity)}`, ok: a.agent == b.agentB },
-      { tex: `${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}`, result: `${formatNumber(a.quantity - b.quantity)}`, ok: a.agent == b.agentA },
+      { tex: `${formatNumber(a.quantity)} ${b.quantity > 0 ? ' + ' : ' - '} ${formatNumber(Math.abs(b.quantity))}`, result: formatNumber(result.quantity), ok: a.agent == b.agentB },
+      { tex: `${formatNumber(a.quantity)} ${b.quantity > 0 ? ' - ' : ' + '} ${formatNumber(Math.abs(b.quantity))}`, result: formatNumber(result.quantity), ok: a.agent == b.agentA },
     ]
   }
 }
@@ -496,14 +496,14 @@ function gcdRule(items: Container[], b: GCD): Question {
     result,
     options: [
       { tex: gcdFromPrimeFactors(factors).join(" * "), result: formatNumber(result.quantity), ok: true },
-      { tex: lcdFromPrimeFactors(factors).join(" * "), result: formatNumber(lcdFromPrimeFactors(factors).reduce((out,d) => out+=d,0)), ok: false },
+      //{ tex: lcdFromPrimeFactors(factors).join(" * "), result: formatNumber(result.quantity), ok: false },
     ]
   }
 }
 function lcdRuleEx(items: Container[], b: LCD): Container {
   return { kind: 'cont', agent: b.agent, quantity: lcdCalc(items.map(d => d.quantity)), entity: b.entity }
 }
-function lcdRule(items: Container[], b: GCD): Question {
+function lcdRule(items: Container[], b: LCD): Question {
   const result = lcdRuleEx(items, b)
   const factors = primeFactorization(items.map(d =>d.quantity))
   return {
@@ -511,7 +511,7 @@ function lcdRule(items: Container[], b: GCD): Question {
     result,
     options: [
       { tex: lcdFromPrimeFactors(factors).join(" * "), result: formatNumber(result.quantity), ok: true },
-      { tex: gcdFromPrimeFactors(factors).join(" * "), result: formatNumber(gcdFromPrimeFactors(factors).reduce((out,d) => out+=d,0)), ok: false },
+      //{ tex: gcdFromPrimeFactors(factors).join(" * "), result: formatNumber(result.quantity), ok: false },
     ]
   }
 }
@@ -527,7 +527,7 @@ function toComparisonEx(a: Container, b: Container): Comparison {
   if (a.entity != b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`
   }
-  return { kind: 'comp', agentB: a.agent, agentA: b.agent, quantity: b.quantity - a.quantity, entity: a.entity }
+  return { kind: 'comp', agentB: b.agent, agentA: a.agent, quantity: a.quantity - b.quantity, entity: a.entity }
 }
 function toComparison(a: Container, b: Container): Question {
   const result = toComparisonEx(a, b)
@@ -535,8 +535,8 @@ function toComparison(a: Container, b: Container): Question {
     question: `Porovnej ${result.agentA} a ${result.agentB}. O kolik?`,
     result,
     options: [
-      { tex: `${formatNumber(b.quantity)} - ${formatNumber(a.quantity)}`, result: formatNumber(b.quantity - a.quantity), ok: true },
-      { tex: `${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}`, result: formatNumber(a.quantity - b.quantity), ok: false },
+      { tex: `${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}`, result: formatNumber(a.quantity - b.quantity), ok: true },
+      { tex: `${formatNumber(b.quantity)} - ${formatNumber(a.quantity)}`, result: formatNumber(b.quantity - a.quantity), ok: false },
     ]
   }
 
@@ -688,22 +688,25 @@ function partToPartRuleEx(a: Container, partToPartRatio: PartToPartRatio, nth?: 
     entity: a.entity,
     quantity: matchedWhole
       ? (a.quantity / partsSum) * partToPartRatio.ratios[targetPartIndex]
-      : (a.quantity / partToPartRatio.ratios[sourcePartIndex]) * ((matchedWhole || nth != null) ? partToPartRatio.ratios[targetPartIndex] : partsSum)
+      : (a.quantity / partToPartRatio.ratios[sourcePartIndex]) * (nth != null ? partToPartRatio.ratios[targetPartIndex] : partsSum)
   }
 }
 
-function partToPartRule(a: Container, parts: PartToPartRatio, nth?: NthPart): Question {
-  const result = partToPartRuleEx(a, parts, nth)
+function partToPartRule(a: Container, partToPartRatio: PartToPartRatio, nth?: NthPart): Question {
+  const result = partToPartRuleEx(a, partToPartRatio, nth)
+  const matchedWhole = matchAgent(partToPartRatio.whole, a);
+  let sourcePartIndex = partToPartRatio.parts.findIndex(d => matchAgent(d, a))
+  const targetPartIndex = nth != null ? partToPartRatio.parts.findIndex(d => d === nth.agent) : matchAgent(partToPartRatio[0], a) ? 0 : partToPartRatio.parts.length - 1;
 
-  const isWhole = matchAgent(parts.whole, a);
-
-  //const partNumber = isFirst ? firstNumber : lastNumber;
-
+  if (sourcePartIndex == -1) sourcePartIndex = 0;
+  const partsSum = `(${partToPartRatio.ratios.join(" + ")})`
+  console.log(partToPartRatio.ratios, sourcePartIndex, targetPartIndex)
   return {
     question: containerQuestion(result),
     result,
     options: [
-      { tex: `${formatNumber(a.quantity)} / (${parts.ratios.join(" + ")}) * ${formatNumber(NaN)}`, result: formatNumber(result.quantity), ok: true },
+      { tex: `${formatNumber(a.quantity)} / ${partsSum} * ${formatNumber(partToPartRatio.ratios[targetPartIndex])}`, result: formatNumber(result.quantity), ok: matchedWhole },
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(partToPartRatio.ratios[sourcePartIndex])} * ${nth != null ? partToPartRatio.ratios[targetPartIndex] : partsSum}`, result: formatNumber(result.quantity), ok: !matchedWhole },
     ]
   }
 }
@@ -726,12 +729,26 @@ function matchAgent(d: AgentMatcher, a: Container) {
   return d === a.agent;
 }
 
-function partEqual(a: Comparison, b: Container) {
-  const rest = diffRuleEx(b, compDiff(b.agent, a.quantity > 0 ? a.agentB : a.agentA, Math.abs(a.quantity), a.entity));
+function partEqualEx(a: Comparison, b: Container) {
+  const diff = compDiff(b.agent, a.quantity > 0 ? a.agentB : a.agentA, Math.abs(a.quantity), a.entity);
+  const rest = diffRuleEx(b, diff);
   return {
     ...rest,
     quantity: rest.quantity / 2
   }
+}
+function partEqual(a: Comparison, b: Container) : Question{
+  const diff = compDiff(b.agent, a.quantity > 0 ? a.agentB : a.agentA, Math.abs(a.quantity), a.entity);
+  const result = partEqualEx(a, b)
+  return {
+    question: containerQuestion(result),
+    result,
+    options: [
+      { tex: `(${formatNumber(b.quantity)} - ${formatNumber(diff.quantity)}) / 2`, result: formatNumber((b.quantity - diff.quantity)/2), ok: b.agent === diff.agentMinuend },
+      { tex: `(${formatNumber(b.quantity)} + ${formatNumber(diff.quantity)}) / 2`, result: formatNumber((b.quantity + diff.quantity)/2), ok: b.agent !== diff.agentMinuend }
+    ]
+  }
+
 }
 
 function nthTermRule(a: Container, b: Sequence): Container {

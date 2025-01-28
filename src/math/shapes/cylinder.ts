@@ -15,6 +15,7 @@ export interface CylinderLabels {
   surfaceBaseAreaLabel?: string,
   entity2D?: string,
   baseCircumferenceLabel?: string,
+  volumeLabel?:string
 
 }
 
@@ -65,13 +66,14 @@ export function baseCircumference(
 export function cylinder(
   { radius, height }: { radius: Container, height: Container },
   options?: CylinderLabels) {
-  const { radiusLabel, entity2D, entity3D, surfaceBaseAreaLabel, heightLabel, baseCircumferenceLabel } = {
+  const { radiusLabel, entity2D, entity3D, surfaceBaseAreaLabel, heightLabel, baseCircumferenceLabel, volumeLabel } = {
     ...{
       radiusLabel: "poloměr",
       entity2D: "čtverečků",
       entity3D: "krychliček",
       surfaceBaseAreaLabel: "obsah podstavy",
       baseCircumferenceLabel: "obvod podstavy",
+      volumeLabel: "objem válce",
       heightLabel: "výška"
     },
     ...options ?? {}
@@ -84,7 +86,7 @@ export function cylinder(
   const volume = deduce(
     surfaceBaseAreaTree,
     height,
-    product("objem válce", ["obsah podstavy", heightLabel], entity3D, entity)
+    product(volumeLabel, [surfaceBaseAreaLabel, heightLabel], entity3D, entity)
   )
 
   const baseCircumferenceTree = baseCircumference({ radius }, { radiusLabel, baseCircumferenceLabel })
