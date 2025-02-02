@@ -92,7 +92,7 @@ export function exampleComparePartToWhole({ input }: {
 
   const template1 = highlight => highlight`
     Cena ${`${input.second ? agentSecond : agentFirst} je ${input.part}`} Kč.
-    Výrobek A je o ${`${Math.abs(input.partRatio)} ${input.partRatio > 0 ? 'dražší' : 'levnější'}`} než výrobek B.
+    Výrobek A je relativně o ${`${Math.abs(input.partRatio)} ${input.partRatio > 0 ? 'dražší' : 'levnější'}`} než výrobek B.
     Kolik stojí druhý výrobek?`;
 
   const template2 = highlight => highlight`
@@ -106,6 +106,36 @@ export function exampleComparePartToWhole({ input }: {
 
   ]
 }
+
+export function exampleDiffPartToWhole({ input }: {
+  input: {
+    diff: number;
+    partRatio: number;
+  }
+}) {
+  const agentFirst = "výrobek A";
+  const agentSecond = "výrobek B"
+  const entity = "Kč";
+
+  const diff = axiomInput(comp(agentFirst, agentSecond, input.diff, entity), 1);
+
+  const template1 = highlight => highlight`
+    Rozdíl cen ${agentFirst} a ${agentSecond} je ${input.diff} Kč.
+    Výrobek A je relativně o ${`${Math.abs(input.partRatio)} ${input.partRatio > 0 ? 'dražší' : 'levnější'}`} než výrobek B.
+    Kolik stojí druhý výrobek?`;
+
+  const template2 = highlight => highlight`
+    Rozdíl cen ${agentFirst} a ${agentSecond} je ${input.diff} Kč.
+    Výrobek A je ${`${Math.abs(input.partRatio)} krát ${input.partRatio > 0 ? 'dražší' : 'levnější'}`} než výrobek B.
+    Kolik stojí druhý výrobek?`;
+
+  return [
+    { deductionTree: deduce(axiomInput(compRelative(agentFirst, agentSecond, input.partRatio), 2), diff), template: template1 },
+    // { deductionTree: deduce(axiomInput(compRatio(agentFirst, agentSecond, input.partRatio), 2), diff), template: template2 },
+
+  ]
+}
+
 
 export function examplePartToPart({ input }: {
   input: {

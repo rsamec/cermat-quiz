@@ -28,7 +28,7 @@ import {example as percentPart} from './math/percent/part.js';
 import {example as percentBase} from './math/percent/base.js';
 import {example as percentPercentage} from './math/percent/percentage.js';
 
-import  {examplePartToWhole, examplePartToPart, exampleComparePartToWhole, examplePartEq}  from './math/comp/comp.js'
+import  {examplePartToWhole, examplePartToPart, exampleComparePartToWhole, exampleDiffPartToWhole, examplePartEq}  from './math/comp/comp.js'
 
 function renderEx({example, unit, showRelativeValues}={}){
   const tree = deduceTraverse(example.deductionTree);
@@ -434,11 +434,13 @@ const proportionCombinedInput = Generators.input(proportionCombinedForms);
 
 <div>${renderExample({example:proportionCombined({input:proportionCombinedInput})})}</div>
 
-## Porovnávání s absolutním rozdílem
+## Porovnávání 
+
+### Porovnávání s absolutním rozdílem
 
 ```js
 const compPartEqForm = Inputs.form({
-  diff: Inputs.range([-50, 50], {step: 1, value:25, label: "cena výrobku A než výrobek B"}),
+  diff: Inputs.range([-50, 50], {step: 1, value:25, label: "O kolik je výrobek A dražší/levnější než výrobek B"}),
   whole: Inputs.range([100, 1000], {step: 1, value:100, label: "celkem (Kč)"}),
 });
 const compPartEqInput = Generators.input(compPartEqForm);
@@ -452,13 +454,13 @@ const compPartEqInput = Generators.input(compPartEqForm);
 <div>${renderEx({example:examplePartEq({input:compPartEqInput})[0]})}</div>
 
 
-## Porovnání s relativním rozdílem
+### Porovnání s relativním rozdílem
 
 ```js
 const compForm = Inputs.form({  
   second: Inputs.radio(new Map([["A", false],["B", true]]), {label:"Výrobek", value:false }),
   part: Inputs.range([1,100], {step: 1, value:10, label: "Cena výrobku (Kč)"}),
-  partRatio: Inputs.range([-1, 1], {step: 0.05, value:0.25, label: "O kolik je výrobek A dražší (levnější) než výrobek B"}),
+  partRatio: Inputs.range([-1, 1], {step: 0.05, value:0.25, label: "O kolik je výrobek A relativně dražší/levnější než výrobek B"}),
   
 });
 const compInput = Generators.input(compForm);
@@ -472,11 +474,12 @@ const compInput = Generators.input(compForm);
 <div>${renderEx({example:exampleComparePartToWhole({input:compInput})[0]})}</div>
 
 
+
 ```js
 const compRatioForm = Inputs.form({  
   second: Inputs.radio(new Map([["A", false],["B", true]]), {label:"Výrobek", value:false }),
   part: Inputs.range([1,100], {step: 1, value:10, label: "Výrobek A (Kč)"}),
-  partRatio: Inputs.range([-10, 10], {step: 1, value:5, label: "Kolikrát je výrobek A dražší (levnější) než výrobek B"}),
+  partRatio: Inputs.range([-10, 10], {step: 1, value:5, label: "Kolikrát je výrobek A dražší/levnější než výrobek B"}),
 });
 const compRatioInput = Generators.input(compRatioForm);
 ```
@@ -489,8 +492,27 @@ const compRatioInput = Generators.input(compRatioForm);
 
 <div>${renderEx({example:exampleComparePartToWhole({input:compRatioInput})[1]})}</div>
 
+### Porovnání s absolutním a relativním rozdílem
+
+```js
+const compAbsDiffForm = Inputs.form({
+  partRatio: Inputs.range([-1, 1], {step: 0.05, value:0.25, label: "O kolik je výrobek A relativně dražší/levnější než výrobek B"}),
+  diff: Inputs.range([-50, 50], {step: 1, value:25, label: "O kolik je výrobek A dražší/levnější než výrobek B"}),
+});
+const compAbsDiffInput = Generators.input(compAbsDiffForm);
+```
+
+<details>
+  <summary>Parametrizace</summary>
+  ${compAbsDiffForm}
+</details>
 
 
+<div>${renderEx({example:exampleDiffPartToWhole({input:compAbsDiffInput})[0]})}</div>
+
+
+
+### Porovnání části k celku
 
 
 ```js

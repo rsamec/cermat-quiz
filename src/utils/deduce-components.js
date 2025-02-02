@@ -314,10 +314,7 @@ export function stepsTraverse(node) {
         }
 
         const res = traverseEx(newChild);
-
-
         args.push(res)
-        //args.push(Array.isArray(res) && res.length > 1 ? {premises: res.slice(0, -1), conlusion:res[res.length - 1]} : res);
 
         if (!isLast) {
           if (newChild?.kind === "ratio" && newChild?.ratio != null) {

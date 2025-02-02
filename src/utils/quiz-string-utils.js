@@ -93,7 +93,10 @@ export function formatVersion({ order, period } = {}) {
             ? "1.náhr."
             : order === "D"
               ? "2.náhr."
+              : order === "I"
+              ? "testovací"
               : order;
+              
   }
   return version;
 }

@@ -1,5 +1,5 @@
 
-import { cont, product, sum } from "../../components/math.js";
+import { cont, type Container, product, sum } from "../../components/math.js";
 import { axiomInput, deduce, highlight } from "../../utils/deduce-utils.js";
 
 
@@ -7,6 +7,37 @@ interface Params {
   width: number
   length: number
   height: number
+}
+
+export function volume(
+  { width, length, height }: { width: Container, length: Container, height: Container, },
+  options?: {
+    widthLabel?: string
+    lenghtLabbel?: string
+    heightLabel?: string
+    entity?:string,
+    entity3D?: string,
+    volumeLabel?: string,
+  }) {
+  const { heightLabel, widthLabel, lengthLabel, entity3D, entity, volumeLabel } = {
+    ...{
+      widthLabel: "šířka",
+      lengthLabel: "délka",
+      heightLabel: "výška",
+      entity3D: "krychliček",
+      entity: "cm",
+      volumeLabel:"objem"
+
+    },
+    ...options ?? {}
+  }
+  return deduce(
+    length,
+    width,
+    height,
+    product(volumeLabel, [lengthLabel, widthLabel, heightLabel], entity3D, entity)
+  )
+  
 }
 
 
@@ -19,7 +50,7 @@ export function examples({ input }: {
   const heightLabel = "výška"
   const entity = "cm"
   const entity2D = "čtverečků"
-  const entity3D = "krychliček"
+
 
   const width = axiomInput(cont(widthLabel, input.width, entity), 1);
   const length = axiomInput(cont(lengthLabel, input.length, entity), 2);
@@ -36,12 +67,7 @@ export function examples({ input }: {
 
   const dTree1 = dBase;
 
-  const dTree2 = deduce(
-    length,
-    width,
-    height,
-    product("objem", [lengthLabel, widthLabel, heightLabel], entity3D, entity)
-  )
+  const dTree2 = volume({length,width,height});
 
   const protilehlaStana = cont("počet stěn", 2, "");
 

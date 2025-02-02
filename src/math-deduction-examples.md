@@ -8,11 +8,14 @@ style: /assets/css/math-deduce.css
 
 ```js
 import {deduce} from './utils/deduce.js';
-import {partion, relativeParts, relativePartsDiff, deduceTraverse, highlightLabel} from './utils/deduce-components.js';
-import { renderChatStepper } from './utils/deduce-chat.js';
+import {partion, relativeParts, relativePartsDiff, deduceTraverse, highlightLabel, renderChat } from './utils/deduce-components.js';
+import { renderChatStepper, useInput } from './utils/deduce-chat.js';
 import {inferenceRule, cont, sum, comp, ratio} from './components/math.js';
-import {computeTreeMetrics, jsonToMarkdownTree, jsonToMarkdownChat, highlight} from './utils/deduce-utils.js';
+import {computeTreeMetrics, jsonToMarkdownTree, jsonToMarkdownChat, highlight, generateAIMessages} from './utils/deduce-utils.js';
 import mdPlus from './utils/md-utils.js';
+import { html as rhtml } from './utils/reactive-htl.js';
+import { signal, computed } from '@preact/signals-core';
+
 //import milkExample from './math/mleko.js';
 
 import cetar from './math/M7A-2023/cetar.js';
@@ -42,61 +45,31 @@ function renderChatButton(label, query){
 function renderExample({example, unit, showRelativeValues}={}){
   const tree = deduceTraverse(example.deductionTree);  
   const {depth, width} = computeTreeMetrics(example.deductionTree);
+  const renderType = Inputs.radio(new Map([['Textový strom','text-tree'],['Dedukční strom','deduce-tree'],['Textový chat','text-chat'],['Chat', 'chat'],['Chat dialog', 'stepper-chat']]), {value:'stepper-chat', label:'Zobrazit'})  
+  const renderType$ = useInput(renderType);
 
-  const message =  `
-Zadání úlohy je 
-
-${example.template(highlight)}
-
-Řešení úlohy je pomocí úvahy dle tohoto dedukčního stromu. Správný výsledek je kořen dedukčního stromu.
-Výsledek úlohy získáme průchodem stromu do hloubky (post-order), tj. aplikujeme odvozovací pravidla až poté, co známe všechny vstupy.
-
-${jsonToMarkdownTree(example.deductionTree).join("")}`
-
-  const alternateMessage = `
-Zadání úlohy je 
-
-${example.template(highlight)}
-
-Řešení úlohy je popsáno heslovitě po jednotlivých krocích. Správný výsledek je uveden jako poslední krok.
-
-${jsonToMarkdownChat(example.deductionTree).join("\n---\n")}`
-
-
-const explainSolution = `${alternateMessage}
-Můžeš vysvětlit podrobné řešení krok po kroku v češtině.`
-
-const vizualizeSolution = `${alternateMessage}
-Můžeš vytvořit vizualizaci, která popisuje situaci, resp. řešení ve formě obrázku. Např. ve formě přehledné infografiky.`
-
-const generateMoreQuizes = `${alternateMessage}
-Můžeš vymyslet novou úlohu v jiné doméně, která půjde řešit stejným postupem řešení 
-- změnit agent - identifikovány pomocí markdown bold **
-- změna entit - identifikace pomocí markdown bold __
-- změnu parametry úlohy - identifikovány pomocí italic *
-
-Změn agenty, entity a parametry úlohy tak aby byly z jiné, pokud možno netradiční domény.
-Vygeneruj 3 různé úlohy v češtině spolu s výsledkem. 
-Použij jiné vstupní parametry tak, aby výsledek byl jiná hodnota, která je možná a pravděpodobná v reálném světě. 
-Nevracej způsob řešení, kroky řešení.`
-
-
-
-
-  return html`
+  const {explainSolution, vizualizeSolution, generateMoreQuizes} = generateAIMessages({template: example.template(highlight), deductionTrees:[["Řešení",example.deductionTree]]})
+return html`
   <div class="v-stack v-stack--l">
     <div class="card">${example.template(highlightLabel())}</div>
     <div class="h-stack h-stack--m h-stack--wrap">
       <div  class="h-stack h-stack--m h-stack--wrap" style="flex:1">
+        ${renderType}
       </div>
       <div class="h-stack h-stack--m h-stack--wrap" style="align-items: flex-start;">
         ${renderChatButton("Vysvětli", explainSolution)}
         ${renderChatButton("Vizualizuj", vizualizeSolution)}
         ${renderChatButton("Generuj více příkladů", generateMoreQuizes)}
-
       </div>
     </div>
-    ${renderChatStepper(example.deductionTree)}
+    <div>
+    ${rhtml`<div class=${computed(() => renderType$.value)}>
+      ${html`<div class="viz viz--stepper-chat">${renderChatStepper(example.deductionTree)}</div>`}
+      ${html`<div class="viz viz--chat">${renderChat(example.deductionTree)}</div>`}
+      ${html`<div class="viz viz--deduce-tree"><div class="flexible">${deduceTraverse(example.deductionTree)}</div></div>`}
+      ${html`<div class="viz viz--text-tree">${mdPlus.unsafe(jsonToMarkdownTree(example.deductionTree).join(''))}</div>`}
+      ${html`<div class="viz viz--text-chat">${mdPlus.unsafe(jsonToMarkdownChat(example.deductionTree).join('\n---\n'))}</div>`}
+    </div>`}
   </div>`
 }
 ```

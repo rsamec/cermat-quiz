@@ -24,7 +24,10 @@ export default function example({ input }: {
   );
 
   const delsiStrana = deduce(
-    kratsiStran,
+    deduce(
+      kratsiStran,
+      compRel
+    ),
     compRatio('delší strana obdelník A', ALabel, 2),
   )
 

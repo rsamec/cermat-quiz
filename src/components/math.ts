@@ -151,7 +151,7 @@ export type Question = {
 
 
 export type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | SumCombine | ProductCombine | PartWholeRatio | PartToPartRatio | ComparisonDiff |
-  CommonSense | GCD | LCD | CompareAndPartEqual | Sequence | NthRule | Quota | Simplify | RatioCtor | RatiosCtor | NthPart;
+  CommonSense | GCD | LCD | CompareAndPartEqual | Sequence | NthRule | Quota | Simplify | RatioCtor | RatiosCtor | NthPart | Transfer;
 
 export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | "comp-diff" | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'simplify') {
   return { kind } as Predicate
@@ -171,6 +171,9 @@ export function pi(): Container {
 }
 export function comp(agentA: string, agentB: string, quantity: number, entity: string): Comparison {
   return { kind: 'comp', agentA, agentB, quantity, entity }
+}
+export function transfer(agentA: string, agentB: string, quantity: number, entity: string): Transfer {
+  return { kind: 'transfer', agentA, agentB, quantity, entity }
 }
 export function compRelative(agentA: string, agentB: string, ratio: number): RatioComparison {
   if (ratio <= -1 && ratio >= 1) {
@@ -237,7 +240,7 @@ function compareRuleEx(a: Container, b: Comparison): Container {
 function compareRule(a: Container, b: Comparison): Question {
   const result = compareRuleEx(a, b)
   return {
-    question: `Vypočti ${a.agent == b.agentB ? b.agentA : b.agentB}  (${result.entity})?`,
+    question: `Vypočti ${a.agent == b.agentB ? b.agentA : b.agentB}${formatEntity(result)}?`,
     result,
     options: [
       { tex: `${formatNumber(a.quantity)} ${b.quantity > 0 ? ' + ' : ' - '} ${formatNumber(Math.abs(b.quantity))}`, result: formatNumber(result.quantity), ok: a.agent == b.agentB },
@@ -245,6 +248,25 @@ function compareRule(a: Container, b: Comparison): Question {
     ]
   }
 }
+
+function toComparisonRatioEx(a: PartWholeRatio, b: PartWholeRatio): RatioComparison {
+  if (a.whole != b.whole) {
+    throw `Mismatch entity ${a.whole}, ${b.whole}`
+  }
+  return { kind: 'comp-ratio', agentB: b.part, agentA: a.part, ratio: 1 + (a.ratio - b.ratio) }
+}
+function toComparisonRatio(a: PartWholeRatio, b: PartWholeRatio): Question {
+  const result = toComparisonRatioEx(a, b)
+  return {
+    question: `Porovnej ${result.agentA} a ${result.agentB}. O kolik?`,
+    result,
+    options: [
+      { tex: `${formatRatio(a.ratio)} - ${formatRatio(b.ratio)}`, result: formatRatio(a.ratio - b.ratio), ok: true },
+      { tex: `${formatRatio(b.ratio)} - ${formatRatio(a.ratio)}`, result: formatRatio(b.ratio - a.ratio), ok: false },
+    ]
+  }
+}
+
 function ratioCompareRuleEx(a: Container, b: RatioComparison): Container {
   if (!(a.agent == b.agentA || a.agent == b.agentB)) {
     throw `Mismatch agent ${a.agent} any of ${b.agentA}, ${b.agentB}`
@@ -260,7 +282,7 @@ function ratioCompareRuleEx(a: Container, b: RatioComparison): Container {
 function ratioCompareRule(a: Container, b: RatioComparison): Question {
   const result = ratioCompareRuleEx(a, b)
   return {
-    question: `Vypočti ${a.agent == b.agentB ? b.agentA : b.agentB}  (${result.entity})?`,
+    question: `Vypočti ${a.agent == b.agentB ? b.agentA : b.agentB}${formatEntity(result)}?`,
     result,
     options: [
       { tex: `${formatNumber(a.quantity)} * ${formatRatio(Math.abs(b.ratio))}`, result: formatNumber(a.quantity * b.ratio), ok: (a.agent == b.agentB && b.ratio >= 0) || (a.agent == b.agentB && b.ratio < 0) },
@@ -270,10 +292,15 @@ function ratioCompareRule(a: Container, b: RatioComparison): Question {
 }
 
 function transferRule(a: Container, b: Transfer): Container {
-  if (a.entity == b.entity) {
+  if (a.entity != b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`
   }
-  return { kind: 'cont', agent: a.agent, quantity: a.quantity + b.quantity, entity: a.entity }
+  if (a.agent == b.agentB) {
+    return { kind: 'cont', agent: b.agentA, quantity: a.quantity + 2 * b.quantity, entity: a.entity }
+  }
+  else if (a.agent == b.agentA) {
+    return { kind: 'cont', agent: b.agentB, quantity: a.quantity + -2 * b.quantity, entity: a.entity }
+  } 
 }
 
 function diffPartToWholeRuleEx(a: RatioCtor, b: PartWholeRatio): PartWholeRatio {
@@ -313,22 +340,27 @@ function diffPartToPartRule(a: RatiosCtor, b: PartWholeRatio): TwoPartRatio {
 
 
 function compRatioToCompRuleEx(a: RatioComparison, b: Comparison): Container {
+  if (b.quantity > 0 && a.ratio < 1 || b.quantity < 0 && a.ratio > 1) {
+    throw `Uncompatible compare rules. Absolute compare ${b.quantity} between ${b.agentA} a ${b.agentB} does not match relative compare ${a.ratio}. `
+  }
   return {
     kind: 'cont',
-    agent: b.agentA,
+    agent: b.agentB,
     entity: b.entity,
-    quantity: a.ratio * (b.quantity >= 0 ? (b.quantity - 1) : 1 + 1 / b.quantity)
+    quantity: Math.abs(b.quantity / (a.ratio - 1))
   }
 }
 
 function compRatioToCompRule(a: RatioComparison, b: Comparison): Question {
   const result = compRatioToCompRuleEx(a, b)
+  console.log(a, b, result)
   return {
     question: containerQuestion(result),
     result,
     options: [
-      { tex: `${formatNumber(b.quantity)} - 1`, result: formatNumber(b.quantity - 1), ok: b.quantity >= 0 },
-      { tex: `1 / ${formatNumber(b.quantity)} + 1`, result: formatNumber(1 / b.quantity + 1), ok: b.quantity < 0 }]
+      { tex: `${formatNumber(Math.abs(b.quantity))} / ${formatRatio(Math.abs(a.ratio - 1))}`, result: formatNumber(result.quantity), ok: true },
+      { tex: `${formatNumber(Math.abs(b.quantity))} / ${formatRatio(Math.abs(1 - a.ratio))}`, result: formatNumber(Math.abs(b.quantity / (1 - a.ratio))), ok: false },
+    ]
   }
 }
 
@@ -490,7 +522,7 @@ function gcdRuleEx(items: Container[], b: GCD): Container {
 }
 function gcdRule(items: Container[], b: GCD): Question {
   const result = gcdRuleEx(items, b)
-  const factors = primeFactorization(items.map(d =>d.quantity))
+  const factors = primeFactorization(items.map(d => d.quantity))
   return {
     question: combineQuestion(result),
     result,
@@ -505,7 +537,7 @@ function lcdRuleEx(items: Container[], b: LCD): Container {
 }
 function lcdRule(items: Container[], b: LCD): Question {
   const result = lcdRuleEx(items, b)
-  const factors = primeFactorization(items.map(d =>d.quantity))
+  const factors = primeFactorization(items.map(d => d.quantity))
   return {
     question: combineQuestion(result),
     result,
@@ -593,7 +625,7 @@ function toDiff(a: Container, b: Container): ComparisonDiff {
 
   }
 }
-function toRate(a: Container, b: Container): Rate {
+function toRateEx(a: Container, b: Container): Rate {
   if (a.agent !== b.agent) {
     throw `Mismatch angent ${a.agent}, ${b.agent}`
   }
@@ -609,6 +641,19 @@ function toRate(a: Container, b: Container): Rate {
     }
   }
 }
+
+function toRate(a: Container, b: Container): Question {
+  const result = toRateEx(a, b)
+  return {
+    question: `Rozděl rovnoměrně na ${b.quantity} ${b.entity}`,
+    result,
+    options: [
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: true },
+      { tex: `${formatNumber(b.quantity)} / ${formatNumber(a.quantity)}`, result: formatNumber(b.quantity / a.quantity), ok: false },
+    ]
+  }
+}
+
 function toQuota(a: Container, quota: Container): Quota {
   if (a.entity !== quota.entity) {
     throw `Mismatch entity ${a.entity}, ${quota.entity}`
@@ -678,7 +723,6 @@ function partToPartRuleEx(a: Container, partToPartRatio: PartToPartRatio, nth?: 
 
   const partsSum = partToPartRatio.ratios.reduce((out, d) => out += d, 0);
   const matchedWhole = matchAgent(partToPartRatio.whole, a);
-  console.log(partToPartRatio, nth)
 
   return {
     kind: 'cont',
@@ -700,7 +744,6 @@ function partToPartRule(a: Container, partToPartRatio: PartToPartRatio, nth?: Nt
 
   if (sourcePartIndex == -1) sourcePartIndex = 0;
   const partsSum = `(${partToPartRatio.ratios.join(" + ")})`
-  console.log(partToPartRatio.ratios, sourcePartIndex, targetPartIndex)
   return {
     question: containerQuestion(result),
     result,
@@ -721,7 +764,7 @@ function mapRatiosByFactor(multi: PartToPartRatio, quantity: number): Question {
     question: "Zjednoduš",
     result,
     options: []
-      
+
   }
 }
 
@@ -737,15 +780,15 @@ function partEqualEx(a: Comparison, b: Container) {
     quantity: rest.quantity / 2
   }
 }
-function partEqual(a: Comparison, b: Container) : Question{
+function partEqual(a: Comparison, b: Container): Question {
   const diff = compDiff(b.agent, a.quantity > 0 ? a.agentB : a.agentA, Math.abs(a.quantity), a.entity);
   const result = partEqualEx(a, b)
   return {
     question: containerQuestion(result),
     result,
     options: [
-      { tex: `(${formatNumber(b.quantity)} - ${formatNumber(diff.quantity)}) / 2`, result: formatNumber((b.quantity - diff.quantity)/2), ok: b.agent === diff.agentMinuend },
-      { tex: `(${formatNumber(b.quantity)} + ${formatNumber(diff.quantity)}) / 2`, result: formatNumber((b.quantity + diff.quantity)/2), ok: b.agent !== diff.agentMinuend }
+      { tex: `(${formatNumber(b.quantity)} - ${formatNumber(diff.quantity)}) / 2`, result: formatNumber((b.quantity - diff.quantity) / 2), ok: b.agent === diff.agentMinuend },
+      { tex: `(${formatNumber(b.quantity)} + ${formatNumber(diff.quantity)}) / 2`, result: formatNumber((b.quantity + diff.quantity) / 2), ok: b.agent !== diff.agentMinuend }
     ]
   }
 
@@ -830,6 +873,9 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
                   ? toPartWholeRatio(a, b)
                   : toComparison(a, b)
   }
+  else if (a.kind === "ratio" && b.kind === "ratio") {
+    return toComparisonRatio(a, b);
+  }
   else if (a.kind === "comp" && b.kind === "cont") {
     const kind = last?.kind;
     return kind === "comp-part-eq" ? partEqual(a, b) : compareRule(b, a);
@@ -912,6 +958,9 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   }
   else if (a.kind === "cont" && b.kind === "transfer") {
     return transferRule(a, b)
+  }
+  else if (a.kind === "transfer" && b.kind === "cont") {
+    return transferRule(b, a)
   }
   else if (a.kind === "comp" && b.kind === "comp") {
     return compareToCompareRule(b, a)
@@ -1068,11 +1117,11 @@ function formatRatio(d: number) {
 }
 
 function containerQuestion(d: Container) {
-  return `Vypočti ${d.agent} (${d.entity})?`
+  return `Vypočti ${d.agent}${formatEntity(d)}?`
 }
 
 function combineQuestion(d: Container) {
-  return `Vypočti ${d.agent} (${d.entity})?`
+  return `Vypočti ${d.agent}${formatEntity(d)}?`
 }
 
 
@@ -1151,4 +1200,8 @@ function lcdFromPrimeFactors(primeFactors: number[][]): number[] {
 
   // Reduce the arrays by applying the union function iteratively
   return primeFactors.reduce((acc, curr) => union(acc, curr), []);
+}
+
+function formatEntity(d: EntityBase) {
+  return d.entity ? ` (${d.entity})` : ''
 }

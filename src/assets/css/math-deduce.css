@@ -7,3 +7,47 @@
 @import './common/deduce.css';
 @import './common/chat.css';
 
+
+.viz--text-tree,
+.viz--text-chat,
+.viz--deduce-tree,
+.viz--chat,
+.viz--stepper-chat {
+  display: none;
+}
+
+
+.deduce-tree
+{
+  .viz--deduce-tree {
+    display: block;
+  }
+}
+
+.text-tree
+{
+  .viz--text-tree {
+    display: block;
+  }
+}
+
+.text-chat
+{
+  .viz--text-chat {
+    display: block;
+  }
+}
+
+.chat
+{
+  .viz--chat {
+    display: block;
+  }
+}
+
+.stepper-chat
+{
+  .viz--stepper-chat {
+    display: block;
+  }
+}

@@ -13,7 +13,7 @@ import mdPlus from './utils/md-utils.js';
 import { parseQuiz } from './utils/quiz-parser.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, isEmptyOrWhiteSpace } from './utils/quiz-string-utils.js';
 import wordProblems from './math/word-problems.js';
-import { isPredicate, jsonToMarkdownChat } from "./utils/deduce-utils.js";
+import { isPredicate, jsonToMarkdownChat, generateAIMessages } from "./utils/deduce-utils.js";
 import { deduceTraverse, highlightLabel, renderChat } from './utils/deduce-components.js';
 import Fraction from 'fraction.js';
 
@@ -58,45 +58,35 @@ const output = ids.map(id => {
   
   return html.fragment`
   ${mdPlus.unsafe(quiz.content([id], { ids, render: 'content' }), { docId: `${code}-${id}` })}
-  ${values?.length > 0
+  ${values?.filter(([key, value]) =>  value.deductionTree != null).length > 0
       ? html.fragment`
+      <div class="h-stack h-stack--wrap">
+      <div>${renderChatButton("Vysvětli", generateAIMessages({
+        template: quiz.content([id], { ids, render: 'content' }),
+        deductionTrees:values.map(([key, value]) => [`Řešení ${key}`,value.deductionTree])}).explainSolution)}
+      </div>
+      <div>${renderChatButton("Více příkladů", generateAIMessages({
+        template: quiz.content([id], { ids, render: 'content' }),
+        deductionTrees:values.map(([key, value]) => [`Řešení ${key}`,value.deductionTree])}).generateMoreQuizes)}
+      </div>
+      <div>${renderChatButton("Vizualizuj", generateAIMessages({
+        template: quiz.content([id], { ids, render: 'content' }),
+        deductionTrees:values.map(([key, value]) => [`Řešení ${key}`,value.deductionTree])}).vizualizeSolution)}
+      </div>
+
+    </div>
+
   ${values.map(([key, value]) => html`<div class="card break-inside-avoid-column">
   ${(value.results ?? []).map(d => renderResult(key, d))}
-  ${value.deductionTree != null ? renderChat(value.deductionTree) : ''}  
+  ${value.deductionTree != null ? html`<div>
+  <div class="h-stack">
+    <div style="flex:1">${key}</div>
+  </div>
+  ${renderChat(value.deductionTree)}
+  </div>` : ''}  
 </div>`)}
 `: ''}`
 })
-
-const message  = ids.map(id => [id, (wordProblem[id] != null)
-   ? [[id, wordProblem[id]]] 
-   : [1, 2, 3]
-    .map(i => `${id}.${i}`)
-    .map(subId => wordProblem[subId])
-    .filter(Boolean)
-    .map((d, index) => [`${id}.${index +1}`, d])]).filter(([id,d]) =>  d.length > 0).slice(2,4      
-    ).map(([id,values]) => {
-
-  return `${quiz.content([id], { ids, render: 'content' })}
-${values.map(([key,value]) => `
-Řešení : ${key}
-
-${jsonToMarkdownChat(value.deductionTree).join("\n\n")}
-`).join("")}`}).join("\n---\n");
-
-const quizQuestions = `Níže je uvedeno zadání testu a řešení jednotlivých úloh.
-Řešení úloh je popsáno heslovitě po jednotlivých krocích. Správný výsledek je uveden jako poslední krok.
-Jednotlivé úlohy jsou odděleny horizontální čárou.
-
-${message}
-
-Můžeš vymyslet obdobný test v jiné doméně, která půjde řešit stejným postupem řešení 
-- změnit agent - identifikovány pomocí markdown bold **
-- změna entit - identifikace pomocí markdown bold __
-- změnu parametry úlohy - identifikovány pomocí italic *
-
-Změn agenty, entity a parametry úlohy tak aby byly z jiné, pokud možno netradiční domény.
-Použij jiné vstupní parametry tak, aby výsledek byl jiná hodnota.
-Vrať pouze zadání testu a nevracej způsob řešení, resp. kroky řešení.`  
 
 function normalizeMath(value) {
   return value

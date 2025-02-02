@@ -4341,5 +4341,664 @@
         }
       ]
     }
+  },
+  "M9I-2025": {
+    "2.1": {
+      "header": "2.1",
+      "mathContent": "(1.5^2 - 0.3^2)\\div6=\n",
+      "results": [
+        {
+          "Name": "Vyhodnotit",
+          "Answer": "$0.36$",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": [
+                {
+                  "Hint": "Proveďte výpočet.",
+                  "Step": "Výpočtem $1.5$ na $2$ získáte $2.25$.",
+                  "Expression": "$$\\frac{2.25-0.3^{2}}{6}$$ "
+                },
+                {
+                  "Hint": "Proveďte výpočet.",
+                  "Step": "Výpočtem $0.3$ na $2$ získáte $0.09$.",
+                  "Expression": "$$\\frac{2.25-0.09}{6}$$ "
+                },
+                {
+                  "Hint": "Odečtěte jeden člen od druhého.",
+                  "Step": "Odečtěte $0.09$ od $2.25$ a dostanete $2.16$.",
+                  "Expression": "$$\\frac{2.16}{6}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Rozbalte položku $\\frac{2.16}{6}$ vynásobením čitatele a jmenovatele čáslem $100$.",
+                  "Expression": "$$\\frac{216}{600}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vykraťte zlomek $\\frac{216}{600}$ na základní tvar vytknutím a vykrácením hodnoty $24$.",
+                  "Expression": "$$\\frac{9}{25}$$ "
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "2.2": {
+      "header": "2.2",
+      "mathContent": "\\sqrt{\\frac{2\\cdot2^2}{3}}\\cdot\\sqrt{\\frac32}=\n",
+      "results": [
+        {
+          "Name": "Vyhodnotit",
+          "Answer": "$2$",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": [
+                {
+                  "Hint": "Slučte mocnitele.",
+                  "Step": "Pokud chcete vynásobit mocniny stejného mocněnce, sečtěte jejich mocnitele. Sečtením $1$ a $2$ získáte $3$.",
+                  "Expression": "$$\\sqrt{\\frac{2^{3}}{3}}\\sqrt{\\frac{3}{2}}$$ "
+                },
+                {
+                  "Hint": "Proveďte výpočet.",
+                  "Step": "Výpočtem $2$ na $3$ získáte $8$.",
+                  "Expression": "$$\\sqrt{\\frac{8}{3}}\\sqrt{\\frac{3}{2}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Odpište druhou odmocninu divize $\\sqrt{\\frac{8}{3}}$ jako divizi čtvercových kořenových složek $\\frac{\\sqrt{8}}{\\sqrt{3}}$.",
+                  "Expression": "$$\\frac{\\sqrt{8}}{\\sqrt{3}}\\sqrt{\\frac{3}{2}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Rozložte $8=2^{2}\\times 2$ na součin. Odpište druhou odmocninu produktu $\\sqrt{2^{2}\\times 2}$ jako součin čtvercových kořenových složek $\\sqrt{2^{2}}\\sqrt{2}$. Vypočítejte druhou odmocninu čísla $2^{2}$.",
+                  "Expression": "$$\\frac{2\\sqrt{2}}{\\sqrt{3}}\\sqrt{\\frac{3}{2}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Převeďte jmenovatele $\\frac{2\\sqrt{2}}{\\sqrt{3}}$ vynásobením čitatele a jmenovatele $\\sqrt{3}$.",
+                  "Expression": "$$\\frac{2\\sqrt{2}\\sqrt{3}}{\\left(\\sqrt{3}\\right)^{2}}\\sqrt{\\frac{3}{2}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Mocnina hodnoty $\\sqrt{3}$ je $3$.",
+                  "Expression": "$$\\frac{2\\sqrt{2}\\sqrt{3}}{3}\\sqrt{\\frac{3}{2}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Chcete-li vynásobit $\\sqrt{2}$ a $\\sqrt{3}$, vynásobte čísla v druhé odmocnině.",
+                  "Expression": "$$\\frac{2\\sqrt{6}}{3}\\sqrt{\\frac{3}{2}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Odpište druhou odmocninu divize $\\sqrt{\\frac{3}{2}}$ jako divizi čtvercových kořenových složek $\\frac{\\sqrt{3}}{\\sqrt{2}}$.",
+                  "Expression": "$$\\frac{2\\sqrt{6}}{3}\\times \\frac{\\sqrt{3}}{\\sqrt{2}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Převeďte jmenovatele $\\frac{\\sqrt{3}}{\\sqrt{2}}$ vynásobením čitatele a jmenovatele $\\sqrt{2}$.",
+                  "Expression": "$$\\frac{2\\sqrt{6}}{3}\\times \\frac{\\sqrt{3}\\sqrt{2}}{\\left(\\sqrt{2}\\right)^{2}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Mocnina hodnoty $\\sqrt{2}$ je $2$.",
+                  "Expression": "$$\\frac{2\\sqrt{6}}{3}\\times \\frac{\\sqrt{3}\\sqrt{2}}{2}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Chcete-li vynásobit $\\sqrt{3}$ a $\\sqrt{2}$, vynásobte čísla v druhé odmocnině.",
+                  "Expression": "$$\\frac{2\\sqrt{6}}{3}\\times \\frac{\\sqrt{6}}{2}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte zlomek $\\frac{2\\sqrt{6}}{3}$ zlomkem $\\frac{\\sqrt{6}}{2}$ tak, že vynásobíte čitatele čitatelem a jmenovatele jmenovatelem.",
+                  "Expression": "$$\\frac{2\\sqrt{6}\\sqrt{6}}{3\\times 2}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vykraťte $2$ v čitateli a jmenovateli.",
+                  "Expression": "$$\\frac{\\sqrt{6}\\sqrt{6}}{3}$$ "
+                },
+                {
+                  "Hint": "Proveďte výpočet.",
+                  "Step": "Vynásobením $\\sqrt{6}$ a $\\sqrt{6}$ získáte $6$.",
+                  "Expression": "$$\\frac{6}{3}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vydělte číslo $6$ číslem $3$ a dostanete $2$.",
+                  "Expression": "$$2$$ "
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "3.1": {
+      "header": "3.1",
+      "mathContent": "0.2-0.2\\cdot\\frac{5}{12}-\\left(-\\frac{7}{30}\\right)=\n",
+      "results": [
+        {
+          "Name": "Vyhodnotit",
+          "Answer": "$0.35$",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": [
+                {
+                  "Hint": null,
+                  "Step": "Umožňuje převést desetinné číslo $0.2$ na zlomek $\\frac{2}{10}$. Vykraťte zlomek $\\frac{2}{10}$ na základní tvar vytknutím a vykrácením hodnoty $2$.",
+                  "Expression": "$$0.2-\\frac{1}{5}\\times \\frac{5}{12}-\\left(-\\frac{7}{30}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte zlomek $\\frac{1}{5}$ zlomkem $\\frac{5}{12}$ tak, že vynásobíte čitatele čitatelem a jmenovatele jmenovatelem.",
+                  "Expression": "$$0.2-\\frac{1\\times 5}{5\\times 12}-\\left(-\\frac{7}{30}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vykraťte $5$ v čitateli a jmenovateli.",
+                  "Expression": "$$0.2-\\frac{1}{12}-\\left(-\\frac{7}{30}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Umožňuje převést desetinné číslo $0.2$ na zlomek $\\frac{2}{10}$. Vykraťte zlomek $\\frac{2}{10}$ na základní tvar vytknutím a vykrácením hodnoty $2$.",
+                  "Expression": "$$\\frac{1}{5}-\\frac{1}{12}-\\left(-\\frac{7}{30}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Nejmenší společný násobek čísel $5$ a $12$ je $60$. Převeďte $\\frac{1}{5}$ a $\\frac{1}{12}$ na zlomky se jmenovatelem $60$.",
+                  "Expression": "$$\\frac{12}{60}-\\frac{5}{60}-\\left(-\\frac{7}{30}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vzhledem k tomu, že $\\frac{12}{60}$ a $\\frac{5}{60}$ mají stejného jmenovatele, můžete je odečíst odečtením jejich čitatelů.",
+                  "Expression": "$$\\frac{12-5}{60}-\\left(-\\frac{7}{30}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Odečtěte $5$ od $12$ a dostanete $7$.",
+                  "Expression": "$$\\frac{7}{60}-\\left(-\\frac{7}{30}\\right)$$ "
+                },
+                {
+                  "Hint": "Proveďte výpočet.",
+                  "Step": "Opakem $-\\frac{7}{30}$ je $\\frac{7}{30}$.",
+                  "Expression": "$$\\frac{7}{60}+\\frac{7}{30}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Nejmenší společný násobek čísel $60$ a $30$ je $60$. Převeďte $\\frac{7}{60}$ a $\\frac{7}{30}$ na zlomky se jmenovatelem $60$.",
+                  "Expression": "$$\\frac{7}{60}+\\frac{14}{60}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vzhledem k tomu, že $\\frac{7}{60}$ a $\\frac{14}{60}$ mají stejného jmenovatele, můžete je sečíst sečtením jejich čitatelů.",
+                  "Expression": "$$\\frac{7+14}{60}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Sečtením $7$ a $14$ získáte $21$.",
+                  "Expression": "$$\\frac{21}{60}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vykraťte zlomek $\\frac{21}{60}$ na základní tvar vytknutím a vykrácením hodnoty $3$.",
+                  "Expression": "$$\\frac{7}{20}$$ "
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "3.2": {
+      "header": "3.2",
+      "mathContent": "\\frac{\\frac{1}{4}+\\frac{1}{6}}{\\frac{4}{9}-\\frac{5}{6}\\cdot\\frac{2}{15}}=\n",
+      "results": [
+        {
+          "Name": "Vyhodnotit",
+          "Answer": "$\\frac{5}{4}=1.25$",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": [
+                {
+                  "Hint": null,
+                  "Step": "Nejmenší společný násobek čísel $4$ a $6$ je $12$. Převeďte $\\frac{1}{4}$ a $\\frac{1}{6}$ na zlomky se jmenovatelem $12$.",
+                  "Expression": "$$\\frac{\\frac{3}{12}+\\frac{2}{12}}{\\frac{4}{9}-\\frac{5}{6}\\times \\frac{2}{15}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vzhledem k tomu, že $\\frac{3}{12}$ a $\\frac{2}{12}$ mají stejného jmenovatele, můžete je sečíst sečtením jejich čitatelů.",
+                  "Expression": "$$\\frac{\\frac{3+2}{12}}{\\frac{4}{9}-\\frac{5}{6}\\times \\frac{2}{15}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Sečtením $3$ a $2$ získáte $5$.",
+                  "Expression": "$$\\frac{\\frac{5}{12}}{\\frac{4}{9}-\\frac{5}{6}\\times \\frac{2}{15}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte zlomek $\\frac{5}{6}$ zlomkem $\\frac{2}{15}$ tak, že vynásobíte čitatele čitatelem a jmenovatele jmenovatelem.",
+                  "Expression": "$$\\frac{\\frac{5}{12}}{\\frac{4}{9}-\\frac{5\\times 2}{6\\times 15}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Proveďte násobení ve zlomku $\\frac{5\\times 2}{6\\times 15}$.",
+                  "Expression": "$$\\frac{\\frac{5}{12}}{\\frac{4}{9}-\\frac{10}{90}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vykraťte zlomek $\\frac{10}{90}$ na základní tvar vytknutím a vykrácením hodnoty $10$.",
+                  "Expression": "$$\\frac{\\frac{5}{12}}{\\frac{4}{9}-\\frac{1}{9}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vzhledem k tomu, že $\\frac{4}{9}$ a $\\frac{1}{9}$ mají stejného jmenovatele, můžete je odečíst odečtením jejich čitatelů.",
+                  "Expression": "$$\\frac{\\frac{5}{12}}{\\frac{4-1}{9}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Odečtěte $1$ od $4$ a dostanete $3$.",
+                  "Expression": "$$\\frac{\\frac{5}{12}}{\\frac{3}{9}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vykraťte zlomek $\\frac{3}{9}$ na základní tvar vytknutím a vykrácením hodnoty $3$.",
+                  "Expression": "$$\\frac{\\frac{5}{12}}{\\frac{1}{3}}$$ "
+                },
+                {
+                  "Hint": "Pokud chcete číslo vydělit zlomkem, vynásobte ho převráceným zlomkem.",
+                  "Step": "Vydělte číslo $\\frac{5}{12}$ zlomkem $\\frac{1}{3}$ tak, že číslo $\\frac{5}{12}$ vynásobíte převrácenou hodnotou zlomku $\\frac{1}{3}$.",
+                  "Expression": "$$\\frac{5}{12}\\times 3$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vyjádřete $\\frac{5}{12}\\times 3$ jako jeden zlomek.",
+                  "Expression": "$$\\frac{5\\times 3}{12}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobením $5$ a $3$ získáte $15$.",
+                  "Expression": "$$\\frac{15}{12}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vykraťte zlomek $\\frac{15}{12}$ na základní tvar vytknutím a vykrácením hodnoty $3$.",
+                  "Expression": "$$\\frac{5}{4}$$ "
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "4.1": {
+      "header": "4.1 Zjednodušte (výsledný výraz nesmí obsahovat závorky):",
+      "mathContent": "x^2 - (x - 2y)\\cdot(x+2y)=\n",
+      "results": [
+        {
+          "Name": "Vyhodnotit",
+          "Answer": "$4y^{2}$",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": [
+                {
+                  "Hint": null,
+                  "Step": "Zvažte $\\left(x-2y\\right)\\left(x+2y\\right)$. Násobení je možné převést na rozdíl druhých mocnin pomocí tohoto pravidla: $\\left(a-b\\right)\\left(a+b\\right)=a^{2}-b^{2}$.",
+                  "Expression": "$$x^{2}-\\left(x^{2}-\\left(2y\\right)^{2}\\right)$$ "
+                },
+                {
+                  "Hint": "Roznásobte mocnitele.",
+                  "Step": "Roznásobte $\\left(2y\\right)^{2}$.",
+                  "Expression": "$$x^{2}-\\left(x^{2}-2^{2}y^{2}\\right)$$ "
+                },
+                {
+                  "Hint": "Proveďte výpočet.",
+                  "Step": "Výpočtem $2$ na $2$ získáte $4$.",
+                  "Expression": "$$x^{2}-\\left(x^{2}-4y^{2}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Pokud chcete najít opačnou hodnotu k $x^{2}-4y^{2}$, najděte opačnou hodnotu k jednotlivým členům.",
+                  "Expression": "$$x^{2}-x^{2}+4y^{2}$$ "
+                },
+                {
+                  "Hint": "Slučte stejné členy.",
+                  "Step": "Sloučením $x^{2}$ a $-x^{2}$ získáte $0$.",
+                  "Expression": "$$4y^{2}$$ "
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "4.2": {
+      "header": "4.2 Rozložte na součin podle vzorce:",
+      "mathContent": "(5n-8)\\cdot(-3n)+(4n-3)^2=\n",
+      "results": [
+        {
+          "Name": "Vyhodnotit",
+          "Answer": "$n^{2}+9$",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": [
+                {
+                  "Hint": "Proveďte roznásobení s využitím distributivnosti.",
+                  "Step": "S využitím distributivnosti vynásobte číslo $5n-8$ číslem $-3$.",
+                  "Expression": "$$\\left(-15n+24\\right)n+\\left(4n-3\\right)^{2}$$ "
+                },
+                {
+                  "Hint": "Proveďte roznásobení s využitím distributivnosti.",
+                  "Step": "S využitím distributivnosti vynásobte číslo $-15n+24$ číslem $n$.",
+                  "Expression": "$$-15n^{2}+24n+\\left(4n-3\\right)^{2}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Rozviňte výraz $\\left(4n-3\\right)^{2}$ podle binomické věty $\\left(a-b\\right)^{2}=a^{2}-2ab+b^{2}$.",
+                  "Expression": "$$-15n^{2}+24n+16n^{2}-24n+9$$ "
+                },
+                {
+                  "Hint": "Slučte stejné členy.",
+                  "Step": "Sloučením $-15n^{2}$ a $16n^{2}$ získáte $n^{2}$.",
+                  "Expression": "$$n^{2}+24n-24n+9$$ "
+                },
+                {
+                  "Hint": "Slučte stejné členy.",
+                  "Step": "Sloučením $24n$ a $-24n$ získáte $0$.",
+                  "Expression": "$$n^{2}+9$$ "
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "4.3": {
+      "header": "4.3 Zjednodušte a výsledek rozložte na součin vytýkáním:",
+      "mathContent": "7\\cdot3 + 10\\cdot({a^2}+10) - a\\cdot(a + {6\\\\6})=\n",
+      "results": [
+        {
+          "Name": "Error",
+          "Answer": "",
+          "TemplateSteps": []
+        }
+      ]
+    },
+    "5.1": {
+      "header": "5.1",
+      "mathContent": "\\begin{aligned}\n3x+\\frac{3}{4}y = 1\\\\\n3,5y+3x = 6,5\n\\end{aligned}\n",
+      "results": [
+        {
+          "Name": "Vyřešte pro: x, y",
+          "Answer": "$x=-\\frac{1}{6}\\approx -0,166666667$<br/>$y=2$",
+          "TemplateSteps": [
+            {
+              "Name": "Postup použití dosazení",
+              "Steps": [
+                {
+                  "Hint": null,
+                  "Step": "Pokud chcete dvojici rovnic řešit pomocí dosazování, vyřešte nejdříve jednu proměnnou v jedné z rovnic. Výsledek této proměnné pak dosaďte do druhé rovnice.",
+                  "Expression": "$$3x+\\frac{3}{4}y=1;3x+3,5y=6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Zvolte jednu z rovnic a vyřešte ji pro $x$ izolováním $x$ na levé straně rovnice.",
+                  "Expression": "$$3x+\\frac{3}{4}y=1$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Odečtěte hodnotu $\\frac{3y}{4}$ od obou stran rovnice.",
+                  "Expression": "$$3x=-\\frac{3}{4}y+1$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vydělte obě strany hodnotou $3$.",
+                  "Expression": "$$x=\\frac{1}{3}\\left(-\\frac{3}{4}y+1\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte číslo $\\frac{1}{3}$ číslem $-\\frac{3y}{4}+1$.",
+                  "Expression": "$$x=-\\frac{1}{4}y+\\frac{1}{3}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Dosaďte $-\\frac{y}{4}+\\frac{1}{3}$ za $x$ ve druhé rovnici, $3x+3,5y=6,5$.",
+                  "Expression": "$$3\\left(-\\frac{1}{4}y+\\frac{1}{3}\\right)+3,5y=6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte číslo $3$ číslem $-\\frac{y}{4}+\\frac{1}{3}$.",
+                  "Expression": "$$-\\frac{3}{4}y+1+3,5y=6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Přidejte uživatele $-\\frac{3y}{4}$ do skupiny $\\frac{7y}{2}$.",
+                  "Expression": "$$\\frac{11}{4}y+1=6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Odečtěte hodnotu $1$ od obou stran rovnice.",
+                  "Expression": "$$\\frac{11}{4}y=5,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vydělte obě strany rovnice hodnotou $\\frac{11}{4}$, což je totéž jako vynásobení obou stran převráceným zlomkem.",
+                  "Expression": "$$y=2$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "V rovnici $x=-\\frac{1}{4}y+\\frac{1}{3}$ dosaďte $y$ za proměnnou $2$. Vzhledem k tomu, že výsledná rovnice obsahuje jen jednu proměnnou, můžete hodnotu proměnné $x$ vypočítat přímo.",
+                  "Expression": "$$x=-\\frac{1}{4}\\times 2+\\frac{1}{3}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte číslo $-\\frac{1}{4}$ číslem $2$.",
+                  "Expression": "$$x=-\\frac{1}{2}+\\frac{1}{3}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Připočítejte $\\frac{1}{3}$ ke $-\\frac{1}{2}$ zjištěním společného jmenovatele a sečtením čitatelů. Pak vykraťte zlomek na jeho základní tvar, pokud je to možné.",
+                  "Expression": "$$x=-\\frac{1}{6}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Systém je teď vyřešený.",
+                  "Expression": "$$x=-\\frac{1}{6};y=2$$ "
+                }
+              ]
+            },
+            {
+              "Name": "Postup použití matic",
+              "Steps": [
+                {
+                  "Hint": null,
+                  "Step": "Rovnice přepište do standardního tvaru a pomocí matic pak vyřešte soustavu rovnic.",
+                  "Expression": "$$3x+\\frac{3}{4}y=1;3x+3,5y=6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Napište rovnice ve tvaru matic.",
+                  "Expression": "$$\\left(\\begin{matrix}3&\\frac{3}{4}\\\\3&3,5\\end{matrix}\\right)\\left(\\begin{matrix}x\\\\y\\end{matrix}\\right)=\\left(\\begin{matrix}1\\\\6,5\\end{matrix}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte rovnici zleva inverzní maticí matice $\\left(\\begin{matrix}3&\\frac{3}{4}\\\\3&3,5\\end{matrix}\\right)$.",
+                  "Expression": "$$inverse(\\left(\\begin{matrix}3&\\frac{3}{4}\\\\3&3,5\\end{matrix}\\right))\\left(\\begin{matrix}3&\\frac{3}{4}\\\\3&3,5\\end{matrix}\\right)\\left(\\begin{matrix}x\\\\y\\end{matrix}\\right)=inverse(\\left(\\begin{matrix}3&\\frac{3}{4}\\\\3&3,5\\end{matrix}\\right))\\left(\\begin{matrix}1\\\\6,5\\end{matrix}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "V případě součinu matice a její inverzní matice dostaneme jednotkovou matici.",
+                  "Expression": "$$\\left(\\begin{matrix}1&0\\\\0&1\\end{matrix}\\right)\\left(\\begin{matrix}x\\\\y\\end{matrix}\\right)=inverse(\\left(\\begin{matrix}3&\\frac{3}{4}\\\\3&3,5\\end{matrix}\\right))\\left(\\begin{matrix}1\\\\6,5\\end{matrix}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte matice na levé straně rovnice.",
+                  "Expression": "$$\\left(\\begin{matrix}x\\\\y\\end{matrix}\\right)=inverse(\\left(\\begin{matrix}3&\\frac{3}{4}\\\\3&3,5\\end{matrix}\\right))\\left(\\begin{matrix}1\\\\6,5\\end{matrix}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Inverzní maticí matice $2\\times 2$ $\\left(\\begin{matrix}a&b\\\\c&d\\end{matrix}\\right)$ je matice $\\left(\\begin{matrix}\\frac{d}{ad-bc}&\\frac{-b}{ad-bc}\\\\\\frac{-c}{ad-bc}&\\frac{a}{ad-bc}\\end{matrix}\\right)$, maticovou rovnici je proto možné přepsat do podoby úlohy násobení matic.",
+                  "Expression": "$$\\left(\\begin{matrix}x\\\\y\\end{matrix}\\right)=\\left(\\begin{matrix}\\frac{3,5}{3\\times 3,5-\\frac{3}{4}\\times 3}&-\\frac{\\frac{3}{4}}{3\\times 3,5-\\frac{3}{4}\\times 3}\\\\-\\frac{3}{3\\times 3,5-\\frac{3}{4}\\times 3}&\\frac{3}{3\\times 3,5-\\frac{3}{4}\\times 3}\\end{matrix}\\right)\\left(\\begin{matrix}1\\\\6,5\\end{matrix}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Proveďte výpočet.",
+                  "Expression": "$$\\left(\\begin{matrix}x\\\\y\\end{matrix}\\right)=\\left(\\begin{matrix}\\frac{14}{33}&-\\frac{1}{11}\\\\-\\frac{4}{11}&\\frac{4}{11}\\end{matrix}\\right)\\left(\\begin{matrix}1\\\\6,5\\end{matrix}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte matice.",
+                  "Expression": "$$\\left(\\begin{matrix}x\\\\y\\end{matrix}\\right)=\\left(\\begin{matrix}\\frac{14}{33}-\\frac{1}{11}\\times 6,5\\\\-\\frac{4}{11}+\\frac{4}{11}\\times 6,5\\end{matrix}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Proveďte výpočet.",
+                  "Expression": "$$\\left(\\begin{matrix}x\\\\y\\end{matrix}\\right)=\\left(\\begin{matrix}-\\frac{1}{6}\\\\2\\end{matrix}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Extrahuje prvky matice $x$ a $y$.",
+                  "Expression": "$$x=-\\frac{1}{6};y=2$$ "
+                }
+              ]
+            },
+            {
+              "Name": "Postup použití eliminace",
+              "Steps": [
+                {
+                  "Hint": null,
+                  "Step": "Pokud chcete rovnici vyřešit eliminací, koeficienty jedné z proměnných musí být v obou rovnicích stejné, aby se při odečítání jedné rovnice od druhé proměnná odstranila.",
+                  "Expression": "$$3x+\\frac{3}{4}y=1;3x+3,5y=6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Odečtěte rovnici $3x+3,5y=6,5$ od rovnice $3x+\\frac{3}{4}y=1$ tak, že odečtete stejné členy na každé straně rovnice.",
+                  "Expression": "$$3x-3x+\\frac{3}{4}y-3,5y=1-6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Přidejte uživatele $3x$ do skupiny $-3x$. Členy $3x$ a $-3x$ se vykrátí, takže v rovnici zůstane jen jedna proměnná, kterou je možné vypočítat.",
+                  "Expression": "$$\\frac{3}{4}y-3,5y=1-6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Přidejte uživatele $\\frac{3y}{4}$ do skupiny $-\\frac{7y}{2}$.",
+                  "Expression": "$$-\\frac{11}{4}y=1-6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Přidejte uživatele $1$ do skupiny $-6,5$.",
+                  "Expression": "$$-\\frac{11}{4}y=-5,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vydělte obě strany rovnice hodnotou $-\\frac{11}{4}$, což je totéž jako vynásobení obou stran převráceným zlomkem.",
+                  "Expression": "$$y=2$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "V rovnici $3x+3,5y=6,5$ dosaďte $y$ za proměnnou $2$. Vzhledem k tomu, že výsledná rovnice obsahuje jen jednu proměnnou, můžete hodnotu proměnné $x$ vypočítat přímo.",
+                  "Expression": "$$3x+3,5\\times 2=6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte číslo $3,5$ číslem $2$.",
+                  "Expression": "$$3x+7=6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Odečtěte hodnotu $7$ od obou stran rovnice.",
+                  "Expression": "$$3x=-0,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vydělte obě strany hodnotou $3$.",
+                  "Expression": "$$x=-\\frac{1}{6}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Systém je teď vyřešený.",
+                  "Expression": "$$x=-\\frac{1}{6};y=2$$ "
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "5.2": {
+      "header": "5.2",
+      "mathContent": "6-\\frac{3-2y}{5}\\cdot2 = 4y\n",
+      "results": [
+        {
+          "Name": "Vyřešte pro: y",
+          "Answer": "$y = \\frac{3}{2} = 1\\frac{1}{2} = 1.5$",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení lineární rovnice",
+              "Steps": [
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte obě strany rovnice hodnotou $5$.",
+                  "Expression": "$$30-\\left(3-2y\\right)\\times 2=20y$$ "
+                },
+                {
+                  "Hint": "Proveďte roznásobení s využitím distributivnosti.",
+                  "Step": "S využitím distributivnosti vynásobte číslo $3-2y$ číslem $2$.",
+                  "Expression": "$$30-\\left(6-4y\\right)=20y$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Pokud chcete najít opačnou hodnotu k $6-4y$, najděte opačnou hodnotu k jednotlivým členům.",
+                  "Expression": "$$30-6-\\left(-4y\\right)=20y$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Opakem $-4y$ je $4y$.",
+                  "Expression": "$$30-6+4y=20y$$ "
+                },
+                {
+                  "Hint": "Odečtěte jeden člen od druhého.",
+                  "Step": "Odečtěte $6$ od $30$ a dostanete $24$.",
+                  "Expression": "$$24+4y=20y$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Odečtěte $20y$ od obou stran.",
+                  "Expression": "$$24+4y-20y=0$$ "
+                },
+                {
+                  "Hint": "Slučte stejné členy.",
+                  "Step": "Sloučením $4y$ a $-20y$ získáte $-16y$.",
+                  "Expression": "$$24-16y=0$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Odečtěte $24$ od obou stran. Po odečtení hodnoty od nuly dostaneme stejnou zápornou hodnotu.",
+                  "Expression": "$$-16y=-24$$ "
+                },
+                {
+                  "Hint": "Zrušte vynásobení vydělením obou stran stejným dělitelem.",
+                  "Step": "Vydělte obě strany hodnotou $-16$.",
+                  "Expression": "$$y=\\frac{-24}{-16}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vykraťte zlomek $\\frac{-24}{-16}$ na základní tvar vytknutím a vykrácením hodnoty $-8$.",
+                  "Expression": "$$y=\\frac{3}{2}$$ "
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
   }
 }

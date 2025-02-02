@@ -64,3 +64,14 @@ function shuffle(array) {
   }
   return array;
 }
+
+export function useInput(input){
+  const s = signal(input.value);
+
+  // Update the signal on input events from the range slider
+  const changed = (e) => (s.value = input.value);
+  
+  input.addEventListener("input", changed);
+  //invalidation.then(() => input.removeEventListener("input", changed));
+  return s;
+}

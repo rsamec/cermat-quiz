@@ -19,6 +19,14 @@ import sourozenci from './M9C-2024/sourozenci.js';
 import trojuhelnik from './M9A-2023/trojuhelnik.js';
 import ctvercovaSit from './M9B-2023/ctvercova-sit.js';
 
+import { plnaKrabice } from './M9I-2025/krabice.js';
+import { kytice } from './M9I-2025/kytice.js';
+import { caryNaPapire } from './M9I-2025/papirACary.js'
+import { letajiciCtverecky } from './M9I-2025/letajiciCtverecky.js';
+import { domecek } from './M9I-2025/domecek.js';
+import { objemNadoby1, objemNadoby2, objemNadoby3 } from './M9I-2025/nadoba.js';
+export { inferenceRule, inferenceRuleWithQuestion } from '../components/math.js';
+
 
 const letniTaborInput = {
   input: {
@@ -45,6 +53,9 @@ const dumMeritkoParams = {
     planDelkaDM: 2,
   }
 }
+
+const krabiceParams = { pocetKusuVKrabice: 12, missingVyrobku: 5 }
+
 export default {
   "M7A-2023": {
     3.3: cetar({
@@ -112,5 +123,18 @@ export default {
   "M9C-2024": {
     1: pocetObyvatel({ input: { celkem: 86_200, jihlavaPlus: 16_000 } }),
     12: sourozenci({ input: { evaPodil: 40, michalPlus: 24, zbyvaNasporit: 72 } }),
+  },
+  "M9I-2025": {
+    7.1: plnaKrabice({ input: krabiceParams })[0],
+    7.2: plnaKrabice({ input: krabiceParams })[1],
+    7.3: plnaKrabice({ input: krabiceParams })[2],
+    12: kytice({ input: {} }),
+    13: caryNaPapire({ input: { pocetCasti: 40 } }),
+    14: domecek({ input: { baseSurfaceArea: 16, quota: 4 } }),
+    15.1: objemNadoby1({ input: { zbyva: 14, zaplnenoPomer: 3 / 5 } }),
+    15.2: objemNadoby2({ input: { zaplnenoProcento: 55, odebrano: 12, zaplnenoPoOdebraniRatio: 1/4} }),
+    15.3: objemNadoby3({ input: { nadoba1Procent: 30, nadoba2Procent: 40, nadoba3: 19, prumerNadobaRatio: 2/5} }),
+    16.1: letajiciCtverecky({ input: { pocetRad: 21, pocetSloupcu: 110 } })[0],
+    16.2: letajiciCtverecky({ input: { pocetRad: 21, pocetSloupcu: 110 } })[1]
   },
 }
