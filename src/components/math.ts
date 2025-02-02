@@ -108,6 +108,12 @@ export type ThreePartRatio = PartToPartRatio & {
   ratios: [number, number, number]
 }
 
+export type Proportion = {
+  kind: 'proportion',
+  inverse: boolean,
+  entities?: [string,string]
+}
+
 export type CommonSense = {
   kind: 'common-sense'
   description: string
@@ -151,7 +157,7 @@ export type Question = {
 
 
 export type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | SumCombine | ProductCombine | PartWholeRatio | PartToPartRatio | ComparisonDiff |
-  CommonSense | GCD | LCD | CompareAndPartEqual | Sequence | NthRule | Quota | Simplify | RatioCtor | RatiosCtor | NthPart | Transfer;
+  CommonSense | GCD | LCD | CompareAndPartEqual | Sequence | NthRule | Quota | Simplify | RatioCtor | RatiosCtor | NthPart | Transfer | Proportion;
 
 export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | "comp-diff" | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'simplify') {
   return { kind } as Predicate
@@ -217,8 +223,13 @@ export function rate(agent: string, quantity: number, entity: string, entityBase
 export function quota(agent: string, agentQuota, quantity: number, restQuantity = 0): Quota {
   return { kind: 'quota', agent, agentQuota, quantity, restQuantity }
 }
+
+export function proportion(inverse: boolean, entities: [string,string]): Proportion {
+  return { kind: 'proportion', inverse, entities };
+}
+
 export function commonSense(description: string): CommonSense {
-  return { kind: 'common-sense', description: description }
+  return { kind: 'common-sense', description }
 }
 
 
@@ -300,7 +311,7 @@ function transferRule(a: Container, b: Transfer): Container {
   }
   else if (a.agent == b.agentA) {
     return { kind: 'cont', agent: b.agentB, quantity: a.quantity + -2 * b.quantity, entity: a.entity }
-  } 
+  }
 }
 
 function diffPartToWholeRuleEx(a: RatioCtor, b: PartWholeRatio): PartWholeRatio {
@@ -353,7 +364,6 @@ function compRatioToCompRuleEx(a: RatioComparison, b: Comparison): Container {
 
 function compRatioToCompRule(a: RatioComparison, b: Comparison): Question {
   const result = compRatioToCompRuleEx(a, b)
-  console.log(a, b, result)
   return {
     question: containerQuestion(result),
     result,
@@ -364,6 +374,24 @@ function compRatioToCompRule(a: RatioComparison, b: Comparison): Question {
   }
 }
 
+function proportionRuleEx(a: RatioComparison, b: Proportion): RatioComparison {
+  return {
+    ...a,
+    ...(b.inverse && { ratio: 1 / a.ratio })
+  }
+}
+
+function proportionRule(a: RatioComparison, b: Proportion): Question {
+  const result = proportionRuleEx(a, b)
+  return {
+    question: `Jaký je vztah mezi veličinami? ${b.entities?.join(' a ')}`,
+    result,
+    options: [
+      { tex: `zachovat poměr`, result: formatRatio(a.ratio), ok: !b.inverse },
+      { tex: `obrátit poměr - 1 / ${formatRatio(a.ratio)}`, result: formatRatio(1 / a.ratio), ok: b.inverse },
+    ]
+  }
+}
 
 function partToWholeRuleEx(a: Container, b: PartWholeRatio): Container {
 
@@ -895,6 +923,12 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   }
   else if (a.kind === "comp-ratio" && b.kind == "comp") {
     return compRatioToCompRule(a, b)
+  }
+  else if (a.kind === "proportion" && b.kind == "comp-ratio") {
+    return proportionRule(b, a)
+  }
+  else if (a.kind === "comp-ratio" && b.kind == "proportion") {
+    return proportionRule(a, b)
   }
   else if (a.kind === "cont" && b.kind == "quota") {
     return quotaRule(a, b)

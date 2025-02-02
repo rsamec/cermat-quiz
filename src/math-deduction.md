@@ -53,25 +53,6 @@ function renderEx({example, unit, showRelativeValues}={}){
   </div>`
 }
 
-function renderExample({example, unit, showRelativeValues}={}){  
-  return html`
-  <div class="v-stack v-stack--l">
-    <div class="card">${example.template}</div>
-    <div class="h-stack h-stack--m">
-      <h3 style="flex:1">Dedukční strom</h3>
-      <div class="h-stack h-stack--m" style="align-items: flex-start;">
-      </div>
-    </div>
-    <div class="flexible">
-      ${example.deductionTree}
-    </div>
-    ${example.data != null ? html`<div>
-      <h3>Zobrazení situace</h3>
-      ${partion(example.data, {unit, showRelativeValues})}
-    </div>`:''}
-  </div>`
-}
-
 function renderRules(rules){
   return html`<div  class="grid grid-cols-3">${rules.map(rule  => {
     const ddRule = inferenceRule(...rule.premises);
@@ -390,7 +371,7 @@ const propInput = Generators.input(propForm);
   ${propForm}
 </details>
 
-<div>${renderExample({example:proportion({input:propInput})})}</div>
+<div>${renderEx({example:proportion({input:propInput})})}</div>
 
 ----------------------
 
@@ -410,7 +391,7 @@ const proportionInverseInput = Generators.input(proportionInverseForm);
   ${proportionInverseForm}
 </details>
 
-<div>${renderExample({example:proportionInverse({input:proportionInverseInput})})}</div>
+<div>${renderEx({example:proportionInverse({input:proportionInverseInput})})}</div>
 
 ----------------------
 
@@ -432,7 +413,7 @@ const proportionCombinedInput = Generators.input(proportionCombinedForms);
   ${proportionCombinedForms}
 </details>
 
-<div>${renderExample({example:proportionCombined({input:proportionCombinedInput})})}</div>
+<div>${renderEx({example:proportionCombined({input:proportionCombinedInput})})}</div>
 
 ## Porovnávání 
 

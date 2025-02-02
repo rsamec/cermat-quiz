@@ -1,13 +1,11 @@
-import { html } from "htl";
-import { cont, inferenceRule, compRatio, commonSense, ctor } from "../../components/math.js";
-import { deduce } from "../../utils/deduce.js";
-import { formatNode as format, inputLabel, deduceLabel, highlightLabel } from "../../utils/deduce-components.js";
+
+import { cont, ctor, proportion } from "../../components/math.js";
+import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 
 interface InversProportionParams {
   previousMachine: number;
   currentMachine: number;
-
   previousCount: number;
 }
 export default function build({ input }: {
@@ -19,33 +17,26 @@ export default function build({ input }: {
   const entityA = "strojů";
   const entityB = "výrobků";
 
-  const aPrevious = cont(agentPrevious, input.previousMachine, entityA);
-  const aCurrent = cont(agentCurrent, input.currentMachine, entityA)
-  const dd1 = inferenceRule(aCurrent, aPrevious, ctor('comp-ratio'));
+  const aPrevious = axiomInput(cont(agentPrevious, input.previousMachine, entityA), 1);
+  const aCurrent = axiomInput(cont(agentCurrent, input.currentMachine, entityA), 3);
+  const bPrevious = axiomInput(cont(agentPrevious, input.previousCount, entityB), 2);
 
-  const cc1 = commonSense("přímá úměrnost, stejný poměru veličin")
-  const compB = compRatio(agentPrevious, agentCurrent, dd1.kind == "comp-ratio" ? dd1.ratio : 0)
-  const bPrevious = cont(agentPrevious, input.previousCount, entityB);
-
-  const dd3 = inferenceRule(compB, bPrevious);
 
   const deductionTree = deduce(
     deduce(
       deduce(
-        format(aPrevious, inputLabel(1)),
-        format(aCurrent, inputLabel(3)),
-        format(dd1, deduceLabel(1))
+        aPrevious,
+        aCurrent,
+        ctor('comp-ratio')
       ),
-      format(cc1),
-      format(compB, deduceLabel(2))
-    ), 
-    format(bPrevious, inputLabel(2)),
-    format(dd3, deduceLabel(3)),
+      proportion(false),
+    ),
+    bPrevious
   )
 
-  const template = html`
-    ${highlightLabel()`${input.previousMachine} strojů zvládne vyrobit ${input.previousCount} výrobků.`}.<br/>
-    ${deduceLabel(3)}<strong> ${highlightLabel(3)`Kolik výrobků zvládne vyrobit ${input.currentMachine} strojů za stejnou dobu?`}</strong>`;
+  const template = highlight => highlight` 
+    ${input.previousMachine} strojů zvládne vyrobit ${input.previousCount} výrobků.
+    Kolik výrobků zvládne vyrobit ${input.currentMachine} strojů za stejnou dobu?`;
 
   return { deductionTree, template }
 }

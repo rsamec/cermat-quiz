@@ -1,7 +1,5 @@
-import { html } from "htl";
-import { cont, inferenceRule, compRatio, commonSense, ctor } from "../../components/math.js";
-import { deduce } from "../../utils/deduce.js";
-import { formatNode as format, inputLabel, deduceLabel, highlightLabel } from "../../utils/deduce-components.js";
+import { cont, ctor, proportion } from "../../components/math.js";
+import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 
 interface InversProportionParams {
@@ -18,33 +16,26 @@ export default function build({ input }: {
   const entityA = "strojů";
   const entityB = "hodin";
 
-  const aPrevious = cont(agentPrevious, input.previousMachine, entityA);
-  const aCurrent = cont(agentCurrent, input.currentMachine, entityA)
-  const dd1 = inferenceRule(aCurrent, aPrevious, ctor('comp-ratio'));
+  const aPrevious = axiomInput(cont(agentPrevious, input.previousMachine, entityA), 1);
+  const aCurrent = axiomInput(cont(agentCurrent, input.currentMachine, entityA), 3)
+  const bPrevious = axiomInput(cont(agentPrevious, input.previousHours, entityB), 2);
 
-  const cc1 = commonSense("nepřímá úměrnost, obracený poměr veličin")
-  const compB = compRatio(agentCurrent, agentPrevious, dd1.kind == "comp-ratio" ? dd1.ratio : 0)
-  const bPrevious = cont(agentPrevious, input.previousHours, entityB);
-
-  const dd3 = inferenceRule(compB, bPrevious);
 
   const deductionTree = deduce(
     deduce(
       deduce(
-        format(aPrevious, inputLabel(1)),
-        format(aCurrent, inputLabel(3)),
-        format(dd1, deduceLabel(1))
+        aPrevious,
+        aCurrent,
+        ctor('comp-ratio')
       ),
-      format(cc1),
-      format(compB, deduceLabel(2))
-    ), 
-    format(bPrevious, inputLabel(2)),
-    format(dd3, deduceLabel(3)),
+      proportion(true)
+    ),
+    bPrevious
   )
 
-  const template = html`
-    ${highlightLabel()`${input.previousMachine} strojů zvládne práci za ${input.previousHours} hodin.`}.<br/>
-    ${deduceLabel(3)}<strong> ${highlightLabel(3)`Kolik hodin bude trvat stejná práce ${input.currentMachine} strojům?`}</strong>`;
+  const template = highlight => highlight`
+    ${input.previousMachine} strojů zvládne práci za ${input.previousHours} hodin.
+    Kolik hodin bude trvat stejná práce ${input.currentMachine} strojům?`;
 
   return { deductionTree, template }
 }

@@ -250,6 +250,9 @@ export function formatPredicate(d: Predicate, formatting: any) {
     case "nth":
       result = compose`${formatEntity(d.entity)}`;
       break;
+    case "proportion":
+      result = compose`${d.inverse ? "nepřímá" : "přímá"} úměra`;
+      break;
     case "common-sense":
       result = compose`${d.description}`
       break;

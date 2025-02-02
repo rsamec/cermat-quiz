@@ -1,5 +1,5 @@
 
-import { cont, inferenceRule, compRatio, commonSense, ctor } from "../../components/math.js";
+import { cont, inferenceRule, compRatio, commonSense, ctor, proportion } from "../../components/math.js";
 import { axiomInput, deduce, to } from "../../utils/deduce-utils.js";
 
 
@@ -22,37 +22,27 @@ export default function build({ input }: {
 
   const aPrevious = axiomInput(cont(agentPrevious, input.previousWorker, entityA), 1);
   const aCurrent = axiomInput(cont(agentCurrent, input.currentWorker, entityA), 3)
-  const dd1 = inferenceRule(aPrevious, aCurrent, ctor('comp-ratio'));
-
-  const cc1 = commonSense("nepřímá úměrnost (méně švadlen - více hodin)")
-  const cc2 = commonSense("přímá úměrnost (více množství - více hodin)")
-  const dd2 = compRatio(agentPrevious,agentCurrent, dd1.kind == "comp-ratio" ? dd1.ratio : 0)
   const bPrevious = axiomInput(cont(agentPrevious, input.previousHours, entityB), 2);
-  const dd3 = inferenceRule(dd2, bPrevious);
-
   const comp = compRatio(agentNew, agentCurrent, 3 / 2)
-  const dd4 = compRatio(agentNew, agentCurrent, 3 / 2)
-  const dd5 = inferenceRule(dd4, dd3);
 
 
   const deductionTree = deduce(
 
     deduce(
-      to(
+      deduce(
         deduce(
           aPrevious,
           aCurrent,
           ctor('comp-ratio')
         ),
-        cc1,
-        dd2
+        proportion(true, [`švadleny`, `hodiny`])
       ),
       bPrevious,
     ),
-    to(
+    deduce(
       comp,
-      cc2,
-      dd4),
+      proportion(false, [`množství`, `hodin`])
+    )
   )
 
   const template = highlight => highlight`${input.previousWorker} švadlen, které šijí oblečení, pracují stejným tempem.
