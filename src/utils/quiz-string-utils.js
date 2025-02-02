@@ -94,7 +94,7 @@ export function formatVersion({ order, period } = {}) {
             : order === "D"
               ? "2.náhr."
               : order === "I"
-              ? "testovací"
+              ? "ilustrační"
               : order;
               
   }

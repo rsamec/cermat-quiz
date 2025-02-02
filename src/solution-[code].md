@@ -74,8 +74,9 @@ const output = ids.map(id => {
         deductionTrees:values.map(([key, value]) => [`Řešení ${key}`,value.deductionTree])}).vizualizeSolution)}
       </div>
 
-    </div>
-
+    </div>`:''}
+  ${values?.length > 0 
+  ? html.fragment`
   ${values.map(([key, value]) => html`<div class="card break-inside-avoid-column">
   ${(value.results ?? []).map(d => renderResult(key, d))}
   ${value.deductionTree != null ? html`<div>
