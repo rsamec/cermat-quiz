@@ -65,15 +65,6 @@ const output = ids.map(id => {
         template: quiz.content([id], { ids, render: 'content' }),
         deductionTrees:values.map(([key, value]) => [`Řešení ${key}`,value.deductionTree])}).explainSolution)}
       </div>
-      <div>${renderChatButton("Více příkladů", generateAIMessages({
-        template: quiz.content([id], { ids, render: 'content' }),
-        deductionTrees:values.map(([key, value]) => [`Řešení ${key}`,value.deductionTree])}).generateMoreQuizes)}
-      </div>
-      <div>${renderChatButton("Vizualizuj", generateAIMessages({
-        template: quiz.content([id], { ids, render: 'content' }),
-        deductionTrees:values.map(([key, value]) => [`Řešení ${key}`,value.deductionTree])}).vizualizeSolution)}
-      </div>
-
     </div>`:''}
   ${values?.length > 0 
   ? html.fragment`

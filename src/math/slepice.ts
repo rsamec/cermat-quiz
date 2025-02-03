@@ -35,13 +35,13 @@ export default function build({ input }: {
           aCurrent,
           ctor('comp-ratio')
         ),
-        proportion(false),
+        proportion(false,["slepice", "vejce"]),
       ),
       bPrevious,
     ),
     deduce(
       deduce(c1, c2, ctor('comp-ratio')),
-      proportion(false)
+      proportion(false, ["den", "vejce"])
     ))
 
   const template = highlight =>

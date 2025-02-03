@@ -115,7 +115,7 @@ export const formatting = {
   formatKind: d => html`<div class="badge">${d.kind === "cont" ? "C" : d.kind.toUpperCase()}</div>`,
   formatQuantity: d => d.toLocaleString('cs-CZ'),
   formatRatio: d => new Fraction(d).toFraction(),
-  formatEntity: d => d,
+  formatEntity: (d, u) => [u, d].filter(d => d != null).join(" "),
   formatAgent: d => html`<b>${d}</b>`,
   formatSequence: d => `${d.type}`
 }

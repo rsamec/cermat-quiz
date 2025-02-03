@@ -1,7 +1,17 @@
 import Fraction from 'fraction.js';
+import configureMeasurements from 'convert-units';
+import length from 'convert-units/definitions/length';
+import area from 'convert-units/definitions/area';
+import mass from 'convert-units/definitions/mass'
+import volume from 'convert-units/definitions/volume'
 
-type CountableUnit = '';
-type Unit = CountableUnit;
+const convert = configureMeasurements<any, any, any>({
+  length,
+  area,
+  volume,
+  mass,
+});
+type Unit = string;
 
 type EntityBase = { entity: string, unit?: Unit }
 type AgentMatcher = string
@@ -12,6 +22,12 @@ export type Container = EntityBase &
   agent: string,
   quantity: number
 }
+
+export type ConvertUnit =
+  {
+    kind: 'unit';
+    unit: Unit
+  }
 
 export type Comparison = EntityBase & {
   kind: 'comp'
@@ -111,7 +127,7 @@ export type ThreePartRatio = PartToPartRatio & {
 export type Proportion = {
   kind: 'proportion',
   inverse: boolean,
-  entities?: [string,string]
+  entities?: [string, string]
 }
 
 export type CommonSense = {
@@ -157,11 +173,15 @@ export type Question = {
 
 
 export type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | SumCombine | ProductCombine | PartWholeRatio | PartToPartRatio | ComparisonDiff |
-  CommonSense | GCD | LCD | CompareAndPartEqual | Sequence | NthRule | Quota | Simplify | RatioCtor | RatiosCtor | NthPart | Transfer | Proportion;
+  CommonSense | GCD | LCD | CompareAndPartEqual | Sequence | NthRule | Quota | Simplify | RatioCtor | RatiosCtor | NthPart | Transfer | Proportion | ConvertUnit;
 
 export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | "comp-diff" | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'simplify') {
   return { kind } as Predicate
 }
+export function ctorUnit(unit: Unit): ConvertUnit {
+  return { kind: "unit", unit }
+}
+
 export function ctorRatios(agent: AgentMatcher): RatiosCtor {
   return { kind: "ratios-c", agent }
 }
@@ -169,8 +189,8 @@ export function ctorRatio(agent: AgentMatcher): RatioCtor {
   return { kind: "ratio-c", agent }
 }
 
-export function cont(agent: string, quantity: number, entity: string): Container {
-  return { kind: 'cont', agent, quantity, entity };
+export function cont(agent: string, quantity: number, entity: string, unit?: string): Container {
+  return { kind: 'cont', agent, quantity, entity, unit };
 }
 export function pi(): Container {
   return { kind: 'cont', agent: "PI", quantity: 3.14, entity: '' }
@@ -224,7 +244,7 @@ export function quota(agent: string, agentQuota, quantity: number, restQuantity 
   return { kind: 'quota', agent, agentQuota, quantity, restQuantity }
 }
 
-export function proportion(inverse: boolean, entities: [string,string]): Proportion {
+export function proportion(inverse: boolean, entities: [string, string]): Proportion {
   return { kind: 'proportion', inverse, entities };
 }
 
@@ -235,17 +255,15 @@ export function commonSense(description: string): CommonSense {
 
 function compareRuleEx(a: Container, b: Comparison): Container {
   //check
-  // if (a.entity != b.entity) {
-  //   throw `Mismatch entity ${a.entity}, ${b.entity}`
-  // }
-  // if (!(a.agent == b.agentA || a.agent == b.agentB)) {
-  //   throw `Mismatch entity ${a.agent}, ${b.agentA} or ${b.agentB}`
-  // }
+  if (a.entity != b.entity) {
+    throw `Mismatch entity ${a.entity}, ${b.entity}`
+  }
+
   if (a.agent == b.agentB) {
-    return { kind: 'cont', agent: b.agentA, quantity: a.quantity + b.quantity, entity: a.entity }
+    return { kind: 'cont', agent: b.agentA, quantity: a.quantity + b.quantity, entity: a.entity, unit: a.unit }
   }
   else if (a.agent == b.agentA) {
-    return { kind: 'cont', agent: b.agentB, quantity: a.quantity + -1 * b.quantity, entity: a.entity }
+    return { kind: 'cont', agent: b.agentB, quantity: a.quantity + -1 * b.quantity, entity: a.entity, unit: a.unit }
   }
 }
 function compareRule(a: Container, b: Comparison): Question {
@@ -274,6 +292,25 @@ function toComparisonRatio(a: PartWholeRatio, b: PartWholeRatio): Question {
     options: [
       { tex: `${formatRatio(a.ratio)} - ${formatRatio(b.ratio)}`, result: formatRatio(a.ratio - b.ratio), ok: true },
       { tex: `${formatRatio(b.ratio)} - ${formatRatio(a.ratio)}`, result: formatRatio(b.ratio - a.ratio), ok: false },
+    ]
+  }
+}
+function convertToUnitEx(a: Container, b: ConvertUnit): Container {
+  if (a.unit == null) {
+    throw `Missing entity unit ${a.agent} a ${a.entity}`;
+  }
+  return { ...a, quantity: convert(a.quantity).from(a.unit).to(b.unit), unit: b.unit }
+}
+function convertToUnit(a: Container, b: ConvertUnit): Question {
+  const result = convertToUnitEx(a, b)
+  const destination = convert().getUnit(a.unit)?.unit?.to_anchor;
+  const origin = convert().getUnit(b.unit)?.unit?.to_anchor;
+  return {
+    question: `Převeď ${formatNumber(a.quantity)} ${formatEntity(a)} na ${b.unit}.`,
+    result,
+    options: [
+      { tex: `${formatNumber(a.quantity)} * ${formatNumber(destination / origin)}`, result: formatNumber(result.quantity), ok: true },
+      { tex: `${formatNumber(a.quantity)} * ${formatNumber(origin / destination)}`, result: formatNumber(result.quantity), ok: false },
     ]
   }
 }
@@ -587,7 +624,7 @@ function toComparisonEx(a: Container, b: Container): Comparison {
   if (a.entity != b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`
   }
-  return { kind: 'comp', agentB: b.agent, agentA: a.agent, quantity: a.quantity - b.quantity, entity: a.entity }
+  return { kind: 'comp', agentB: b.agent, agentA: a.agent, quantity: a.quantity - b.quantity, entity: a.entity, unit: a.unit }
 }
 function toComparison(a: Container, b: Container): Question {
   const result = toComparisonEx(a, b)
@@ -599,7 +636,6 @@ function toComparison(a: Container, b: Container): Question {
       { tex: `${formatNumber(b.quantity)} - ${formatNumber(a.quantity)}`, result: formatNumber(b.quantity - a.quantity), ok: false },
     ]
   }
-
 }
 function toRatioComparisonEx(a: Container, b: Container): RatioComparison {
   if (a.agent === b.agent && a.entity != b.entity) {
@@ -760,7 +796,8 @@ function partToPartRuleEx(a: Container, partToPartRatio: PartToPartRatio, nth?: 
     entity: a.entity,
     quantity: matchedWhole
       ? (a.quantity / partsSum) * partToPartRatio.ratios[targetPartIndex]
-      : (a.quantity / partToPartRatio.ratios[sourcePartIndex]) * (nth != null ? partToPartRatio.ratios[targetPartIndex] : partsSum)
+      : (a.quantity / partToPartRatio.ratios[sourcePartIndex]) * (nth != null ? partToPartRatio.ratios[targetPartIndex] : partsSum),
+    unit: a.unit,
   }
 }
 
@@ -900,6 +937,12 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
                 : kind === "ratio"
                   ? toPartWholeRatio(a, b)
                   : toComparison(a, b)
+  }
+  else if (a.kind === "cont" && b.kind === "unit") {
+    return convertToUnit(a, b);
+  }
+  else if (a.kind === "unit" && b.kind === "cont") {
+    return convertToUnit(b, a);
   }
   else if (a.kind === "ratio" && b.kind === "ratio") {
     return toComparisonRatio(a, b);
@@ -1237,5 +1280,5 @@ function lcdFromPrimeFactors(primeFactors: number[][]): number[] {
 }
 
 function formatEntity(d: EntityBase) {
-  return d.entity ? ` (${d.entity})` : ''
+  return (d.entity || d.unit) ? `(${[d.unit, d.entity].filter(d => d != null).join(" ")})` : ''
 }

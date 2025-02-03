@@ -1,6 +1,7 @@
 
 import { cont, type Container, pi, product, ratio, sum } from "../../components/math.js";
 import { axiomInput, connectTo, deduce, last, type TreeNode } from "../../utils/deduce-utils.js";
+import { volume } from "./rectangle.js";
 
 
 export interface CylinderOut {
@@ -126,35 +127,29 @@ export function surfaceIn({ input, height }: { input: TreeNode, height: Containe
 }
 
 interface Params {
-  diameter: number
+  radius: number
   height: number
 }
 
 export function examples({ input }: {
   input: Params,
 }) {
-  const diameterLabel = "průměr"
+
   const radiusLabel = "poloměr"
   const heightLabel = "výška"
   const entity = "cm";
 
-  const diameter = axiomInput(cont(diameterLabel, input.diameter, entity), 1);
+  const radius = axiomInput(cont(radiusLabel, input.radius, entity), 1);
   const height = axiomInput(cont(heightLabel, input.height, entity), 2);
-  const dRadius = deduce(
-    diameter,
-    ratio(diameterLabel,radiusLabel, 1 / 2)
-  )
 
+  const dTree1 = surfaceBaseArea({ radius })
 
+  const dTree2 = cylinder({radius, height }).volume;
 
-  const dTree1 = surfaceBaseAreaIn({ input: dRadius })
-
-  const dTree2 = volumeIn({ input: dRadius, height });
-
-  const dTree3 = surfaceIn({ input: dRadius, height });
+  const dTree3 = cylinder({ radius, height }).surface;
 
   const templateBase = highlight => highlight
-    `Válec, který má průměr podstavy ${input.diameter} cm a výšku ${input.height} cm.`
+    `Válec, který má poloměr podstavy ${input.radius} cm a výšku ${input.height} cm.`
 
   const template1 = html => html`<br/>
     <strong>Vypočtěte obsah podstavy.</strong>`;

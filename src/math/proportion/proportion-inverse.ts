@@ -28,7 +28,7 @@ export default function build({ input }: {
         aCurrent,
         ctor('comp-ratio')
       ),
-      proportion(true)
+      proportion(true, ['stroje', 'hodiny'])
     ),
     bPrevious
   )

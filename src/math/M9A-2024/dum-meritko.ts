@@ -1,5 +1,5 @@
 
-import { commonSense, cont, ctor, ctorRatios, gcd, nthPart, type PartToPartRatio, product, ratios } from "../../components/math.js";
+import { commonSense, cont, ctor, ctorRatios, ctorUnit, gcd, nthPart, type PartToPartRatio, product, ratios } from "../../components/math.js";
 import { axiomInput, deduce, deduceLbl, last, to } from "../../utils/deduce-utils.js";
 
 
@@ -16,23 +16,22 @@ export default function build({ input }: {
   const plan = "plán"
   const widthLabel = "šířka"
   const lengthLabel = "délka"
-  const entity = "cm"
-  const entity2D = "cm ctverecni"
+  const entity = "";
+  const unit = "cm";
+  const unit2D = "cm2";
 
 
-  const width = axiomInput(cont(`${skutecnost} ${widthLabel}`, input.sirkaM * 100, entity), 1);
-  const widthOnPlan = axiomInput(cont(`${plan} ${widthLabel}`, input.planSirkaCM, entity), 2);
-  const lengthOnPlan = axiomInput(cont(`${plan} ${lengthLabel}`, input.planDelkaDM * 10, entity), 3);
+  const width = axiomInput(cont(`${skutecnost} ${widthLabel}`, input.sirkaM, entity, "m"), 1);
+  const widthOnPlan = axiomInput(cont(`${plan} ${widthLabel}`, input.planSirkaCM, entity, unit), 2);
+  const lengthOnPlan = axiomInput(cont(`${plan} ${lengthLabel}`, input.planDelkaDM, entity, "dm"), 3);
 
-
+  const dWidth = deduce(width, ctorUnit(unit));
   const dBase =
     deduce(
       widthOnPlan,
-      width,
+      dWidth,
       ctorRatios("měřítko"),
     )
-
-  console.log(dBase);
 
   const dTree1 = deduce(
     dBase,
@@ -40,9 +39,9 @@ export default function build({ input }: {
     ctor("simplify")
   )
 
-  const meritko = {...last(dTree1) as unknown as PartToPartRatio,...deduceLbl(3)}
+  const meritko = { ...last(dTree1) as unknown as PartToPartRatio, ...deduceLbl(3) }
   const dTree2 = deduce(
-    lengthOnPlan,
+    deduce(lengthOnPlan,ctorUnit(unit)),
     to(
       meritko,
       commonSense("měřítko plánu platí pro celý plán, stejně pro šírku a délku domu"),
@@ -53,13 +52,13 @@ export default function build({ input }: {
 
   const ddSkutecnost = deduce(
     dTree2,
-    width,
-    product(`${skutecnost} obsah`, [lengthLabel, widthLabel], entity2D, entity)
+    dWidth,
+    product(`${skutecnost} obsah`, [lengthLabel, widthLabel], unit2D, entity)
   )
   const ddPlan = deduce(
-    lengthOnPlan,
+    deduce(lengthOnPlan,ctorUnit(unit)),
     widthOnPlan,
-    product(`${plan} obsah`, [lengthLabel, widthLabel], entity2D, entity)
+    product(`${plan} obsah`, [lengthLabel, widthLabel], unit2D, entity)
   )
 
 

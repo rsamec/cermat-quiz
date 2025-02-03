@@ -25,6 +25,7 @@ import { caryNaPapire } from './M9I-2025/papirACary.js'
 import { letajiciCtverecky } from './M9I-2025/letajiciCtverecky.js';
 import { domecek } from './M9I-2025/domecek.js';
 import { objemNadoby1, objemNadoby2, objemNadoby3 } from './M9I-2025/nadoba.js';
+import { porovnani2Ploch } from './M9I-2025/plocha.js';
 export { inferenceRule, inferenceRuleWithQuestion } from '../components/math.js';
 
 
@@ -125,6 +126,7 @@ export default {
     12: sourozenci({ input: { evaPodil: 40, michalPlus: 24, zbyvaNasporit: 72 } }),
   },
   "M9I-2025": {
+    1: porovnani2Ploch({ input: {} }),
     7.1: plnaKrabice({ input: krabiceParams })[0],
     7.2: plnaKrabice({ input: krabiceParams })[1],
     7.3: plnaKrabice({ input: krabiceParams })[2],
@@ -132,8 +134,8 @@ export default {
     13: caryNaPapire({ input: { pocetCasti: 40 } }),
     14: domecek({ input: { baseSurfaceArea: 16, quota: 4 } }),
     15.1: objemNadoby1({ input: { zbyva: 14, zaplnenoPomer: 3 / 5 } }),
-    15.2: objemNadoby2({ input: { zaplnenoProcento: 55, odebrano: 12, zaplnenoPoOdebraniRatio: 1/4} }),
-    15.3: objemNadoby3({ input: { nadoba1Procent: 30, nadoba2Procent: 40, nadoba3: 19, prumerNadobaRatio: 2/5} }),
+    15.2: objemNadoby2({ input: { zaplnenoProcento: 55, odebrano: 12, zaplnenoPoOdebraniRatio: 1 / 4 } }),
+    15.3: objemNadoby3({ input: { nadoba1Procent: 30, nadoba2Procent: 40, nadoba3: 19, prumerNadobaRatio: 2 / 5 } }),
     16.1: letajiciCtverecky({ input: { pocetRad: 21, pocetSloupcu: 110 } })[0],
     16.2: letajiciCtverecky({ input: { pocetRad: 21, pocetSloupcu: 110 } })[1]
   },

@@ -67,7 +67,7 @@ return html`
       ${html`<div class="viz viz--stepper-chat">${renderChatStepper(example.deductionTree)}</div>`}
       ${html`<div class="viz viz--chat">${renderChat(example.deductionTree)}</div>`}
       ${html`<div class="viz viz--deduce-tree"><div class="flexible">${deduceTraverse(example.deductionTree)}</div></div>`}
-      ${html`<div class="viz viz--text-tree">${mdPlus.unsafe(jsonToMarkdownTree(example.deductionTree).join(''))}</div>`}
+      ${html`<div class="viz viz--text-tree">${Inputs.button("Copy to clipboard",{value:null, reduce: () => navigator.clipboard.writeText(jsonToMarkdownTree(example.deductionTree).join(''))} )} ${mdPlus.unsafe(jsonToMarkdownTree(example.deductionTree).join(''))}</div>`}
       ${html`<div class="viz viz--text-chat">${mdPlus.unsafe(jsonToMarkdownChat(example.deductionTree).join('\n---\n'))}</div>`}
     </div>`}
   </div>`

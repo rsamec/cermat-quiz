@@ -1,6 +1,6 @@
 import { html } from "htl";
 import type { Comparison, Container, Predicate, Rate, RatioComparison } from "../components/math.js";
-import { cont, ratio, comp, rate, ratios, compRatio, compDiff, sum, lcd, gcd, ctor, inferenceRule, nth, quota, product, ctorRatios } from "../components/math.js";
+import { cont, ratio, comp, rate, ratios, compRatio, compDiff, sum, lcd, gcd, ctor, inferenceRule, nth, quota, product, ctorRatios, ctorUnit } from "../components/math.js";
 
 export default function rules() {
 
@@ -167,18 +167,7 @@ export default function rules() {
     lcd: [deduceRule(cont("dvojice", 2, "osob"), cont("trojice", 3, "osob"), lcd("nejmenší možná skupina", "osob"))],
     aritmeticSequence: [...nthRule(arithmetic, tenthTerm)],
     quadraticSequence: [...nthRule(quadratic, tenthTerm)],
-    geometricSequence: [...nthRule(geometric, tenthTerm)],   
+    geometricSequence: [...nthRule(geometric, tenthTerm)],
+    unit:[deduceRule(cont("Honzík", 4, "jablek", "kg"), ctorUnit("g")), deduceRule(cont("Ája", 400, "mléka", "cm3"), ctorUnit("l"))]
   }
-
-
-
-  // partToPartCompareRules(comp("letos", "loni" , 1/4, "")),
-  // partToPartCompareRules(comp("letos", "loni" , -1/4, "")),
-  // partToPartRatioCompareRules(ratioComp("letos", "loni" , 5/4, "")),
-  // partToPartRatioCompareRules(ratioComp("letos", "loni" , 3/4, "")),
-
-  // partToPartDiffRules(diff("letos", "loni" , 1/4, "")),
-  // partToPartDiffRules(diff("letos", "loni" , -1/4, "")),
-
-
 }

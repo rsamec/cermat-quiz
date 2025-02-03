@@ -155,9 +155,29 @@ Predikáty umožňují formalní zápis situačního modelu úlohy.
       <td>Každý rohlík, který má Ája, stojí 3 Kč.</td>
     </tr>
     <tr>
-      <td><div class="badge">SUM</div> sumation</td>
+      <td><div class="badge">QUOTE</div> quote</td>
+      <td>(agent=skupina,</br> agent=dvojice,</br>quantity=5)</td>
+      <td>Skupina rozdělena na 5 dvojic.</td>
+    </tr>
+    <tr>
+      <td><div class="badge">SUM</div> sum</td>
       <td>(agentWhole=třída,</br>partAgents=[chlapci,dívky],</br>entityWhole=žáků)</td>
       <td>Počet chlapců a dívek dohromady dává počet žáků ve třídě.</td>
+    </tr>
+    <tr>
+      <td><div class="badge">PRODUCT</div> product </td>
+      <td>(agentWhole=obsah obdélníku,</br>partAgents=[šířka,délka],</br>entityWhole=cm2)</td>
+      <td>Obsah obdelníku je produktem výšky a šířky.</td>
+    </tr>
+    <tr>
+      <td><div class="badge">PROPORTION</div> proportion </td>
+      <td>(inverse=true,</br> entities=[počet výrobků, počet pracovníků])</td>
+      <td>Nepřímá úměra platí mezi veličinami počet výrobků a počet pracovníků.</td>
+    </tr>
+    <tr>
+      <td><div class="badge">UNIT</div> convert unit </td>
+      <td>(unit=kg)</td>
+      <td>Převod na kg.</td>
     </tr>
     <tr>
       <td><div class="badge">GCD</div> Greatest Common Divisor</td>
@@ -267,13 +287,17 @@ ${partion([
 
 <div>${renderRules(rules.sum)}</div>
 
-## Největší společný dělitel
-<div class="badge badge--large">GCD</div>
-<div>${renderRules(rules.gcd)}</div>
+## Převod jednotek
+<div class="badge badge--large">UNIT</div>
+<div>${renderRules(rules.unit)}</div>
 
 ## Nejmenší společný násobek
 <div class="badge badge--large">LCD</div>
 <div>${renderRules(rules.lcd)}</div>
+
+## Největší společný dělitel
+<div class="badge badge--large">GCD</div>
+<div>${renderRules(rules.gcd)}</div>
 
 ## Posloupnosti
 <div class="badge badge--large">SEQUENCE</div>
@@ -563,8 +587,8 @@ const rectangleInput = Generators.input(rectangleForm);
 
 ```js
 const cylinderForm = Inputs.form({
-  diameter: Inputs.range([1, 10], {step: 1, value:4, label: "průměr podstavy"}),
-  height: Inputs.range([1, 10], {step: 1, value:2, label: "výška"}),
+  radius: Inputs.range([1, 50], {step: 1, value:10, label: "poloměr podstavy"}),
+  height: Inputs.range([1, 10], {step: 1, value:5, label: "výška"}),
 });
 const cylinderInput = Generators.input(cylinderForm);
 ```

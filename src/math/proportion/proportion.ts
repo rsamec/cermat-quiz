@@ -17,21 +17,16 @@ export default function build({ input }: {
   const entityA = "strojů";
   const entityB = "výrobků";
 
-  const aPrevious = axiomInput(cont(agentPrevious, input.previousMachine, entityA), 1);
-  const aCurrent = axiomInput(cont(agentCurrent, input.currentMachine, entityA), 3);
-  const bPrevious = axiomInput(cont(agentPrevious, input.previousCount, entityB), 2);
-
-
   const deductionTree = deduce(
     deduce(
       deduce(
-        aPrevious,
-        aCurrent,
+        axiomInput(cont(agentPrevious, input.previousMachine, entityA), 1),
+        axiomInput(cont(agentCurrent, input.currentMachine, entityA), 3),
         ctor('comp-ratio')
       ),
-      proportion(false),
+      proportion(false, [entityA, entityB]),
     ),
-    bPrevious
+    axiomInput(cont(agentPrevious, input.previousCount, entityB), 2)
   )
 
   const template = highlight => highlight` 

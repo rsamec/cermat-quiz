@@ -197,7 +197,7 @@ const mdFormatting = {
   formatKind: d => `[${d.kind.toUpperCase()}]`,
   formatQuantity: d => d.toLocaleString('cs-CZ'),
   formatRatio: d => d.toLocaleString('cs-CZ'),
-  formatEntity: d => d != null && d != '' ? `__${d}__` : '',
+  formatEntity: (d, unit) => `__${[unit, d].filter(d => d != null).join(" ")}__`,
   formatAgent: d => `**${d}**`,
   formatSequence: d => `${d.type}`
 }
@@ -212,10 +212,10 @@ export function formatPredicate(d: Predicate, formatting: any) {
   let result = ''
   switch (d.kind) {
     case "cont":
-      result = compose`${formatAgent(d.agent)}=${formatQuantity(d.quantity)} ${formatEntity(d.entity)}`;
+      result = compose`${formatAgent(d.agent)}=${formatQuantity(d.quantity)} ${formatEntity(d.entity, d.unit)}`;
       break;
     case "comp":
-      result = compose`${formatAgent(d.agentA)} ${d.quantity > 0 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} o ${formatQuantity(Math.abs(d.quantity))} ${formatEntity(d.entity)}`
+      result = compose`${formatAgent(d.agentA)} ${d.quantity > 0 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} o ${formatQuantity(Math.abs(d.quantity))} ${formatEntity(d.entity, d.unit)}`
       break;
     case "comp-ratio":
       const between = (d.ratio > 0 && d.ratio < 2);
@@ -224,7 +224,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
         : compose`${formatAgent(d.agentA)} ${formatRatio(Math.abs(d.ratio))} krát ${d.ratio > 0 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} `
       break;
     case "comp-diff":
-      result = compose`${formatAgent(d.agentMinuend)} - ${formatAgent(d.agentSubtrahend)}=${formatQuantity(d.quantity)} ${formatEntity(d.entity)}`
+      result = compose`${formatAgent(d.agentMinuend)} - ${formatAgent(d.agentSubtrahend)}=${formatQuantity(d.quantity)} ${formatEntity(d.entity, d.unit)}`
       break;
     case "ratio":
       result = compose`${formatAgent(d.part)} z ${formatAgent(d.whole)}=${formatRatio(d.ratio)}`;
@@ -239,7 +239,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = compose`${joinArray(d.partAgents?.map(d => formatAgent(d)), " * ")}`;
       break;
     case "rate":
-      result = compose`${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity)} per ${formatEntity(d.entityBase.entity)}`
+      result = compose`${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} per ${formatEntity(d.entityBase.entity, d.entityBase.unit)}`
       break;
     case "quota":
       result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${d.restQuantity !== 0 ? ` se zbytkem ${formatAgent(d.restQuantity)}` : ''}`
@@ -250,8 +250,11 @@ export function formatPredicate(d: Predicate, formatting: any) {
     case "nth":
       result = compose`${formatEntity(d.entity)}`;
       break;
+    case "unit":
+      result = compose`${d.unit}`;
+      break;
     case "proportion":
-      result = compose`${d.inverse ? "nepřímá" : "přímá"} úměra`;
+      result = compose`${d.inverse ? "nepřímá" : "přímá"} úměra mezi ${d.entities.join(' a ')}`;
       break;
     case "common-sense":
       result = compose`${d.description}`

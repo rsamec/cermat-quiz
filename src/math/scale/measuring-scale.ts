@@ -1,5 +1,5 @@
 
-import { cont, ctor, gcd, nthPart } from "../../components/math.js";
+import { cont, ctor, ctorUnit, gcd, nthPart } from "../../components/math.js";
 import { axiomInput, deduce, last } from "../../utils/deduce-utils.js";
 
 
@@ -13,17 +13,18 @@ export default function build({ input }: {
 }) {
   const skutecnost = "skutečnost"
   const mapa = "plán"
-  const entity = "cm"
+  const entity = ""
+  const unit = "cm";
 
-  const reality = axiomInput(cont(skutecnost, input.skutecnost * 1_000_000, entity), 1);
-  const plan = axiomInput(cont(mapa, input.plan, entity), 2);
+  const reality = axiomInput(cont(skutecnost, input.skutecnost, entity, "km"), 1);
+  const plan = axiomInput(cont(mapa, input.plan, entity, unit), 2);
 
 
 
   const dBase =
     deduce(
       deduce(plan,
-        reality,
+        deduce(reality, ctorUnit(unit)),
         ctor('ratios')),
       deduce(plan, reality, gcd("nejvyšší společný násobek", entity)),
       ctor('simplify')
@@ -33,14 +34,16 @@ export default function build({ input }: {
 
   const dTree2 =
     deduce(
-      cont(mapa, 3, entity),
-      last(dBase),
-      nthPart(skutecnost)
-    )
+      deduce(
+        cont(mapa, 3, entity, unit),
+        last(dBase),
+        nthPart(skutecnost)
+      ),
+      ctorUnit("km"))
 
   const dTree3 =
     deduce(
-      cont(skutecnost, 5_000_000, entity),
+      deduce(cont(skutecnost, 5, entity, "km"), ctorUnit(unit)),
       last(dBase),
       nthPart(mapa)
     )

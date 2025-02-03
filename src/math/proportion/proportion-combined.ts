@@ -39,13 +39,13 @@ export default function build({ input }: {
           aCurrent,
           ctor('comp-ratio')
         ),
-        proportion(true)
+        proportion(true, ['pracovníci', 'hodiny'])
       ),
       bPrevious
     ),
     deduce(
       deduce(c1, c2, ctor('comp-ratio')),
-      proportion(false))
+      proportion(false, ['výrobky', 'hodiny']))
   )
 
   const template = highlight => highlight`

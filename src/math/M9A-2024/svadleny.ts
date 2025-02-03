@@ -1,6 +1,5 @@
-
-import { cont, inferenceRule, compRatio, commonSense, ctor, proportion } from "../../components/math.js";
-import { axiomInput, deduce, to } from "../../utils/deduce-utils.js";
+import { cont, compRatio, ctor, proportion } from "../../components/math.js";
+import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 
 interface InversProportionParams {
