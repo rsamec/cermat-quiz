@@ -20,8 +20,8 @@ export default function build({ input }: {
   const deductionTree = deduce(
     deduce(
       deduce(
-        axiomInput(cont(agentPrevious, input.previousMachine, entityA), 1),
         axiomInput(cont(agentCurrent, input.currentMachine, entityA), 3),
+        axiomInput(cont(agentPrevious, input.previousMachine, entityA), 1),
         ctor('comp-ratio')
       ),
       proportion(false, [entityA, entityB]),

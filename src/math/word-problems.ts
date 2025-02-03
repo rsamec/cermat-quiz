@@ -26,6 +26,7 @@ import { letajiciCtverecky } from './M9I-2025/letajiciCtverecky.js';
 import { domecek } from './M9I-2025/domecek.js';
 import { objemNadoby1, objemNadoby2, objemNadoby3 } from './M9I-2025/nadoba.js';
 import { porovnani2Ploch } from './M9I-2025/plocha.js';
+import { porovnatObsahObdelnikACtverec } from './M7A-2024/13.js';
 export { inferenceRule, inferenceRuleWithQuestion } from '../components/math.js';
 
 
@@ -83,6 +84,12 @@ export default {
         kralikuMene: 5,
         pocetHlav: 37
       }
+    }),
+    13: porovnatObsahObdelnikACtverec({
+      input: {
+        obdelnik: { a: 36, b: 12 },
+        ctverec: { a: 6 }
+      }
     })
   },
   "M9A-2023": {
@@ -111,7 +118,8 @@ export default {
     }),
     7.1: tridaSkupiny(tridaSkupinyParams)[0],
     7.2: tridaSkupiny(tridaSkupinyParams)[1],
-    8.1: tanga({ input: { tangaWidth: 20 } }),
+    8.1: tanga({ input: { tangaWidth: 20 } })[0],
+    8.2: tanga({ input: { tangaWidth: 20 } })[1],
     12: obrazec({ input: { obvod: 30 } }),
     13: dvaCtverce({ input: { rozdilObvod: 6, obdelnikCtvAStrana: 1 / 2, obdelnikCtvBStrana: 1 / 5 } }),
     15.1: dumMeritko(dumMeritkoParams)[0],

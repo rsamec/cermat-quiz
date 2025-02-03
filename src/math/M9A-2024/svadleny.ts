@@ -30,8 +30,8 @@ export default function build({ input }: {
     deduce(
       deduce(
         deduce(
-          aPrevious,
           aCurrent,
+          aPrevious,
           ctor('comp-ratio')
         ),
         proportion(true, [`švadleny`, `hodiny`])

@@ -638,15 +638,15 @@ function toComparison(a: Container, b: Container): Question {
   }
 }
 function toRatioComparisonEx(a: Container, b: Container): RatioComparison {
-  if (a.agent === b.agent && a.entity != b.entity) {
+  if (b.agent === a.agent && b.entity != a.entity) {
     //auto convert to
-    a = toGenerAgent(a);
-    b = toGenerAgent(b)
+    b = toGenerAgent(b);
+    a = toGenerAgent(a)
   }
-  if (a.entity != b.entity) {
-    throw `Mismatch entity ${a.entity}, ${b.entity}`
+  if (b.entity != a.entity) {
+    throw `Mismatch entity ${b.entity}, ${a.entity}`
   }
-  return { kind: 'comp-ratio', agentB: a.agent, agentA: b.agent, ratio: b.quantity / a.quantity }
+  return { kind: 'comp-ratio', agentB: b.agent, agentA: a.agent, ratio: a.quantity / b.quantity }
 }
 function toRatioComparison(a: Container, b: Container): Question {
   const result = toRatioComparisonEx(a, b);
@@ -656,12 +656,12 @@ function toRatioComparison(a: Container, b: Container): Question {
     result,
     options: between
       ? [
-        { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)} - 1`, result: formatRatio(result.ratio - 1), ok: result.ratio > 1 },
-        { tex: `1 - ${formatNumber(b.quantity)} / ${formatNumber(a.quantity)}`, result: formatRatio(1 - result.ratio), ok: result.ratio <= 1 }
+        { tex: `${formatNumber(b.quantity)} / ${formatNumber(a.quantity)} - 1`, result: formatRatio(result.ratio - 1), ok: result.ratio > 1 },
+        { tex: `1 - ${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatRatio(1 - result.ratio), ok: result.ratio <= 1 }
       ]
       : [
-        { tex: `${formatNumber(b.quantity)} / ${formatNumber(a.quantity)}`, result: formatRatio(b.quantity / a.quantity), ok: true },
-        { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatRatio(a.quantity / b.quantity), ok: false }
+        { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatRatio(a.quantity / b.quantity), ok: true },
+        { tex: `${formatNumber(b.quantity)} / ${formatNumber(a.quantity)}`, result: formatRatio(b.quantity / a.quantity), ok: false }
       ]
   }
 }

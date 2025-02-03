@@ -15,8 +15,8 @@ export default function build({ input }: {
 }) {
 
   const agentPrevious = "původní zakázka";
-  const agentCurrent = "nová zakázka (změna dělníků)";
-  const agentNew = "nová zakázka (změna dělníků i výrobků)";
+  const agentCurrent = "nová zakázka";
+  const agentNew = "rozšířená nová zakázka";
   const entityA = "dělník";
   const entityB = "hodin";
   const entityC = "výrobek"
@@ -35,8 +35,8 @@ export default function build({ input }: {
     deduce(
       deduce(
         deduce(
-          aPrevious,
           aCurrent,
+          aPrevious,
           ctor('comp-ratio')
         ),
         proportion(true, ['pracovníci', 'hodiny'])
@@ -44,7 +44,7 @@ export default function build({ input }: {
       bPrevious
     ),
     deduce(
-      deduce(c1, c2, ctor('comp-ratio')),
+      deduce(c2, c1, ctor('comp-ratio')),
       proportion(false, ['výrobky', 'hodiny']))
   )
 

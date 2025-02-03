@@ -1,7 +1,7 @@
 
-import { commonSense, compRatio, cont, product, type Container } from "../../components/math.js";
+import { commonSense, compRatio, cont, product, sum, type Container } from "../../components/math.js";
 import { axiomInput, deduce, last, to } from "../../utils/deduce-utils.js";
-import { surfaceBaseArea, surfaceBaseAreaIn, surfaceIn } from "../shapes/cylinder.js"
+import { baseCircumference, surfaceBaseArea, surfaceBaseAreaIn, surfaceIn } from "../shapes/cylinder.js"
 
 
 interface Params {
@@ -13,25 +13,26 @@ export default function build({ input }: {
 }) {
 
   const radiusLabel = "poloměr";
-  const circleLabel = "obsah kruhu";
+  const areaCircleLabel = "obsah kruhu";
+  const baseCircleLabel = "obvod kruhu";
   const circelPartLabel = "čtvrtkruh";
   const tangaHeight = "tanga výška";
   const entity = "cm"
   const entity2d = "cm čtverečních"
-
-
 
   const width = axiomInput(cont(`tanga šířka`, input.tangaWidth, entity), 1)
   const ratio = compRatio(`tanga šířka`, radiusLabel, 2)
   const dRadius = deduce(width, ratio);
 
 
-  const dCircle = surfaceBaseArea({ radius: last(dRadius) }, {
-    surfaceBaseAreaLabel: circleLabel,
+  const obsah = surfaceBaseArea({ radius: last(dRadius) }, {
+    surfaceBaseAreaLabel: areaCircleLabel,
     entity2D: entity2d
   });
 
-  const deductionTree = deduce(
+
+
+  const dd1 = deduce(
     deduce(
       width,
       to(
@@ -43,14 +44,24 @@ export default function build({ input }: {
     deduce(
       cont(`2 krát ${circelPartLabel}`, 2, ""),
       deduce(
-        dCircle,
-        compRatio(circleLabel, circelPartLabel, 4)),
+        obsah,
+        compRatio(areaCircleLabel, circelPartLabel, 4)),
 
       product(`dvojice ${circelPartLabel}`, [], entity2d, entity2d)
     )
   )
 
-  const template = highlight => highlight``;
+  const obvod = baseCircumference(
+    { radius: last(dRadius) },
+    { baseCircumferenceLabel: baseCircleLabel });
 
-  return { deductionTree, template }
+  const obvodCvrtkruh = deduce(obvod, compRatio(baseCircleLabel, circelPartLabel, 4));
+  const dd2 = deduce(
+    obvodCvrtkruh,
+    last(obvodCvrtkruh),
+    width,
+    sum(`obvod šedého obrazce`, [circelPartLabel, circelPartLabel, 'šířka' ], entity, entity)
+  )
+
+  return [{ deductionTree: dd1 }, { deductionTree: dd2 }]
 }

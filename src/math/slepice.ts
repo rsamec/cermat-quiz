@@ -31,8 +31,8 @@ export default function build({ input }: {
     deduce(
       deduce(
         deduce(
-          aPrevious,
           aCurrent,
+          aPrevious,
           ctor('comp-ratio')
         ),
         proportion(false,["slepice", "vejce"]),
@@ -40,7 +40,7 @@ export default function build({ input }: {
       bPrevious,
     ),
     deduce(
-      deduce(c1, c2, ctor('comp-ratio')),
+      deduce(c2, c1, ctor('comp-ratio')),
       proportion(false, ["den", "vejce"])
     ))
 

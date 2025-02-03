@@ -24,8 +24,8 @@ export default function build({ input }: {
   const deductionTree = deduce(
     deduce(
       deduce(
-        aPrevious,
         aCurrent,
+        aPrevious,
         ctor('comp-ratio')
       ),
       proportion(true, ['stroje', 'hodiny'])

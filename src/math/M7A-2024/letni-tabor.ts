@@ -52,8 +52,8 @@ export default function build({ input }: {
   const dTree1Result = last(dTree1);
 
   const dTree2 = deduce(
-    last(kuchari),
     instruktori,
+    last(kuchari),
     ctor('comp-ratio')
   )
   const dTree2Result = last(dTree2) as unknown as RatioComparison;
