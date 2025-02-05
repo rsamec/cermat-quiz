@@ -38,6 +38,7 @@ const merge = (f, s) => {
   }, { ...f })
 }
 const expressions = await readJsonFromFile(path.resolve('./src/data/math-answers.json'))
+const videoExlusions = await readJsonFromFile(path.resolve('./src/data/math-answers-video-exclude.json'))
 const geometry = await readJsonFromFile(path.resolve('./src/data/math-geometry.json'))
 
 const result = Object.keys(geometry).reduce((merged, key) => {
@@ -48,6 +49,7 @@ const result = Object.keys(geometry).reduce((merged, key) => {
 
 
 const answers = result[code];
+const videoExclude = videoExlusions[code] ?? {};
 const ids = quiz.questions.map(d => d.id);
 
 const wordProblem = wordProblems[code];
@@ -104,7 +106,7 @@ function renderResult(key, { Name, Answer, TemplateSteps }) {
   </div>`: ''}
 <div class="v-stack v-stack--m">${TemplateSteps.map((d, i) =>
     `<div class="v-stack v-stack--s">
-<video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>
+${videoExclude[key] ? '':`<video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`}
 ${d.Steps?.length > 0 ? renderTemplateSteps(d) : ''}
 </div>`).join("")}
 </div>`
