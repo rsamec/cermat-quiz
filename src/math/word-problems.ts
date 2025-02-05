@@ -27,7 +27,11 @@ import { domecek } from './M9I-2025/domecek.js';
 import { objemNadoby1, objemNadoby2, objemNadoby3 } from './M9I-2025/nadoba.js';
 import { porovnani2Ploch } from './M9I-2025/plocha.js';
 import { porovnatObsahObdelnikACtverec } from './M7A-2024/13.js';
-export { inferenceRule, inferenceRuleWithQuestion } from '../components/math.js';
+import { najitMensiCislo, porovnatAaB } from './M7A-2024/1.js';
+import { okurkyASalaty } from './M9I-2025/okurky.js';
+import { cislaNaOse } from './M7A-2024/3.js';
+export { inferenceRuleWithQuestion } from '../components/math.js';
+export { formatPredicate } from '../utils/deduce-utils.js';
 
 
 const letniTaborInput = {
@@ -57,7 +61,7 @@ const dumMeritkoParams = {
 }
 
 const krabiceParams = { pocetKusuVKrabice: 12, missingVyrobku: 5 }
-
+const osaParams = {mensiCislo: 1.4, vetsiCislo: 5.6, pocetUsekuMeziCisly: 6, A: 4, B: 7, C: -2};
 export default {
   "M7A-2023": {
     3.3: cetar({
@@ -75,6 +79,11 @@ export default {
     })
   },
   "M7A-2024": {
+    1.1: porovnatAaB({ input: { a: 1.6, b: -1.2 } }),
+    1.2: najitMensiCislo({ input: { zadane: 7/8, mensiO: 0.093 } }),
+    3.1: cislaNaOse({input: osaParams })[0],
+    3.2: cislaNaOse({input: osaParams })[1],
+    3.3: cislaNaOse({input: osaParams })[2],
     6: pocetSportovcu({ input: {} }),
     10.1: letniTabor(letniTaborInput)[0],
     10.2: letniTabor(letniTaborInput)[1],
@@ -135,6 +144,8 @@ export default {
   },
   "M9I-2025": {
     1: porovnani2Ploch({ input: {} }),
+    6.1: okurkyASalaty({ input: { okurky: 36 } })[0],
+    6.2: okurkyASalaty({ input: { okurky: 36 } })[1],
     7.1: plnaKrabice({ input: krabiceParams })[0],
     7.2: plnaKrabice({ input: krabiceParams })[1],
     7.3: plnaKrabice({ input: krabiceParams })[2],

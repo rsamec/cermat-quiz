@@ -4,9 +4,7 @@ import mdPlus from './utils/md-utils.js';
 import { parseQuiz } from './utils/quiz-parser.js';
 import { readJsonFromFile } from './utils/file.utils.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, isEmptyOrWhiteSpace } from './utils/quiz-string-utils.js';
-import wordProblems from '../word-problems.js';
-import Fraction from 'fraction.js';
-
+import wordProblems, {inferenceRuleWithQuestion, formatPredicate} from '../word-problems.js';
 
 const {
   values: { code }
@@ -14,9 +12,16 @@ const {
   options: { code: { type: "string" } }
 });
 
-function isPredicate(node){
-  return node.kind != null;
+const formatting = {
+  compose: (strings, ...args) => concatString(strings, ...args),
+  formatKind: d => ``,
+  formatQuantity: d => d.toLocaleString('cs-CZ'),
+  formatRatio: d => d.toLocaleString('cs-CZ'),
+  formatEntity: (d, unit) => `<i>${[unit, d].filter(d => d != null).join(" ")}</i>`,
+  formatAgent: d => `<b>${d}</b>`,
+  formatSequence: d => `${d.type}`
 }
+
 const d = parseCode(code);
 const baseUrl = `${baseDomainPublic}/${d.subject}/${d.period}/${code}`
 const content = await text(`${baseUrl}/index.md`);
@@ -65,11 +70,11 @@ ${answers == null ? `<div class="warning" label="Upozornění">
   K tomuto testu v tuto chvíli neexistují žádná řešení.
 </div>`: ''}
 <div class="root">${ids.map(id => {
-  const values = (answers?.[id] != null || wordProblem[id] != null)
+  const values = (answers?.[id] != null || wordProblem?.[id] != null)
    ? [[id, answers[id] ?? wordProblem[id]]] 
    : [1, 2, 3]
     .map(i => `${id}.${i}`)
-    .map(subId => answers?.[subId] ?? wordProblem[subId])
+    .map(subId => answers?.[subId] ?? wordProblem?.[subId])
     .filter(Boolean)
     .map((d, index) => [`${id}.${index +1}`, d])
   
@@ -77,12 +82,12 @@ ${answers == null ? `<div class="warning" label="Upozornění">
   return `${mdPlus.renderToString(quiz.content([id], { ids, render: 'content' }), { docId: `${code}-${id}` })}
 ${values?.length > 0
       ? 
-`${values.map(([key, value]) => `<h2 id="s-${id}">Řešení úloha ${id}</h2><div class="card break-inside-avoid-column">${(value.results ?? []).map(d => renderResult(key, d)).join('')}
+`<div class="break-inside-avoid-column">${values.map(([key, value]) => `<h2 id="s-${key}">Řešení úloha ${key}</h2><div class="card">${(value.results ?? []).map(d => renderResult(key, d)).join('')}
 <div>
-${value.deductionTree != null ? deduceTraverse(value.deductionTree) : ''}
+${value.deductionTree != null ? renderChat(value.deductionTree) : ''}
 </div>
 </div>`).join("")}
-`: ''}
+</div>`: ''}
 `}).join('')}`)
 
 
@@ -121,23 +126,102 @@ function renderStep({ Step, Hint, Expression }, index) {
   </div>`
 }
 
-function highlight(strings, ...substitutions) {
+ function renderChat(deductionTree) {
+  const steps = stepsTraverse(deductionTree).map((d, i) => ({ ...d, index: i }));
 
-  const formattedString = strings.reduce((acc, curr, i) => {
-    const substitution = substitutions[i];
-
-    const res = substitution && typeof substitution === "function"
-      ? `${curr}${substitution(concatString)}`
-      : substitution
-        ? `${curr}<span class="highlight">${inputLabel(1 + i)} ${substitution}</span>`
-        : `${curr}`;
-    return `${acc}${res}`;
-  }, '');
-
-  return formattedString;
+  return `<div class="chat">${steps.map(({ premises, conclusion, questions }, i) => {
+    const q = questions[0];
+    const answer = q?.options?.find(d => d.ok)
+    return `<div class="messages">
+<div class='message v-stack v-stack--s'>${premises.join("")}</div>
+${q != null ? `<div class='message agent v-stack v-stack--s'>
+<div>${q?.question}</div>
+${answer != null ? `<div>${answer.tex} = ${answer.result}</div>` : ''}
+</div>`: ''}
+${steps.length == i + 1 ? `<div class='message'>${conclusion}</div>` : ''}
+</div>`}).join("")}</div>`
 }
 
-export function concatString(strings, ...substitutions) {
+
+export function stepsTraverse(node) {
+  let counter = 1;
+  const deduceMap = new Map();
+
+  const flatStructure = [];
+  function traverseEx(node) {
+
+    // Base case: if the node is a leaf, add it to the result  
+    if (isPredicate(node)) {
+      return formatNode(node, node.labelKind === "input"
+        ? inputLabel(node.label)
+        : node.labelKind === "deduce"
+          ? deduceLabel(node.label)
+          : null);
+    }
+    if (node.tagName === "FIGURE") {
+      return node;
+    }
+
+    const args = []
+    let question = null
+    // Recursive case: traverse each child
+    if (node.children) {
+      let i = 0;
+      for (const child of node.children) {
+        const isLast = node.children.length === ++i;
+        let newChild;
+        if (isLast && isPredicate(child) && !deduceMap.has(child)) {
+          newChild = { ...child, ...{ labelKind: 'deduce', label: counter++ } }
+          deduceMap.set(child, newChild)
+        }
+        else {
+          newChild = deduceMap.has(child) ? deduceMap.get(child) : child;
+        }
+
+        if (isLast) {
+          const children = node.children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]);
+          const result = children.length > 2 ? inferenceRuleWithQuestion(...children.slice(0, -1)) : null;
+          question = result;
+        }
+        else {
+          question = null;
+        }
+
+        const res = traverseEx(newChild);
+        args.push(res)
+
+        // if (!isLast) {
+        //   if (newChild?.kind === "gcd" || newChild?.kind === "lcd") {
+        //     const numbers = node.children.slice(0, -2).map(d => d.quantity);
+        //     args.push(`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d, i) => html`<div>${formatNumber(numbers[i])} = ${d.join()}</div>`)}</div>`)
+        //   }
+        // }
+
+      }
+
+      // Add a group containing the parent and its children
+      const arr = normalizeToArray(args).map(d => {
+        return Array.isArray(d) ? d[d.length - 1] : d
+      });
+
+      const premises = arr.slice(0, -1);
+      //const questions = premises.filter(d => d?.result != null)
+      const conclusion = arr[arr.length - 1];
+      flatStructure.push({ premises, conclusion, questions: [question] });
+
+    }
+
+    // You can process the current node itself here if needed
+    // For example, add something from the node to `result`.
+    return args; //html`<div class="v-stack v-stack--l"><div>${args.slice(0, args.length - 1).map(d => html.fragment`${d}`)}</div> <div style="opacity:0.4">${args[args.length - 1]}</div></div>`;
+  }
+  traverseEx(node)
+  return flatStructure;
+}
+function formatNode(t, label) {
+  return `<span>${label != null ? label : ''} ${t?.kind != null ? formatPredicate(t, formatting) : t}</span>`
+}
+function concatString(strings, ...substitutions) {
   const formattedString = strings.reduce((acc, curr, i) => {
     const substitution = substitutions[i];
 
@@ -149,121 +233,6 @@ export function concatString(strings, ...substitutions) {
 
   return formattedString;
 }
-
-function deduce(...ts) {
-  const premises = ts.slice(0, -1);
-  const conclusion = ts.slice(-1);
-
-  const proof = 
-`<div class="proof">
-<div class="premises">
-${premises.map(t => `<div class="node leaf">${t}</div>`).join('')}
-</div>
-<div class="conclusion">
-<div class="le"></div>
-<div class="ct">
-${conclusion}
-</div>
-<div class="ri"></div>
-</div>
-</div>`;
-return proof;
-
-}
-
-
-function deduceTraverse(node) {
-  let counter = 1;
-  function deduceTraverseEx(node) {
-
-    // Base case: if the node is a leaf, add it to the result  
-    if (isPredicate(node)) {
-      return formatNode(node, node.labelKind === "input"
-        ? inputLabel(node.label)
-        : node.labelKind === "deduce"
-          ? deduceLabel(node.label)
-          : null);
-    }
-
-    if (node.tagName === "FIGURE") {
-      return 'FIGURE' //node;
-    }
-
-    const args = []
-    // Recursive case: traverse each child
-    if (node.children) {
-      let i = 0;
-      for (const child of node.children) {
-        const isLast = node.children.length === ++i;
-        const newChild = isLast && isPredicate(child) ? { ...child, ...{ labelKind: 'deduce', label: counter++ } } : child
-        args.push(deduceTraverseEx(newChild))
-      }
-    }
-
-    // You can process the current node itself here if needed
-    // For example, add something from the node to `result`.
-
-    const res = deduce(...args)
-    return res;
-  }
-  return deduceTraverseEx(node)
-}
-
-function formatNode(t, label) {
-  return `${label != null ? label : ''}&nbsp;${t?.kind != null ? formatPredicate(t) : t}`
-}
-function formatPredicate(d) {
-  
-  const formatQuantity = (d, absolute) => (absolute ? Math.abs(d.quantity) : d.quantity).toLocaleString('cs-CZ')
-  const formatEntity = (d) => d.entity
-  const formatQuantityWithEntity = (d, absolute) => `${formatQuantity(d, absolute)}&nbsp;${formatEntity(d)}`;
-
-  if ((d.kind == "ratio" || d.kind === "comp-ratio" || d.kind === "rate" || d.kind === "comp-diff" || d.kind === "comp-part-eq") && (d.quantity == null && d.ratio == null)) {
-    return formatToBadge(d);
-  }
-
-  let result = ''
-  switch (d.kind) {
-    case "cont":
-      result = `${d.agent}=${formatQuantityWithEntity(d)}`;
-      break;
-    case "comp":
-      result = `${d.agentA} ${d.quantity > 0 ? 'více' : 'méně'} než ${d.agentB} o ${formatQuantityWithEntity(d, true)}`
-      break;
-    case "comp-ratio":
-      const between = (d.quantity > -1 && d.quantity < 1);
-      result = between 
-        ? `${d.agentA}  ${d.quantity > 0 ? 'méně' : 'více'} ${new Fraction(Math.abs(d.quantity)).toFraction()}&nbsp;${formatEntity(d)} než ${d.agentB} `
-        : `${d.agentA} ${formatQuantity(d, true)} krát ${d.quantity > 0 ? 'více' : 'méně'}&nbsp;${formatEntity(d)} než ${d.agentB} `
-      break;
-    case "comp-diff":
-      result = `${d.agentMinuend} - ${d.agentSubtrahend}=${formatQuantityWithEntity(d)}`
-      break;
-    case "ratio":
-      result = `${formatAgentEntity(d)}=${new Fraction(d.ratio).toFraction()}`;
-      break;
-    case "ratios":
-      result = `${d.parts?.join(":")} v poměru ${d.ratios?.join(":")} z ${d.whole}`;
-      break;
-    case "sum":
-      result = `${d.partAgents.join("+")}`;
-      break;
-    case "rate":
-      result = `${d.quantity} ${d.entity?.entity} per ${d.entityBase?.entity}`
-      break;
-    case "common-sense":
-      result = `${d.agent}`
-      break;
-    default:
-      break;
-  }
-  return `${formatToBadge(d)} ${result}`;
-}
-
-function formatToBadge({ kind } = {}) {
-  return `<div class="badge">${kind === "cont" ? "C" : kind.toUpperCase()}</div>`
-}
-
 function inputLabel(id) {
   return label({ id, kind: 'input' })
 }
@@ -273,6 +242,11 @@ function deduceLabel(id) {
 function label(d) {
   return `<div class="badge badge--${d.kind}">${d.id}</div>`
 }
-function formatAgentEntity(){
-  return ''
+function normalizeToArray(d) {
+  return Array.isArray(d) ? d : [d]
 }
+
+function isPredicate(node){
+  return node.kind != null;
+}
+

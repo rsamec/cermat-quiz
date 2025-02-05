@@ -465,7 +465,7 @@ const compPartEqInput = Generators.input(compPartEqForm);
 const compForm = Inputs.form({  
   second: Inputs.radio(new Map([["A", false],["B", true]]), {label:"Výrobek", value:false }),
   part: Inputs.range([1,100], {step: 1, value:10, label: "Cena výrobku (Kč)"}),
-  partRatio: Inputs.range([-1, 1], {step: 0.05, value:0.25, label: "O kolik je výrobek A relativně dražší/levnější než výrobek B"}),
+  partRatio: Inputs.range([-0.5, 1], {step: 0.05, value:0.25, label: "O kolik je výrobek A relativně dražší/levnější než výrobek B"}),
   
 });
 const compInput = Generators.input(compForm);

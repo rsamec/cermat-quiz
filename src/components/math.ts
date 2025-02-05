@@ -650,9 +650,9 @@ function toRatioComparisonEx(a: Container, b: Container): RatioComparison {
 }
 function toRatioComparison(a: Container, b: Container): Question {
   const result = toRatioComparisonEx(a, b);
-  const between = (result.ratio > 0 && result.ratio < 2);
+  const between = (result.ratio > 1/2 && result.ratio < 2);
   return {
-    question: `Porovnej ${result.agentA} a ${result.agentB}.${between ? `O kolik z ${result.agentB}?` : `Kolikrát?`}`,
+    question: `Porovnej ${result.agentA} a ${result.agentB}.${between ? `O kolik z ${result.agentB}?` : `Kolikrát ${result.ratio < 1 ? 'menší' : 'větší'}?`}`,
     result,
     options: between
       ? [
@@ -660,8 +660,8 @@ function toRatioComparison(a: Container, b: Container): Question {
         { tex: `1 - ${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatRatio(1 - result.ratio), ok: result.ratio <= 1 }
       ]
       : [
-        { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatRatio(a.quantity / b.quantity), ok: true },
-        { tex: `${formatNumber(b.quantity)} / ${formatNumber(a.quantity)}`, result: formatRatio(b.quantity / a.quantity), ok: false }
+        { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatRatio(a.quantity / b.quantity), ok: result.ratio >= 1 },
+        { tex: `${formatNumber(b.quantity)} / ${formatNumber(a.quantity)}`, result: formatRatio(b.quantity / a.quantity), ok: result.ratio < 1 }
       ]
   }
 }
@@ -676,7 +676,7 @@ function compareToCompareRule(a: Comparison, b: Comparison): Rate {
 
   }
 }
-function toDiff(a: Container, b: Container): ComparisonDiff {
+function toDiffEx(a: Container, b: Container): ComparisonDiff {
   if (a.entity !== b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`
   }
@@ -689,6 +689,18 @@ function toDiff(a: Container, b: Container): ComparisonDiff {
 
   }
 }
+function toDiff(a: Container, b: Container): Question {
+  const result = toDiffEx(a, b)
+  return {
+    question: `Vypočti rozdíl mezi ${a.quantity} a ${b.quantity}`,
+    result,
+    options: [
+      { tex: `${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: true },
+      { tex: `${formatNumber(b.quantity)} - ${formatNumber(a.quantity)}`, result: formatNumber(b.quantity - a.quantity), ok: false },
+    ]
+  }
+}
+
 function toRateEx(a: Container, b: Container): Rate {
   if (a.agent !== b.agent) {
     throw `Mismatch angent ${a.agent}, ${b.agent}`

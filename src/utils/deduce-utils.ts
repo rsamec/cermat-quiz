@@ -218,10 +218,10 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = compose`${formatAgent(d.agentA)} ${d.quantity > 0 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} o ${formatQuantity(Math.abs(d.quantity))} ${formatEntity(d.entity, d.unit)}`
       break;
     case "comp-ratio":
-      const between = (d.ratio > 0 && d.ratio < 2);
+      const between = (d.ratio > 1/2 && d.ratio < 2);
       result = between
         ? compose`${formatAgent(d.agentA)} ${d.ratio < 1 ? 'méně' : 'více'} o ${formatRatio(d.ratio > 1 ? d.ratio - 1 : 1 - d.ratio)} než ${formatAgent(d.agentB)} `
-        : compose`${formatAgent(d.agentA)} ${formatRatio(Math.abs(d.ratio))} krát ${d.ratio > 0 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} `
+        : compose`${formatAgent(d.agentA)} ${formatRatio(d.ratio > 1 ? Math.abs(d.ratio): 1/Math.abs(d.ratio))} krát ${d.ratio > 1 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} `
       break;
     case "comp-diff":
       result = compose`${formatAgent(d.agentMinuend)} - ${formatAgent(d.agentSubtrahend)}=${formatQuantity(d.quantity)} ${formatEntity(d.entity, d.unit)}`
