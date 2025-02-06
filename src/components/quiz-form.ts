@@ -179,8 +179,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
               <a style="height:34px;" href="#" onclick=${(e) => {
                     e.preventDefault();
                     window.open(`https://chat.openai.com/?q=${encodeURIComponent(quizBuilder.content(ids, { render: 'content' }))}`)
-                  }}><img style="height:34px;" src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white" alt="ChatGPT" /></a>
-              <a class="a-button" href="./ai-${code}#s-${ids[0]}" target="_blank" title="Otevřít AI řešení v novém okně" ><i class="fa-solid fa-comment-nodes"></i></a> 
+                  }}><img style="height:34px;" src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white" alt="ChatGPT" /></a>              
             ${html`<a href="#" class="a-button a-button--secondary" onclick=${(e) => {
                     e.preventDefault();
                     var el = e.target.querySelector("i") ?? e.target;
@@ -270,13 +269,14 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
             ${useResources ? html`<div class="v-stack v-stack--s">
               ${useResources && mathResourceEntries.length > 0 || wordProblemEntries.length > 0 ? html`<details class="solution break-inside-avoid-column"><summary>Řešení úlohy</summary><div class="v-stack v-stack--s">
               ${mathResourceEntries.map(([key, value, i]) => html`<div class="h-stack h-stack--s">
-                <span style="flex:1">${key} - ${value.Name}</span>
-                <a href="./solution-${code}#s-${ids[0]}" target="_blank"><i class="fa-solid fa-square-up-right"></i></a>
+                <h3 style="flex:1">Řešení ${key} - ${value.Name}</h3>
+                <a href="./solu-${code}#s-${ids[0]}" target="_blank"><span>Otevřít ↗︎</span></a>
               </div>
               <video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`)}
               
               ${wordProblemEntries.map(([key, d]) => html`<div class="h-stack h-stack--s">
-                ${key.indexOf(".") !== -1 ? html`<span style="flex:1">${key}</span>`:''}
+                <h3 style="flex:1">Řešení ${key} - krok za krokem</h3>
+                <a href="./solu-${code}#s-${ids[0]}" target="_blank"><span>Otevřít ↗︎</span></a>
               </div>
               ${html.fragment`${renderChatStepper(d.deductionTree)}`}
               `)}

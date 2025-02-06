@@ -13,6 +13,7 @@
 @import './common/tippy-observable-theme.css';
 @import './common/deduce.css';
 @import './common/badge.css';
+@import './common/chat.css';
 
 
 .sticky {

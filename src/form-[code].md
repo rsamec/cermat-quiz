@@ -12,6 +12,7 @@ import { parseCode, formatShortCode, formatSubject, formatPeriod} from './utils/
 import { fromEvent, combineLatest } from 'rxjs';
 import { map, startWith, tap } from  'rxjs/operators';
 import { store } from './utils/quiz.js';
+import * as a from "npm:@appnest/masonry-layout";
 
 function getQuestionIds(metadata, code) {
   const { subject } = parseCode(code);
@@ -43,6 +44,11 @@ const state = {
     .observablehq .observablehq--block {
       margin: 0px;
   }
+  @media (min-width: 521px) {
+    masonry-layout .q { padding: 12px; background: var(--theme-background-alt);  border-radius:16px;}
+  }
+
+ }
 </style>
 
 <div class="h-stack h-stack--m h-stack--wrap h-stack-items--center sticky main-header">
@@ -50,7 +56,6 @@ const state = {
   ${html`<a href="./quiz-picker-${subject}-${period}"><i class="fa-solid fa-left-long"></i></a>`}
   <span>/</span>${formatShortCode(code)}</div>
   <div class="h-stack h-stack--m h-stack--end">
-    ${showInput}
     <div class="badge">
       <i class="fa fa-hashtag"></i>
       <span>${state.totalAnswers}</span>
@@ -64,25 +69,12 @@ const state = {
 
 
 ```js
-// const showInput = Inputs.button(html`<button class="badge">
-//       <i class="fa-solid fa-toggle-off"></i>
-//       <span>Nápověda</span>
-//     </button>`, {reduce: (value) => !value });
-
-const showInput = Inputs.checkbox(new Map([
-  ['AI', ['useAIHelpers',true]],
-  ['Řešení', ['useResources',true]]
-]))
-const displayOptions = Generators.input(showInput);
-
-```
-```js
 
 const parameters = ({
   questions: [[code].concat(getQuestionIds(metadata,code))],
   subject:parseCode(code).subject,
   quizQuestionsMap,
-  displayOptions: {useFormControl:true, ...Object.fromEntries(displayOptions)},
+  displayOptions: {useFormControl:true,useAIHelpers:true,useResources:true},
   mathResourcesMap,
 })
 const {renderedQuestions, inputs:inputsStore} = renderedQuestionsPerQuizWithInputs(parameters);
@@ -117,6 +109,6 @@ const values = Generators.observe((notify) => {
   return () => values$.unsubscribe();
 });
 
-const print =  false;
-display(html`<div data-testid="root" class="root">${renderedQuestions.map(d => print ? html.fragment`${d}`: html`<div class="v-stack v-stack--s">${d}</div>`)}</div>`);
+const print =  true;
+display(html`<div data-testid="root" style="padding:10px"><masonry-layout gap="15">${renderedQuestions.map(d => print ? html.fragment`${d}`: html`<div class="v-stack v-stack--s">${d}</div>`)}</masonry-layout></div>`);
 ```
