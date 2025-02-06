@@ -165,6 +165,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                     .flatMap((x) => (x.TemplateSteps ?? []).map((x, i) => ({ x, i })))
                     .map(({ x, i }) => ([d.leaf.data.id, x, i]));
                 }) : [];
+              console.log(mathResourceEntries, mathResource)
 
               const wordProblemEntries = wordProblem != null ? leafs
                 .map((d, i) => wordProblem[d.leaf.data.id] != null ? [d.leaf.data.id, wordProblem[d.leaf.data.id]] : null).filter(Boolean)

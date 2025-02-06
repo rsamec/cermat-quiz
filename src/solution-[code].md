@@ -33,7 +33,7 @@ const merge = (f, s) => {
     return merged;
   }, { ...f })
 }
-const expressions = await FileAttachment('./data/math-answers.json').json();
+const expressions = await FileAttachment('./data/math-results.json').json();
 const geometry = await FileAttachment('./data/math-geometry.json').json();
 
 const result = Object.keys(geometry).reduce((merged, key) => {

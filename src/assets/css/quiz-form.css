@@ -28,10 +28,15 @@
   top: 0px;
   z-index: 10;
 }
+
+.absolute {
+  position: fixed;
+  right: 0px;
+  top: 0px;
+  z-index: 10;
+}
+
 .main-header {
-  background: black;
-  color: white;
-  fill: white;
   padding: 5px 5px;
 }
 
@@ -41,13 +46,12 @@
 
 
 details.solution {
-  background:var(--theme-background);
   border: 1px solid var(--theme-foreground-fainter);
   /* border-radius: 5px; */
 }
 
 details.solution summary {
-  background-color: var(--theme-background-alt);
+  background-color: var(--theme-foreground-fainter);
   padding: 5px 10px;
   /* border-radius: 5px; */
 }

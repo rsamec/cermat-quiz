@@ -21,12 +21,6 @@
   top: 0px;
   z-index: 10;
 }
-.main-header {
-  background: black;
-  color: white;
-  fill: white;
-  padding: 5px 5px;
-}
 
 .hidden {
   display: none;

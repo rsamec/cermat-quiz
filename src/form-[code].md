@@ -1,6 +1,7 @@
 ---
-sidebar: false
+sidebar: true
 footer: false
+header: false
 pager: false
 toc: false
 style: /assets/css/quiz-form.css
@@ -47,15 +48,9 @@ const state = {
   @media (min-width: 521px) {
     masonry-layout .q { padding: 12px; background: var(--theme-background-alt);  border-radius:16px;}
   }
-
- }
 </style>
 
-<div class="h-stack h-stack--m h-stack--wrap h-stack-items--center sticky main-header">
-  <div class="h-stack h-stack--m" style="flex:1;">
-  ${html`<a href="./quiz-picker-${subject}-${period}"><i class="fa-solid fa-left-long"></i></a>`}
-  <span>/</span>${formatShortCode(code)}</div>
-  <div class="h-stack h-stack--m h-stack--end">
+  <div class="h-stack h-stack--m absolute main-header">
     <div class="badge">
       <i class="fa fa-hashtag"></i>
       <span>${state.totalAnswers}</span>
