@@ -1,6 +1,5 @@
-import { inferenceRule, inferenceRuleWithQuestion } from "../components/math.js"
-import type { Predicate, Container, Rate } from "../components/math.js"
-import { isEmptyOrWhiteSpace } from "./string-utils.js"
+import { cont, formatAngle, inferenceRule, inferenceRuleWithQuestion } from "../components/math.js"
+import type { Predicate, Container, Rate, ComparisonDiff, Comparison } from "../components/math.js"
 
 type PredicateLabel = { labelKind?: 'input' | 'deduce', label?: number }
 
@@ -44,6 +43,14 @@ export function deduce(...children: Node[]): TreeNode {
 }
 export function to(...children: Node[]): TreeNode {
   return { children: children }
+}
+export function toCont(child: Node, { agent }: { agent: string }): TreeNode {
+  const node = isPredicate(child) ? child : last(child);
+  if (!(node.kind == "cont" || node.kind === "transfer" || node.kind == "comp" || node.kind === "comp-diff" || node.kind === "rate")) {
+    throw `Non convertable node type: ${node.kind}`
+  }
+  const typeNode = node as ComparisonDiff | Comparison | Rate;
+  return to(child, cont(agent, typeNode.quantity, typeNode.kind == "rate" ? typeNode.entity.entity : typeNode.entity, typeNode.kind == "rate" ? typeNode.entity.unit : typeNode.unit))
 }
 
 export function connectTo(node: any, input: TreeNode) {
@@ -190,7 +197,9 @@ export function jsonToMarkdownChat(node, level = 0) {
   return flatStructure;
 
 }
-
+function isEmptyOrWhiteSpace(value: string | undefined) {
+  return value == null || (typeof value === 'string' && value.trim() === '');
+};
 
 const mdFormatting = {
   compose: (strings: TemplateStringsArray, ...args) => concatString(strings, ...args),
@@ -205,7 +214,7 @@ const mdFormatting = {
 
 export function formatPredicate(d: Predicate, formatting: any) {
   const { formatKind, formatAgent, formatEntity, formatQuantity, formatRatio, formatSequence, compose } = { ...mdFormatting, ...formatting }
-  if ((d.kind == "ratio" || d.kind === "comp-ratio" || d.kind === "rate" || d.kind === "quota" || d.kind === "comp-diff" || d.kind === "comp-part-eq" || d.kind === 'ratio-c' || d.kind === 'ratios-c') && (d.quantity == null && d.ratio == null)) {
+  if ((d.kind == "ratio" || d.kind == "transfer" || d.kind === "comp-ratio" || d.kind === "rate" || d.kind === "quota" || d.kind === "comp-diff" || d.kind === "comp-part-eq" || d.kind === 'ratio-c' || d.kind === 'ratios-c') && (d.quantity == null && d.ratio == null)) {
     return formatKind(d);
   }
 
@@ -215,13 +224,22 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = compose`${formatAgent(d.agent)}=${formatQuantity(d.quantity)} ${formatEntity(d.entity, d.unit)}`;
       break;
     case "comp":
-      result = compose`${formatAgent(d.agentA)} ${d.quantity > 0 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} o ${formatQuantity(Math.abs(d.quantity))} ${formatEntity(d.entity, d.unit)}`
+      result = d.quantity === 0
+        ? compose`${formatAgent(d.agentA)} je rovno ${formatAgent(d.agentB)}`
+        : compose`${formatAgent(d.agentA)} ${d.quantity > 0 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} o ${formatQuantity(Math.abs(d.quantity))} ${formatEntity(d.entity, d.unit)}`
+      break;
+    case "transfer":
+      result = d.quantity === 0
+        ? compose`${formatAgent(d.agentReceiver.name)} je rovno ${formatAgent(d.agentSender.name)}`
+        : d.agentReceiver === d.agentSender 
+          ? compose`změna o ${formatQuantity(d.quantity)} ${formatEntity(d.entity, d.unit)} mezi ${formatAgent(d.agentSender.nameBefore)} a ${formatAgent(d.agentSender.nameAfter)}`
+          : compose`${formatQuantity(Math.abs(d.quantity))} ${formatEntity(d.entity, d.unit)}, ${formatAgent(d.quantity > 0 ? d.agentSender.name : d.agentReceiver.name)} => ${formatAgent(d.quantity > 0 ? d.agentReceiver.name : d.agentSender.name)}`
       break;
     case "comp-ratio":
-      const between = (d.ratio > 1/2 && d.ratio < 2);
+      const between = (d.ratio > 1 / 2 && d.ratio < 2);
       result = between
         ? compose`${formatAgent(d.agentA)} ${d.ratio < 1 ? 'méně' : 'více'} o ${formatRatio(d.ratio > 1 ? d.ratio - 1 : 1 - d.ratio)} než ${formatAgent(d.agentB)} `
-        : compose`${formatAgent(d.agentA)} ${formatRatio(d.ratio > 1 ? Math.abs(d.ratio): 1/Math.abs(d.ratio))} krát ${d.ratio > 1 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} `
+        : compose`${formatAgent(d.agentA)} ${formatRatio(d.ratio > 1 ? Math.abs(d.ratio) : 1 / Math.abs(d.ratio))} krát ${d.ratio > 1 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} `
       break;
     case "comp-diff":
       result = compose`${formatAgent(d.agentMinuend)} - ${formatAgent(d.agentSubtrahend)}=${formatQuantity(d.quantity)} ${formatEntity(d.entity, d.unit)}`
@@ -258,6 +276,9 @@ export function formatPredicate(d: Predicate, formatting: any) {
       break;
     case "common-sense":
       result = compose`${d.description}`
+      break;
+    case "comp-angle":
+      result = compose`${formatAngle(d.relationship)}`
       break;
     default:
       break;

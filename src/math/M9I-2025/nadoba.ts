@@ -1,5 +1,8 @@
-import { cont, ratio, type Container, ctorRatio, ctor, comp, compDiff, sum, transfer } from "../../components/math.js";
-import { deduce, axiomInput, last, deduceLbl, to } from "../../utils/deduce-utils.js";
+import { cont, ratio, ctorComplement, ctor, comp, sum, transfer } from "../../components/math.js";
+import { deduce, axiomInput, last, deduceLbl, to, connectTo } from "../../utils/deduce-utils.js";
+import { percentBase } from "../percent/base.js";
+import { percentPart } from "../percent/part.js";
+import { percentage } from "../percent/percentage.js";
 
 
 const entity = "litrů";
@@ -16,7 +19,7 @@ export function objemNadoby1({ input }: {
 
 
   const deductionTree = deduce(
-    deduce(percentage, ctorRatio("zbytek")),
+    deduce(percentage, ctorComplement("zbytek")),
     part,
   )
 
@@ -59,6 +62,7 @@ export function objemNadoby3({ input }: {
 
   const nadoba1 = axiomInput(cont("nádoba 1", input.nadoba1Procent, entityPercent), 1);
   const nadoba2 = axiomInput(cont("nádoba 2", input.nadoba2Procent, entityPercent), 2);
+  const nadoba3Perc = axiomInput(cont("nádoba 3", 40, entityPercent), 2);
   const nadoba3 = axiomInput(cont("nádoba 3", input.nadoba3, entity), 3);
   const prumer = axiomInput(ratio("nádoba celkem", "naplněno průměr", input.prumerNadobaRatio), 4);
 
@@ -66,23 +70,28 @@ export function objemNadoby3({ input }: {
 
   const average = deduce(prumer, celek)
 
-  const deductionTree = deduce(
-    deduce(
-      deduce(
-        to(
-          deduce(
-            deduce(nadoba1, average),
-            deduce(nadoba2, { ...last(average), ...deduceLbl(1) }),
-            sum("rozdíl vůči průměru", [], entityPercent, entityPercent)
-          ),
-          transfer("nádoba 3", "nádoba 1", 10, entityPercent)),
-          nadoba1,
-      ),
-      celek,
-      ctor("ratio")
-    )
-    ,nadoba3
-  )
-
-  return { deductionTree }
+  // const deductionTree = deduce(
+  //   deduce(
+  //     deduce(
+  //       to(
+  //         deduce(nadoba1, average),
+  //         transfer("nádoba 3", "nádoba 1", 10, entityPercent)
+  //       ),
+  //       nadoba3,
+  //     ),
+  //     celek,
+  //     ctor("ratio")
+  //   )
+  //   , nadoba3
+  // )
+  const nadoba3Percent = deduce(
+    to(
+      deduce(nadoba1, average),
+      transfer("nádoba 3", "nádoba 1", 10, entityPercent)
+    ),
+    nadoba3Perc
+  );
+  return {
+    deductionTree: connectTo(percentBase({part:nadoba3, percentage: last(nadoba3Percent)}),nadoba3Percent)
+  }
 }

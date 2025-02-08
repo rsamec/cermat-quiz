@@ -28,7 +28,9 @@ import {example as percentPart} from './math/percent/part.js';
 import {example as percentBase} from './math/percent/base.js';
 import {example as percentPercentage} from './math/percent/percentage.js';
 
-import  {examplePartToWhole, examplePartToPart, exampleComparePartToWhole, exampleDiffPartToWhole, examplePartEq}  from './math/comp/comp.js'
+import {autobus} from './math/autobus.js';
+
+import  {examplePartToWhole, exampleComparePartToWhole, exampleDiffPartToWhole, examplePartEq}  from './math/comp/comp.js'
 
 function renderEx({example, unit, showRelativeValues}={}){
   const tree = deduceTraverse(example.deductionTree);
@@ -55,11 +57,11 @@ function renderEx({example, unit, showRelativeValues}={}){
 
 function renderRules(rules){
   return html`<div  class="grid grid-cols-3">${rules.map(rule  => {
-    const ddRule = inferenceRule(...rule.premises);
+    const ddRule = inferenceRule(...rule);
     return html`<div> 
       <div class="card">
       
-      ${deduce(...rule.premises.flatMap(d => d).map(d => formatPredicate(d,formatting)),formatPredicate(ddRule,formatting))}
+      ${deduce(...rule.flatMap(d => d).map(d => formatPredicate(d,formatting)),formatPredicate(ddRule,formatting))}
       </div>
      
     </div>`
@@ -138,6 +140,11 @@ Predikáty umožňují formalní zápis situačního modelu úlohy.
       <td><div class="badge">COMP DIFF</div> comparison by difference</td>
       <td>(agentMinuend=celkem,</br>agentSubtrahend=Honzík,</br>quantity=7,</br>entity=sešity)</td>
       <td>Rozdíl mezi sešity celkem a Honzíkem je 7 sešitů./td>
+    </tr>
+    <tr>
+      <td><div class="badge">TRANSFER</div> transfer</td>
+      <td>(agentSender=Ája,</br>agentReceiver=Honzík,</br>quantity=7,</br>entity=sešity)</td>
+      <td>Ája dala 7 sešitů Honzíkovi.</td>
     </tr>
     <tr>
       <td><div class="badge">RATIO</div> part to whole comparison</td>
@@ -272,6 +279,10 @@ ${partion([
 
 <div>${renderRules(rules.partToPartRatio)}</div>
 
+## Přesun
+<div class="badge badge--large">TRANSFER</div>
+<div>${renderRules(rules.transfer)}</div>
+
 
 ## Rozdělování
 
@@ -286,6 +297,7 @@ ${partion([
 <div class="badge badge--large">PRODUCT</div>
 
 <div>${renderRules(rules.sum)}</div>
+
 
 ## Převod jednotek
 <div class="badge badge--large">UNIT</div>
@@ -535,7 +547,6 @@ const compDiffInput = Generators.input(compDiffForm);
 
 
 <div>${renderEx({example:examplePartToWhole({input:compDiffInput})[0]})}</div>
-<div>${renderEx({example:examplePartToPart({input:compDiffInput})[0]})}</div>
 
 
 
@@ -628,6 +639,8 @@ const triangleInput = Generators.input(triangleForm);
 <div>${renderEx({example:prismExamples({input:triangleInput})[2]})}</div>
 
 
+<!-- <div>${renderEx({example:autobus()})}</div> -->
+
 # Jak je to uděláno?
 
 Inspirováno prací [MathGAP](https://arxiv.org/pdf/2410.13502).
@@ -635,18 +648,18 @@ Inspirováno prací [MathGAP](https://arxiv.org/pdf/2410.13502).
 Můžete použít jako javascript module.
 
 <script type="module">
-import {cont, inferenceRule} from "https://www.cermatdata.cz/components/math.js";
+// import {cont, inferenceRule} from "https://www.cermatdata.cz/components/math.js";
 
-const result = inferenceRule(
-  cont("půjčka", 300, "Kč"),
-  inferenceRule(
-    cont("úrok", 20, "%"),
-    cont("půjčka", 100, "%"),
-    { kind: 'ratio' }
-  )
-);
+// const result = inferenceRule(
+//   cont("půjčka", 300, "Kč"),
+//   inferenceRule(
+//     cont("úrok", 20, "%"),
+//     cont("půjčka", 100, "%"),
+//     { kind: 'ratio' }
+//   )
+// );
 
-console.log(`Výsledek: ${result.agent} = ${result.quantity} ${result.entity}`)
+// console.log(`Výsledek: ${result.agent} = ${result.quantity} ${result.entity}`)
 
 
 </script>

@@ -1,4 +1,4 @@
-import { cont, sum, ctor, ctorRatio } from "../../components/math.js";
+import { cont, sum, ctor, ctorComplement } from "../../components/math.js";
 import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 interface SourozenciParams {
@@ -34,7 +34,7 @@ export default function build({ input }: {
         celek,
         ctor('ratio')
       ),
-      ctorRatio("Michal+zbývá"),
+      ctorComplement("Michal+zbývá"),
     ),
     deduce(michalPlus, zbyva, penize),
   )

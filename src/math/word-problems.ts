@@ -30,6 +30,8 @@ import { porovnatObsahObdelnikACtverec } from './M7A-2024/13.js';
 import { najitMensiCislo, porovnatAaB } from './M7A-2024/1.js';
 import { okurkyASalaty } from './M9I-2025/okurky.js';
 import { cislaNaOse } from './M7A-2024/3.js';
+import { rozdilUhlu } from './M9A-2024/angle.js';
+import { desetiuhelnik } from './M9I-2025/angle.js';
 export { inferenceRuleWithQuestion } from '../components/math.js';
 export { formatPredicate } from '../utils/deduce-utils.js';
 
@@ -61,7 +63,7 @@ const dumMeritkoParams = {
 }
 
 const krabiceParams = { pocetKusuVKrabice: 12, missingVyrobku: 5 }
-const osaParams = {mensiCislo: 1.4, vetsiCislo: 5.6, pocetUsekuMeziCisly: 6, A: 4, B: 7, C: -2};
+const osaParams = { mensiCislo: 1.4, vetsiCislo: 5.6, pocetUsekuMeziCisly: 6, A: 4, B: 7, C: -2 };
 export default {
   "M7A-2023": {
     3.3: cetar({
@@ -80,10 +82,10 @@ export default {
   },
   "M7A-2024": {
     1.1: porovnatAaB({ input: { a: 1.6, b: -1.2 } }),
-    1.2: najitMensiCislo({ input: { zadane: 7/8, mensiO: 0.093 } }),
-    3.1: cislaNaOse({input: osaParams })[0],
-    3.2: cislaNaOse({input: osaParams })[1],
-    3.3: cislaNaOse({input: osaParams })[2],
+    1.2: najitMensiCislo({ input: { zadane: 7 / 8, mensiO: 0.093 } }),
+    3.1: cislaNaOse({ input: osaParams })[0],
+    3.2: cislaNaOse({ input: osaParams })[1],
+    3.3: cislaNaOse({ input: osaParams })[2],
     6: pocetSportovcu({ input: {} }),
     10.1: letniTabor(letniTaborInput)[0],
     10.2: letniTabor(letniTaborInput)[1],
@@ -129,6 +131,7 @@ export default {
     7.2: tridaSkupiny(tridaSkupinyParams)[1],
     8.1: tanga({ input: { tangaWidth: 20 } })[0],
     8.2: tanga({ input: { tangaWidth: 20 } })[1],
+    11: rozdilUhlu({ input: { delta: 107, beta: 23 } }),
     12: obrazec({ input: { obvod: 30 } }),
     13: dvaCtverce({ input: { rozdilObvod: 6, obdelnikCtvAStrana: 1 / 2, obdelnikCtvBStrana: 1 / 5 } }),
     15.1: dumMeritko(dumMeritkoParams)[0],
@@ -149,6 +152,9 @@ export default {
     7.1: plnaKrabice({ input: krabiceParams })[0],
     7.2: plnaKrabice({ input: krabiceParams })[1],
     7.3: plnaKrabice({ input: krabiceParams })[2],
+    11.1: desetiuhelnik({input:{pocetUhlu: 10}})[0],
+    11.2: desetiuhelnik({input:{pocetUhlu: 10}})[1],
+    11.3: desetiuhelnik({input:{pocetUhlu: 10}})[2],
     12: kytice({ input: {} }),
     13: caryNaPapire({ input: { pocetCasti: 40 } }),
     14: domecek({ input: { baseSurfaceArea: 16, quota: 4 } }),

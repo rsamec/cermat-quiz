@@ -1,5 +1,5 @@
 
-import { cont, inferenceRule, ratio, sum, compRelative, ctor, ctorRatio } from "../../components/math.js";
+import { cont, inferenceRule, ratio, sum, compRelative, ctorComplement } from "../../components/math.js";
 import { axiomInput, deduce, deduceLbl } from "../../utils/deduce-utils.js";
 
 interface ZakuseParams {
@@ -51,7 +51,7 @@ export default function build({ input }: {
           ),
           deduce(
             oneThird,
-            ctorRatio(partTotalPrice),
+            ctorComplement(partTotalPrice),
           )
         ),
         oneThird)
