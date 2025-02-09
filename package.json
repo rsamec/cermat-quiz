@@ -30,6 +30,7 @@
     "invert-color": "^2.0.0",
     "markdown-it-footnote": "^4.0.0",
     "markdown-it-html5-embed": "^1.0.0",
+    "markdown-it-katex": "^2.0.3",
     "markdown-it-sup": "^2.0.0",
     "playwright": "^1.49.0",
     "redux": "^5.0.1",
