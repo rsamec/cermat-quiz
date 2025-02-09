@@ -1,14 +1,21 @@
 # Cermat úlohy
-Mimooficiální databanka úloh a řešení úloh
+Mimooficiální databanka úloh a jejich řešení...
 
 [Demo](https://rsamec.github.io/cermat-quiz)
 
 # Databanka úloh
 
-- @todo - add Data + API description
+- strukturovaná data
+  - zadání - markdown
+  - metadata - json
 
 # Databanka řešení úloh
 
-- automatizované řešení všech úloh pomocí AI
-- automatizované řešení matematickýh výrazů pomocí Microsoft Math Solver API
-- řešení konstručních úloh v geometrii
+- strukturovaná data
+  - řešení slovních úloh
+  - řešení konstručních úloh 
+- automatizovaně
+  - automatizované řešení všech úloh pomocí AI
+  - automatizované řešení matematickýh výrazů pomocí Microsoft Math Solver API
+
+
