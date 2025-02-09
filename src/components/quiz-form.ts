@@ -268,16 +268,16 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                     ;
                   })}</div>` : ''}
             ${useResources ? html`<div class="v-stack v-stack--s">
-              ${useResources && mathResourceEntries.length > 0 || wordProblemEntries.length > 0 ? html`<details class="solution break-inside-avoid-column"><summary>Řešení úlohy</summary><div class="v-stack v-stack--s">
+              ${useResources && mathResourceEntries.length > 0 || wordProblemEntries.length > 0 ? html`<details class="solution break-inside-avoid-column"><summary>Řešení krok za krokem</summary><div class="v-stack v-stack--s">
               ${mathResourceEntries.map(([key, value, i]) => html`<div class="h-stack h-stack--s">
                 <h3 style="flex:1">Řešení ${key} - ${value.Name}</h3>
-                <a href="./solu-${code}#s-${ids[0]}" target="_blank"><span>Otevřít ↗︎</span></a>
+                <a href="./solu-${code}#s-${key}" target="_blank"><span>Otevřít ↗︎</span></a>
               </div>
               <video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`)}
               
               ${wordProblemEntries.map(([key, d]) => html`<div class="h-stack h-stack--s">
-                <h3 style="flex:1">Řešení ${key} - krok za krokem</h3>
-                <a href="./solu-${code}#s-${ids[0]}" target="_blank"><span>Otevřít ↗︎</span></a>
+                <h3 style="flex:1">Řešení ${key} - rozhodovačka</h3>
+                <a href="./solu-${code}#s-${key}" target="_blank"><span>Otevřít ↗︎</span></a>
               </div>
               ${html.fragment`${renderChatStepper(d.deductionTree)}`}
               `)}

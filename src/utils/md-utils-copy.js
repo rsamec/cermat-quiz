@@ -107,18 +107,18 @@ const Markdown = new markdownit({ html: false })
 
 const mdPlus = {
   unsafe(string, env) {
-    var head = document.head || document.getElementsByTagName("head")[0];
-    const href =
-      "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css";
+    // var head = document.head || document.getElementsByTagName("head")[0];
+    // const href =
+    //   "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css";
 
-    const existingLink = document.querySelector(`head link[href="${href}"]`);
-    if (!existingLink) {
-      var link = document.createElement("link");
-      head.appendChild(link);
+    // const existingLink = document.querySelector(`head link[href="${href}"]`);
+    // if (!existingLink) {
+    //   var link = document.createElement("link");
+    //   head.appendChild(link);
 
-      link.rel = "stylesheet";
-      link.href = href;
-    }
+    //   link.rel = "stylesheet";
+    //   link.href = href;
+    // }
 
     const template = document.createElement("template");
     template.innerHTML = Markdown.render(string, env);

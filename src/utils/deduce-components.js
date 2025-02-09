@@ -117,7 +117,7 @@ export const formatting = {
   formatRatio: d => new Fraction(d).toFraction(),
   formatEntity: (d, u) => [u, d].filter(d => d != null).join(" "),
   formatAgent: d => html`<b>${d}</b>`,
-  formatSequence: d => `${d.type}`
+  formatSequence: d => formatSequence(d),
 }
 
 export function formatNode(t, label, format = formatting) {

@@ -19,7 +19,7 @@ const content = await text(`${baseUrl}/index.md`);
 const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [baseUrl])
 const quiz = parseQuiz(rawContent);
 
-const filePath = path.resolve('./src/data/quiz-answers-detail-gpt-4o.json');
+const filePath = path.resolve('./src/data/quiz-answers-detail-o1-mini.json');
 const data = await readJsonFromFile(filePath);
 const answers = data[code];
 const ids = quiz.questions.map(d => d.id);
@@ -46,6 +46,15 @@ style: /assets/css/print.css
     color: var(--theme-red);
   }
 
+.katex-display > .katex {
+  display: inline-block;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  padding: 7px 0px;
+  text-align: initial;
+}
 
 details.solutions > summary > h1, h2 {
     display:inline-block;

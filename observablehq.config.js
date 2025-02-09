@@ -54,18 +54,18 @@ export default {
   pages: [
     {
       open: true,
-      name: "Úlohy",
-      pages: quizes.map(d => ({
-        name: `${formatSubject(d.subject)} ${formatPeriod(d.period)}`,
-        path: `/quiz-sel-${d.subject}-${d.period}`,
-      }))
-    },
-    {
-      open: false,
       name: "Testy",
       pages: quizes.map(d => ({
         name: `${formatSubject(d.subject)} ${formatPeriod(d.period)}`,
         path: `/quiz-picker-${d.subject}-${d.period}`,
+      }))
+    },
+    {
+      open: false,
+      name: "Úlohy",
+      pages: quizes.map(d => ({
+        name: `${formatSubject(d.subject)} ${formatPeriod(d.period)}`,
+        path: `/quiz-sel-${d.subject}-${d.period}`,
       }))
     },
     {
@@ -80,7 +80,6 @@ export default {
         {name: "Matika - slovní úlohy", path: "/math-deduction-examples"},
         {name: "Matika - výrazy", path: "/math"},
         {name: "AI", path: "/ai"},
-        
         // {name: "Kategorie", path: "/categories"},
         // {name: "Inline md", path: "/quiz-markdown"},
         // {name: "Rozvržení stránky", path: "/layout"},
@@ -92,7 +91,8 @@ export default {
   head: `<link rel="icon" href="observable.png" type="image/png" sizes="32x32">
          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css">
          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tippy.js/6.3.7/tippy.min.css">
-         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
+         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css"/>
          `,
 
   // The path to the source root.
@@ -103,6 +103,7 @@ export default {
   .concat(['/components/math.js'])
   .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
   .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))
+  .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/ai-${code}`))
   .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-${code}`))
   .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solu-${code}`))
   .concat(quizes.map(d => `/quiz-${d.subject}-${d.period}`))

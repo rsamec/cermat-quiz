@@ -1,7 +1,8 @@
 import markdownit from "markdown-it";
-import * as katex from 'markdown-it-katex';
+import katex from '@vscode/markdown-it-katex';
 import MarkdownItFootnote from "markdown-it-footnote";
 import sup from 'markdown-it-sup';
+
 //const inlineTextColor = import('https://cdn.skypack.dev/@gerhobbelt/markdown-it-inline-text-color@1.0.1-1?min');
 //import textBgColor from 'https://cdn.jsdelivr.net/npm/markdown-it-color-plus/+esm';
 import html5Media from 'markdown-it-html5-embed';
@@ -89,11 +90,12 @@ const underline = (md) => {
 
 const Markdown = new markdownit({ html: false, })
   .use(underline)  
-  .use(katex.default, {
+  .use(katex.default ?? katex, {
+    
     // unicodeTextInMathMode:true,
-    svg: {
-      scale: 2
-    }
+    // svg: {
+    //   scale: 2
+    // }
   })
   .use(sup)  
   .use(MarkdownItFootnote)
@@ -108,18 +110,18 @@ const Markdown = new markdownit({ html: false, })
 
 const mdPlus = {
   unsafe(string, env) {
-    var head = document.head || document.getElementsByTagName("head")[0];
-    const href =
-      "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css";
+    // var head = document.head || document.getElementsByTagName("head")[0];
+    // const href =
+    //   "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css";
 
-    const existingLink = document.querySelector(`head link[href="${href}"]`);
-    if (!existingLink) {
-      var link = document.createElement("link");
-      head.appendChild(link);
+    // const existingLink = document.querySelector(`head link[href="${href}"]`);
+    // if (!existingLink) {
+    //   var link = document.createElement("link");
+    //   head.appendChild(link);
 
-      link.rel = "stylesheet";
-      link.href = href;
-    }
+    //   link.rel = "stylesheet";
+    //   link.href = href;
+    // }
 
     const template = document.createElement("template");
     template.innerHTML = Markdown.render(string, env);
