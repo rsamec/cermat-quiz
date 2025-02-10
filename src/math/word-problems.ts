@@ -147,8 +147,8 @@ export default {
   },
   "M9I-2025": {
     1: porovnani2Ploch({ input: {} }),
-    6.1: okurkyASalaty({ input: { okurky: 36 } })[0],
-    6.2: okurkyASalaty({ input: { okurky: 36 } })[1],
+    // 6.1: okurkyASalaty({ input: { okurky: 36 } })[0],
+    // 6.2: okurkyASalaty({ input: { okurky: 36 } })[1],
     7.1: plnaKrabice({ input: krabiceParams })[0],
     7.2: plnaKrabice({ input: krabiceParams })[1],
     7.3: plnaKrabice({ input: krabiceParams })[2],

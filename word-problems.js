@@ -2053,15 +2053,15 @@ function toComparison(a, b) {
     ]
   };
 }
-function toTransferEx(a, b, last4) {
+function toTransferEx(a, b, last3) {
   if (a.entity != b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`;
   }
-  const agent = { name: last4.agent, nameBefore: a.agent, nameAfter: b.agent };
+  const agent = { name: last3.agent, nameBefore: a.agent, nameAfter: b.agent };
   return { kind: "transfer", agentReceiver: agent, agentSender: agent, quantity: b.quantity - a.quantity, entity: a.entity, unit: a.unit };
 }
-function toTransfer(a, b, last4) {
-  const result = toTransferEx(a, b, last4);
+function toTransfer(a, b, last3) {
+  const result = toTransferEx(a, b, last3);
   return {
     question: `Zm\u011Bna stavu ${result.agentSender} => ${result.agentReceiver}. O kolik?`,
     result,
@@ -2192,8 +2192,8 @@ function toRatiosEx(a, b, whole) {
     whole
   };
 }
-function toRatios(a, b, last4) {
-  const result = toRatiosEx(a, b, last4.whole);
+function toRatios(a, b, last3) {
+  const result = toRatiosEx(a, b, last3.whole);
   return {
     question: `Vyj\xE1d\u0159i pom\u011Brem mezi ${result.parts.join(":")}?`,
     result,
@@ -2301,13 +2301,13 @@ function inferenceRuleWithQuestion(...args) {
 }
 function inferenceRuleEx(...args) {
   const [a, b, ...rest] = args;
-  const last4 = rest?.length > 0 ? rest[rest.length - 1] : null;
-  if (last4?.kind === "sum" || last4?.kind === "product" || last4?.kind === "lcd" || last4?.kind === "gcd" || last4?.kind === "sequence" && args.length > 3) {
+  const last3 = rest?.length > 0 ? rest[rest.length - 1] : null;
+  if (last3?.kind === "sum" || last3?.kind === "product" || last3?.kind === "lcd" || last3?.kind === "gcd" || last3?.kind === "sequence" && args.length > 3) {
     const arr = [a, b].concat(rest.slice(0, -1));
-    return last4.kind === "sequence" ? sequenceRule(arr) : last4.kind === "gcd" ? gcdRule(arr, last4) : last4.kind === "lcd" ? lcdRule(arr, last4) : last4.kind === "product" ? productRule(arr, last4) : last4.kind === "sum" ? sumRule(arr, last4) : null;
+    return last3.kind === "sequence" ? sequenceRule(arr) : last3.kind === "gcd" ? gcdRule(arr, last3) : last3.kind === "lcd" ? lcdRule(arr, last3) : last3.kind === "product" ? productRule(arr, last3) : last3.kind === "sum" ? sumRule(arr, last3) : null;
   } else if (a.kind === "cont" && b.kind == "cont") {
-    const kind = last4?.kind;
-    return kind === "comp-diff" ? toDiff(a, b) : kind === "quota" ? toQuota(a, b) : kind === "delta" ? toTransfer(a, b, last4) : kind === "rate" ? toRate(a, b) : kind === "ratios" ? toRatios(a, b, last4) : kind === "comp-ratio" ? toRatioComparison(a, b) : kind === "ratio" ? toPartWholeRatio(a, b) : toComparison(a, b);
+    const kind = last3?.kind;
+    return kind === "comp-diff" ? toDiff(a, b) : kind === "quota" ? toQuota(a, b) : kind === "delta" ? toTransfer(a, b, last3) : kind === "rate" ? toRate(a, b) : kind === "ratios" ? toRatios(a, b, last3) : kind === "comp-ratio" ? toRatioComparison(a, b) : kind === "ratio" ? toPartWholeRatio(a, b) : toComparison(a, b);
   } else if (a.kind === "cont" && b.kind === "unit") {
     return convertToUnit(a, b);
   } else if (a.kind === "unit" && b.kind === "cont") {
@@ -2319,10 +2319,10 @@ function inferenceRuleEx(...args) {
   } else if (a.kind === "ratio" && b.kind === "ratio") {
     return toComparisonRatio(a, b);
   } else if (a.kind === "comp" && b.kind === "cont") {
-    const kind = last4?.kind;
+    const kind = last3?.kind;
     return kind === "comp-part-eq" ? partEqual(a, b) : compareRule(b, a);
   } else if (a.kind === "cont" && b.kind === "comp") {
-    const kind = last4?.kind;
+    const kind = last3?.kind;
     return kind === "comp-part-eq" ? partEqual(b, a) : compareRule(a, b);
   } else if (a.kind === "cont" && b.kind == "rate") {
     return rateRule(a, b);
@@ -2357,21 +2357,21 @@ function inferenceRuleEx(...args) {
   } else if (a.kind === "ratio" && b.kind === "complement") {
     return ratioConvertRule(b, a);
   } else if (a.kind === "cont" && b.kind == "ratios") {
-    const kind = last4?.kind;
-    return kind === "simplify" ? mapRatiosByFactor(b, 1 / a.quantity) : kind === "nth-part" ? partToPartRule(a, b, last4) : partToPartRule(a, b);
+    const kind = last3?.kind;
+    return kind === "simplify" ? mapRatiosByFactor(b, 1 / a.quantity) : kind === "nth-part" ? partToPartRule(a, b, last3) : partToPartRule(a, b);
   } else if (a.kind === "ratios" && b.kind == "cont") {
-    const kind = last4?.kind;
-    return kind === "simplify" ? mapRatiosByFactor(a, 1 / b.quantity) : kind === "nth-part" ? partToPartRule(b, a, last4) : partToPartRule(b, a);
+    const kind = last3?.kind;
+    return kind === "simplify" ? mapRatiosByFactor(a, 1 / b.quantity) : kind === "nth-part" ? partToPartRule(b, a, last3) : partToPartRule(b, a);
   } else if (a.kind === "cont" && b.kind === "comp-diff") {
     return diffRule(a, b);
   } else if (a.kind === "comp-diff" && b.kind === "cont") {
     return diffRule(b, a);
   } else if (a.kind === "sequence" && b.kind === "cont") {
-    const kind = last4?.kind;
-    return kind === "nth" ? nthPositionRule(b, a, last4.entity) : nthTermRule(b, a);
+    const kind = last3?.kind;
+    return kind === "nth" ? nthPositionRule(b, a, last3.entity) : nthTermRule(b, a);
   } else if (a.kind === "cont" && b.kind === "sequence") {
-    const kind = last4?.kind;
-    return kind === "nth" ? nthPositionRule(a, b, last4.entity) : nthTermRule(a, b);
+    const kind = last3?.kind;
+    return kind === "nth" ? nthPositionRule(a, b, last3.entity) : nthTermRule(a, b);
   } else if (a.kind === "cont" && b.kind === "transfer") {
     return transferRule(a, b, "after");
   } else if (a.kind === "transfer" && b.kind === "cont") {
@@ -3886,29 +3886,6 @@ function najitMensiCislo({ input }) {
   };
 }
 
-// src/math/M9I-2025/okurky.ts
-function okurkyASalaty({ input }) {
-  const entity3 = "sazenic";
-  const okurkaLabel = "zasazeno okurek";
-  const salatLabel = "zasazeno sal\xE1t\u016F";
-  const ujaloOkurekLabel = "ujalo okurek";
-  const ujaloSalatLabel = "ujalo sal\xE1t\u016F";
-  const okurka = axiomInput(cont(okurkaLabel, input.okurky, entity3), 1);
-  const salat = deduce(
-    okurka,
-    comp(salatLabel, okurkaLabel, 4, entity3)
-  );
-  const dd1 = deduce(
-    salat,
-    ratio(salatLabel, ujaloSalatLabel, 3 / 4)
-  );
-  const dd2 = deduce(
-    okurka,
-    ratio(okurkaLabel, ujaloOkurekLabel, 5 / 6)
-  );
-  return [{ deductionTree: deduce(dd1, dd2) }, { deductionTree: dd2 }];
-}
-
 // src/math/M7A-2024/3.ts
 function cislaNaOse({ input }) {
   const entityLength = "d\xE9lka";
@@ -4115,8 +4092,8 @@ var word_problems_default = {
   },
   "M9I-2025": {
     1: porovnani2Ploch({ input: {} }),
-    6.1: okurkyASalaty({ input: { okurky: 36 } })[0],
-    6.2: okurkyASalaty({ input: { okurky: 36 } })[1],
+    // 6.1: okurkyASalaty({ input: { okurky: 36 } })[0],
+    // 6.2: okurkyASalaty({ input: { okurky: 36 } })[1],
     7.1: plnaKrabice({ input: krabiceParams })[0],
     7.2: plnaKrabice({ input: krabiceParams })[1],
     7.3: plnaKrabice({ input: krabiceParams })[2],
