@@ -12,7 +12,8 @@ import * as Inputs from 'npm:@observablehq/inputs';
 import { isEmptyOrWhiteSpace, cls } from '../utils/string-utils.js';
 
 import wordProblems from '../math/word-problems.js';
-import {renderChatStepper} from '../utils/deduce-chat.js';
+import { renderChatStepper } from '../utils/deduce-chat.js';
+import { generateAIMessages } from '../utils/deduce-utils.js';
 
 type QuizParams = {
   questions: string[][],
@@ -122,7 +123,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
 
               })
             )
-            const env = { docId: `${code}-${i}` };
+            const env = { docId: `${code}-${i}`, withoutKatex: true };
             return html`<div class=${cls(['q', `q-${i}`, questionCustomClass])}>${useFormControl
               ? toTemplate(quizBuilder.content(ids, { rootOnly: true }), env, context, (key) => {
                 const metadata = metadataMap[key];
@@ -165,7 +166,6 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                     .flatMap((x) => (x.TemplateSteps ?? []).map((x, i) => ({ x, i })))
                     .map(({ x, i }) => ([d.leaf.data.id, x, i]));
                 }) : [];
-              console.log(mathResourceEntries, mathResource)
 
               const wordProblemEntries = wordProblem != null ? leafs
                 .map((d, i) => wordProblem[d.leaf.data.id] != null ? [d.leaf.data.id, wordProblem[d.leaf.data.id]] : null).filter(Boolean)
@@ -176,7 +176,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
               ${rawContent}
 
             
-            ${useAIHelpers ? html`<div class="h-stack h-stack-items--center h-stack--m h-stack--wrap h-stack--end">              
+            ${useAIHelpers ? html`<div class="h-stack h-stack-items--center h-stack--m h-stack--wrap h-stack--end">
               <a style="height:34px;" href="#" onclick=${(e) => {
                     e.preventDefault();
                     window.open(`https://chat.openai.com/?q=${encodeURIComponent(quizBuilder.content(ids, { render: 'content' }))}`)
@@ -269,18 +269,24 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                   })}</div>` : ''}
             ${useResources ? html`<div class="v-stack v-stack--s">
               ${useResources && mathResourceEntries.length > 0 || wordProblemEntries.length > 0 ? html`<details class="solution break-inside-avoid-column"><summary>Řešení krok za krokem</summary><div class="v-stack v-stack--s">
-              ${mathResourceEntries.map(([key, value, i]) => html`<div class="h-stack h-stack--s">
+              ${mathResourceEntries.map(([key, value, i]) => html`<div class="h-stack h-stack-items--center h-stack--s">
                 <h3 style="flex:1">Řešení ${key} - ${value.Name}</h3>
-                <a href="./solu-${code}#s-${key}" target="_blank"><span>Otevřít ↗︎</span></a>
+                <a href="./solu-${code}#s-${key}" target="_blank"><span>↗︎</span></a>
               </div>
               <video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`)}
               
-              ${wordProblemEntries.map(([key, d]) => html`<div class="h-stack h-stack--s">
+              ${wordProblemEntries.length > 0 ? html`<div class="h-stack h-stack--end">${renderChatButton("Zdůvodni řešení", generateAIMessages({
+                    template: quizBuilder.content(ids, { ids: groupedIds, render: 'content' }),
+                    deductionTrees: wordProblemEntries.map(([key, d]) => [`Řešení ${key}`, d.deductionTree])
+                  }).explainSolution)}<div>` : ""}
+              ${wordProblemEntries.map(([key, d]) => html`<div class="h-stack h-stack-items--center h-stack--s">
                 <h3 style="flex:1">Řešení ${key} - rozhodovačka</h3>
-                <a href="./solu-${code}#s-${key}" target="_blank"><span>Otevřít ↗︎</span></a>
+                <a href="./solu-${code}#s-${key}" target="_blank"><span>↗︎</span></a>
               </div>
+              
               ${html.fragment`${renderChatStepper(d.deductionTree)}`}
               `)}
+            
               
               </div></details>` : ''}
                            
@@ -569,4 +575,11 @@ function sortableInput(array, options: any = {}) {
   });
 
   return form;
+}
+
+function renderChatButton(label, query) {
+  return html`<a style="height:34px;" href="#" onclick=${(e) => {
+    e.preventDefault();
+    window.open(`https://chat.openai.com/?q=${encodeURIComponent(query)}`)
+  }}><img style="height:34px;" src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white&label=${encodeURIComponent(label)}" alt="ChatGPT" /></a>`
 }

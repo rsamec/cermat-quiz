@@ -69,7 +69,7 @@ const parameters = ({
   questions: [[code].concat(getQuestionIds(metadata,code))],
   subject:parseCode(code).subject,
   quizQuestionsMap,
-  displayOptions: {useFormControl:true,useAIHelpers:true,useResources:true},
+  displayOptions: {useFormControl:true,useAIHelpers:false,useResources:true},
   mathResourcesMap,
 })
 const {renderedQuestions, inputs:inputsStore} = renderedQuestionsPerQuizWithInputs(parameters);

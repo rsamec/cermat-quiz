@@ -21,7 +21,7 @@ const ATXRenderer = function () {
   function open(tokens, idx) {
     const token = tokens[idx];
     const tag = getTagName(token);
-    return tag === "h1"? `<${tag} id=${idx+(counter++)}>`:`<${tag}>`;
+    return tag === "h1" ? `<${tag} id=${idx + (counter++)}>` : `<${tag}>`;
   }
 
   function close(tokens, idx) {
@@ -88,16 +88,24 @@ const underline = (md) => {
   md.renderer.rules.strong_close = renderStrong;
 }
 
-const Markdown = new markdownit({ html: false, })
-  .use(underline)  
+const MarkdownWithKatex = new markdownit({ html: false, })
+  .use(underline)
   .use(katex.default ?? katex, {
-    
-    // unicodeTextInMathMode:true,
-    // svg: {
-    //   scale: 2
-    // }
   })
-  .use(sup)  
+  .use(sup)
+  .use(MarkdownItFootnote)
+  // .use(textBgColor.default, { inline: false, isMultiLine: true })
+  .use(html5Media, {
+    html5embed: {
+      useImageSyntax: false, // Enables video/audio embed with ![]() syntax (default)
+      useLinkSyntax: true // Enables video/audio embed with []() syntax
+    }
+  })
+  .use(ATXRenderer())
+
+const Markdown = new markdownit({ html: false, })
+  .use(underline)
+  .use(sup)
   .use(MarkdownItFootnote)
   // .use(textBgColor.default, { inline: false, isMultiLine: true })
   .use(html5Media, {
@@ -124,11 +132,15 @@ const mdPlus = {
     // }
 
     const template = document.createElement("template");
-    template.innerHTML = Markdown.render(string, env);
+    template.innerHTML = env?.withoutKatex === true
+      ? Markdown.render(string, env)
+      : MarkdownWithKatex.render(string, env);
     return template.content.cloneNode(true);
   },
   renderToString(string, env) {
-    return Markdown.render(string,env);
+    return env?.withoutKatex === true
+      ? Markdown.render(string, env)
+      : MarkdownWithKatex.render(string, env)
   }
 };
 
