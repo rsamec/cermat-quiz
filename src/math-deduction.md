@@ -137,6 +137,11 @@ Predikáty umožňují formalní zápis situačního modelu úlohy.
       <td>Ája má 7 krát více sešitů než Honzík</td>
     </tr>
     <tr>
+      <td><div class="badge">COMP ANGLE</div> comparison between 2 angles</td>
+      <td>(agentA=alfa,</br>agentB=beta,</br>relationship="complementary")</td>
+      <td>Alfa je doplňkový úhel k beta.</td>
+    </tr>
+    <tr>
       <td><div class="badge">COMP DIFF</div> comparison by difference</td>
       <td>(agentMinuend=celkem,</br>agentSubtrahend=Honzík,</br>quantity=7,</br>entity=sešity)</td>
       <td>Rozdíl mezi sešity celkem a Honzíkem je 7 sešitů./td>
@@ -279,6 +284,10 @@ ${partion([
 
 <div>${renderRules(rules.partToPartRatio)}</div>
 
+### Porovnávání - úhly
+<div class="badge badge--large">COMP-ANGLE</div>
+<div>${renderRules(rules.angleCompare)}</div>
+
 ## Stav a změna stavu
 
 <div class="badge badge--large">TRANSFER</div>
@@ -296,6 +305,15 @@ ${partion([
 
 <div class="badge badge--large">RATE</div>
 <div class="badge badge--large">QUOTA</div>
+
+<div class="tip" label="Rozlišuj počet skupin a velikost skupiny">
+   10 : 2 = 5 může reprezentovat 2 různé věci
+   <ul>
+    <li>2 díly velikosti 5m - znám počet skupin 2, rozdělení 10m tyče na 2 díly o délce 5m - <div class="badge badge--large">RATE</div></li>
+    <li>5 dílů velikosti 2m - znám velikost skupiny 2m, rozdělení 10m tyče po 2m na 5 dílů - <div class="badge badge--large">QUOTA</div></li>
+   </ul>
+</div>
+
 
 <div>${renderRules(rules.rate)}</div>
 
@@ -651,8 +669,6 @@ const triangleInput = Generators.input(triangleForm);
 
 # Jak je to uděláno?
 
-Inspirováno prací [MathGAP](https://arxiv.org/pdf/2410.13502).
-
 Můžete použít jako javascript module.
 
 <script type="module">
@@ -717,3 +733,57 @@ export declare function inferenceRule(a: Predicate | Container[], b: Predicate, 
     kind: 'ratio' | 'comp-ratio' | 'rate' | "comp-diff" | 'comp-part-eq';
 })
 ```
+## Deduction tree
+
+Všechny příklady jsou k vidění [zde](https://github.com/rsamec/cermat-quiz/tree/master/src/math)
+
+```typescript
+import { comp, compRatio, nthPart, rate, ratios, sum } from "../../components/math.js";
+import { axiomInput, deduce, last } from "../../utils/deduce-utils.js";
+
+export function kytice() {
+  //agent names and entities
+  const kyticeAgent = "kytice";
+  const chryzatemaAgent = "chryzantéma";
+  const ruzeAgent = "růže";
+  const staticAgent = "statice";
+
+  const kusEntity = "kus";
+  const entity = "cena";
+
+  //axioms
+  const rozdilRuze = axiomInput(comp(ruzeAgent, staticAgent, 2, kusEntity), 1);
+  const RtoS = axiomInput(compRatio(ruzeAgent, staticAgent, 5 / 4), 2);
+  const CHxS = axiomInput(ratios(kyticeAgent, [chryzatemaAgent, staticAgent], [3, 2]), 3);
+  const ruzeRate = axiomInput(rate(chryzatemaAgent, 54, entity, kusEntity), 4)
+  const chryzantemaRate = axiomInput(rate(chryzatemaAgent, 40, entity, kusEntity), 5)
+  const staticeRate = axiomInput(rate(chryzatemaAgent, 35, entity, kusEntity), 6)
+
+  //deduction
+  const statice = deduce(
+    rozdilRuze,
+    RtoS
+  )
+  const chryzantem = deduce(
+    last(statice),
+    CHxS,
+    nthPart(chryzatemaAgent)
+  )
+  const ruze = deduce(
+    statice,
+    rozdilRuze
+  )
+
+  return {
+    deductionTree: deduce(
+      deduce(ruze, ruzeRate),
+      deduce(last(statice), staticeRate),
+      deduce(chryzantem, chryzantemaRate),
+      sum(kyticeAgent, [ruzeAgent, chryzatemaAgent, staticAgent], entity, entity)
+    )
+  }
+}
+
+```
+
+Inspirováno prací [MathGAP](https://arxiv.org/pdf/2410.13502).

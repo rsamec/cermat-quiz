@@ -155,7 +155,7 @@ export default {
     11.1: desetiuhelnik({input:{pocetUhlu: 10}})[0],
     11.2: desetiuhelnik({input:{pocetUhlu: 10}})[1],
     11.3: desetiuhelnik({input:{pocetUhlu: 10}})[2],
-    12: kytice({ input: {} }),
+    12: kytice(),
     13: caryNaPapire({ input: { pocetCasti: 40 } }),
     14: domecek({ input: { baseSurfaceArea: 16, quota: 4 } }),
     15.1: objemNadoby1({ input: { zbyva: 14, zaplnenoPomer: 3 / 5 } }),

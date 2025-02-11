@@ -1,6 +1,6 @@
 
 import type { Predicate } from "../components/math.js";
-import { cont, ratio, comp, rate, ratios, compRatio, compDiff, sum, lcd, gcd, ctor, inferenceRule, nth, quota, product, ctorRatios, ctorUnit, transfer, ctorDelta } from "../components/math.js";
+import { cont, ratio, comp, rate, ratios, compRatio, compDiff, sum, lcd, gcd, ctor, inferenceRule, nth, quota, product, ctorRatios, ctorUnit, transfer, ctorDelta, compAngle } from "../components/math.js";
 
 export default function rules() {
 
@@ -22,7 +22,7 @@ export default function rules() {
   const a = cont("Ája", 2, "sešity");
   const b = cont("Honzík", 6, "sešity");
   const compareAtoB = comp("Honzík", "Ája", 4, "sešity");
-  const transferAtoB = transfer({name:"Ája", nameBefore: "Ája před změnou", nameAfter:"Ája po změně"},{name:"Honzík", nameBefore: "Honzík před změnou", nameAfter:"Honzík po změně"}, 1, "sešity");
+  const transferAtoB = transfer({ name: "Ája", nameBefore: "Ája před změnou", nameAfter: "Ája po změně" }, { name: "Honzík", nameBefore: "Honzík před změnou", nameAfter: "Honzík po změně" }, 1, "sešity");
   const compareRatioAtoB = compRatio("Honzík", "Ája", 3);
 
   const a1 = (quantity: number) => cont("Ája dnes", quantity, "sešity");
@@ -34,17 +34,20 @@ export default function rules() {
   const geometric = [2, 4, 8, 16, 32].map((d, i) => cont(`č. ${i + 1}`, d, "čtverec"));
   const quadratic = [1, 4, 9, 16, 25].map((d, i) => cont(`č. ${i + 1}`, d, "čtverec"));
   const tenthTerm = cont("č.10", 10, "pozice");
+
+  const alfa = cont("alfa", 50, "stupňů");
+
   return {
     compare: [deduceRule(a, b), deduceRule(a, compareAtoB), deduceRule(b, compareAtoB)],
     transfer: [
-        deduceRule(a, transferAtoB), deduceRule(b, transferAtoB),deduceRule(a, b, ),
-        deduceRule(transferAtoB, a), deduceRule(transferAtoB, b),
-        deduceRule(a1(2), a2(5), ctorDelta('Ája')), deduceRule(a1(5), a2(2), ctorDelta('Ája'))
-      ],
+      deduceRule(a, transferAtoB), deduceRule(b, transferAtoB), deduceRule(a, b,),
+      deduceRule(transferAtoB, a), deduceRule(transferAtoB, b),
+      deduceRule(a1(2), a2(5), ctorDelta('Ája')), deduceRule(a1(5), a2(2), ctorDelta('Ája'))
+    ],
     ratioCompare: [deduceRule(a, b, ctor('comp-ratio')), deduceRule(a, compareRatioAtoB), deduceRule(b, compareRatioAtoB)],
+    angleCompare: [deduceRule(alfa, compAngle("beta", "alfa", "supplementary")), deduceRule(alfa, compAngle("beta", "alfa", "complementary")), deduceRule(alfa, compAngle("beta", "alfa", "corresponding"))],
     partToWholeRatio: [deduceRule(cont("třída", 120, ""), partToWholeRatio), deduceRule(cont("chlapci", 30, ""), partToWholeRatio)],
     partToPartRatio: [
-
       deduceRule(cont("třída", 120, ""), partToPartRatios), deduceRule(cont("dívky", 90, ""), partToPartRatios),
       deduceRule(cont("chlapci", 30, ""), cont("dívky", 90, ""), ctorRatios("třída"))
     ],
@@ -72,6 +75,7 @@ export default function rules() {
     aritmeticSequence: [...nthRule(arithmetic, tenthTerm)],
     quadraticSequence: [...nthRule(quadratic, tenthTerm)],
     geometricSequence: [...nthRule(geometric, tenthTerm)],
+
     unit: [deduceRule(cont("Honzík", 4, "jablek", "kg"), ctorUnit("g")), deduceRule(cont("Ája", 400, "mléka", "cm3"), ctorUnit("l"))]
   }
 }
