@@ -1,5 +1,6 @@
-import { cont, formatAngle, inferenceRule, inferenceRuleWithQuestion } from "../components/math.js"
+import { cont, formatAngle, inferenceRule } from "../components/math.js"
 import type { Predicate, Container, Rate, ComparisonDiff, Comparison } from "../components/math.js"
+import { inferenceRuleWithQuestion } from "../math/math-configure.js"
 
 type PredicateLabel = { labelKind?: 'input' | 'deduce', label?: number }
 

@@ -672,18 +672,18 @@ const triangleInput = Generators.input(triangleForm);
 Můžete použít jako javascript module.
 
 <script type="module">
-// import {cont, inferenceRule} from "https://www.cermatdata.cz/components/math.js";
+import {cont, inferenceRule} from "https://www.cermatdata.cz/components/math.js";
 
-// const result = inferenceRule(
-//   cont("půjčka", 300, "Kč"),
-//   inferenceRule(
-//     cont("úrok", 20, "%"),
-//     cont("půjčka", 100, "%"),
-//     { kind: 'ratio' }
-//   )
-// );
+const result = inferenceRule(
+  cont("půjčka", 300, "Kč"),
+  inferenceRule(
+    cont("úrok", 20, "%"),
+    cont("půjčka", 100, "%"),
+    { kind: 'ratio' }
+  )
+);
 
-// console.log(`Výsledek: ${result.agent} = ${result.quantity} ${result.entity}`)
+console.log(`Výsledek: ${result.agent} = ${result.quantity} ${result.entity}`)
 
 
 </script>

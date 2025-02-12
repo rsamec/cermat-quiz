@@ -32,9 +32,9 @@ import { okurkyASalaty } from './M9I-2025/okurky.js';
 import { cislaNaOse } from './M7A-2024/3.js';
 import { rozdilUhlu } from './M9A-2024/angle.js';
 import { desetiuhelnik } from './M9I-2025/angle.js';
-export { inferenceRuleWithQuestion } from '../components/math.js';
-export { formatPredicate } from '../utils/deduce-utils.js';
 
+export { inferenceRuleWithQuestion } from '../math/math-configure.js'
+export { formatPredicate } from '../utils/deduce-utils.js';
 
 const letniTaborInput = {
   input: {

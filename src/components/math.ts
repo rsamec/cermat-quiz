@@ -1,16 +1,20 @@
-import Fraction from 'fraction.js';
-import configureMeasurements from 'convert-units';
-import length from 'convert-units/definitions/length';
-import area from 'convert-units/definitions/area';
-import mass from 'convert-units/definitions/mass'
-import volume from 'convert-units/definitions/volume'
+export type UnitType = string
+export type Helpers = {
+  convertToFraction?: (quantity: number) => string | number,
+  convertToUnit?: (quantity: number, from: UnitType, to: UnitType) => number
+  unitAnchor?: (unit: UnitType) => number;
+}
+const defaultHelpers: Helpers = {
+  convertToFraction: d => d,
+  convertToUnit: d => d,
+  unitAnchor: () => 1
+}
 
-const convert = configureMeasurements<any, any, any>({
-  length,
-  area,
-  volume,
-  mass,
-});
+let helpers = defaultHelpers
+export function configure(config: Helpers) {
+  helpers = { ...defaultHelpers, ...config }
+}
+
 type Unit = string;
 
 type EntityBase = { entity: string, unit?: Unit }
@@ -339,12 +343,12 @@ function convertToUnitEx(a: Container, b: ConvertUnit): Container {
   if (a.unit == null) {
     throw `Missing entity unit ${a.agent} a ${a.entity}`;
   }
-  return { ...a, quantity: convert(a.quantity).from(a.unit).to(b.unit), unit: b.unit }
+  return { ...a, quantity: helpers.convertToUnit(a.quantity,a.unit, b.unit), unit: b.unit }
 }
 function convertToUnit(a: Container, b: ConvertUnit): Question {
   const result = convertToUnitEx(a, b)
-  const destination = convert().getUnit(a.unit)?.unit?.to_anchor;
-  const origin = convert().getUnit(b.unit)?.unit?.to_anchor;
+  const destination = helpers.unitAnchor(a.unit);
+  const origin = helpers.unitAnchor(b.unit);
   return {
     question: `Převeď ${formatNumber(a.quantity)} ${formatEntity(a)} na ${b.unit}.`,
     result,
@@ -1288,7 +1292,7 @@ function formatNumber(d: number) {
 }
 
 function formatRatio(d: number) {
-  return (d > -2 && d < 2) ? new Fraction(d).toFraction() : formatNumber(d)
+  return (d > -2 && d < 2) ? helpers.convertToFraction(d) as string : formatNumber(d)
 }
 
 function containerQuestion(d: Container) {

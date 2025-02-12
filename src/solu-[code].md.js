@@ -4,7 +4,8 @@ import mdPlus from './utils/md-utils.js';
 import { parseQuiz } from './utils/quiz-parser.js';
 import { readJsonFromFile } from './utils/file.utils.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, isEmptyOrWhiteSpace } from './utils/quiz-string-utils.js';
-import wordProblems, {inferenceRuleWithQuestion, formatPredicate} from '../word-problems.js';
+import wordProblems, {inferenceRuleWithQuestion, formatPredicate} from './math/word-problems.js';
+import Fraction from 'fraction.js';
 
 const {
   values: { code }
@@ -16,7 +17,7 @@ const formatting = {
   compose: (strings, ...args) => concatString(strings, ...args),
   formatKind: d => ``,
   formatQuantity: d => d.toLocaleString('cs-CZ'),
-  formatRatio: d => d.toLocaleString('cs-CZ'),
+  formatRatio: d => d != null ? new Fraction(d).toFraction() : d,
   formatEntity: (d, unit) => `<i>${[unit, d].filter(d => d != null).join(" ")}</i>`,
   formatAgent: d => `<b>${d}</b>`,
   formatSequence: d => `${d.type}`
