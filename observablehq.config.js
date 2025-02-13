@@ -89,7 +89,7 @@ export default {
         { name: "Slovní úlohy", path: "/math-deduction" },
         { name: "Slovní úlohy - příklady", path: "/math-deduction-examples" },
         { name: "Výrazy, rovnice", path: "/math" },
-        // { name: "Konstruční úlohy", path: "/geometry" },
+        { name: "Konstrukční úlohy", path: "/math-geometry" },
       ]
     },
   ],
