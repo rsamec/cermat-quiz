@@ -1,4 +1,4 @@
-import { cont, type Container, ctor } from "../../components/math.js";
+import { cont, ctor } from "../../components/math.js";
 import { axiomInput, connectTo, deduce, last, toCont } from "../../utils/deduce-utils.js";
 
 
@@ -20,7 +20,7 @@ export function desetiuhelnik({ input }: {
 
   const triangleSum = cont(rovnoramennyTrojLabel, 180, entity)
   const uhelRamenaRovnoramennehoTrojuhelniku = (
-    { vrcholovyUhel }: { vrcholovyUhel: Container },
+    { vrcholovyUhel }: { vrcholovyUhel: any },
     { uhelRamenoLabel }: { uhelRamenoLabel?: string }) => toCont(deduce(
       toCont(deduce(
         triangleSum,
