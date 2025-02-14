@@ -1,8 +1,6 @@
-import { cont, ratio, ctorComplement, ctor, comp, sum, transfer } from "../../components/math.js";
-import { deduce, axiomInput, last, deduceLbl, to, connectTo } from "../../utils/deduce-utils.js";
+import { cont, ratio, ctorComplement, comp, transfer } from "../../components/math.js";
+import { deduce, axiomInput, last, to, connectTo } from "../../utils/deduce-utils.js";
 import { percentBase } from "../percent/base.js";
-import { percentPart } from "../percent/part.js";
-import { percentage } from "../percent/percentage.js";
 
 
 const entity = "litrů";

@@ -16,6 +16,13 @@ export function configure(config: Helpers) {
 }
 
 type Unit = string;
+type Variable = string
+type Quantity = number
+type Ratio = number 
+
+function isQuantity(quantity: Quantity): quantity is number {
+  return typeof quantity === "number";
+}
 
 type EntityBase = { entity: string, unit?: Unit }
 type AgentMatcher = string
@@ -30,7 +37,7 @@ export type Container = EntityBase &
 {
   kind: 'cont';
   agent: string,
-  quantity: number
+  quantity: Quantity
 }
 
 export type ConvertUnit =
@@ -50,28 +57,28 @@ export type Comparison = EntityBase & {
   kind: 'comp'
   agentA: string,
   agentB: string,
-  quantity: number
+  quantity: Quantity
 }
 
 export type RatioComparison = {
   kind: 'comp-ratio'
   agentA: string,
   agentB: string,
-  ratio: number
+  ratio: Ratio
 }
 
 export type ComparisonDiff = EntityBase & {
   kind: "comp-diff"
   agentMinuend: string,
   agentSubtrahend: string,
-  quantity: number
+  quantity: Quantity
 }
 
 export type Transfer = EntityBase & {
   kind: 'transfer'
   agentReceiver: AgentNames,
   agentSender: AgentNames,
-  quantity: number
+  quantity: Quantity
 }
 
 export type Delta = {
@@ -84,22 +91,22 @@ export type Rate = {
   agent: string,
   entity: EntityBase,
   entityBase: EntityBase,
-  quantity: number
+  quantity: Quantity
 }
 
 export type Quota = {
   kind: 'quota'
   agentQuota: string,
   agent: string
-  quantity: number
-  restQuantity: number
+  quantity: Quantity
+  restQuantity: Quantity
 }
 
 export type PartWholeRatio = {
   kind: 'ratio'
   whole: AgentMatcher,
   part: AgentMatcher,
-  ratio: number
+  ratio: Ratio
 }
 export type SumCombine = Combine & {
   kind: 'sum'
@@ -343,7 +350,7 @@ function convertToUnitEx(a: Container, b: ConvertUnit): Container {
   if (a.unit == null) {
     throw `Missing entity unit ${a.agent} a ${a.entity}`;
   }
-  return { ...a, quantity: helpers.convertToUnit(a.quantity,a.unit, b.unit), unit: b.unit }
+  return { ...a, quantity: helpers.convertToUnit(a.quantity, a.unit, b.unit), unit: b.unit }
 }
 function convertToUnit(a: Container, b: ConvertUnit): Question {
   const result = convertToUnitEx(a, b)
@@ -377,8 +384,8 @@ function ratioCompareRule(a: Container, b: RatioComparison): Question {
     question: `Vypočti ${a.agent == b.agentB ? b.agentA : b.agentB}${formatEntity(result)}?`,
     result,
     options: [
-      { tex: `${formatNumber(a.quantity)} * ${formatRatio(Math.abs(b.ratio))}`, result: formatNumber(a.quantity * b.ratio), ok: (a.agent == b.agentB && b.ratio >= 0) || (a.agent == b.agentB && b.ratio < 0) },
-      { tex: `${formatNumber(a.quantity)} / ${formatRatio(Math.abs(b.ratio))}`, result: formatNumber(a.quantity / b.ratio), ok: (a.agent == b.agentA && b.ratio >= 0) || (a.agent == b.agentA && b.ratio < 0) },
+      { tex: `${formatNumber(a.quantity)} * ${formatRatio(Math.abs(b.ratio))}`, result: formatNumber(a.quantity * b.ratio), ok: (a.agent == b.agentB && b.ratio >= 0) || (a.agent == b.agentA && b.ratio < 0) },
+      { tex: `${formatNumber(a.quantity)} / ${formatRatio(Math.abs(b.ratio))}`, result: formatNumber(a.quantity / b.ratio), ok: (a.agent == b.agentA && b.ratio >= 0) || (a.agent == b.agentB && b.ratio < 0) },
     ]
   }
 }
@@ -411,8 +418,8 @@ function transferRule(a: Container, b: Transfer, transferOrder: "after" | "befor
     question: `Vypočti ${a.agent}${formatEntity(result)}?`,
     result,
     options: [
-      { tex: `${formatNumber(a.quantity)} ${b.quantity > 0 ? ' + ' : ' - '} ${formatNumber(Math.abs(b.quantity))}`, result: formatNumber(result.quantity), ok: a.agent == b.agentReceiver },
-      { tex: `${formatNumber(a.quantity)} ${b.quantity > 0 ? ' - ' : ' + '} ${formatNumber(Math.abs(b.quantity))}`, result: formatNumber(result.quantity), ok: a.agent == b.agentSender },
+      { tex: `${formatNumber(a.quantity)} ${b.quantity > 0 ? ' + ' : ' - '} ${formatNumber(Math.abs(b.quantity))}`, result: formatNumber(result.quantity), ok: a.agent == b.agentReceiver.name },
+      { tex: `${formatNumber(a.quantity)} ${b.quantity > 0 ? ' - ' : ' + '} ${formatNumber(Math.abs(b.quantity))}`, result: formatNumber(result.quantity), ok: a.agent == b.agentSender.name },
     ]
   }
 }
