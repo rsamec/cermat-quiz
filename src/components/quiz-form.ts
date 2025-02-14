@@ -20,8 +20,8 @@ type QuizParams = {
   quizQuestionsMap: Record<string, { metadata: any, rawContent: string }>,
   subject: string,
   displayOptions: { useAIHelpers?: boolean, questionCustomClass?: string, useFormControl?: boolean, useResources?: boolean }
-  resourcesMap?: Record<string, any>
   mathResourcesMap?: Record<string, any>
+  videoExcludesMap?: Record<string, any>
 }
 
 function parseQuestionId(id, subject) {
@@ -59,7 +59,7 @@ function chunkMetadataByInputs(metadata, subject, selectedIds = []) {
   }, []);
 }
 
-function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, displayOptions, resourcesMap, mathResourcesMap }: QuizParams) {
+function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, displayOptions, mathResourcesMap, videoExcludesMap }: QuizParams) {
   const { questionCustomClass, useAIHelpers, useFormControl, useResources } = displayOptions;
   const inputsStore: Record<string, Record<string, any>> = {}
   const indexMap: Record<string, number[][]> = {}
@@ -75,9 +75,9 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
         const chunks = chunkMetadataByInputs(quiz.metadata, subject, ids);
         const submit = "Odeslat"
 
-        const resource = resourcesMap?.[code];
         const mathResource = mathResourcesMap?.[code];
         const wordProblem = wordProblems[code];
+        const videoExclude = videoExcludesMap?.[code] ?? {};
 
         let currentIndex = indexMap[code];
         if (currentIndex == null) {
@@ -273,7 +273,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                 <h3 style="flex:1">Řešení ${key} - ${value.Name}</h3>
                 <a href="./solu-${code}#s-${key}" target="_blank"><span>↗︎</span></a>
               </div>
-              <video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`)}
+              ${videoExclude[key] ? '':html`<video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`}`)}
               
               ${wordProblemEntries.length > 0 ? html`<div class="h-stack h-stack--end">${renderChatButton("Zdůvodni řešení", generateAIMessages({
                     template: quizBuilder.content(ids, { ids: groupedIds, render: 'content' }),

@@ -1,4 +1,4 @@
-import { comp, compDiff, compRatio, cont, ctor, product } from "../../components/math.js";
+import { compDiff, cont, ctor } from "../../components/math.js";
 import { axiomInput, deduce, deduceLbl, last, to } from "../../utils/deduce-utils.js";
 
 

@@ -36,6 +36,8 @@ import { isEmptyOrWhiteSpace } from './utils/string-utils.js';
 import { formatCode } from './utils/quiz-string-utils.js';
 
 const metadata = await FileAttachment(`./data/math-${observable.params.code}.json`).json();
+const videoExlusions = await FileAttachment('./data/math-answers-video-exclude.json').json();
+const videoExclude = videoExlusions[observable.params.code] ?? {};
 const entries = Object.entries(metadata);
 function normalizeMath(value){
   return value
@@ -50,7 +52,7 @@ function renderResult(key, {Name, Answer, TemplateSteps}){
   </div>`:''}
   <div class="v-stack v-stack--m">${TemplateSteps.map((d,i) => 
     html`<div class="v-stack v-stack--s">
-      <video src="./assets/math/${observable.params.code}/${key}-${i}.mp4" playsinline muted controls></video>
+      ${videoExclude[key] ? '':html`<video src="./assets/math/${observable.params.code}/${key}-${i}.mp4" playsinline muted controls></video>`}
       ${d.Steps?.length > 0 ? renderTemplateSteps(d):''}
     </div>`)}</div>
   </div>`
