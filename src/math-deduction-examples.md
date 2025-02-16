@@ -76,8 +76,21 @@ return html`
 
 # Slovní úlohy
 
-Řešené slovní úlohy pomocí dedukčních stromů.
+Následující vybrané slovní úlohy slouží k ukázce různých reprezentací dedukčních stromů, parametrizaci úloh a možností propojení s AI.
 
+Různé reprezentace dedukčního stromu pomocí
+- textové stromu - **shora dolů** kompatkní textový zápis, kořen představuje konečný výsledek
+- dedukční strom - **zdola nahoru** - vizuální strom, který umožňuje zobrazovat i grafické prvky
+- textový chat - **plochý seznam kroků řešení úlohy** - každý krok má strukturu otázkou, vstupy a vyvozený závěr spolu s numerickým výpočtem
+- chat - **grafický chat** - oddělení otázky a numerického výpočtu
+- chat dialog - **interaktivní chat** - rozhodovačka po jednotlivých krocích s nutností volby z nabízených možností
+
+Propojení s AI - je vygenerován jednoduchí prompt, který může obsahovat zadání i textové řešení úlohy
+- vysvětlení řešení - prompt na převedení heslovitého řešení do srozumitelnější podoby pro uživatele
+- generování více příkladů - prompt na vytvoření obdobních úloh v jiné doméně
+- vizualizace - prompt na vizualizaci situace v úloze
+
+ 
 ```js
 const koloForm = Inputs.form({
   base: Inputs.range([10_000, 50_000], {step: 1000, value:20_000, label: "Cena"}),
@@ -119,30 +132,26 @@ const cetarInput = Generators.input(cetarForm);
 
 ----------------------
 
+
 ```js
-const taborForm = Inputs.form({
-  zdravotnik: Inputs.range([1, 5], {step: 1, value:1, label: "Počet zdravotníků"}),
-  kucharPerZdravotnik: Inputs.range([1, 10], {step: 1, value:4, label: "Kuchařek na každého zdravotníka"}),
-  vedouciPerKuchar: Inputs.range([1,10], {step: 1, value:2, label: "Vedoucí za každou kuchařku"}),
-  instruktorPerVedouci: Inputs.range([1,10], {step: 1, value:2, label: "Instruktorů za každého vedoucího"}),
-  ditePerInstruktor: Inputs.range([1, 10], {step: 1, value:4, label: "Dětí za každého instruktora"}),
+const workersForms = Inputs.form({
+  previousWorker: Inputs.range([5, 10], {step: 1, value:5, label: "Původní počet švadlen"}),
+  previousHours: Inputs.range([1, 50], {step: 1, value:24, label: "Původní počet hodin"}),
+  currentWorker: Inputs.range([2, 4], {step: 1, value:4, label: "Nový počet švadlen"}),
 });
-const taborInput = Generators.input(taborForm);
+const workersInput = Generators.input(workersForms);
 ```
 
-## Letni tabor
+## Švadleny
 
 <details>
   <summary>Parametrizace</summary>
-  ${taborForm}
+  ${workersForms}
 </details>
-    
-<div>${renderExample({example:tabor({input:taborInput})[0]})}</div>
-<div>${renderExample({example:tabor({input:taborInput})[1]})}</div>
-<div>${renderExample({example:tabor({input:taborInput})[2]})}</div>
+
+<div>${renderExample({example:svadleny({input:workersInput})})}</div>
 
 ----------------------
-
 
 ## Sportovci
 
@@ -228,6 +237,32 @@ const sourozenciInput = Generators.input(sourozenciInputForm);
 ----------------------
 
 
+
+```js
+const taborForm = Inputs.form({
+  zdravotnik: Inputs.range([1, 5], {step: 1, value:1, label: "Počet zdravotníků"}),
+  kucharPerZdravotnik: Inputs.range([1, 10], {step: 1, value:4, label: "Kuchařek na každého zdravotníka"}),
+  vedouciPerKuchar: Inputs.range([1,10], {step: 1, value:2, label: "Vedoucí za každou kuchařku"}),
+  instruktorPerVedouci: Inputs.range([1,10], {step: 1, value:2, label: "Instruktorů za každého vedoucího"}),
+  ditePerInstruktor: Inputs.range([1, 10], {step: 1, value:4, label: "Dětí za každého instruktora"}),
+});
+const taborInput = Generators.input(taborForm);
+```
+
+## Letni tabor
+
+<details>
+  <summary>Parametrizace</summary>
+  ${taborForm}
+</details>
+    
+<div>${renderExample({example:tabor({input:taborInput})[0]})}</div>
+<div>${renderExample({example:tabor({input:taborInput})[1]})}</div>
+<div>${renderExample({example:tabor({input:taborInput})[2]})}</div>
+
+----------------------
+
+
 ```js
 const vekForm = Inputs.form({
   vekRozdil: Inputs.range([6, 50], {step: 2, value:6, label: "Věkový rozdíl"}),
@@ -235,25 +270,6 @@ const vekForm = Inputs.form({
 const vekInput = Generators.input(vekForm);
 ```
 
-```js
-const workersForms = Inputs.form({
-  previousWorker: Inputs.range([5, 10], {step: 1, value:5, label: "Původní počet švadlen"}),
-  previousHours: Inputs.range([1, 50], {step: 1, value:24, label: "Původní počet hodin"}),
-  currentWorker: Inputs.range([2, 4], {step: 1, value:4, label: "Nový počet švadlen"}),
-});
-const workersInput = Generators.input(workersForms);
-```
-
-## Švadleny
-
-<details>
-  <summary>Parametrizace</summary>
-  ${workersForms}
-</details>
-
-<div>${renderExample({example:svadleny({input:workersInput})})}</div>
-
-----------------------
 
 ```js
 const milkForm = Inputs.form({

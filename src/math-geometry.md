@@ -12,12 +12,12 @@ import mdPlus from './utils/md-utils.js';
 
 # Řešení konstrukčních úloh
 
-Použita knihovna <a href="https://rulerandcompass.org/">RAC - Ruler and Compass</a> k vytvoření gemoetrických konstrukcí pomocí operací simulující použití pravítka a kružítka.
+K vytvoření gemoetrických konstrukcí je použita knihovna <a href="https://rulerandcompass.org/">RAC - Ruler and Compass</a>.
 
 Konstrukční úloha je rozdělena na části
 
  - zadání úlohy - kalibrace úlohy, dle obrázku vytvoříme geometrickou konstrukci, která odpovídá zadání (libovoná velikost konstrukce, ale vždy zachovat proporci mezi objekty)
- - kroky řešení
+ - kroky řešení - jednotlivé operace simulují použití pravítka a kružítka
  - finální konstrukce
   
 
@@ -76,7 +76,7 @@ smartDrawing(300, (rac, shared) => {
 ```
 
 
-## Playground k vyzkoušení
+## Příklady
 
 <iframe width="100%" height="376" frameborder="0"
   src="https://observablehq.com/embed/@jsamec/matika-9?cells=q9"></iframe>

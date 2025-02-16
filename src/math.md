@@ -12,7 +12,7 @@ import mdPlus from './utils/md-utils.js';
 
 # Řešení matematických výrazů
 
-Použití <a href="https://math.microsoft.com/"><i class="fa-brands fa-microsoft"></i> Microsoft Math</a> API k automatickému řešení matematických výrazů.
+K automatickému řešení matematických výrazů je použití <a href="https://math.microsoft.com/"><i class="fa-brands fa-microsoft"></i> Microsoft Math</a> API.
 
 Hlavní přidanou hodnotou je krokové vysvětlení řešení, které pomáhá uživateli pochopit problematiku hlouběji. Na základě kroků řešení jsou generována i vysvětlující videa.
 
