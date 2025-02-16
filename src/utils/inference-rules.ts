@@ -72,9 +72,9 @@ export default function rules() {
     ],
     gcd: [deduceRule(cont("tyč", 24, "m"), cont("tyč", 16, "m"), gcd("největší možná délka tyče", "m"))],
     lcd: [deduceRule(cont("dvojice", 2, "osob"), cont("trojice", 3, "osob"), lcd("nejmenší možná skupina", "osob"))],
-    aritmeticSequence: [...nthRule(arithmetic, tenthTerm)],
-    quadraticSequence: [...nthRule(quadratic, tenthTerm)],
-    geometricSequence: [...nthRule(geometric, tenthTerm)],
+    // aritmeticSequence: [...nthRule(arithmetic, tenthTerm)],
+    // quadraticSequence: [...nthRule(quadratic, tenthTerm)],
+    // geometricSequence: [...nthRule(geometric, tenthTerm)],
 
     unit: [deduceRule(cont("Honzík", 4, "jablek", "kg"), ctorUnit("g")), deduceRule(cont("Ája", 400, "mléka", "cm3"), ctorUnit("l"))]
   }

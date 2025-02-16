@@ -11,7 +11,8 @@ import {deduce} from './utils/deduce.js';
 import {partion, relativeParts, relativePartsDiff, deduceTraverse, highlightLabel, renderChat } from './utils/deduce-components.js';
 import { renderChatStepper, useInput } from './utils/deduce-chat.js';
 import {inferenceRule, cont, sum, comp, ratio} from './components/math.js';
-import {computeTreeMetrics, jsonToMarkdownTree, jsonToMarkdownChat, highlight, generateAIMessages} from './utils/deduce-utils.js';
+import {computeTreeMetrics, jsonToMarkdownTree, jsonToMarkdownChat, highlight, generateAIMessages, last} from './utils/deduce-utils.js';
+import {toEquation} from './utils/deduce-solver.js';
 import mdPlus from './utils/md-utils.js';
 import { html as rhtml } from './utils/reactive-htl.js';
 import { signal, computed } from '@preact/signals-core';
@@ -30,6 +31,11 @@ import {example3} from './math/M9A-2024/kolo.js';
 
 import sourozenci from './math/M9C-2024/sourozenci.js';
 import pocetOb from './math/M9C-2024/pocet-obyvatel.js';
+import {okurkyASalaty} from './math/M9I-2025/okurky.js';
+
+const okurkyDT = okurkyASalaty({input:36})[0].deductionTree;
+console.log(toEquation(last(okurkyDT)).toString())
+//console.log(toEquation(last(okurkyDT)).evaluate({okurky: 36}))
 
 ```
 
@@ -45,7 +51,7 @@ function renderChatButton(label, query){
 function renderExample({example, unit, showRelativeValues}={}){
   const tree = deduceTraverse(example.deductionTree);  
   const {depth, width} = computeTreeMetrics(example.deductionTree);
-  const renderType = Inputs.radio(new Map([['Textový strom','text-tree'],['Dedukční strom','deduce-tree'],['Textový chat','text-chat'],['Chat', 'chat'],['Chat dialog', 'stepper-chat']]), {value:'stepper-chat', label:'Zobrazit'})  
+  const renderType = Inputs.radio(new Map([['Textový strom','text-tree'],['Dedukční strom','deduce-tree'],['Textový chat','text-chat'],['Chat', 'chat'],['Chat dialog', 'stepper-chat']]), {value:'chat', label:'Zobrazit'})  
   const renderType$ = useInput(renderType);
 
   const {explainSolution, vizualizeSolution, generateMoreQuizes} = generateAIMessages({template: example.template(highlight), deductionTrees:[["Řešení",example.deductionTree]]})
@@ -77,6 +83,27 @@ return html`
 # Slovní úlohy
 
 Řešené slovní úlohy pomocí dedukčních stromů.
+
+```js
+const okurkyForm = Inputs.form({
+  okurky: Inputs.range([1, 50], {step: 1, value:36, label: "Okurky"}),
+});
+const okurkyInput = Generators.input(okurkyForm);
+```
+
+## Okurky a saláty
+
+<details>
+  <summary>Parametrizace</summary>
+  ${okurkyForm}
+</details>
+    
+<div>${renderExample({example:okurkyASalaty({input:okurkyInput})[0], unit: 1000, showRelativeValues: false})}</div>
+<div>${renderExample({example:okurkyASalaty({input:okurkyInput})[1], unit: 1000, showRelativeValues: false})}</div>
+<div>${renderExample({example:okurkyASalaty({input:okurkyInput})[2], unit: 1000, showRelativeValues: false})}</div>
+
+----------------------
+
 
 ```js
 const koloForm = Inputs.form({

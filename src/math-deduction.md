@@ -341,13 +341,13 @@ ${partion([
 <div class="badge badge--large">SEQUENCE</div>
 
 ### Aritmetická
-<div>${renderRules(rules.aritmeticSequence)}</div>
+<!-- <div>${renderRules(rules.aritmeticSequence)}</div> -->
 
 ### Kvadratická
-<div>${renderRules(rules.quadraticSequence)}</div>
+<!-- <div>${renderRules(rules.quadraticSequence)}</div> -->
 
 ### Geometrická
-<div>${renderRules(rules.geometricSequence)}</div>
+<!-- <div>${renderRules(rules.geometricSequence)}</div> -->
 
 ----------------------
 
