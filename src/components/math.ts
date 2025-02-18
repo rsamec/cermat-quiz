@@ -18,7 +18,7 @@ export function configure(config: Helpers) {
 type Unit = string;
 type Variable = string
 type Quantity = number
-type Ratio = number 
+type Ratio = number
 
 function isQuantity(quantity: Quantity): quantity is number {
   return typeof quantity === "number";
@@ -361,7 +361,7 @@ function convertToUnit(a: Container, b: ConvertUnit): Question {
     result,
     options: [
       { tex: `${formatNumber(a.quantity)} * ${formatNumber(destination / origin)}`, result: formatNumber(result.quantity), ok: true },
-      { tex: `${formatNumber(a.quantity)} * ${formatNumber(origin / destination)}`, result: formatNumber(result.quantity), ok: false },
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(destination / origin)}`, result: formatNumber(result.quantity), ok: false },
     ]
   }
 }
@@ -684,12 +684,20 @@ function lcdRule(items: Container[], b: LCD): Question {
     ]
   }
 }
-function sequenceRule(items: Container[]): Sequence {
+function sequenceRuleEx(items: Container[]): Sequence {
   if (new Set(items.map(d => d.entity)).size > 1) {
     throw `Mismatch entity ${items.map(d => d.entity).join()}`
   }
   const type = sequencer(items.map(d => d.quantity));
   return { kind: 'sequence', type, entity: items[0].entity }
+}
+function sequenceRule(items: Container[]): Question {
+  const result = sequenceRuleEx(items);  
+  return {
+    question: `Hledej vzor opakování. Jaký je vztah mezi sousedními členy?`,
+    result,
+    options: sequenceOptions(result.type)
+  }
 }
 
 function toComparisonEx(a: Container, b: Container): Comparison {
@@ -962,7 +970,7 @@ function partEqual(a: Comparison, b: Container): Question {
 
 }
 
-function nthTermRule(a: Container, b: Sequence): Container {
+function nthTermRuleEx(a: Container, b: Sequence): Container {
   const [first, second] = b.type.sequence;
   return {
     kind: 'cont', agent: a.agent, entity: b.entity,
@@ -975,8 +983,19 @@ function nthTermRule(a: Container, b: Sequence): Container {
             ? first * Math.pow(b.type.commonRatio, a.quantity - 1) : NaN
   }
 }
+function nthTermRule(a: Container, b: Sequence): Question {
+  const result = nthTermRuleEx(a, b)
+  return {
+    question: `Vypočti ${result.agent} na pozici ${a.quantity}?`,
+    result,
+    options: [
+      { tex: formatSequence(b.type, a.quantity), result: formatNumber(result.quantity), ok: true },
+    ]
+  }
+}
 
-function nthPositionRule(a: Container, b: Sequence, newEntity: string = 'nth'): Container {
+
+function nthPositionRuleEx(a: Container, b: Sequence, newEntity: string = 'nth'): Container {
 
   const { kind, sequence } = b.type;
   const [first, second] = sequence;
@@ -993,7 +1012,16 @@ function nthPositionRule(a: Container, b: Sequence, newEntity: string = 'nth'): 
           : NaN
   }
 }
-
+function nthPositionRule(a: Container, b: Sequence, newEntity: string = 'nth'): Question {
+  const result = nthPositionRuleEx(a, b, newEntity)
+  return {
+    question: `Vypočti pozici ${result.agent} = ${formatEntity(a)}?`,
+    result,
+    options: [
+      { tex: 'Dle vzorce', result: formatNumber(result.quantity), ok: true },
+    ]
+  }
+}
 function isQuestion(value: Question | Predicate): value is Question {
   return (value as any)?.result != null
 }
@@ -1426,4 +1454,38 @@ export function formatAngle(relationship: AngleRelationship) {
       throw "Neznámý vztah";
 
   }
+}
+
+function formatSequence(type, n: number) {
+  const simplify = (d, op = '') => d !== 1 ? `${d}${op}` : ''
+
+  if (type.kind === "arithmetic")
+    return `${type.sequence[0]} + ${type.commonDifference}(${formatNumber(n)}-1)`;
+  if (type.kind === "quadratic") {
+    const [first, second] = type.sequence;
+    const { A, B, C } = nthQuadraticElements(first, second, type.secondDifference);
+    let parts = [`${simplify(A, "*")}${formatNumber(n)}^2`];
+    if (B !== 0) {
+      parts = parts.concat(`${simplify(B, "*")}${formatNumber(n)}`)
+    }
+    if (C !== 0) {
+      parts = parts.concat(`${simplify(C, "*")}${formatNumber(n)}`)
+    }
+    return `${parts.map((d, i) => `${i !== 0 ? ' + ' : ''}${d}`).join(' ')}`;
+  }
+  if (type.kind === "geometric") {
+    return `${simplify(type.sequence[0], '*')}${type.commonRatio}^(${formatNumber(n)}-1)`;
+  }
+}
+
+function sequenceOptions(seqType: SequenceAnalysis) {
+  return [
+    { tex: 'stejný rozdíl', result: `${seqType.kind === 'arithmetic' ? formatNumber(seqType.commonDifference) : "chybně"}`, ok: seqType.kind === 'arithmetic' },
+    { tex: 'stejný druhý rozdíl', result: `${seqType.kind === 'quadratic' ? formatNumber(seqType.secondDifference) : "chybně"}`, ok: seqType.kind === 'quadratic' },
+    { tex: 'stejný poměr', result: `${seqType.kind === 'geometric' ? formatNumber(seqType.commonRatio) : "chybně"}`, ok: seqType.kind === 'geometric' },
+  ]
+}
+export function formatSequencePattern(seqType: SequenceAnalysis){
+  const d = sequenceOptions(seqType).find(d => d.ok === true);
+  return d !=null ? `${d.tex} = ${d.result}`: 'N/A'
 }

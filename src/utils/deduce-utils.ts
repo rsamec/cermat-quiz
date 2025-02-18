@@ -266,6 +266,9 @@ export function formatPredicate(d: Predicate, formatting: any) {
     case "sequence":
       result = compose`${d.type != null ? formatSequence(d.type) : ''}`
       break;
+    case "nth-part":
+      result = compose`${formatAgent(d.agent)}`;
+      break;      
     case "nth":
       result = compose`${formatEntity(d.entity)}`;
       break;

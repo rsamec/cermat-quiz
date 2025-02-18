@@ -154,7 +154,7 @@ function convertToUnit(a, b) {
     result,
     options: [
       { tex: `${formatNumber(a.quantity)} * ${formatNumber(destination / origin)}`, result: formatNumber(result.quantity), ok: true },
-      { tex: `${formatNumber(a.quantity)} * ${formatNumber(origin / destination)}`, result: formatNumber(result.quantity), ok: false }
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(destination / origin)}`, result: formatNumber(result.quantity), ok: false }
     ]
   };
 }
@@ -434,12 +434,20 @@ function lcdRule(items, b) {
     ]
   };
 }
-function sequenceRule(items) {
+function sequenceRuleEx(items) {
   if (new Set(items.map((d) => d.entity)).size > 1) {
     throw `Mismatch entity ${items.map((d) => d.entity).join()}`;
   }
   const type = sequencer(items.map((d) => d.quantity));
   return { kind: "sequence", type, entity: items[0].entity };
+}
+function sequenceRule(items) {
+  const result = sequenceRuleEx(items);
+  return {
+    question: `Hledej vzor opakov\xE1n\xED. Jak\xFD je vztah mezi sousedn\xEDmi \u010Dleny?`,
+    result,
+    options: sequenceOptions(result.type)
+  };
 }
 function toComparisonEx(a, b) {
   if (a.entity != b.entity) {
@@ -675,7 +683,7 @@ function partEqual(a, b) {
     ]
   };
 }
-function nthTermRule(a, b) {
+function nthTermRuleEx(a, b) {
   const [first, second] = b.type.sequence;
   return {
     kind: "cont",
@@ -684,7 +692,17 @@ function nthTermRule(a, b) {
     quantity: b.type.kind === "arithmetic" ? first + (a.quantity - 1) * b.type.commonDifference : b.type.kind === "quadratic" ? nthQuadraticElementFromDifference(first, second, b.type.secondDifference, a.quantity) : b.type.kind === "geometric" ? first * Math.pow(b.type.commonRatio, a.quantity - 1) : NaN
   };
 }
-function nthPositionRule(a, b, newEntity = "nth") {
+function nthTermRule(a, b) {
+  const result = nthTermRuleEx(a, b);
+  return {
+    question: `Vypo\u010Dti ${result.agent} na pozici ${a.quantity}?`,
+    result,
+    options: [
+      { tex: formatSequence(b.type, a.quantity), result: formatNumber(result.quantity), ok: true }
+    ]
+  };
+}
+function nthPositionRuleEx(a, b, newEntity = "nth") {
   const { kind, sequence } = b.type;
   const [first, second] = sequence;
   return {
@@ -692,6 +710,16 @@ function nthPositionRule(a, b, newEntity = "nth") {
     agent: a.agent,
     entity: newEntity,
     quantity: kind === "arithmetic" ? Math.round((a.quantity - first) / b.type.commonDifference) + 1 : kind === "quadratic" ? findPositionInQuadraticSequence(a.quantity, first, second, b.type.secondDifference) : kind === "geometric" ? Math.round(Math.log(a.quantity / first) / Math.log(b.type.commonRatio)) + 1 : NaN
+  };
+}
+function nthPositionRule(a, b, newEntity = "nth") {
+  const result = nthPositionRuleEx(a, b, newEntity);
+  return {
+    question: `Vypo\u010Dti pozici ${result.agent} = ${formatEntity(a)}?`,
+    result,
+    options: [
+      { tex: "Dle vzorce", result: formatNumber(result.quantity), ok: true }
+    ]
   };
 }
 function isQuestion(value) {
@@ -975,6 +1003,37 @@ function formatAngle(relationship) {
     default:
       throw "Nezn\xE1m\xFD vztah";
   }
+}
+function formatSequence(type, n) {
+  const simplify = (d, op = "") => d !== 1 ? `${d}${op}` : "";
+  if (type.kind === "arithmetic")
+    return `${type.sequence[0]} + ${type.commonDifference}(${formatNumber(n)}-1)`;
+  if (type.kind === "quadratic") {
+    const [first, second] = type.sequence;
+    const { A, B, C } = nthQuadraticElements(first, second, type.secondDifference);
+    let parts = [`${simplify(A, "*")}${formatNumber(n)}^2`];
+    if (B !== 0) {
+      parts = parts.concat(`${simplify(B, "*")}${formatNumber(n)}`);
+    }
+    if (C !== 0) {
+      parts = parts.concat(`${simplify(C, "*")}${formatNumber(n)}`);
+    }
+    return `${parts.map((d, i) => `${i !== 0 ? " + " : ""}${d}`).join(" ")}`;
+  }
+  if (type.kind === "geometric") {
+    return `${simplify(type.sequence[0], "*")}${type.commonRatio}^(${formatNumber(n)}-1)`;
+  }
+}
+function sequenceOptions(seqType) {
+  return [
+    { tex: "stejn\xFD rozd\xEDl", result: `${seqType.kind === "arithmetic" ? formatNumber(seqType.commonDifference) : "chybn\u011B"}`, ok: seqType.kind === "arithmetic" },
+    { tex: "stejn\xFD druh\xFD rozd\xEDl", result: `${seqType.kind === "quadratic" ? formatNumber(seqType.secondDifference) : "chybn\u011B"}`, ok: seqType.kind === "quadratic" },
+    { tex: "stejn\xFD pom\u011Br", result: `${seqType.kind === "geometric" ? formatNumber(seqType.commonRatio) : "chybn\u011B"}`, ok: seqType.kind === "geometric" }
+  ];
+}
+function formatSequencePattern(seqType) {
+  const d = sequenceOptions(seqType).find((d2) => d2.ok === true);
+  return d != null ? `${d.tex} = ${d.result}` : "N/A";
 }
 
 // node_modules/fraction.js/dist/fraction.mjs
@@ -2661,7 +2720,7 @@ var mdFormatting = {
   formatSequence: (d) => `${d.type}`
 };
 function formatPredicate(d, formatting) {
-  const { formatKind, formatAgent, formatEntity: formatEntity2, formatQuantity, formatRatio: formatRatio2, formatSequence, compose } = { ...mdFormatting, ...formatting };
+  const { formatKind, formatAgent, formatEntity: formatEntity2, formatQuantity, formatRatio: formatRatio2, formatSequence: formatSequence2, compose } = { ...mdFormatting, ...formatting };
   if ((d.kind == "ratio" || d.kind == "transfer" || d.kind === "comp-ratio" || d.kind === "rate" || d.kind === "quota" || d.kind === "comp-diff" || d.kind === "comp-part-eq" || d.kind === "ratio-c" || d.kind === "ratios-c") && (d.quantity == null && d.ratio == null)) {
     return formatKind(d);
   }
@@ -2702,7 +2761,10 @@ function formatPredicate(d, formatting) {
       result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${d.restQuantity !== 0 ? ` se zbytkem ${formatAgent(d.restQuantity)}` : ""}`;
       break;
     case "sequence":
-      result = compose`${d.type != null ? formatSequence(d.type) : ""}`;
+      result = compose`${d.type != null ? formatSequence2(d.type) : ""}`;
+      break;
+    case "nth-part":
+      result = compose`${formatAgent(d.agent)}`;
       break;
     case "nth":
       result = compose`${formatEntity2(d.entity)}`;
@@ -2961,7 +3023,7 @@ function build6({ input }) {
   const aPrevious = axiomInput(cont(agentPrevious, input.previousWorker, entityA), 1);
   const aCurrent = axiomInput(cont(agentCurrent, input.currentWorker, entityA), 3);
   const bPrevious = axiomInput(cont(agentPrevious, input.previousHours, entityB), 2);
-  const comp6 = compRatio(agentNew, agentCurrent, 3 / 2);
+  const comp5 = compRatio(agentNew, agentCurrent, 3 / 2);
   const deductionTree = deduce(
     deduce(
       deduce(
@@ -2975,7 +3037,7 @@ function build6({ input }) {
       bPrevious
     ),
     deduce(
-      comp6,
+      comp5,
       proportion(false, [`mno\u017Estv\xED`, `hodin`])
     )
   );
@@ -4131,5 +4193,6 @@ var word_problems_default = {
 export {
   word_problems_default as default,
   formatPredicate,
+  formatSequencePattern,
   inferenceRuleWithQuestion2 as inferenceRuleWithQuestion
 };

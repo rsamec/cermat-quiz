@@ -4,7 +4,7 @@ import mdPlus from './utils/md-utils.js';
 import { parseQuiz } from './utils/quiz-parser.js';
 import { readJsonFromFile } from './utils/file.utils.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, isEmptyOrWhiteSpace } from './utils/quiz-string-utils.js';
-import wordProblems, {inferenceRuleWithQuestion, formatPredicate} from './math/word-problems.js';
+import wordProblems, { inferenceRuleWithQuestion, formatPredicate, formatSequencePattern } from './math/word-problems.js';
 import Fraction from 'fraction.js';
 
 const {
@@ -20,7 +20,7 @@ const formatting = {
   formatRatio: d => d != null ? new Fraction(d).toFraction() : d,
   formatEntity: (d, unit) => `<i>${[unit, d].filter(d => d != null).join(" ")}</i>`,
   formatAgent: d => `<b>${d}</b>`,
-  formatSequence: d => `${d.type}`
+  formatSequence: d => formatSequencePattern(d)
 }
 
 const d = parseCode(code);
@@ -54,6 +54,9 @@ const videoExclude = videoExlusions[code] ?? {};
 const ids = quiz.questions.map(d => d.id);
 
 const wordProblem = wordProblems[code];
+
+const solutionsCount = uniqueQuestion(answers) + uniqueQuestion(wordProblem)
+const solutionRate = solutionsCount / quiz.questions.length;
 process.stdout.write(`---
 title: ${formatCode(code)}
 sidebar: true
@@ -69,23 +72,27 @@ details.solutions > summary > h1, h2 {
     display:inline-block;
 }
 </style>
-${answers == null ? `<div class="warning" label="Upozornění">
+${solutionsCount == 0 ? `<div class="danger" label="Upozornění">
   K tomuto testu v tuto chvíli neexistují žádná řešení.
 </div>`: ''}
+${solutionsCount < quiz.questions.length ? `<div class=${solutionRate < 0.2 ? 'caution' : solutionRate < 0.8 ? 'warning' : 'tip'} label="Upozornění">
+  Vyřešeno ${solutionsCount} z ${quiz.questions.length} otázek.
+</div>`: ''}
+
 <div class="root">${ids.map(id => {
   const values = (answers?.[id] != null || wordProblem?.[id] != null)
-   ? [[id, answers[id] ?? wordProblem[id]]] 
-   : [1, 2, 3]
-    .map(i => `${id}.${i}`)
-    .map(subId => answers?.[subId] ?? wordProblem?.[subId])
-    .filter(Boolean)
-    .map((d, index) => [`${id}.${index +1}`, d])
-  
+    ? [[id, answers[id] ?? wordProblem[id]]]
+    : [1, 2, 3]
+      .map(i => `${id}.${i}`)
+      .map(subId => answers?.[subId] ?? wordProblem?.[subId])
+      .filter(Boolean)
+      .map((d, index) => [`${id}.${index + 1}`, d])
+
 
   return `${mdPlus.renderToString(quiz.content([id], { ids, render: 'content' }), { docId: `${code}-${id}` })}
 ${values?.length > 0
-      ? 
-`<div class="break-inside-avoid-column">${values.map(([key, value]) => `<h2 id="s-${key}">Řešení úloha ${key}</h2><div class="card">${(value.results ?? []).map(d => renderResult(key, d)).join('')}
+      ?
+      `<div class="break-inside-avoid-column">${values.map(([key, value]) => `<h2 id="s-${key}">Řešení úloha ${key}</h2><div class="card">${(value.results ?? []).map(d => renderResult(key, d)).join('')}
 <div>
 ${value.deductionTree != null ? renderChat(value.deductionTree) : ''}
 </div>
@@ -107,7 +114,7 @@ function renderResult(key, { Name, Answer, TemplateSteps }) {
   </div>`: ''}
 <div class="v-stack v-stack--m">${TemplateSteps.map((d, i) =>
     `<div class="v-stack v-stack--s">
-${videoExclude[key] ? '':`<video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`}
+${videoExclude[key] ? '' : `<video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`}
 ${d.Steps?.length > 0 ? renderTemplateSteps(d) : ''}
 </div>`).join("")}
 </div>`
@@ -129,7 +136,7 @@ function renderStep({ Step, Hint, Expression }, index) {
   </div>`
 }
 
- function renderChat(deductionTree) {
+function renderChat(deductionTree) {
   const steps = stepsTraverse(deductionTree).map((d, i) => ({ ...d, index: i }));
 
   return `<div class="chat">${steps.map(({ premises, conclusion, questions }, i) => {
@@ -249,7 +256,14 @@ function normalizeToArray(d) {
   return Array.isArray(d) ? d : [d]
 }
 
-function isPredicate(node){
+function isPredicate(node) {
   return node.kind != null;
 }
 
+function uniqueQuestion(obj){
+  if (obj == null){
+    return 0;
+  }
+  const keys = Object.keys(obj);
+  return keys.map(d => d.split('.')[0]).filter((d,i,arr) => arr.indexOf(d) === i).length
+}

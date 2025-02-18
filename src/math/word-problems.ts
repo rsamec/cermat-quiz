@@ -35,6 +35,7 @@ import { desetiuhelnik } from './M9I-2025/angle.js';
 
 export { inferenceRuleWithQuestion } from '../math/math-configure.js'
 export { formatPredicate } from '../utils/deduce-utils.js';
+export { formatSequencePattern} from '../components/math.js';
 
 const letniTaborInput = {
   input: {
