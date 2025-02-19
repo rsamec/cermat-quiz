@@ -84,7 +84,7 @@ export const quizes = [
   { subject: 'en', period: 'diploma', codes: ["AJA-2023", "AJB-2023", "AJA-2024", "AJB-2024"] },
   { subject: 'de', period: 'diploma', codes: ["DEA-2023"] },
   { subject: 'cz', period: '8', codes: generateCode("C5", ["A"]).concat("C5B-2023") },
-  { subject: 'cz', period: '4', codes: generateCode("C9", ["A", "B", "C", "D"])},
+  { subject: 'cz', period: '4', codes: generateCode("C9", ["A", "B", "C", "D"]).concat("C9I-2025")},
   { subject: 'cz', period: '6', codes: generateCode("C7", ["A"]) },
   { subject: 'cz', period: 'diploma', codes: generateCode("CM", ["A", "B"]) },
   { subject: 'math', period: '8', codes: generateCode("M5", ["A"]) },

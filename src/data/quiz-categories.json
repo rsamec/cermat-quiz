@@ -3106,5 +3106,197 @@
         "category": "GRAPHS_SCHEMES_TABLES"
       }
     ]
+  },
+  "M9I-2025": {
+    "questions": [
+      {
+        "id": "1",
+        "category": "UNIT_CONVERSIONS"
+      },
+      {
+        "id": "2",
+        "category": "NUM_EXPRESSIONS"
+      },
+      {
+        "id": "3",
+        "category": "NUM_EXPRESSIONS"
+      },
+      {
+        "id": "4",
+        "category": "POLYNOMIALS"
+      },
+      {
+        "id": "5",
+        "category": "LINEAR_EQUATIONS"
+      },
+      {
+        "id": "6",
+        "category": "WORD_PROBLEMS"
+      },
+      {
+        "id": "7",
+        "category": "PROPORTIONS"
+      },
+      {
+        "id": "8",
+        "category": "PLANE_GEOMETRY"
+      },
+      {
+        "id": "9",
+        "category": "SYMMETRY"
+      },
+      {
+        "id": "10",
+        "category": "CONSTRUCTION_PROBLEMS"
+      },
+      {
+        "id": "11",
+        "category": "PLANE_GEOMETRY"
+      },
+      {
+        "id": "12",
+        "category": "RATIOS_MAPS"
+      },
+      {
+        "id": "13",
+        "category": "PLANE_GEOMETRY"
+      },
+      {
+        "id": "14",
+        "category": "SOLID_GEOMETRY"
+      },
+      {
+        "id": "15",
+        "category": "APPLICATION_PROBLEMS"
+      },
+      {
+        "id": "16",
+        "category": "WORD_PROBLEMS"
+      }
+    ]
+  },
+  "C9I-2025": {
+    "questions": [
+      {
+        "id": "1",
+        "category": "LITERARY_TEXT_UNDERSTANDING"
+      },
+      {
+        "id": "2",
+        "category": "WORK_WITH_DEFINITION"
+      },
+      {
+        "id": "3",
+        "category": "TEXT_COHERENCE"
+      },
+      {
+        "id": "4",
+        "category": "SPELLING_RULES_CLOSED"
+      },
+      {
+        "id": "5",
+        "category": "SENTENCE_MEMBERS_SUBORDINATE_CLAUSES"
+      },
+      {
+        "id": "6",
+        "category": "NON_LITERARY_TEXT_UNDERSTANDING"
+      },
+      {
+        "id": "7",
+        "category": "PHONETICS_WORD_STRUCTURE"
+      },
+      {
+        "id": "8",
+        "category": "TEXT_COHERENCE"
+      },
+      {
+        "id": "9",
+        "category": "TEXT_COHERENCE"
+      },
+      {
+        "id": "10",
+        "category": "WORD_MEANING_RELATIONS"
+      },
+      {
+        "id": "11",
+        "category": "WORD_MEANING_RELATIONS"
+      },
+      {
+        "id": "12",
+        "category": "SPELLING_RULES_CLOSED"
+      },
+      {
+        "id": "13",
+        "category": "SENTENCE_CONSTRUCTION"
+      },
+      {
+        "id": "14",
+        "category": "TEXT_COHERENCE"
+      },
+      {
+        "id": "15",
+        "category": "SPELLING_RULES_CLOSED"
+      },
+      {
+        "id": "16",
+        "category": "NON_LITERARY_TEXT_UNDERSTANDING"
+      },
+      {
+        "id": "17",
+        "category": "FIXED_EXPRESSIONS"
+      },
+      {
+        "id": "18",
+        "category": "LITERARY_TEXT_UNDERSTANDING"
+      },
+      {
+        "id": "19",
+        "category": "WORK_WITH_DEFINITION"
+      },
+      {
+        "id": "20",
+        "category": "WORD_MEANING_RELATIONS"
+      },
+      {
+        "id": "21",
+        "category": "STYLE"
+      },
+      {
+        "id": "22",
+        "category": "STYLE"
+      },
+      {
+        "id": "23",
+        "category": "TEXT_COHERENCE"
+      },
+      {
+        "id": "24",
+        "category": "SPELLING_RULES_CLOSED"
+      },
+      {
+        "id": "25",
+        "category": "NON_LITERARY_TEXT_UNDERSTANDING"
+      },
+      {
+        "id": "26",
+        "category": "PARTS_OF_SPEECH"
+      },
+      {
+        "id": "27",
+        "category": "GRAMMATICAL_CATEGORIES"
+      },
+      {
+        "id": "28",
+        "category": "WORD_MEANING_RELATIONS"
+      },
+      {
+        "id": "29",
+        "category": "WORD_FORMS"
+      },
+      {
+        "id": "30",
+        "category": "WORK_WITH_DEFINITION"
+      }
+    ]
   }
 }
