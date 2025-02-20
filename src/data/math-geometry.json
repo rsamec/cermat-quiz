@@ -120,5 +120,35 @@
   "M7A-2023": {},
   "M7A-2024": {},
   "MMA-2023": {},
-  "MMB-2023": {}
+  "MMB-2023": {},
+  "M9I-2025": {
+    "9": {
+      "header": "9 Bod A' je vrchol trojúhelníku A'B'C', který je obrazem trojúhelníku ABC ve středové souměrnosti se středem S.",
+      "results": [
+        {
+          "Name": "Sestrojit",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": []
+            }
+          ]
+        }
+      ]
+    },
+    "10": {
+      "header": "10",
+      "results": [
+        {
+          "Name": "Sestrojit",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": []
+            }
+          ]
+        }
+      ]
+    }
+  }
 }
