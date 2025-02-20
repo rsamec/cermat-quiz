@@ -4826,12 +4826,203 @@
     },
     "5.2": {
       "header": "5.2",
-      "mathContent": "\\begin{aligned}\n3x+\\frac{3}{4}y = 1\\\\\n3.5y+3x = 6.5\n\\end{aligned}\n",
+      "mathContent": "\\begin{aligned}\n3x+\\frac{3}{4}y = 1\\\\\n3,5y+3x = 6,5\n\\end{aligned}\n",
       "results": [
         {
-          "Name": "Error",
-          "Answer": "",
-          "TemplateSteps": []
+          "Name": "Vyřešte pro: x, y",
+          "Answer": "$x=-\\frac{1}{6}\\approx -0,166666667$<br/>$y=2$",
+          "TemplateSteps": [
+            {
+              "Name": "Postup použití dosazení",
+              "Steps": [
+                {
+                  "Hint": null,
+                  "Step": "Pokud chcete dvojici rovnic řešit pomocí dosazování, vyřešte nejdříve jednu proměnnou v jedné z rovnic. Výsledek této proměnné pak dosaďte do druhé rovnice.",
+                  "Expression": "$$3x+\\frac{3}{4}y=1;3x+3,5y=6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Zvolte jednu z rovnic a vyřešte ji pro $x$ izolováním $x$ na levé straně rovnice.",
+                  "Expression": "$$3x+\\frac{3}{4}y=1$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Odečtěte hodnotu $\\frac{3y}{4}$ od obou stran rovnice.",
+                  "Expression": "$$3x=-\\frac{3}{4}y+1$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vydělte obě strany hodnotou $3$.",
+                  "Expression": "$$x=\\frac{1}{3}\\left(-\\frac{3}{4}y+1\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte číslo $\\frac{1}{3}$ číslem $-\\frac{3y}{4}+1$.",
+                  "Expression": "$$x=-\\frac{1}{4}y+\\frac{1}{3}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Dosaďte $-\\frac{y}{4}+\\frac{1}{3}$ za $x$ ve druhé rovnici, $3x+3,5y=6,5$.",
+                  "Expression": "$$3\\left(-\\frac{1}{4}y+\\frac{1}{3}\\right)+3,5y=6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte číslo $3$ číslem $-\\frac{y}{4}+\\frac{1}{3}$.",
+                  "Expression": "$$-\\frac{3}{4}y+1+3,5y=6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Přidejte uživatele $-\\frac{3y}{4}$ do skupiny $\\frac{7y}{2}$.",
+                  "Expression": "$$\\frac{11}{4}y+1=6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Odečtěte hodnotu $1$ od obou stran rovnice.",
+                  "Expression": "$$\\frac{11}{4}y=5,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vydělte obě strany rovnice hodnotou $\\frac{11}{4}$, což je totéž jako vynásobení obou stran převráceným zlomkem.",
+                  "Expression": "$$y=2$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "V rovnici $x=-\\frac{1}{4}y+\\frac{1}{3}$ dosaďte $y$ za proměnnou $2$. Vzhledem k tomu, že výsledná rovnice obsahuje jen jednu proměnnou, můžete hodnotu proměnné $x$ vypočítat přímo.",
+                  "Expression": "$$x=-\\frac{1}{4}\\times 2+\\frac{1}{3}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte číslo $-\\frac{1}{4}$ číslem $2$.",
+                  "Expression": "$$x=-\\frac{1}{2}+\\frac{1}{3}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Připočítejte $\\frac{1}{3}$ ke $-\\frac{1}{2}$ zjištěním společného jmenovatele a sečtením čitatelů. Pak vykraťte zlomek na jeho základní tvar, pokud je to možné.",
+                  "Expression": "$$x=-\\frac{1}{6}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Systém je teď vyřešený.",
+                  "Expression": "$$x=-\\frac{1}{6};y=2$$ "
+                }
+              ]
+            },
+            {
+              "Name": "Postup použití matic",
+              "Steps": [
+                {
+                  "Hint": null,
+                  "Step": "Rovnice přepište do standardního tvaru a pomocí matic pak vyřešte soustavu rovnic.",
+                  "Expression": "$$3x+\\frac{3}{4}y=1;3x+3,5y=6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Napište rovnice ve tvaru matic.",
+                  "Expression": "$$\\left(\\begin{matrix}3&\\frac{3}{4}\\\\3&3,5\\end{matrix}\\right)\\left(\\begin{matrix}x\\\\y\\end{matrix}\\right)=\\left(\\begin{matrix}1\\\\6,5\\end{matrix}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte rovnici zleva inverzní maticí matice $\\left(\\begin{matrix}3&\\frac{3}{4}\\\\3&3,5\\end{matrix}\\right)$.",
+                  "Expression": "$$inverse(\\left(\\begin{matrix}3&\\frac{3}{4}\\\\3&3,5\\end{matrix}\\right))\\left(\\begin{matrix}3&\\frac{3}{4}\\\\3&3,5\\end{matrix}\\right)\\left(\\begin{matrix}x\\\\y\\end{matrix}\\right)=inverse(\\left(\\begin{matrix}3&\\frac{3}{4}\\\\3&3,5\\end{matrix}\\right))\\left(\\begin{matrix}1\\\\6,5\\end{matrix}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "V případě součinu matice a její inverzní matice dostaneme jednotkovou matici.",
+                  "Expression": "$$\\left(\\begin{matrix}1&0\\\\0&1\\end{matrix}\\right)\\left(\\begin{matrix}x\\\\y\\end{matrix}\\right)=inverse(\\left(\\begin{matrix}3&\\frac{3}{4}\\\\3&3,5\\end{matrix}\\right))\\left(\\begin{matrix}1\\\\6,5\\end{matrix}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte matice na levé straně rovnice.",
+                  "Expression": "$$\\left(\\begin{matrix}x\\\\y\\end{matrix}\\right)=inverse(\\left(\\begin{matrix}3&\\frac{3}{4}\\\\3&3,5\\end{matrix}\\right))\\left(\\begin{matrix}1\\\\6,5\\end{matrix}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Inverzní maticí matice $2\\times 2$ $\\left(\\begin{matrix}a&b\\\\c&d\\end{matrix}\\right)$ je matice $\\left(\\begin{matrix}\\frac{d}{ad-bc}&\\frac{-b}{ad-bc}\\\\\\frac{-c}{ad-bc}&\\frac{a}{ad-bc}\\end{matrix}\\right)$, maticovou rovnici je proto možné přepsat do podoby úlohy násobení matic.",
+                  "Expression": "$$\\left(\\begin{matrix}x\\\\y\\end{matrix}\\right)=\\left(\\begin{matrix}\\frac{3,5}{3\\times 3,5-\\frac{3}{4}\\times 3}&-\\frac{\\frac{3}{4}}{3\\times 3,5-\\frac{3}{4}\\times 3}\\\\-\\frac{3}{3\\times 3,5-\\frac{3}{4}\\times 3}&\\frac{3}{3\\times 3,5-\\frac{3}{4}\\times 3}\\end{matrix}\\right)\\left(\\begin{matrix}1\\\\6,5\\end{matrix}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Proveďte výpočet.",
+                  "Expression": "$$\\left(\\begin{matrix}x\\\\y\\end{matrix}\\right)=\\left(\\begin{matrix}\\frac{14}{33}&-\\frac{1}{11}\\\\-\\frac{4}{11}&\\frac{4}{11}\\end{matrix}\\right)\\left(\\begin{matrix}1\\\\6,5\\end{matrix}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte matice.",
+                  "Expression": "$$\\left(\\begin{matrix}x\\\\y\\end{matrix}\\right)=\\left(\\begin{matrix}\\frac{14}{33}-\\frac{1}{11}\\times 6,5\\\\-\\frac{4}{11}+\\frac{4}{11}\\times 6,5\\end{matrix}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Proveďte výpočet.",
+                  "Expression": "$$\\left(\\begin{matrix}x\\\\y\\end{matrix}\\right)=\\left(\\begin{matrix}-\\frac{1}{6}\\\\2\\end{matrix}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Extrahuje prvky matice $x$ a $y$.",
+                  "Expression": "$$x=-\\frac{1}{6};y=2$$ "
+                }
+              ]
+            },
+            {
+              "Name": "Postup použití eliminace",
+              "Steps": [
+                {
+                  "Hint": null,
+                  "Step": "Pokud chcete rovnici vyřešit eliminací, koeficienty jedné z proměnných musí být v obou rovnicích stejné, aby se při odečítání jedné rovnice od druhé proměnná odstranila.",
+                  "Expression": "$$3x+\\frac{3}{4}y=1;3x+3,5y=6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Odečtěte rovnici $3x+3,5y=6,5$ od rovnice $3x+\\frac{3}{4}y=1$ tak, že odečtete stejné členy na každé straně rovnice.",
+                  "Expression": "$$3x-3x+\\frac{3}{4}y-3,5y=1-6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Přidejte uživatele $3x$ do skupiny $-3x$. Členy $3x$ a $-3x$ se vykrátí, takže v rovnici zůstane jen jedna proměnná, kterou je možné vypočítat.",
+                  "Expression": "$$\\frac{3}{4}y-3,5y=1-6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Přidejte uživatele $\\frac{3y}{4}$ do skupiny $-\\frac{7y}{2}$.",
+                  "Expression": "$$-\\frac{11}{4}y=1-6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Přidejte uživatele $1$ do skupiny $-6,5$.",
+                  "Expression": "$$-\\frac{11}{4}y=-5,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vydělte obě strany rovnice hodnotou $-\\frac{11}{4}$, což je totéž jako vynásobení obou stran převráceným zlomkem.",
+                  "Expression": "$$y=2$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "V rovnici $3x+3,5y=6,5$ dosaďte $y$ za proměnnou $2$. Vzhledem k tomu, že výsledná rovnice obsahuje jen jednu proměnnou, můžete hodnotu proměnné $x$ vypočítat přímo.",
+                  "Expression": "$$3x+3,5\\times 2=6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte číslo $3,5$ číslem $2$.",
+                  "Expression": "$$3x+7=6,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Odečtěte hodnotu $7$ od obou stran rovnice.",
+                  "Expression": "$$3x=-0,5$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vydělte obě strany hodnotou $3$.",
+                  "Expression": "$$x=-\\frac{1}{6}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Systém je teď vyřešený.",
+                  "Expression": "$$x=-\\frac{1}{6};y=2$$ "
+                }
+              ]
+            }
+          ]
         }
       ]
     }
