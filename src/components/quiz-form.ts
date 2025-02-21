@@ -273,7 +273,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                 <h3 style="flex:1">Řešení ${key} - ${value.Name}</h3>
                 <a href="./solu-${code}#s-${key}" target="_blank"><span>↗︎</span></a>
               </div>
-              ${videoExclude[key] ? '':html`<video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`}`)}
+              ${videoExclude[key]?.includes(i) ? '':html`<video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`}`)}
               
               ${wordProblemEntries.length > 0 ? html`<div class="h-stack h-stack--end">${renderChatButton("Zdůvodni řešení", generateAIMessages({
                     template: quizBuilder.content(ids, { ids: groupedIds, render: 'content' }),

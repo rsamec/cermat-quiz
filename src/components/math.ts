@@ -765,7 +765,7 @@ function toRatioComparison(a: Container, b: Container): Question {
   }
 }
 
-function compareToCompareRule(a: Comparison, b: Comparison): Rate {
+function compareToCompareRuleEx(a: Comparison, b: Comparison): Rate {
   return {
     kind: 'rate',
     agent: a.agentA,
@@ -775,6 +775,20 @@ function compareToCompareRule(a: Comparison, b: Comparison): Rate {
 
   }
 }
+function compareToCompareRule(a: Comparison, b: Comparison): Question {
+  const result = compareToCompareRuleEx(a, b);
+  const aQuantity = Math.abs(a.quantity);
+  const bQuantity = Math.abs(b.quantity);
+  return {
+    question: `Rozděl ${aQuantity} ${formatEntity({entity:a.entity})} rovnoměrně na ${bQuantity} ${formatEntity({entity:b.entity})}`,
+    result,
+    options: [
+      { tex: `${formatNumber(aQuantity)} / ${formatNumber(bQuantity)}`, result: formatNumber(result.quantity), ok: true },
+      { tex: `${formatNumber(bQuantity)} / ${formatNumber(aQuantity)}`, result: formatNumber(bQuantity / aQuantity), ok: false },
+    ]
+  }
+}
+
 function toDiffEx(a: Container, b: Container): ComparisonDiff {
   if (a.entity !== b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`
@@ -820,7 +834,7 @@ function toRateEx(a: Container, b: Container): Rate {
 function toRate(a: Container, b: Container): Question {
   const result = toRateEx(a, b)
   return {
-    question: `Rozděl rovnoměrně na ${b.quantity} ${b.entity}`,
+    question: `Rozděl ${formatNumber(a.quantity)} ${formatEntity({entity:a.entity})} rovnoměrně na ${formatNumber(b.quantity)} ${formatEntity({entity:b.entity})}`,
     result,
     options: [
       { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: true },
@@ -1417,7 +1431,7 @@ function lcdFromPrimeFactors(primeFactors: number[][]): number[] {
 }
 
 function formatEntity(d: EntityBase) {
-  return (d.entity || d.unit) ? `(${[d.unit, d.entity].filter(d => d != null).join(" ")})` : ''
+  return (d.entity || d.unit) ? `(${[d.unit, d.entity].filter(d => d != null && d != "").join(" ")})` : ''
 }
 export type AngleRelationship = "complementary" | "supplementary" | "vertical" | "corresponding" | "sameSide" | "alternate"
 function computeOtherAngle(angle1, relationship: AngleRelationship) {

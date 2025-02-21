@@ -114,7 +114,7 @@ function renderResult(key, { Name, Answer, TemplateSteps }) {
   </div>`: ''}
 <div class="v-stack v-stack--m">${TemplateSteps.map((d, i) =>
     `<div class="v-stack v-stack--s">
-${videoExclude[key] ? '' : `<video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`}
+${videoExclude[key]?.includes(i) ? '' : `<video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`}
 ${d.Steps?.length > 0 ? renderTemplateSteps(d) : ''}
 </div>`).join("")}
 </div>`
@@ -236,7 +236,7 @@ function concatString(strings, ...substitutions) {
     const substitution = substitutions[i];
 
     const res = substitution
-      ? `${curr}${substitution}`
+      ? `${curr}${Array.isArray(substitution) ? substitution.join("") : substitution}`
       : curr;
     return `${acc}${res}`;
   }, '');

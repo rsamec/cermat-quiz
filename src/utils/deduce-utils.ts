@@ -317,7 +317,7 @@ function concatString(strings, ...substitutions) {
     const substitution = substitutions[i];
 
     const res = substitution
-      ? `${curr}${substitution}`
+      ? `${curr}${Array.isArray(substitution) ? substitution.join(""): substitution}`
       : curr;
     return `${acc}${res}`;
   }, '');

@@ -509,13 +509,26 @@ function toRatioComparison(a, b) {
     ]
   };
 }
-function compareToCompareRule(a, b) {
+function compareToCompareRuleEx(a, b) {
   return {
     kind: "rate",
     agent: a.agentA,
     quantity: Math.abs(a.quantity) / Math.abs(b.quantity),
     entity: { entity: a.entity },
     entityBase: { entity: b.entity }
+  };
+}
+function compareToCompareRule(a, b) {
+  const result = compareToCompareRuleEx(a, b);
+  const aQuantity = Math.abs(a.quantity);
+  const bQuantity = Math.abs(b.quantity);
+  return {
+    question: `Rozd\u011Bl ${aQuantity} ${formatEntity({ entity: a.entity })} rovnom\u011Brn\u011B na ${bQuantity} ${formatEntity({ entity: b.entity })}`,
+    result,
+    options: [
+      { tex: `${formatNumber(aQuantity)} / ${formatNumber(bQuantity)}`, result: formatNumber(result.quantity), ok: true },
+      { tex: `${formatNumber(bQuantity)} / ${formatNumber(aQuantity)}`, result: formatNumber(bQuantity / aQuantity), ok: false }
+    ]
   };
 }
 function toDiffEx(a, b) {
@@ -560,7 +573,7 @@ function toRateEx(a, b) {
 function toRate(a, b) {
   const result = toRateEx(a, b);
   return {
-    question: `Rozd\u011Bl rovnom\u011Brn\u011B na ${b.quantity} ${b.entity}`,
+    question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnom\u011Brn\u011B na ${formatNumber(b.quantity)} ${formatEntity({ entity: b.entity })}`,
     result,
     options: [
       { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: true },
@@ -969,7 +982,7 @@ function lcdFromPrimeFactors(primeFactors) {
   return primeFactors.reduce((acc, curr) => union(acc, curr), []);
 }
 function formatEntity(d) {
-  return d.entity || d.unit ? `(${[d.unit, d.entity].filter((d2) => d2 != null).join(" ")})` : "";
+  return d.entity || d.unit ? `(${[d.unit, d.entity].filter((d2) => d2 != null && d2 != "").join(" ")})` : "";
 }
 function computeOtherAngle(angle1, relationship) {
   switch (relationship) {
@@ -2794,7 +2807,7 @@ function joinArray(arr, sep) {
 function concatString(strings, ...substitutions) {
   const formattedString = strings.reduce((acc, curr, i) => {
     const substitution = substitutions[i];
-    const res = substitution ? `${curr}${substitution}` : curr;
+    const res = substitution ? `${curr}${Array.isArray(substitution) ? substitution.join("") : substitution}` : curr;
     return `${acc}${res}`;
   }, "");
   return formattedString;
