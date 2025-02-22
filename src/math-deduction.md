@@ -71,15 +71,11 @@ function renderRules(rules){
 const rules = allRules();
 const opacity = 0.3;
 ```
+Dedukčního strom je __strukturovaná reprezentace řešení__ úlohy.
 
-Řešení úlohy má podobu posloupnosti kroků ve formě __dedukčního stromu__.
+Řešení úlohy je rozděleno na posloupnost __jednoduchých kroků__. Pořadí a návaznosti jednotlivých kroků definuje  dedukčního strom, kde __kroky__ jsou __uzly stromu__ a __vrchol stromu__ je __konečný výsledek__.
 
-- zadání úlohy je potřeba převést (text comprehension) na sadu __predikátů__ (formalizované pravdivé tvrzení)
-- použít __odvozovací pravidla__ (inference rules) 
-  - vstupem - seznam  __predikátů__, resp. __předpokladů__ (premises)
-  - výstupem - jeden __predikát__
-- výsledek úlohy získáme __průchodem stromu__ do hloubky (post-order), tj. aplikujeme __odvozovací pravidla__ až poté, co známe všechny vstupy (premises)
-
+Podrobnosti a příklady, jak vytvořit dedukční strom [zde](#dedukcni-strom)
 
 ```js
 const slepiceForms = Inputs.form({
@@ -707,35 +703,18 @@ console.log(`Výsledek: ${result.agent} = ${result.quantity} ${result.entity}`)
 
 </script>
 ```
-## API 
 
-### Predicates
+## Dedukční strom
 
-```typescript
-export declare type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | Combine | PartWholeRatio | PartToPartRatio | ComparisonDiff | CommonSense | GCD | LCD;
-export declare function cont(agent: string, quantity: number, entity: string): Container;
-export declare function comp(agentA: string, agentB: string, quantity: number, entity: string): Comparison;
-export declare function compRatio(agentA: string, agentB: string, quantity: number, entity: string): RatioComparison;
-export declare function compDiff(agentMinuend: string, agentSubtrahend: string, quantity: number, entity: string): ComparisonDiff;
-export declare function ratio(whole: EntityMatcher, part: EntityMatcher, ratio: number): PartWholeRatio;
-export declare function ratios(whole: EntityMatcher, parts: EntityMatcher[], ratios: number[]): PartToPartRatio;
-export declare function sum(wholeAgent: string, partAgents: string[], wholeEntity: string, partEntity: string): Combine;
-export declare function gcd(agent: string, entity: string): GCD;
-export declare function lcd(agent: string, entity: string): LCD;
-export declare function rate(agent: string, quantity: number, entity: string, entityBase: string): Rate;
-export declare function commonSense(description: string): CommonSense;
-```
+Obecný postup vytvoření dedukčního stromu ze zadání úlohy
+- zadání úlohy je potřeba převést (text comprehension) na sadu __predikátů__ (formalizované pravdivé tvrzení)
+- použít __odvozovací pravidla__ (inference rules) 
+  - vstupem - seznam  __predikátů__, resp. __předpokladů__ (premises)
+  - výstupem - jeden __predikát__
+- výsledek úlohy získáme __průchodem stromu__ do hloubky (post-order), tj. aplikujeme __odvozovací pravidla__ až poté, co známe všechny vstupy (premises)
 
-### Inference rule
 
-```typescript
-export declare function inferenceRule(a: Predicate | Container[], b: Predicate, c?: {
-    kind: 'ratio' | 'comp-ratio' | 'rate' | "comp-diff" | 'comp-part-eq';
-})
-```
-## Deduction tree
-
-Všechny příklady jsou k vidění [zde](https://github.com/rsamec/cermat-quiz/tree/master/src/math)
+Konkrétní příklad řešení pro zadání [úlohy](./solu-M9I-2025#7)
 
 ```typescript
 import { comp, compRatio, nthPart, rate, ratios, sum } from "../../components/math.js";
@@ -784,6 +763,36 @@ export function kytice() {
   }
 }
 
+```
+
+
+Další příklady jsou [zde](https://github.com/rsamec/cermat-quiz/tree/master/src/math)
+
+## API 
+
+### Predikáty (predicates)
+
+```typescript
+export declare type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | Combine | PartWholeRatio | PartToPartRatio | ComparisonDiff | CommonSense | GCD | LCD;
+export declare function cont(agent: string, quantity: number, entity: string): Container;
+export declare function comp(agentA: string, agentB: string, quantity: number, entity: string): Comparison;
+export declare function compRatio(agentA: string, agentB: string, quantity: number, entity: string): RatioComparison;
+export declare function compDiff(agentMinuend: string, agentSubtrahend: string, quantity: number, entity: string): ComparisonDiff;
+export declare function ratio(whole: EntityMatcher, part: EntityMatcher, ratio: number): PartWholeRatio;
+export declare function ratios(whole: EntityMatcher, parts: EntityMatcher[], ratios: number[]): PartToPartRatio;
+export declare function sum(wholeAgent: string, partAgents: string[], wholeEntity: string, partEntity: string): Combine;
+export declare function gcd(agent: string, entity: string): GCD;
+export declare function lcd(agent: string, entity: string): LCD;
+export declare function rate(agent: string, quantity: number, entity: string, entityBase: string): Rate;
+export declare function commonSense(description: string): CommonSense;
+```
+
+### Odvozovací pravidla (inference rules)
+
+```typescript
+export declare function inferenceRule(a: Predicate | Container[], b: Predicate, c?: {
+    kind: 'ratio' | 'comp-ratio' | 'rate' | "comp-diff" | 'comp-part-eq';
+})
 ```
 
 Inspirováno prací [MathGAP](https://arxiv.org/pdf/2410.13502).
