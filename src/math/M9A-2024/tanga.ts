@@ -1,7 +1,7 @@
 
 import { commonSense, compRatio, cont, product, sum, type Container } from "../../components/math.js";
 import { axiomInput, deduce, last, to } from "../../utils/deduce-utils.js";
-import { baseCircumference, surfaceBaseArea, surfaceBaseAreaIn, surfaceIn } from "../shapes/cylinder.js"
+import { baseCircumference, surfaceBaseArea } from "../shapes/cylinder.js"
 
 
 interface Params {
@@ -15,13 +15,15 @@ export default function build({ input }: {
   const radiusLabel = "poloměr";
   const areaCircleLabel = "obsah kruhu";
   const baseCircleLabel = "obvod kruhu";
-  const circelPartLabel = "čtvrtkruh";
-  const tangaHeight = "tanga výška";
+  const circelPartLabel = "bílá čtvrtkružnice";
+  const rectangleLabel = "celý obdelník";
+  const reactangleHeight = `${rectangleLabel} výška`;  
   const entity = "cm"
   const entity2d = "cm čtverečních"
 
-  const width = axiomInput(cont(`tanga šířka`, input.tangaWidth, entity), 1)
-  const ratio = compRatio(`tanga šířka`, radiusLabel, 2)
+  const width = axiomInput(cont(`šedá tanga šířka`, input.tangaWidth, entity), 1)
+  const widthRectangle = axiomInput(cont(`${rectangleLabel} šířka`, input.tangaWidth, entity), 1)
+  const ratio = compRatio(`šedá tanga šířka`, `${circelPartLabel} ${radiusLabel}`, 2)
   const dRadius = deduce(width, ratio);
 
 
@@ -34,12 +36,12 @@ export default function build({ input }: {
 
   const dd1 = deduce(
     deduce(
-      width,
+      widthRectangle,
       to(
         dRadius,
-        commonSense(`${radiusLabel} = ${tangaHeight}`),
-        cont(tangaHeight, (dRadius.children[2] as Container).quantity, entity)),
-      product("obsah obdélníku", [], entity2d, entity)
+        commonSense(`${radiusLabel} = ${reactangleHeight}`),
+        cont(reactangleHeight, (dRadius.children[2] as Container).quantity, entity)),
+      product(`${rectangleLabel} obsah`, [], entity2d, entity)
     ),
     deduce(
       cont(`2 krát ${circelPartLabel}`, 2, ""),

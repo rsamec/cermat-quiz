@@ -35,7 +35,7 @@ export default function build({ input }: {
 
   const dTree1 = deduce(
     dBase,
-    deduce(widthOnPlan, width, gcd("nejmenší společný násobek", entity)),
+    deduce(widthOnPlan, last(dWidth), gcd("nejmenší společný násobek", entity)),
     ctor("simplify")
   )
 

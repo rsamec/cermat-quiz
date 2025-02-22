@@ -1,5 +1,5 @@
 
-import { cont, comp, ctor, compDiff, sum, commonSense, rate } from "../../components/math.js";
+import { cont, compDiff, sum, commonSense } from "../../components/math.js";
 import { axiomInput, deduce, to } from "../../utils/deduce-utils.js";
 
 
@@ -16,8 +16,8 @@ export default function build({ input }: {
 
   const celkemAgent = "chlapců celkem"
   const entityChlapci = "chlapci"
-  const entityDivky = "divky"
-  const entity = "zaci"
+  const entityDivky = "dívky"
+  const entity = ""
 
 
   const chlapci = axiomInput(cont(celkemAgent, input.chlapci, entityChlapci), 1);

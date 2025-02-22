@@ -17,18 +17,18 @@ export default function build({ input }: {
   input: Params,
 }) {
 
-  const agentOut = "vnější válec";
-  const agentIn = "vnitřní válec";
+  const agentOut = "čiré sklo";
+  const agentIn = "modré sklo";
   const entity = "cm"
 
 
-  const outRadius = axiomInput(cont(`${agentOut} poloměr`, input.out.radius, entity), 1);
-  const outHeight = axiomInput(cont(`${agentOut} výška`, input.out.height, entity), 2)
-  const inRadius = axiomInput(cont(`${agentIn} poloměr`, input.in.radius, entity), 3);
-  const inHeight = axiomInput(cont(`${agentIn} výška`, input.in.height, entity), 4);
+  const outRadius = axiomInput(cont(`${agentOut} podstava poloměr`, input.out.radius, entity), 1);
+  const outHeight = axiomInput(cont(`${agentOut} válec výška`, input.out.height, entity), 2)
+  const inRadius = axiomInput(cont(`${agentIn} podstava poloměr`, input.in.radius, entity), 3);
+  const inHeight = axiomInput(cont(`${agentIn} válec výška`, input.in.height, entity), 4);
 
-  const outCylinder = cylinder({ radius: outRadius, height: outHeight }, {volumeLabel:'objem vnějšího válce'});
-  const inCylinder = cylinder({ radius: inRadius, height: inHeight }, {volumeLabel: "objem vnitřního válce"});
+  const outCylinder = cylinder({ radius: outRadius, height: outHeight }, { surfaceBaseAreaLabel:`${agentOut} obsah`,volumeLabel:`${agentOut} objem`});
+  const inCylinder = cylinder({ radius: inRadius, height: inHeight }, {surfaceBaseAreaLabel:`${agentIn} obsah`, volumeLabel: `${agentIn} objem`});
 
 
   const deductionTree = deduce(

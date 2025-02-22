@@ -288,25 +288,25 @@ function partToWholeRule(a, b) {
     ]
   };
 }
-function rateRuleEx(a, rate5) {
-  if (!(a.entity === rate5.entity.entity || a.entity === rate5.entityBase.entity)) {
-    throw `Mismatch entity ${a.entity} any of ${rate5.entity.entity}, ${rate5.entityBase.entity}`;
+function rateRuleEx(a, rate4) {
+  if (!(a.entity === rate4.entity.entity || a.entity === rate4.entityBase.entity)) {
+    throw `Mismatch entity ${a.entity} any of ${rate4.entity.entity}, ${rate4.entityBase.entity}`;
   }
   return {
     kind: "cont",
     agent: a.agent,
-    entity: a.entity == rate5.entity.entity ? rate5.entityBase.entity : rate5.entity.entity,
-    quantity: a.entity == rate5.entity.entity ? a.quantity / rate5.quantity : a.quantity * rate5.quantity
+    entity: a.entity == rate4.entity.entity ? rate4.entityBase.entity : rate4.entity.entity,
+    quantity: a.entity == rate4.entity.entity ? a.quantity / rate4.quantity : a.quantity * rate4.quantity
   };
 }
-function rateRule(a, rate5) {
-  const result = rateRuleEx(a, rate5);
+function rateRule(a, rate4) {
+  const result = rateRuleEx(a, rate4);
   return {
     question: containerQuestion(result),
     result,
     options: [
-      { tex: `${formatNumber(a.quantity)} * ${formatNumber(rate5.quantity)}`, result: formatNumber(a.quantity * rate5.quantity), ok: a.entity !== rate5.entity.entity },
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(rate5.quantity)}`, result: formatNumber(a.quantity / rate5.quantity), ok: a.entity === rate5.entity.entity }
+      { tex: `${formatNumber(a.quantity)} * ${formatNumber(rate4.quantity)}`, result: formatNumber(a.quantity * rate4.quantity), ok: a.entity !== rate4.entity.entity },
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(rate4.quantity)}`, result: formatNumber(a.quantity / rate4.quantity), ok: a.entity === rate4.entity.entity }
     ]
   };
 }
@@ -2783,7 +2783,7 @@ function formatPredicate(d, formatting) {
       result = compose`${formatEntity2(d.entity)}`;
       break;
     case "unit":
-      result = compose`${d.unit}`;
+      result = compose`převod na ${d.unit}`;
       break;
     case "proportion":
       result = compose`${d.inverse ? "nep\u0159\xEDm\xE1" : "p\u0159\xEDm\xE1"} úměra mezi ${d.entities.join(" a ")}`;
@@ -3036,7 +3036,7 @@ function build6({ input }) {
   const aPrevious = axiomInput(cont(agentPrevious, input.previousWorker, entityA), 1);
   const aCurrent = axiomInput(cont(agentCurrent, input.currentWorker, entityA), 3);
   const bPrevious = axiomInput(cont(agentPrevious, input.previousHours, entityB), 2);
-  const comp5 = compRatio(agentNew, agentCurrent, 3 / 2);
+  const comp4 = compRatio(agentNew, agentCurrent, 3 / 2);
   const deductionTree = deduce(
     deduce(
       deduce(
@@ -3050,7 +3050,7 @@ function build6({ input }) {
       bPrevious
     ),
     deduce(
-      comp5,
+      comp4,
       proportion(false, [`mno\u017Estv\xED`, `hodin`])
     )
   );
@@ -3066,8 +3066,8 @@ function build7({ input }) {
   const skupinaDE = "n\u011Bm\u010Dina";
   const celkemAgent = "chlapc\u016F celkem";
   const entityChlapci = "chlapci";
-  const entityDivky = "divky";
-  const entity3 = "zaci";
+  const entityDivky = "d\xEDvky";
+  const entity3 = "";
   const chlapci = axiomInput(cont(celkemAgent, input.chlapci, entityChlapci), 1);
   const chlapciDiff = axiomInput(compDiff(celkemAgent, skupinaDE, input.anglictinaChlapci, entityChlapci), 2);
   const de = axiomInput(cont(skupinaDE, input.nemcinaDivky, entityDivky), 3);
@@ -3125,7 +3125,7 @@ function build8({ input }) {
   );
   const dTree1 = deduce(
     dBase,
-    deduce(widthOnPlan, width, gcd("nejmen\u0161\xED spole\u010Dn\xFD n\xE1sobek", entity3)),
+    deduce(widthOnPlan, last(dWidth), gcd("nejmen\u0161\xED spole\u010Dn\xFD n\xE1sobek", entity3)),
     ctor("simplify")
   );
   const meritko = { ...last(dTree1), ...deduceLbl(3) };
@@ -3333,15 +3333,15 @@ function cylinder({ radius, height }, options) {
 
 // src/math/M9A-2024/tezitko.ts
 function build9({ input }) {
-  const agentOut = "vn\u011Bj\u0161\xED v\xE1lec";
-  const agentIn = "vnit\u0159n\xED v\xE1lec";
+  const agentOut = "\u010Dir\xE9 sklo";
+  const agentIn = "modr\xE9 sklo";
   const entity3 = "cm";
-  const outRadius = axiomInput(cont(`${agentOut} polom\u011Br`, input.out.radius, entity3), 1);
-  const outHeight = axiomInput(cont(`${agentOut} v\xFD\u0161ka`, input.out.height, entity3), 2);
-  const inRadius = axiomInput(cont(`${agentIn} polom\u011Br`, input.in.radius, entity3), 3);
-  const inHeight = axiomInput(cont(`${agentIn} v\xFD\u0161ka`, input.in.height, entity3), 4);
-  const outCylinder = cylinder({ radius: outRadius, height: outHeight }, { volumeLabel: "objem vn\u011Bj\u0161\xEDho v\xE1lce" });
-  const inCylinder = cylinder({ radius: inRadius, height: inHeight }, { volumeLabel: "objem vnit\u0159n\xEDho v\xE1lce" });
+  const outRadius = axiomInput(cont(`${agentOut} podstava polom\u011Br`, input.out.radius, entity3), 1);
+  const outHeight = axiomInput(cont(`${agentOut} v\xE1lec v\xFD\u0161ka`, input.out.height, entity3), 2);
+  const inRadius = axiomInput(cont(`${agentIn} podstava polom\u011Br`, input.in.radius, entity3), 3);
+  const inHeight = axiomInput(cont(`${agentIn} v\xE1lec v\xFD\u0161ka`, input.in.height, entity3), 4);
+  const outCylinder = cylinder({ radius: outRadius, height: outHeight }, { surfaceBaseAreaLabel: `${agentOut} obsah`, volumeLabel: `${agentOut} objem` });
+  const inCylinder = cylinder({ radius: inRadius, height: inHeight }, { surfaceBaseAreaLabel: `${agentIn} obsah`, volumeLabel: `${agentIn} objem` });
   const deductionTree = deduce(
     outCylinder.volume,
     inCylinder.volume
@@ -3361,12 +3361,14 @@ function build10({ input }) {
   const radiusLabel = "polom\u011Br";
   const areaCircleLabel = "obsah kruhu";
   const baseCircleLabel = "obvod kruhu";
-  const circelPartLabel = "\u010Dtvrtkruh";
-  const tangaHeight = "tanga v\xFD\u0161ka";
+  const circelPartLabel = "b\xEDl\xE1 \u010Dtvrtkru\u017Enice";
+  const rectangleLabel = "cel\xFD obdeln\xEDk";
+  const reactangleHeight = `${rectangleLabel} v\xFD\u0161ka`;
   const entity3 = "cm";
   const entity2d = "cm \u010Dtvere\u010Dn\xEDch";
-  const width = axiomInput(cont(`tanga \u0161\xED\u0159ka`, input.tangaWidth, entity3), 1);
-  const ratio4 = compRatio(`tanga \u0161\xED\u0159ka`, radiusLabel, 2);
+  const width = axiomInput(cont(`\u0161ed\xE1 tanga \u0161\xED\u0159ka`, input.tangaWidth, entity3), 1);
+  const widthRectangle = axiomInput(cont(`${rectangleLabel} \u0161\xED\u0159ka`, input.tangaWidth, entity3), 1);
+  const ratio4 = compRatio(`\u0161ed\xE1 tanga \u0161\xED\u0159ka`, `${circelPartLabel} ${radiusLabel}`, 2);
   const dRadius = deduce(width, ratio4);
   const obsah = surfaceBaseArea({ radius: last(dRadius) }, {
     surfaceBaseAreaLabel: areaCircleLabel,
@@ -3374,13 +3376,13 @@ function build10({ input }) {
   });
   const dd1 = deduce(
     deduce(
-      width,
+      widthRectangle,
       to(
         dRadius,
-        commonSense(`${radiusLabel} = ${tangaHeight}`),
-        cont(tangaHeight, dRadius.children[2].quantity, entity3)
+        commonSense(`${radiusLabel} = ${reactangleHeight}`),
+        cont(reactangleHeight, dRadius.children[2].quantity, entity3)
       ),
-      product("obsah obd\xE9ln\xEDku", [], entity2d, entity3)
+      product(`${rectangleLabel} obsah`, [], entity2d, entity3)
     ),
     deduce(
       cont(`2 kr\xE1t ${circelPartLabel}`, 2, ""),

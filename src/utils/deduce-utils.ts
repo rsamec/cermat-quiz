@@ -273,7 +273,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = compose`${formatEntity(d.entity)}`;
       break;
     case "unit":
-      result = compose`${d.unit}`;
+      result = compose`převod na ${d.unit}`;
       break;
     case "proportion":
       result = compose`${d.inverse ? "nepřímá" : "přímá"} úměra mezi ${d.entities.join(' a ')}`;
