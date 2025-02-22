@@ -1,19 +1,12 @@
-
-import { parser, GFM, Subscript, Superscript } from 'npm:@lezer/markdown';
 import { getQuizBuilder, OptionList, ShortCodeMarker } from '../utils/parse-utils.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, text } from '../utils/quiz-string-utils.js';
 
-import mdPlus from "../utils/md-utils-copy.js";
-
-
-export async function renderQuiz(code, filterIds){
+export async function loadQuiz(code) {
   const d = parseCode(code);
   const baseUrl = `${baseDomainPublic}/${d.subject}/${d.period}/${code}`
   const content = await text(`${baseUrl}/index.md`);
   
-  const quiz = parseQuiz(normalizeImageUrlsToAbsoluteUrls(content, [baseUrl]));
-  const ids = quiz.questions.map(d => d.id).filter(d => filterIds == null || filterIds.includes(d));  
-  return mdPlus.unsafe(quiz.content(ids,{render:'content'}))
+  return parseQuiz(normalizeImageUrlsToAbsoluteUrls(content, [baseUrl]));
 }
 
 export function parseQuiz(normalizedQuiz) {
