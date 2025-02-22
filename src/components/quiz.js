@@ -1,3 +1,4 @@
+import { parser, GFM, Subscript, Superscript } from '@lezer/markdown';
 import { getQuizBuilder, OptionList, ShortCodeMarker } from '../utils/parse-utils.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, text } from '../utils/quiz-string-utils.js';
 
