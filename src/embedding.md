@@ -45,6 +45,18 @@ document.querySelector("#quiz").append(fragment);
 ```
 ---
 
+<script type="module">
+import {loadQuiz} from "https://www.cermatdata.cz/components/quiz.js";
+
+const quizProvider = await loadQuiz('C9I-2025');
+const questions = quizProvider.questions
+const content = quizProvider.content([5])
+
+console.log(questions[5], content)
+
+</script>
+
+
 ## vlastní styly
 
 ```js

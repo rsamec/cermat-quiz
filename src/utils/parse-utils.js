@@ -106,12 +106,12 @@ export const OptionList = {
         { name: "OptionMarker" }
     ],
     parseBlock: [{
-            name: "OptionList",
-            leaf(cx, leaf) {
-                return /^\[[\w\d]*\][ \t]/.test(leaf.content) && cx.parentType().name == "ListItem" ? new OptionParser : null;
-            },
-            after: "SetextHeading"
-        }]
+        name: "OptionList",
+        leaf(cx, leaf) {
+            return /^\[[\w\d]*\][ \t]/.test(leaf.content) && cx.parentType().name == "ListItem" ? new OptionParser : null;
+        },
+        after: "SetextHeading"
+    }]
 };
 class OptionParser {
     nextLine() { return false; }
@@ -125,17 +125,17 @@ class OptionParser {
 }
 export const ShortCodeMarker = {
     defineNodes: [{
-            name: "ShortCodeMarker",
-        }],
+        name: "ShortCodeMarker",
+    }],
     parseInline: [{
-            name: "ShortCodeMarker",
-            parse(cx, next, pos) {
-                let match;
-                if (next != 123 /* '{' */ || !(match = /^[a-zA-Z_0-9\.]+\}/.exec(cx.slice(pos + 1, cx.end))))
-                    return -1;
-                return cx.addElement(cx.elt("ShortCodeMarker", pos, pos + 1 + match[0].length));
-            },
-        }]
+        name: "ShortCodeMarker",
+        parse(cx, next, pos) {
+            let match;
+            if (next != 123 /* '{' */ || !(match = /^[a-zA-Z_0-9\.]+\}/.exec(cx.slice(pos + 1, cx.end))))
+                return -1;
+            return cx.addElement(cx.elt("ShortCodeMarker", pos, pos + 1 + match[0].length));
+        },
+    }]
 };
 export function excludeChunks(inputString, chunks) {
     if (chunks.length === 0) {
@@ -160,7 +160,7 @@ export function countMaxChars(str, charToCount) {
     const maxCount = matches.length == 0 ? 0 : Math.max(...matches.map(match => match.length));
     return maxCount;
 }
-export function getQuizBuilder(tree, input, baseRenderOptions = { render: "content" }) {
+export function getQuizBuilder(tree, input, baseRenderOptions = { render: "content", optionsInheritance: 'inherit' }) {
     const rawHeadings = chunkHeadingsList(tree, input);
     function order(name) {
         if (name == Abbreviations.ST)
@@ -171,12 +171,20 @@ export function getQuizBuilder(tree, input, baseRenderOptions = { render: "conte
     }
     const headingsTree = createTree(rawHeadings.map(data => ({ data })), (child, potentionalParent) => order(child.type?.name) > order(potentionalParent.type?.name));
     const rootQuestions = getNodesWithAncestors({ data: {}, children: headingsTree }, d => d.type?.name == Abbreviations.H1, (parent, child, node) => {
-        //copy some children property bottom up from leafs to its parent
-        if ((child.options?.length > 0 || (node.children.some(d => d.data.options?.length > 0)))) {
+        //copy some children property bottom up from leafs to its 
+
+        if (child.options?.length > 0 || node.children.some(d => d.data.options?.length > 0)) {
             //!!! - fallback to reduce options for subquestions - potentional bug...
-            parent.options = child.options?.length > 0 ? child.options : node.children.map(d=> d.data.options).filter(d => d?.length > 0)?.[0]
+            const options = node.children.map(d => d.data.options).filter(d => d?.length > 0)?.[0]
+            if (!child.options?.length) {
+                child.options = options;
+            }
+            if (!parent.options?.length) {
+                parent.options = child.options;
+            }
         }
     });
+
     const isInRange = (number, range) => range != null ? number >= range[0] && number <= range[1] : false;
     const toContent = (items, { renderHeader, render }) => items.map(d => (renderHeader ? d.header ?? "" : "") +
         (render === "content"
@@ -199,8 +207,12 @@ export function getQuizBuilder(tree, input, baseRenderOptions = { render: "conte
                     ? toContent([root], { renderHeader: true, render }) + toContent(items, { renderHeader: !rootOnly, render })
                     : toContent(items, { renderHeader: !rootOnly, render });
             },
-            groupKey: isInRange(id, range) && range != null ? `${range[0]}`:id,
-            options: d.leaf.data.options?.length > 0 ? d.leaf.data.options : d.ancestors[d.ancestors.length - 2].data.options
+            groupKey: isInRange(id, range) && range != null ? `${range[0]}` : id,
+            options: d.leaf.data.options?.length > 0
+                ? d.leaf.data.options
+                : baseRenderOptions.optionsInheritance === 'inherit'
+                    ? d.ancestors[d.ancestors.length - 2].data.options
+                    : [],
         };
     });
     const output = {

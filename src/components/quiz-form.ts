@@ -335,7 +335,7 @@ function useInput(input) {
 function makeQuizBuilder(normalizedQuiz) {
   const markdownParser = parser.configure([[ShortCodeMarker, OptionList], GFM, Subscript, Superscript]);
   const parsedTree = markdownParser.parse(normalizedQuiz);
-  return getQuizBuilder(parsedTree, normalizedQuiz, { render: 'contentWithoutOptions' });
+  return getQuizBuilder(parsedTree, normalizedQuiz, { render: 'contentWithoutOptions', optionsInheritance: 'inherit' });
 }
 function toTooltipInput(input) {
 
