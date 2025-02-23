@@ -45,16 +45,48 @@ document.querySelector("#quiz").append(fragment);
 ```
 ---
 
+## API - vlastní aplikace
+
+
+```html run=false
 <script type="module">
 import {loadQuiz} from "https://www.cermatdata.cz/components/quiz.js";
 
-const quizProvider = await loadQuiz('C9I-2025');
-const questions = quizProvider.questions
-const content = quizProvider.content([5])
-
-console.log(questions[5], content)
+const quizProvider = await loadQuiz('C9I-2025'); //load and parse quiz
+const questions = quizProvider.questions; //array of questions in quiz
+const quizContent = quizProvider.content(questions.map(d => d.id)) // quiz content in markdown
+const secondQuestionContent = quizProvider.content([2]) // second question content in markdown
 
 </script>
+```
+
+<div class="tip">
+Pokud je potřeba oddělit načtení a parsování dat, můžete použít metodu <b>parseQuiz</b>.
+</div>
+
+```html run=false
+<script type="module">
+import {parseQuiz} from "https://www.cermatdata.cz/components/quiz.js";
+
+//fetch data
+const response = await fetch('https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/cz/4/C9I-2025/index.md');
+if (!response.ok) {
+   throw new Error(`HTTP error! status: ${response.status}`);
+}
+const text = await response.text();
+
+const quizProvider = parseQuiz(text); //parse quiz
+const questions = quizProvider.questions; //array of questions in quiz
+const quizContent = quizProvider.content(questions.map(d => d.id)) // quiz content in markdown
+const secondQuestionContent = quizProvider.content([2]) // second question content in markdown
+
+</script>
+```
+
+
+<iframe width="100%" height="300" frameborder="0" src="https://stackblitz.com/edit/vitejs-vite-jaf9wowd?embed=1&file=src%2Fquiz.jsx"></iframe>
+
+Databanku úloh využívá např. trénovací PWA aplikace [eforms](https://www.eforms.cz).
 
 
 ## vlastní styly
@@ -275,6 +307,3 @@ Příklady využití databanky úloh v prostředí [ObservableHQ](https://observ
   src="https://observablehq.com/embed/@rsamec/m9c-2024?cells=q9%2Csteps9%2Cq10%2Csteps10"></iframe>
 
 
-## vytvoření vlastní aplikace
-
-Databanku úloh využívá např. trénovací PWA aplikace [eforms](https://www.eforms.cz).
