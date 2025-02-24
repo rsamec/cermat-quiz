@@ -45,8 +45,10 @@ document.querySelector("#quiz").append(fragment);
 ```
 ---
 
-## API - vlastní aplikace
+## API
 
+Tvořte vlastní aplikace a využijte API na načtení úloh z data banky.
+- @TODO - add api description
 
 ```html run=false
 <script type="module">
@@ -82,12 +84,17 @@ const secondQuestionContent = quizProvider.content([2]) // second question conte
 
 </script>
 ```
+---
 
+## příklady aplikací
 
+Jednoduchá aplikace na vyplnění testu
 <iframe width="100%" height="300" frameborder="0" src="https://stackblitz.com/edit/vitejs-vite-jaf9wowd?embed=1&file=src%2Fquiz.jsx"></iframe>
+
 
 Databanku úloh využívá např. trénovací PWA aplikace [eforms](https://www.eforms.cz).
 
+---
 
 ## vlastní styly
 
@@ -296,7 +303,7 @@ document.querySelector("#quiz-with-custom-style").append(fragment);
 ```
 ---
 
-## observableHQ playground
+## playground
 
 Příklady využití databanky úloh v prostředí [ObservableHQ](https://observablehq.com).
 
