@@ -715,6 +715,7 @@ Obecný postup vytvoření dedukčního stromu ze zadání úlohy
 
 
 Konkrétní příklad řešení pro zadání [úlohy](./solu-M9I-2025#7)
+<video src="./assets/kytice.mp4" autoplay playsinline muted controls style="width: 100%;"></video>
 
 ```typescript
 import { comp, compRatio, nthPart, rate, ratios, sum } from "../../components/math.js";
