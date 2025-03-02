@@ -106,8 +106,16 @@ export async function text(url) {
   if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
   return await response.text();
 }
+async function jsonGet(url) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
+  return await response.json();
+}
 
 export async function json(url, data) {  
+  if (data == null){
+    return await jsonGet(url)
+  }
   const response = await fetch(url,
     {
       headers: {
