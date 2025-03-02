@@ -107,13 +107,7 @@ export async function text(url) {
   return await response.text();
 }
 
-export async function json(url, data) {
-  if (data == null){
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
-    return await response.json();
-  }
-  
+export async function json(url, data) {  
   const response = await fetch(url,
     {
       headers: {

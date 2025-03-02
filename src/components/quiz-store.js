@@ -3,7 +3,7 @@ import { QuizStore } from '../utils/quiz-store.js'
 
 export async function loadQuizStore(code) {
   const metadata = await json(`${baseDomain}/generated/${code}.json`);
-  return parseQuiz(metadata);
+  return parseQuizStore(metadata);
 }
 
 export function parseQuizStore(metadata) {
