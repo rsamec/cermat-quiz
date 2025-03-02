@@ -10,9 +10,9 @@ style: /assets/css/quiz-form.css
 ```js
 import { renderedQuestionsPerQuizWithInputs } from './components/quiz-form.js';
 import { parseCode, formatShortCode, formatSubject, formatPeriod} from './utils/quiz-string-utils.js';
-import { fromEvent, combineLatest } from 'rxjs';
+import { fromEvent, combineLatest, BehaviorSubject } from 'rxjs';
 import { map, startWith, tap } from  'rxjs/operators';
-import { store } from './utils/quiz.js';
+import { QuizStore } from './utils/quiz-store.js';
 import * as a from "npm:@appnest/masonry-layout";
 
 function getQuestionIds(metadata, code) {
@@ -34,8 +34,8 @@ const {subject,period}  = parseCode(code);
 
 ```js
 const state = {
-  ...values.quiz,
-  ...selection(values)
+  ...values,
+  ...store.selectors(values)
 }
 ```
 <style>
@@ -88,21 +88,16 @@ function combineInputValues(inputs) {
 }
 const values$ = combineInputValues(inputsStore[code] ?? {});
 
-const { dispatch } = store;
-const selection = store.select((models) => ({
-    totalAnswers: models.quiz.totalAnswers,
-    maxTotalAnswers: models.quiz.maxTotalAnswers,
-}));
+const store = new QuizStore({metadata});
 
 const values = Generators.observe((notify) => {
-  dispatch.quiz.init({metadata,answers:{}});
   values$.subscribe({
     next: value => {
-      dispatch.quiz.submitQuiz(Object.fromEntries(value.filter(([key,v]) => v != null)))
+      store.submitQuiz(Object.fromEntries(value.filter(([key,v]) => v != null)))
       notify(store.getState())
     }
   });
-  notify([]);
+  notify(store.getState());
   return () => values$.unsubscribe();
 });
 

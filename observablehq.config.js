@@ -108,6 +108,7 @@ export default {
     .concat(assetsFiles.concat("/assets/css/print-results.css"))
     .concat(['/components/quiz-html.js'])
     .concat(['/components/quiz.js'])
+    .concat(['/components/quiz-store.js'])
     .concat(['/components/math.js'])
     .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))

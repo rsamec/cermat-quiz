@@ -57,25 +57,6 @@ export const categories = ({
   de: langCategories
 })
 
-export function convertTree(tree) {
-  const isGroup = node => Object.keys(node?.children ?? {}).length > 0;
-  const traverse = (id, node) => {
-    if (isGroup(node)) {
-      const children = []
-      for (let key in node.children) {
-        children.push(traverse(key, node.children[key]));
-      }
-      return {
-        data: { id, node },
-        children,
-      }
-    }
-    else {
-      return { data: { id, node } }
-    }
-  }
-  return traverse("root", tree)
-}
 
 const generateCode = (code, variants) =>
   [2023, 2024].flatMap(year => variants.flatMap(v => `${code}${v}-${year}`));
