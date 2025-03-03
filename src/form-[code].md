@@ -70,7 +70,7 @@ const parameters = ({
   questions: [[code].concat(getQuestionIds(metadata,code))],
   subject:parseCode(code).subject,
   quizQuestionsMap,
-  displayOptions: {useFormControl:true,useAIHelpers:false,useResources:true},
+  displayOptions: {useFormControl:true,useAIHelpers:true,useResources:true},
   mathResourcesMap,
   videoExcludesMap,
 })
