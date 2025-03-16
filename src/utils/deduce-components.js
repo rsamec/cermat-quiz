@@ -245,7 +245,7 @@ export function deduceTraverse(node) {
 
         if (!isLast) {
           if (newChild?.kind === "ratio" && newChild?.ratio != null) {
-            args.push(relativePartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole), asPercent: ratio.asPercent }))
+            args.push(relativePartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole), asPercent: newChild.asPercent }))
           }
           // else if (newChild?.kind === "ratios" && newChild?.ratios?.length === 2) {
           //   args.push(relativeParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
