@@ -206,8 +206,11 @@ const mdFormatting = {
   compose: (strings: TemplateStringsArray, ...args) => concatString(strings, ...args),
   formatKind: d => `[${d.kind.toUpperCase()}]`,
   formatQuantity: d => d.toLocaleString('cs-CZ'),
-  formatRatio: d => d.toLocaleString('cs-CZ'),
-  formatEntity: (d, unit) => `__${[unit, d].filter(d => d != null).join(" ")}__`,
+  formatRatio: (d,asPercent) => asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%`  : d.toLocaleString("cs-CZ"),
+  formatEntity: (d, unit) => {
+    const res = [unit, d].filter(d => d != null).join(" "); 
+    return isEmptyOrWhiteSpace(res) ? '': `__${res.trim()}__`;  
+  },
   formatAgent: d => `**${d}**`,
   formatSequence: d => `${d.type}`
 }
@@ -239,14 +242,14 @@ export function formatPredicate(d: Predicate, formatting: any) {
     case "comp-ratio":
       const between = (d.ratio > 1 / 2 && d.ratio < 2);
       result = between
-        ? compose`${formatAgent(d.agentA)} ${d.ratio < 1 ? 'méně' : 'více'} o ${formatRatio(d.ratio > 1 ? d.ratio - 1 : 1 - d.ratio)} než ${formatAgent(d.agentB)} `
-        : compose`${formatAgent(d.agentA)} ${formatRatio(d.ratio > 1 ? Math.abs(d.ratio) : 1 / Math.abs(d.ratio))} krát ${d.ratio > 1 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} `
+        ? compose`${formatAgent(d.agentA)} ${d.ratio < 1 ? 'méně' : 'více'} o ${formatRatio(d.ratio > 1 ? d.ratio - 1 : 1 - d.ratio, d.asPercent)} než ${formatAgent(d.agentB)} `
+        : compose`${formatAgent(d.agentA)} ${formatRatio(d.ratio > 1 ? Math.abs(d.ratio) : 1 / Math.abs(d.ratio), false)} krát ${d.ratio > 1 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} `
       break;
     case "comp-diff":
       result = compose`${formatAgent(d.agentMinuend)} - ${formatAgent(d.agentSubtrahend)}=${formatQuantity(d.quantity)} ${formatEntity(d.entity, d.unit)}`
       break;
     case "ratio":
-      result = compose`${formatAgent(d.part)} z ${formatAgent(d.whole)}=${formatRatio(d.ratio)}`;
+      result = compose`${formatAgent(d.part)} z ${formatAgent(d.whole)}=${formatRatio(d.ratio, d.asPercent)}`;
       break;
     case "ratios":
       result = compose`${formatAgent(d.whole)} ${joinArray(d.parts?.map(d => formatAgent(d)), ":")} v poměru ${joinArray(d.ratios?.map(d => formatQuantity(d)), ":")}`;

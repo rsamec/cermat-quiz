@@ -115,7 +115,7 @@ export const formatting = {
   compose: (strings, ...args) => concatHtml(strings, ...args),
   formatKind: d => html`<div class="badge">${d.kind === "cont" ? "C" : d.kind.toUpperCase()}</div>`,
   formatQuantity: d => d.toLocaleString('cs-CZ'),
-  formatRatio: d => new Fraction(d).toFraction(),
+  formatRatio: (d,asPercent) => asPercent ? `${(d * 100).toLocaleString('cs-CZ')}%` : new Fraction(d).toFraction(),
   formatEntity: (d, u) => [u, d].filter(d => d != null).join(" "),
   formatAgent: d => html`<b>${d}</b>`,
   formatSequence: d => formatSequence(d),
@@ -245,7 +245,7 @@ export function deduceTraverse(node) {
 
         if (!isLast) {
           if (newChild?.kind === "ratio" && newChild?.ratio != null) {
-            args.push(relativePartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole) }))
+            args.push(relativePartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole), asPercent: ratio.asPercent }))
           }
           // else if (newChild?.kind === "ratios" && newChild?.ratios?.length === 2) {
           //   args.push(relativeParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
@@ -255,7 +255,7 @@ export function deduceTraverse(node) {
             args.push(html`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d, i) => html`<div>${numbers[i]} = ${d.join()}</div>`)}</div>`)
           }
           else if (newChild?.kind === "comp-ratio" && newChild?.ratio != null) {
-            args.push(relativePartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: newChild.agentB }))
+            args.push(relativePartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: newChild.agentB, asPercent: newChild.asPercent }))
           }
         }
       }
@@ -319,7 +319,7 @@ export function stepsTraverse(node) {
 
         if (!isLast) {
           if (newChild?.kind === "ratio" && newChild?.ratio != null) {
-            args.push(relativePartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole) }))
+            args.push(relativePartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole), asPercent: newChild.asPercent  }))
           }
           // else if (newChild?.kind === "ratios" && newChild?.ratios?.length === 2) {
           //   args.push(relativeParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
@@ -329,7 +329,7 @@ export function stepsTraverse(node) {
             args.push(html`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d, i) => html`<div>${formatNumber(numbers[i])} = ${d.join()}</div>`)}</div>`)
           }
           else if (newChild?.kind === "comp-ratio" && newChild?.ratio != null) {
-            args.push(relativePartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: newChild.agentB }))
+            args.push(relativePartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: newChild.agentB, asPercent: newChild.asPercent }))
           }
         }
 

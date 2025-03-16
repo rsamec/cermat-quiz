@@ -17,7 +17,11 @@ const formatting = {
   compose: (strings, ...args) => concatString(strings, ...args),
   formatKind: d => ``,
   formatQuantity: d => d.toLocaleString('cs-CZ'),
-  formatRatio: d => d != null ? new Fraction(d).toFraction() : d,
+  formatRatio: (d, asPercent) => d != null
+    ? (asPercent
+      ? `${(d * 100).toLocaleString('cs-CZ')}%`
+      : new Fraction(d).toFraction())
+    : d,
   formatEntity: (d, unit) => `<i>${[unit, d].filter(d => d != null).join(" ")}</i>`,
   formatAgent: d => `<b>${d}</b>`,
   formatSequence: d => formatSequencePattern(d)
@@ -260,10 +264,10 @@ function isPredicate(node) {
   return node.kind != null;
 }
 
-function uniqueQuestion(obj){
-  if (obj == null){
+function uniqueQuestion(obj) {
+  if (obj == null) {
     return 0;
   }
   const keys = Object.keys(obj);
-  return keys.map(d => d.split('.')[0]).filter((d,i,arr) => arr.indexOf(d) === i).length
+  return keys.map(d => d.split('.')[0]).filter((d, i, arr) => arr.indexOf(d) === i).length
 }

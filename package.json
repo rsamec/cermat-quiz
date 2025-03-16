@@ -9,7 +9,9 @@
     "observable": "observable",
     "merge-pdf": "node merge-pdf.js ./generated",
     "baml-generate": "baml-cli generate",
-    "build:word-problems": "esbuild ./src/math/word-problems.ts --bundle --platform=neutral --outfile=./src/math/word-problems.js"
+    "build:word-problems": "esbuild ./src/math/word-problems.ts --bundle --platform=neutral --outfile=./src/math/word-problems.js",
+    "build:deduce-utils": "esbuild ./src/utils/deduce-utils.ts --bundle --platform=neutral --outfile=./src/utils/deduce-utils.js",
+    "generate:word-problems": "node ./src/data/word-problems-solu-[code].txt.js --code M9I-2025"
   },
   "dependencies": {
     "@lezer/common": "^1.2.2",

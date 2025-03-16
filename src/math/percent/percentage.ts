@@ -1,5 +1,5 @@
 
-import { cont, ctor, type Container } from "../../components/math.js";
+import { compDiff, cont, ctor, type Container } from "../../components/math.js";
 import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 export function percentage({ base, part }: { base: Container, part: Container },
@@ -15,6 +15,17 @@ export function percentage({ base, part }: { base: Container, part: Container },
       ctor('ratio')
     ),
     celek,
+  )
+}
+
+export function percentComplement({ percent }: { percent: Container },
+  labels: { complementAgent?: string, celekAgent?: string, entityPercent?: string } = {}) {
+  const { entityPercent, celekAgent, complementAgent } = { ...{ complementAgent: "zbytek", entityPercent: "%", celekAgent: 'celek' }, ...labels }
+
+  const celek = cont(celekAgent, 100, entityPercent);
+  return deduce(
+    celek,
+    compDiff(celekAgent, complementAgent, percent.quantity, entityPercent)
   )
 }
 export function example({ input }: {

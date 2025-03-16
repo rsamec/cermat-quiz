@@ -32,10 +32,12 @@ import { okurkyASalaty } from './M9I-2025/okurky.js';
 import { cislaNaOse } from './M7A-2024/3.js';
 import { rozdilUhlu } from './M9A-2024/angle.js';
 import { desetiuhelnik } from './M9I-2025/angle.js';
+import { example_1, example_11, example_12, example_13, example_15_1, example_15_2, example_15_3, example_4_1, example_4_2, example_5_1, example_5_2, example_6 } from './M7A-2023/index.js';
 
 export { inferenceRuleWithQuestion } from '../math/math-configure.js'
 export { formatPredicate } from '../utils/deduce-utils.js';
 export { formatSequencePattern} from '../components/math.js';
+
 
 const letniTaborInput = {
   input: {
@@ -67,6 +69,7 @@ const krabiceParams = { pocetKusuVKrabice: 12, missingVyrobku: 5 }
 const osaParams = { mensiCislo: 1.4, vetsiCislo: 5.6, pocetUsekuMeziCisly: 6, A: 4, B: 7, C: -2 };
 export default {
   "M7A-2023": {
+    1: example_1(),
     3.3: cetar({
       input: {
         kapitan: 1,
@@ -75,11 +78,23 @@ export default {
         vojinPerCetar: 10
       }
     }),
+    4.1: example_4_1(),
+    4.2: example_4_2(),
+    5.1: example_5_1(),
+    5.2: example_5_2(),
+    6.1: example_6()[0],
+    6.2: example_6()[1],
+    11: example_11(),
+    12: example_12(),
+    // 13: example_13(),
     14: zakusek({
       input: {
         cena: 72
       }
-    })
+    }),    
+    15.1: example_15_1(),
+    15.2: example_15_2(),
+    15.3: example_15_3(),
   },
   "M7A-2024": {
     1.1: porovnatAaB({ input: { a: 1.6, b: -1.2 } }),
