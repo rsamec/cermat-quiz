@@ -33,10 +33,11 @@ import { cislaNaOse } from './M7A-2024/3.js';
 import { rozdilUhlu } from './M9A-2024/angle.js';
 import { desetiuhelnik } from './M9I-2025/angle.js';
 import { example_1, example_11, example_12, example_13, example_15_1, example_15_2, example_15_3, example_4_1, example_4_2, example_5_1, example_5_2, example_6 } from './M7A-2023/index.js';
+import { angle, cestovni_kancelar, koupaliste, krouzky, pozemek } from './M7A-2024/index.js';
 
 export { inferenceRuleWithQuestion } from '../math/math-configure.js'
 export { formatPredicate } from '../utils/deduce-utils.js';
-export { formatSequencePattern} from '../components/math.js';
+export { formatSequencePattern } from '../components/math.js';
 
 
 const letniTaborInput = {
@@ -91,7 +92,7 @@ export default {
       input: {
         cena: 72
       }
-    }),    
+    }),
     15.1: example_15_1(),
     15.2: example_15_2(),
     15.3: example_15_3(),
@@ -102,6 +103,8 @@ export default {
     3.1: cislaNaOse({ input: osaParams })[0],
     3.2: cislaNaOse({ input: osaParams })[1],
     3.3: cislaNaOse({ input: osaParams })[2],
+    5.1: krouzky()[0],
+    5.2: krouzky()[1],
     6: pocetSportovcu({ input: {} }),
     10.1: letniTabor(letniTaborInput)[0],
     10.2: letniTabor(letniTaborInput)[1],
@@ -117,7 +120,11 @@ export default {
         obdelnik: { a: 36, b: 12 },
         ctverec: { a: 6 }
       }
-    })
+    }),
+    14: angle(),
+    15.1: koupaliste(),
+    15.2: cestovni_kancelar(),
+    15.3: pozemek(),
   },
   "M9A-2023": {
     16.1: trojuhelnik({ input: {} })[0],
@@ -168,9 +175,9 @@ export default {
     7.1: plnaKrabice({ input: krabiceParams })[0],
     7.2: plnaKrabice({ input: krabiceParams })[1],
     7.3: plnaKrabice({ input: krabiceParams })[2],
-    11.1: desetiuhelnik({input:{pocetUhlu: 10}})[0],
-    11.2: desetiuhelnik({input:{pocetUhlu: 10}})[1],
-    11.3: desetiuhelnik({input:{pocetUhlu: 10}})[2],
+    11.1: desetiuhelnik({ input: { pocetUhlu: 10 } })[0],
+    11.2: desetiuhelnik({ input: { pocetUhlu: 10 } })[1],
+    11.3: desetiuhelnik({ input: { pocetUhlu: 10 } })[2],
     12: kytice(),
     13: caryNaPapire({ input: { pocetCasti: 40 } }),
     14: domecek({ input: { baseSurfaceArea: 16, quota: 4 } }),

@@ -44,9 +44,9 @@ function compareAngleRule(a, b) {
     question: `Vypo\u010Dti ${a.agent == b.agentB ? b.agentA : b.agentB}? \xDAhel ${b.agentA} je ${formatAngle(b.relationship)} \xFAhel k ${b.agentB}.`,
     result,
     options: [
-      { tex: `90 - ${a.agent}`, result: formatNumber(result.quantity), ok: b.relationship == "complementary" },
-      { tex: `180 - ${a.agent}`, result: formatNumber(result.quantity), ok: b.relationship == "supplementary" || b.relationship == "sameSide" },
-      { tex: `${a.agent}`, result: formatNumber(result.quantity), ok: b.relationship != "supplementary" && b.relationship != "complementary" && b.relationship != "sameSide" }
+      { tex: `90 - ${a.quantity}`, result: formatNumber(result.quantity), ok: b.relationship == "complementary" },
+      { tex: `180 - ${a.quantity}`, result: formatNumber(result.quantity), ok: b.relationship == "supplementary" || b.relationship == "sameSide" },
+      { tex: `${a.quantity}`, result: formatNumber(result.quantity), ok: b.relationship != "supplementary" && b.relationship != "complementary" && b.relationship != "sameSide" }
     ]
   };
 }
@@ -1019,9 +1019,9 @@ function formatAngle(relationship) {
     case "sameSide":
       return "p\u0159ilehl\xFD";
     case "vertical":
-      return "souhlasn\xFD";
-    case "corresponding":
       return "vrcholov\xFD";
+    case "corresponding":
+      return "souhlasn\xFD";
     case "alternate":
       return "st\u0159\xEDdav\xFD";
     default:

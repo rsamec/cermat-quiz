@@ -122,9 +122,9 @@ function compareAngleRule(a, b) {
     question: `Vypo\u010Dti ${a.agent == b.agentB ? b.agentA : b.agentB}? \xDAhel ${b.agentA} je ${formatAngle(b.relationship)} \xFAhel k ${b.agentB}.`,
     result,
     options: [
-      { tex: `90 - ${a.agent}`, result: formatNumber(result.quantity), ok: b.relationship == "complementary" },
-      { tex: `180 - ${a.agent}`, result: formatNumber(result.quantity), ok: b.relationship == "supplementary" || b.relationship == "sameSide" },
-      { tex: `${a.agent}`, result: formatNumber(result.quantity), ok: b.relationship != "supplementary" && b.relationship != "complementary" && b.relationship != "sameSide" }
+      { tex: `90 - ${a.quantity}`, result: formatNumber(result.quantity), ok: b.relationship == "complementary" },
+      { tex: `180 - ${a.quantity}`, result: formatNumber(result.quantity), ok: b.relationship == "supplementary" || b.relationship == "sameSide" },
+      { tex: `${a.quantity}`, result: formatNumber(result.quantity), ok: b.relationship != "supplementary" && b.relationship != "complementary" && b.relationship != "sameSide" }
     ]
   };
 }
@@ -1185,9 +1185,9 @@ function compareAngleRule2(a, b) {
     question: `Vypo\u010Dti ${a.agent == b.agentB ? b.agentA : b.agentB}? \xDAhel ${b.agentA} je ${formatAngle2(b.relationship)} \xFAhel k ${b.agentB}.`,
     result,
     options: [
-      { tex: `90 - ${a.agent}`, result: formatNumber2(result.quantity), ok: b.relationship == "complementary" },
-      { tex: `180 - ${a.agent}`, result: formatNumber2(result.quantity), ok: b.relationship == "supplementary" || b.relationship == "sameSide" },
-      { tex: `${a.agent}`, result: formatNumber2(result.quantity), ok: b.relationship != "supplementary" && b.relationship != "complementary" && b.relationship != "sameSide" }
+      { tex: `90 - ${a.quantity}`, result: formatNumber2(result.quantity), ok: b.relationship == "complementary" },
+      { tex: `180 - ${a.quantity}`, result: formatNumber2(result.quantity), ok: b.relationship == "supplementary" || b.relationship == "sameSide" },
+      { tex: `${a.quantity}`, result: formatNumber2(result.quantity), ok: b.relationship != "supplementary" && b.relationship != "complementary" && b.relationship != "sameSide" }
     ]
   };
 }
@@ -2157,9 +2157,9 @@ function formatAngle2(relationship) {
     case "sameSide":
       return "p\u0159ilehl\xFD";
     case "vertical":
-      return "souhlasn\xFD";
-    case "corresponding":
       return "vrcholov\xFD";
+    case "corresponding":
+      return "souhlasn\xFD";
     case "alternate":
       return "st\u0159\xEDdav\xFD";
     default:
@@ -4171,7 +4171,7 @@ function build6({ input }) {
   const aPrevious = axiomInput(cont(agentPrevious, input.previousWorker, entityA), 1);
   const aCurrent = axiomInput(cont(agentCurrent, input.currentWorker, entityA), 3);
   const bPrevious = axiomInput(cont(agentPrevious, input.previousHours, entityB), 2);
-  const comp4 = compRatio(agentNew, agentCurrent, 3 / 2);
+  const comp5 = compRatio(agentNew, agentCurrent, 3 / 2);
   const deductionTree = deduce(
     deduce(
       deduce(
@@ -4185,7 +4185,7 @@ function build6({ input }) {
       bPrevious
     ),
     deduce(
-      comp4,
+      comp5,
       proportion(false, [`mno\u017Estv\xED`, `hodin`])
     )
   );
@@ -7102,6 +7102,123 @@ var example_15_3 = () => {
   };
 };
 
+// src/math/M7A-2024/index.ts
+var koupaliste = () => {
+  const entity3 = "n\xE1v\u0161t\u011Bvn\xEDk\u016F";
+  return {
+    deductionTree: deduce(
+      axiomInput(percent("koupali\u0161t\u011B loni", "koupali\u0161t\u011B letos", 80), 1),
+      axiomInput(cont("koupali\u0161t\u011B letos", 680, entity3), 2)
+    )
+  };
+};
+var cestovni_kancelar = () => {
+  const entity3 = "klient\u016F";
+  return {
+    deductionTree: deduce(
+      axiomInput(cont("\u010Derven", 330, entity3), 1),
+      axiomInput(compPercent("\u010Derven", "\u010Dervenec", 100 - 40), 2)
+    )
+  };
+};
+var pozemek = () => {
+  const skutecnost = "skute\u010Dnost";
+  const mapa = "pl\xE1n";
+  const entity3 = "";
+  return {
+    deductionTree: deduce(
+      deduce(
+        axiomInput(ratios("pozemek m\u011B\u0159\xEDtko", [mapa, skutecnost], [1, 3e3]), 1),
+        axiomInput(cont(mapa, 15, entity3, "cm"), 2),
+        nthPart(skutecnost)
+      ),
+      ctorUnit("m")
+    )
+  };
+};
+var krouzky = () => {
+  const entity3 = "d\u011Bti";
+  const entityPercent3 = "%";
+  const basketabal = cont("basketbal", 16, entityPercent3);
+  const tanecni = cont("tane\u010Dn\xED", 15, entityPercent3);
+  const lezeckaStena = cont("lezeck\xE1 st\u011Bna", 25, entityPercent3);
+  const bezKrouzku = cont("\u017E\xE1dn\xFD krou\u017Eek", 6, entityPercent3);
+  const celek = cont("celek", 100, entityPercent3);
+  const florbalPocet = cont("florbal", 114, entity3);
+  const florbalDiff = deduce(
+    celek,
+    deduce(
+      bezKrouzku,
+      basketabal,
+      tanecni,
+      lezeckaStena,
+      sum(`zadan\xE9 \xFAdaje`, [], entityPercent3, entityPercent3)
+    ),
+    ctor("comp-diff")
+  );
+  const celekPocet = deduce(
+    to(florbalDiff, percent("celek", "florbal", last(florbalDiff).quantity)),
+    florbalPocet
+  );
+  return [
+    {
+      deductionTree: deduce(
+        celekPocet,
+        deduce(
+          last(celekPocet),
+          percent("celek", "\u017E\xE1dn\xFD krou\u017Eek", 6)
+        ),
+        ctor("comp-diff")
+      )
+    },
+    {
+      deductionTree: deduce(
+        last(celekPocet),
+        percent("celek", "basketbal", 16)
+      )
+    }
+  ];
+};
+var angle = () => {
+  const entity3 = "stup\u0148\u016F";
+  const betaEntity = "beta \xFAhel";
+  const inputAngleLabel = `zadan\xFD \xFAhel`;
+  const triangleSumLabel = "sou\u010Det \xFAhl\u016F v troj\xFAheln\xEDku";
+  const triangleSum = cont(triangleSumLabel, 180, entity3);
+  const triangle = "\xFAhel troj\xFAheln\xEDku ABC";
+  const doubleBeta = deduce(
+    cont(inputAngleLabel, 2, betaEntity),
+    compAngle(inputAngleLabel, `${triangle} u vrcholu A`, "alternate")
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          toCont(
+            deduce(
+              triangleSum,
+              deduce(
+                axiomInput(cont(inputAngleLabel, 105, entity3), 1),
+                compAngle(inputAngleLabel, `${triangle} u vrcholu C`, "supplementary")
+              ),
+              ctor("comp-diff")
+            ),
+            { agent: `beta` }
+          ),
+          deduce(
+            doubleBeta,
+            cont(`${triangle} u vrcholu B`, 1, betaEntity),
+            sum("beta", [], betaEntity, betaEntity)
+          ),
+          ctor("rate")
+        ),
+        last(doubleBeta)
+      ),
+      compAngle(`${triangle} u vrcholu A`, "alfa", "supplementary")
+    )
+  };
+};
+
 // src/math/word-problems.ts
 var letniTaborInput = {
   input: {
@@ -7163,6 +7280,8 @@ var word_problems_default = {
     3.1: cislaNaOse({ input: osaParams })[0],
     3.2: cislaNaOse({ input: osaParams })[1],
     3.3: cislaNaOse({ input: osaParams })[2],
+    5.1: krouzky()[0],
+    5.2: krouzky()[1],
     6: build3({ input: {} }),
     10.1: build4(letniTaborInput)[0],
     10.2: build4(letniTaborInput)[1],
@@ -7178,7 +7297,11 @@ var word_problems_default = {
         obdelnik: { a: 36, b: 12 },
         ctverec: { a: 6 }
       }
-    })
+    }),
+    14: angle(),
+    15.1: koupaliste(),
+    15.2: cestovni_kancelar(),
+    15.3: pozemek()
   },
   "M9A-2023": {
     16.1: build13({ input: {} })[0],

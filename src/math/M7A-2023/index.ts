@@ -242,11 +242,6 @@ export const example_12 = () => {
 }
 
 export const example_15_1 = () => {
-  // const deducePercent = deduce(
-  //   ratios("celá kniha", ["Róza nepřečteno", "Róza přečteno"], [40, 60]),
-  //   axiomInput(cont("Róza přečteno", 60, entityPercent), 2),
-  //   nthPart("Róza nepřečteno")
-  // );
 
   const deducePercent = deduce(
     axiomInput(percent("celá kniha", "Róza přečteno", 60), 2),
@@ -262,12 +257,6 @@ export const example_15_1 = () => {
 }
 
 export const example_15_2 = () => {
-  // const deducePercent = deduce(
-  //   ratios("celá kniha", ["Róza nepřečteno", "Róza přečteno"], [40, 60]),
-  //   axiomInput(cont("Róza přečteno", 60, entityPercent), 2),
-  //   nthPart("Róza nepřečteno")
-  // );
-
   const entity = "Kč"
   const compare = axiomInput(comp("dospělé vstupné", "dětské vstupné", 210, entity), 2);
 
