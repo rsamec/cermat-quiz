@@ -32,7 +32,7 @@ import { okurkyASalaty } from './M9I-2025/okurky.js';
 import { cislaNaOse } from './M7A-2024/3.js';
 import { rozdilUhlu } from './M9A-2024/angle.js';
 import { desetiuhelnik } from './M9I-2025/angle.js';
-import { example_1, example_11, example_12, example_13, example_15_1, example_15_2, example_15_3, example_4_1, example_4_2, example_5_1, example_5_2, example_6 } from './M7A-2023/index.js';
+import { example_1, example_11, example_12, example_13, example_15_1, example_15_2, example_15_3, example_4_1, example_4_2, example_5_1, example_5_2, example_6, obrazce, trideni_odpadu } from './M7A-2023/index.js';
 import { angle, cestovni_kancelar, koupaliste, krouzky, pozemek } from './M7A-2024/index.js';
 
 export { inferenceRuleWithQuestion } from '../math/math-configure.js'
@@ -68,23 +68,29 @@ const dumMeritkoParams = {
 
 const krabiceParams = { pocetKusuVKrabice: 12, missingVyrobku: 5 }
 const osaParams = { mensiCislo: 1.4, vetsiCislo: 5.6, pocetUsekuMeziCisly: 6, A: 4, B: 7, C: -2 };
+const cetarParams = {
+  input: {
+    kapitan: 1,
+    porucik: 4,
+    cetarPerPorucik: 3,
+    vojinPerCetar: 10
+  }
+};
 export default {
   "M7A-2023": {
     1: example_1(),
-    3.3: cetar({
-      input: {
-        kapitan: 1,
-        porucik: 4,
-        cetarPerPorucik: 3,
-        vojinPerCetar: 10
-      }
-    }),
+    3.1: cetar(cetarParams)[0],
+    3.2: cetar(cetarParams)[1],
+    3.3: cetar(cetarParams)[2],
     4.1: example_4_1(),
     4.2: example_4_2(),
     5.1: example_5_1(),
     5.2: example_5_2(),
     6.1: example_6()[0],
     6.2: example_6()[1],
+    10.1: trideni_odpadu()[0],
+    10.2: trideni_odpadu()[1],
+    10.3: trideni_odpadu()[2],
     11: example_11(),
     12: example_12(),
     // 13: example_13(),
@@ -96,6 +102,9 @@ export default {
     15.1: example_15_1(),
     15.2: example_15_2(),
     15.3: example_15_3(),
+    16.1: obrazce()[0],
+    16.2: obrazce()[1],
+    16.3: obrazce()[2]
   },
   "M7A-2024": {
     1.1: porovnatAaB({ input: { a: 1.6, b: -1.2 } }),

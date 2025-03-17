@@ -140,7 +140,7 @@ function toComparisonAsRatio(a, b) {
     question: `Porovnej ${result.agentA} a ${result.agentB}. O kolik?`,
     result,
     options: [
-      { tex: `${formatRatio(a.ratio)} - ${formatRatio(b.ratio)}`, result: formatRatio(a.ratio - b.ratio), ok: true },
+      { tex: `1 + (${formatRatio(a.ratio)} - ${formatRatio(b.ratio)})`, result: formatRatio(result.ratio), ok: true },
       { tex: `${formatRatio(b.ratio)} - ${formatRatio(a.ratio)}`, result: formatRatio(b.ratio - a.ratio), ok: false }
     ]
   };
@@ -577,11 +577,11 @@ function toRatioComparison(a, b) {
     question: `Porovnej ${result.agentA} a ${result.agentB}.${between ? `O kolik z ${result.agentB}?` : `Kolikr\xE1t ${result.ratio < 1 ? "men\u0161\xED" : "v\u011Bt\u0161\xED"}?`}`,
     result,
     options: between ? [
-      { tex: `${formatNumber(b.quantity)} / ${formatNumber(a.quantity)} - 1`, result: formatRatio(result.ratio - 1), ok: result.ratio > 1 },
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)} - 1`, result: formatRatio(result.ratio - 1), ok: result.ratio > 1 },
       { tex: `1 - ${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatRatio(1 - result.ratio), ok: result.ratio <= 1 }
     ] : [
       { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatRatio(a.quantity / b.quantity), ok: result.ratio >= 1 },
-      { tex: `${formatNumber(b.quantity)} / ${formatNumber(a.quantity)}`, result: formatRatio(b.quantity / a.quantity), ok: result.ratio < 1 }
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatRatio(b.quantity / a.quantity), ok: result.ratio < 1 }
     ]
   };
 }
@@ -1203,7 +1203,7 @@ function toComparisonAsRatio2(a, b) {
     question: `Porovnej ${result.agentA} a ${result.agentB}. O kolik?`,
     result,
     options: [
-      { tex: `${formatRatio2(a.ratio)} - ${formatRatio2(b.ratio)}`, result: formatRatio2(a.ratio - b.ratio), ok: true },
+      { tex: `1 + (${formatRatio2(a.ratio)} - ${formatRatio2(b.ratio)})`, result: formatRatio2(result.ratio), ok: true },
       { tex: `${formatRatio2(b.ratio)} - ${formatRatio2(a.ratio)}`, result: formatRatio2(b.ratio - a.ratio), ok: false }
     ]
   };
@@ -1640,11 +1640,11 @@ function toRatioComparison2(a, b) {
     question: `Porovnej ${result.agentA} a ${result.agentB}.${between ? `O kolik z ${result.agentB}?` : `Kolikr\xE1t ${result.ratio < 1 ? "men\u0161\xED" : "v\u011Bt\u0161\xED"}?`}`,
     result,
     options: between ? [
-      { tex: `${formatNumber2(b.quantity)} / ${formatNumber2(a.quantity)} - 1`, result: formatRatio2(result.ratio - 1), ok: result.ratio > 1 },
+      { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(b.quantity)} - 1`, result: formatRatio2(result.ratio - 1), ok: result.ratio > 1 },
       { tex: `1 - ${formatNumber2(a.quantity)} / ${formatNumber2(b.quantity)}`, result: formatRatio2(1 - result.ratio), ok: result.ratio <= 1 }
     ] : [
       { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(b.quantity)}`, result: formatRatio2(a.quantity / b.quantity), ok: result.ratio >= 1 },
-      { tex: `${formatNumber2(b.quantity)} / ${formatNumber2(a.quantity)}`, result: formatRatio2(b.quantity / a.quantity), ok: result.ratio < 1 }
+      { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(b.quantity)}`, result: formatRatio2(b.quantity / a.quantity), ok: result.ratio < 1 }
     ]
   };
 }
@@ -3960,19 +3960,26 @@ function build({ input }) {
   const porucik = axiomInput(cont(agent, input.porucik, porucikLabel), 2);
   const cetarPerPorucik = axiomInput(rate(agent, input.cetarPerPorucik, cetarLabel, porucikLabel), 3);
   const vojinPerCetar = axiomInput(rate(agent, input.vojinPerCetar, vojinLabel, cetarLabel), 4);
-  const dd1 = inferenceRule(porucik, cetarPerPorucik);
-  const vydaneRozkazy = sum("vydan\xE9 rozkazy", [kapitanLabel, porucikLabel, cetarLabel, vojinLabel], entity3, entity3);
+  const vydaneRozkazy = sum("vydan\xE9 rozkazy", [kapitanLabel, porucikLabel, cetarLabel], entity3, entity3);
   const dostaneRozkazy = sum("p\u0159ijat\xE9 rozkazy", [porucikLabel, cetarLabel, vojinLabel], entity3, entity3);
-  const dTree1 = deduce(
+  const pocetCetaru = deduce(
     porucik,
-    { ...dd1, ...deduceLbl(1) },
-    deduce(
-      deduce(
-        porucik,
-        cetarPerPorucik
-      ),
-      vojinPerCetar
-    ),
+    cetarPerPorucik
+  );
+  const pocetVojinu = deduce(
+    pocetCetaru,
+    vojinPerCetar
+  );
+  const dTree2 = deduce(
+    kapitan,
+    porucik,
+    last(pocetCetaru),
+    vydaneRozkazy
+  );
+  const dTree3 = deduce(
+    porucik,
+    last(pocetCetaru),
+    last(pocetVojinu),
     dostaneRozkazy
   );
   const template1 = (html) => html`<br/><strong>Kolik osob v rotě dostalo rozkaz k nástupu?</strong>`;
@@ -3982,7 +3989,18 @@ Kapitán se rozhodl svolat celou rotu k nástupu.Rozkaz k nástupu se předával
 kapitán vydal rozkaz všem poručíkům, z nichž každý vydal tento rozkaz svým četařům
 a každý četař jej vydal svým vojínům.Poté celá rota nastoupila.
   ${template1}`;
-  return { deductionTree: dTree1, template };
+  return [
+    {
+      deductionTree: pocetVojinu
+    },
+    {
+      deductionTree: dTree2
+    },
+    {
+      deductionTree: dTree3,
+      template
+    }
+  ];
 }
 
 // src/math/M7A-2023/zakusek.ts
@@ -6982,6 +7000,52 @@ var example_6 = () => {
     }
   ];
 };
+var trideni_odpadu = () => {
+  const oddilR = "odd\xEDl R";
+  const oddilS = "odd\xEDl S";
+  const oddilT = "odd\xEDl T";
+  const entityPapir = "pap\xEDr";
+  const entityPlast = "plast";
+  const entityKovy = "kovy";
+  const entityVaha = "kg";
+  return [
+    {
+      deductionTree: deduce2(
+        cont(oddilS, 8, entityPapir),
+        cont(oddilR, 6, entityPapir),
+        ctor("comp-ratio")
+      )
+    },
+    {
+      deductionTree: deduce2(
+        deduce2(
+          cont(oddilT, 9, entityPlast),
+          cont(oddilS, 11, entityPlast),
+          sum(`odd\xEDl S a T`, [], entityPlast, entityPlast)
+        ),
+        cont(oddilR, 15, entityPlast),
+        ctor("comp-ratio")
+      )
+    },
+    {
+      deductionTree: deduce2(
+        deduce2(
+          cont(oddilR, 3, entityKovy),
+          cont(oddilS, 3, entityKovy),
+          cont(oddilT, 4, entityKovy),
+          sum(`kovy v\u0161echny odd\xEDly`, [], entityVaha, entityPlast)
+        ),
+        deduce2(
+          cont(oddilR, 6, entityPapir),
+          cont(oddilS, 8, entityPapir),
+          cont(oddilT, 1, entityPapir),
+          sum(`plast v\u0161echny odd\xEDly`, [], entityVaha, entityPlast)
+        ),
+        ctor("comp-ratio")
+      )
+    }
+  ];
+};
 var example_11 = () => {
   const entity3 = "stup\u0148\u016F";
   const inputAngleLabel = `zadan\xFD \xFAhel`;
@@ -7100,6 +7164,59 @@ var example_15_3 = () => {
       ctor("comp-diff")
     )
   };
+};
+var obrazce = () => {
+  const entityRow = "\u0159\xE1dk\u016F";
+  const entityColumn = "sloupc\u016F";
+  const entityTmave = "tmav\xFD \u010Dtvere\u010Dek";
+  const entitySvetle = "sv\u011Btl\xE9 \u010Dtvere\u010Dek";
+  const entity3 = "\u010Dtvere\u010Dk\u016F";
+  const base = "z\xE1kladn\xED obrazec";
+  const extended = "roz\u0161\xED\u0159en\xFD obrazec";
+  const dd1 = deduce2(
+    cont(`p\u0159id\xE1no ${extended}`, 30, entityTmave),
+    deduce2(
+      cont(`lev\xFD sloupec ${extended}`, 6, entityTmave),
+      cont(`prav\xFD sloupec ${extended}`, 6, entityTmave),
+      sum("oba krajn\xED sloupce", [], entityTmave, entityTmave)
+    ),
+    ctor("comp-diff")
+  );
+  return [
+    {
+      deductionTree: to3(
+        dd1,
+        commonSense("horn\xED \u0159ada tmav\xFDch \u010Dtver\u010Dk\u016F bez krajn\xEDch sloupc\u016F roz\u0161\xED\u0159en\xE9ho obrazce odpov\xEDd\xE1 po\u010Dtu sloupc\u016F z\xE1kladn\xEDho obrazce"),
+        cont(base, last3(dd1).quantity, entityColumn)
+      )
+    },
+    {
+      deductionTree: deduce2(
+        deduce2(
+          deduce2(
+            cont(`lev\xFD sloupec`, 3, entity3),
+            cont(`prav\xFD sloupec`, 3, entity3),
+            sum("oba krajn\xED sloupce", [], entity3, entity3)
+          ),
+          ratios(extended, [entitySvetle, "horn\xED \u0159ada", "oba krajn\xED sloupce"], [2, 1, 1])
+        ),
+        cont(extended, 3, entityRow),
+        ctor("rate")
+      )
+    },
+    {
+      deductionTree: to3(
+        deduce2(
+          rate("oba krajn\xED sloupce", 2, entityTmave, entityRow),
+          cont("oba krajn\xED sloupce", 24, entityRow)
+        ),
+        commonSense("z\xE1kladn\xED obrazec je tvo\u0159en jednou nebo v\xEDce \u0159adami sv\u011Btl\xFDch \u010Dtvere\u010Dk\u016F."),
+        commonSense("2 \u0159\xE1dky jsou minimum a 24 \u0159\xE1dk\u016F je maximum."),
+        commonSense("mo\u017En\xFDch roz\u0161\xED\u0159en\xFDch obrazc\u016F tvo\u0159\xED obrazce s 2, 3, 4... 24 \u0159\xE1dk\u016F"),
+        cont("mo\u017En\xFDch roz\u0161\xED\u0159en\xFDch obrazc\u016F s 50 tmav\xFDmi \u010Dtvere\u010Dky", 23, extended)
+      )
+    }
+  ];
 };
 
 // src/math/M7A-2024/index.ts
@@ -7245,23 +7362,29 @@ var dumMeritkoParams = {
 };
 var krabiceParams = { pocetKusuVKrabice: 12, missingVyrobku: 5 };
 var osaParams = { mensiCislo: 1.4, vetsiCislo: 5.6, pocetUsekuMeziCisly: 6, A: 4, B: 7, C: -2 };
+var cetarParams = {
+  input: {
+    kapitan: 1,
+    porucik: 4,
+    cetarPerPorucik: 3,
+    vojinPerCetar: 10
+  }
+};
 var word_problems_default = {
   "M7A-2023": {
     1: example_1(),
-    3.3: build({
-      input: {
-        kapitan: 1,
-        porucik: 4,
-        cetarPerPorucik: 3,
-        vojinPerCetar: 10
-      }
-    }),
+    3.1: build(cetarParams)[0],
+    3.2: build(cetarParams)[1],
+    3.3: build(cetarParams)[2],
     4.1: example_4_1(),
     4.2: example_4_2(),
     5.1: example_5_1(),
     5.2: example_5_2(),
     6.1: example_6()[0],
     6.2: example_6()[1],
+    10.1: trideni_odpadu()[0],
+    10.2: trideni_odpadu()[1],
+    10.3: trideni_odpadu()[2],
     11: example_11(),
     12: example_12(),
     // 13: example_13(),
@@ -7272,7 +7395,10 @@ var word_problems_default = {
     }),
     15.1: example_15_1(),
     15.2: example_15_2(),
-    15.3: example_15_3()
+    15.3: example_15_3(),
+    16.1: obrazce()[0],
+    16.2: obrazce()[1],
+    16.3: obrazce()[2]
   },
   "M7A-2024": {
     1.1: porovnatAaB({ input: { a: 1.6, b: -1.2 } }),

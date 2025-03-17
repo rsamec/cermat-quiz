@@ -1,5 +1,5 @@
-import { cont, inferenceRule, rate, sum } from "../../components/math.js";
-import { axiomInput, deduce, deduceLbl} from "../../utils/deduce-utils.js";
+import { cont, rate, sum } from "../../components/math.js";
+import { axiomInput, deduce, last } from "../../utils/deduce-utils.js";
 import type { DeduceTemplate } from "../../utils/deduce-utils.js";
 
 interface PercentPartParams {
@@ -24,22 +24,28 @@ export default function build({ input }: {
   const cetarPerPorucik = axiomInput(rate(agent, input.cetarPerPorucik, cetarLabel, porucikLabel), 3);
   const vojinPerCetar = axiomInput(rate(agent, input.vojinPerCetar, vojinLabel, cetarLabel), 4);
 
-  const dd1 = inferenceRule(porucik, cetarPerPorucik) as any;
 
-  const vydaneRozkazy = sum("vydané rozkazy", [kapitanLabel, porucikLabel, cetarLabel, vojinLabel], entity, entity);
+  const vydaneRozkazy = sum("vydané rozkazy", [kapitanLabel, porucikLabel, cetarLabel], entity, entity);
   const dostaneRozkazy = sum("přijaté rozkazy", [porucikLabel, cetarLabel, vojinLabel], entity, entity);
 
-
-  const dTree1 = deduce(
+  const pocetCetaru = deduce(
     porucik,
-    { ...dd1, ...deduceLbl(1) },
-    deduce(
-      deduce(
-        porucik,
-        cetarPerPorucik,
-      ),
-      vojinPerCetar,
-    ),
+    cetarPerPorucik,
+  )
+  const pocetVojinu = deduce(
+    pocetCetaru,
+    vojinPerCetar,
+  )
+  const dTree2 = deduce(
+    kapitan,
+    porucik,
+    last(pocetCetaru),
+    vydaneRozkazy,
+  )
+  const dTree3 = deduce(
+    porucik,
+    last(pocetCetaru),
+    last(pocetVojinu),
     dostaneRozkazy
   )
 
@@ -56,5 +62,14 @@ a každý četař jej vydal svým vojínům.Poté celá rota nastoupila.
 
 
 
-  return { deductionTree: dTree1, template: template }
+  return [{
+    deductionTree: pocetVojinu
+  },
+  {
+    deductionTree: dTree2,
+  },
+  {
+    deductionTree: dTree3,
+    template: template
+  }]
 }
