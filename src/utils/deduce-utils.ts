@@ -145,14 +145,14 @@ export function jsonToMarkdownTree(node, level = 0) {
 
   return markdown
 }
-export function jsonToMarkdownChat(node, level = 0) {
+export function jsonToMarkdownChat(node, formatting) {
 
   const flatStructure = [];
   function traverseEx(node) {
     const args = []
     // Add node details if they exist
     if (isPredicate(node)) {
-      return formatPredicate(node, { ...mdFormatting, formatKind: () => `` });
+      return formatPredicate(node, { ...mdFormatting, formatKind: () => ``, ...formatting });
     }
 
     let q = null

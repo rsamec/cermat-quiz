@@ -1,9 +1,13 @@
 import { parseArgs } from "node:util";
 import { parseQuiz } from './utils/quiz-parser.js';
-import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text } from './utils/quiz-string-utils.js';
+import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatSubject, text } from './utils/quiz-string-utils.js';
 import wordProblems, {  } from './math/word-problems.js';
 import { jsonToMarkdownChat } from "./utils/deduce-utils.js";
 //import mdPlus from './utils/md-utils.js';
+import Fraction from 'fraction.js';
+const mdFormatting = {
+  formatRatio: (d,asPercent) => asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%`  : new Fraction(d).toFraction(),
+}
 
 const {
   values: { code }
@@ -23,13 +27,13 @@ const quiz = parseQuiz(rawContent);
 const ids = quiz.questions.map(d => d.id);
 
 const wordProblem = wordProblems[code];
-
+const formatTitle = code => {
+  const {subject, year, grade} = parseCode(code);
+  return `${formatSubject(subject)} ${grade}.ročník ${year}`
+}
 process.stdout.write(`---
-title: ${formatCode(code)}
-sidebar: true
-header: ${formatCode(code)}
-footer: false
-pager: true
+title: ${formatTitle(code)}
+source: české statní přijímací zkoušky
 toc: true
 style: /assets/css/print-solution.css
 ---
@@ -45,11 +49,9 @@ ${ids.map(id => {
 
 
   return `
-${values?.length > 0 ? 
-`${quiz.content([id], { ids, render: 'content' })}\n
+${quiz.content([id], { ids, render: 'content' })}\n
 ---
 ${values.map(([key, value]) => 
 `**${key} Rozbor řešení úlohy** \n
-${jsonToMarkdownChat(value.deductionTree).join("")}`).join("")} \n`
-      : ''}
+${jsonToMarkdownChat(value.deductionTree, mdFormatting).join("")}`).join("")} \n
 `}).join('')}`)

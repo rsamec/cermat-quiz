@@ -28,12 +28,18 @@ import { objemNadoby1, objemNadoby2, objemNadoby3 } from './M9I-2025/nadoba.js';
 import { porovnani2Ploch } from './M9I-2025/plocha.js';
 import { porovnatObsahObdelnikACtverec } from './M7A-2024/13.js';
 import { najitMensiCislo, porovnatAaB } from './M7A-2024/1.js';
-import { okurkyASalaty } from './M9I-2025/okurky.js';
 import { cislaNaOse } from './M7A-2024/3.js';
 import { rozdilUhlu } from './M9A-2024/angle.js';
 import { desetiuhelnik } from './M9I-2025/angle.js';
-import { example_1, example_11, example_12, example_13, example_15_1, example_15_2, example_15_3, example_4_1, example_4_2, example_5_1, example_5_2, example_6, obrazce, trideni_odpadu } from './M7A-2023/index.js';
+import { example_11, example_12, example_15_1, example_15_2, example_15_3, example_4_1, example_4_2 } from './M7A-2023/index.js';
 import { angle, cestovni_kancelar, koupaliste, krouzky, pozemek } from './M7A-2024/index.js';
+import { comparingValues } from './comparing-values.js';
+import { desitiuhelnik, hledani_cisel, klubSEN, stavebnice } from './M5A-2023/index.js';
+import { sesity } from './sesity.js';
+import { compass } from './compass.js';
+import { odmenySoutezici } from './odmeny-soutezici.js';
+import { obrazce } from './obrazce.js';
+import { trideni_odpadu } from './trideni-odpady.js';
 
 export { inferenceRuleWithQuestion } from '../math/math-configure.js'
 export { formatPredicate } from '../utils/deduce-utils.js';
@@ -77,17 +83,73 @@ const cetarParams = {
   }
 };
 export default {
+  "M5A-2023": {
+    2.1: comparingValues({
+      input: {
+        first: {
+          ratio: 1 / 4,
+          value: 24
+        },
+        second: {
+          ratio: 1 / 3,
+          value: 12
+        }
+      }
+    }),
+    2.2: hledani_cisel({
+      input: {
+        value: 180
+      }
+    }),
+    3.1: cetar(cetarParams)[0],
+    3.2: cetar(cetarParams)[1],
+    3.3: cetar(cetarParams)[2],
+    4.1: sesity()[0],
+    4.2: sesity()[1],
+    4.3: compass(),
+    5.1: klubSEN().jedenKrouzek,
+    5.2: klubSEN().klub,
+    6.1: odmenySoutezici()[0],
+    6.2: odmenySoutezici()[1],
+    8.1: desitiuhelnik().whiteTriangle,
+    8.2: desitiuhelnik().grayRectangle,
+    8.3: desitiuhelnik().grayTriangle,
+    9: zakusek({
+      input: {
+        cena: 72
+      }
+    }),
+    11: stavebnice().cube,
+    12: stavebnice().minimalCube,
+    13.1: trideni_odpadu()[0],
+    13.2: trideni_odpadu()[1],
+    13.3: trideni_odpadu()[2],
+    14.1: obrazce()[0],
+    14.2: obrazce()[1],
+    14.3: obrazce()[2]
+  },
   "M7A-2023": {
-    1: example_1(),
+    1: comparingValues({
+      input: {
+        first: {
+          ratio: 3 / 4,
+          value: 24
+        },
+        second: {
+          ratio: 1 / 3,
+          value: 12
+        }
+      }
+    }),
     3.1: cetar(cetarParams)[0],
     3.2: cetar(cetarParams)[1],
     3.3: cetar(cetarParams)[2],
     4.1: example_4_1(),
     4.2: example_4_2(),
-    5.1: example_5_1(),
-    5.2: example_5_2(),
-    6.1: example_6()[0],
-    6.2: example_6()[1],
+    5.1: sesity()[1],
+    5.2: compass(),
+    6.1: odmenySoutezici()[0],
+    6.2: odmenySoutezici()[1],
     10.1: trideni_odpadu()[0],
     10.2: trideni_odpadu()[1],
     10.3: trideni_odpadu()[2],
@@ -196,4 +258,5 @@ export default {
     16.1: letajiciCtverecky({ input: { pocetRad: 21, pocetSloupcu: 110 } })[0],
     16.2: letajiciCtverecky({ input: { pocetRad: 21, pocetSloupcu: 110 } })[1]
   },
+
 }

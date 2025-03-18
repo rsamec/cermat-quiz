@@ -2770,12 +2770,12 @@ function jsonToMarkdownTree(node, level = 0) {
   }
   return markdown;
 }
-function jsonToMarkdownChat(node, level = 0) {
+function jsonToMarkdownChat(node, formatting) {
   const flatStructure = [];
   function traverseEx(node2) {
     const args = [];
     if (isPredicate(node2)) {
-      return formatPredicate(node2, { ...mdFormatting, formatKind: () => `` });
+      return formatPredicate(node2, { ...mdFormatting, formatKind: () => ``, ...formatting });
     }
     let q = null;
     if (node2.children && Array.isArray(node2.children)) {

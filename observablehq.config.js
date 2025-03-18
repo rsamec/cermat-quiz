@@ -116,7 +116,7 @@ export default {
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solu-${code}`))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solution-${code}`))
-    // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-solu-${code}`))
+    //.concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-${code}`))
     .concat(quizes.map(d => `/quiz-${d.subject}-${d.period}`))
     .concat(quizes.map(d => `/quiz-print-${d.subject}-${d.period}`))
     .concat(quizes.map(d => `/quiz-picker-${d.subject}-${d.period}`))
