@@ -96,20 +96,21 @@ ${renderChatButton("Základní postup řešení", template)}
 ${renderChatButton("Smart postup řešení", aiPromts.explainSolution)}
 ${renderChatButton("Generuj obdobné úlohy", aiPromts.generateMoreQuizes)}
 
-
-
-
-# Podcast (anglicky)
+<div class="tip" label="Smart podcast">
+  Poslechni si podcast vygenerovaný pro danou úlohu v anglickém jazyku. Generováno pomocí <a href="https://notebooklm.google/">NotebookLM</>
+</div>
 
 ${renderAudio(code,id)}
 
+
 # Strukturované řešení úlohy
+
 
 ${values?.filter(([key, value]) =>  value.deductionTree != null).length > 0
       ? html.fragment`
       <div class="h-stack h-stack--wrap">
       <div>
-        ${values.map(([key, value]) => html`<div>Řešení ${key}</div><video src="./assets/math/${code}/{key}-0.mp4" autoplay playsinline muted controls style="width: 100%;"></video>`)}
+        ${values.map(([key, value]) => html`<div>Řešení ${key}</div><video src="./assets/math/${code}/${key}-0.mp4" autoplay playsinline muted controls style="width: 100%;"></video>`)}
       </div>
     </div>`:''}
 
