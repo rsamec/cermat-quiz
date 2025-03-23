@@ -41,7 +41,7 @@ function renderChatButton(label, query){
 }
 
 function renderAudio(code,id) {
-  return html`<audio src="./assets/math/${code}/${id}.mp3" autoplay playsinline muted controls style="width: 100%;"></audio>`
+  return html`<audio src="./assets/math/${code}/${id}.mp3" autoplay playsinline muted controls style="min-width: 100px;"></audio>`
 }
 function renderQuestion(id) {
   return html`${mdPlus.unsafe(quiz.content([id]))}`
@@ -84,27 +84,26 @@ function renderValues (values) {
 
 ${renderQuestion(id)}
 
-# AI postupy řešení
+# AI řešení úloh
 
 <div class="tip" label="Smart řešení úlohy">  
-  Je založen na tom, že AI nedostane pouze zadání úlohy, ale v rámci promptu dostane i řešení úlohy rozpadnuté na základní jednoduché operace.
-  AI poté jen přeformuluje řešení do co nejsrozumitelnější podoby.
+  AI dostane kromě zadání úlohy i řešení úlohy rozpadnuté na základní jednoduché operace.
+  AI následně upraví řešení tak, aby bylo co nejjasnější a nejpochopitelnější.
 </div>
 
 
-${renderChatButton("Základní postup řešení", template)}
-${renderChatButton("Smart postup řešení", aiPromts.explainSolution)}
+${renderChatButton("Základní řešení", template)}
+${renderChatButton("Smart řešení", aiPromts.explainSolution)}
 ${renderChatButton("Generuj obdobné úlohy", aiPromts.generateMoreQuizes)}
 
-<div class="tip" label="Smart podcast">
-  Poslechni si podcast vygenerovaný pro danou úlohu v anglickém jazyku. Generováno pomocí <a href="https://notebooklm.google/">NotebookLM</>
-</div>
+# AI podcast
 
+<div class="tip" label="Podcast">
+  Poslechni si podcast vygenerovaný pro danou úlohu v anglickém jazyce. Generováno pomocí <a href="https://notebooklm.google/">NotebookLM</>
+</div>
 ${renderAudio(code,id)}
 
-
 # Strukturované řešení úlohy
-
 
 ${values?.filter(([key, value]) =>  value.deductionTree != null).length > 0
       ? html.fragment`
