@@ -10,15 +10,36 @@ export const trideni_odpadu = () => {
   const entityKovy = "kovy";
   const entityVaha = "kg"
 
-  return [
-    {
+  const kovyCelkem = deduce(
+    cont(oddilR, 3, entityKovy),
+    cont(oddilS, 3, entityKovy),
+    cont(oddilT, 4, entityKovy),
+    sum(`kovy všechny oddíly`, [], entityVaha, entityPlast)
+  )
+
+  const papirCelkem = deduce(
+    cont(oddilR, 6, entityPapir),
+    cont(oddilS, 8, entityPapir),
+    cont(oddilT, 1, entityPapir),
+    sum(`papír všechny oddíly`, [], entityVaha, entityPlast)
+  )
+
+  return {
+    papirStoR: {
       deductionTree: deduce(
         cont(oddilS, 8, entityPapir),
         cont(oddilR, 6, entityPapir),
         ctor('comp-ratio')
       )
     },
-    {
+    papirRtoS: {
+      deductionTree: deduce(
+        cont(oddilR, 6, entityPapir),
+        cont(oddilS, 8, entityPapir),
+        ctor('comp-ratio')
+      )
+    },
+    plast: {
       deductionTree: deduce(
         deduce(
           cont(oddilT, 9, entityPlast),
@@ -29,23 +50,19 @@ export const trideni_odpadu = () => {
         ctor('comp-ratio')
       )
     },
-    {
+    kovyToPapir: {
       deductionTree: deduce(
-        deduce(
-          cont(oddilR, 3, entityKovy),
-          cont(oddilS, 3, entityKovy),
-          cont(oddilT, 4, entityKovy),
-          sum(`kovy všechny oddíly`, [], entityVaha, entityPlast)
-        ),
-        deduce(
-          cont(oddilR, 6, entityPapir),
-          cont(oddilS, 8, entityPapir),
-          cont(oddilT, 1, entityPapir),
-          sum(`plast všechny oddíly`, [], entityVaha, entityPlast)
-        ),
+        kovyCelkem,
+        papirCelkem,
         ctor('comp-ratio')
       )
     },
-
-  ]
+    papirToKovy: {
+      deductionTree: deduce(
+        papirCelkem,
+        kovyCelkem,
+        ctor('comp-ratio')
+      )
+    }
+  }
 }

@@ -42,6 +42,13 @@ function renderChatButton(label, query){
                   }}><img style="height:34px;" src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white&label=${encodeURIComponent(label)}" alt="ChatGPT" /></a>`
 }
 
+function renderVideo(label, url){
+  reutrn html`<video width="320" height="240" controls>
+  <source src=${url} type="video/mp4">
+Your browser does not support the video tag.
+</video>`
+}
+
 function renderExample({example, unit, showRelativeValues}={}){
   const tree = deduceTraverse(example.deductionTree);  
   const {depth, width} = computeTreeMetrics(example.deductionTree);
@@ -128,7 +135,7 @@ const cetarInput = Generators.input(cetarForm);
   ${cetarForm}
 </details>
     
-<div>${renderExample({example:cetar({input:cetarInput}[2])})}</div>
+<div>${renderExample({example:cetar({input:cetarInput})[2]})}</div>
 
 ----------------------
 

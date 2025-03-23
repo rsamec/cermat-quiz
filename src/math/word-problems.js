@@ -577,11 +577,11 @@ function toRatioComparison(a, b) {
     question: `Porovnej ${result.agentA} a ${result.agentB}.${between ? `O kolik z ${result.agentB}?` : `Kolikr\xE1t ${result.ratio < 1 ? "men\u0161\xED" : "v\u011Bt\u0161\xED"}?`}`,
     result,
     options: between ? [
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)} - 1`, result: formatRatio(result.ratio - 1), ok: result.ratio > 1 },
-      { tex: `1 - ${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatRatio(1 - result.ratio), ok: result.ratio <= 1 }
+      { tex: `(${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}) / ${b.quantity}`, result: formatRatio((a.quantity - b.quantity) / b.quantity), ok: result.ratio > 1 },
+      { tex: `(${formatNumber(b.quantity)} - ${formatNumber(a.quantity)}) / ${b.quantity}`, result: formatRatio((b.quantity - a.quantity) / b.quantity), ok: result.ratio <= 1 }
     ] : [
       { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatRatio(a.quantity / b.quantity), ok: result.ratio >= 1 },
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatRatio(b.quantity / a.quantity), ok: result.ratio < 1 }
+      { tex: `${formatNumber(b.quantity)} / ${formatNumber(a.quantity)}`, result: formatRatio(b.quantity / a.quantity), ok: result.ratio < 1 }
     ]
   };
 }
@@ -1640,11 +1640,11 @@ function toRatioComparison2(a, b) {
     question: `Porovnej ${result.agentA} a ${result.agentB}.${between ? `O kolik z ${result.agentB}?` : `Kolikr\xE1t ${result.ratio < 1 ? "men\u0161\xED" : "v\u011Bt\u0161\xED"}?`}`,
     result,
     options: between ? [
-      { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(b.quantity)} - 1`, result: formatRatio2(result.ratio - 1), ok: result.ratio > 1 },
-      { tex: `1 - ${formatNumber2(a.quantity)} / ${formatNumber2(b.quantity)}`, result: formatRatio2(1 - result.ratio), ok: result.ratio <= 1 }
+      { tex: `(${formatNumber2(a.quantity)} - ${formatNumber2(b.quantity)}) / ${b.quantity}`, result: formatRatio2((a.quantity - b.quantity) / b.quantity), ok: result.ratio > 1 },
+      { tex: `(${formatNumber2(b.quantity)} - ${formatNumber2(a.quantity)}) / ${b.quantity}`, result: formatRatio2((b.quantity - a.quantity) / b.quantity), ok: result.ratio <= 1 }
     ] : [
       { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(b.quantity)}`, result: formatRatio2(a.quantity / b.quantity), ok: result.ratio >= 1 },
-      { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(b.quantity)}`, result: formatRatio2(b.quantity / a.quantity), ok: result.ratio < 1 }
+      { tex: `${formatNumber2(b.quantity)} / ${formatNumber2(a.quantity)}`, result: formatRatio2(b.quantity / a.quantity), ok: result.ratio < 1 }
     ]
   };
 }
@@ -7509,15 +7509,34 @@ var trideni_odpadu = () => {
   const entityPlast = "plast";
   const entityKovy = "kovy";
   const entityVaha = "kg";
-  return [
-    {
+  const kovyCelkem = deduce2(
+    cont(oddilR, 3, entityKovy),
+    cont(oddilS, 3, entityKovy),
+    cont(oddilT, 4, entityKovy),
+    sum(`kovy v\u0161echny odd\xEDly`, [], entityVaha, entityPlast)
+  );
+  const papirCelkem = deduce2(
+    cont(oddilR, 6, entityPapir),
+    cont(oddilS, 8, entityPapir),
+    cont(oddilT, 1, entityPapir),
+    sum(`pap\xEDr v\u0161echny odd\xEDly`, [], entityVaha, entityPlast)
+  );
+  return {
+    papirStoR: {
       deductionTree: deduce2(
         cont(oddilS, 8, entityPapir),
         cont(oddilR, 6, entityPapir),
         ctor("comp-ratio")
       )
     },
-    {
+    papirRtoS: {
+      deductionTree: deduce2(
+        cont(oddilR, 6, entityPapir),
+        cont(oddilS, 8, entityPapir),
+        ctor("comp-ratio")
+      )
+    },
+    plast: {
       deductionTree: deduce2(
         deduce2(
           cont(oddilT, 9, entityPlast),
@@ -7528,24 +7547,21 @@ var trideni_odpadu = () => {
         ctor("comp-ratio")
       )
     },
-    {
+    kovyToPapir: {
       deductionTree: deduce2(
-        deduce2(
-          cont(oddilR, 3, entityKovy),
-          cont(oddilS, 3, entityKovy),
-          cont(oddilT, 4, entityKovy),
-          sum(`kovy v\u0161echny odd\xEDly`, [], entityVaha, entityPlast)
-        ),
-        deduce2(
-          cont(oddilR, 6, entityPapir),
-          cont(oddilS, 8, entityPapir),
-          cont(oddilT, 1, entityPapir),
-          sum(`plast v\u0161echny odd\xEDly`, [], entityVaha, entityPlast)
-        ),
+        kovyCelkem,
+        papirCelkem,
+        ctor("comp-ratio")
+      )
+    },
+    papirToKovy: {
+      deductionTree: deduce2(
+        papirCelkem,
+        kovyCelkem,
         ctor("comp-ratio")
       )
     }
-  ];
+  };
 };
 
 // src/math/word-problems.ts
@@ -7621,9 +7637,9 @@ var word_problems_default = {
     }),
     11: stavebnice().cube,
     12: stavebnice().minimalCube,
-    13.1: trideni_odpadu()[0],
-    13.2: trideni_odpadu()[1],
-    13.3: trideni_odpadu()[2],
+    13.1: trideni_odpadu().papirRtoS,
+    13.2: trideni_odpadu().plast,
+    13.3: trideni_odpadu().papirToKovy,
     14.1: obrazce()[0],
     14.2: obrazce()[1],
     14.3: obrazce()[2]
@@ -7650,9 +7666,9 @@ var word_problems_default = {
     5.2: compass(),
     6.1: odmenySoutezici()[0],
     6.2: odmenySoutezici()[1],
-    10.1: trideni_odpadu()[0],
-    10.2: trideni_odpadu()[1],
-    10.3: trideni_odpadu()[2],
+    10.1: trideni_odpadu().papirStoR,
+    10.2: trideni_odpadu().plast,
+    10.3: trideni_odpadu().kovyToPapir,
     11: example_11(),
     12: example_12(),
     // 13: example_13(),

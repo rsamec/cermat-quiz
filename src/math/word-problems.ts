@@ -31,7 +31,7 @@ import { najitMensiCislo, porovnatAaB } from './M7A-2024/1.js';
 import { cislaNaOse } from './M7A-2024/3.js';
 import { rozdilUhlu } from './M9A-2024/angle.js';
 import { desetiuhelnik } from './M9I-2025/angle.js';
-import { example_11, example_12, example_15_1, example_15_2, example_15_3, example_4_1, example_4_2 } from './M7A-2023/index.js';
+import { example_11, example_12, example_15_1, example_15_2, example_15_3, example_4_1, example_4_2} from './M7A-2023/index.js';
 import { angle, cestovni_kancelar, koupaliste, krouzky, pozemek } from './M7A-2024/index.js';
 import { comparingValues } from './comparing-values.js';
 import { desitiuhelnik, hledani_cisel, klubSEN, stavebnice } from './M5A-2023/index.js';
@@ -40,6 +40,7 @@ import { compass } from './compass.js';
 import { odmenySoutezici } from './odmeny-soutezici.js';
 import { obrazce } from './obrazce.js';
 import { trideni_odpadu } from './trideni-odpady.js';
+
 
 export { inferenceRuleWithQuestion } from '../math/math-configure.js'
 export { formatPredicate } from '../utils/deduce-utils.js';
@@ -121,9 +122,9 @@ export default {
     }),
     11: stavebnice().cube,
     12: stavebnice().minimalCube,
-    13.1: trideni_odpadu()[0],
-    13.2: trideni_odpadu()[1],
-    13.3: trideni_odpadu()[2],
+    13.1: trideni_odpadu().papirRtoS,
+    13.2: trideni_odpadu().plast,
+    13.3: trideni_odpadu().papirToKovy,
     14.1: obrazce()[0],
     14.2: obrazce()[1],
     14.3: obrazce()[2]
@@ -150,9 +151,9 @@ export default {
     5.2: compass(),
     6.1: odmenySoutezici()[0],
     6.2: odmenySoutezici()[1],
-    10.1: trideni_odpadu()[0],
-    10.2: trideni_odpadu()[1],
-    10.3: trideni_odpadu()[2],
+    10.1: trideni_odpadu().papirStoR,
+    10.2: trideni_odpadu().plast,
+    10.3: trideni_odpadu().kovyToPapir,
     11: example_11(),
     12: example_12(),
     // 13: example_13(),

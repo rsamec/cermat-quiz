@@ -1,6 +1,6 @@
 import { parseArgs } from "node:util";
 import { parseQuiz } from './utils/quiz-parser.js';
-import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatSubject, text } from './utils/quiz-string-utils.js';
+import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCodeAlt, text } from './utils/quiz-string-utils.js';
 import wordProblems, {  } from './math/word-problems.js';
 import { jsonToMarkdownChat } from "./utils/deduce-utils.js";
 //import mdPlus from './utils/md-utils.js';
@@ -27,13 +27,9 @@ const quiz = parseQuiz(rawContent);
 const ids = quiz.questions.map(d => d.id);
 
 const wordProblem = wordProblems[code];
-const formatTitle = code => {
-  const {subject, year, grade} = parseCode(code);
-  return `${formatSubject(subject)} ${grade}.ročník ${year}`
-}
 process.stdout.write(`---
-title: ${formatTitle(code)}
-source: české statní přijímací zkoušky
+title: ${formatCodeAlt(code)}
+source: české statní zkoušky
 toc: true
 style: /assets/css/print-solution.css
 ---

@@ -1,8 +1,8 @@
 export const baseDomain = "https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main";
 export const baseDomainPublic = `${baseDomain}/public`;
 
-export function formatPdfFileName({pageSize, columnsCount, orientation}){
-  return `${pageSize}-sloupce-${columnsCount}${orientation == 'landscape' ? '-landscape':''}`
+export function formatPdfFileName({ pageSize, columnsCount, orientation }) {
+  return `${pageSize}-sloupce-${columnsCount}${orientation == 'landscape' ? '-landscape' : ''}`
 }
 
 export function normalizeImageUrlsToAbsoluteUrls(markdown, segments) {
@@ -33,6 +33,16 @@ export function formatGrade(grade) {
       return "šestileté";
     case "5":
       return "osmileté";
+    default:
+      return "maturita";
+  }
+}
+export function formatGradeAlt(grade) {
+  switch (grade) {
+    case "9":
+    case "7":
+    case "5":
+      return `${grade}. ročník`
     default:
       return "maturita";
   }
@@ -69,6 +79,12 @@ export function formatCode(code) {
   const { subject, grade, order, year, period } = parseCode(code);
   return `${formatSubject(subject)} ${formatGrade(grade)} ${year} ${formatVersion({ order, period })}`;
 }
+
+export function formatCodeAlt(code) {
+  const { subject, grade, order, year, period } = parseCode(code);
+  return `${formatSubject(subject)} ${formatGradeAlt(grade)} ${year} ${formatVersion({ order, period })}`;
+}
+
 export function formatShortCode(code) {
   const { order, year, period } = parseCode(code);
   return `${year} - ${formatVersion({ order, period })}`;
@@ -94,9 +110,9 @@ export function formatVersion({ order, period } = {}) {
             : order === "D"
               ? "2.náhr."
               : order === "I"
-              ? "ilustrační"
-              : order;
-              
+                ? "ilustrační"
+                : order;
+
   }
   return version;
 }
@@ -112,8 +128,8 @@ async function jsonGet(url) {
   return await response.json();
 }
 
-export async function json(url, data) {  
-  if (data == null){
+export async function json(url, data) {
+  if (data == null) {
     return await jsonGet(url)
   }
   const response = await fetch(url,
@@ -121,8 +137,8 @@ export async function json(url, data) {
       headers: {
         'content-type': 'application/json'
       },
-      method: data != null ? "POST" :"GET",
-      ...(data && {body: JSON.stringify(data)})
+      method: data != null ? "POST" : "GET",
+      ...(data && { body: JSON.stringify(data) })
     });
   if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
   return await response.json();
@@ -136,18 +152,18 @@ export function getQuestionIds(metadata, code) {
 
 function removeDiacritics(input) {
   return input
-      .normalize("NFD") // Normalize the string into decomposed form
-      .replace(/[\u0300-\u036f]/g, ""); // Remove diacritical marks
+    .normalize("NFD") // Normalize the string into decomposed form
+    .replace(/[\u0300-\u036f]/g, ""); // Remove diacritical marks
 }
 export function normalizeLatex(result) {
   const val = result
-  .replace(/\\\[/g, '$$$')
-  .replace(/\\\]/g, '$$$')
-  .replace(/\\\(\s*/g, '$')
-  .replace(/\s*\\\)/g, '$')
-  .replace(/\\text\{([^}]*)\}/g, (match, group) => {
+    .replace(/\\\[/g, '$$$')
+    .replace(/\\\]/g, '$$$')
+    .replace(/\\\(\s*/g, '$')
+    .replace(/\s*\\\)/g, '$')
+    .replace(/\\text\{([^}]*)\}/g, (match, group) => {
       return `\\text{${removeDiacritics(group)}}`;
-  })
+    })
   return val;
 }
 
