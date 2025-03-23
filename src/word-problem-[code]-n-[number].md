@@ -41,7 +41,7 @@ function renderChatButton(label, query){
 }
 
 function renderAudio(code,id) {
-  return html`<audio src="./assets/math/${code}/${id}.wav" autoplay playsinline muted controls style="width: 100%;"></audio>`
+  return html`<audio src="./assets/math/${code}/${id}.mp3" autoplay playsinline muted controls style="width: 100%;"></audio>`
 }
 function renderQuestion(id) {
   return html`${mdPlus.unsafe(quiz.content([id]))}`
