@@ -13,11 +13,6 @@ import tanga from './M9A-2024/tanga.js';
 import dvaCtverce from './M9A-2024/dva-ctverce.js';
 import obrazec from './M9A-2024/obrazec.js';
 
-import pocetObyvatel from './M9C-2024/pocet-obyvatel.js';
-import sourozenci from './M9C-2024/sourozenci.js';
-
-import trojuhelnik from './M9A-2023/trojuhelnik.js';
-import ctvercovaSit from './M9B-2023/ctvercova-sit.js';
 
 import { plnaKrabice } from './M9I-2025/krabice.js';
 import { kytice } from './M9I-2025/kytice.js';
@@ -31,7 +26,7 @@ import { najitMensiCislo, porovnatAaB } from './M7A-2024/1.js';
 import { cislaNaOse } from './M7A-2024/3.js';
 import { rozdilUhlu } from './M9A-2024/angle.js';
 import { desetiuhelnik } from './M9I-2025/angle.js';
-import { example_11, example_12, example_15_1, example_15_2, example_15_3, example_4_1, example_4_2} from './M7A-2023/index.js';
+import { example_11, example_12, example_15_1, example_15_2, example_15_3, example_4_1, example_4_2 } from './M7A-2023/index.js';
 import { angle, cestovni_kancelar, koupaliste, krouzky, pozemek } from './M7A-2024/index.js';
 import { comparingValues } from './comparing-values.js';
 import { desitiuhelnik, hledani_cisel, klubSEN, stavebnice } from './M5A-2023/index.js';
@@ -198,16 +193,16 @@ export default {
     15.2: cestovni_kancelar(),
     15.3: pozemek(),
   },
-  "M9A-2023": {
-    16.1: trojuhelnik({ input: {} })[0],
-    16.2: trojuhelnik({ input: {} })[1],
-    16.3: trojuhelnik({ input: {} })[2],
-  },
-  "M9B-2023": {
-    16.1: ctvercovaSit({ input: {} })[0],
-    16.2: ctvercovaSit({ input: {} })[1],
-    16.3: ctvercovaSit({ input: {} })[2],
-  },
+  // "M9A-2023": {
+  //   16.1: trojuhelnik({ input: {} })[0],
+  //   16.2: trojuhelnik({ input: {} })[1],
+  //   16.3: trojuhelnik({ input: {} })[2],
+  // },
+  // "M9B-2023": {
+  //   16.1: ctvercovaSit({ input: {} })[0],
+  //   16.2: ctvercovaSit({ input: {} })[1],
+  //   16.3: ctvercovaSit({ input: {} })[2],
+  // },
   "M9A-2024": {
     1: svadleny({ input: { currentWorker: 4, previousWorker: 5, previousHours: 24 } }),
     2: tezitko({
@@ -236,10 +231,10 @@ export default {
     16.2: example2({ input: { vlozeno: 1_000_000, urokPercentage: 2.5, danPercentage: 15 } }),
     16.3: example3({ input: { base: 20_000, percentageDown: 10, percentageNewUp: 10 } }),
   },
-  "M9C-2024": {
-    1: pocetObyvatel({ input: { celkem: 86_200, jihlavaPlus: 16_000 } }),
-    12: sourozenci({ input: { evaPodil: 40, michalPlus: 24, zbyvaNasporit: 72 } }),
-  },
+  // "M9C-2024": {
+  //   1: pocetObyvatel({ input: { celkem: 86_200, jihlavaPlus: 16_000 } }),
+  //   12: sourozenci({ input: { evaPodil: 40, michalPlus: 24, zbyvaNasporit: 72 } }),
+  // },
   "M9I-2025": {
     1: porovnani2Ploch({ input: {} }),
     // 6.1: okurkyASalaty({ input: { okurky: 36 } })[0],
@@ -250,7 +245,7 @@ export default {
     11.1: desetiuhelnik({ input: { pocetUhlu: 10 } })[0],
     11.2: desetiuhelnik({ input: { pocetUhlu: 10 } })[1],
     11.3: desetiuhelnik({ input: { pocetUhlu: 10 } })[2],
-    12: kytice(),
+    12: kytice({ input: { cenaZaKus: { ruze: 54, chryzantema: 40, statice: 35 } } }),
     13: caryNaPapire({ input: { pocetCasti: 40 } }),
     14: domecek({ input: { baseSurfaceArea: 16, quota: 4 } }),
     15.1: objemNadoby1({ input: { zbyva: 14, zaplnenoPomer: 3 / 5 } }),

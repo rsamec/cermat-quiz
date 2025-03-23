@@ -1,7 +1,7 @@
 import { comp, compRatio, nthPart, rate, ratios, sum } from "../../components/math.js";
 import { axiomInput, deduce, last } from "../../utils/deduce-utils.js";
 
-export function kytice() {
+export function kytice({ input }: { input: { cenaZaKus: { ruze: number, chryzantema: number, statice: number } } }) {
   //agent names and entities
   const kyticeAgent = "kytice";
   const chryzatemaAgent = "chryzantéma";
@@ -15,9 +15,9 @@ export function kytice() {
   const rozdilRuze = axiomInput(comp(ruzeAgent, staticAgent, 2, kusEntity), 1);
   const RtoS = axiomInput(compRatio(ruzeAgent, staticAgent, 5 / 4), 2);
   const CHxS = axiomInput(ratios(kyticeAgent, [chryzatemaAgent, staticAgent], [3, 2]), 3);
-  const ruzeRate = axiomInput(rate(chryzatemaAgent, 54, entity, kusEntity), 4)
-  const chryzantemaRate = axiomInput(rate(chryzatemaAgent, 40, entity, kusEntity), 5)
-  const staticeRate = axiomInput(rate(chryzatemaAgent, 35, entity, kusEntity), 6)
+  const ruzeRate = axiomInput(rate(chryzatemaAgent, input.cenaZaKus.ruze, entity, kusEntity), 4)
+  const chryzantemaRate = axiomInput(rate(chryzatemaAgent, input.cenaZaKus.chryzantema, entity, kusEntity), 5)
+  const staticeRate = axiomInput(rate(chryzatemaAgent, input.cenaZaKus.statice, entity, kusEntity), 6)
 
   //deduction
   const statice = deduce(

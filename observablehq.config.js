@@ -118,6 +118,7 @@ export default {
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solu-${code}`))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solution-${code}`))    
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-${code}`))
+    .concat([["M9I-2025", 12]].flatMap(([code,id]) => `/word-problem-${code}-n-${id}`))
     .concat(quizes.map(d => `/quiz-${d.subject}-${d.period}`))
     .concat(quizes.map(d => `/quiz-print-${d.subject}-${d.period}`))
     .concat(quizes.map(d => `/quiz-picker-${d.subject}-${d.period}`))
