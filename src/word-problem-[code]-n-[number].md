@@ -34,10 +34,7 @@ const wordProblem = wordProblems[code] ?? {};
 ```js
 
 function renderChatButton(label, query){
-  return html`<a style="height:34px;" href="#" onclick=${(e) => {
-                    e.preventDefault();
-                    window.open(`https://chat.openai.com/?q=${encodeURIComponent(query)}`)
-                  }}><img style="height:34px;" src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white&label=${encodeURIComponent(label)}" alt="ChatGPT" /></a>`
+  return html`<a style="height:34px;" href="https://chat.openai.com/?q=${encodeURIComponent(query)}" target="_blank"><img style="height:34px;" src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white&label=${encodeURIComponent(label)}" alt="ChatGPT" /></a>`
 }
 
 function renderAudio(code,id) {

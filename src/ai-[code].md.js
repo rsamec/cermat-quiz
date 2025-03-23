@@ -114,5 +114,5 @@ ${answers[id] != null ? mdPlus.renderToString(normalizeLatex(answers[id])): 'N/A
 
 
 function renderChatButton(label, query){
-  return `<a style="height:34px;" href="https://chat.openai.com/?q=${encodeURIComponent(query)}')"><img style="height:34px;" src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white&label=${encodeURIComponent(label)}" alt="ChatGPT" /></a>`
+  return `<a style="height:34px;" href="#" onclick="((e) => { e.preventDefault(); window.open('https://chat.openai.com/?q=${encodeURIComponent(query)}');})(event)"><img style="height:34px;" src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white&label=${encodeURIComponent(label)}" alt="ChatGPT" /></a>`
 }
