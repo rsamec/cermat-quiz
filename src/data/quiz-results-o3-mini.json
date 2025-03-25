@@ -1,0 +1,9297 @@
+{
+  "M5A-2024": {
+    "metadata": {
+      "info": {
+        "code": "M5PAD24C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 6,
+          "opened": 8
+        }
+      }
+    },
+    "subject": "math",
+    "grade": "8",
+    "totalAnswers": 28,
+    "totalPoints": 32,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "2": false,
+      "3": false,
+      "9": true,
+      "10": true,
+      "11": true,
+      "1.1": true,
+      "1.2": true,
+      "4.1": true,
+      "4.2": true,
+      "4.3": true,
+      "5.1": true,
+      "5.2": true,
+      "6.1": false,
+      "6.2": false,
+      "7.1": false,
+      "7.2": false,
+      "8.1": true,
+      "8.2": true,
+      "8.3": true,
+      "12.1": false,
+      "12.2": false,
+      "12.3": false,
+      "13.1": true,
+      "13.2": true,
+      "13.3": true,
+      "14.1": true,
+      "14.2": true,
+      "14.3": true
+    },
+    "correctAnswers": {
+      "2": 6,
+      "3": 6,
+      "9": "B",
+      "10": "C",
+      "11": "D",
+      "1.1": 591,
+      "1.2": 1,
+      "4.1": 13,
+      "4.2": 269,
+      "4.3": 50,
+      "5.1": 4800,
+      "5.2": 240,
+      "6.1": "{\"X\":22,\"Y\":77}",
+      "6.2": "Číslo 0 se nachází o 2 dílky nalevo od bodu X.",
+      "7.1": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/8/M5A-2024/primkyABvRovineVysledek.jpg",
+      "7.2": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/8/M5A-2024/bodyVRovine.jpg",
+      "8.1": "Ne",
+      "8.2": "Ano",
+      "8.3": "Ne",
+      "12.1": "E",
+      "12.2": "D",
+      "12.3": "B",
+      "13.1": "E",
+      "13.2": "C",
+      "13.3": "A",
+      "14.1": 12,
+      "14.2": 196,
+      "14.3": 18
+    },
+    "answers": {
+      "2": 9,
+      "3": 7,
+      "9": "B",
+      "10": "C",
+      "11": "D",
+      "1.1": 591,
+      "1.2": 1,
+      "4.1": 13,
+      "4.2": 269,
+      "4.3": 50,
+      "5.1": 4800,
+      "5.2": 240,
+      "6.1": "{\"X\":\"11\",\"Y\":\"143\"}",
+      "6.2": "0",
+      "7.1": "Vrchol B se sestrojí jako obraz bodu A souměrně vůči středu S.",
+      "7.2": "Konstrukce vede k dvěma variantám – buď s bodem Q jako středem strany BC, nebo s bodem Q jako středem strany AD; podle zvolené varianty se pak sestrojí vrcholy C a D a obdélník ABCD.",
+      "8.1": "Ne",
+      "8.2": "Ano",
+      "8.3": "Ne",
+      "12.1": "A",
+      "12.2": "B",
+      "12.3": "D",
+      "13.1": "E",
+      "13.2": "C",
+      "13.3": "A",
+      "14.1": 12,
+      "14.2": 196,
+      "14.3": 18
+    },
+    "points": {
+      "1": {
+        "v": 4,
+        "max": 4
+      },
+      "2": {
+        "v": 0,
+        "max": 2
+      },
+      "3": {
+        "v": 0,
+        "max": 3
+      },
+      "4": {
+        "v": 6,
+        "max": 6
+      },
+      "5": {
+        "v": 4,
+        "max": 4
+      },
+      "6": {
+        "v": 0,
+        "max": 4
+      },
+      "7": {
+        "v": 0,
+        "max": 6
+      },
+      "8": {
+        "v": 3,
+        "max": 3
+      },
+      "9": {
+        "v": 2,
+        "max": 2
+      },
+      "10": {
+        "v": 2,
+        "max": 2
+      },
+      "11": {
+        "v": 2,
+        "max": 2
+      },
+      "12": {
+        "v": 0,
+        "max": 3
+      },
+      "13": {
+        "v": 3,
+        "max": 3
+      },
+      "14": {
+        "v": 6,
+        "max": 6
+      }
+    }
+  },
+  "M5A-2023": {
+    "metadata": {
+      "info": {
+        "code": "M5PAD23C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 6,
+          "opened": 8
+        }
+      }
+    },
+    "subject": "math",
+    "grade": "8",
+    "totalAnswers": 29,
+    "totalPoints": 36,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "9": true,
+      "10": true,
+      "11": true,
+      "12": true,
+      "1.1": true,
+      "1.2": true,
+      "2.1": true,
+      "2.2": true,
+      "3.1": true,
+      "3.2": true,
+      "3.3": true,
+      "4.1": true,
+      "4.2": true,
+      "4.3": true,
+      "5.1": true,
+      "5.2": true,
+      "6.1": true,
+      "6.2": true,
+      "7.1": false,
+      "7.2": false,
+      "8.1": false,
+      "8.2": true,
+      "8.3": true,
+      "13.1": true,
+      "13.2": true,
+      "13.3": false,
+      "14.1": false,
+      "14.2": false,
+      "14.3": false
+    },
+    "correctAnswers": {
+      "9": "A",
+      "10": "B",
+      "11": "C",
+      "12": "D",
+      "1.1": 710,
+      "1.2": 126,
+      "2.1": 2,
+      "2.2": 60,
+      "3.1": 120,
+      "3.2": 17,
+      "3.3": 136,
+      "4.1": 27,
+      "4.2": 54,
+      "4.3": 520,
+      "5.1": 7,
+      "5.2": 18,
+      "6.1": 2,
+      "6.2": 900,
+      "7.1": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/8/M5A-2023/primkyABvRovineVysledek.jpg",
+      "7.2": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/8/M5A-2023/bodyVRovine.jpg",
+      "8.1": "Ne",
+      "8.2": "Ano",
+      "8.3": "Ne",
+      "13.1": "C",
+      "13.2": "D",
+      "13.3": "E",
+      "14.1": 18,
+      "14.2": 8,
+      "14.3": 23
+    },
+    "answers": {
+      "9": "A",
+      "10": "B",
+      "11": "C",
+      "12": "D",
+      "1.1": 710,
+      "1.2": 126,
+      "2.1": 2,
+      "2.2": 60,
+      "3.1": 120,
+      "3.2": 17,
+      "3.3": 136,
+      "4.1": 27,
+      "4.2": 54,
+      "4.3": 520,
+      "5.1": 7,
+      "5.2": 18,
+      "6.1": 2,
+      "6.2": 900,
+      "7.1": "Existují dvě konstrukční možnosti trojúhelníku, jež splňují podmínky: s vrcholy A na přímce a, B na přímce b, přičemž strana AC procházející bodem C je rovnoběžná s přímkou b a přitom platí AB = AC.",
+      "7.2": "K obdélníku KLMN se dvěma možnými konstrukcemi – při volbě, kterou ze zbývajících stran protnout s přímkou p (vedoucí středem strany KL i středem protilehlé strany), získáme obě řešení.",
+      "8.1": "Ano",
+      "8.2": "Ano",
+      "8.3": "Ne",
+      "13.1": "C",
+      "13.2": "D",
+      "13.3": "F",
+      "14.1": 20,
+      "14.2": 6,
+      "14.3": 24
+    },
+    "points": {
+      "1": {
+        "v": 4,
+        "max": 4
+      },
+      "2": {
+        "v": 4,
+        "max": 4
+      },
+      "3": {
+        "v": 3,
+        "max": 3
+      },
+      "4": {
+        "v": 5,
+        "max": 5
+      },
+      "5": {
+        "v": 4,
+        "max": 4
+      },
+      "6": {
+        "v": 3,
+        "max": 3
+      },
+      "7": {
+        "v": 0,
+        "max": 6
+      },
+      "8": {
+        "v": 2,
+        "max": 4
+      },
+      "9": {
+        "v": 2,
+        "max": 2
+      },
+      "10": {
+        "v": 2,
+        "max": 2
+      },
+      "11": {
+        "v": 2,
+        "max": 2
+      },
+      "12": {
+        "v": 2,
+        "max": 2
+      },
+      "13": {
+        "v": 3,
+        "max": 5
+      },
+      "14": {
+        "v": 0,
+        "max": 4
+      }
+    }
+  },
+  "M7A-2024": {
+    "metadata": {
+      "info": {
+        "code": "M7PAD24C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 6,
+          "opened": 10
+        }
+      }
+    },
+    "subject": "math",
+    "grade": "6",
+    "totalAnswers": 26,
+    "totalPoints": 26,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "4": false,
+      "6": true,
+      "7": false,
+      "8": false,
+      "9": false,
+      "11": true,
+      "12": true,
+      "13": true,
+      "14": false,
+      "1.1": true,
+      "1.2": true,
+      "2.1": true,
+      "2.2": true,
+      "3.1": false,
+      "3.2": false,
+      "3.3": false,
+      "5.1": false,
+      "5.2": false,
+      "10.1": true,
+      "10.2": true,
+      "10.3": true,
+      "15.1": true,
+      "15.2": true,
+      "15.3": true,
+      "16.1": false,
+      "16.2": false
+    },
+    "correctAnswers": {
+      "4": "7/15",
+      "6": 61,
+      "7": 12.4,
+      "8": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/6/M7A-2024/rovina2Primky-reseni.jpeg",
+      "9": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/6/M7A-2024/rovina1Primka-reseni.jpeg",
+      "11": "E",
+      "12": "D",
+      "13": "D",
+      "14": "B",
+      "1.1": 7,
+      "1.2": 0.782,
+      "2.1": "1/7",
+      "2.2": "9/10",
+      "3.1": 0,
+      "3.2": 4.5,
+      "3.3": 2.1,
+      "5.1": 282,
+      "5.2": 48,
+      "10.1": "Ne",
+      "10.2": "Ano",
+      "10.3": "Ano",
+      "15.1": "E",
+      "15.2": "B",
+      "15.3": "A",
+      "16.1": 630,
+      "16.2": 675
+    },
+    "answers": {
+      "4": "1/3",
+      "6": 61,
+      "7": 12,
+      "8": "Zvolte libovolný úsek AB. Sestrojte na přímce p kolmici v bodě A a určete bod D tak, aby AD = AB. Na úseku AB označte bod B a na polopřímce vycházející z B určete bod C tak, aby délka BC byla rovna polovině délky AB. Poté proložte čáry spojující vrcholy a získáte pravoúhlý lichoběžník ABCD splňující zadané podmínky.",
+      "9": "Na polopřímce BX vyberte libovolný bod A. Sestrojte osovou přímku o ke straně BC tak, aby s danou polopřímkou BX vycházela symetrická poloha. Poté určete bod C na této přímce, který spolu s bodem A vytvoří základnu AC rovnoramenného trojúhelníku s vrcholem B. Konstrukce je jednoznačná danými podmínkami.",
+      "11": "E",
+      "12": "D",
+      "13": "D",
+      "14": "C",
+      "1.1": 7,
+      "1.2": 0.782,
+      "2.1": "1/7",
+      "2.2": "9/10",
+      "3.1": 4.55,
+      "3.2": 2.5,
+      "3.3": -1.05,
+      "5.1": 285,
+      "5.2": 57,
+      "10.1": "Ne",
+      "10.2": "Ano",
+      "10.3": "Ano",
+      "15.1": "E",
+      "15.2": "B",
+      "15.3": "A",
+      "16.1": 7200,
+      "16.2": 31500
+    },
+    "points": {
+      "1": {
+        "v": 4,
+        "max": 4
+      },
+      "2": {
+        "v": 4,
+        "max": 4
+      },
+      "3": {
+        "v": 0,
+        "max": 3
+      },
+      "4": {
+        "v": 0,
+        "max": 2
+      },
+      "5": {
+        "v": 0,
+        "max": 4
+      },
+      "6": {
+        "v": 3,
+        "max": 3
+      },
+      "7": {
+        "v": 0,
+        "max": 3
+      },
+      "8": {
+        "v": 0,
+        "max": 3
+      },
+      "9": {
+        "v": 0,
+        "max": 3
+      },
+      "10": {
+        "v": 3,
+        "max": 3
+      },
+      "11": {
+        "v": 2,
+        "max": 2
+      },
+      "12": {
+        "v": 2,
+        "max": 2
+      },
+      "13": {
+        "v": 2,
+        "max": 2
+      },
+      "14": {
+        "v": 0,
+        "max": 2
+      },
+      "15": {
+        "v": 6,
+        "max": 6
+      },
+      "16": {
+        "v": 0,
+        "max": 4
+      }
+    }
+  },
+  "M7A-2023": {
+    "metadata": {
+      "info": {
+        "code": "M7PAD23C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 6,
+          "opened": 10
+        }
+      }
+    },
+    "subject": "math",
+    "grade": "6",
+    "totalAnswers": 30,
+    "totalPoints": 40,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "8": false,
+      "9": false,
+      "11": true,
+      "12": false,
+      "13": true,
+      "14": true,
+      "2.1": true,
+      "2.2": true,
+      "3.1": true,
+      "3.2": true,
+      "3.3": true,
+      "4.1": true,
+      "4.2": true,
+      "5.1": true,
+      "5.2": true,
+      "6.1": true,
+      "6.2": true,
+      "7.1": true,
+      "7.2": true,
+      "7.3": true,
+      "10.1": false,
+      "10.2": true,
+      "10.3": true,
+      "15.1": true,
+      "15.2": true,
+      "15.3": true,
+      "16.1": true,
+      "16.2": true,
+      "16.3": true
+    },
+    "correctAnswers": {
+      "1": 14,
+      "8": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/6/M7A-2023/rovina2Primky-reseni.jpeg",
+      "9": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/6/M7A-2023/rovina1Primka-reseni.jpeg",
+      "11": "D",
+      "12": "B",
+      "13": "E",
+      "14": "A",
+      "2.1": "-1/5",
+      "2.2": "2/15",
+      "3.1": 120,
+      "3.2": 17,
+      "3.3": 136,
+      "4.1": 19,
+      "4.2": "2:3",
+      "5.1": 54,
+      "5.2": 520,
+      "6.1": 2,
+      "6.2": 900,
+      "7.1": 12,
+      "7.2": 18,
+      "7.3": 24,
+      "10.1": "Ne",
+      "10.2": "Ano",
+      "10.3": "Ne",
+      "15.1": "C",
+      "15.2": "D",
+      "15.3": "B",
+      "16.1": 18,
+      "16.2": 8,
+      "16.3": 23
+    },
+    "answers": {
+      "1": 14,
+      "8": "Dvě řešení",
+      "9": "Dvě řešení",
+      "11": "D",
+      "12": "D",
+      "13": "E",
+      "14": "A",
+      "2.1": "-1/5",
+      "2.2": "2/15",
+      "3.1": 120,
+      "3.2": 17,
+      "3.3": 136,
+      "4.1": 19,
+      "4.2": "2:3",
+      "5.1": 54,
+      "5.2": 520,
+      "6.1": 2,
+      "6.2": 900,
+      "7.1": 12,
+      "7.2": 18,
+      "7.3": 24,
+      "10.1": "Ano",
+      "10.2": "Ano",
+      "10.3": "Ne",
+      "15.1": "C",
+      "15.2": "D",
+      "15.3": "B",
+      "16.1": 18,
+      "16.2": 8,
+      "16.3": 23
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 4,
+        "max": 4
+      },
+      "3": {
+        "v": 3,
+        "max": 3
+      },
+      "4": {
+        "v": 4,
+        "max": 4
+      },
+      "5": {
+        "v": 4,
+        "max": 4
+      },
+      "6": {
+        "v": 3,
+        "max": 3
+      },
+      "7": {
+        "v": 3,
+        "max": 3
+      },
+      "8": {
+        "v": 0,
+        "max": 3
+      },
+      "9": {
+        "v": 0,
+        "max": 3
+      },
+      "10": {
+        "v": 2,
+        "max": 4
+      },
+      "11": {
+        "v": 2,
+        "max": 2
+      },
+      "12": {
+        "v": 0,
+        "max": 2
+      },
+      "13": {
+        "v": 2,
+        "max": 2
+      },
+      "14": {
+        "v": 2,
+        "max": 2
+      },
+      "15": {
+        "v": 6,
+        "max": 6
+      },
+      "16": {
+        "v": 4,
+        "max": 4
+      }
+    }
+  },
+  "M9I-2025": {
+    "metadata": {
+      "info": {
+        "code": "M9PND25C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 5,
+          "opened": 11
+        }
+      }
+    },
+    "subject": "math",
+    "grade": "4",
+    "totalAnswers": 30,
+    "totalPoints": 32,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "9": false,
+      "10": false,
+      "12": true,
+      "13": true,
+      "14": false,
+      "2.1": true,
+      "2.2": true,
+      "3.1": true,
+      "3.2": true,
+      "4.1": true,
+      "4.2": true,
+      "4.3": true,
+      "5.1": true,
+      "5.2": false,
+      "6.1": true,
+      "6.2": true,
+      "7.1": true,
+      "7.2": true,
+      "7.3": true,
+      "8.1": false,
+      "8.2": true,
+      "11.1": true,
+      "11.2": false,
+      "11.3": false,
+      "15.1": true,
+      "15.2": true,
+      "15.3": true,
+      "16.1": false,
+      "16.2": false
+    },
+    "correctAnswers": {
+      "1": 1980,
+      "9": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9I-2025/image-9.png",
+      "10": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9I-2025/image-10.png",
+      "12": "D",
+      "13": "A",
+      "14": "B",
+      "2.1": 0.36,
+      "2.2": 2,
+      "3.1": "7/20",
+      "3.2": "5/4",
+      "4.1": "4y^2",
+      "4.2": "n^2+9",
+      "4.3": "(3a-11)^2",
+      "5.1": "y=0",
+      "5.2": "x=-1/6, y=2",
+      "6.1": 40,
+      "6.2": 30,
+      "7.1": 760,
+      "7.2": 56,
+      "7.3": 88,
+      "8.1": 84,
+      "8.2": 432,
+      "11.1": "Ano",
+      "11.2": "Ne",
+      "11.3": "Ano",
+      "15.1": "C",
+      "15.2": "E",
+      "15.3": "D",
+      "16.1": 420,
+      "16.2": 11
+    },
+    "answers": {
+      "1": 1980,
+      "9": "Sestrojte střed S jako střed souměrnosti trojúhelníků a proveďte symetrické zobrazení bodů B a C do bodů B' a C' podle zadání.",
+      "10": "Konstrukci proveďte podle zadání; existují dvě geometricky odlišná řešení, přičemž vrchol D leží na přímce PX.",
+      "12": "D",
+      "13": "A",
+      "14": "C",
+      "2.1": 0.36,
+      "2.2": 2,
+      "3.1": "7/20",
+      "3.2": "5/4",
+      "4.1": "4y^2",
+      "4.2": "n^2+9",
+      "4.3": "(3a-11)^2",
+      "5.1": "y=0",
+      "5.2": "x=-1/6, y=2",
+      "6.1": 40,
+      "6.2": 30,
+      "7.1": 760,
+      "7.2": 56,
+      "7.3": 88,
+      "8.1": 108,
+      "8.2": 432,
+      "11.1": "Ano",
+      "11.2": "Ano",
+      "11.3": "Ne",
+      "15.1": "C",
+      "15.2": "E",
+      "15.3": "D",
+      "16.1": 20,
+      "16.2": 111
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 2,
+        "max": 2
+      },
+      "3": {
+        "v": 4,
+        "max": 4
+      },
+      "4": {
+        "v": 4,
+        "max": 4
+      },
+      "5": {
+        "v": 2,
+        "max": 4
+      },
+      "6": {
+        "v": 3,
+        "max": 3
+      },
+      "7": {
+        "v": 4,
+        "max": 4
+      },
+      "8": {
+        "v": 2,
+        "max": 3
+      },
+      "9": {
+        "v": 0,
+        "max": 2
+      },
+      "10": {
+        "v": 0,
+        "max": 3
+      },
+      "11": {
+        "v": 0,
+        "max": 4
+      },
+      "12": {
+        "v": 2,
+        "max": 2
+      },
+      "13": {
+        "v": 2,
+        "max": 2
+      },
+      "14": {
+        "v": 0,
+        "max": 2
+      },
+      "15": {
+        "v": 6,
+        "max": 6
+      },
+      "16": {
+        "v": 0,
+        "max": 4
+      }
+    }
+  },
+  "M9A-2024": {
+    "metadata": {
+      "info": {
+        "code": "M9PAD24C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 6,
+          "opened": 10
+        }
+      }
+    },
+    "subject": "math",
+    "grade": "4",
+    "totalAnswers": 27,
+    "totalPoints": 31,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": true,
+      "9": false,
+      "10": false,
+      "11": false,
+      "12": false,
+      "13": true,
+      "14": true,
+      "3.1": true,
+      "3.2": true,
+      "4.1": true,
+      "4.2": false,
+      "4.3": true,
+      "5.1": false,
+      "5.2": false,
+      "6.1": true,
+      "6.2": true,
+      "7.1": true,
+      "7.2": true,
+      "8.1": false,
+      "8.2": false,
+      "15.1": true,
+      "15.2": true,
+      "15.3": true,
+      "16.1": true,
+      "16.2": true,
+      "16.3": true
+    },
+    "correctAnswers": {
+      "1": 45,
+      "2": 3140,
+      "9": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9A-2024/image-9.png",
+      "10": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9A-2024/image-10.png",
+      "11": "B",
+      "12": "C",
+      "13": "A",
+      "14": "D",
+      "3.1": "13/3",
+      "3.2": "-1/3",
+      "4.1": "9a^2/16",
+      "4.2": "(3a+4)(3a-4)",
+      "4.3": "10(c-1)",
+      "5.1": "x=-1.1)",
+      "5.2": "y=1.5",
+      "6.1": 306,
+      "6.2": 15,
+      "7.1": 8,
+      "7.2": 26,
+      "8.1": 43,
+      "8.2": 51,
+      "15.1": "Ne",
+      "15.2": "Ano",
+      "15.3": "Ne",
+      "16.1": "A",
+      "16.2": "C",
+      "16.3": "E"
+    },
+    "answers": {
+      "1": 45,
+      "2": 3140,
+      "9": "Sestrojte konstrukci dle zadání.",
+      "10": "Sestrojte konstrukci dle zadání.",
+      "11": "C",
+      "12": "B",
+      "13": "A",
+      "14": "D",
+      "3.1": "13/3",
+      "3.2": "-1/3",
+      "4.1": "9a^2/16",
+      "4.2": "(3a-4)(3a+4)",
+      "4.3": "10(c-1)",
+      "5.1": "-11/10",
+      "5.2": "3/2",
+      "6.1": 306,
+      "6.2": 15,
+      "7.1": 8,
+      "7.2": 26,
+      "8.1": 314,
+      "8.2": 64,
+      "15.1": "Ne",
+      "15.2": "Ano",
+      "15.3": "Ne",
+      "16.1": "A",
+      "16.2": "C",
+      "16.3": "E"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 2,
+        "max": 2
+      },
+      "3": {
+        "v": 4,
+        "max": 4
+      },
+      "4": {
+        "v": 3,
+        "max": 4
+      },
+      "5": {
+        "v": 0,
+        "max": 4
+      },
+      "6": {
+        "v": 4,
+        "max": 4
+      },
+      "7": {
+        "v": 4,
+        "max": 4
+      },
+      "8": {
+        "v": 0,
+        "max": 4
+      },
+      "9": {
+        "v": 0,
+        "max": 3
+      },
+      "10": {
+        "v": 0,
+        "max": 3
+      },
+      "11": {
+        "v": 0,
+        "max": 2
+      },
+      "12": {
+        "v": 0,
+        "max": 2
+      },
+      "13": {
+        "v": 2,
+        "max": 2
+      },
+      "14": {
+        "v": 2,
+        "max": 2
+      },
+      "15": {
+        "v": 3,
+        "max": 3
+      },
+      "16": {
+        "v": 6,
+        "max": 6
+      }
+    }
+  },
+  "M9B-2024": {
+    "metadata": {
+      "info": {
+        "code": "M9PBD24C0T02",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 6,
+          "opened": 10
+        }
+      }
+    },
+    "subject": "math",
+    "grade": "4",
+    "totalAnswers": 27,
+    "totalPoints": 26,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": true,
+      "9": false,
+      "10": false,
+      "11": true,
+      "12": true,
+      "13": false,
+      "14": true,
+      "3.1": true,
+      "3.2": true,
+      "4.1": false,
+      "4.2": true,
+      "4.3": false,
+      "5.1": false,
+      "5.2": false,
+      "6.1": false,
+      "6.2": false,
+      "7.1": false,
+      "7.2": true,
+      "8.1": true,
+      "8.2": true,
+      "15.1": false,
+      "15.2": false,
+      "15.3": false,
+      "16.1": true,
+      "16.2": true,
+      "16.3": true
+    },
+    "correctAnswers": {
+      "1": 1.5,
+      "2": 40,
+      "9": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9B-2024/image-4.png",
+      "10": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9B-2024/image-9.png",
+      "11": "B",
+      "12": "C",
+      "13": "D",
+      "14": "D",
+      "3.1": "-10/9",
+      "3.2": "-70/9",
+      "4.1": "9+12x+4x^2",
+      "4.2": "(100-x)(100+x)",
+      "4.3": "3x+21",
+      "5.1": "x=-1",
+      "5.2": "y=3",
+      "6.1": 84,
+      "6.2": 48,
+      "7.1": "1.5x",
+      "7.2": 58,
+      "8.1": 64,
+      "8.2": 20,
+      "15.1": "Ano",
+      "15.2": "Ne",
+      "15.3": "Ano",
+      "16.1": "D",
+      "16.2": "C",
+      "16.3": "B"
+    },
+    "answers": {
+      "1": 1.5,
+      "2": 40,
+      "9": "Kosočtverec ABCD je sestrojen dle zadání.",
+      "10": "Rovnoramenný trojúhelník KLM je sestrojen se všemi řešeními podle zadání.",
+      "11": "B",
+      "12": "C",
+      "13": "B",
+      "14": "D",
+      "3.1": "-10/9",
+      "3.2": "-70/9",
+      "4.1": "4x^2+12x+9",
+      "4.2": "(100-x)(100+x)",
+      "4.3": "3(x+7)",
+      "5.1": "-1",
+      "5.2": "3",
+      "6.1": 96,
+      "6.2": 50,
+      "7.1": "3x/2",
+      "7.2": 58,
+      "8.1": 64,
+      "8.2": 20,
+      "15.1": "Ne",
+      "15.2": "Ano",
+      "15.3": "Ne",
+      "16.1": "D",
+      "16.2": "C",
+      "16.3": "B"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 2,
+        "max": 2
+      },
+      "3": {
+        "v": 4,
+        "max": 4
+      },
+      "4": {
+        "v": 1,
+        "max": 4
+      },
+      "5": {
+        "v": 0,
+        "max": 4
+      },
+      "6": {
+        "v": 0,
+        "max": 4
+      },
+      "7": {
+        "v": 2,
+        "max": 4
+      },
+      "8": {
+        "v": 4,
+        "max": 4
+      },
+      "9": {
+        "v": 0,
+        "max": 3
+      },
+      "10": {
+        "v": 0,
+        "max": 3
+      },
+      "11": {
+        "v": 2,
+        "max": 2
+      },
+      "12": {
+        "v": 2,
+        "max": 2
+      },
+      "13": {
+        "v": 0,
+        "max": 2
+      },
+      "14": {
+        "v": 2,
+        "max": 2
+      },
+      "15": {
+        "v": 0,
+        "max": 3
+      },
+      "16": {
+        "v": 6,
+        "max": 6
+      }
+    }
+  },
+  "M9C-2024": {
+    "metadata": {
+      "info": {
+        "code": "M9PCD24C0T03",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 6,
+          "opened": 10
+        }
+      }
+    },
+    "subject": "math",
+    "grade": "4",
+    "totalAnswers": 27,
+    "totalPoints": 36,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": true,
+      "9": false,
+      "10": false,
+      "11": false,
+      "12": true,
+      "13": true,
+      "14": true,
+      "3.1": true,
+      "3.2": true,
+      "4.1": false,
+      "4.2": false,
+      "4.3": true,
+      "5.1": false,
+      "5.2": false,
+      "6.1": true,
+      "6.2": true,
+      "7.1": true,
+      "7.2": true,
+      "8.1": true,
+      "8.2": true,
+      "15.1": true,
+      "15.2": true,
+      "15.3": true,
+      "16.1": true,
+      "16.2": true,
+      "16.3": true
+    },
+    "correctAnswers": {
+      "1": 35100,
+      "2": 5,
+      "9": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9C-2024/image-9.png",
+      "10": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9C-2024/image-10.png",
+      "11": "B",
+      "12": "C",
+      "13": "D",
+      "14": "E",
+      "3.1": "21/2",
+      "3.2": "-16/5",
+      "4.1": "(64/9)b^2",
+      "4.2": "(2+x)(2-x)",
+      "4.3": "c+49",
+      "5.1": "x=9",
+      "5.2": "x=2",
+      "6.1": 8,
+      "6.2": 88,
+      "7.1": 6,
+      "7.2": 2,
+      "8.1": 78,
+      "8.2": 2,
+      "15.1": "Ano",
+      "15.2": "Ne",
+      "15.3": "Ano",
+      "16.1": "E",
+      "16.2": "D",
+      "16.3": "B"
+    },
+    "answers": {
+      "1": 35100,
+      "2": 5,
+      "9": "Konstrukce lichoběžníku ABCD se zbývajícími vrcholy B, C a D byla provedena podle zadání.",
+      "10": "Lichoběžník ABCD byl sestrojen dle zadaných podmínek.",
+      "11": "C",
+      "12": "C",
+      "13": "D",
+      "14": "E",
+      "3.1": "21/2",
+      "3.2": "-16/5",
+      "4.1": "64b^2/9",
+      "4.2": "(2-x)(2+x)",
+      "4.3": "c+49",
+      "5.1": "9",
+      "5.2": "2",
+      "6.1": 8,
+      "6.2": 88,
+      "7.1": 6,
+      "7.2": 2,
+      "8.1": 78,
+      "8.2": 2,
+      "15.1": "Ano",
+      "15.2": "Ne",
+      "15.3": "Ano",
+      "16.1": "E",
+      "16.2": "D",
+      "16.3": "B"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 2,
+        "max": 2
+      },
+      "3": {
+        "v": 4,
+        "max": 4
+      },
+      "4": {
+        "v": 2,
+        "max": 4
+      },
+      "5": {
+        "v": 0,
+        "max": 4
+      },
+      "6": {
+        "v": 4,
+        "max": 4
+      },
+      "7": {
+        "v": 4,
+        "max": 4
+      },
+      "8": {
+        "v": 4,
+        "max": 4
+      },
+      "9": {
+        "v": 0,
+        "max": 3
+      },
+      "10": {
+        "v": 0,
+        "max": 3
+      },
+      "11": {
+        "v": 0,
+        "max": 2
+      },
+      "12": {
+        "v": 2,
+        "max": 2
+      },
+      "13": {
+        "v": 2,
+        "max": 2
+      },
+      "14": {
+        "v": 2,
+        "max": 2
+      },
+      "15": {
+        "v": 3,
+        "max": 3
+      },
+      "16": {
+        "v": 6,
+        "max": 6
+      }
+    }
+  },
+  "M9D-2024": {
+    "metadata": {
+      "info": {
+        "code": "M9PDD24C0T04",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 6,
+          "opened": 10
+        }
+      }
+    },
+    "subject": "math",
+    "grade": "4",
+    "totalAnswers": 27,
+    "totalPoints": 35,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": true,
+      "9": false,
+      "10": false,
+      "11": true,
+      "12": true,
+      "13": true,
+      "14": false,
+      "3.1": true,
+      "3.2": true,
+      "4.1": true,
+      "4.2": false,
+      "4.3": true,
+      "5.1": true,
+      "5.2": false,
+      "6.1": true,
+      "6.2": true,
+      "7.1": true,
+      "7.2": true,
+      "8.1": false,
+      "8.2": false,
+      "15.1": true,
+      "15.2": true,
+      "15.3": true,
+      "16.1": true,
+      "16.2": true,
+      "16.3": true
+    },
+    "correctAnswers": {
+      "1": 900,
+      "2": 35,
+      "9": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9D-2024/image-5.png",
+      "10": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9D-2024/image-6.png",
+      "11": "A",
+      "12": "B",
+      "13": "C",
+      "14": "C",
+      "3.1": "1/3",
+      "3.2": "-1/30",
+      "4.1": "a(5a-12)",
+      "4.2": "(1/9)-(8/3)b+16b^2",
+      "4.3": "14x+5",
+      "5.1": "x=18",
+      "5.2": "y=3",
+      "6.1": 4,
+      "6.2": 120,
+      "7.1": 280,
+      "7.2": 300,
+      "8.1": 6,
+      "8.2": 58,
+      "15.1": "Ano",
+      "15.2": "Ne",
+      "15.3": "Ano",
+      "16.1": "D",
+      "16.2": "A",
+      "16.3": "E"
+    },
+    "answers": {
+      "1": 900,
+      "2": 35,
+      "9": "Konstrukčně sestrojitelná řešení obdélníku ABCD podle daných podmínek (konstrukce s vyznačeným bodem A, středem S a vrcholem D na přímce p).",
+      "10": "Konstrukčně sestrojitelná řešení pravoúhlého trojúhelníku ABC se středem S strany BC a se stranou AB rovnoběžnou s přímkou p.",
+      "11": "A",
+      "12": "B",
+      "13": "C",
+      "14": "D",
+      "3.1": "1/3",
+      "3.2": "-1/30",
+      "4.1": "a*(5a-12)",
+      "4.2": "16b^2-8b/3+1/9",
+      "4.3": "14x+5",
+      "5.1": "x=18",
+      "5.2": "x=2",
+      "6.1": 4,
+      "6.2": 120,
+      "7.1": 280,
+      "7.2": 300,
+      "8.1": 8,
+      "8.2": 30,
+      "15.1": "Ano",
+      "15.2": "Ne",
+      "15.3": "Ano",
+      "16.1": "D",
+      "16.2": "A",
+      "16.3": "E"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 2,
+        "max": 2
+      },
+      "3": {
+        "v": 4,
+        "max": 4
+      },
+      "4": {
+        "v": 3,
+        "max": 4
+      },
+      "5": {
+        "v": 2,
+        "max": 4
+      },
+      "6": {
+        "v": 4,
+        "max": 4
+      },
+      "7": {
+        "v": 4,
+        "max": 4
+      },
+      "8": {
+        "v": 0,
+        "max": 4
+      },
+      "9": {
+        "v": 0,
+        "max": 3
+      },
+      "10": {
+        "v": 0,
+        "max": 3
+      },
+      "11": {
+        "v": 2,
+        "max": 2
+      },
+      "12": {
+        "v": 2,
+        "max": 2
+      },
+      "13": {
+        "v": 2,
+        "max": 2
+      },
+      "14": {
+        "v": 0,
+        "max": 2
+      },
+      "15": {
+        "v": 3,
+        "max": 3
+      },
+      "16": {
+        "v": 6,
+        "max": 6
+      }
+    }
+  },
+  "M9A-2023": {
+    "metadata": {
+      "info": {
+        "code": "M9PAD23C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 5,
+          "opened": 11
+        }
+      }
+    },
+    "subject": "math",
+    "grade": "4",
+    "totalAnswers": 33,
+    "totalPoints": 37,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "9": false,
+      "10": false,
+      "12": true,
+      "13": true,
+      "14": true,
+      "2.1": true,
+      "2.2": true,
+      "3.1": true,
+      "3.2": true,
+      "3.3": true,
+      "4.1": true,
+      "4.2": true,
+      "4.3": true,
+      "5.1": false,
+      "5.2": true,
+      "6.1": false,
+      "6.2": false,
+      "7.1": false,
+      "7.2": true,
+      "7.3": false,
+      "8.1": false,
+      "8.2": true,
+      "8.3": false,
+      "11.1": true,
+      "11.2": true,
+      "11.3": true,
+      "15.1": true,
+      "15.2": true,
+      "15.3": true,
+      "16.1": true,
+      "16.2": true,
+      "16.3": true
+    },
+    "correctAnswers": {
+      "1": 20,
+      "9": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9A-2023/9-result.jpeg",
+      "10": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9A-2023/10-result.jpeg",
+      "12": "C",
+      "13": "D",
+      "14": "B",
+      "2.1": 1.2,
+      "2.2": 1600000,
+      "3.1": "4/9",
+      "3.2": "-2/7",
+      "3.3": "5/14",
+      "4.1": "x(2x-1)",
+      "4.2": "4/9a^2-4a+9",
+      "4.3": "n^2+19n+7",
+      "5.1": "Ne",
+      "5.2": "y=-10",
+      "6.1": 24,
+      "6.2": 64,
+      "7.1": 25,
+      "7.2": 21,
+      "7.3": "3:7",
+      "8.1": "0.75a",
+      "8.2": 40,
+      "8.3": 10,
+      "11.1": "Ne",
+      "11.2": "Ano",
+      "11.3": "Ne",
+      "15.1": "E",
+      "15.2": "C",
+      "15.3": "A",
+      "16.1": 81,
+      "16.2": 364,
+      "16.3": 19683
+    },
+    "answers": {
+      "1": 20,
+      "9": "Konstrukce provedena dle zadání",
+      "10": "Konstrukce provedena dle zadání, přičemž jsou nalezena všechna řešení",
+      "12": "C",
+      "13": "D",
+      "14": "B",
+      "2.1": 1.2,
+      "2.2": 1600000,
+      "3.1": "4/9",
+      "3.2": "-2/7",
+      "3.3": "5/14",
+      "4.1": "x(2x-1)",
+      "4.2": "4/9a^2-4a+9",
+      "4.3": "n^2+19n+7",
+      "5.1": "no solution",
+      "5.2": "y=-10",
+      "6.1": 84,
+      "6.2": 140,
+      "7.1": 40,
+      "7.2": 21,
+      "7.3": "1:2",
+      "8.1": "3/4*a",
+      "8.2": 40,
+      "8.3": 100,
+      "11.1": "Ne",
+      "11.2": "Ano",
+      "11.3": "Ne",
+      "15.1": "E",
+      "15.2": "C",
+      "15.3": "A",
+      "16.1": 81,
+      "16.2": 364,
+      "16.3": 19683
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 3,
+        "max": 3
+      },
+      "3": {
+        "v": 4,
+        "max": 4
+      },
+      "4": {
+        "v": 4,
+        "max": 4
+      },
+      "5": {
+        "v": 2,
+        "max": 4
+      },
+      "6": {
+        "v": 0,
+        "max": 2
+      },
+      "7": {
+        "v": 1,
+        "max": 3
+      },
+      "8": {
+        "v": 2,
+        "max": 4
+      },
+      "9": {
+        "v": 0,
+        "max": 2
+      },
+      "10": {
+        "v": 0,
+        "max": 3
+      },
+      "11": {
+        "v": 4,
+        "max": 4
+      },
+      "12": {
+        "v": 2,
+        "max": 2
+      },
+      "13": {
+        "v": 2,
+        "max": 2
+      },
+      "14": {
+        "v": 2,
+        "max": 2
+      },
+      "15": {
+        "v": 6,
+        "max": 6
+      },
+      "16": {
+        "v": 4,
+        "max": 4
+      }
+    }
+  },
+  "M9B-2023": {
+    "metadata": {
+      "info": {
+        "code": "M9PBD23C0T02",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 5,
+          "opened": 11
+        }
+      }
+    },
+    "subject": "math",
+    "grade": "4",
+    "totalAnswers": 33,
+    "totalPoints": 33,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "9": false,
+      "10": false,
+      "12": false,
+      "13": true,
+      "14": true,
+      "2.1": true,
+      "2.2": true,
+      "3.1": true,
+      "3.2": true,
+      "3.3": false,
+      "4.1": true,
+      "4.2": true,
+      "4.3": false,
+      "5.1": false,
+      "5.2": false,
+      "6.1": true,
+      "6.2": true,
+      "6.3": true,
+      "7.1": false,
+      "7.2": false,
+      "7.3": true,
+      "8.1": true,
+      "8.2": true,
+      "11.1": true,
+      "11.2": true,
+      "11.3": true,
+      "15.1": true,
+      "15.2": true,
+      "15.3": true,
+      "16.1": true,
+      "16.2": true,
+      "16.3": true
+    },
+    "correctAnswers": {
+      "1": -4,
+      "9": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9B-2023/V rovině leží úsečka AB a bod S.jpeg",
+      "10": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9B-2023/V rovině leží body C, Q a kružnice k se středem S, která prochází bodem C.jpeg",
+      "12": "E",
+      "13": "C",
+      "14": "A",
+      "2.1": 2.5,
+      "2.2": 300,
+      "3.1": "-13/18",
+      "3.2": "7/10",
+      "3.3": "2/9",
+      "4.1": "y(x-6)",
+      "4.2": "3a+4",
+      "4.3": "7n^2+8n+4",
+      "5.1": "x=-3",
+      "5.2": "y=5/3",
+      "6.1": 25,
+      "6.2": 8,
+      "6.3": 18,
+      "7.1": "1/2x",
+      "7.2": "5/4x",
+      "7.3": 20,
+      "8.1": 24,
+      "8.2": 3140,
+      "11.1": "Ne",
+      "11.2": "Ano",
+      "11.3": "Ano",
+      "15.1": "D",
+      "15.2": "C",
+      "15.3": "B",
+      "16.1": 32,
+      "16.2": 19,
+      "16.3": "361,441"
+    },
+    "answers": {
+      "1": -4,
+      "9": "Konstrukce provedena v záznamovém archu podle zadání.",
+      "10": "Konstrukce provedena v záznamovém archu se všemi řešeními.",
+      "12": "D",
+      "13": "C",
+      "14": "A",
+      "2.1": 2.5,
+      "2.2": 300,
+      "3.1": "-13/18",
+      "3.2": "7/10",
+      "3.3": "Nejprve spočítáme součet 2/3 + 2/7 = (14+6)/21 = 20/21. Dále sečteme 9/14 + 3/2 = 9/14 + 21/14 = 30/14 = 15/7 a vynásobíme ho 2: (15/7)*2 = 30/7. Výraz se pak získá jako (20/21) děleno (30/7) = (20/21)*(7/30) = 140/630, což se zkrátí na 2/9.",
+      "4.1": "y*(x-6)",
+      "4.2": "3a+4",
+      "4.3": "Nejprve rozepíšeme (3n+2)^2 = 9n^2 + 12n + 4, dále spočítáme n*(3n+4) = 3n^2 + 4n a (2n-n)*n = n^2. Poté odečteme: 9n^2 + 12n + 4 - 3n^2 - 4n + n^2 = 7n^2 + 8n + 4.",
+      "5.1": "Nejprve rozebereme levou stranu: 2 + 0.5*(x-3) = 2 + 0.5x - 1.5 = 0.5x + 0.5. Pravá strana: 0.4*(1.5x+2) = 0.6x + 0.8. Poté rovnici 0.5x + 0.5 = 0.6x + 0.8 přepíšeme: 0.5 = 0.1x + 0.8, což vede k 0.1x = -0.3 a tedy x = -3.",
+      "5.2": "Nejprve zjednodušíme levou stranu: 3*(2y-1)/6 = (2y-1)/2. Pravá strana se upraví na: (3y+2)/8 + (3/4)*(y-1)/6 = (3y+2)/8 + (y-1)/8 = (4y+1)/8. Nyní máme rovnici (2y-1)/2 = (4y+1)/8. Obě strany vynásobíme osmi, což dává 4*(2y-1) = 4y+1, tedy 8y - 4 = 4y + 1. Odečtením 4y obou stran získáme 4y - 4 = 1, což vede k 4y = 5 a tedy y = 5/4.",
+      "6.1": 25,
+      "6.2": 8,
+      "6.3": 18,
+      "7.1": "x/2",
+      "7.2": "5x/4",
+      "7.3": 20,
+      "8.1": 24,
+      "8.2": 3140,
+      "11.1": "Ne",
+      "11.2": "Ano",
+      "11.3": "Ano",
+      "15.1": "D",
+      "15.2": "C",
+      "15.3": "B",
+      "16.1": 32,
+      "16.2": 19,
+      "16.3": "361,441"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 2,
+        "max": 2
+      },
+      "3": {
+        "v": 2,
+        "max": 4
+      },
+      "4": {
+        "v": 2,
+        "max": 4
+      },
+      "5": {
+        "v": 0,
+        "max": 4
+      },
+      "6": {
+        "v": 4,
+        "max": 4
+      },
+      "7": {
+        "v": 1,
+        "max": 3
+      },
+      "8": {
+        "v": 3,
+        "max": 3
+      },
+      "9": {
+        "v": 0,
+        "max": 2
+      },
+      "10": {
+        "v": 0,
+        "max": 3
+      },
+      "11": {
+        "v": 4,
+        "max": 4
+      },
+      "12": {
+        "v": 0,
+        "max": 2
+      },
+      "13": {
+        "v": 2,
+        "max": 2
+      },
+      "14": {
+        "v": 2,
+        "max": 2
+      },
+      "15": {
+        "v": 6,
+        "max": 6
+      },
+      "16": {
+        "v": 4,
+        "max": 4
+      }
+    }
+  },
+  "M9C-2023": {
+    "metadata": {
+      "info": {
+        "code": "M9PCD23C0T03",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 5,
+          "opened": 11
+        }
+      }
+    },
+    "subject": "math",
+    "grade": "4",
+    "totalAnswers": 32,
+    "totalPoints": 32,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "9": false,
+      "12": true,
+      "13": true,
+      "14": true,
+      "2.1": true,
+      "2.2": true,
+      "3.1": true,
+      "3.2": true,
+      "3.3": true,
+      "4.1": false,
+      "4.2": true,
+      "4.3": false,
+      "5.1": false,
+      "5.2": false,
+      "6.1": false,
+      "6.2": true,
+      "7.1": true,
+      "7.2": true,
+      "8.1": true,
+      "8.2": true,
+      "10.1": false,
+      "10.2": false,
+      "11.1": false,
+      "11.2": false,
+      "11.3": false,
+      "15.1": true,
+      "15.2": true,
+      "15.3": true,
+      "16.1": true,
+      "16.2": true,
+      "16.3": true
+    },
+    "correctAnswers": {
+      "1": 7,
+      "9": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9C-2023/image-7.png",
+      "12": "C",
+      "13": "D",
+      "14": "B",
+      "2.1": -3,
+      "2.2": 0.5,
+      "3.1": "4/7",
+      "3.2": "-2/5",
+      "3.3": "5/8",
+      "4.1": "(2a+3)(2a-3)",
+      "4.2": "-1/2",
+      "4.3": "-12n+9",
+      "5.1": "x=-2.5",
+      "5.2": "y=0.3",
+      "6.1": "(4/15)x",
+      "6.2": 900,
+      "7.1": 5,
+      "7.2": 940,
+      "8.1": 152,
+      "8.2": 750,
+      "10.1": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9C-2023/image-8.png",
+      "10.2": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9C-2023/image-8.png",
+      "11.1": "Ano",
+      "11.2": "Ne",
+      "11.3": "Ano",
+      "15.1": "E",
+      "15.2": "A",
+      "15.3": "B",
+      "16.1": 380,
+      "16.2": 39,
+      "16.3": 207
+    },
+    "answers": {
+      "1": 7,
+      "9": "Konstrukce: Ze zadané úsečky AB sestrojte kružnici se středem A a poloměrem AB. Její průsečíky s přímkou p procházející bodem B určují možnou umístění vrcholu C. Pro každý výběr C pak sestrojte v pravém úhlu k AB přímku procházející A a její posun, aby byl vytvořen lichoběžník ABCD splňující podmínku, že úhlopříčka AC má délku AB. Výsledkem jsou dvě různá řešení.",
+      "12": "C",
+      "13": "D",
+      "14": "B",
+      "2.1": -3,
+      "2.2": 0.5,
+      "3.1": "4/7",
+      "3.2": "-2/5",
+      "3.3": "5/8",
+      "4.1": "(2a-3)(2a+3)",
+      "4.2": "-1/2",
+      "4.3": "-3*(4n-3)",
+      "5.1": "-2.5",
+      "5.2": "3/10",
+      "6.1": "x/3-60",
+      "6.2": 900,
+      "7.1": 5,
+      "7.2": 940,
+      "8.1": 152,
+      "8.2": 750,
+      "10.1": "Osou souměrnosti trojúhelníku ABC je kolmice na základnu AC procházející jejím středem. Sestročení této osy (označené písmenem o) realizujeme jako kolmá bisektrice úsečky AC.",
+      "10.2": "Vrchol B se určí jako průsečík přímky p s osou souměrnosti (kolmou bisektricí úsečky AC) tak, aby trojúhelník ABC byl rovnoramenný se základem AC.",
+      "11.1": "Ne",
+      "11.2": "Ano",
+      "11.3": "Ne",
+      "15.1": "E",
+      "15.2": "A",
+      "15.3": "B",
+      "16.1": 380,
+      "16.2": 39,
+      "16.3": 207
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 2,
+        "max": 2
+      },
+      "3": {
+        "v": 4,
+        "max": 4
+      },
+      "4": {
+        "v": 1,
+        "max": 4
+      },
+      "5": {
+        "v": 0,
+        "max": 4
+      },
+      "6": {
+        "v": 2,
+        "max": 3
+      },
+      "7": {
+        "v": 3,
+        "max": 3
+      },
+      "8": {
+        "v": 3,
+        "max": 3
+      },
+      "9": {
+        "v": 0,
+        "max": 3
+      },
+      "10": {
+        "v": 0,
+        "max": 3
+      },
+      "11": {
+        "v": 0,
+        "max": 4
+      },
+      "12": {
+        "v": 2,
+        "max": 2
+      },
+      "13": {
+        "v": 2,
+        "max": 2
+      },
+      "14": {
+        "v": 2,
+        "max": 2
+      },
+      "15": {
+        "v": 6,
+        "max": 6
+      },
+      "16": {
+        "v": 4,
+        "max": 4
+      }
+    }
+  },
+  "M9D-2023": {
+    "metadata": {
+      "info": {
+        "code": "M9PDD23C0T04",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 5,
+          "opened": 11
+        }
+      }
+    },
+    "subject": "math",
+    "grade": "4",
+    "totalAnswers": 32,
+    "totalPoints": 30,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "9": false,
+      "10": false,
+      "12": true,
+      "13": false,
+      "14": false,
+      "2.1": false,
+      "2.2": false,
+      "3.1": true,
+      "3.2": true,
+      "3.3": true,
+      "4.1": true,
+      "4.2": false,
+      "4.3": true,
+      "5.1": true,
+      "5.2": true,
+      "6.1": false,
+      "6.2": false,
+      "6.3": true,
+      "7.1": true,
+      "7.2": true,
+      "8.1": false,
+      "8.2": false,
+      "11.1": false,
+      "11.2": true,
+      "11.3": true,
+      "15.1": true,
+      "15.2": true,
+      "15.3": true,
+      "16.1": true,
+      "16.2": true,
+      "16.3": true
+    },
+    "correctAnswers": {
+      "1": 900,
+      "9": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9D-2023/image-9.png",
+      "10": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9D-2023/image-10.png",
+      "12": "B",
+      "13": "C",
+      "14": "A",
+      "2.1": 40,
+      "2.2": 28,
+      "3.1": "-3/8",
+      "3.2": "-7/6",
+      "3.3": "1/8",
+      "4.1": "0.09x^2+0.3x+0.25",
+      "4.2": "(7+4a)(7-4a)",
+      "4.3": "7n^2+5n+1",
+      "5.1": "x=4",
+      "5.2": "y=-9",
+      "6.1": "(4/3)p",
+      "6.2": "(8/5)p",
+      "6.3": 150,
+      "7.1": 21,
+      "7.2": 20,
+      "8.1": "6,10",
+      "8.2": "1,9",
+      "11.1": "Ano",
+      "11.2": "Ano",
+      "11.3": "Ne",
+      "15.1": "E",
+      "15.2": "B",
+      "15.3": "D",
+      "16.1": 45,
+      "16.2": 33,
+      "16.3": 900
+    },
+    "answers": {
+      "1": 900,
+      "9": "Konstrukčně lze vyjádřit všechny čtverce splňující podmínky – řešení není jedinečné, záleží na volbě umístění bodů.",
+      "10": "Konstrukce trojúhelníku vede ke dvěma odlišným řešením.",
+      "12": "B",
+      "13": "E",
+      "14": "B",
+      "2.1": 30,
+      "2.2": 20,
+      "3.1": "-3/8",
+      "3.2": "-7/6",
+      "3.3": "1/8",
+      "4.1": "0.09x^2+0.3x+0.25",
+      "4.2": "(7-4a)(7+4a)",
+      "4.3": "7n^2+5n+1",
+      "5.1": "x=4",
+      "5.2": "y=-9",
+      "6.1": "4/3p",
+      "6.2": "8/5p",
+      "6.3": 150,
+      "7.1": 21,
+      "7.2": 20,
+      "8.1": "3,7",
+      "8.2": "4,6",
+      "11.1": "Ne",
+      "11.2": "Ano",
+      "11.3": "Ne",
+      "15.1": "E",
+      "15.2": "B",
+      "15.3": "D",
+      "16.1": 45,
+      "16.2": 33,
+      "16.3": 900
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 0,
+        "max": 2
+      },
+      "3": {
+        "v": 4,
+        "max": 4
+      },
+      "4": {
+        "v": 3,
+        "max": 4
+      },
+      "5": {
+        "v": 4,
+        "max": 4
+      },
+      "6": {
+        "v": 1,
+        "max": 3
+      },
+      "7": {
+        "v": 3,
+        "max": 3
+      },
+      "8": {
+        "v": 0,
+        "max": 4
+      },
+      "9": {
+        "v": 0,
+        "max": 3
+      },
+      "10": {
+        "v": 0,
+        "max": 2
+      },
+      "11": {
+        "v": 2,
+        "max": 4
+      },
+      "12": {
+        "v": 2,
+        "max": 2
+      },
+      "13": {
+        "v": 0,
+        "max": 2
+      },
+      "14": {
+        "v": 0,
+        "max": 2
+      },
+      "15": {
+        "v": 6,
+        "max": 6
+      },
+      "16": {
+        "v": 4,
+        "max": 4
+      }
+    }
+  },
+  "MMA-2023": {
+    "metadata": {
+      "info": {
+        "code": "MAMZD23C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 11,
+          "opened": 14
+        }
+      }
+    },
+    "subject": "math",
+    "grade": "diploma",
+    "totalAnswers": 30,
+    "totalPoints": 29,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": true,
+      "3": false,
+      "4": false,
+      "5": false,
+      "6": false,
+      "7": false,
+      "9": false,
+      "10": false,
+      "11": false,
+      "12": false,
+      "14": true,
+      "16": true,
+      "17": true,
+      "18": true,
+      "19": true,
+      "20": false,
+      "21": true,
+      "22": true,
+      "23": true,
+      "24": true,
+      "8.1": false,
+      "8.2": false,
+      "13.1": true,
+      "13.2": false,
+      "15.1": true,
+      "15.2": true,
+      "15.3": true,
+      "25.1": true,
+      "25.2": true
+    },
+    "correctAnswers": {
+      "1": 25,
+      "2": 424,
+      "3": "1/2-x",
+      "4": "\\{-4;1\\}",
+      "5": "x=0, y=\\frac52",
+      "6": "\\{-1;9\\}",
+      "7": "-8/3",
+      "9": "\\[0;-\\frac{1}{2}\\]",
+      "10": "4\\pi3",
+      "11": 1,
+      "12": 1.4,
+      "14": 57,
+      "16": "B",
+      "17": "E",
+      "18": "B",
+      "19": "C",
+      "20": "A",
+      "21": "D",
+      "22": "C",
+      "23": "A",
+      "24": "E",
+      "8.1": "\\[2;-4\\]",
+      "8.2": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/diploma/MMA-2023/image-9.png",
+      "13.1": 4.6,
+      "13.2": 8.2,
+      "15.1": "Ano",
+      "15.2": "Ne",
+      "15.3": "Ne",
+      "25.1": "D",
+      "25.2": "C"
+    },
+    "answers": {
+      "1": 25,
+      "2": 424,
+      "3": "-1/(x-2)",
+      "4": "$x\\approx-4.445$",
+      "5": "$x=0,\\;y=\\frac{5}{2}$",
+      "6": "$k=0$",
+      "7": "x = -8/3",
+      "9": "$P = (0, -\\frac{1}{2})$",
+      "10": "$x = \\frac{4\\pi}{3}$",
+      "11": 2,
+      "12": 1.6,
+      "14": 57,
+      "16": "B",
+      "17": "E",
+      "18": "B",
+      "19": "C",
+      "20": "C",
+      "21": "D",
+      "22": "C",
+      "23": "A",
+      "24": "E",
+      "8.1": "$S = (2, -4)$",
+      "8.2": "$f(x) = -\\frac{5}{7}x - \\frac{18}{7}$",
+      "13.1": 4.6,
+      "13.2": 8.3,
+      "15.1": "Ano",
+      "15.2": "Ne",
+      "15.3": "Ne",
+      "25.1": "D",
+      "25.2": "C"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 1,
+        "max": 1
+      },
+      "3": {
+        "v": 0,
+        "max": 2
+      },
+      "4": {
+        "v": 0,
+        "max": 2
+      },
+      "5": {
+        "v": 0,
+        "max": 2
+      },
+      "6": {
+        "v": 0,
+        "max": 2
+      },
+      "7": {
+        "v": 0,
+        "max": 2
+      },
+      "8": {
+        "v": 0,
+        "max": 2
+      },
+      "9": {
+        "v": 0,
+        "max": 1
+      },
+      "10": {
+        "v": 0,
+        "max": 2
+      },
+      "11": {
+        "v": 0,
+        "max": 1
+      },
+      "12": {
+        "v": 0,
+        "max": 1
+      },
+      "13": {
+        "v": 1,
+        "max": 3
+      },
+      "14": {
+        "v": 3,
+        "max": 3
+      },
+      "15": {
+        "v": 3,
+        "max": 3
+      },
+      "16": {
+        "v": 2,
+        "max": 2
+      },
+      "17": {
+        "v": 2,
+        "max": 2
+      },
+      "18": {
+        "v": 2,
+        "max": 2
+      },
+      "19": {
+        "v": 2,
+        "max": 2
+      },
+      "20": {
+        "v": 0,
+        "max": 2
+      },
+      "21": {
+        "v": 2,
+        "max": 2
+      },
+      "22": {
+        "v": 2,
+        "max": 2
+      },
+      "23": {
+        "v": 2,
+        "max": 2
+      },
+      "24": {
+        "v": 2,
+        "max": 2
+      },
+      "25": {
+        "v": 4,
+        "max": 4
+      }
+    }
+  },
+  "MMB-2023": {
+    "metadata": {
+      "info": {
+        "code": "MAMZD23C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 11,
+          "opened": 14
+        }
+      }
+    },
+    "subject": "math",
+    "grade": "diploma",
+    "totalAnswers": 32,
+    "totalPoints": 27,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": false,
+      "3": true,
+      "4": false,
+      "6": false,
+      "8": false,
+      "9": true,
+      "11": false,
+      "12": false,
+      "14": true,
+      "16": true,
+      "17": true,
+      "18": false,
+      "19": true,
+      "20": false,
+      "21": true,
+      "22": true,
+      "23": false,
+      "24": true,
+      "5.1": false,
+      "5.2": false,
+      "7.1": false,
+      "7.2": false,
+      "10.1": true,
+      "10.2": false,
+      "13.1": false,
+      "13.2": false,
+      "15.1": true,
+      "15.2": true,
+      "15.3": true,
+      "25.1": true,
+      "25.2": true
+    },
+    "correctAnswers": {
+      "1": 22,
+      "2": "a=-3c/b^2+2",
+      "3": "2/x",
+      "4": "K={-1;2}",
+      "6": "3/2",
+      "8": "(-8;-6>",
+      "9": 3,
+      "11": "x=2+2t",
+      "12": "D[0;19]",
+      "14": 1040,
+      "16": "A",
+      "17": "C",
+      "18": "E",
+      "19": "B",
+      "20": "A",
+      "21": "B",
+      "22": "D",
+      "23": "D",
+      "24": "C",
+      "5.1": "64^{n+0.5}",
+      "5.2": "5^{2n-1}",
+      "7.1": "b_2=1/4",
+      "7.2": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/diploma/MMB-2023/graf.jpeg",
+      "10.1": 2.8,
+      "10.2": "(2.8-0.4x)",
+      "13.1": "35m^2",
+      "13.2": "613m^3",
+      "15.1": "Ne",
+      "15.2": "Ano",
+      "15.3": "Ano",
+      "25.1": "D",
+      "25.2": "E"
+    },
+    "answers": {
+      "1": 22,
+      "2": "a = -3c/(b^2+2)",
+      "3": "2/x",
+      "4": "x = 2, -1",
+      "6": "x = 3/2",
+      "8": "(-∞;-6]",
+      "9": 3,
+      "11": "10 - 10t",
+      "12": "(0;1)",
+      "14": 1040,
+      "16": "A",
+      "17": "C",
+      "18": "D",
+      "19": "B",
+      "20": "D",
+      "21": "B",
+      "22": "D",
+      "23": "A",
+      "24": "C",
+      "5.1": "64^{n+1/2}",
+      "5.2": "5^{3}",
+      "7.1": "1/4",
+      "7.2": "Graf funkce g: y = (1/2)^x, kde body A(-2;4) a B(2;1/4) leží na křivce.",
+      "10.1": 2.8,
+      "10.2": "40*(7-x)/100",
+      "13.1": "20",
+      "13.2": "100",
+      "15.1": "Ne",
+      "15.2": "Ano",
+      "15.3": "Ano",
+      "25.1": "D",
+      "25.2": "E"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 0,
+        "max": 1
+      },
+      "3": {
+        "v": 2,
+        "max": 2
+      },
+      "4": {
+        "v": 0,
+        "max": 2
+      },
+      "5": {
+        "v": 0,
+        "max": 2
+      },
+      "6": {
+        "v": 0,
+        "max": 2
+      },
+      "7": {
+        "v": 0,
+        "max": 2
+      },
+      "8": {
+        "v": 0,
+        "max": 1
+      },
+      "9": {
+        "v": 1,
+        "max": 1
+      },
+      "10": {
+        "v": 1,
+        "max": 2
+      },
+      "11": {
+        "v": 0,
+        "max": 1
+      },
+      "12": {
+        "v": 0,
+        "max": 1
+      },
+      "13": {
+        "v": 0,
+        "max": 4
+      },
+      "14": {
+        "v": 3,
+        "max": 3
+      },
+      "15": {
+        "v": 3,
+        "max": 3
+      },
+      "16": {
+        "v": 2,
+        "max": 2
+      },
+      "17": {
+        "v": 2,
+        "max": 2
+      },
+      "18": {
+        "v": 0,
+        "max": 2
+      },
+      "19": {
+        "v": 2,
+        "max": 2
+      },
+      "20": {
+        "v": 0,
+        "max": 2
+      },
+      "21": {
+        "v": 2,
+        "max": 2
+      },
+      "22": {
+        "v": 2,
+        "max": 2
+      },
+      "23": {
+        "v": 0,
+        "max": 2
+      },
+      "24": {
+        "v": 2,
+        "max": 2
+      },
+      "25": {
+        "v": 4,
+        "max": 4
+      }
+    }
+  },
+  "C5A-2024": {
+    "metadata": {
+      "info": {
+        "code": "C5PAD24C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 22,
+          "opened": 6
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "8",
+    "totalAnswers": 50,
+    "totalPoints": 26,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": false,
+      "3": true,
+      "7": true,
+      "8": true,
+      "10": false,
+      "11": false,
+      "13": true,
+      "14": false,
+      "16": true,
+      "17": false,
+      "19": true,
+      "20": false,
+      "21": false,
+      "22": false,
+      "23": true,
+      "24": false,
+      "26": true,
+      "27": true,
+      "4.1": false,
+      "4.2": false,
+      "5.1": true,
+      "5.2": true,
+      "5.3": true,
+      "5.4": true,
+      "6.1": true,
+      "6.2": true,
+      "6.3": true,
+      "9.1": true,
+      "9.2": false,
+      "9.3": true,
+      "9.4": true,
+      "12.1": false,
+      "12.2": false,
+      "12.3": true,
+      "12.4": true,
+      "15.1": false,
+      "15.2": true,
+      "18.1": true,
+      "18.2": false,
+      "18.3": true,
+      "18.4": false,
+      "25.1": true,
+      "25.2": true,
+      "25.3": true,
+      "25.4": true,
+      "28.1": false,
+      "28.2": false,
+      "28.3": true,
+      "28.4": false
+    },
+    "correctAnswers": {
+      "1": "C",
+      "2": "A",
+      "3": "D",
+      "7": "B",
+      "8": "C",
+      "10": "C",
+      "11": "B",
+      "13": "C",
+      "14": "E,B,D,C,A,F",
+      "16": "4,9,13",
+      "17": "zrcadly,kroužku,zaměřil,nechyběly",
+      "19": "jeho,té,nic",
+      "20": "A",
+      "21": "A",
+      "22": "A",
+      "23": "B",
+      "24": "Vystavili pět jeho děl.",
+      "26": "B",
+      "27": "C",
+      "4.1": "{\"podmět\":\"neděle\",\"přísudek\":\"bude patřit\"}",
+      "4.2": "{\"podmět\":\"jak učebny, tak hřiště\",\"přísudek\":\"upoutaly\"}",
+      "5.1": "Ano",
+      "5.2": "Ne",
+      "5.3": "Ano",
+      "5.4": "Ano",
+      "6.1": "E",
+      "6.2": "C",
+      "6.3": "B",
+      "9.1": "Ano",
+      "9.2": "Ano",
+      "9.3": "Ano",
+      "9.4": "Ano",
+      "12.1": "Ne",
+      "12.2": "Ne",
+      "12.3": "Ne",
+      "12.4": "Ne",
+      "15.1": "kteří budí důvěru",
+      "15.2": "promícháním těchto barev",
+      "18.1": "Ne",
+      "18.2": "Ano",
+      "18.3": "Ne",
+      "18.4": "Ano",
+      "25.1": "Ano",
+      "25.2": "Ne",
+      "25.3": "Ne",
+      "25.4": "Ano",
+      "28.1": "C",
+      "28.2": "A",
+      "28.3": "F",
+      "28.4": "B"
+    },
+    "answers": {
+      "1": "C",
+      "2": "C",
+      "3": "D",
+      "7": "B",
+      "8": "C",
+      "10": "D",
+      "11": "D",
+      "13": "C",
+      "14": "B,D,A,C,E,F",
+      "16": "4,9,13",
+      "17": "zrcadly,útlého,zaměřil,kroužek",
+      "19": "jeho,té,nic",
+      "20": "B",
+      "21": "D",
+      "22": "D",
+      "23": "B",
+      "24": "Děl padl do příkopu.",
+      "26": "B",
+      "27": "C",
+      "4.1": "{\"podmět\":\"Poslední srpnová neděle\",\"přísudek\":\"bude patřit fotbalovému utkání\"}",
+      "4.2": "{\"podmět\":\"počítačové učebny a hřiště\",\"přísudek\":\"upoutaly\"}",
+      "5.1": "Ano",
+      "5.2": "Ne",
+      "5.3": "Ano",
+      "5.4": "Ano",
+      "6.1": "E",
+      "6.2": "C",
+      "6.3": "B",
+      "9.1": "Ano",
+      "9.2": "Ne",
+      "9.3": "Ano",
+      "9.4": "Ano",
+      "12.1": "Ano",
+      "12.2": "Ano",
+      "12.3": "Ne",
+      "12.4": "Ne",
+      "15.1": "Patřil k lidem, a ti lidé budili důvěru.",
+      "15.2": "Promícháním těchto barev získáme požadovaný odstín.",
+      "18.1": "Ne",
+      "18.2": "Ne",
+      "18.3": "Ne",
+      "18.4": "Ne",
+      "25.1": "Ano",
+      "25.2": "Ne",
+      "25.3": "Ne",
+      "25.4": "Ano",
+      "28.1": "A",
+      "28.2": "C",
+      "28.3": "F",
+      "28.4": "D"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 0,
+        "max": 1
+      },
+      "3": {
+        "v": 1,
+        "max": 1
+      },
+      "4": {
+        "v": 0,
+        "max": 2
+      },
+      "5": {
+        "v": 2,
+        "max": 2
+      },
+      "6": {
+        "v": 3,
+        "max": 3
+      },
+      "7": {
+        "v": 1,
+        "max": 1
+      },
+      "8": {
+        "v": 1,
+        "max": 1
+      },
+      "9": {
+        "v": 1,
+        "max": 2
+      },
+      "10": {
+        "v": 0,
+        "max": 1
+      },
+      "11": {
+        "v": 0,
+        "max": 1
+      },
+      "12": {
+        "v": 0,
+        "max": 2
+      },
+      "13": {
+        "v": 1,
+        "max": 1
+      },
+      "14": {
+        "v": 0,
+        "max": 3
+      },
+      "15": {
+        "v": 1,
+        "max": 2
+      },
+      "16": {
+        "v": 3,
+        "max": 3
+      },
+      "17": {
+        "v": 2,
+        "max": 4
+      },
+      "18": {
+        "v": 0,
+        "max": 2
+      },
+      "19": {
+        "v": 3,
+        "max": 3
+      },
+      "20": {
+        "v": 0,
+        "max": 1
+      },
+      "21": {
+        "v": 0,
+        "max": 1
+      },
+      "22": {
+        "v": 0,
+        "max": 1
+      },
+      "23": {
+        "v": 1,
+        "max": 1
+      },
+      "24": {
+        "v": 0,
+        "max": 2
+      },
+      "25": {
+        "v": 2,
+        "max": 2
+      },
+      "26": {
+        "v": 1,
+        "max": 1
+      },
+      "27": {
+        "v": 1,
+        "max": 1
+      },
+      "28": {
+        "v": 1,
+        "max": 4
+      }
+    }
+  },
+  "C5A-2023": {
+    "metadata": {
+      "info": {
+        "code": "C5PAD23C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 22,
+          "opened": 6
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "8",
+    "totalAnswers": 50,
+    "totalPoints": 29,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": false,
+      "3": true,
+      "4": true,
+      "9": false,
+      "10": false,
+      "11": true,
+      "12": true,
+      "13": true,
+      "14": false,
+      "15": false,
+      "17": true,
+      "18": false,
+      "20": false,
+      "21": true,
+      "22": true,
+      "24": true,
+      "26": true,
+      "27": true,
+      "5.1": true,
+      "5.2": true,
+      "5.3": true,
+      "5.4": true,
+      "6.1": true,
+      "6.2": true,
+      "6.3": false,
+      "7.1": false,
+      "7.2": false,
+      "8.1": true,
+      "8.2": true,
+      "8.3": true,
+      "8.4": true,
+      "16.1": false,
+      "16.2": false,
+      "19.1": true,
+      "19.2": true,
+      "19.3": true,
+      "19.4": true,
+      "23.1": true,
+      "23.2": true,
+      "23.3": true,
+      "23.4": true,
+      "25.1": true,
+      "25.2": true,
+      "25.3": true,
+      "25.4": false,
+      "28.1": false,
+      "28.2": false,
+      "28.3": false,
+      "28.4": false
+    },
+    "correctAnswers": {
+      "1": "A",
+      "2": "B",
+      "3": "B",
+      "4": "B",
+      "9": "D",
+      "10": "B",
+      "11": "A",
+      "12": "C",
+      "13": "A",
+      "14": "Věta musí obsahovat bezchybně zapsané slovo stát a musí splňovat tyto\n  podmínky: a) výraz stát je jiným SD než ve VT; b) věta obsahuje přísudek;\n  c) věta je gramaticky správná; d) věta je\n  smysluplná; e) věta je pravopisně správná; f) věta obsahuje 4 slova.\n  Věta, která splňovala podmínky a)–c), ale obsahovala 1 chybu\n  (např. pravopisnou), byla hodnocena 1 bodem.\n  V ostatních případech bylo přiděleno 0 bodů.",
+      "15": "C,E,B,D,A,F",
+      "17": "čistota,důsledek,plavání",
+      "18": "vyzvídat,nerozuměl,autogramy,nejúžasnější",
+      "20": "kukátku,plánu,náhodě",
+      "21": "D",
+      "22": "C",
+      "24": "C",
+      "26": "D",
+      "27": "A",
+      "5.1": "Ano",
+      "5.2": "Ne",
+      "5.3": "Ne",
+      "5.4": "Ano",
+      "6.1": "E",
+      "6.2": "B",
+      "6.3": "D",
+      "7.1": "{\"podmět\":\"kousky\",\"přísudek\":\"se objeví\"}",
+      "7.2": "{\"podmět\":\"deště (a) záplavy\",\"přísudek\":\"zničily\"}",
+      "8.1": "Ne",
+      "8.2": "Ne",
+      "8.3": "Ne",
+      "8.4": "Ne",
+      "16.1": "např. Až skončí trénink, půjdeme do parku.",
+      "16.2": "např. Rozhodl jsem se napsat román.",
+      "19.1": "Ne",
+      "19.2": "Ne",
+      "19.3": "Ne",
+      "19.4": "Ano",
+      "23.1": "Ano",
+      "23.2": "Ne",
+      "23.3": "Ne",
+      "23.4": "Ano",
+      "25.1": "Ano",
+      "25.2": "Ne",
+      "25.3": "Ne",
+      "25.4": "Ano",
+      "28.1": "D",
+      "28.2": "C",
+      "28.3": "A",
+      "28.4": "E"
+    },
+    "answers": {
+      "1": "A",
+      "2": "A",
+      "3": "B",
+      "4": "B",
+      "9": "C",
+      "10": "C",
+      "11": "A",
+      "12": "C",
+      "13": "A",
+      "14": "Silný stát vítězí vždy.",
+      "15": "C,A,B,D,E,F",
+      "17": "čistota,důsledek,plavání",
+      "18": "připravil,vyzvídat,autogramy,nejúžasnější",
+      "20": "kukátku,Norbridgovi,dohodě",
+      "21": "D",
+      "22": "C",
+      "24": "C",
+      "26": "D",
+      "27": "A",
+      "5.1": "Ano",
+      "5.2": "Ne",
+      "5.3": "Ne",
+      "5.4": "Ano",
+      "6.1": "E",
+      "6.2": "B",
+      "6.3": "E",
+      "7.1": "{\"podmět\":\"vzácné kousky\",\"přísudek\":\"objeví\"}",
+      "7.2": "{\"podmět\":\"Loňské silné deště a s nimi související záplavy\",\"přísudek\":\"zničily\"}",
+      "8.1": "Ne",
+      "8.2": "Ne",
+      "8.3": "Ne",
+      "8.4": "Ne",
+      "16.1": "Až skončí trénink, půjdeme do parku.",
+      "16.2": "Rozhodl jsem se napsat román.",
+      "19.1": "Ne",
+      "19.2": "Ne",
+      "19.3": "Ne",
+      "19.4": "Ano",
+      "23.1": "Ano",
+      "23.2": "Ne",
+      "23.3": "Ne",
+      "23.4": "Ano",
+      "25.1": "Ano",
+      "25.2": "Ne",
+      "25.3": "Ne",
+      "25.4": "Ne",
+      "28.1": "A",
+      "28.2": "D",
+      "28.3": "E",
+      "28.4": "F"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 0,
+        "max": 1
+      },
+      "3": {
+        "v": 1,
+        "max": 1
+      },
+      "4": {
+        "v": 1,
+        "max": 1
+      },
+      "5": {
+        "v": 2,
+        "max": 2
+      },
+      "6": {
+        "v": 2,
+        "max": 3
+      },
+      "7": {
+        "v": 0,
+        "max": 2
+      },
+      "8": {
+        "v": 2,
+        "max": 2
+      },
+      "9": {
+        "v": 0,
+        "max": 1
+      },
+      "10": {
+        "v": 0,
+        "max": 1
+      },
+      "11": {
+        "v": 1,
+        "max": 1
+      },
+      "12": {
+        "v": 1,
+        "max": 1
+      },
+      "13": {
+        "v": 1,
+        "max": 1
+      },
+      "14": {
+        "v": 0,
+        "max": 2
+      },
+      "15": {
+        "v": 0,
+        "max": 3
+      },
+      "16": {
+        "v": 0,
+        "max": 2
+      },
+      "17": {
+        "v": 3,
+        "max": 3
+      },
+      "18": {
+        "v": 3,
+        "max": 4
+      },
+      "19": {
+        "v": 2,
+        "max": 2
+      },
+      "20": {
+        "v": 1,
+        "max": 3
+      },
+      "21": {
+        "v": 1,
+        "max": 1
+      },
+      "22": {
+        "v": 1,
+        "max": 1
+      },
+      "23": {
+        "v": 2,
+        "max": 2
+      },
+      "24": {
+        "v": 1,
+        "max": 1
+      },
+      "25": {
+        "v": 1,
+        "max": 2
+      },
+      "26": {
+        "v": 1,
+        "max": 1
+      },
+      "27": {
+        "v": 1,
+        "max": 1
+      },
+      "28": {
+        "v": 0,
+        "max": 4
+      }
+    }
+  },
+  "C5B-2023": {
+    "metadata": {
+      "info": {
+        "code": "C5PBD23C0T02",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 22,
+          "opened": 6
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "8",
+    "totalAnswers": 50,
+    "totalPoints": 26,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": true,
+      "3": true,
+      "4": true,
+      "8": true,
+      "9": true,
+      "11": true,
+      "12": true,
+      "13": false,
+      "14": false,
+      "16": true,
+      "17": false,
+      "19": false,
+      "20": true,
+      "21": false,
+      "23": true,
+      "24": false,
+      "26": true,
+      "27": true,
+      "5.1": true,
+      "5.2": false,
+      "5.3": true,
+      "5.4": false,
+      "6.1": true,
+      "6.2": true,
+      "6.3": false,
+      "7.1": false,
+      "7.2": false,
+      "10.1": true,
+      "10.2": true,
+      "10.3": true,
+      "10.4": true,
+      "15.1": false,
+      "15.2": false,
+      "18.1": true,
+      "18.2": true,
+      "18.3": true,
+      "18.4": false,
+      "22.1": true,
+      "22.2": true,
+      "22.3": true,
+      "22.4": false,
+      "25.1": true,
+      "25.2": true,
+      "25.3": true,
+      "25.4": true,
+      "28.1": false,
+      "28.2": false,
+      "28.3": false,
+      "28.4": false
+    },
+    "correctAnswers": {
+      "1": "B",
+      "2": "D",
+      "3": "D",
+      "4": "A",
+      "8": "A",
+      "9": "B",
+      "11": "C",
+      "12": "A",
+      "13": "C",
+      "14": "F,A,C,B,E,D",
+      "16": "taxi,menu,filé",
+      "17": "povinností,dědovi,holých,odměnu",
+      "19": "součástí,jinovatkou,křídly",
+      "20": "B",
+      "21": "B",
+      "23": "D",
+      "24": "např. Muž utekl bez placení.",
+      "26": "B",
+      "27": "B",
+      "5.1": "Ano",
+      "5.2": "Ne",
+      "5.3": "Ano",
+      "5.4": "Ne",
+      "6.1": "C",
+      "6.2": "B",
+      "6.3": "A",
+      "7.1": "{\"podmět\":\"(nejen) spolužáci, (ale i) učitelé\",\"přísudek\":\"se obávali\"}",
+      "7.2": "{\"podmět\":\"příjezd\",\"přísudek\":\"by zaskočil\"}",
+      "10.1": "Ne",
+      "10.2": "Ne",
+      "10.3": "Ano",
+      "10.4": "Ne",
+      "15.1": "např. S trenérem se sejdeme, než začne závod.",
+      "15.2": "např. Silnice vedoucí lesem je neprůjezdná.",
+      "18.1": "Ne",
+      "18.2": "Ne",
+      "18.3": "Ne",
+      "18.4": "Ano",
+      "22.1": "Ne",
+      "22.2": "Ne",
+      "22.3": "Ne",
+      "22.4": "Ano",
+      "25.1": "Ano",
+      "25.2": "Ne",
+      "25.3": "Ano",
+      "25.4": "Ne",
+      "28.1": "C",
+      "28.2": "D",
+      "28.3": "F",
+      "28.4": "A"
+    },
+    "answers": {
+      "1": "B",
+      "2": "D",
+      "3": "D",
+      "4": "A",
+      "8": "A",
+      "9": "B",
+      "11": "C",
+      "12": "A",
+      "13": "A",
+      "14": "F,E,B,D,A,C",
+      "16": "taxi,menu,filé",
+      "17": "dědovi,mávaním,tohoto,drakoleti",
+      "19": "drakem,křídly,máváním",
+      "20": "B",
+      "21": "D",
+      "23": "D",
+      "24": "Placení zlepšuje náš život.",
+      "26": "B",
+      "27": "B",
+      "5.1": "Ano",
+      "5.2": "Ano",
+      "5.3": "Ano",
+      "5.4": "Ano",
+      "6.1": "C",
+      "6.2": "B",
+      "6.3": "D",
+      "7.1": "{\"podmět\":\"mí spolužáci, ale i naši učitelé\",\"přísudek\":\"se obávali\"}",
+      "7.2": "{\"podmět\":\"dřívější příjezd rodičů z letní dovolené\",\"přísudek\":\"by zaskočil\"}",
+      "10.1": "Ne",
+      "10.2": "Ne",
+      "10.3": "Ano",
+      "10.4": "Ne",
+      "15.1": "Sejdeme se s trenérem, a to před začátkem závodu.",
+      "15.2": "Silnice vedoucí lesem je neprůjezdná.",
+      "18.1": "Ne",
+      "18.2": "Ne",
+      "18.3": "Ne",
+      "18.4": "Ne",
+      "22.1": "Ne",
+      "22.2": "Ne",
+      "22.3": "Ne",
+      "22.4": "Ne",
+      "25.1": "Ano",
+      "25.2": "Ne",
+      "25.3": "Ano",
+      "25.4": "Ne",
+      "28.1": "D",
+      "28.2": "F",
+      "28.3": "E",
+      "28.4": "C"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 1,
+        "max": 1
+      },
+      "3": {
+        "v": 1,
+        "max": 1
+      },
+      "4": {
+        "v": 1,
+        "max": 1
+      },
+      "5": {
+        "v": 0,
+        "max": 2
+      },
+      "6": {
+        "v": 2,
+        "max": 3
+      },
+      "7": {
+        "v": 0,
+        "max": 2
+      },
+      "8": {
+        "v": 1,
+        "max": 1
+      },
+      "9": {
+        "v": 1,
+        "max": 1
+      },
+      "10": {
+        "v": 2,
+        "max": 2
+      },
+      "11": {
+        "v": 1,
+        "max": 1
+      },
+      "12": {
+        "v": 1,
+        "max": 1
+      },
+      "13": {
+        "v": 0,
+        "max": 1
+      },
+      "14": {
+        "v": 0,
+        "max": 3
+      },
+      "15": {
+        "v": 0,
+        "max": 2
+      },
+      "16": {
+        "v": 3,
+        "max": 3
+      },
+      "17": {
+        "v": 1,
+        "max": 4
+      },
+      "18": {
+        "v": 1,
+        "max": 2
+      },
+      "19": {
+        "v": 1,
+        "max": 3
+      },
+      "20": {
+        "v": 1,
+        "max": 1
+      },
+      "21": {
+        "v": 0,
+        "max": 1
+      },
+      "22": {
+        "v": 1,
+        "max": 2
+      },
+      "23": {
+        "v": 1,
+        "max": 1
+      },
+      "24": {
+        "v": 1,
+        "max": 2
+      },
+      "25": {
+        "v": 2,
+        "max": 2
+      },
+      "26": {
+        "v": 1,
+        "max": 1
+      },
+      "27": {
+        "v": 1,
+        "max": 1
+      },
+      "28": {
+        "v": 0,
+        "max": 4
+      }
+    }
+  },
+  "C7A-2024": {
+    "metadata": {
+      "info": {
+        "code": "C7PAD24C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 22,
+          "opened": 6
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "6",
+    "totalAnswers": 51,
+    "totalPoints": 23,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": true,
+      "3": false,
+      "4": true,
+      "5": true,
+      "8": true,
+      "9": true,
+      "10": true,
+      "14": false,
+      "16": true,
+      "17": false,
+      "19": false,
+      "20": true,
+      "22": true,
+      "23": false,
+      "24": false,
+      "26": true,
+      "27": false,
+      "6.1": false,
+      "6.2": false,
+      "6.3": true,
+      "7.1": false,
+      "7.2": true,
+      "7.3": true,
+      "7.4": true,
+      "11.1": true,
+      "11.2": false,
+      "12.1": false,
+      "12.2": true,
+      "12.3": false,
+      "12.4": false,
+      "13.1": false,
+      "13.2": false,
+      "15.1": false,
+      "15.2": false,
+      "18.1": true,
+      "18.2": true,
+      "18.3": true,
+      "18.4": false,
+      "21.1": true,
+      "21.2": true,
+      "21.3": true,
+      "21.4": true,
+      "25.1": true,
+      "25.2": true,
+      "25.3": false,
+      "25.4": true,
+      "28.1": false,
+      "28.2": false,
+      "28.3": true,
+      "28.4": false
+    },
+    "correctAnswers": {
+      "1": "B",
+      "2": "A",
+      "3": "A",
+      "4": "D",
+      "5": "C",
+      "8": "A",
+      "9": "C",
+      "10": "B",
+      "14": "E,B,F,A,D,C",
+      "16": "4,7,11",
+      "17": "nevídaný,medaili,směle,zpochybňovat",
+      "19": "A",
+      "20": "D",
+      "22": "uprostřed,vedle,mezi",
+      "23": "C",
+      "24": "B",
+      "26": "D",
+      "27": "D",
+      "6.1": "C",
+      "6.2": "A",
+      "6.3": "E",
+      "7.1": "Ano",
+      "7.2": "Ano",
+      "7.3": "Ano",
+      "7.4": "Ano",
+      "11.1": "lhář",
+      "11.2": "smetí",
+      "12.1": "Ne",
+      "12.2": "Ano",
+      "12.3": "Ne",
+      "12.4": "Ano",
+      "13.1": "{\"podmet\":\"autobus\",\"prisudek\":\"by nenabral\"}",
+      "13.2": "{\"podmet\":\"ochota (a) schopnost\",\"prisudek\":\"patří\"}",
+      "15.1": "např. Přestože naléhal, nabídku odmítla.",
+      "15.2": "např. Sběr hub.",
+      "18.1": "Ne",
+      "18.2": "Ne",
+      "18.3": "Ne",
+      "18.4": "Ano",
+      "21.1": "Ano",
+      "21.2": "Ne",
+      "21.3": "Ne",
+      "21.4": "Ano",
+      "25.1": "Ne",
+      "25.2": "Ano",
+      "25.3": "Ano",
+      "25.4": "Ne",
+      "28.1": "C",
+      "28.2": "A",
+      "28.3": "F",
+      "28.4": "B"
+    },
+    "answers": {
+      "1": "B",
+      "2": "A",
+      "3": "D",
+      "4": "D",
+      "5": "C",
+      "8": "A",
+      "9": "C",
+      "10": "B",
+      "14": "E,B,A,D,C,F",
+      "16": "4,7,11",
+      "17": "nevydařený,dvoumetroví,městě,Minhově",
+      "19": "B",
+      "20": "D",
+      "22": "uprostřed,vedle,mezi",
+      "23": "B",
+      "24": "D",
+      "26": "D",
+      "27": "B",
+      "6.1": "D",
+      "6.2": "B",
+      "6.3": "E",
+      "7.1": "Ne",
+      "7.2": "Ano",
+      "7.3": "Ano",
+      "7.4": "Ano",
+      "11.1": "lhář",
+      "11.2": "zaměstnání",
+      "12.1": "Ano",
+      "12.2": "Ano",
+      "12.3": "Ano",
+      "12.4": "Ne",
+      "13.1": "{\"podmet\":\"dálkový autobus\",\"prisudek\":\"nenabral\"}",
+      "13.2": "{\"podmet\":\"ochota naslouchat a schopnost efektivně řešit různé problémy\",\"prisudek\":\"patří\"}",
+      "15.1": "On naléhal, ale ona nabídku odmítla.",
+      "15.2": "Zakázal mi sbírat houby.",
+      "18.1": "Ne",
+      "18.2": "Ne",
+      "18.3": "Ne",
+      "18.4": "Ne",
+      "21.1": "Ano",
+      "21.2": "Ne",
+      "21.3": "Ne",
+      "21.4": "Ano",
+      "25.1": "Ne",
+      "25.2": "Ano",
+      "25.3": "Ne",
+      "25.4": "Ne",
+      "28.1": "A",
+      "28.2": "D",
+      "28.3": "F",
+      "28.4": "C"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 1,
+        "max": 1
+      },
+      "3": {
+        "v": 0,
+        "max": 1
+      },
+      "4": {
+        "v": 1,
+        "max": 1
+      },
+      "5": {
+        "v": 1,
+        "max": 1
+      },
+      "6": {
+        "v": 1,
+        "max": 3
+      },
+      "7": {
+        "v": 1,
+        "max": 2
+      },
+      "8": {
+        "v": 1,
+        "max": 1
+      },
+      "9": {
+        "v": 1,
+        "max": 1
+      },
+      "10": {
+        "v": 1,
+        "max": 1
+      },
+      "11": {
+        "v": 1,
+        "max": 2
+      },
+      "12": {
+        "v": 0,
+        "max": 2
+      },
+      "13": {
+        "v": 0,
+        "max": 2
+      },
+      "14": {
+        "v": 0,
+        "max": 3
+      },
+      "15": {
+        "v": 0,
+        "max": 2
+      },
+      "16": {
+        "v": 3,
+        "max": 3
+      },
+      "17": {
+        "v": 0,
+        "max": 4
+      },
+      "18": {
+        "v": 1,
+        "max": 2
+      },
+      "19": {
+        "v": 0,
+        "max": 1
+      },
+      "20": {
+        "v": 1,
+        "max": 1
+      },
+      "21": {
+        "v": 2,
+        "max": 2
+      },
+      "22": {
+        "v": 3,
+        "max": 3
+      },
+      "23": {
+        "v": 0,
+        "max": 1
+      },
+      "24": {
+        "v": 0,
+        "max": 1
+      },
+      "25": {
+        "v": 1,
+        "max": 2
+      },
+      "26": {
+        "v": 1,
+        "max": 1
+      },
+      "27": {
+        "v": 0,
+        "max": 1
+      },
+      "28": {
+        "v": 1,
+        "max": 4
+      }
+    }
+  },
+  "C7A-2023": {
+    "metadata": {
+      "info": {
+        "code": "C7PAD23C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 22,
+          "opened": 6
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "6",
+    "totalAnswers": 50,
+    "totalPoints": 23,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": true,
+      "3": true,
+      "4": false,
+      "6": true,
+      "7": false,
+      "9": true,
+      "10": false,
+      "11": true,
+      "12": false,
+      "15": false,
+      "17": false,
+      "18": false,
+      "20": true,
+      "21": false,
+      "23": false,
+      "24": false,
+      "26": true,
+      "27": true,
+      "5.1": true,
+      "5.2": true,
+      "5.3": true,
+      "8.1": true,
+      "8.2": true,
+      "8.3": true,
+      "8.4": true,
+      "13.1": true,
+      "13.2": true,
+      "13.3": true,
+      "13.4": false,
+      "14.1": false,
+      "14.2": false,
+      "16.1": false,
+      "16.2": false,
+      "19.1": true,
+      "19.2": false,
+      "19.3": true,
+      "19.4": true,
+      "22.1": true,
+      "22.2": true,
+      "22.3": true,
+      "22.4": true,
+      "25.1": true,
+      "25.2": true,
+      "25.3": true,
+      "25.4": true,
+      "28.1": false,
+      "28.2": false,
+      "28.3": false,
+      "28.4": false
+    },
+    "correctAnswers": {
+      "1": "C",
+      "2": "A",
+      "3": "A",
+      "4": "např. Doma prohledal každý kout.",
+      "6": "D",
+      "7": "B",
+      "9": "A",
+      "10": "D",
+      "11": "B",
+      "12": "B",
+      "15": "C,A,D,F,E,B",
+      "17": "dějinách,úklidu,trhu",
+      "18": "skutečné,nerozuměl,autogramy,nejúžasnější",
+      "20": "C",
+      "21": "B",
+      "23": "dějinách,úklidu,trhu",
+      "24": "D",
+      "26": "B",
+      "27": "D",
+      "5.1": "E",
+      "5.2": "A",
+      "5.3": "B",
+      "8.1": "Ano",
+      "8.2": "Ano",
+      "8.3": "Ne",
+      "8.4": "Ne",
+      "13.1": "Ne",
+      "13.2": "Ano",
+      "13.3": "Ne",
+      "13.4": "Ano",
+      "14.1": "{\"podmet\":\"návštěva\",\"prisudek\":\"je považována\"}",
+      "14.2": "{\"podmet\":\"ne\",\"prisudek\":\"zahřálo\"}",
+      "16.1": "např. Učitelka informovala rodiče, že se chovám nevhodně.",
+      "16.2": "např. Parkoval na místě určeném jen pro zákazníky",
+      "19.1": "Ne",
+      "19.2": "Ne",
+      "19.3": "Ne",
+      "19.4": "Ne",
+      "22.1": "Ano",
+      "22.2": "Ano",
+      "22.3": "Ne",
+      "22.4": "Ne",
+      "25.1": "Ano",
+      "25.2": "Ano",
+      "25.3": "Ano",
+      "25.4": "Ne",
+      "28.1": "D",
+      "28.2": "C",
+      "28.3": "A",
+      "28.4": "E"
+    },
+    "answers": {
+      "1": "C",
+      "2": "A",
+      "3": "A",
+      "4": "Ten kout je chladný.",
+      "6": "D",
+      "7": "C",
+      "9": "A",
+      "10": "A",
+      "11": "B",
+      "12": "A",
+      "15": "C,D,F,E,A,B",
+      "17": "podpatek,bezdomovec,předsíň",
+      "18": "skutečné,zpočátku,autogramy,nejúžasnější",
+      "20": "C",
+      "21": "D",
+      "23": "úpatí,člunu,oknu",
+      "24": "C",
+      "26": "B",
+      "27": "D",
+      "5.1": "E",
+      "5.2": "A",
+      "5.3": "B",
+      "8.1": "Ano",
+      "8.2": "Ano",
+      "8.3": "Ne",
+      "8.4": "Ne",
+      "13.1": "Ne",
+      "13.2": "Ano",
+      "13.3": "Ne",
+      "13.4": "Ne",
+      "14.1": "{\"podmet\":\"Návštěva divadelního představení\",\"prisudek\":\"je považována\"}",
+      "14.2": "{\"podmet\":\"Její včerejší ne\",\"prisudek\":\"zahřálo\"}",
+      "16.1": "Učitelka informovala rodiče, že jsem se nevhodně choval.",
+      "16.2": "Parkoval na místě určeném jen pro zákazníky.",
+      "19.1": "Ne",
+      "19.2": "Ano",
+      "19.3": "Ne",
+      "19.4": "Ne",
+      "22.1": "Ano",
+      "22.2": "Ano",
+      "22.3": "Ne",
+      "22.4": "Ne",
+      "25.1": "Ano",
+      "25.2": "Ano",
+      "25.3": "Ano",
+      "25.4": "Ne",
+      "28.1": "F",
+      "28.2": "E",
+      "28.3": "D",
+      "28.4": "C"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 1,
+        "max": 1
+      },
+      "3": {
+        "v": 1,
+        "max": 1
+      },
+      "4": {
+        "v": 0,
+        "max": 2
+      },
+      "5": {
+        "v": 3,
+        "max": 3
+      },
+      "6": {
+        "v": 1,
+        "max": 1
+      },
+      "7": {
+        "v": 0,
+        "max": 1
+      },
+      "8": {
+        "v": 2,
+        "max": 2
+      },
+      "9": {
+        "v": 1,
+        "max": 1
+      },
+      "10": {
+        "v": 0,
+        "max": 1
+      },
+      "11": {
+        "v": 1,
+        "max": 1
+      },
+      "12": {
+        "v": 0,
+        "max": 1
+      },
+      "13": {
+        "v": 1,
+        "max": 2
+      },
+      "14": {
+        "v": 0,
+        "max": 2
+      },
+      "15": {
+        "v": 0,
+        "max": 3
+      },
+      "16": {
+        "v": 0,
+        "max": 2
+      },
+      "17": {
+        "v": 0,
+        "max": 3
+      },
+      "18": {
+        "v": 3,
+        "max": 4
+      },
+      "19": {
+        "v": 1,
+        "max": 2
+      },
+      "20": {
+        "v": 1,
+        "max": 1
+      },
+      "21": {
+        "v": 0,
+        "max": 1
+      },
+      "22": {
+        "v": 2,
+        "max": 2
+      },
+      "23": {
+        "v": 0,
+        "max": 3
+      },
+      "24": {
+        "v": 0,
+        "max": 1
+      },
+      "25": {
+        "v": 2,
+        "max": 2
+      },
+      "26": {
+        "v": 1,
+        "max": 1
+      },
+      "27": {
+        "v": 1,
+        "max": 1
+      },
+      "28": {
+        "v": 0,
+        "max": 4
+      }
+    }
+  },
+  "C9I-2025": {
+    "metadata": {
+      "info": {
+        "code": "C9PND25C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 24,
+          "opened": 6
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "4",
+    "totalAnswers": 51,
+    "totalPoints": 28,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": true,
+      "3": false,
+      "4": false,
+      "7": true,
+      "8": true,
+      "9": false,
+      "10": true,
+      "11": true,
+      "14": false,
+      "15": false,
+      "16": false,
+      "20": false,
+      "21": true,
+      "22": true,
+      "23": true,
+      "24": true,
+      "26": true,
+      "27": true,
+      "28": true,
+      "5.1": false,
+      "5.2": true,
+      "5.3": false,
+      "5.4": false,
+      "6.1": true,
+      "6.2": true,
+      "6.3": true,
+      "6.4": true,
+      "12.1": true,
+      "12.2": true,
+      "12.3": true,
+      "12.4": false,
+      "13.1": false,
+      "13.2": false,
+      "17.1": true,
+      "17.2": false,
+      "18.1": false,
+      "18.2": false,
+      "18.3": true,
+      "18.4": false,
+      "19.1": true,
+      "19.2": true,
+      "25.1": true,
+      "25.2": true,
+      "25.3": true,
+      "25.4": true,
+      "29.1": true,
+      "29.2": false,
+      "30.1": true,
+      "30.2": false,
+      "30.3": false
+    },
+    "correctAnswers": {
+      "1": "D",
+      "2": "D",
+      "3": "C",
+      "4": "C",
+      "7": "oceánu,místech,diskusích",
+      "8": "C",
+      "9": "D",
+      "10": "A",
+      "11": "A",
+      "14": "C,F,D,B,E,A",
+      "15": "oblíbeným,zběhlý,sebevědomě,probrali",
+      "16": "C",
+      "20": "A",
+      "21": "A",
+      "22": "D",
+      "23": "D",
+      "24": "B",
+      "26": "B",
+      "27": "A",
+      "28": "A",
+      "5.1": "F",
+      "5.2": "D",
+      "5.3": "E",
+      "5.4": "C",
+      "6.1": "Ne",
+      "6.2": "Ne",
+      "6.3": "Ne",
+      "6.4": "Ne",
+      "12.1": "Ano",
+      "12.2": "Ano",
+      "12.3": "Ne",
+      "12.4": "Ano",
+      "13.1": "{\"podmět\":\"příležitost\",\"přísudek\":\"se naskytla\"}",
+      "13.2": "{\"podmět\":\"úroda\",\"přísudek\":\"bude menší\"}",
+      "17.1": "provaz",
+      "17.2": "stébla",
+      "18.1": "Ano",
+      "18.2": "Ne",
+      "18.3": "Ne",
+      "18.4": "Ano",
+      "19.1": "malý",
+      "19.2": "raněných",
+      "25.1": "Ano",
+      "25.2": "Ano",
+      "25.3": "Ano",
+      "25.4": "Ne",
+      "29.1": "kategoriích",
+      "29.2": "závodícími",
+      "30.1": "B",
+      "30.2": "E",
+      "30.3": "A"
+    },
+    "answers": {
+      "1": "D",
+      "2": "D",
+      "3": "D",
+      "4": "D",
+      "7": "oceánu,diskusích,místech",
+      "8": "C",
+      "9": "C",
+      "10": "A",
+      "11": "A",
+      "14": "C,D,B,A,E,F",
+      "15": "oblíbeným,zběhlý,bez újmy,spletenými",
+      "16": "B",
+      "20": "C",
+      "21": "A",
+      "22": "D",
+      "23": "D",
+      "24": "B",
+      "26": "B",
+      "27": "A",
+      "28": "A",
+      "5.1": "C",
+      "5.2": "D",
+      "5.3": "B",
+      "5.4": "A",
+      "6.1": "Ne",
+      "6.2": "Ne",
+      "6.3": "Ne",
+      "6.4": "Ne",
+      "12.1": "Ano",
+      "12.2": "Ano",
+      "12.3": "Ne",
+      "12.4": "Ne",
+      "13.1": "{\"podmět\":\"skvělá příležitost\",\"přísudek\":\"naskytla se\"}",
+      "13.2": "{\"podmět\":\"letošní úroda meruněk a švestek\",\"přísudek\":\"bude daleko menší\"}",
+      "17.1": "provaz",
+      "17.2": "lano",
+      "18.1": "Ne",
+      "18.2": "Ano",
+      "18.3": "Ne",
+      "18.4": "Ne",
+      "19.1": "malý",
+      "19.2": "raněných",
+      "25.1": "Ano",
+      "25.2": "Ano",
+      "25.3": "Ano",
+      "25.4": "Ne",
+      "29.1": "kategoriích",
+      "29.2": "závodili",
+      "30.1": "B",
+      "30.2": "A",
+      "30.3": "C"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 1,
+        "max": 1
+      },
+      "3": {
+        "v": 0,
+        "max": 1
+      },
+      "4": {
+        "v": 0,
+        "max": 1
+      },
+      "5": {
+        "v": 1,
+        "max": 4
+      },
+      "6": {
+        "v": 2,
+        "max": 2
+      },
+      "7": {
+        "v": 3,
+        "max": 3
+      },
+      "8": {
+        "v": 1,
+        "max": 1
+      },
+      "9": {
+        "v": 0,
+        "max": 1
+      },
+      "10": {
+        "v": 1,
+        "max": 1
+      },
+      "11": {
+        "v": 1,
+        "max": 1
+      },
+      "12": {
+        "v": 1,
+        "max": 2
+      },
+      "13": {
+        "v": 0,
+        "max": 2
+      },
+      "14": {
+        "v": 0,
+        "max": 3
+      },
+      "15": {
+        "v": 2,
+        "max": 4
+      },
+      "16": {
+        "v": 0,
+        "max": 1
+      },
+      "17": {
+        "v": 1,
+        "max": 2
+      },
+      "18": {
+        "v": 0,
+        "max": 2
+      },
+      "19": {
+        "v": 2,
+        "max": 2
+      },
+      "20": {
+        "v": 0,
+        "max": 1
+      },
+      "21": {
+        "v": 1,
+        "max": 1
+      },
+      "22": {
+        "v": 1,
+        "max": 1
+      },
+      "23": {
+        "v": 1,
+        "max": 1
+      },
+      "24": {
+        "v": 1,
+        "max": 1
+      },
+      "25": {
+        "v": 2,
+        "max": 2
+      },
+      "26": {
+        "v": 1,
+        "max": 1
+      },
+      "27": {
+        "v": 1,
+        "max": 1
+      },
+      "28": {
+        "v": 1,
+        "max": 1
+      },
+      "29": {
+        "v": 1,
+        "max": 2
+      },
+      "30": {
+        "v": 1,
+        "max": 3
+      }
+    }
+  },
+  "C9A-2024": {
+    "metadata": {
+      "info": {
+        "code": "C9PAD24C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 24,
+          "opened": 6
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "4",
+    "totalAnswers": 49,
+    "totalPoints": 33,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": true,
+      "3": false,
+      "4": true,
+      "7": false,
+      "8": true,
+      "9": true,
+      "10": true,
+      "11": true,
+      "14": true,
+      "15": false,
+      "16": true,
+      "17": false,
+      "19": true,
+      "20": true,
+      "21": false,
+      "22": true,
+      "23": false,
+      "24": false,
+      "26": true,
+      "27": true,
+      "28": false,
+      "5.1": true,
+      "5.2": true,
+      "5.3": true,
+      "6.1": true,
+      "6.2": true,
+      "6.3": false,
+      "6.4": true,
+      "12.1": true,
+      "12.2": false,
+      "12.3": false,
+      "12.4": false,
+      "13.1": false,
+      "13.2": false,
+      "18.1": true,
+      "18.2": true,
+      "18.3": false,
+      "18.4": true,
+      "25.1": true,
+      "25.2": true,
+      "25.3": true,
+      "25.4": true,
+      "29.1": false,
+      "29.2": true,
+      "30.1": false,
+      "30.2": true,
+      "30.3": true,
+      "30.4": true
+    },
+    "correctAnswers": {
+      "1": "B",
+      "2": "A",
+      "3": "C",
+      "4": "B",
+      "7": "zhruba,totiž,během",
+      "8": "D",
+      "9": "D",
+      "10": "C",
+      "11": "B",
+      "14": "D,B,E,A,C,F",
+      "15": "průkazku,dané,Oskarovi,my",
+      "16": "C",
+      "17": "vítr",
+      "19": "B",
+      "20": "A",
+      "21": "A",
+      "22": "C",
+      "23": "D",
+      "24": "závislý,důrazný,podlomený",
+      "26": "A",
+      "27": "B",
+      "28": "D",
+      "5.1": "D",
+      "5.2": "B",
+      "5.3": "C",
+      "6.1": "Ano",
+      "6.2": "Ano",
+      "6.3": "Ne",
+      "6.4": "Ne",
+      "12.1": "Ano",
+      "12.2": "Ne",
+      "12.3": "Ano",
+      "12.4": "Ne",
+      "13.1": "{\"podmet\":\"materiály\",\"prisudek\":\"budou vytvořeny\"}",
+      "13.2": "{\"podmet\":\"bylinky, (ale i) koření\",\"prisudek\":\"dodávají\"}",
+      "18.1": "Ano",
+      "18.2": "Ne",
+      "18.3": "Ne",
+      "18.4": "Ne",
+      "25.1": "Ne",
+      "25.2": "Ano",
+      "25.3": "Ne",
+      "25.4": "Ne",
+      "29.1": "vyrobenými",
+      "29.2": "umístěných",
+      "30.1": "A",
+      "30.2": "E",
+      "30.3": "C",
+      "30.4": "F"
+    },
+    "answers": {
+      "1": "B",
+      "2": "A",
+      "3": "A",
+      "4": "B",
+      "7": "poprvé,zhruba,totiž",
+      "8": "D",
+      "9": "D",
+      "10": "C",
+      "11": "B",
+      "14": "D,B,E,A,C,F",
+      "15": "průkazku,dětscí,jakákoliv,dané",
+      "16": "C",
+      "17": "pán",
+      "19": "B",
+      "20": "A",
+      "21": "C",
+      "22": "C",
+      "23": "A",
+      "24": "důrazný,bezbřehý,podlomený",
+      "26": "A",
+      "27": "B",
+      "28": "B",
+      "5.1": "D",
+      "5.2": "B",
+      "5.3": "C",
+      "6.1": "Ano",
+      "6.2": "Ano",
+      "6.3": "Ano",
+      "6.4": "Ne",
+      "12.1": "Ano",
+      "12.2": "Ano",
+      "12.3": "Ne",
+      "12.4": "Ano",
+      "13.1": "{\"podmet\":\"speciální informační materiály\",\"prisudek\":\"budou vytvořeny\"}",
+      "13.2": "{\"podmet\":\"čerstvé bylinky, ale i exotické koření\",\"prisudek\":\"dodávají\"}",
+      "18.1": "Ano",
+      "18.2": "Ne",
+      "18.3": "Ano",
+      "18.4": "Ne",
+      "25.1": "Ne",
+      "25.2": "Ano",
+      "25.3": "Ne",
+      "25.4": "Ne",
+      "29.1": "vyrobené",
+      "29.2": "umístěných",
+      "30.1": "B",
+      "30.2": "E",
+      "30.3": "C",
+      "30.4": "F"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 1,
+        "max": 1
+      },
+      "3": {
+        "v": 0,
+        "max": 1
+      },
+      "4": {
+        "v": 1,
+        "max": 1
+      },
+      "5": {
+        "v": 3,
+        "max": 3
+      },
+      "6": {
+        "v": 1,
+        "max": 2
+      },
+      "7": {
+        "v": 2,
+        "max": 3
+      },
+      "8": {
+        "v": 1,
+        "max": 1
+      },
+      "9": {
+        "v": 1,
+        "max": 1
+      },
+      "10": {
+        "v": 1,
+        "max": 1
+      },
+      "11": {
+        "v": 1,
+        "max": 1
+      },
+      "12": {
+        "v": 0,
+        "max": 2
+      },
+      "13": {
+        "v": 0,
+        "max": 2
+      },
+      "14": {
+        "v": 3,
+        "max": 3
+      },
+      "15": {
+        "v": 2,
+        "max": 4
+      },
+      "16": {
+        "v": 1,
+        "max": 1
+      },
+      "17": {
+        "v": 0,
+        "max": 1
+      },
+      "18": {
+        "v": 1,
+        "max": 2
+      },
+      "19": {
+        "v": 1,
+        "max": 1
+      },
+      "20": {
+        "v": 1,
+        "max": 1
+      },
+      "21": {
+        "v": 0,
+        "max": 1
+      },
+      "22": {
+        "v": 1,
+        "max": 1
+      },
+      "23": {
+        "v": 0,
+        "max": 1
+      },
+      "24": {
+        "v": 2,
+        "max": 3
+      },
+      "25": {
+        "v": 2,
+        "max": 2
+      },
+      "26": {
+        "v": 1,
+        "max": 1
+      },
+      "27": {
+        "v": 1,
+        "max": 1
+      },
+      "28": {
+        "v": 0,
+        "max": 1
+      },
+      "29": {
+        "v": 1,
+        "max": 2
+      },
+      "30": {
+        "v": 3,
+        "max": 4
+      }
+    }
+  },
+  "C9B-2024": {
+    "metadata": {
+      "info": {
+        "code": "C9PAD24C0T02",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 24,
+          "opened": 6
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "4",
+    "totalAnswers": 49,
+    "totalPoints": 30,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": true,
+      "3": true,
+      "4": true,
+      "7": true,
+      "8": true,
+      "9": true,
+      "10": false,
+      "11": true,
+      "14": false,
+      "15": false,
+      "16": true,
+      "17": false,
+      "19": true,
+      "20": false,
+      "21": true,
+      "22": false,
+      "23": false,
+      "24": false,
+      "26": false,
+      "27": true,
+      "28": false,
+      "5.1": false,
+      "5.2": false,
+      "5.3": false,
+      "6.1": true,
+      "6.2": true,
+      "6.3": true,
+      "6.4": true,
+      "12.1": true,
+      "12.2": true,
+      "12.3": true,
+      "12.4": false,
+      "13.1": true,
+      "13.2": false,
+      "18.1": true,
+      "18.2": true,
+      "18.3": true,
+      "18.4": true,
+      "25.1": true,
+      "25.2": true,
+      "25.3": true,
+      "25.4": true,
+      "29.1": false,
+      "29.2": true,
+      "30.1": true,
+      "30.2": true,
+      "30.3": true,
+      "30.4": true
+    },
+    "correctAnswers": {
+      "1": "A",
+      "2": "C",
+      "3": "B",
+      "4": "D",
+      "7": "sousední,pravým,nezkrotnou",
+      "8": "A",
+      "9": "D",
+      "10": "B",
+      "11": "D",
+      "14": "F,E,B,D,A,C",
+      "15": "modely,objevíte,strávit,dospělí",
+      "16": "A",
+      "17": "hroší",
+      "19": "A",
+      "20": "B",
+      "21": "D",
+      "22": "C",
+      "23": "C",
+      "24": "příslovce,rýč,dobrman",
+      "26": "C",
+      "27": "C",
+      "28": "D",
+      "5.1": "E",
+      "5.2": "B",
+      "5.3": "C",
+      "6.1": "Ne",
+      "6.2": "Ano",
+      "6.3": "Ano",
+      "6.4": "Ano",
+      "12.1": "Ne",
+      "12.2": "Ano",
+      "12.3": "Ano",
+      "12.4": "Ne",
+      "13.1": "{\"podmet\":\"Někdo\",\"prisudek\":\"nechal\"}",
+      "13.2": "{\"podmet\":\"kamarádky\",\"prisudek\":\"by nedoporučily\"}",
+      "18.1": "Ano",
+      "18.2": "Ne",
+      "18.3": "Ne",
+      "18.4": "Ne",
+      "25.1": "Ne",
+      "25.2": "Ne",
+      "25.3": "Ne",
+      "25.4": "Ano",
+      "29.1": "vydaných",
+      "29.2": "zaslané",
+      "30.1": "C",
+      "30.2": "D",
+      "30.3": "B",
+      "30.4": "E"
+    },
+    "answers": {
+      "1": "A",
+      "2": "C",
+      "3": "B",
+      "4": "D",
+      "7": "pravým,sousední,nezkrotnou",
+      "8": "A",
+      "9": "D",
+      "10": "C",
+      "11": "D",
+      "14": "A,B,C,D,E,F",
+      "15": "dospělí,dotyční,odcházejí,sháněli",
+      "16": "A",
+      "17": "měkkou",
+      "19": "A",
+      "20": "C",
+      "21": "D",
+      "22": "B",
+      "23": "A",
+      "24": "dobrman,zub,příslovce",
+      "26": "A",
+      "27": "C",
+      "28": "B",
+      "5.1": "B",
+      "5.2": "A",
+      "5.3": "E",
+      "6.1": "Ne",
+      "6.2": "Ano",
+      "6.3": "Ano",
+      "6.4": "Ano",
+      "12.1": "Ne",
+      "12.2": "Ano",
+      "12.3": "Ano",
+      "12.4": "Ano",
+      "13.1": "{\"podmet\":\"Někdo\",\"prisudek\":\"nechal\"}",
+      "13.2": "{\"podmet\":\"dobré kamarádky\",\"prisudek\":\"nedoporučily\"}",
+      "18.1": "Ano",
+      "18.2": "Ne",
+      "18.3": "Ne",
+      "18.4": "Ne",
+      "25.1": "Ne",
+      "25.2": "Ne",
+      "25.3": "Ne",
+      "25.4": "Ano",
+      "29.1": "vydaná",
+      "29.2": "zaslané",
+      "30.1": "C",
+      "30.2": "D",
+      "30.3": "B",
+      "30.4": "E"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 1,
+        "max": 1
+      },
+      "3": {
+        "v": 1,
+        "max": 1
+      },
+      "4": {
+        "v": 1,
+        "max": 1
+      },
+      "5": {
+        "v": 0,
+        "max": 3
+      },
+      "6": {
+        "v": 2,
+        "max": 2
+      },
+      "7": {
+        "v": 3,
+        "max": 3
+      },
+      "8": {
+        "v": 1,
+        "max": 1
+      },
+      "9": {
+        "v": 1,
+        "max": 1
+      },
+      "10": {
+        "v": 0,
+        "max": 1
+      },
+      "11": {
+        "v": 1,
+        "max": 1
+      },
+      "12": {
+        "v": 1,
+        "max": 2
+      },
+      "13": {
+        "v": 1,
+        "max": 2
+      },
+      "14": {
+        "v": 0,
+        "max": 3
+      },
+      "15": {
+        "v": 1,
+        "max": 4
+      },
+      "16": {
+        "v": 1,
+        "max": 1
+      },
+      "17": {
+        "v": 0,
+        "max": 1
+      },
+      "18": {
+        "v": 2,
+        "max": 2
+      },
+      "19": {
+        "v": 1,
+        "max": 1
+      },
+      "20": {
+        "v": 0,
+        "max": 1
+      },
+      "21": {
+        "v": 1,
+        "max": 1
+      },
+      "22": {
+        "v": 0,
+        "max": 1
+      },
+      "23": {
+        "v": 0,
+        "max": 1
+      },
+      "24": {
+        "v": 2,
+        "max": 3
+      },
+      "25": {
+        "v": 2,
+        "max": 2
+      },
+      "26": {
+        "v": 0,
+        "max": 1
+      },
+      "27": {
+        "v": 1,
+        "max": 1
+      },
+      "28": {
+        "v": 0,
+        "max": 1
+      },
+      "29": {
+        "v": 1,
+        "max": 2
+      },
+      "30": {
+        "v": 4,
+        "max": 4
+      }
+    }
+  },
+  "C9C-2024": {
+    "metadata": {
+      "info": {
+        "code": "C9PCD24C0T03",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 24,
+          "opened": 6
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "4",
+    "totalAnswers": 49,
+    "totalPoints": 29,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": false,
+      "2": false,
+      "3": false,
+      "4": false,
+      "8": false,
+      "9": true,
+      "10": true,
+      "11": true,
+      "12": false,
+      "14": false,
+      "15": false,
+      "16": false,
+      "17": true,
+      "18": false,
+      "20": true,
+      "21": false,
+      "22": true,
+      "23": true,
+      "24": true,
+      "26": true,
+      "27": true,
+      "28": true,
+      "5.1": false,
+      "5.2": false,
+      "6.1": false,
+      "6.2": false,
+      "6.3": false,
+      "7.1": true,
+      "7.2": true,
+      "7.3": true,
+      "7.4": true,
+      "13.1": false,
+      "13.2": true,
+      "13.3": true,
+      "13.4": true,
+      "19.1": true,
+      "19.2": true,
+      "19.3": true,
+      "19.4": false,
+      "25.1": true,
+      "25.2": true,
+      "25.3": true,
+      "25.4": true,
+      "29.1": true,
+      "29.2": true,
+      "30.1": true,
+      "30.2": true,
+      "30.3": true,
+      "30.4": true
+    },
+    "correctAnswers": {
+      "1": "A",
+      "2": "B",
+      "3": "C",
+      "4": "B",
+      "8": "A",
+      "9": "A",
+      "10": "C",
+      "11": "D",
+      "12": "a,či,že",
+      "14": "nadávka,podíl,předlouhý",
+      "15": "A,D,B,F,E,C",
+      "16": "týdenní,nalákaly,soutěsky,extrémně",
+      "17": "C",
+      "18": "nemastná",
+      "20": "B",
+      "21": "C",
+      "22": "A",
+      "23": "D",
+      "24": "D",
+      "26": "C",
+      "27": "B",
+      "28": "D",
+      "5.1": "{\"podmět\":\"(nejen) spánek, (ale i) strava\",\"přísudek\":\"chybí\"}",
+      "5.2": "{\"podmět\":\"sklenice\",\"přísudek\":\"byly osvěžením\"}",
+      "6.1": "D",
+      "6.2": "B",
+      "6.3": "A",
+      "7.1": "Ne",
+      "7.2": "Ano",
+      "7.3": "Ne",
+      "7.4": "Ano",
+      "13.1": "Ano",
+      "13.2": "Ano",
+      "13.3": "Ano",
+      "13.4": "Ne",
+      "19.1": "Ne",
+      "19.2": "Ano",
+      "19.3": "Ne",
+      "19.4": "Ano",
+      "25.1": "Ne",
+      "25.2": "Ano",
+      "25.3": "Ne",
+      "25.4": "Ne",
+      "29.1": "provedeného",
+      "29.2": "předloženou",
+      "30.1": "E",
+      "30.2": "A",
+      "30.3": "D",
+      "30.4": "C"
+    },
+    "answers": {
+      "1": "C",
+      "2": "A",
+      "3": "B",
+      "4": "C",
+      "8": "C",
+      "9": "A",
+      "10": "C",
+      "11": "D",
+      "12": "a,i,či",
+      "14": "podíl,podklad,nadávka",
+      "15": "A,B,D,C,E,F",
+      "16": "týdenní,Soča,lanami,extrémně",
+      "17": "C",
+      "18": "okurka",
+      "20": "B",
+      "21": "A",
+      "22": "A",
+      "23": "D",
+      "24": "D",
+      "26": "C",
+      "27": "B",
+      "28": "D",
+      "5.1": "{\"podmět\":\"kvalitní spánek a vyvážená strava\",\"přísudek\":\"chybí\"}",
+      "5.2": "{\"podmět\":\"sklenice vychlazené limonády\",\"přísudek\":\"byly vítaným osvěžením\"}",
+      "6.1": "B",
+      "6.2": "A",
+      "6.3": "D",
+      "7.1": "Ne",
+      "7.2": "Ano",
+      "7.3": "Ne",
+      "7.4": "Ano",
+      "13.1": "Ne",
+      "13.2": "Ano",
+      "13.3": "Ano",
+      "13.4": "Ne",
+      "19.1": "Ne",
+      "19.2": "Ano",
+      "19.3": "Ne",
+      "19.4": "Ne",
+      "25.1": "Ne",
+      "25.2": "Ano",
+      "25.3": "Ne",
+      "25.4": "Ne",
+      "29.1": "provedeného",
+      "29.2": "předloženou",
+      "30.1": "E",
+      "30.2": "A",
+      "30.3": "D",
+      "30.4": "C"
+    },
+    "points": {
+      "1": {
+        "v": 0,
+        "max": 1
+      },
+      "2": {
+        "v": 0,
+        "max": 1
+      },
+      "3": {
+        "v": 0,
+        "max": 1
+      },
+      "4": {
+        "v": 0,
+        "max": 1
+      },
+      "5": {
+        "v": 0,
+        "max": 2
+      },
+      "6": {
+        "v": 0,
+        "max": 3
+      },
+      "7": {
+        "v": 2,
+        "max": 2
+      },
+      "8": {
+        "v": 0,
+        "max": 1
+      },
+      "9": {
+        "v": 1,
+        "max": 1
+      },
+      "10": {
+        "v": 1,
+        "max": 1
+      },
+      "11": {
+        "v": 1,
+        "max": 1
+      },
+      "12": {
+        "v": 2,
+        "max": 3
+      },
+      "13": {
+        "v": 1,
+        "max": 2
+      },
+      "14": {
+        "v": 2,
+        "max": 3
+      },
+      "15": {
+        "v": 0,
+        "max": 3
+      },
+      "16": {
+        "v": 2,
+        "max": 4
+      },
+      "17": {
+        "v": 1,
+        "max": 1
+      },
+      "18": {
+        "v": 0,
+        "max": 1
+      },
+      "19": {
+        "v": 1,
+        "max": 2
+      },
+      "20": {
+        "v": 1,
+        "max": 1
+      },
+      "21": {
+        "v": 0,
+        "max": 1
+      },
+      "22": {
+        "v": 1,
+        "max": 1
+      },
+      "23": {
+        "v": 1,
+        "max": 1
+      },
+      "24": {
+        "v": 1,
+        "max": 1
+      },
+      "25": {
+        "v": 2,
+        "max": 2
+      },
+      "26": {
+        "v": 1,
+        "max": 1
+      },
+      "27": {
+        "v": 1,
+        "max": 1
+      },
+      "28": {
+        "v": 1,
+        "max": 1
+      },
+      "29": {
+        "v": 2,
+        "max": 2
+      },
+      "30": {
+        "v": 4,
+        "max": 4
+      }
+    }
+  },
+  "C9D-2024": {
+    "metadata": {
+      "info": {
+        "code": "C9PDD24C0T04",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 24,
+          "opened": 6
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "4",
+    "totalAnswers": 49,
+    "totalPoints": 28,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": true,
+      "3": false,
+      "4": true,
+      "8": true,
+      "9": true,
+      "10": true,
+      "11": true,
+      "12": true,
+      "14": false,
+      "15": false,
+      "16": false,
+      "17": true,
+      "18": false,
+      "20": true,
+      "21": false,
+      "22": false,
+      "23": true,
+      "24": true,
+      "26": false,
+      "27": true,
+      "28": false,
+      "5.1": false,
+      "5.2": false,
+      "6.1": false,
+      "6.2": false,
+      "6.3": false,
+      "7.1": true,
+      "7.2": true,
+      "7.3": true,
+      "7.4": true,
+      "13.1": true,
+      "13.2": true,
+      "13.3": false,
+      "13.4": false,
+      "19.1": true,
+      "19.2": true,
+      "19.3": true,
+      "19.4": true,
+      "25.1": true,
+      "25.2": true,
+      "25.3": true,
+      "25.4": true,
+      "29.1": true,
+      "29.2": true,
+      "30.1": true,
+      "30.2": false,
+      "30.3": true,
+      "30.4": true
+    },
+    "correctAnswers": {
+      "1": "D",
+      "2": "C",
+      "3": "B",
+      "4": "B",
+      "8": "C",
+      "9": "C",
+      "10": "D",
+      "11": "B",
+      "12": "kromě,díky,podle",
+      "14": "zauzený,zneuctěný,samouk",
+      "15": "B,D,A,F,E,C",
+      "16": "bezobratlých,spletly,změti,zpočátku",
+      "17": "C",
+      "18": "^(honit|honiti)$",
+      "20": "A",
+      "21": "B",
+      "22": "A",
+      "23": "C",
+      "24": "D",
+      "26": "A",
+      "27": "A",
+      "28": "D",
+      "5.1": "{\"podmět\":\"radní\",\"přísudek\":\"musí projednat\"}",
+      "5.2": "{\"podmět\":\"ty\",\"přísudek\":\"bys pomohla\"}",
+      "6.1": "D",
+      "6.2": "A",
+      "6.3": "E",
+      "7.1": "Ne",
+      "7.2": "Ne",
+      "7.3": "Ne",
+      "7.4": "Ano",
+      "13.1": "Ne",
+      "13.2": "Ne",
+      "13.3": "Ano",
+      "13.4": "Ano",
+      "19.1": "Ano",
+      "19.2": "Ne",
+      "19.3": "Ne",
+      "19.4": "Ano",
+      "25.1": "Ano",
+      "25.2": "Ne",
+      "25.3": "Ne",
+      "25.4": "Ne",
+      "29.1": "uznávaného",
+      "29.2": "vyhovujícímu",
+      "30.1": "E",
+      "30.2": "A",
+      "30.3": "F",
+      "30.4": "B"
+    },
+    "answers": {
+      "1": "D",
+      "2": "C",
+      "3": "C",
+      "4": "B",
+      "8": "C",
+      "9": "C",
+      "10": "D",
+      "11": "B",
+      "12": "kromě,díky,podle",
+      "14": "eunuch,eukalyptus,zneuctěný",
+      "15": "B,A,C,D,E,F",
+      "16": "Milovice,bezobratlých,zmatení,splétli",
+      "17": "C",
+      "18": "litovat",
+      "20": "A",
+      "21": "C",
+      "22": "D",
+      "23": "C",
+      "24": "D",
+      "26": "C",
+      "27": "A",
+      "28": "A",
+      "5.1": "{\"podmět\":\"příslušní radní obou měst\",\"přísudek\":\"musí projednat\"}",
+      "5.2": "{\"podmět\":\"ty\",\"přísudek\":\"pomohla\"}",
+      "6.1": "A",
+      "6.2": "B",
+      "6.3": "D",
+      "7.1": "Ne",
+      "7.2": "Ne",
+      "7.3": "Ne",
+      "7.4": "Ano",
+      "13.1": "Ne",
+      "13.2": "Ne",
+      "13.3": "Ne",
+      "13.4": "Ne",
+      "19.1": "Ano",
+      "19.2": "Ne",
+      "19.3": "Ne",
+      "19.4": "Ano",
+      "25.1": "Ano",
+      "25.2": "Ne",
+      "25.3": "Ne",
+      "25.4": "Ne",
+      "29.1": "uznávaného",
+      "29.2": "vyhovujícímu",
+      "30.1": "E",
+      "30.2": "D",
+      "30.3": "F",
+      "30.4": "B"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 1,
+        "max": 1
+      },
+      "3": {
+        "v": 0,
+        "max": 1
+      },
+      "4": {
+        "v": 1,
+        "max": 1
+      },
+      "5": {
+        "v": 0,
+        "max": 2
+      },
+      "6": {
+        "v": 0,
+        "max": 3
+      },
+      "7": {
+        "v": 2,
+        "max": 2
+      },
+      "8": {
+        "v": 1,
+        "max": 1
+      },
+      "9": {
+        "v": 1,
+        "max": 1
+      },
+      "10": {
+        "v": 1,
+        "max": 1
+      },
+      "11": {
+        "v": 1,
+        "max": 1
+      },
+      "12": {
+        "v": 3,
+        "max": 3
+      },
+      "13": {
+        "v": 0,
+        "max": 2
+      },
+      "14": {
+        "v": 1,
+        "max": 3
+      },
+      "15": {
+        "v": 0,
+        "max": 3
+      },
+      "16": {
+        "v": 1,
+        "max": 4
+      },
+      "17": {
+        "v": 1,
+        "max": 1
+      },
+      "18": {
+        "v": 0,
+        "max": 1
+      },
+      "19": {
+        "v": 2,
+        "max": 2
+      },
+      "20": {
+        "v": 1,
+        "max": 1
+      },
+      "21": {
+        "v": 0,
+        "max": 1
+      },
+      "22": {
+        "v": 0,
+        "max": 1
+      },
+      "23": {
+        "v": 1,
+        "max": 1
+      },
+      "24": {
+        "v": 1,
+        "max": 1
+      },
+      "25": {
+        "v": 2,
+        "max": 2
+      },
+      "26": {
+        "v": 0,
+        "max": 1
+      },
+      "27": {
+        "v": 1,
+        "max": 1
+      },
+      "28": {
+        "v": 0,
+        "max": 1
+      },
+      "29": {
+        "v": 2,
+        "max": 2
+      },
+      "30": {
+        "v": 3,
+        "max": 4
+      }
+    }
+  },
+  "C9A-2023": {
+    "metadata": {
+      "info": {
+        "code": "C9PAD23C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 24,
+          "opened": 6
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "4",
+    "totalAnswers": 50,
+    "totalPoints": 32,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": true,
+      "3": true,
+      "4": false,
+      "5": true,
+      "9": true,
+      "10": true,
+      "11": false,
+      "12": false,
+      "15": false,
+      "17": false,
+      "18": false,
+      "20": true,
+      "21": true,
+      "22": true,
+      "23": true,
+      "24": true,
+      "26": true,
+      "27": true,
+      "28": true,
+      "29": true,
+      "6.1": true,
+      "6.2": true,
+      "6.3": true,
+      "7.1": true,
+      "7.2": true,
+      "8.1": true,
+      "8.2": true,
+      "8.3": true,
+      "8.4": true,
+      "13.1": false,
+      "13.2": true,
+      "13.3": true,
+      "13.4": false,
+      "14.1": false,
+      "14.2": false,
+      "16.1": false,
+      "16.2": false,
+      "19.1": true,
+      "19.2": true,
+      "19.3": true,
+      "19.4": true,
+      "25.1": true,
+      "25.2": true,
+      "25.3": true,
+      "25.4": true,
+      "30.1": true,
+      "30.2": false,
+      "30.3": false,
+      "30.4": false
+    },
+    "correctAnswers": {
+      "1": "D",
+      "2": "B",
+      "3": "C",
+      "4": "D",
+      "5": "C",
+      "9": "je,vaše",
+      "10": "A",
+      "11": "D",
+      "12": "C",
+      "15": "B,A,F,C,E,D",
+      "17": "A",
+      "18": "nejvýznamnějším,spjatý,tradičně,knihomoly",
+      "20": "A",
+      "21": "A",
+      "22": "B",
+      "23": "C",
+      "24": "B",
+      "26": "dějinách,úklidu,trhu",
+      "27": "B",
+      "28": "D",
+      "29": "C",
+      "6.1": "A",
+      "6.2": "E",
+      "6.3": "D",
+      "7.1": "řeč",
+      "7.2": "srovnání",
+      "8.1": "Ne",
+      "8.2": "Ne",
+      "8.3": "Ne",
+      "8.4": "Ne",
+      "13.1": "Ne",
+      "13.2": "Ano",
+      "13.3": "Ano",
+      "13.4": "Ano",
+      "14.1": "zvyklému",
+      "14.2": "prožitého",
+      "16.1": "{\"podmet\":\"závan\",\"prisudek\":\"byl osvěžující\"}",
+      "16.2": "{\"podmet\":\"lidé\",\"prisudek\":\"by mohli žít\"}",
+      "19.1": "Ano",
+      "19.2": "Ano",
+      "19.3": "Ne",
+      "19.4": "Ano",
+      "25.1": "Ano",
+      "25.2": "Ne",
+      "25.3": "Ano",
+      "25.4": "Ne",
+      "30.1": "A",
+      "30.2": "D",
+      "30.3": "E",
+      "30.4": "C"
+    },
+    "answers": {
+      "1": "D",
+      "2": "B",
+      "3": "C",
+      "4": "B",
+      "5": "C",
+      "9": "je,vaše",
+      "10": "A",
+      "11": "C",
+      "12": "D",
+      "15": "B,A,C,D,E,F",
+      "17": "C",
+      "18": "spjatý,na kterou,významné,tradičně",
+      "20": "A",
+      "21": "A",
+      "22": "B",
+      "23": "C",
+      "24": "B",
+      "26": "dějinách,úklidu,trhu",
+      "27": "B",
+      "28": "D",
+      "29": "C",
+      "6.1": "A",
+      "6.2": "E",
+      "6.3": "D",
+      "7.1": "řeč",
+      "7.2": "srovnání",
+      "8.1": "Ne",
+      "8.2": "Ne",
+      "8.3": "Ne",
+      "8.4": "Ne",
+      "13.1": "Ano",
+      "13.2": "Ano",
+      "13.3": "Ano",
+      "13.4": "Ne",
+      "14.1": "zvykle",
+      "14.2": "prožitě",
+      "16.1": "{\"podmet\":\"Závan horského větru\",\"prisudek\":\"byl osvěžující\"}",
+      "16.2": "{\"podmet\":\"dnešní lidé\",\"prisudek\":\"mohli by žít\"}",
+      "19.1": "Ano",
+      "19.2": "Ano",
+      "19.3": "Ne",
+      "19.4": "Ano",
+      "25.1": "Ano",
+      "25.2": "Ne",
+      "25.3": "Ano",
+      "25.4": "Ne",
+      "30.1": "A",
+      "30.2": "C",
+      "30.3": "F",
+      "30.4": "B"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 1,
+        "max": 1
+      },
+      "3": {
+        "v": 1,
+        "max": 1
+      },
+      "4": {
+        "v": 0,
+        "max": 1
+      },
+      "5": {
+        "v": 1,
+        "max": 1
+      },
+      "6": {
+        "v": 3,
+        "max": 3
+      },
+      "7": {
+        "v": 2,
+        "max": 2
+      },
+      "8": {
+        "v": 2,
+        "max": 2
+      },
+      "9": {
+        "v": 2,
+        "max": 2
+      },
+      "10": {
+        "v": 1,
+        "max": 1
+      },
+      "11": {
+        "v": 0,
+        "max": 1
+      },
+      "12": {
+        "v": 0,
+        "max": 1
+      },
+      "13": {
+        "v": 0,
+        "max": 2
+      },
+      "14": {
+        "v": 0,
+        "max": 2
+      },
+      "15": {
+        "v": 0,
+        "max": 3
+      },
+      "16": {
+        "v": 0,
+        "max": 2
+      },
+      "17": {
+        "v": 0,
+        "max": 1
+      },
+      "18": {
+        "v": 2,
+        "max": 4
+      },
+      "19": {
+        "v": 2,
+        "max": 2
+      },
+      "20": {
+        "v": 1,
+        "max": 1
+      },
+      "21": {
+        "v": 1,
+        "max": 1
+      },
+      "22": {
+        "v": 1,
+        "max": 1
+      },
+      "23": {
+        "v": 1,
+        "max": 1
+      },
+      "24": {
+        "v": 1,
+        "max": 1
+      },
+      "25": {
+        "v": 2,
+        "max": 2
+      },
+      "26": {
+        "v": 3,
+        "max": 3
+      },
+      "27": {
+        "v": 1,
+        "max": 1
+      },
+      "28": {
+        "v": 1,
+        "max": 1
+      },
+      "29": {
+        "v": 1,
+        "max": 1
+      },
+      "30": {
+        "v": 1,
+        "max": 4
+      }
+    }
+  },
+  "C9B-2023": {
+    "metadata": {
+      "info": {
+        "code": "C9PBD23C0T02",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 24,
+          "opened": 6
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "4",
+    "totalAnswers": 50,
+    "totalPoints": 26,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": true,
+      "3": false,
+      "4": true,
+      "5": false,
+      "8": true,
+      "9": true,
+      "10": false,
+      "11": false,
+      "14": false,
+      "16": true,
+      "18": false,
+      "19": true,
+      "20": false,
+      "22": false,
+      "23": true,
+      "24": false,
+      "26": true,
+      "27": false,
+      "28": true,
+      "29": true,
+      "6.1": true,
+      "6.2": true,
+      "6.3": true,
+      "7.1": false,
+      "7.2": true,
+      "7.3": true,
+      "7.4": true,
+      "12.1": true,
+      "12.2": true,
+      "12.3": false,
+      "12.4": false,
+      "13.1": false,
+      "13.2": false,
+      "15.1": true,
+      "15.2": true,
+      "17.1": false,
+      "17.2": false,
+      "21.1": true,
+      "21.2": true,
+      "21.3": true,
+      "21.4": true,
+      "25.1": true,
+      "25.2": true,
+      "25.3": true,
+      "25.4": true,
+      "30.1": true,
+      "30.2": false,
+      "30.3": true,
+      "30.4": false
+    },
+    "correctAnswers": {
+      "1": "A",
+      "2": "B",
+      "3": "A",
+      "4": "B",
+      "5": "B",
+      "8": "C",
+      "9": "A",
+      "10": "D",
+      "11": "podobu,turisty,kouzlo",
+      "14": "D,B,E,C,A,F",
+      "16": "D",
+      "18": "favoritům,hlavolamy,střežený,zločinného",
+      "19": "D",
+      "20": "C",
+      "22": "C",
+      "23": "D",
+      "24": "C",
+      "26": "D",
+      "27": "A",
+      "28": "oproti,mezi",
+      "29": "A",
+      "6.1": "C",
+      "6.2": "B",
+      "6.3": "D",
+      "7.1": "Ne",
+      "7.2": "Ne",
+      "7.3": "Ne",
+      "7.4": "Ano",
+      "12.1": "Ano",
+      "12.2": "Ne",
+      "12.3": "Ano",
+      "12.4": "Ne",
+      "13.1": "jedlý",
+      "13.2": "obránce",
+      "15.1": "zaměřených",
+      "15.2": "způsobenými",
+      "17.1": "{\"podmět\":\"zákusky\",\"přísudek\":\"byly připraveny\"}",
+      "17.2": "{\"podmět\":\"větve (i) kmeny\",\"přísudek\":\"se lámaly\"}",
+      "21.1": "Ne",
+      "21.2": "Ne",
+      "21.3": "Ne",
+      "21.4": "Ne",
+      "25.1": "Ano",
+      "25.2": "Ne",
+      "25.3": "Ano",
+      "25.4": "Ne",
+      "30.1": "A",
+      "30.2": "E",
+      "30.3": "C",
+      "30.4": "B"
+    },
+    "answers": {
+      "1": "A",
+      "2": "B",
+      "3": "C",
+      "4": "B",
+      "5": "D",
+      "8": "C",
+      "9": "A",
+      "10": "C",
+      "11": "sídlo,stavba,podobu",
+      "14": "D,A,C,B,E,F",
+      "16": "D",
+      "18": "favoritům,ztřeštěný,zločineckého,čidla",
+      "19": "D",
+      "20": "A",
+      "22": "B",
+      "23": "D",
+      "24": "B",
+      "26": "D",
+      "27": "D",
+      "28": "oproti,mezi",
+      "29": "A",
+      "6.1": "C",
+      "6.2": "B",
+      "6.3": "D",
+      "7.1": "Ano",
+      "7.2": "Ne",
+      "7.3": "Ne",
+      "7.4": "Ano",
+      "12.1": "Ano",
+      "12.2": "Ne",
+      "12.3": "Ne",
+      "12.4": "Ano",
+      "13.1": "Jedlý",
+      "13.2": "Obránce",
+      "15.1": "zaměřených",
+      "15.2": "způsobenými",
+      "17.1": "{\"podmět\":\"lahodné zákusky\",\"přísudek\":\"byly připraveny\"}",
+      "17.2": "{\"podmět\":\"větve dubů i celé kmeny okolních borovic\",\"přísudek\":\"se lámaly\"}",
+      "21.1": "Ne",
+      "21.2": "Ne",
+      "21.3": "Ne",
+      "21.4": "Ne",
+      "25.1": "Ano",
+      "25.2": "Ne",
+      "25.3": "Ano",
+      "25.4": "Ne",
+      "30.1": "A",
+      "30.2": "B",
+      "30.3": "C",
+      "30.4": "E"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 1,
+        "max": 1
+      },
+      "3": {
+        "v": 0,
+        "max": 1
+      },
+      "4": {
+        "v": 1,
+        "max": 1
+      },
+      "5": {
+        "v": 0,
+        "max": 1
+      },
+      "6": {
+        "v": 3,
+        "max": 3
+      },
+      "7": {
+        "v": 1,
+        "max": 2
+      },
+      "8": {
+        "v": 1,
+        "max": 1
+      },
+      "9": {
+        "v": 1,
+        "max": 1
+      },
+      "10": {
+        "v": 0,
+        "max": 1
+      },
+      "11": {
+        "v": 1,
+        "max": 3
+      },
+      "12": {
+        "v": 0,
+        "max": 2
+      },
+      "13": {
+        "v": 0,
+        "max": 2
+      },
+      "14": {
+        "v": 0,
+        "max": 3
+      },
+      "15": {
+        "v": 2,
+        "max": 2
+      },
+      "16": {
+        "v": 1,
+        "max": 1
+      },
+      "17": {
+        "v": 0,
+        "max": 2
+      },
+      "18": {
+        "v": 1,
+        "max": 4
+      },
+      "19": {
+        "v": 1,
+        "max": 1
+      },
+      "20": {
+        "v": 0,
+        "max": 1
+      },
+      "21": {
+        "v": 2,
+        "max": 2
+      },
+      "22": {
+        "v": 0,
+        "max": 1
+      },
+      "23": {
+        "v": 1,
+        "max": 1
+      },
+      "24": {
+        "v": 0,
+        "max": 1
+      },
+      "25": {
+        "v": 2,
+        "max": 2
+      },
+      "26": {
+        "v": 1,
+        "max": 1
+      },
+      "27": {
+        "v": 0,
+        "max": 1
+      },
+      "28": {
+        "v": 2,
+        "max": 2
+      },
+      "29": {
+        "v": 1,
+        "max": 1
+      },
+      "30": {
+        "v": 2,
+        "max": 4
+      }
+    }
+  },
+  "C9C-2023": {
+    "metadata": {
+      "info": {
+        "code": "C9PCD23C0T03",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 24,
+          "opened": 6
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "4",
+    "totalAnswers": 51,
+    "totalPoints": 36,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": false,
+      "3": true,
+      "4": true,
+      "5": false,
+      "6": true,
+      "9": false,
+      "10": true,
+      "11": false,
+      "12": true,
+      "15": false,
+      "17": true,
+      "18": true,
+      "20": true,
+      "21": true,
+      "22": true,
+      "23": true,
+      "26": true,
+      "27": true,
+      "29": true,
+      "7.1": true,
+      "7.2": true,
+      "7.3": true,
+      "8.1": false,
+      "8.2": true,
+      "8.3": true,
+      "8.4": true,
+      "13.1": true,
+      "13.2": true,
+      "13.3": false,
+      "13.4": true,
+      "14.1": true,
+      "14.2": false,
+      "16.1": true,
+      "16.2": true,
+      "19.1": true,
+      "19.2": true,
+      "19.3": true,
+      "19.4": true,
+      "24.1": false,
+      "24.2": false,
+      "25.1": true,
+      "25.2": true,
+      "25.3": true,
+      "25.4": true,
+      "28.1": true,
+      "28.2": true,
+      "30.1": true,
+      "30.2": false,
+      "30.3": true,
+      "30.4": false
+    },
+    "correctAnswers": {
+      "1": "D",
+      "2": "D",
+      "3": "A",
+      "4": "A",
+      "5": "C",
+      "6": "C",
+      "9": "A",
+      "10": "D",
+      "11": "C",
+      "12": "netvorovi,příteli,bytu",
+      "15": "B,E,C,F,A,D",
+      "17": "B",
+      "18": "zvolí,poměrně,zkušené,nedotčené",
+      "20": "B",
+      "21": "D",
+      "22": "C",
+      "23": "B",
+      "26": "A",
+      "27": "D",
+      "29": "A",
+      "7.1": "E",
+      "7.2": "A",
+      "7.3": "B",
+      "8.1": "Ano",
+      "8.2": "Ne",
+      "8.3": "Ne",
+      "8.4": "Ne",
+      "13.1": "Ano",
+      "13.2": "Ano",
+      "13.3": "Ano",
+      "13.4": "Ano",
+      "14.1": "{\"podmět\":\"porada\",\"přísudek\":\"přesvědčila\"}",
+      "14.2": "{\"podmět\":\"nápad\",\"přísudek\":\"není praštěný\"}",
+      "16.1": "pořádaném",
+      "16.2": "článkem",
+      "19.1": "Ano",
+      "19.2": "Ano",
+      "19.3": "Ne",
+      "19.4": "Ne",
+      "24.1": "občerstvení",
+      "24.2": "dávka",
+      "25.1": "Ano",
+      "25.2": "Ne",
+      "25.3": "Ne",
+      "25.4": "Ne",
+      "28.1": "přívlastek",
+      "28.2": "předmět",
+      "30.1": "D",
+      "30.2": "E",
+      "30.3": "C",
+      "30.4": "A"
+    },
+    "answers": {
+      "1": "D",
+      "2": "C",
+      "3": "A",
+      "4": "A",
+      "5": "D",
+      "6": "C",
+      "9": "C",
+      "10": "D",
+      "11": "A",
+      "12": "netvorovi,příteli,bytu",
+      "15": "B,E,C,A,D,F",
+      "17": "B",
+      "18": "zvolí,zkušené,poměrně,nedotčené",
+      "20": "B",
+      "21": "D",
+      "22": "C",
+      "23": "B",
+      "26": "A",
+      "27": "D",
+      "29": "A",
+      "7.1": "E",
+      "7.2": "A",
+      "7.3": "B",
+      "8.1": "Ne",
+      "8.2": "Ne",
+      "8.3": "Ne",
+      "8.4": "Ne",
+      "13.1": "Ano",
+      "13.2": "Ano",
+      "13.3": "Ne",
+      "13.4": "Ano",
+      "14.1": "{\"podmět\":\"porada\",\"přísudek\":\"přesvědčila\"}",
+      "14.2": "{\"podmět\":\"ten jeho nápad\",\"přísudek\":\"není\"}",
+      "16.1": "pořádaném",
+      "16.2": "článkem",
+      "19.1": "Ano",
+      "19.2": "Ano",
+      "19.3": "Ne",
+      "19.4": "Ne",
+      "24.1": "zčerstvení",
+      "24.2": "dání",
+      "25.1": "Ano",
+      "25.2": "Ne",
+      "25.3": "Ne",
+      "25.4": "Ne",
+      "28.1": "přívlastek",
+      "28.2": "předmět",
+      "30.1": "D",
+      "30.2": "B",
+      "30.3": "C",
+      "30.4": "E"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 0,
+        "max": 1
+      },
+      "3": {
+        "v": 1,
+        "max": 1
+      },
+      "4": {
+        "v": 1,
+        "max": 1
+      },
+      "5": {
+        "v": 0,
+        "max": 1
+      },
+      "6": {
+        "v": 1,
+        "max": 1
+      },
+      "7": {
+        "v": 3,
+        "max": 3
+      },
+      "8": {
+        "v": 1,
+        "max": 2
+      },
+      "9": {
+        "v": 0,
+        "max": 1
+      },
+      "10": {
+        "v": 1,
+        "max": 1
+      },
+      "11": {
+        "v": 0,
+        "max": 1
+      },
+      "12": {
+        "v": 3,
+        "max": 3
+      },
+      "13": {
+        "v": 1,
+        "max": 2
+      },
+      "14": {
+        "v": 1,
+        "max": 2
+      },
+      "15": {
+        "v": 0,
+        "max": 3
+      },
+      "16": {
+        "v": 2,
+        "max": 2
+      },
+      "17": {
+        "v": 1,
+        "max": 1
+      },
+      "18": {
+        "v": 4,
+        "max": 4
+      },
+      "19": {
+        "v": 2,
+        "max": 2
+      },
+      "20": {
+        "v": 1,
+        "max": 1
+      },
+      "21": {
+        "v": 1,
+        "max": 1
+      },
+      "22": {
+        "v": 1,
+        "max": 1
+      },
+      "23": {
+        "v": 1,
+        "max": 1
+      },
+      "24": {
+        "v": 0,
+        "max": 2
+      },
+      "25": {
+        "v": 2,
+        "max": 2
+      },
+      "26": {
+        "v": 1,
+        "max": 1
+      },
+      "27": {
+        "v": 1,
+        "max": 1
+      },
+      "28": {
+        "v": 2,
+        "max": 2
+      },
+      "29": {
+        "v": 1,
+        "max": 1
+      },
+      "30": {
+        "v": 2,
+        "max": 4
+      }
+    }
+  },
+  "C9D-2023": {
+    "metadata": {
+      "info": {
+        "code": "C9PDD23C0T04",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 24,
+          "opened": 6
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "4",
+    "totalAnswers": 51,
+    "totalPoints": 34,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": true,
+      "3": true,
+      "4": true,
+      "9": true,
+      "10": true,
+      "11": false,
+      "12": false,
+      "13": true,
+      "15": true,
+      "17": true,
+      "18": false,
+      "20": true,
+      "21": true,
+      "22": true,
+      "24": true,
+      "26": true,
+      "27": true,
+      "28": true,
+      "29": false,
+      "5.1": true,
+      "5.2": true,
+      "5.3": true,
+      "5.4": true,
+      "6.1": false,
+      "6.2": true,
+      "6.3": false,
+      "6.4": false,
+      "7.1": true,
+      "7.2": false,
+      "8.1": true,
+      "8.2": true,
+      "8.3": true,
+      "8.4": false,
+      "14.1": true,
+      "14.2": true,
+      "16.1": false,
+      "16.2": true,
+      "19.1": true,
+      "19.2": true,
+      "19.3": true,
+      "19.4": true,
+      "23.1": false,
+      "23.2": false,
+      "25.1": true,
+      "25.2": false,
+      "25.3": true,
+      "25.4": true,
+      "30.1": true,
+      "30.2": true,
+      "30.3": false
+    },
+    "correctAnswers": {
+      "1": "D",
+      "2": "B",
+      "3": "C",
+      "4": "B",
+      "9": "D",
+      "10": "D",
+      "11": "A",
+      "12": "B",
+      "13": "D",
+      "15": "E,A,D,B,F,C",
+      "17": "A",
+      "18": "cizích,zákonné,historickými,upřímně",
+      "20": "C",
+      "21": "A",
+      "22": "D",
+      "24": "B",
+      "26": "B",
+      "27": "C",
+      "28": "D",
+      "29": "základní,další,obsahující",
+      "5.1": "Ano",
+      "5.2": "Ano",
+      "5.3": "Ne",
+      "5.4": "Ano",
+      "6.1": "D",
+      "6.2": "E",
+      "6.3": "B",
+      "6.4": "A",
+      "7.1": "{\"podmět\":\"stavení\",\"přísudek\":\"se proměnilo\"}",
+      "7.2": "{\"podmět\":\"listy\",\"přísudek\":\"jsou potravou\"}",
+      "8.1": "Ano",
+      "8.2": "Ne",
+      "8.3": "Ne",
+      "8.4": "Ano",
+      "14.1": "podezřelým",
+      "14.2": "odnětím",
+      "16.1": "nádvoří",
+      "16.2": "obhajoba",
+      "19.1": "Ne",
+      "19.2": "Ano",
+      "19.3": "Ne",
+      "19.4": "Ne",
+      "23.1": "důsledkový",
+      "23.2": "odporovací",
+      "25.1": "Ne",
+      "25.2": "Ne",
+      "25.3": "Ne",
+      "25.4": "Ne",
+      "30.1": "E",
+      "30.2": "C",
+      "30.3": "B"
+    },
+    "answers": {
+      "1": "D",
+      "2": "B",
+      "3": "C",
+      "4": "B",
+      "9": "D",
+      "10": "D",
+      "11": "C",
+      "12": "D",
+      "13": "D",
+      "15": "E,A,D,B,F,C",
+      "17": "A",
+      "18": "zákonní,historickými,rozvernými,upřímně",
+      "20": "C",
+      "21": "A",
+      "22": "D",
+      "24": "B",
+      "26": "B",
+      "27": "C",
+      "28": "D",
+      "29": "základní,intenzivní,umami",
+      "5.1": "Ano",
+      "5.2": "Ano",
+      "5.3": "Ne",
+      "5.4": "Ano",
+      "6.1": "E",
+      "6.2": "E",
+      "6.3": "D",
+      "6.4": "D",
+      "7.1": "{\"podmět\":\"stavení\",\"přísudek\":\"se proměnilo\"}",
+      "7.2": "{\"podmět\":\"listy stromů a keřů\",\"přísudek\":\"jsou\"}",
+      "8.1": "Ano",
+      "8.2": "Ne",
+      "8.3": "Ne",
+      "8.4": "Ne",
+      "14.1": "podezřelým",
+      "14.2": "odnětím",
+      "16.1": "zdvoření",
+      "16.2": "obhajoba",
+      "19.1": "Ne",
+      "19.2": "Ano",
+      "19.3": "Ne",
+      "19.4": "Ne",
+      "23.1": "Příčinný významový poměr (vysvětluje, že Hubáčkův návrh byl schválen díky svému pozitivnímu vlivu na siluetu hory).",
+      "23.2": "Protikladný významový poměr (i když návrh oceněn, Hubáček si ho politických důvodů nemohl převzít).",
+      "25.1": "Ne",
+      "25.2": "Ano",
+      "25.3": "Ne",
+      "25.4": "Ne",
+      "30.1": "E",
+      "30.2": "C",
+      "30.3": "E"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 1,
+        "max": 1
+      },
+      "3": {
+        "v": 1,
+        "max": 1
+      },
+      "4": {
+        "v": 1,
+        "max": 1
+      },
+      "5": {
+        "v": 2,
+        "max": 2
+      },
+      "6": {
+        "v": 1,
+        "max": 4
+      },
+      "7": {
+        "v": 1,
+        "max": 2
+      },
+      "8": {
+        "v": 1,
+        "max": 2
+      },
+      "9": {
+        "v": 1,
+        "max": 1
+      },
+      "10": {
+        "v": 1,
+        "max": 1
+      },
+      "11": {
+        "v": 0,
+        "max": 1
+      },
+      "12": {
+        "v": 0,
+        "max": 1
+      },
+      "13": {
+        "v": 1,
+        "max": 1
+      },
+      "14": {
+        "v": 2,
+        "max": 2
+      },
+      "15": {
+        "v": 3,
+        "max": 3
+      },
+      "16": {
+        "v": 1,
+        "max": 2
+      },
+      "17": {
+        "v": 1,
+        "max": 1
+      },
+      "18": {
+        "v": 2,
+        "max": 4
+      },
+      "19": {
+        "v": 2,
+        "max": 2
+      },
+      "20": {
+        "v": 1,
+        "max": 1
+      },
+      "21": {
+        "v": 1,
+        "max": 1
+      },
+      "22": {
+        "v": 1,
+        "max": 1
+      },
+      "23": {
+        "v": 0,
+        "max": 2
+      },
+      "24": {
+        "v": 1,
+        "max": 1
+      },
+      "25": {
+        "v": 1,
+        "max": 2
+      },
+      "26": {
+        "v": 1,
+        "max": 1
+      },
+      "27": {
+        "v": 1,
+        "max": 1
+      },
+      "28": {
+        "v": 1,
+        "max": 1
+      },
+      "29": {
+        "v": 1,
+        "max": 3
+      },
+      "30": {
+        "v": 2,
+        "max": 3
+      }
+    }
+  },
+  "CMA-2023": {
+    "metadata": {
+      "info": {
+        "code": "CJMZD23C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 27,
+          "opened": 5
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "diploma",
+    "totalAnswers": 50,
+    "totalPoints": 27,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "2": false,
+      "3": true,
+      "4": true,
+      "5": true,
+      "6": false,
+      "7": true,
+      "9": false,
+      "10": false,
+      "11": false,
+      "13": true,
+      "14": true,
+      "15": false,
+      "16": false,
+      "17": true,
+      "20": true,
+      "21": true,
+      "22": true,
+      "23": false,
+      "25": true,
+      "26": false,
+      "27": false,
+      "28": false,
+      "30": false,
+      "31": true,
+      "32": true,
+      "1.1": true,
+      "1.2": true,
+      "1.3": true,
+      "1.4": false,
+      "8.1": true,
+      "8.2": true,
+      "8.3": true,
+      "8.4": true,
+      "12.1": true,
+      "12.2": true,
+      "12.3": true,
+      "12.4": true,
+      "18.1": true,
+      "18.2": true,
+      "18.3": true,
+      "18.4": true,
+      "19.1": false,
+      "19.2": false,
+      "24.1": false,
+      "24.2": false,
+      "24.3": false,
+      "24.4": true,
+      "29.1": false,
+      "29.2": false,
+      "29.3": true
+    },
+    "correctAnswers": {
+      "2": "příjmení,střetu,dceři",
+      "3": "B",
+      "4": "A",
+      "5": "C",
+      "6": "A",
+      "7": "B",
+      "9": "obrovský,nahatý",
+      "10": "C,A,E,D,B",
+      "11": "A",
+      "13": "B",
+      "14": "A",
+      "15": "A",
+      "16": "D",
+      "17": "C",
+      "20": "C",
+      "21": "D",
+      "22": "D",
+      "23": "B",
+      "25": "C",
+      "26": "B",
+      "27": "D",
+      "28": "než",
+      "30": "přibyly,amerických,výkonnou,čidly",
+      "31": "D",
+      "32": "D",
+      "1.1": "Ano",
+      "1.2": "Ne",
+      "1.3": "Ano",
+      "1.4": "Ne",
+      "8.1": "A",
+      "8.2": "E",
+      "8.3": "D",
+      "8.4": "F",
+      "12.1": "Ano",
+      "12.2": "Ne",
+      "12.3": "Ne",
+      "12.4": "Ne",
+      "18.1": "Ano",
+      "18.2": "Ne",
+      "18.3": "Ano",
+      "18.4": "Ne",
+      "19.1": "např. Epos o Gilgamešovi / Gilgameš",
+      "19.2": "např. Homér / Homéros",
+      "24.1": "Ano",
+      "24.2": "Ne",
+      "24.3": "Ano",
+      "24.4": "Ano",
+      "29.1": "D",
+      "29.2": "B",
+      "29.3": "E"
+    },
+    "answers": {
+      "2": "lihovina,dceři,příjmení",
+      "3": "B",
+      "4": "A",
+      "5": "C",
+      "6": "D",
+      "7": "B",
+      "9": "obrovský,schůdný",
+      "10": "C,D,A,B,E",
+      "11": "D",
+      "13": "B",
+      "14": "A",
+      "15": "B",
+      "16": "B",
+      "17": "C",
+      "20": "C",
+      "21": "D",
+      "22": "D",
+      "23": "A",
+      "25": "C",
+      "26": "D",
+      "27": "B",
+      "28": "víc než",
+      "30": "žádní,nákladu,výkonnou,nejvýše",
+      "31": "D",
+      "32": "D",
+      "1.1": "Ano",
+      "1.2": "Ne",
+      "1.3": "Ano",
+      "1.4": "Ano",
+      "8.1": "A",
+      "8.2": "E",
+      "8.3": "D",
+      "8.4": "F",
+      "12.1": "Ano",
+      "12.2": "Ne",
+      "12.3": "Ne",
+      "12.4": "Ne",
+      "18.1": "Ano",
+      "18.2": "Ne",
+      "18.3": "Ano",
+      "18.4": "Ne",
+      "19.1": "Epos o Gilgamešovi",
+      "19.2": "Homer",
+      "24.1": "Ne",
+      "24.2": "Ano",
+      "24.3": "Ne",
+      "24.4": "Ano",
+      "29.1": "A",
+      "29.2": "D",
+      "29.3": "E"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 2
+      },
+      "2": {
+        "v": 2,
+        "max": 3
+      },
+      "3": {
+        "v": 1,
+        "max": 1
+      },
+      "4": {
+        "v": 1,
+        "max": 1
+      },
+      "5": {
+        "v": 1,
+        "max": 1
+      },
+      "6": {
+        "v": 0,
+        "max": 1
+      },
+      "7": {
+        "v": 1,
+        "max": 1
+      },
+      "8": {
+        "v": 4,
+        "max": 4
+      },
+      "9": {
+        "v": 1,
+        "max": 2
+      },
+      "10": {
+        "v": 0,
+        "max": 3
+      },
+      "11": {
+        "v": 0,
+        "max": 1
+      },
+      "12": {
+        "v": 2,
+        "max": 2
+      },
+      "13": {
+        "v": 1,
+        "max": 1
+      },
+      "14": {
+        "v": 1,
+        "max": 1
+      },
+      "15": {
+        "v": 0,
+        "max": 1
+      },
+      "16": {
+        "v": 0,
+        "max": 1
+      },
+      "17": {
+        "v": 1,
+        "max": 1
+      },
+      "18": {
+        "v": 2,
+        "max": 2
+      },
+      "19": {
+        "v": 0,
+        "max": 2
+      },
+      "20": {
+        "v": 1,
+        "max": 1
+      },
+      "21": {
+        "v": 1,
+        "max": 1
+      },
+      "22": {
+        "v": 1,
+        "max": 1
+      },
+      "23": {
+        "v": 0,
+        "max": 1
+      },
+      "24": {
+        "v": 0,
+        "max": 2
+      },
+      "25": {
+        "v": 1,
+        "max": 1
+      },
+      "26": {
+        "v": 0,
+        "max": 1
+      },
+      "27": {
+        "v": 0,
+        "max": 1
+      },
+      "28": {
+        "v": 0,
+        "max": 1
+      },
+      "29": {
+        "v": 1,
+        "max": 3
+      },
+      "30": {
+        "v": 1,
+        "max": 4
+      },
+      "31": {
+        "v": 1,
+        "max": 1
+      },
+      "32": {
+        "v": 1,
+        "max": 1
+      }
+    }
+  },
+  "CMB-2023": {
+    "metadata": {
+      "info": {
+        "code": "CJMZD23C0T04",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 27,
+          "opened": 5
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "diploma",
+    "totalAnswers": 49,
+    "totalPoints": 32,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "2": false,
+      "3": false,
+      "4": true,
+      "5": true,
+      "6": true,
+      "7": false,
+      "9": false,
+      "10": true,
+      "12": true,
+      "13": true,
+      "14": false,
+      "15": true,
+      "16": true,
+      "17": true,
+      "19": false,
+      "20": true,
+      "21": true,
+      "22": false,
+      "24": true,
+      "25": true,
+      "26": true,
+      "27": false,
+      "29": false,
+      "30": false,
+      "31": true,
+      "32": true,
+      "1.1": true,
+      "1.2": true,
+      "1.3": true,
+      "1.4": true,
+      "8.1": true,
+      "8.2": true,
+      "8.3": true,
+      "11.1": true,
+      "11.2": false,
+      "11.3": true,
+      "11.4": true,
+      "18.1": false,
+      "18.2": true,
+      "18.3": true,
+      "18.4": true,
+      "23.1": false,
+      "23.2": true,
+      "23.3": true,
+      "23.4": true,
+      "28.1": true,
+      "28.2": true,
+      "28.3": true,
+      "28.4": true
+    },
+    "correctAnswers": {
+      "2": "srpnové,mezinárodní,známém",
+      "3": "A",
+      "4": "C",
+      "5": "A",
+      "6": "C",
+      "7": "A",
+      "9": "D,C,A,B,E",
+      "10": "sál,obrat",
+      "12": "D",
+      "13": "B",
+      "14": "C",
+      "15": "B",
+      "16": "C",
+      "17": "D",
+      "19": "B",
+      "20": "C",
+      "21": "A",
+      "22": "oblast,ker",
+      "24": "D",
+      "25": "A",
+      "26": "A",
+      "27": "V",
+      "29": "setměním,zcela,skleněných,narušily",
+      "30": "A",
+      "31": "B",
+      "32": "B",
+      "1.1": "Ano",
+      "1.2": "Ne",
+      "1.3": "Ano",
+      "1.4": "Ne",
+      "8.1": "D",
+      "8.2": "E",
+      "8.3": "B",
+      "11.1": "Ne",
+      "11.2": "Ano",
+      "11.3": "Ne",
+      "11.4": "Ne",
+      "18.1": "Ano",
+      "18.2": "Ne",
+      "18.3": "Ne",
+      "18.4": "Ano",
+      "23.1": "Ano",
+      "23.2": "Ne",
+      "23.3": "Ne",
+      "23.4": "Ano",
+      "28.1": "C",
+      "28.2": "F",
+      "28.3": "B",
+      "28.4": "D"
+    },
+    "answers": {
+      "2": "srpnové,varšavské,komunistickému",
+      "3": "C",
+      "4": "C",
+      "5": "A",
+      "6": "C",
+      "7": "B",
+      "9": "D,A,C,B,E",
+      "10": "obrat,sál",
+      "12": "D",
+      "13": "B",
+      "14": "D",
+      "15": "B",
+      "16": "C",
+      "17": "D",
+      "19": "D",
+      "20": "C",
+      "21": "A",
+      "22": "kráků,ledoborci",
+      "24": "D",
+      "25": "A",
+      "26": "A",
+      "27": "A",
+      "29": "setměním,zcela,zbořily,ikonickou",
+      "30": "B",
+      "31": "B",
+      "32": "B",
+      "1.1": "Ano",
+      "1.2": "Ne",
+      "1.3": "Ano",
+      "1.4": "Ne",
+      "8.1": "D",
+      "8.2": "E",
+      "8.3": "B",
+      "11.1": "Ne",
+      "11.2": "Ne",
+      "11.3": "Ne",
+      "11.4": "Ne",
+      "18.1": "Ne",
+      "18.2": "Ne",
+      "18.3": "Ne",
+      "18.4": "Ano",
+      "23.1": "Ne",
+      "23.2": "Ne",
+      "23.3": "Ne",
+      "23.4": "Ano",
+      "28.1": "C",
+      "28.2": "F",
+      "28.3": "B",
+      "28.4": "D"
+    },
+    "points": {
+      "1": {
+        "v": 2,
+        "max": 2
+      },
+      "2": {
+        "v": 1,
+        "max": 3
+      },
+      "3": {
+        "v": 0,
+        "max": 1
+      },
+      "4": {
+        "v": 1,
+        "max": 1
+      },
+      "5": {
+        "v": 1,
+        "max": 1
+      },
+      "6": {
+        "v": 1,
+        "max": 1
+      },
+      "7": {
+        "v": 0,
+        "max": 1
+      },
+      "8": {
+        "v": 3,
+        "max": 3
+      },
+      "9": {
+        "v": 0,
+        "max": 3
+      },
+      "10": {
+        "v": 2,
+        "max": 2
+      },
+      "11": {
+        "v": 1,
+        "max": 2
+      },
+      "12": {
+        "v": 1,
+        "max": 1
+      },
+      "13": {
+        "v": 1,
+        "max": 1
+      },
+      "14": {
+        "v": 0,
+        "max": 1
+      },
+      "15": {
+        "v": 1,
+        "max": 1
+      },
+      "16": {
+        "v": 1,
+        "max": 1
+      },
+      "17": {
+        "v": 1,
+        "max": 1
+      },
+      "18": {
+        "v": 1,
+        "max": 2
+      },
+      "19": {
+        "v": 0,
+        "max": 1
+      },
+      "20": {
+        "v": 1,
+        "max": 1
+      },
+      "21": {
+        "v": 1,
+        "max": 1
+      },
+      "22": {
+        "v": 0,
+        "max": 2
+      },
+      "23": {
+        "v": 1,
+        "max": 2
+      },
+      "24": {
+        "v": 1,
+        "max": 1
+      },
+      "25": {
+        "v": 1,
+        "max": 1
+      },
+      "26": {
+        "v": 1,
+        "max": 1
+      },
+      "27": {
+        "v": 0,
+        "max": 1
+      },
+      "28": {
+        "v": 4,
+        "max": 4
+      },
+      "29": {
+        "v": 2,
+        "max": 4
+      },
+      "30": {
+        "v": 0,
+        "max": 1
+      },
+      "31": {
+        "v": 1,
+        "max": 1
+      },
+      "32": {
+        "v": 1,
+        "max": 1
+      }
+    }
+  },
+  "CMA-2024": {
+    "metadata": {
+      "info": {
+        "code": "CJMZD24C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 27,
+          "opened": 5
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "diploma",
+    "totalAnswers": 51,
+    "totalPoints": 34,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "3": false,
+      "4": false,
+      "5": true,
+      "6": true,
+      "7": true,
+      "8": true,
+      "11": false,
+      "13": true,
+      "14": true,
+      "15": true,
+      "16": true,
+      "17": false,
+      "18": false,
+      "20": true,
+      "21": false,
+      "22": true,
+      "23": true,
+      "25": true,
+      "26": true,
+      "27": true,
+      "28": false,
+      "30": false,
+      "31": true,
+      "32": false,
+      "1.1": true,
+      "1.2": true,
+      "1.3": true,
+      "1.4": true,
+      "2.1": true,
+      "2.2": true,
+      "9.1": true,
+      "9.2": true,
+      "9.3": false,
+      "10.1": true,
+      "10.2": false,
+      "12.1": true,
+      "12.2": true,
+      "12.3": true,
+      "12.4": true,
+      "19.1": true,
+      "19.2": true,
+      "19.3": true,
+      "19.4": true,
+      "24.1": false,
+      "24.2": false,
+      "24.3": true,
+      "24.4": true,
+      "29.1": true,
+      "29.2": true,
+      "29.3": true,
+      "29.4": true
+    },
+    "correctAnswers": {
+      "3": "A",
+      "4": "C",
+      "5": "C",
+      "6": "D",
+      "7": "A",
+      "8": "C",
+      "11": "E,C,B,A,D",
+      "13": "dlaní,ženou,chováním",
+      "14": "A",
+      "15": "B",
+      "16": "B",
+      "17": "B",
+      "18": "B",
+      "20": "A",
+      "21": "C",
+      "22": "D",
+      "23": "D",
+      "25": "A",
+      "26": "A",
+      "27": "C",
+      "28": "svý",
+      "30": "stezce,skromně,přemítání,poctěné",
+      "31": "C",
+      "32": "D",
+      "1.1": "Ne",
+      "1.2": "Ano",
+      "1.3": "Ne",
+      "1.4": "Ne",
+      "2.1": "jelikož",
+      "2.2": "ač",
+      "9.1": "A",
+      "9.2": "E",
+      "9.3": "C",
+      "10.1": "popsaném",
+      "10.2": "(?:bych zapomněl|bych zapomenul)",
+      "12.1": "Ne",
+      "12.2": "Ano",
+      "12.3": "Ne",
+      "12.4": "Ne",
+      "19.1": "Ano",
+      "19.2": "Ne",
+      "19.3": "Ne",
+      "19.4": "Ne",
+      "24.1": "Ne",
+      "24.2": "Ano",
+      "24.3": "Ano",
+      "24.4": "Ano",
+      "29.1": "E",
+      "29.2": "C",
+      "29.3": "B",
+      "29.4": "D"
+    },
+    "answers": {
+      "3": "D",
+      "4": "A",
+      "5": "C",
+      "6": "D",
+      "7": "A",
+      "8": "C",
+      "11": "E,C,B,D,A",
+      "13": "dlaní,ženou,chováním",
+      "14": "A",
+      "15": "B",
+      "16": "B",
+      "17": "C",
+      "18": "A",
+      "20": "A",
+      "21": "B",
+      "22": "D",
+      "23": "D",
+      "25": "A",
+      "26": "A",
+      "27": "C",
+      "28": "sem",
+      "30": "skromně,dobývacími,Rhodosu,přemítání",
+      "31": "C",
+      "32": "B",
+      "1.1": "Ne",
+      "1.2": "Ano",
+      "1.3": "Ne",
+      "1.4": "Ne",
+      "2.1": "jelikož",
+      "2.2": "ač",
+      "9.1": "A",
+      "9.2": "E",
+      "9.3": "D",
+      "10.1": "popsaném",
+      "10.2": "zapomněl bych",
+      "12.1": "Ne",
+      "12.2": "Ano",
+      "12.3": "Ne",
+      "12.4": "Ne",
+      "19.1": "Ano",
+      "19.2": "Ne",
+      "19.3": "Ne",
+      "19.4": "Ne",
+      "24.1": "Ano",
+      "24.2": "Ne",
+      "24.3": "Ano",
+      "24.4": "Ano",
+      "29.1": "E",
+      "29.2": "C",
+      "29.3": "B",
+      "29.4": "D"
+    },
+    "points": {
+      "1": {
+        "v": 2,
+        "max": 2
+      },
+      "2": {
+        "v": 2,
+        "max": 2
+      },
+      "3": {
+        "v": 0,
+        "max": 1
+      },
+      "4": {
+        "v": 0,
+        "max": 1
+      },
+      "5": {
+        "v": 1,
+        "max": 1
+      },
+      "6": {
+        "v": 1,
+        "max": 1
+      },
+      "7": {
+        "v": 1,
+        "max": 1
+      },
+      "8": {
+        "v": 1,
+        "max": 1
+      },
+      "9": {
+        "v": 2,
+        "max": 3
+      },
+      "10": {
+        "v": 1,
+        "max": 2
+      },
+      "11": {
+        "v": 0,
+        "max": 3
+      },
+      "12": {
+        "v": 2,
+        "max": 2
+      },
+      "13": {
+        "v": 3,
+        "max": 3
+      },
+      "14": {
+        "v": 1,
+        "max": 1
+      },
+      "15": {
+        "v": 1,
+        "max": 1
+      },
+      "16": {
+        "v": 1,
+        "max": 1
+      },
+      "17": {
+        "v": 0,
+        "max": 1
+      },
+      "18": {
+        "v": 0,
+        "max": 1
+      },
+      "19": {
+        "v": 2,
+        "max": 2
+      },
+      "20": {
+        "v": 1,
+        "max": 1
+      },
+      "21": {
+        "v": 0,
+        "max": 1
+      },
+      "22": {
+        "v": 1,
+        "max": 1
+      },
+      "23": {
+        "v": 1,
+        "max": 1
+      },
+      "24": {
+        "v": 0,
+        "max": 2
+      },
+      "25": {
+        "v": 1,
+        "max": 1
+      },
+      "26": {
+        "v": 1,
+        "max": 1
+      },
+      "27": {
+        "v": 1,
+        "max": 1
+      },
+      "28": {
+        "v": 0,
+        "max": 1
+      },
+      "29": {
+        "v": 4,
+        "max": 4
+      },
+      "30": {
+        "v": 2,
+        "max": 4
+      },
+      "31": {
+        "v": 1,
+        "max": 1
+      },
+      "32": {
+        "v": 0,
+        "max": 1
+      }
+    }
+  },
+  "CMB-2024": {
+    "metadata": {
+      "info": {
+        "code": "CJMZD24C0T04",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 27,
+          "opened": 5
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "diploma",
+    "totalAnswers": 50,
+    "totalPoints": 34,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "3": true,
+      "4": false,
+      "5": true,
+      "8": false,
+      "9": true,
+      "10": false,
+      "11": false,
+      "12": true,
+      "13": true,
+      "14": true,
+      "15": true,
+      "17": true,
+      "18": true,
+      "19": true,
+      "21": false,
+      "22": false,
+      "23": true,
+      "24": true,
+      "25": true,
+      "26": true,
+      "27": false,
+      "28": false,
+      "29": false,
+      "30": true,
+      "32": false,
+      "1.1": true,
+      "1.2": true,
+      "1.3": true,
+      "1.4": true,
+      "2.1": false,
+      "2.2": false,
+      "6.1": true,
+      "6.2": true,
+      "6.3": true,
+      "7.1": true,
+      "7.2": true,
+      "7.3": true,
+      "7.4": false,
+      "16.1": true,
+      "16.2": true,
+      "16.3": true,
+      "16.4": true,
+      "20.1": true,
+      "20.2": true,
+      "20.3": true,
+      "20.4": true,
+      "31.1": true,
+      "31.2": true,
+      "31.3": true,
+      "31.4": true
+    },
+    "correctAnswers": {
+      "3": "B",
+      "4": "A",
+      "5": "C",
+      "8": "po",
+      "9": "A",
+      "10": "A",
+      "11": "A",
+      "12": "B,A,E,C,D",
+      "13": "D",
+      "14": "B",
+      "15": "A",
+      "17": "D",
+      "18": "D",
+      "19": "sušák,budík,škrabka",
+      "21": "lidi,záda",
+      "22": "B",
+      "23": "D",
+      "24": "B",
+      "25": "C",
+      "26": "D",
+      "27": "vzájemně,vysychání,neprospívají,ochranou",
+      "28": "B",
+      "29": "B",
+      "30": "D",
+      "32": "A",
+      "1.1": "Ne",
+      "1.2": "Ne",
+      "1.3": "Ne",
+      "1.4": "Ano",
+      "2.1": "ovlivněnou",
+      "2.2": "vedoucích",
+      "6.1": "C",
+      "6.2": "E",
+      "6.3": "D",
+      "7.1": "Ne",
+      "7.2": "Ano",
+      "7.3": "Ano",
+      "7.4": "Ano",
+      "16.1": "Ne",
+      "16.2": "Ne",
+      "16.3": "Ne",
+      "16.4": "Ne",
+      "20.1": "Ne",
+      "20.2": "Ne",
+      "20.3": "Ano",
+      "20.4": "Ne",
+      "31.1": "F",
+      "31.2": "E",
+      "31.3": "D",
+      "31.4": "B"
+    },
+    "answers": {
+      "3": "B",
+      "4": "C",
+      "5": "C",
+      "8": "ve",
+      "9": "A",
+      "10": "B",
+      "11": "B",
+      "12": "B,A,E,C,D",
+      "13": "D",
+      "14": "B",
+      "15": "A",
+      "17": "D",
+      "18": "D",
+      "19": "sušák,budík,škrabka",
+      "21": "kuchyň,jídelnu",
+      "22": "C",
+      "23": "D",
+      "24": "B",
+      "25": "C",
+      "26": "D",
+      "27": "okenních,vzájemně,vlhkost,neprozpívají",
+      "28": "A",
+      "29": "C",
+      "30": "D",
+      "32": "B",
+      "1.1": "Ne",
+      "1.2": "Ne",
+      "1.3": "Ne",
+      "1.4": "Ano",
+      "2.1": "ovlivněné",
+      "2.2": "vedoucími",
+      "6.1": "C",
+      "6.2": "E",
+      "6.3": "D",
+      "7.1": "Ne",
+      "7.2": "Ano",
+      "7.3": "Ano",
+      "7.4": "Ne",
+      "16.1": "Ne",
+      "16.2": "Ne",
+      "16.3": "Ne",
+      "16.4": "Ne",
+      "20.1": "Ne",
+      "20.2": "Ne",
+      "20.3": "Ano",
+      "20.4": "Ne",
+      "31.1": "F",
+      "31.2": "E",
+      "31.3": "D",
+      "31.4": "B"
+    },
+    "points": {
+      "1": {
+        "v": 2,
+        "max": 2
+      },
+      "2": {
+        "v": 0,
+        "max": 2
+      },
+      "3": {
+        "v": 1,
+        "max": 1
+      },
+      "4": {
+        "v": 0,
+        "max": 1
+      },
+      "5": {
+        "v": 1,
+        "max": 1
+      },
+      "6": {
+        "v": 3,
+        "max": 3
+      },
+      "7": {
+        "v": 1,
+        "max": 2
+      },
+      "8": {
+        "v": 0,
+        "max": 1
+      },
+      "9": {
+        "v": 1,
+        "max": 1
+      },
+      "10": {
+        "v": 0,
+        "max": 1
+      },
+      "11": {
+        "v": 0,
+        "max": 1
+      },
+      "12": {
+        "v": 3,
+        "max": 3
+      },
+      "13": {
+        "v": 1,
+        "max": 1
+      },
+      "14": {
+        "v": 1,
+        "max": 1
+      },
+      "15": {
+        "v": 1,
+        "max": 1
+      },
+      "16": {
+        "v": 2,
+        "max": 2
+      },
+      "17": {
+        "v": 1,
+        "max": 1
+      },
+      "18": {
+        "v": 1,
+        "max": 1
+      },
+      "19": {
+        "v": 3,
+        "max": 3
+      },
+      "20": {
+        "v": 2,
+        "max": 2
+      },
+      "21": {
+        "v": 0,
+        "max": 2
+      },
+      "22": {
+        "v": 0,
+        "max": 1
+      },
+      "23": {
+        "v": 1,
+        "max": 1
+      },
+      "24": {
+        "v": 1,
+        "max": 1
+      },
+      "25": {
+        "v": 1,
+        "max": 1
+      },
+      "26": {
+        "v": 1,
+        "max": 1
+      },
+      "27": {
+        "v": 1,
+        "max": 4
+      },
+      "28": {
+        "v": 0,
+        "max": 1
+      },
+      "29": {
+        "v": 0,
+        "max": 1
+      },
+      "30": {
+        "v": 1,
+        "max": 1
+      },
+      "31": {
+        "v": 4,
+        "max": 4
+      },
+      "32": {
+        "v": 0,
+        "max": 1
+      }
+    }
+  },
+  "AJA-2023": {
+    "metadata": {
+      "info": {
+        "code": "AJMZD23C0T01",
+        "maxPoints": 95,
+        "questions": {
+          "closed": 56,
+          "opened": 8
+        }
+      }
+    },
+    "subject": "en",
+    "grade": "diploma",
+    "totalAnswers": 64,
+    "totalPoints": 58,
+    "maxTotalPoints": 95,
+    "corrections": {
+      "1.1": true,
+      "1.2": false,
+      "1.3": false,
+      "1.4": false,
+      "2.5": true,
+      "2.6": true,
+      "2.7": true,
+      "2.8": false,
+      "2.9": true,
+      "2.10": true,
+      "2.11": true,
+      "2.12": false,
+      "3.13": false,
+      "3.14": false,
+      "3.15": false,
+      "3.16": true,
+      "3.17": false,
+      "3.18": false,
+      "3.19": false,
+      "3.20": false,
+      "4.21": false,
+      "4.22": false,
+      "4.23": false,
+      "4.24": false,
+      "5.25": true,
+      "5.26": false,
+      "5.27": true,
+      "5.28": true,
+      "5.29": false,
+      "6.30": true,
+      "6.31": true,
+      "6.32": true,
+      "6.33": true,
+      "6.34": true,
+      "6.35": true,
+      "6.36": true,
+      "6.37": true,
+      "6.38": false,
+      "6.39": true,
+      "7.40": true,
+      "7.41": true,
+      "7.42": true,
+      "7.43": true,
+      "7.44": true,
+      "8.45": true,
+      "8.46": true,
+      "8.47": true,
+      "8.48": false,
+      "8.49": true,
+      "9.50": true,
+      "9.51": true,
+      "9.52": true,
+      "9.53": true,
+      "9.54": true,
+      "9.55": true,
+      "9.56": true,
+      "9.57": true,
+      "9.58": true,
+      "9.59": true,
+      "9.60": true,
+      "9.61": true,
+      "9.62": true,
+      "9.63": true,
+      "9.64": true
+    },
+    "correctAnswers": {
+      "1.1": "C",
+      "1.2": "D",
+      "1.3": "C",
+      "1.4": "B",
+      "2.5": "Ano",
+      "2.6": "Ne",
+      "2.7": "Ano",
+      "2.8": "Ano",
+      "2.9": "Ne",
+      "2.10": "Ano",
+      "2.11": "Ne",
+      "2.12": "Ne",
+      "3.13": "(?:a |her )?friend(?:s)?",
+      "3.14": 1962,
+      "3.15": 77590,
+      "3.16": 4,
+      "3.17": "(?:a )?stone(?:s)?",
+      "3.18": "(?:a |the )?(bath|bathroom)",
+      "3.19": "(?:an |the )?architect",
+      "3.20": "Hughes",
+      "4.21": "C",
+      "4.22": "D",
+      "4.23": "B",
+      "4.24": "B",
+      "5.25": "D",
+      "5.26": "A",
+      "5.27": "A",
+      "5.28": "C",
+      "5.29": "B",
+      "6.30": "Ne",
+      "6.31": "Ano",
+      "6.32": "Ano",
+      "6.33": "Ne",
+      "6.34": "Ano",
+      "6.35": "Ne",
+      "6.36": "Ne",
+      "6.37": "Ne",
+      "6.38": "Ano",
+      "6.39": "Ne",
+      "7.40": "A",
+      "7.41": "A",
+      "7.42": "C",
+      "7.43": "B",
+      "7.44": "D",
+      "8.45": "E",
+      "8.46": "B",
+      "8.47": "C",
+      "8.48": "G",
+      "8.49": "A",
+      "9.50": "B",
+      "9.51": "C",
+      "9.52": "B",
+      "9.53": "B",
+      "9.54": "A",
+      "9.55": "A",
+      "9.56": "A",
+      "9.57": "C",
+      "9.58": "C",
+      "9.59": "A",
+      "9.60": "B",
+      "9.61": "B",
+      "9.62": "C",
+      "9.63": "B",
+      "9.64": "C"
+    },
+    "answers": {
+      "1.1": "C",
+      "1.2": "B",
+      "1.3": "D",
+      "1.4": "A",
+      "2.5": "Ano",
+      "2.6": "Ne",
+      "2.7": "Ano",
+      "2.8": "Ne",
+      "2.9": "Ne",
+      "2.10": "Ano",
+      "2.11": "Ne",
+      "2.12": "Ano",
+      "3.13": "Her agent",
+      "3.14": 1953,
+      "3.15": 100000,
+      "3.16": 4,
+      "3.17": "wooden floors",
+      "3.18": "sunny terrace",
+      "3.19": "actor",
+      "3.20": "Smith",
+      "4.21": "A",
+      "4.22": "B",
+      "4.23": "A",
+      "4.24": "D",
+      "5.25": "D",
+      "5.26": "B",
+      "5.27": "A",
+      "5.28": "C",
+      "5.29": "D",
+      "6.30": "Ne",
+      "6.31": "Ano",
+      "6.32": "Ano",
+      "6.33": "Ne",
+      "6.34": "Ano",
+      "6.35": "Ne",
+      "6.36": "Ne",
+      "6.37": "Ne",
+      "6.38": "Ne",
+      "6.39": "Ne",
+      "7.40": "A",
+      "7.41": "A",
+      "7.42": "C",
+      "7.43": "B",
+      "7.44": "D",
+      "8.45": "E",
+      "8.46": "B",
+      "8.47": "C",
+      "8.48": "D",
+      "8.49": "A",
+      "9.50": "B",
+      "9.51": "C",
+      "9.52": "B",
+      "9.53": "B",
+      "9.54": "A",
+      "9.55": "A",
+      "9.56": "A",
+      "9.57": "C",
+      "9.58": "C",
+      "9.59": "A",
+      "9.60": "B",
+      "9.61": "B",
+      "9.62": "C",
+      "9.63": "B",
+      "9.64": "C"
+    },
+    "points": {
+      "1": {
+        "v": 2,
+        "max": 8
+      },
+      "2": {
+        "v": 6,
+        "max": 8
+      },
+      "3": {
+        "v": 2,
+        "max": 16
+      },
+      "4": {
+        "v": 0,
+        "max": 8
+      },
+      "5": {
+        "v": 6,
+        "max": 10
+      },
+      "6": {
+        "v": 9,
+        "max": 10
+      },
+      "7": {
+        "v": 10,
+        "max": 10
+      },
+      "8": {
+        "v": 8,
+        "max": 10
+      },
+      "9": {
+        "v": 15,
+        "max": 15
+      }
+    }
+  },
+  "AJB-2023": {
+    "metadata": {
+      "info": {
+        "code": "AJMZD23C0T04",
+        "maxPoints": 95,
+        "questions": {
+          "closed": 56,
+          "opened": 8
+        }
+      }
+    },
+    "subject": "en",
+    "grade": "diploma",
+    "totalAnswers": 64,
+    "totalPoints": 63,
+    "maxTotalPoints": 95,
+    "corrections": {
+      "1.1": false,
+      "1.2": true,
+      "1.3": true,
+      "1.4": false,
+      "2.5": true,
+      "2.6": true,
+      "2.7": false,
+      "2.8": true,
+      "2.9": false,
+      "2.10": true,
+      "2.11": false,
+      "2.12": false,
+      "3.13": false,
+      "3.14": false,
+      "3.15": false,
+      "3.16": false,
+      "3.17": false,
+      "3.18": false,
+      "3.19": false,
+      "3.20": true,
+      "4.21": false,
+      "4.22": false,
+      "4.23": false,
+      "4.24": true,
+      "5.25": true,
+      "5.26": true,
+      "5.27": true,
+      "5.28": true,
+      "5.29": true,
+      "6.30": true,
+      "6.31": true,
+      "6.32": true,
+      "6.33": true,
+      "6.34": false,
+      "6.35": true,
+      "6.36": true,
+      "6.37": true,
+      "6.38": true,
+      "6.39": true,
+      "7.40": true,
+      "7.41": true,
+      "7.42": true,
+      "7.43": true,
+      "7.44": true,
+      "8.45": true,
+      "8.46": true,
+      "8.47": true,
+      "8.48": false,
+      "8.49": true,
+      "9.50": true,
+      "9.51": true,
+      "9.52": true,
+      "9.53": true,
+      "9.54": false,
+      "9.55": true,
+      "9.56": true,
+      "9.57": true,
+      "9.58": true,
+      "9.59": true,
+      "9.60": true,
+      "9.61": true,
+      "9.62": true,
+      "9.63": true,
+      "9.64": true
+    },
+    "correctAnswers": {
+      "1.1": "D",
+      "1.2": "C",
+      "1.3": "D",
+      "1.4": "A",
+      "2.5": "Ne",
+      "2.6": "Ano",
+      "2.7": "Ano",
+      "2.8": "Ne",
+      "2.9": "Ano",
+      "2.10": "Ne",
+      "2.11": "Ne",
+      "2.12": "Ne",
+      "3.13": 868,
+      "3.14": "MOYCULEN",
+      "3.15": "brown",
+      "3.16": "(?:a|the) map(?:s)?",
+      "3.17": "(?:a|the) concert(?:s)?",
+      "3.18": "(?:a|the) sofa(?:s)?",
+      "3.19": "rose(?:s)",
+      "3.20": "March (the )?3(?:rd)?|3(?:rd)? March|3\\.3",
+      "4.21": "C",
+      "4.22": "C",
+      "4.23": "B",
+      "4.24": "D",
+      "5.25": "B",
+      "5.26": "A",
+      "5.27": "C",
+      "5.28": "C",
+      "5.29": "D",
+      "6.30": "Ne",
+      "6.31": "Ano",
+      "6.32": "Ano",
+      "6.33": "Ano",
+      "6.34": "Ne",
+      "6.35": "Ne",
+      "6.36": "Ne",
+      "6.37": "Ano",
+      "6.38": "Ne",
+      "6.39": "Ne",
+      "7.40": "B",
+      "7.41": "D",
+      "7.42": "A",
+      "7.43": "C",
+      "7.44": "B",
+      "8.45": "F",
+      "8.46": "A",
+      "8.47": "D",
+      "8.48": "G",
+      "8.49": "C",
+      "9.50": "A",
+      "9.51": "C",
+      "9.52": "C",
+      "9.53": "B",
+      "9.54": "B",
+      "9.55": "C",
+      "9.56": "A",
+      "9.57": "A",
+      "9.58": "B",
+      "9.59": "C",
+      "9.60": "C",
+      "9.61": "B",
+      "9.62": "A",
+      "9.63": "B",
+      "9.64": "C"
+    },
+    "answers": {
+      "1.1": "B",
+      "1.2": "C",
+      "1.3": "D",
+      "1.4": "B",
+      "2.5": "Ne",
+      "2.6": "Ano",
+      "2.7": "Ne",
+      "2.8": "Ne",
+      "2.9": "Ne",
+      "2.10": "Ne",
+      "2.11": "Ano",
+      "2.12": "Ano",
+      "3.13": 1500,
+      "3.14": "Belfast Books",
+      "3.15": "Blue",
+      "3.16": "Stationery",
+      "3.17": "Live music",
+      "3.18": "Armchair",
+      "3.19": "Rose",
+      "3.20": "23 March",
+      "4.21": "A",
+      "4.22": "D",
+      "4.23": "A",
+      "4.24": "D",
+      "5.25": "B",
+      "5.26": "A",
+      "5.27": "C",
+      "5.28": "C",
+      "5.29": "D",
+      "6.30": "Ne",
+      "6.31": "Ano",
+      "6.32": "Ano",
+      "6.33": "Ano",
+      "6.34": "Ano",
+      "6.35": "Ne",
+      "6.36": "Ne",
+      "6.37": "Ano",
+      "6.38": "Ne",
+      "6.39": "Ne",
+      "7.40": "B",
+      "7.41": "D",
+      "7.42": "A",
+      "7.43": "C",
+      "7.44": "B",
+      "8.45": "F",
+      "8.46": "A",
+      "8.47": "D",
+      "8.48": "C",
+      "8.49": "C",
+      "9.50": "A",
+      "9.51": "C",
+      "9.52": "C",
+      "9.53": "B",
+      "9.54": "A",
+      "9.55": "C",
+      "9.56": "A",
+      "9.57": "A",
+      "9.58": "B",
+      "9.59": "C",
+      "9.60": "C",
+      "9.61": "B",
+      "9.62": "A",
+      "9.63": "B",
+      "9.64": "C"
+    },
+    "points": {
+      "1": {
+        "v": 4,
+        "max": 8
+      },
+      "2": {
+        "v": 4,
+        "max": 8
+      },
+      "3": {
+        "v": 2,
+        "max": 16
+      },
+      "4": {
+        "v": 2,
+        "max": 8
+      },
+      "5": {
+        "v": 10,
+        "max": 10
+      },
+      "6": {
+        "v": 9,
+        "max": 10
+      },
+      "7": {
+        "v": 10,
+        "max": 10
+      },
+      "8": {
+        "v": 8,
+        "max": 10
+      },
+      "9": {
+        "v": 14,
+        "max": 15
+      }
+    }
+  },
+  "AJA-2024": {
+    "metadata": {
+      "info": {
+        "code": "AJMZD24C0K01",
+        "maxPoints": 100,
+        "questions": {
+          "closed": 51,
+          "opened": 13
+        }
+      }
+    },
+    "subject": "en",
+    "grade": "diploma",
+    "totalAnswers": 64,
+    "totalPoints": 67,
+    "maxTotalPoints": 100,
+    "corrections": {
+      "1.1": true,
+      "1.2": false,
+      "1.3": true,
+      "1.4": false,
+      "2.5": true,
+      "2.6": true,
+      "2.7": true,
+      "2.8": true,
+      "2.9": true,
+      "2.10": true,
+      "2.11": true,
+      "2.12": true,
+      "3.13": true,
+      "3.14": false,
+      "3.15": false,
+      "3.16": false,
+      "3.17": false,
+      "3.18": false,
+      "3.19": false,
+      "3.20": false,
+      "4.21": true,
+      "4.22": false,
+      "4.23": false,
+      "4.24": false,
+      "5.25": true,
+      "5.26": true,
+      "5.27": true,
+      "5.28": true,
+      "5.29": true,
+      "6.30": false,
+      "6.31": true,
+      "6.32": false,
+      "6.33": true,
+      "6.34": true,
+      "6.35": true,
+      "6.36": true,
+      "6.37": false,
+      "6.38": true,
+      "6.39": false,
+      "7.40": true,
+      "7.41": true,
+      "7.42": true,
+      "7.43": true,
+      "7.44": false,
+      "8.45": true,
+      "8.46": true,
+      "8.47": false,
+      "8.48": true,
+      "8.49": true,
+      "9.50": true,
+      "9.51": true,
+      "9.52": true,
+      "9.53": true,
+      "9.54": true,
+      "9.55": true,
+      "9.56": true,
+      "9.57": false,
+      "9.58": true,
+      "9.59": true,
+      "10.60": true,
+      "10.61": true,
+      "10.62": true,
+      "10.63": true,
+      "10.64": true
+    },
+    "correctAnswers": {
+      "1.1": "C",
+      "1.2": "A",
+      "1.3": "D",
+      "1.4": "B",
+      "2.5": "Ne",
+      "2.6": "Ano",
+      "2.7": "Ne",
+      "2.8": "Ano",
+      "2.9": "Ne",
+      "2.10": "Ano",
+      "2.11": "Ne",
+      "2.12": "Ne",
+      "3.13": "(?:twice|two times|2|2 times)",
+      "3.14": "(?:12th December|12.12.|12\\/12)",
+      "3.15": "vocabulary",
+      "3.16": "(?:to )?record?",
+      "3.17": 368,
+      "3.18": "Jasey",
+      "3.19": "(?:grey|gray)",
+      "3.20": "library",
+      "4.21": "A",
+      "4.22": "D",
+      "4.23": "C",
+      "4.24": "A",
+      "5.25": "C",
+      "5.26": "C",
+      "5.27": "B",
+      "5.28": "A",
+      "5.29": "C",
+      "6.30": "Ano",
+      "6.31": "Ano",
+      "6.32": "Ne",
+      "6.33": "Ano",
+      "6.34": "Ne",
+      "6.35": "Ano",
+      "6.36": "Ne",
+      "6.37": "Ano",
+      "6.38": "Ne",
+      "6.39": "Ne",
+      "7.40": "A",
+      "7.41": "B",
+      "7.42": "A",
+      "7.43": "D",
+      "7.44": "C",
+      "8.45": "E",
+      "8.46": "D",
+      "8.47": "G",
+      "8.48": "C",
+      "8.49": "B",
+      "9.50": "A",
+      "9.51": "C",
+      "9.52": "B",
+      "9.53": "C",
+      "9.54": "B",
+      "9.55": "C",
+      "9.56": "A",
+      "9.57": "B",
+      "9.58": "C",
+      "9.59": "C",
+      "10.60": "from",
+      "10.61": "are",
+      "10.62": "(?:who|that)",
+      "10.63": "in",
+      "10.64": "forward"
+    },
+    "answers": {
+      "1.1": "C",
+      "1.2": "B",
+      "1.3": "D",
+      "1.4": "A",
+      "2.5": "Ne",
+      "2.6": "Ano",
+      "2.7": "Ne",
+      "2.8": "Ano",
+      "2.9": "Ne",
+      "2.10": "Ano",
+      "2.11": "Ne",
+      "2.12": "Ne",
+      "3.13": "2 times",
+      "3.14": "June 30",
+      "3.15": "speaking and listening",
+      "3.16": "talk during class",
+      "3.17": 105,
+      "3.18": "Smith",
+      "3.19": "blue",
+      "3.20": "computer room",
+      "4.21": "A",
+      "4.22": "C",
+      "4.23": "D",
+      "4.24": "C",
+      "5.25": "C",
+      "5.26": "C",
+      "5.27": "B",
+      "5.28": "A",
+      "5.29": "C",
+      "6.30": "Ne",
+      "6.31": "Ano",
+      "6.32": "Ano",
+      "6.33": "Ano",
+      "6.34": "Ne",
+      "6.35": "Ano",
+      "6.36": "Ne",
+      "6.37": "Ne",
+      "6.38": "Ne",
+      "6.39": "Ano",
+      "7.40": "A",
+      "7.41": "B",
+      "7.42": "A",
+      "7.43": "D",
+      "7.44": "D",
+      "8.45": "E",
+      "8.46": "D",
+      "8.47": "F",
+      "8.48": "C",
+      "8.49": "B",
+      "9.50": "A",
+      "9.51": "C",
+      "9.52": "B",
+      "9.53": "C",
+      "9.54": "B",
+      "9.55": "C",
+      "9.56": "A",
+      "9.57": "A",
+      "9.58": "C",
+      "9.59": "C",
+      "10.60": "from",
+      "10.61": "are",
+      "10.62": "who",
+      "10.63": "in",
+      "10.64": "forward"
+    },
+    "points": {
+      "1": {
+        "v": 4,
+        "max": 8
+      },
+      "2": {
+        "v": 8,
+        "max": 8
+      },
+      "3": {
+        "v": 2,
+        "max": 16
+      },
+      "4": {
+        "v": 2,
+        "max": 8
+      },
+      "5": {
+        "v": 10,
+        "max": 10
+      },
+      "6": {
+        "v": 6,
+        "max": 10
+      },
+      "7": {
+        "v": 8,
+        "max": 10
+      },
+      "8": {
+        "v": 8,
+        "max": 10
+      },
+      "9": {
+        "v": 9,
+        "max": 10
+      },
+      "10": {
+        "v": 10,
+        "max": 10
+      }
+    }
+  },
+  "AJB-2024": {
+    "metadata": {
+      "info": {
+        "code": "AJMZD24C0T04",
+        "maxPoints": 100,
+        "questions": {
+          "closed": 51,
+          "opened": 13
+        }
+      }
+    },
+    "subject": "en",
+    "grade": "diploma",
+    "totalAnswers": 64,
+    "totalPoints": 53,
+    "maxTotalPoints": 100,
+    "corrections": {
+      "1.1": false,
+      "1.2": false,
+      "1.3": true,
+      "1.4": false,
+      "2.5": true,
+      "2.6": false,
+      "2.7": false,
+      "2.8": false,
+      "2.9": true,
+      "2.10": false,
+      "2.11": false,
+      "2.12": true,
+      "3.13": false,
+      "3.14": false,
+      "3.15": false,
+      "3.16": false,
+      "3.17": false,
+      "3.18": false,
+      "3.19": false,
+      "3.20": false,
+      "4.21": true,
+      "4.22": false,
+      "4.23": false,
+      "4.24": false,
+      "5.25": true,
+      "5.26": true,
+      "5.27": false,
+      "5.28": true,
+      "5.29": false,
+      "6.30": false,
+      "6.31": true,
+      "6.32": true,
+      "6.33": true,
+      "6.34": true,
+      "6.35": true,
+      "6.36": true,
+      "6.37": true,
+      "6.38": true,
+      "6.39": false,
+      "7.40": true,
+      "7.41": true,
+      "7.42": false,
+      "7.43": true,
+      "7.44": true,
+      "8.45": true,
+      "8.46": false,
+      "8.47": true,
+      "8.48": true,
+      "8.49": false,
+      "9.50": true,
+      "9.51": true,
+      "9.52": true,
+      "9.53": true,
+      "9.54": true,
+      "9.55": true,
+      "9.56": true,
+      "9.57": true,
+      "9.58": true,
+      "9.59": true,
+      "10.60": true,
+      "10.61": true,
+      "10.62": true,
+      "10.63": false,
+      "10.64": true
+    },
+    "correctAnswers": {
+      "1.1": "A",
+      "1.2": "C",
+      "1.3": "D",
+      "1.4": "B",
+      "2.5": "Ne",
+      "2.6": "Ano",
+      "2.7": "Ne",
+      "2.8": "Ano",
+      "2.9": "Ano",
+      "2.10": "Ne",
+      "2.11": "Ne",
+      "2.12": "Ne",
+      "3.13": "GAYLE",
+      "3.14": "(?:the )?Moon?",
+      "3.15": "(?:29th December|29.2.|29\\/2)",
+      "3.16": "(?:a |the )?hall?",
+      "3.17": "(?:quarter past ten|10\\.15|10\\,15)",
+      "3.18": "(?:a |the )?poster?",
+      "3.19": "(?:a |the )?secretary?",
+      "3.20": 8.4,
+      "4.21": "C",
+      "4.22": "D",
+      "4.23": "B",
+      "4.24": "C",
+      "5.25": "B",
+      "5.26": "C",
+      "5.27": "D",
+      "5.28": "C",
+      "5.29": "A",
+      "6.30": "Ne",
+      "6.31": "Ano",
+      "6.32": "Ne",
+      "6.33": "Ano",
+      "6.34": "Ano",
+      "6.35": "Ne",
+      "6.36": "Ano",
+      "6.37": "Ne",
+      "6.38": "Ano",
+      "6.39": "Ne",
+      "7.40": "C",
+      "7.41": "B",
+      "7.42": "A",
+      "7.43": "A",
+      "7.44": "D",
+      "8.45": "D",
+      "8.46": "E",
+      "8.47": "B",
+      "8.48": "A",
+      "8.49": "G",
+      "9.50": "C",
+      "9.51": "B",
+      "9.52": "B",
+      "9.53": "B",
+      "9.54": "B",
+      "9.55": "A",
+      "9.56": "A",
+      "9.57": "A",
+      "9.58": "B",
+      "9.59": "C",
+      "10.60": "was",
+      "10.61": "to",
+      "10.62": "There",
+      "10.63": "then",
+      "10.64": "(?:work|write)"
+    },
+    "answers": {
+      "1.1": "B",
+      "1.2": "A",
+      "1.3": "D",
+      "1.4": "C",
+      "2.5": "Ne",
+      "2.6": "Ne",
+      "2.7": "Ano",
+      "2.8": "Ne",
+      "2.9": "Ano",
+      "2.10": "Ano",
+      "2.11": "Ano",
+      "2.12": "Ne",
+      "3.13": "www.royaldrama.com",
+      "3.14": "The Tempest",
+      "3.15": "on Aug 15",
+      "3.16": "auditorium",
+      "3.17": "7 pm",
+      "3.18": "free tickets",
+      "3.19": "the teacher",
+      "3.20": 5,
+      "4.21": "C",
+      "4.22": "A",
+      "4.23": "D",
+      "4.24": "B",
+      "5.25": "B",
+      "5.26": "C",
+      "5.27": "C",
+      "5.28": "C",
+      "5.29": "D",
+      "6.30": "Ano",
+      "6.31": "Ano",
+      "6.32": "Ne",
+      "6.33": "Ano",
+      "6.34": "Ano",
+      "6.35": "Ne",
+      "6.36": "Ano",
+      "6.37": "Ne",
+      "6.38": "Ano",
+      "6.39": "Ano",
+      "7.40": "C",
+      "7.41": "B",
+      "7.42": "D",
+      "7.43": "A",
+      "7.44": "D",
+      "8.45": "D",
+      "8.46": "F",
+      "8.47": "B",
+      "8.48": "A",
+      "8.49": "C",
+      "9.50": "C",
+      "9.51": "B",
+      "9.52": "B",
+      "9.53": "B",
+      "9.54": "B",
+      "9.55": "A",
+      "9.56": "A",
+      "9.57": "A",
+      "9.58": "B",
+      "9.59": "C",
+      "10.60": "was",
+      "10.61": "to",
+      "10.62": "There",
+      "10.63": "than",
+      "10.64": "work"
+    },
+    "points": {
+      "1": {
+        "v": 2,
+        "max": 8
+      },
+      "2": {
+        "v": 3,
+        "max": 8
+      },
+      "3": {
+        "v": 0,
+        "max": 16
+      },
+      "4": {
+        "v": 2,
+        "max": 8
+      },
+      "5": {
+        "v": 6,
+        "max": 10
+      },
+      "6": {
+        "v": 8,
+        "max": 10
+      },
+      "7": {
+        "v": 8,
+        "max": 10
+      },
+      "8": {
+        "v": 6,
+        "max": 10
+      },
+      "9": {
+        "v": 10,
+        "max": 10
+      },
+      "10": {
+        "v": 8,
+        "max": 10
+      }
+    }
+  },
+  "DEA-2023": {
+    "metadata": {
+      "info": {
+        "code": "NJMZD23C0T01",
+        "maxPoints": 95,
+        "questions": {
+          "closed": 56,
+          "opened": 8
+        }
+      }
+    },
+    "subject": "de",
+    "grade": "diploma",
+    "totalAnswers": 64,
+    "totalPoints": 58,
+    "maxTotalPoints": 95,
+    "corrections": {
+      "1.1": false,
+      "1.2": false,
+      "1.3": false,
+      "1.4": false,
+      "2.5": true,
+      "2.6": false,
+      "2.7": true,
+      "2.8": false,
+      "2.9": true,
+      "2.10": true,
+      "2.11": true,
+      "2.12": false,
+      "3.13": false,
+      "3.14": true,
+      "3.15": false,
+      "3.16": false,
+      "3.17": false,
+      "3.18": false,
+      "3.19": false,
+      "3.20": false,
+      "4.21": false,
+      "4.22": false,
+      "4.23": true,
+      "4.24": false,
+      "5.25": false,
+      "5.26": true,
+      "5.27": true,
+      "5.28": true,
+      "5.29": true,
+      "6.30": true,
+      "6.31": true,
+      "6.32": true,
+      "6.33": true,
+      "6.34": false,
+      "6.35": false,
+      "6.36": true,
+      "6.37": false,
+      "6.38": true,
+      "6.39": true,
+      "7.40": true,
+      "7.41": true,
+      "7.42": true,
+      "7.43": true,
+      "7.44": true,
+      "8.45": true,
+      "8.46": true,
+      "8.47": true,
+      "8.48": true,
+      "8.49": true,
+      "9.50": true,
+      "9.51": false,
+      "9.52": true,
+      "9.53": true,
+      "9.54": true,
+      "9.55": true,
+      "9.56": true,
+      "9.57": true,
+      "9.58": true,
+      "9.59": true,
+      "9.60": true,
+      "9.61": true,
+      "9.62": true,
+      "9.63": true,
+      "9.64": true
+    },
+    "correctAnswers": {
+      "1.1": "A",
+      "1.2": "B",
+      "1.3": "B",
+      "1.4": "A",
+      "2.5": "Ano",
+      "2.6": "Ano",
+      "2.7": "Ne",
+      "2.8": "Ne",
+      "2.9": "Ne",
+      "2.10": "Ano",
+      "2.11": "Ne",
+      "2.12": "Ne",
+      "3.13": 1935,
+      "3.14": 10,
+      "3.15": "TAJEVU",
+      "3.16": "15:15",
+      "3.17": "(?:die )?Giraffen malen",
+      "3.18": "(?:ein |das )?Familienticket|Ticket",
+      "3.19": "(?:eine |die )?Kanne",
+      "3.20": "(?:ein |das )?Pferd",
+      "4.21": "C",
+      "4.22": "B",
+      "4.23": "C",
+      "4.24": "B",
+      "5.25": "C",
+      "5.26": "D",
+      "5.27": "C",
+      "5.28": "A",
+      "5.29": "A",
+      "6.30": "Ne",
+      "6.31": "Ne",
+      "6.32": "Ano",
+      "6.33": "Ne",
+      "6.34": "Ano",
+      "6.35": "Ne",
+      "6.36": "Ano",
+      "6.37": "Ano",
+      "6.38": "Ne",
+      "6.39": "Ano",
+      "7.40": "C",
+      "7.41": "A",
+      "7.42": "B",
+      "7.43": "D",
+      "7.44": "C",
+      "8.45": "F",
+      "8.46": "E",
+      "8.47": "C",
+      "8.48": "B",
+      "8.49": "D",
+      "9.50": "A",
+      "9.51": "C",
+      "9.52": "B",
+      "9.53": "C",
+      "9.54": "A",
+      "9.55": "A",
+      "9.56": "A",
+      "9.57": "C",
+      "9.58": "B",
+      "9.59": "C",
+      "9.60": "C",
+      "9.61": "A",
+      "9.62": "B",
+      "9.63": "A",
+      "9.64": "A"
+    },
+    "answers": {
+      "1.1": "C",
+      "1.2": "D",
+      "1.3": "A",
+      "1.4": "B",
+      "2.5": "Ano",
+      "2.6": "Ne",
+      "2.7": "Ne",
+      "2.8": "Ano",
+      "2.9": "Ne",
+      "2.10": "Ano",
+      "2.11": "Ne",
+      "2.12": "Ano",
+      "3.13": 2000,
+      "3.14": 10,
+      "3.15": "Lola",
+      "3.16": "15 Uhr",
+      "3.17": "Bilder malen",
+      "3.18": "Kinogutschein",
+      "3.19": "Alter Baum",
+      "3.20": "Schlangen",
+      "4.21": "D",
+      "4.22": "A",
+      "4.23": "C",
+      "4.24": "D",
+      "5.25": "D",
+      "5.26": "D",
+      "5.27": "C",
+      "5.28": "A",
+      "5.29": "A",
+      "6.30": "Ne",
+      "6.31": "Ne",
+      "6.32": "Ano",
+      "6.33": "Ne",
+      "6.34": "Ne",
+      "6.35": "Ano",
+      "6.36": "Ano",
+      "6.37": "Ne",
+      "6.38": "Ne",
+      "6.39": "Ano",
+      "7.40": "C",
+      "7.41": "A",
+      "7.42": "B",
+      "7.43": "D",
+      "7.44": "C",
+      "8.45": "F",
+      "8.46": "E",
+      "8.47": "C",
+      "8.48": "B",
+      "8.49": "D",
+      "9.50": "A",
+      "9.51": "B",
+      "9.52": "B",
+      "9.53": "C",
+      "9.54": "A",
+      "9.55": "A",
+      "9.56": "A",
+      "9.57": "C",
+      "9.58": "B",
+      "9.59": "C",
+      "9.60": "C",
+      "9.61": "A",
+      "9.62": "B",
+      "9.63": "A",
+      "9.64": "A"
+    },
+    "points": {
+      "1": {
+        "v": 0,
+        "max": 8
+      },
+      "2": {
+        "v": 5,
+        "max": 8
+      },
+      "3": {
+        "v": 2,
+        "max": 16
+      },
+      "4": {
+        "v": 2,
+        "max": 8
+      },
+      "5": {
+        "v": 8,
+        "max": 10
+      },
+      "6": {
+        "v": 7,
+        "max": 10
+      },
+      "7": {
+        "v": 10,
+        "max": 10
+      },
+      "8": {
+        "v": 10,
+        "max": 10
+      },
+      "9": {
+        "v": 14,
+        "max": 15
+      }
+    }
+  }
+}
