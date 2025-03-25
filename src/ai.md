@@ -87,7 +87,7 @@ Procento vyjadřuje **počet bodů z maximálního počtu možných bodů**. Vst
 
 # model o3-mini
 ${
-  totalP(rawData1)
+  totalP(rawData2)
 }
 
 [více informací](./ai-results-o3-mini)
@@ -95,7 +95,7 @@ ${
 # model GTP-4o
 
 ${
-  totalP(rawData2)
+  totalP(rawData1)
 }
 
 [více informací](./ai-results-gpt-4o)
