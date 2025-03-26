@@ -101,7 +101,7 @@ ${mdPlus.renderToString(template, {docId:`${code}-${id}` })}
 
 ${answers != null ? `
 <details class="solutions" open>
-<summary><h2 style="flex:1;" id="s-${id}">Řešení úloha ${id}</h2></summary>
+<summary><h2 style="flex:1;" id="s-${id}">Řešení úloha ${id}</h2>${aiPrompts?.explainSolution != null ? `<a href="/word-problem-${code}-n-${id}"> více<span>↗︎</span></a>`:''}</summary>
 <div class="break-inside-avoid-column">
 <div class="h-stack h-stack--end">${aiPrompts?.explainSolution != null ? renderChatButton("Smart řešení", aiPrompts.explainSolution) :''}</div>
 <div class="card">

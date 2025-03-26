@@ -1,8 +1,9 @@
 import { formatSubject, formatPeriod, formatPdfFileName } from './src/utils/quiz-string-utils.js';
 import { quizes, printedPages } from './src/utils/quiz-utils.js';
-
+import wordProblems from './src/math/word-problems.js';
 import { readdirSync, statSync } from 'fs';
 import { join } from 'path';
+
 
 /**
  * Recursively retrieves all files in a directory.
@@ -40,6 +41,8 @@ const range = (start, end) => Array.from(
   (_, i) => start + i
 );
 const assetsFiles = getFilesRecursive(`./src/assets/math`).map(d => d.replace("src", ""))
+const wordProblemsKeyValuePairs = Object.entries(wordProblems).flatMap(([key,value]) => Object.keys(value).map(d => d.split('.')[0]).filter(unique).map(d => [key,d]));
+
 
 // See https://observablehq.com/framework/config for documentation.
 export default {
@@ -119,7 +122,7 @@ export default {
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solu-${code}`))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solution-${code}`))    
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-${code}`))
-    .concat([["M9I-2025", 12]].flatMap(([code,id]) => `/word-problem-${code}-n-${id}`))
+    .concat(wordProblemsKeyValuePairs.map(([code,id]) => `/word-problem-${code}-n-${id}`))
     .concat(quizes.map(d => `/quiz-${d.subject}-${d.period}`))
     .concat(quizes.map(d => `/quiz-print-${d.subject}-${d.period}`))
     .concat(quizes.map(d => `/quiz-picker-${d.subject}-${d.period}`))

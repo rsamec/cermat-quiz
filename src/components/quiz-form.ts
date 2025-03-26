@@ -274,7 +274,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
               </div>
               ${videoExclude[key]?.includes(i) ? '':html`<video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`}`)}
               
-              ${wordProblemEntries.length > 0 ? html`<div class="h-stack h-stack--end">${renderChatButton("Zdůvodni řešení", generateAIMessages({
+              ${wordProblemEntries.length > 0 ? html`<div class="h-stack h-stack--end">${renderChatButton("Smart řešení", generateAIMessages({
                     template: quizBuilder.content(ids, { ids: groupedIds, render: 'content' }),
                     deductionTrees: wordProblemEntries.map(([key, d]) => [`Řešení ${key}`, d.deductionTree])
                   }).explainSolution)}<div>` : ""}
