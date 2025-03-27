@@ -74,9 +74,6 @@ function gcd(agent, entity3) {
 function lcd(agent, entity3) {
   return { kind: "lcd", agent, entity: entity3 };
 }
-function nth(entity3) {
-  return { kind: "nth", entity: entity3 };
-}
 function nthPart(agent) {
   return { kind: "nth-part", agent };
 }
@@ -346,25 +343,25 @@ function partToWholeRule(a, b) {
     ]
   };
 }
-function rateRuleEx(a, rate4) {
-  if (!(a.entity === rate4.entity.entity || a.entity === rate4.entityBase.entity)) {
-    throw `Mismatch entity ${a.entity} any of ${rate4.entity.entity}, ${rate4.entityBase.entity}`;
+function rateRuleEx(a, rate3) {
+  if (!(a.entity === rate3.entity.entity || a.entity === rate3.entityBase.entity)) {
+    throw `Mismatch entity ${a.entity} any of ${rate3.entity.entity}, ${rate3.entityBase.entity}`;
   }
   return {
     kind: "cont",
     agent: a.agent,
-    entity: a.entity == rate4.entity.entity ? rate4.entityBase.entity : rate4.entity.entity,
-    quantity: a.entity == rate4.entity.entity ? a.quantity / rate4.quantity : a.quantity * rate4.quantity
+    entity: a.entity == rate3.entity.entity ? rate3.entityBase.entity : rate3.entity.entity,
+    quantity: a.entity == rate3.entity.entity ? a.quantity / rate3.quantity : a.quantity * rate3.quantity
   };
 }
-function rateRule(a, rate4) {
-  const result = rateRuleEx(a, rate4);
+function rateRule(a, rate3) {
+  const result = rateRuleEx(a, rate3);
   return {
     question: containerQuestion(result),
     result,
     options: [
-      { tex: `${formatNumber(a.quantity)} * ${formatNumber(rate4.quantity)}`, result: formatNumber(a.quantity * rate4.quantity), ok: a.entity !== rate4.entity.entity },
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(rate4.quantity)}`, result: formatNumber(a.quantity / rate4.quantity), ok: a.entity === rate4.entity.entity }
+      { tex: `${formatNumber(a.quantity)} * ${formatNumber(rate3.quantity)}`, result: formatNumber(a.quantity * rate3.quantity), ok: a.entity !== rate3.entity.entity },
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(rate3.quantity)}`, result: formatNumber(a.quantity / rate3.quantity), ok: a.entity === rate3.entity.entity }
     ]
   };
 }
@@ -705,27 +702,27 @@ function toRatios(a, b, last4) {
     ]
   };
 }
-function partToPartRuleEx(a, partToPartRatio, nth2) {
+function partToPartRuleEx(a, partToPartRatio, nth) {
   if (!(partToPartRatio.whole != null && matchAgent(partToPartRatio.whole, a) || partToPartRatio.parts.some((d) => matchAgent(d, a)))) {
     throw `Mismatch agent ${[a.agent, a.entity].join()} any of ${[partToPartRatio.whole].concat(partToPartRatio.parts).join()}`;
   }
   const sourcePartIndex = partToPartRatio.parts.findIndex((d) => matchAgent(d, a));
-  const targetPartIndex = nth2 != null ? partToPartRatio.parts.findIndex((d) => d === nth2.agent) : matchAgent(partToPartRatio[0], a) ? 0 : partToPartRatio.parts.length - 1;
+  const targetPartIndex = nth != null ? partToPartRatio.parts.findIndex((d) => d === nth.agent) : matchAgent(partToPartRatio[0], a) ? 0 : partToPartRatio.parts.length - 1;
   const partsSum = partToPartRatio.ratios.reduce((out, d) => out += d, 0);
   const matchedWhole = matchAgent(partToPartRatio.whole, a);
   return {
     kind: "cont",
-    agent: (matchedWhole || nth2 != null) && targetPartIndex != -1 ? partToPartRatio.parts[targetPartIndex] : partToPartRatio.whole,
+    agent: (matchedWhole || nth != null) && targetPartIndex != -1 ? partToPartRatio.parts[targetPartIndex] : partToPartRatio.whole,
     entity: a.entity,
-    quantity: matchedWhole ? a.quantity / partsSum * partToPartRatio.ratios[targetPartIndex] : a.quantity / partToPartRatio.ratios[sourcePartIndex] * (nth2 != null ? partToPartRatio.ratios[targetPartIndex] : partsSum),
+    quantity: matchedWhole ? a.quantity / partsSum * partToPartRatio.ratios[targetPartIndex] : a.quantity / partToPartRatio.ratios[sourcePartIndex] * (nth != null ? partToPartRatio.ratios[targetPartIndex] : partsSum),
     unit: a.unit
   };
 }
-function partToPartRule(a, partToPartRatio, nth2) {
-  const result = partToPartRuleEx(a, partToPartRatio, nth2);
+function partToPartRule(a, partToPartRatio, nth) {
+  const result = partToPartRuleEx(a, partToPartRatio, nth);
   const matchedWhole = matchAgent(partToPartRatio.whole, a);
   let sourcePartIndex = partToPartRatio.parts.findIndex((d) => matchAgent(d, a));
-  const targetPartIndex = nth2 != null ? partToPartRatio.parts.findIndex((d) => d === nth2.agent) : matchAgent(partToPartRatio[0], a) ? 0 : partToPartRatio.parts.length - 1;
+  const targetPartIndex = nth != null ? partToPartRatio.parts.findIndex((d) => d === nth.agent) : matchAgent(partToPartRatio[0], a) ? 0 : partToPartRatio.parts.length - 1;
   if (sourcePartIndex == -1)
     sourcePartIndex = 0;
   const partsSum = `(${partToPartRatio.ratios.join(" + ")})`;
@@ -734,7 +731,7 @@ function partToPartRule(a, partToPartRatio, nth2) {
     result,
     options: [
       { tex: `${formatNumber(a.quantity)} / ${partsSum} * ${formatNumber(partToPartRatio.ratios[targetPartIndex])}`, result: formatNumber(result.quantity), ok: matchedWhole },
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(partToPartRatio.ratios[sourcePartIndex])} * ${nth2 != null ? partToPartRatio.ratios[targetPartIndex] : partsSum}`, result: formatNumber(result.quantity), ok: !matchedWhole }
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(partToPartRatio.ratios[sourcePartIndex])} * ${nth != null ? partToPartRatio.ratios[targetPartIndex] : partsSum}`, result: formatNumber(result.quantity), ok: !matchedWhole }
     ]
   };
 }
@@ -1409,25 +1406,25 @@ function partToWholeRule2(a, b) {
     ]
   };
 }
-function rateRuleEx2(a, rate4) {
-  if (!(a.entity === rate4.entity.entity || a.entity === rate4.entityBase.entity)) {
-    throw `Mismatch entity ${a.entity} any of ${rate4.entity.entity}, ${rate4.entityBase.entity}`;
+function rateRuleEx2(a, rate3) {
+  if (!(a.entity === rate3.entity.entity || a.entity === rate3.entityBase.entity)) {
+    throw `Mismatch entity ${a.entity} any of ${rate3.entity.entity}, ${rate3.entityBase.entity}`;
   }
   return {
     kind: "cont",
     agent: a.agent,
-    entity: a.entity == rate4.entity.entity ? rate4.entityBase.entity : rate4.entity.entity,
-    quantity: a.entity == rate4.entity.entity ? a.quantity / rate4.quantity : a.quantity * rate4.quantity
+    entity: a.entity == rate3.entity.entity ? rate3.entityBase.entity : rate3.entity.entity,
+    quantity: a.entity == rate3.entity.entity ? a.quantity / rate3.quantity : a.quantity * rate3.quantity
   };
 }
-function rateRule2(a, rate4) {
-  const result = rateRuleEx2(a, rate4);
+function rateRule2(a, rate3) {
+  const result = rateRuleEx2(a, rate3);
   return {
     question: containerQuestion2(result),
     result,
     options: [
-      { tex: `${formatNumber2(a.quantity)} * ${formatNumber2(rate4.quantity)}`, result: formatNumber2(a.quantity * rate4.quantity), ok: a.entity !== rate4.entity.entity },
-      { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(rate4.quantity)}`, result: formatNumber2(a.quantity / rate4.quantity), ok: a.entity === rate4.entity.entity }
+      { tex: `${formatNumber2(a.quantity)} * ${formatNumber2(rate3.quantity)}`, result: formatNumber2(a.quantity * rate3.quantity), ok: a.entity !== rate3.entity.entity },
+      { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(rate3.quantity)}`, result: formatNumber2(a.quantity / rate3.quantity), ok: a.entity === rate3.entity.entity }
     ]
   };
 }
@@ -1768,27 +1765,27 @@ function toRatios2(a, b, last22) {
     ]
   };
 }
-function partToPartRuleEx2(a, partToPartRatio, nth2) {
+function partToPartRuleEx2(a, partToPartRatio, nth) {
   if (!(partToPartRatio.whole != null && matchAgent2(partToPartRatio.whole, a) || partToPartRatio.parts.some((d) => matchAgent2(d, a)))) {
     throw `Mismatch agent ${[a.agent, a.entity].join()} any of ${[partToPartRatio.whole].concat(partToPartRatio.parts).join()}`;
   }
   const sourcePartIndex = partToPartRatio.parts.findIndex((d) => matchAgent2(d, a));
-  const targetPartIndex = nth2 != null ? partToPartRatio.parts.findIndex((d) => d === nth2.agent) : matchAgent2(partToPartRatio[0], a) ? 0 : partToPartRatio.parts.length - 1;
+  const targetPartIndex = nth != null ? partToPartRatio.parts.findIndex((d) => d === nth.agent) : matchAgent2(partToPartRatio[0], a) ? 0 : partToPartRatio.parts.length - 1;
   const partsSum = partToPartRatio.ratios.reduce((out, d) => out += d, 0);
   const matchedWhole = matchAgent2(partToPartRatio.whole, a);
   return {
     kind: "cont",
-    agent: (matchedWhole || nth2 != null) && targetPartIndex != -1 ? partToPartRatio.parts[targetPartIndex] : partToPartRatio.whole,
+    agent: (matchedWhole || nth != null) && targetPartIndex != -1 ? partToPartRatio.parts[targetPartIndex] : partToPartRatio.whole,
     entity: a.entity,
-    quantity: matchedWhole ? a.quantity / partsSum * partToPartRatio.ratios[targetPartIndex] : a.quantity / partToPartRatio.ratios[sourcePartIndex] * (nth2 != null ? partToPartRatio.ratios[targetPartIndex] : partsSum),
+    quantity: matchedWhole ? a.quantity / partsSum * partToPartRatio.ratios[targetPartIndex] : a.quantity / partToPartRatio.ratios[sourcePartIndex] * (nth != null ? partToPartRatio.ratios[targetPartIndex] : partsSum),
     unit: a.unit
   };
 }
-function partToPartRule2(a, partToPartRatio, nth2) {
-  const result = partToPartRuleEx2(a, partToPartRatio, nth2);
+function partToPartRule2(a, partToPartRatio, nth) {
+  const result = partToPartRuleEx2(a, partToPartRatio, nth);
   const matchedWhole = matchAgent2(partToPartRatio.whole, a);
   let sourcePartIndex = partToPartRatio.parts.findIndex((d) => matchAgent2(d, a));
-  const targetPartIndex = nth2 != null ? partToPartRatio.parts.findIndex((d) => d === nth2.agent) : matchAgent2(partToPartRatio[0], a) ? 0 : partToPartRatio.parts.length - 1;
+  const targetPartIndex = nth != null ? partToPartRatio.parts.findIndex((d) => d === nth.agent) : matchAgent2(partToPartRatio[0], a) ? 0 : partToPartRatio.parts.length - 1;
   if (sourcePartIndex == -1)
     sourcePartIndex = 0;
   const partsSum = `(${partToPartRatio.ratios.join(" + ")})`;
@@ -1797,7 +1794,7 @@ function partToPartRule2(a, partToPartRatio, nth2) {
     result,
     options: [
       { tex: `${formatNumber2(a.quantity)} / ${partsSum} * ${formatNumber2(partToPartRatio.ratios[targetPartIndex])}`, result: formatNumber2(result.quantity), ok: matchedWhole },
-      { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(partToPartRatio.ratios[sourcePartIndex])} * ${nth2 != null ? partToPartRatio.ratios[targetPartIndex] : partsSum}`, result: formatNumber2(result.quantity), ok: !matchedWhole }
+      { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(partToPartRatio.ratios[sourcePartIndex])} * ${nth != null ? partToPartRatio.ratios[targetPartIndex] : partsSum}`, result: formatNumber2(result.quantity), ok: !matchedWhole }
     ]
   };
 }
@@ -4189,7 +4186,7 @@ function build6({ input }) {
   const aPrevious = axiomInput(cont(agentPrevious, input.previousWorker, entityA), 1);
   const aCurrent = axiomInput(cont(agentCurrent, input.currentWorker, entityA), 3);
   const bPrevious = axiomInput(cont(agentPrevious, input.previousHours, entityB), 2);
-  const comp5 = compRatio(agentNew, agentCurrent, 3 / 2);
+  const comp4 = compRatio(agentNew, agentCurrent, 3 / 2);
   const deductionTree = deduce(
     deduce(
       deduce(
@@ -4203,7 +4200,7 @@ function build6({ input }) {
       bPrevious
     ),
     deduce(
-      comp5,
+      comp4,
       proportion(false, [`mno\u017Estv\xED`, `hodin`])
     )
   );
@@ -4624,190 +4621,6 @@ function example4({ input }) {
   return { deductionTree };
 }
 
-// src/math/M9C-2024/pocet-obyvatel.ts
-function build11({ input }) {
-  const rozdil = input.celkem - input.jihlavaPlus;
-  const halfTotal = Math.round(rozdil / 2);
-  const jihlava = "Jihlava";
-  const trebic = "T\u0159eb\xED\u010D";
-  const data = [{ value: halfTotal, agent: jihlava }, { value: halfTotal, agent: trebic }, { value: input.jihlavaPlus, agent: jihlava, opacity: 0.6 }];
-  const celkem = "Jihlava a T\u0159eb\xED\u010D";
-  const entity3 = "obyvatel";
-  const total = axiomInput(cont(celkem, input.celkem, entity3), 1);
-  const diffComp = axiomInput(comp(jihlava, trebic, input.jihlavaPlus, entity3), 2);
-  const deductionTree = deduce(
-    total,
-    diffComp,
-    ctor("comp-part-eq")
-  );
-  const template = (highlight2) => highlight2`Města Jihlava a Třebíč mají dohromady ${input.celkem.toLocaleString("cs-CZ")} obyvatel.
-    Jihlava má o ${input.jihlavaPlus.toLocaleString("cs-CZ")} více.
-  ${(html) => html`<br/>
-    <strong> Kolik obyvatel má Třebíč?</strong>`}`;
-  return { deductionTree, data, template };
-}
-
-// src/math/M9C-2024/sourozenci.ts
-function build12({ input }) {
-  const percentValue = (input.zbyvaNasporit + input.michalPlus) / (100 - input.evaPodil * 2);
-  const data = [
-    { agent: "Eva", value: input.evaPodil * percentValue },
-    { agent: "Michal", value: input.evaPodil * percentValue },
-    { agent: "Michal", opacity: 0.5, value: input.michalPlus },
-    { agent: "zbyva", value: input.zbyvaNasporit }
-  ];
-  const entity3 = "K\u010D";
-  const zbyva = axiomInput(cont("zb\xFDv\xE1", input.zbyvaNasporit, entity3), 4);
-  const michalPlus = axiomInput(cont("Michal+", input.michalPlus, entity3), 3);
-  const penize = sum("Michal+zb\xFDv\xE1", [], entity3, entity3);
-  const eva = axiomInput(cont("Eva", input.evaPodil, "%"), 2);
-  const michal = cont("Michal", input.evaPodil, "%");
-  const spolecne = axiomInput(sum("Eva + Michal", [], "%", "%"), 1);
-  const celek = cont("celek", 100, "%");
-  const deductionTree = deduce(
-    deduce(
-      deduce(
-        deduce(eva, michal, spolecne),
-        celek,
-        ctor("ratio")
-      ),
-      ctorComplement("Michal+zb\xFDv\xE1")
-    ),
-    deduce(michalPlus, zbyva, penize)
-  );
-  const template = (highlight2) => highlight2`
-  Dva sourozenci Eva a Michal šetří ${"spole\u010Dn\u011B"} na dárek pro rodiče.
-  Eva našetřila ${input.evaPodil} % potřebné částky, Michal o ${input.michalPlus} korun více než Eva.
-  Sourozencům zbývá našetřit ${input.zbyvaNasporit} korun.
-  ${(html) => html`<br/><strong> Kolik korun stojí dárek?</strong>`}`;
-  return { deductionTree, data, template };
-}
-
-// src/math/M9A-2023/trojuhelnik.ts
-function build13({ input }) {
-  const agent = "obrazec";
-  const entity3 = "troj\xFAheln\xEDk";
-  const whiteEntity = `b\xEDl\xFD ${entity3}`;
-  const grayEntity = `\u0161ed\xFD ${entity3}`;
-  const nthLabel = "pozice";
-  const nthEntity = nth(nthLabel);
-  const inputContainers = [1, 3, 9].map((d, i) => cont(`${agent} \u010D.${i + 1}`, d, whiteEntity));
-  const dSequence = inferenceRule(...inputContainers, ctor("sequence"));
-  const soucet = sum("obrazec \u010D.7", [], entity3, grayEntity);
-  const dBase = deduce(
-    ...inputContainers,
-    ctor("sequence")
-  );
-  const dTree1 = deduce(
-    dBase,
-    cont(`${agent} \u010D.5`, 5, nthLabel)
-  );
-  const dTree2 = deduce(
-    deduce(
-      dBase,
-      cont(`${agent} \u010D.6`, 6, nthLabel)
-    ),
-    cont(`${agent} \u010D.6`, 121, grayEntity),
-    soucet
-  );
-  const dTree3 = deduce(
-    deduce(
-      deduce(
-        dBase,
-        cont("p\u0159edposledn\xED obrazec", 6561, entity3),
-        nthEntity
-      ),
-      cont("posun na posledn\xED obrazec", 1, nthEntity.entity),
-      sum("posledn\xED obrazec", [], nthEntity.entity, nthEntity.entity)
-    ),
-    { ...dSequence, ...deduceLbl(1) }
-  );
-  const templateBase = (highlight2) => highlight2`Prvním obrazcem je bílý rovnostranný trojúhelník. Každý další obrazec vznikne z předchozího obrazce dle následujících pravidel:.
-  ${(html) => html`<br/>
-    Nejprve každý bílý trojúhelník v obrazci rozdělíme na 4 shodné rovnostranné trojúhelníky.
-    Poté v každé takto vzniklé čtveřici bílých trojúhelníků obarvíme vnitřní trojúhelník na šedo.
-  `}`;
-  const template1 = (html) => html`<br/>
-    <strong>Určete, kolik bílých trojúhelníků obsahuje pátý obrazec?</strong>`;
-  const template2 = (html) => html`<br/>
-    <strong>Šestý obrazec obsahuje 121 šedých trojúhelníků.Určete, kolik šedých trojúhelníků obsahuje sedmý obrazec.</strong>`;
-  const template3 = (html) => html`<br/>
-    <strong>Počet šedých trojúhelníků v posledním a v předposledním obrazci se liší o 6 561.Určete, kolik bílých trojúhelníků obsahuje poslední obrazec</strong>`;
-  return [
-    { deductionTree: dTree1, template: (highlight2) => highlight2`${() => templateBase(highlight2)}${template1}` },
-    { deductionTree: dTree2, template: (highlight2) => highlight2`${() => templateBase(highlight2)}${template2}` },
-    { deductionTree: dTree3, template: (highlight2) => highlight2`${() => templateBase(highlight2)}${template3}` }
-  ];
-}
-
-// src/math/M9B-2023/ctvercova-sit.ts
-function build14({ input }) {
-  const agent = "obrazec";
-  const entity3 = "pole";
-  const whiteEntity = `sv\u011Btl\xE1 ${entity3}`;
-  const grayEntity = `tmav\xE1 ${entity3}`;
-  const nthLabel = "pozice";
-  const nthEntity = nth(nthLabel);
-  const inputContainers = [1, 5, 13].map((d, i) => cont(`${agent} \u010D.${i + 1}`, d, entity3));
-  const dSequence = inferenceRule(...inputContainers, ctor("sequence"));
-  const soucetLiche = sum("liche cisla", [], entity3, entity3);
-  const soucetSude = sum("suda cisla", [], entity3, entity3);
-  const sude = [2, 4, 6, 8, 10].map((d) => cont("sude", d, entity3));
-  const liche = [1, 3, 5, 7, 9].map((d) => cont("liche", d, entity3));
-  const diffEntity = "rozdil tmav\xFDch a sv\u011Btlych";
-  const diffSequence = [3, 7, 11].map((d, i) => cont(`${i + 1}.sud\xFD ${agent} \u010D.${(i + 1) * 2}`, d, diffEntity));
-  const darkEntity = "tmav\xFD \u010Dtverec";
-  const darkSequence = [4, 16, 36].map((d, i) => cont(`${i + 1}.sud\xFD ${agent} \u010D.${(i + 1) * 2}`, d, darkEntity));
-  const dBase = deduce(
-    ...inputContainers,
-    ctor("sequence")
-  );
-  const dTree1 = deduce(
-    deduce(
-      dBase,
-      cont(`${agent} \u010D.8`, 8, nthLabel)
-    ),
-    deduce(
-      { ...dSequence, ...deduceLbl(1) },
-      cont(`${agent} \u010D.9`, 9, nthLabel)
-    )
-  );
-  const dTree2 = deduce(
-    deduce(
-      ...diffSequence,
-      ctor("sequence")
-    ),
-    cont("5.sudy obrazec \u010D.10", 5, nthLabel)
-  );
-  const dTree3 = deduce(
-    deduce(
-      ...darkSequence,
-      ctor("sequence")
-    ),
-    cont("hledan\xFD tmav\xFD obrazec", 400, entity3),
-    nthEntity
-  );
-  const templateBase = (highlight2) => highlight2`Vybarvováním některých prázdných polí čtvercové sítě postupně vytváříme obrazce.
-    Prvním obrazcem je jedno světle vybarvené pole čtvercové sítě.
-    Každý další obrazec vytvoříme z předchozího obrazce tak, že vybarvíme všechna prázdná pole, která mají s předchozím obrazcem společné pouze vrcholy. Tato nově vybarvená pole jsou u sudých obrazců tmavá a u lichých obrazců světlá.
-
-
-  ${(html) => html`<br/>
-    Druhý obrazec jsme vytvořili z prvního obrazce vybarvením 4 dalších polí tmavou barvou. Třetí obrazec má celkem 13 polí (9 světlých a 4 tmavé) a vytvořili jsme jej z druhého obrazce vybarvením 8 dalších polí světlou barvou.
-  `}`;
-  const template1 = (html) => html`<br/>
-    <strong>Vybarvením kolika dalších polí jsme z 8. obrazce vytvořili 9. obrazec?</strong>`;
-  const template2 = (html) => html`<br/>
-    <strong>O kolik se liší počet tmavých a světlých polí v 10. obrazci?</strong>`;
-  const template3 = (html) => html`<br/>
-    <strong>Kolik světlých polí může mít obrazec, který má 400 tmavých polí?</strong>`;
-  return [
-    { deductionTree: dTree1, template: (highlight2) => highlight2`${() => templateBase(highlight2)}${template1}` },
-    { deductionTree: dTree2, template: (highlight2) => highlight2`${() => templateBase(highlight2)}${template2}` },
-    { deductionTree: dTree3, template: (highlight2) => highlight2`${() => templateBase(highlight2)}${template3}` }
-  ];
-}
-
 // src/math/M9I-2025/krabice.ts
 function plnaKrabice({ input }) {
   const krabiceLabel = "krabice";
@@ -4860,7 +4673,7 @@ function plnaKrabice({ input }) {
 }
 
 // src/math/M9I-2025/kytice.ts
-function kytice() {
+function kytice({ input }) {
   const kyticeAgent = "kytice";
   const chryzatemaAgent = "chryzant\xE9ma";
   const ruzeAgent = "r\u016F\u017Ee";
@@ -4870,9 +4683,9 @@ function kytice() {
   const rozdilRuze = axiomInput(comp(ruzeAgent, staticAgent, 2, kusEntity), 1);
   const RtoS = axiomInput(compRatio(ruzeAgent, staticAgent, 5 / 4), 2);
   const CHxS = axiomInput(ratios(kyticeAgent, [chryzatemaAgent, staticAgent], [3, 2]), 3);
-  const ruzeRate = axiomInput(rate(chryzatemaAgent, 54, entity3, kusEntity), 4);
-  const chryzantemaRate = axiomInput(rate(chryzatemaAgent, 40, entity3, kusEntity), 5);
-  const staticeRate = axiomInput(rate(chryzatemaAgent, 35, entity3, kusEntity), 6);
+  const ruzeRate = axiomInput(rate(chryzatemaAgent, input.cenaZaKus.ruze, entity3, kusEntity), 4);
+  const chryzantemaRate = axiomInput(rate(chryzatemaAgent, input.cenaZaKus.chryzantema, entity3, kusEntity), 5);
+  const staticeRate = axiomInput(rate(chryzatemaAgent, input.cenaZaKus.statice, entity3, kusEntity), 6);
   const statice = deduce(
     rozdilRuze,
     RtoS
@@ -4887,6 +4700,7 @@ function kytice() {
     rozdilRuze
   );
   return {
+    audio: true,
     deductionTree: deduce(
       deduce(ruze, ruzeRate),
       deduce(last(statice), staticeRate),
@@ -7713,16 +7527,16 @@ var word_problems_default = {
     15.2: cestovni_kancelar(),
     15.3: pozemek()
   },
-  "M9A-2023": {
-    16.1: build13({ input: {} })[0],
-    16.2: build13({ input: {} })[1],
-    16.3: build13({ input: {} })[2]
-  },
-  "M9B-2023": {
-    16.1: build14({ input: {} })[0],
-    16.2: build14({ input: {} })[1],
-    16.3: build14({ input: {} })[2]
-  },
+  // "M9A-2023": {
+  //   16.1: trojuhelnik({ input: {} })[0],
+  //   16.2: trojuhelnik({ input: {} })[1],
+  //   16.3: trojuhelnik({ input: {} })[2],
+  // },
+  // "M9B-2023": {
+  //   16.1: ctvercovaSit({ input: {} })[0],
+  //   16.2: ctvercovaSit({ input: {} })[1],
+  //   16.3: ctvercovaSit({ input: {} })[2],
+  // },
   "M9A-2024": {
     1: build6({ input: { currentWorker: 4, previousWorker: 5, previousHours: 24 } }),
     2: build9({
@@ -7751,10 +7565,10 @@ var word_problems_default = {
     16.2: example2({ input: { vlozeno: 1e6, urokPercentage: 2.5, danPercentage: 15 } }),
     16.3: example3({ input: { base: 2e4, percentageDown: 10, percentageNewUp: 10 } })
   },
-  "M9C-2024": {
-    1: build11({ input: { celkem: 86200, jihlavaPlus: 16e3 } }),
-    12: build12({ input: { evaPodil: 40, michalPlus: 24, zbyvaNasporit: 72 } })
-  },
+  // "M9C-2024": {
+  //   1: pocetObyvatel({ input: { celkem: 86_200, jihlavaPlus: 16_000 } }),
+  //   12: sourozenci({ input: { evaPodil: 40, michalPlus: 24, zbyvaNasporit: 72 } }),
+  // },
   "M9I-2025": {
     1: porovnani2Ploch({ input: {} }),
     // 6.1: okurkyASalaty({ input: { okurky: 36 } })[0],
@@ -7765,7 +7579,7 @@ var word_problems_default = {
     11.1: desetiuhelnik({ input: { pocetUhlu: 10 } })[0],
     11.2: desetiuhelnik({ input: { pocetUhlu: 10 } })[1],
     11.3: desetiuhelnik({ input: { pocetUhlu: 10 } })[2],
-    12: kytice(),
+    12: kytice({ input: { cenaZaKus: { ruze: 54, chryzantema: 40, statice: 35 } } }),
     13: caryNaPapire({ input: { pocetCasti: 40 } }),
     14: domecek({ input: { baseSurfaceArea: 16, quota: 4 } }),
     15.1: objemNadoby1({ input: { zbyva: 14, zaplnenoPomer: 3 / 5 } }),

@@ -56,27 +56,21 @@ function codesBy({subject, period}){
 <div class="grid grid-cols-4" style="grid-auto-rows: auto;">
  ${subjects.map(subject => html`<div class="card">
     <h2><strong>${formatSubject(subject)}</strong></h2>
-    <div class="v-stack v-stack--l">
     <div class="v-stack v-stack--s">
-      <div>
-        <span class="big">${quizQuestions.filter((d) => d.subject === subject).length.toLocaleString("en-US")}</span>
-        <span>úloh</span>
-      </div>
-      <div class="h-stack h-stack--m h-stack--wrap">
-      ${subjectWithPeriods[subject].periods.map(period => html`<a class="h-stack h-stack--xs" href="./quiz-sel-${subject}-${period}">${formatPeriod(period)}<span><span></a>
-        `)}
-      </div>
-     </div>
-     <div class="v-stack v-stack--s">
-      <div>
-        <span class="big">${subjectWithPeriods[subject].codes.length.toLocaleString("en-US")}</span>
-        <span>testů</span>
+      <div class="h-stack h-stack--l">
+        <div>
+          <span class="big">${quizQuestions.filter((d) => d.subject === subject).length.toLocaleString("en-US")}</span>
+          <span>úloh</span>
+        </div>
+        <div>
+          <span class="big">${subjectWithPeriods[subject].codes.length.toLocaleString("en-US")}</span>
+          <span>testů</span>
+        </div>
       </div>
       <div class="h-stack h-stack--m h-stack--wrap">
       ${subjectWithPeriods[subject].periods.map(period => html`<a class="h-stack h-stack--xs" href="./quiz-picker-${subject}-${period}">${formatPeriod(period)}<span><span></a>
         `)}
       </div>
-    </div>
     </div>
   </div>`)}
 </div>

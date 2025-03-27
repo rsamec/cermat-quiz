@@ -135,7 +135,7 @@ const cetarInput = Generators.input(cetarForm);
   ${cetarForm}
 </details>
     
-<div>${renderExample({example:cetar({input:cetarInput})[2]})}</div>
+
 
 ----------------------
 

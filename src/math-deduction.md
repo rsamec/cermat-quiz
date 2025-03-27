@@ -102,8 +102,6 @@ const slepiceInput = Generators.input(slepiceForms);
 Parametry dedukčního stromu může sloužit jako míra složitosti úlohy.
 </div>
 
-<a href="/math-deduction-examples">Více příkladů</a>
-
 # Predikáty
 
 Predikáty umožňují formalní zápis situačního modelu úlohy.

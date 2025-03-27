@@ -93,12 +93,8 @@ ${renderChatButton("Základní řešení", template)}
 ${renderChatButton("Smart řešení", aiPromts.explainSolution)}
 ${renderChatButton("Generuj obdobné úlohy", aiPromts.generateMoreQuizes)}
 
-# AI podcast
 
-<div class="tip" label="Podcast">
-  Poslechni si podcast vygenerovaný pro danou úlohu v anglickém jazyce. Generováno pomocí <a href="https://notebooklm.google/">NotebookLM</>
-</div>
-${renderAudio(code,id)}
+${values?.some(([key,value]) => value.audio) ? html`<div class="tip" label="Podcast">Poslechni si podcast vygenerovaný pro danou úlohu v anglickém jazyce. Generováno pomocí <a href="https://notebooklm.google/">NotebookLM</></div>${renderAudio(code,id)}`:''}
 
 # Strukturované řešení úlohy
 

@@ -44,10 +44,10 @@ ${ids.map(id => {
       .map((d, index) => [`${id}.${index + 1}`, d])
 
 
-  return `
+  return values?.length > 0 ? `
 ${quiz.content([id], { ids, render: 'content' })}\n
 ---
 ${values.map(([key, value]) => 
 `**${key} Rozbor řešení úlohy** \n
 ${jsonToMarkdownChat(value.deductionTree, mdFormatting).join("")}`).join("")} \n
-`}).join('')}`)
+`:''}).join('')}`)

@@ -35,6 +35,7 @@ export function kytice({ input }: { input: { cenaZaKus: { ruze: number, chryzant
   )
 
   return {
+    audio: true,
     deductionTree: deduce(
       deduce(ruze, ruzeRate),
       deduce(last(statice), staticeRate),

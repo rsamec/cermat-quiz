@@ -37,3 +37,5 @@ export function forkJoin(promises) {
     }
   });
 }
+
+export const unique = (value, index, array) => array.indexOf(value) === index;

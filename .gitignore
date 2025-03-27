@@ -8,3 +8,4 @@ yarn-error.log
 /playwright/.cache/
 /generated/
 /gen-screenshots/
+audio/

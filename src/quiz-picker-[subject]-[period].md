@@ -13,7 +13,7 @@ const filteredQuizes = quizes.filter(d => d.subject === observable.params.subjec
 const quizesByYear = Object.entries(Object.groupBy(filteredQuizes, (d) => parseCode(d).year));
 
 const pdfs = await FileAttachment(`./data/pdf-${observable.params.subject}-${observable.params.period}.json`).json();
-
+const audios = ['M5A-2023']
 ```
 
 <!-- Cards with big numbers -->
@@ -34,6 +34,7 @@ const pdfs = await FileAttachment(`./data/pdf-${observable.params.subject}-${obs
               <a class="h-stack h-stack--s" href="./print-${code}"><span>tisk</span><i class="fa-solid fa-print"></i></a>
               ${subject === "math" ? html`<a class="h-stack h-stack--s" href="./solu-${code}"><span>rozbor</span><i class="fa-solid fa-mug-hot"></i></a>`:''}
               ${subject === "math" ? html`<a class="h-stack h-stack--s" href="./ai-${code}"><span>AI</span><i class="fa-solid fa-comment-nodes"></i></a>`:''}
+              ${subject === "math" && audios.indexOf(code) != -1? html`<a class="h-stack h-stack--s" href="/assets/math/${code}.mp3"><span>podcast</span><i class="fa-solid fa-microphone"></i></a>`:''}
           <div>`
         })}
       </div>
