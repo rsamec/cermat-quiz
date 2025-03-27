@@ -13,7 +13,7 @@ const filteredQuizes = quizes.filter(d => d.subject === observable.params.subjec
 const quizesByYear = Object.entries(Object.groupBy(filteredQuizes, (d) => parseCode(d).year));
 
 const pdfs = await FileAttachment(`./data/pdf-${observable.params.subject}-${observable.params.period}.json`).json();
-const audios = ['M5A-2023']
+const audios = ['M5A-2023', 'M7A-2023', 'M7A-2024', 'M9A-2024', 'M9I-2025']
 ```
 
 <!-- Cards with big numbers -->
@@ -26,15 +26,15 @@ const audios = ['M5A-2023']
         <div class="big">${year}</div>
         <!-- <span>${codes.length.toLocaleString("en-US")} testy</span> -->
       </div>
-      <div class="v-stack v-stack--m">
+      <div class="v-stack v-stack--l">
         ${codes.map(code => {
           const {order,subject,period,year} = parseCode(code);
-          return html`<div class="h-stack h-stack--l">
-              <a class="h-stack h-stack--s" href="./form-${code}"><span>${formatVersion({order,period})}</span><span>↗︎</span></a>
-              <a class="h-stack h-stack--s" href="./print-${code}"><span>tisk</span><i class="fa-solid fa-print"></i></a>
-              ${subject === "math" ? html`<a class="h-stack h-stack--s" href="./solu-${code}"><span>rozbor</span><i class="fa-solid fa-mug-hot"></i></a>`:''}
-              ${subject === "math" ? html`<a class="h-stack h-stack--s" href="./ai-${code}"><span>AI</span><i class="fa-solid fa-comment-nodes"></i></a>`:''}
-              ${subject === "math" && audios.indexOf(code) != -1? html`<a class="h-stack h-stack--s" href="/assets/math/${code}.mp3"><span>podcast</span><i class="fa-solid fa-microphone"></i></a>`:''}
+          return html`<div class="h-stack h-stack--m h-stack--wrap">
+              <a class="h-stack h-stack--xs" href="./form-${code}"><span>${formatVersion({order,period})}</span><span>↗︎</span></a>
+              <a class="h-stack h-stack--xs" href="./print-${code}"><span>tisk</span><i class="fa-solid fa-print"></i></a>
+              ${subject === "math" ? html`<a class="h-stack h-stack--xs" href="./solu-${code}"><span>rozbor</span><i class="fa-solid fa-mug-hot"></i></a>`:''}
+              ${subject === "math" ? html`<a class="h-stack h-stack--xs" href="./ai-${code}"><span>AI</span><i class="fa-solid fa-comment-nodes"></i></a>`:''}
+              ${subject === "math" && audios.indexOf(code) != -1? html`<a class="h-stack h-stack--xs" href="/assets/math/${code}.mp3"><span>podcast</span><i class="fa-solid fa-microphone"></i></a>`:''}
           <div>`
         })}
       </div>
