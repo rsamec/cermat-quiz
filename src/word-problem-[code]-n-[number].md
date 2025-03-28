@@ -59,19 +59,49 @@ const aiPromts = generateAIMessages({
         deductionTrees:values.map(([key, value]) => [`Řešení ${key}`,value.deductionTree])});
 
 function renderValues (values) {
-  return values.map(([key, value], i) => html.fragment`
-  <h1>Řešení ${key}</h1>
-  <div class="card">
+  return values.map(([key, value], i) => html.fragment`  
+  <h3>Řešení ${key}</h3>
+  <details open>
+    <summary>Video</summary>
+    <video src="./assets/math/${code}/${key}-0.mp4" playsinline muted controls style="width: 100%;"></video>
+  </details>
 
-  ${renderChat(value.deductionTree)}
-  </div>
-  <h2>Rozhodovačka</h2>
+  <details open>
+    <summary>Chat</summary>
 
-  <div class="card">
+    <div class="card">
+    ${renderChat(value.deductionTree)}
+    </div>
+  </details>
 
-  ${renderChatStepper(value.deductionTree)}
-  </div>
+  <details>
+    <summary>Rozhodovačka</summary>
+    <div class="card">
+      ${renderChatStepper(value.deductionTree)}
+    </div>  
+  </details>
 
+  <details>
+    <summary>Strom</summary>
+    <div class="card">
+      ${deduceTraverse(value.deductionTree)}
+    </div>
+  </details>
+
+  <details>
+    <summary>Strom - textově</summary>
+    <div class="card">
+      ${mdPlus.unsafe(jsonToMarkdownTree(value.deductionTree).join(''))}
+    </div>
+  </details>
+  <details>
+    <summary>Chat - textově</summary>
+    <div class="card">
+      ${mdPlus.unsafe(jsonToMarkdownChat(value.deductionTree).join(''))}
+    </div>
+  </details>
+
+  <hr/>
 `)
 }
 
@@ -81,7 +111,7 @@ function renderValues (values) {
 
 ${renderQuestion(id)}
 
-# AI řešení úloh
+# AI řešení úlohy
 
 <div class="tip" label="Smart řešení úlohy">  
   AI dostane kromě zadání úlohy i řešení úlohy rozpadnuté na základní jednoduché operace.
@@ -98,15 +128,14 @@ ${values?.some(([key,value]) => value.audio) ? html`<div class="tip" label="Podc
 
 # Strukturované řešení úlohy
 
-${values?.filter(([key, value]) =>  value.deductionTree != null).length > 0
-      ? html.fragment`
-      <div class="h-stack h-stack--wrap">
-      <div>
-        ${values.map(([key, value]) => html`<div>Řešení ${key}</div><video src="./assets/math/${code}/${key}-0.mp4" autoplay playsinline muted controls style="width: 100%;"></video>`)}
-      </div>
-    </div>`:''}
+${renderValues(values)}
 
-
-
-  ${renderValues(values)}
+<div class="tip" label="Různé reprezentace řešení úlohy">  
+  <li><b>video</b> - animace průchodu stromem</li>
+  <li><b>chat dialog</b> - oddělení otázky a numerického výpočtu</li>
+  <li><b>interaktivní chat dialog</b> - rozhodovačka po jednotlivých krocích s nutností volby z nabízených možností</li>
+  <li><b>dedukční strom</b> - <b>zdola nahoru</b> - vizuální strom, který umožňuje zobrazovat i grafické prvky</li>
+  <li><b>textový strom</b> - <b>shora dolů</b> kompaktní textový zápis, kořen představuje konečný výsledek</li>
+  <li><b>textový chat</b> - plochý seznam kroků řešení úlohy - každý krok má strukturu otázka, vstupy a vyvozený závěr spolu s numerickým výpočtem</li>
+</div>
 
