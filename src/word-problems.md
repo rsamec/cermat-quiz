@@ -16,10 +16,10 @@ const wordProblemsKeyValuePairs = Object.entries(wordProblems).map(([key,value])
 
 # Řešení slovních úloh
 
-Slovní úlohy jsou řešeny rozložením na jednoduché podproblémy, které jsou řešitelné pomocí jednoduchých početních operacích.
+Slovní úlohy jsou řešeny rozložením na podproblémy, které jsou řešitelné pomocí jednoduchých početních operacích.
 
-<div class="tip" label="Řešení pouze úvahou">
-  Žádné zavádění proměných, žádné sestavování rovnic. Žádné složité výpočty. Stačí logická úvaha a elementární operace.
+<div class="tip" label="Řešení pouze logickou úvahou">
+  Žádné zavádění proměných. Žádné sestavování rovnic. Žádné složité výpočty.
 </div>
 
 
@@ -32,21 +32,28 @@ ${wordProblemsKeyValuePairs.map(([code, problems]) => html`<h3>${formatCode(code
 
 Řešení je vytvořeno jako dedukční strom. [více podrobností](/math-deduction)
 
-Každá úloha má různé reprezentace dedukčního stromu pomocí
-- textové stromu - **shora dolů** kompaktní textový zápis, kořen představuje konečný výsledek
+Ke každé úloze lze zobrazit různé reprezentace dedukčního stromu
+- textový strom - **shora dolů** kompaktní textový zápis, kořen představuje konečný výsledek
 - dedukční strom - **zdola nahoru** - vizuální strom, který umožňuje zobrazovat i grafické prvky
 - textový chat - **plochý seznam kroků řešení úlohy** - každý krok má strukturu otázka, vstupy a vyvozený závěr spolu s numerickým výpočtem
 - chat - **grafický chat** - oddělení otázky a numerického výpočtu
 - chat dialog - **interaktivní chat** - rozhodovačka po jednotlivých krocích s nutností volby z nabízených možností
 - video - animace průchodu stromem
 
+<div class="tip" label="Rozhodovačka">  
+  Čtení samo o sobě je silný nástroj pro rozvoj myšlení, ale když se k němu přidají interaktivní prvky (např. dotazy), posouvá se jeho vliv na ještě vyšší úroveň.
+
+  Vyzkoušej <b>interaktivní rozhodovačku</b> ve formě chatu po jednotlivých krocích s nutností volby z nabízených možností.
+</div>
 
 Propojení s AI - je vygenerován jednoduchí prompt, který může obsahovat zadání i textové řešení úlohy
 - smart řešení - prompt na převedení heslovitého řešení do srozumitelnější podoby pro uživatele
 - generování více příkladů - prompt na vytvoření obdobních úloh v jiné doméně
 - audio - generovaný pomocí <a href="https://notebooklm.google.com/"><i class="fa-brands fa-google"></i> NotebookLM</a>
 
-<div class="tip" label="Podcast v angličtině">
-  K vyvoření podcastů je použito <a href="https://notebooklm.google.com/"><i class="fa-brands fa-google"></i> NotebookLM</a>.  
+<div class="tip" label="Poslechni si podcast">
+  Poslech vyžaduje aktivní zapojení a schopnost soustředit se na obsah. Protože audio neposkytuje vizuální podněty, posluchač si musí sám <b>vytvářet mentální obrazy</b> na základě slyšeného obsahu.
+  
+  Navíc je podcast v angličtině, což <b>podporuje abstraktní myšlení</b>. Matematické pojmy (ratio, proportion,...) v cizím jazyce vyžadují přemýšlení na více úrovních: nejen o číslech a vzorcích, ale i o jejich jazykovém vyjádření.
 </div>
 

@@ -80,6 +80,12 @@ function totalP(rawData) {
 
 ```
 
+Řešení testových úloh v češtině, matice a cizích jazycích. Srovnání výsledků automatického řešení úloh pomocí AI dokazují, že AI modelů dnes oproti situaci před půl rokem dosahují výrazné zlepšení v matematice, v ostatních předmětech jsou výsledky podobné.
+
+ - srovnává se pouze konečný výsledek, né postup řešení
+ - lze srovnávat pouze úlohy, které mají výsledek v textové (číselné) podobě, resp.nelze srovnávat např. konstrukční úlohy, kde výsledkem je geometrická konstrukce - AI nedostává žádné body
+
+
 # Úspěšnost dle předmětů
 
 Procento vyjadřuje **počet bodů z maximálního počtu možných bodů**. Vstupem jsou všechny úlohy z databanky.

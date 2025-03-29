@@ -90,17 +90,20 @@ export function connectTo(node: any, input: TreeNode) {
 type TreeMetrics = {
   depth: number;
   width: number;
+  predicates: string[]
 };
 
 export function computeTreeMetrics(
   node: Node,
   level = 0,
-  levels: Record<number, number> = {}
+  levels: Record<number, number> = {},
+  predicates: string[] = []
 ): TreeMetrics {
   // Base case: If the node is a leaf
   if (isPredicate(node)) {
     levels[level] = (levels[level] || 0) + 1; // Count nodes at this level
-    return { depth: level + 1, width: Math.max(...Object.values(levels)) };
+    
+    return { depth: level + 1, width: Math.max(...Object.values(levels)), predicates: predicates.includes(node.kind) ? predicates: predicates.concat(node.kind) };
   }
 
   // Recursive case: Process children and calculate depth
@@ -109,15 +112,16 @@ export function computeTreeMetrics(
     let maxDepth = level + 1;
 
     for (const child of node.children) {
-      const metrics = computeTreeMetrics(child, level + 1, levels);
+      const metrics = computeTreeMetrics(child, level + 1, levels, predicates);
+      predicates = metrics.predicates;
       maxDepth = Math.max(maxDepth, metrics.depth);
     }
 
-    return { depth: maxDepth, width: Math.max(...Object.values(levels)) };
+    return { depth: maxDepth, width: Math.max(...Object.values(levels)), predicates };
   }
 
   // Fallback for empty nodes
-  return { depth: level, width: Math.max(...Object.values(levels)) };
+  return { depth: level, width: Math.max(...Object.values(levels)),predicates };
 }
 
 

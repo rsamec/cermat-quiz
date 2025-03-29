@@ -59,8 +59,23 @@ const aiPromts = generateAIMessages({
         deductionTrees:values.map(([key, value]) => [`Řešení ${key}`,value.deductionTree])});
 
 function renderValues (values) {
-  return values.map(([key, value], i) => html.fragment`  
+  return values.map(([key, value], i) => {
+    const {depth, width, predicates} = computeTreeMetrics(value.deductionTree);
+    return html.fragment`  
   <h3>Řešení ${key}</h3>
+  <div class="h-stack h-stack--l h-stack--wrap">
+    <div class="h-stack h-stack--m h-stack--wrap">
+      <div class="badge">Hloubka: ${depth}</div>
+      <div class="badge">Šířka: ${width}</div>
+    </div>
+    <div class="h-stack h-stack--m h-stack-items-">
+      <span>Predikáty:</span>
+      <div class="h-stack h-stack--s h-stack--wrap">
+        ${predicates.map(d => html`<div class="badge">${d}</div>`)}
+      </div>
+    </div>
+  </div>
+
   <details open>
     <summary>Video</summary>
     <video src="./assets/math/${code}/${key}-0.mp4" playsinline muted controls style="width: 100%;"></video>
@@ -102,7 +117,7 @@ function renderValues (values) {
   </details>
 
   <hr/>
-`)
+`})
 }
 
   
@@ -129,13 +144,3 @@ ${values?.some(([key,value]) => value.audio) ? html`<div class="tip" label="Podc
 # Strukturované řešení úlohy
 
 ${renderValues(values)}
-
-<div class="tip" label="Různé reprezentace řešení úlohy">  
-  <li><b>video</b> - animace průchodu stromem</li>
-  <li><b>chat dialog</b> - oddělení otázky a numerického výpočtu</li>
-  <li><b>interaktivní chat dialog</b> - rozhodovačka po jednotlivých krocích s nutností volby z nabízených možností</li>
-  <li><b>dedukční strom</b> - <b>zdola nahoru</b> - vizuální strom, který umožňuje zobrazovat i grafické prvky</li>
-  <li><b>textový strom</b> - <b>shora dolů</b> kompaktní textový zápis, kořen představuje konečný výsledek</li>
-  <li><b>textový chat</b> - plochý seznam kroků řešení úlohy - každý krok má strukturu otázka, vstupy a vyvozený závěr spolu s numerickým výpočtem</li>
-</div>
-

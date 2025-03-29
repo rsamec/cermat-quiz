@@ -2737,21 +2737,22 @@ function connectTo(node, input) {
   };
   return connect(node, input);
 }
-function computeTreeMetrics(node, level = 0, levels = {}) {
+function computeTreeMetrics(node, level = 0, levels = {}, predicates = []) {
   if (isPredicate(node)) {
     levels[level] = (levels[level] || 0) + 1;
-    return { depth: level + 1, width: Math.max(...Object.values(levels)) };
+    return { depth: level + 1, width: Math.max(...Object.values(levels)), predicates: predicates.includes(node.kind) ? predicates : predicates.concat(node.kind) };
   }
   if (node.children) {
     levels[level] = (levels[level] || 0) + 1;
     let maxDepth = level + 1;
     for (const child of node.children) {
-      const metrics = computeTreeMetrics(child, level + 1, levels);
+      const metrics = computeTreeMetrics(child, level + 1, levels, predicates);
+      predicates = metrics.predicates;
       maxDepth = Math.max(maxDepth, metrics.depth);
     }
-    return { depth: maxDepth, width: Math.max(...Object.values(levels)) };
+    return { depth: maxDepth, width: Math.max(...Object.values(levels)), predicates };
   }
-  return { depth: level, width: Math.max(...Object.values(levels)) };
+  return { depth: level, width: Math.max(...Object.values(levels)), predicates };
 }
 function jsonToMarkdownTree(node, level = 0) {
   const indent = "  ".repeat(level);
