@@ -23,7 +23,7 @@ import { objemNadoby1, objemNadoby2, objemNadoby3 } from './M9I-2025/nadoba.js';
 import { porovnani2Ploch } from './M9I-2025/plocha.js';
 import { porovnatObsahObdelnikACtverec } from './M7A-2024/13.js';
 import { najitMensiCislo, porovnatAaB } from './M7A-2024/1.js';
-import { cislaNaOse } from './M7A-2024/3.js';
+import { triCislaNaOse } from './M7A-2024/3.js';
 import { rozdilUhlu } from './M9A-2024/angle.js';
 import { desetiuhelnik } from './M9I-2025/angle.js';
 import { example_11, example_12, example_15_1, example_15_2, example_15_3, example_4_1, example_4_2 } from './M7A-2023/index.js';
@@ -35,6 +35,7 @@ import { compass } from './compass.js';
 import { odmenySoutezici } from './odmeny-soutezici.js';
 import { obrazce } from './obrazce.js';
 import { trideni_odpadu } from './trideni-odpady.js';
+import { appleBox, carTrip, distanceUnitCompareDiff, dveCislaNaOse, giftAndBox, lukasAccount, novorocniPrani, pyramida, sestiuhelnik, souctovyTrojuhelnik, timeUnitSum, vyvojObyvatel } from './M5A-2024/index.js';
 
 
 export { inferenceRuleWithQuestion } from '../math/math-configure.js'
@@ -78,6 +79,16 @@ const cetarParams = {
     vojinPerCetar: 10
   }
 };
+
+const dveCislaNaOseParams = {
+  input: {
+    mensiCislo: 44,
+    vetsiCislo: 110,
+    pocetUsekuMeziCisly: 6,
+    X: -2,
+    Y: 3,
+  }
+}
 export default {
   "M5A-2023": {
     2.1: comparingValues({
@@ -124,6 +135,27 @@ export default {
     14.2: obrazce()[1],
     14.3: obrazce()[2]
   },
+  "M5A-2024": {
+    3:souctovyTrojuhelnik(),
+    4.1: giftAndBox(),
+    4.2: lukasAccount(),
+    4.3: appleBox(),
+    5.1: timeUnitSum(),
+    5.2: distanceUnitCompareDiff(),
+    6.1: dveCislaNaOse(dveCislaNaOseParams).XandY,
+    6.2: dveCislaNaOse(dveCislaNaOseParams).posun,
+    9: novorocniPrani(),
+    11: sestiuhelnik(),
+    12.1: vyvojObyvatel().panov,
+    12.2: vyvojObyvatel().lidov,
+    12.3: vyvojObyvatel().damov,
+    13.1: carTrip().pocatekCesty,
+    13.2: carTrip().zeleznicniPrejezd,
+    13.3: carTrip().konecCesty,
+    14.1: pyramida().floor8,
+    14.2: pyramida().floor7,
+    14.3: pyramida().stairs,
+  },
   "M7A-2023": {
     1: comparingValues({
       input: {
@@ -167,9 +199,9 @@ export default {
   "M7A-2024": {
     1.1: porovnatAaB({ input: { a: 1.6, b: -1.2 } }),
     1.2: najitMensiCislo({ input: { zadane: 7 / 8, mensiO: 0.093 } }),
-    3.1: cislaNaOse({ input: osaParams })[0],
-    3.2: cislaNaOse({ input: osaParams })[1],
-    3.3: cislaNaOse({ input: osaParams })[2],
+    3.1: triCislaNaOse({ input: osaParams }).C,
+    3.2: triCislaNaOse({ input: osaParams }).B,
+    3.3: triCislaNaOse({ input: osaParams }).rozdil,
     5.1: krouzky()[0],
     5.2: krouzky()[1],
     6: pocetSportovcu({ input: {} }),

@@ -63,7 +63,7 @@ function toComparisonAsRatio(a, b) {
     result,
     options: [
       { tex: `1 + (${formatRatio(a.ratio)} - ${formatRatio(b.ratio)})`, result: formatRatio(result.ratio), ok: true },
-      { tex: `${formatRatio(b.ratio)} - ${formatRatio(a.ratio)}`, result: formatRatio(b.ratio - a.ratio), ok: false }
+      { tex: `${formatRatio(b.ratio)} - ${formatRatio(a.ratio)}`, result: formatRatio(result.ratio), ok: false }
     ]
   };
 }
@@ -357,32 +357,37 @@ function diffRule(a, diff) {
   };
 }
 function sumRuleEx(items, b) {
-  if (items.every((d) => isQuantityPredicate(d))) {
-    return { kind: "cont", agent: b.wholeAgent, quantity: items.reduce((out, d) => out += d.quantity, 0), entity: b.wholeEntity.entity };
-  } else if (items.every((d) => isRatioPredicate(d))) {
+  if (items.every((d) => isRatioPredicate(d))) {
     const wholes = items.map((d) => d.whole);
     if (!wholes.map(unique)) {
       throw `Combine only part to whole ratio with the same whole ${wholes}`;
     }
     ;
     return { kind: "ratio", whole: wholes[0], ratio: items.reduce((out, d) => out += d.ratio, 0), part: b.wholeAgent };
+  } else if (items.every((d) => isQuantityPredicate(d))) {
+    if (items.every((d) => isRatePredicate(d))) {
+      const { entity, entityBase } = items[0];
+      return { kind: "rate", agent: b.wholeAgent, quantity: items.reduce((out, d) => out += d.quantity, 0), entity, entityBase };
+    } else {
+      return { kind: "cont", agent: b.wholeAgent, quantity: items.reduce((out, d) => out += d.quantity, 0), entity: b.wholeEntity.entity, unit: b.wholeEntity.unit };
+    }
   }
 }
 function sumRule(items, b) {
   const result = sumRuleEx(items, b);
-  const isContainer = result.kind === "cont";
+  const isQuantity = isQuantityPredicate(result);
   return {
-    question: isContainer ? combineQuestion(result) : `Vypo\u010Dti ${result.part}`,
+    question: result.kind === "cont" ? combineQuestion(result) : result.kind === "rate" ? `Vypo\u010Dti ${result.agent}` : `Vypo\u010Dti ${result.part}`,
     result,
     options: [
       {
-        tex: items.map((d) => isContainer ? formatNumber(d.quantity) : formatRatio(d.ratio)).join(" + "),
-        result: isContainer ? formatNumber(result.quantity) : formatRatio(result.ratio),
+        tex: items.map((d) => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio)).join(" + "),
+        result: isQuantity ? formatNumber(result.quantity) : formatRatio(result.ratio),
         ok: true
       },
       {
-        tex: items.map((d) => isContainer ? formatNumber(d.quantity) : formatRatio(d.ratio)).join(" * "),
-        result: isContainer ? formatNumber(result.quantity) : formatRatio(result.ratio),
+        tex: items.map((d) => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio)).join(" * "),
+        result: isQuantity ? formatNumber(result.quantity) : formatRatio(result.ratio),
         ok: false
       }
     ]
@@ -529,7 +534,7 @@ function compareToCompareRule(a, b) {
     ]
   };
 }
-function toDiffEx(a, b) {
+function toComparisonDiffEx(a, b) {
   if (a.entity !== b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`;
   }
@@ -541,14 +546,62 @@ function toDiffEx(a, b) {
     entity: a.entity
   };
 }
-function toDiff(a, b) {
-  const result = toDiffEx(a, b);
+function toComparisonDiff(a, b) {
+  const result = toComparisonDiffEx(a, b);
   return {
     question: `Vypo\u010Dti rozd\xEDl mezi ${a.quantity} a ${b.quantity}`,
     result,
     options: [
       { tex: `${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: true },
       { tex: `${formatNumber(b.quantity)} - ${formatNumber(a.quantity)}`, result: formatNumber(b.quantity - a.quantity), ok: false }
+    ]
+  };
+}
+function toDifferenceEx(a, b, diff) {
+  if (a.entity !== b.entity) {
+    throw `Mismatch entity ${a.entity}, ${b.entity}`;
+  }
+  if (a.unit !== b.unit) {
+    throw `Mismatch unit ${a.unit}, ${b.unit}`;
+  }
+  return {
+    kind: "cont",
+    agent: diff.differenceAgent,
+    quantity: a.quantity - b.quantity,
+    entity: a.entity,
+    unit: a.unit
+  };
+}
+function toDifference(a, b, diff) {
+  const result = toDifferenceEx(a, b, diff);
+  return {
+    question: `Vypo\u010Dti rozd\xEDl mezi ${a.agent} a ${b.agent}`,
+    result,
+    options: [
+      { tex: `${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: true },
+      { tex: `${formatNumber(b.quantity)} - ${formatNumber(a.quantity)}`, result: formatNumber(b.quantity - a.quantity), ok: false }
+    ]
+  };
+}
+function toDifferenceAsRatioEx(a, b, diff) {
+  if (a.whole !== b.whole) {
+    throw `Mismatch whole agents ${a.whole}, ${b.whole}`;
+  }
+  return {
+    kind: "ratio",
+    whole: a.whole,
+    part: diff.differenceAgent,
+    ratio: a.ratio - b.ratio
+  };
+}
+function toDifferenceAsRatio(a, b, diff) {
+  const result = toDifferenceAsRatioEx(a, b, diff);
+  return {
+    question: `Vypo\u010Dti rozd\xEDl mezi ${a.part} a ${b.part}`,
+    result,
+    options: [
+      { tex: `${formatRatio(a.ratio)} - ${formatRatio(b.ratio)}`, result: formatRatio(result.ratio), ok: true },
+      { tex: `${formatRatio(b.ratio)} - ${formatRatio(a.ratio)}`, result: formatRatio(b.ratio - a.ratio), ok: false }
     ]
   };
 }
@@ -742,6 +795,9 @@ function isQuantityPredicate(value) {
 function isRatioPredicate(value) {
   return value.ratio != null;
 }
+function isRatePredicate(value) {
+  return value.kind === "rate";
+}
 function inferenceRule(...args) {
   const value = inferenceRuleEx(...args);
   return isQuestion(value) ? value.result : value;
@@ -757,7 +813,7 @@ function inferenceRuleEx(...args) {
     return last2.kind === "sequence" ? sequenceRule(arr) : last2.kind === "gcd" ? gcdRule(arr, last2) : last2.kind === "lcd" ? lcdRule(arr, last2) : last2.kind === "product" ? productRule(arr, last2) : last2.kind === "sum" ? sumRule(arr, last2) : null;
   } else if (a.kind === "cont" && b.kind == "cont") {
     const kind = last2?.kind;
-    return kind === "comp-diff" ? toDiff(a, b) : kind === "quota" ? toQuota(a, b) : kind === "delta" ? toTransfer(a, b, last2) : kind === "rate" ? toRate(a, b) : kind === "ratios" ? toRatios(a, b, last2) : kind === "comp-ratio" ? toRatioComparison(a, b) : kind === "ratio" ? toPartWholeRatio(a, b) : toComparison(a, b);
+    return kind === "comp-diff" ? toComparisonDiff(a, b) : kind === "diff" ? toDifference(a, b, last2) : kind === "quota" ? toQuota(a, b) : kind === "delta" ? toTransfer(a, b, last2) : kind === "rate" ? toRate(a, b) : kind === "ratios" ? toRatios(a, b, last2) : kind === "comp-ratio" ? toRatioComparison(a, b) : kind === "ratio" ? toPartWholeRatio(a, b) : toComparison(a, b);
   } else if (a.kind === "cont" && b.kind === "unit") {
     return convertToUnit(a, b);
   } else if (a.kind === "unit" && b.kind === "cont") {
@@ -768,7 +824,7 @@ function inferenceRuleEx(...args) {
     return compareAngleRule(b, a);
   } else if (a.kind === "ratio" && b.kind === "ratio") {
     const kind = last2?.kind;
-    return kind === "comp-ratio" ? toComparisonRatio(a, b) : toComparisonAsRatio(a, b);
+    return kind === "diff" ? toDifferenceAsRatio(a, b, last2) : kind === "comp-ratio" ? toComparisonRatio(a, b) : toComparisonAsRatio(a, b);
   } else if (a.kind === "comp" && b.kind === "cont") {
     const kind = last2?.kind;
     return kind === "comp-part-eq" ? partEqual(a, b) : compareRule(b, a);
@@ -1880,8 +1936,8 @@ var Converter = class {
       result -= origin.unit.anchor_shift;
     }
     if (origin.system != destination.system) {
-      const measure5 = this.measureData[origin.measure];
-      const anchors = measure5.anchors;
+      const measure6 = this.measureData[origin.measure];
+      const anchors = measure6.anchors;
       if (anchors == null) {
         throw new MeasureStructureError(`Unable to convert units. Anchors are missing for "${origin.measure}" and "${destination.measure}" measures.`);
       }
@@ -1994,8 +2050,8 @@ var Converter = class {
   list(measureName) {
     const list = [];
     if (measureName == null) {
-      for (const [name, measure5] of Object.entries(this.measureData)) {
-        for (const [systemName, units] of Object.entries(measure5.systems)) {
+      for (const [name, measure6] of Object.entries(this.measureData)) {
+        for (const [systemName, units] of Object.entries(measure6.systems)) {
           for (const [abbr, unit] of Object.entries(units)) {
             list.push(this.describeUnit({
               abbr,
@@ -2009,8 +2065,8 @@ var Converter = class {
     } else {
       if (!this.isMeasure(measureName))
         throw new UnknownMeasureError(`Meausure "${measureName}" not found.`);
-      const measure5 = this.measureData[measureName];
-      for (const [systemName, units] of Object.entries(measure5.systems)) {
+      const measure6 = this.measureData[measureName];
+      for (const [systemName, units] of Object.entries(measure6.systems)) {
         for (const [abbr, unit] of Object.entries(units)) {
           list.push(this.describeUnit({
             abbr,
@@ -2028,8 +2084,8 @@ var Converter = class {
   }
   throwUnsupportedUnitError(what) {
     let validUnits = [];
-    for (const measure5 of Object.values(this.measureData)) {
-      for (const systems of Object.values(measure5.systems)) {
+    for (const measure6 of Object.values(this.measureData)) {
+      for (const systems of Object.values(measure6.systems)) {
         validUnits = validUnits.concat(Object.keys(systems));
       }
     }
@@ -2049,8 +2105,8 @@ var Converter = class {
     } else {
       list_measures = Object.keys(this.measureData);
     }
-    for (const measure5 of list_measures) {
-      const systems = this.measureData[measure5].systems;
+    for (const measure6 of list_measures) {
+      const systems = this.measureData[measure6].systems;
       for (const system of Object.values(systems)) {
         possibilities = [
           ...possibilities,
@@ -2070,8 +2126,8 @@ var Converter = class {
 };
 function buildUnitCache(measures) {
   const unitCache = /* @__PURE__ */ new Map();
-  for (const [measureName, measure5] of Object.entries(measures)) {
-    for (const [systemName, system] of Object.entries(measure5.systems)) {
+  for (const [measureName, measure6] of Object.entries(measures)) {
+    for (const [systemName, system] of Object.entries(measure6.systems)) {
       for (const [testAbbr, unit] of Object.entries(system)) {
         unitCache.set(testAbbr, {
           measure: measureName,
@@ -2655,12 +2711,94 @@ var measure4 = {
 };
 var volume_default = measure4;
 
+// node_modules/convert-units/lib/esm/definitions/time.js
+var daysInYear = 365.25;
+var SI = {
+  ns: {
+    name: {
+      singular: "Nanosecond",
+      plural: "Nanoseconds"
+    },
+    to_anchor: 1 / 1e9
+  },
+  mu: {
+    name: {
+      singular: "Microsecond",
+      plural: "Microseconds"
+    },
+    to_anchor: 1 / 1e6
+  },
+  ms: {
+    name: {
+      singular: "Millisecond",
+      plural: "Milliseconds"
+    },
+    to_anchor: 1 / 1e3
+  },
+  s: {
+    name: {
+      singular: "Second",
+      plural: "Seconds"
+    },
+    to_anchor: 1
+  },
+  min: {
+    name: {
+      singular: "Minute",
+      plural: "Minutes"
+    },
+    to_anchor: 60
+  },
+  h: {
+    name: {
+      singular: "Hour",
+      plural: "Hours"
+    },
+    to_anchor: 60 * 60
+  },
+  d: {
+    name: {
+      singular: "Day",
+      plural: "Days"
+    },
+    to_anchor: 60 * 60 * 24
+  },
+  week: {
+    name: {
+      singular: "Week",
+      plural: "Weeks"
+    },
+    to_anchor: 60 * 60 * 24 * 7
+  },
+  month: {
+    name: {
+      singular: "Month",
+      plural: "Months"
+    },
+    to_anchor: 60 * 60 * 24 * daysInYear / 12
+  },
+  year: {
+    name: {
+      singular: "Year",
+      plural: "Years"
+    },
+    to_anchor: 60 * 60 * 24 * daysInYear
+  }
+};
+var measure5 = {
+  systems: {
+    SI
+  }
+};
+var time_default = measure5;
+
 // src/math/math-configure.ts
 var convert = configureMeasurements({
   length: length_default,
   area: area_default,
   volume: volume_default,
-  mass: mass_default
+  mass: mass_default,
+  time: time_default
 });
 configure({
   convertToFraction: (d) => new Fraction(d).toFraction(),

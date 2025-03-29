@@ -68,7 +68,7 @@ function renderValues (values) {
       <div class="badge">Hloubka: ${depth}</div>
       <div class="badge">Šířka: ${width}</div>
     </div>
-    <div class="h-stack h-stack--m h-stack-items-">
+    <div class="h-stack h-stack--m h-stack-items--center">
       <span>Predikáty:</span>
       <div class="h-stack h-stack--s h-stack--wrap">
         ${predicates.map(d => html`<div class="badge">${d}</div>`)}

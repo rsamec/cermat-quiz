@@ -4,6 +4,7 @@ import length from 'convert-units/definitions/length';
 import area from 'convert-units/definitions/area';
 import mass from 'convert-units/definitions/mass'
 import volume from 'convert-units/definitions/volume'
+import time from 'convert-units/definitions/time'
 import { configure, inferenceRuleWithQuestion as IRWQ } from '../components/math.js';
 
 const convert = configureMeasurements<any, any, any>({
@@ -11,6 +12,7 @@ const convert = configureMeasurements<any, any, any>({
   area,
   volume,
   mass,
+  time,
 });
 
 configure({
