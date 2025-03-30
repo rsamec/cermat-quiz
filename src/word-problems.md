@@ -5,13 +5,20 @@ toc: true
 ---
 
 ```js
-import { baseDomain, baseDomainPublic, formatSubject, formatPeriod, formatCode, formatShortCode} from './utils/quiz-string-utils.js';
+import { baseDomain, baseDomainPublic, formatSubject, formatPeriod, formatCode, parseCode, formatShortCode} from './utils/quiz-string-utils.js';
 import { unique } from "./utils/common-utils.js";
 import { quizes } from "./utils/quiz-utils.js";
 import mdPlus from './utils/md-utils.js';
 import wordProblems, {  } from './math/word-problems.js';
 
-const wordProblemsKeyValuePairs = Object.entries(wordProblems).map(([key,value]) => [key,Object.keys(value).map(d => d.split('.')[0]).filter(unique).sort((f,s) => f - s)]);
+const wordProblemsKeyValuePairs = Object.entries(wordProblems).sort(([fKey],[sKey]) => {
+  const f = parseCode(sKey);
+  const s = parseCode(fKey);
+  if (f.period === s.period){
+    return f.year - s.year
+  }
+  return f.period - s.period;
+}).map(([key,value]) => [key,Object.keys(value).map(d => d.split('.')[0]).filter(unique).sort((f,s) => f - s)]);
 ```
 
 # Řešení slovních úloh
@@ -23,7 +30,7 @@ Slovní úlohy jsou řešeny rozložením na podproblémy, které jsou řešitel
 </div>
 
 
-${wordProblemsKeyValuePairs.map(([code, problems]) => html`<h3>${formatCode(code)}</h3><ul><audio src="/assets/math/${code}.mp3" autoplay playsinline muted controls style="min-width: 100px;"></audio>${
+${wordProblemsKeyValuePairs.map(([code, problems]) => html`<h3>${formatCode(code)}</h3><ul><audio src="/assets/math/${code}.mp3" playsinline muted controls style="min-width: 100px;"></audio>${
   problems.map(key => html`<li><a href="./word-problem-${code}-n-${key}">Řešení úloha ${key}</a></li>`
 )}</ul>`)}
 
@@ -54,6 +61,6 @@ Propojení s AI - je vygenerován jednoduchí prompt, který může obsahovat za
 <div class="tip" label="Poslechni si podcast">
   Poslech vyžaduje aktivní zapojení a schopnost soustředit se na obsah. Protože audio neposkytuje vizuální podněty, posluchač si musí sám <b>vytvářet mentální obrazy</b> na základě slyšeného obsahu.
   
-  Navíc je podcast v angličtině, což <b>podporuje abstraktní myšlení</b>. Matematické pojmy (ratio, proportion,...) v cizím jazyce vyžadují přemýšlení na více úrovních: nejen o číslech a vzorcích, ale i o jejich jazykovém vyjádření.
+  Podcast je v angličtině, což <b>podporuje abstraktní myšlení</b> a vyžadují přemýšlení na více úrovních: nejen o číslech a vzorcích, ale i o jejich jazykovém vyjádření.
 </div>
 

@@ -7675,14 +7675,21 @@ var trideni_odpadu = () => {
 // src/math/M5A-2024/index.ts
 function souctovyTrojuhelnik() {
   const entity3 = "velikost";
+  const zbytekKRozdeleni = "zbytek k rozd\u011Blen\xED";
   return {
     deductionTree: deduce2(
       deduce2(
-        cont("zadan\xE1 hodnota ve vrcholu troj\xFAheln\xEDku", 25, entity3),
-        cont("zadan\xE1 hodnota v jednom z pol\xED", 7, entity3),
-        ctorDifference("zbytek k rozd\u011Blen\xED")
+        cont("zadan\xE1 hodnota v poli v t\u0159et\xED \u0159ad\u011B troj\xFAheln\xEDku", 25, entity3),
+        cont("zadan\xE1 hodnota v poli v prvn\xED \u0159ad\u011B", 7, entity3),
+        ctorDifference(zbytekKRozdeleni)
       ),
-      cont("zbytek k rozd\u011Blen\xED", 3, "\u010D\xEDsel"),
+      to3(
+        cont("hledan\xFDch \u010D\xEDsla v \u0161ed\xFDch pol\xEDch v prvn\xED \u0159ad\u011B", 2, "\u010D\xEDsel"),
+        commonSense("sou\u010Dtov\xFD troj\xFAheln\xEDk obsahuje 3 \u0159ady, kde jsou 3 pole, pot\xE9 2 pole a 1 pole ve spodn\xED \u0159ad\u011B"),
+        commonSense("Ka\u017Ed\xE9 \u010D\xEDslo je sou\u010Dtem dvou \u010D\xEDsel nad n\xEDm."),
+        commonSense("hledan\xFDch \u010D\xEDslo napravo je zapo\u010D\xEDt\xE1no 2 kr\xE1t, proto\u017Ee je pou\u017Eito v lev\xE9m i prav\xE9m sou\u010Dtu v prost\u0159edn\xED \u0159ad\u011B"),
+        cont(zbytekKRozdeleni, 3, "\u010D\xEDsel")
+      ),
       ctor("rate")
     )
   };
@@ -7853,7 +7860,7 @@ function vyvojObyvatel() {
   return {
     panov: {
       deductionTree: to3(
-        comp("po\u010D\xE1tek 2021", " konec 2021", 10, entity3)
+        cont("p\u0159\xEDr\u016Fstek 2021", 10, entity3)
       )
     },
     lidov: {

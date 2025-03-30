@@ -4,14 +4,21 @@ import { cislaNaOse } from "../cislaNaOse";
 
 export function souctovyTrojuhelnik() {
   const entity = 'velikost'
+  const zbytekKRozdeleni = "zbytek k rozdělení"
   return {
     deductionTree: deduce(
       deduce(
-        cont("zadaná hodnota ve vrcholu trojúhelníku", 25, entity),
-        cont("zadaná hodnota v jednom z polí", 7, entity),
-        ctorDifference("zbytek k rozdělení")
+        cont("zadaná hodnota v poli v třetí řadě trojúhelníku", 25, entity),
+        cont("zadaná hodnota v poli v první řadě", 7, entity),
+        ctorDifference(zbytekKRozdeleni)
       ),
-      cont("zbytek k rozdělení", 3, "čísel"),
+      to(
+        cont("hledaných čísla v šedých polích v první řadě", 2, "čísel"),
+        commonSense("součtový trojúhelník obsahuje 3 řady, kde jsou 3 pole, poté 2 pole a 1 pole ve spodní řadě"),
+        commonSense("Každé číslo je součtem dvou čísel nad ním."),
+        commonSense("hledaných číslo napravo je započítáno 2 krát, protože je použito v levém i pravém součtu v prostřední řadě"),
+        cont(zbytekKRozdeleni, 3, "čísel"),
+      ),
       ctor('rate')
     )
   }
@@ -213,7 +220,7 @@ export function vyvojObyvatel() {
   return {
     panov: {
       deductionTree: to(
-        comp("počátek 2021", " konec 2021", 10, entity)
+        cont("přírůstek 2021", 10, entity)
       )
     },
     lidov: {

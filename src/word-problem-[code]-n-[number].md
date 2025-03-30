@@ -136,6 +136,7 @@ ${renderQuestion(id)}
 
 ${renderChatButton("Základní řešení", template)}
 ${renderChatButton("Smart řešení", aiPromts.explainSolution)}
+${renderChatButton("Vizualizuj řešení", aiPromts.vizualizeSolution)}
 ${renderChatButton("Generuj obdobné úlohy", aiPromts.generateMoreQuizes)}
 
 
