@@ -80,6 +80,7 @@ export default {
         { name: "Sestavení úloh", path: "/builder" },
         { name: "Přepoužitelnost", path: "/embedding" },
         { name: "AI", path: "/ai" },
+        { name: "Novinky", path: "/news" },
         // {name: "Kategorie", path: "/categories"},
         // {name: "Inline md", path: "/quiz-markdown"},
         // {name: "Rozvržení stránky", path: "/layout"},
@@ -114,6 +115,7 @@ export default {
     .concat(['/components/quiz-store.js'])
     .concat(['/components/math.js'])
     .concat(['gpt-4o','o3-mini'].map(model => `/ai-results-${model}`))
+    .concat('/blog/20250330')
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.json`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))
