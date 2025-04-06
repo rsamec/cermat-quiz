@@ -154,7 +154,11 @@ export type ThreePartRatio = PartToPartRatio & {
   parts: [AgentMatcher, AgentMatcher, AgentMatcher]
   ratios: [number, number, number]
 }
-
+export type Phytagoras = {
+  kind: 'pythagoras'
+  longest: AgentMatcher
+  sites: [AgentMatcher, AgentMatcher]
+}
 export type Proportion = {
   kind: 'proportion',
   inverse: boolean,
@@ -207,9 +211,9 @@ export type Question = {
   }[]
 }
 
-
+export type EntityDef = string | EntityBase
 export type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | SumCombine | ProductCombine | PartWholeRatio | PartToPartRatio | ComparisonDiff |
-  CommonSense | GCD | LCD | CompareAndPartEqual | Sequence | NthRule | Quota | FactorBy | Simplify | Complement | NthPart | Transfer | Proportion | ConvertUnit | AngleComparison | Delta | Difference
+  CommonSense | GCD | LCD | CompareAndPartEqual | Sequence | NthRule | Quota | FactorBy | Simplify | Complement | NthPart | Transfer | Proportion | ConvertUnit | AngleComparison | Delta | Difference | Phytagoras
 
 export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | 'quota' | "comp-diff" | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'factorBy' | 'simplify' | 'complement') {
   return { kind } as Predicate
@@ -219,6 +223,9 @@ export function ctorUnit(unit: Unit): ConvertUnit {
 }
 export function ctorDelta(agent: string): Delta {
   return { kind: "delta", agent }
+}
+export function ctorPercent(): RatioComparison {
+  return { kind: "comp-ratio", asPercent: true } as any
 }
 
 export function ctorRatios(agent: AgentMatcher): PartToPartRatio {
@@ -237,13 +244,15 @@ export function cont(agent: string, quantity: number, entity: string, unit?: str
 export function pi(): Container {
   return { kind: 'cont', agent: "PI", quantity: 3.14, entity: '' }
 }
-export function comp(agentA: string, agentB: string, quantity: number, entity: string): Comparison {
-  return { kind: 'comp', agentA, agentB, quantity, entity }
+export function comp(agentA: string, agentB: string, quantity: number, entity: EntityDef): Comparison {
+  return { kind: 'comp', agentA, agentB, quantity, entity: toEntity(entity).entity, unit: toEntity(entity).unit }
 }
 export function compAngle(agentA: string, agentB: string, relationship: AngleRelationship): AngleComparison {
   return { kind: 'comp-angle', agentA, agentB, relationship }
 }
-
+export function pythagoras(longestSite: AgentMatcher, sites: [AgentMatcher, AgentMatcher]): Phytagoras {
+  return { kind: 'pythagoras', longest: longestSite, sites }
+}
 export function transfer(agentSender: string | AgentNames, agentReceiver: string | AgentNames, quantity: number, entity: string): Transfer {
   return { kind: 'transfer', agentReceiver: toAgentNames(agentReceiver), agentSender: toAgentNames(agentSender), quantity, entity }
 }
@@ -274,17 +283,17 @@ export function percent(whole: AgentMatcher, part: AgentMatcher, percent: number
 export function ratios(whole: AgentMatcher, parts: AgentMatcher[], ratios: number[]): PartToPartRatio {
   return { kind: 'ratios', parts, whole, ratios };
 }
-export function sum(wholeAgent: string, partAgents: string[], wholeEntity: string | EntityBase, partEntity: string | EntityBase): SumCombine {
+export function sum(wholeAgent: string, partAgents: string[], wholeEntity: EntityDef, partEntity: EntityDef): SumCombine {
   return {
     kind: 'sum',
     wholeAgent,
     partAgents,
-    wholeEntity: isEntityBase(wholeEntity) ? wholeEntity : { entity: wholeEntity },
-    partEntity: isEntityBase(partEntity) ? partEntity : { entity: partEntity }
+    wholeEntity: toEntity(wholeEntity),
+    partEntity: toEntity(partEntity)
   }
 }
-export function product(wholeAgent: string, partAgents: string[], wholeEntity: string, partEntity: string): ProductCombine {
-  return { kind: 'product', wholeAgent, partAgents, wholeEntity: { entity: wholeEntity }, partEntity: { entity: partEntity } }
+export function product(wholeAgent: string, partAgents: string[], wholeEntity: EntityDef, partEntity: EntityDef): ProductCombine {
+  return { kind: 'product', wholeAgent, partAgents, wholeEntity: toEntity(wholeEntity), partEntity: toEntity(partEntity) }
 }
 export function gcd(agent: string, entity: string): GCD {
   return { kind: 'gcd', agent, entity }
@@ -298,8 +307,8 @@ export function nth(entity): NthRule {
 export function nthPart(agent): NthPart {
   return { kind: 'nth-part', agent }
 }
-export function rate(agent: string, quantity: number, entity: string, entityBase: string): Rate {
-  return { kind: 'rate', agent, quantity, entity: { entity: entity }, entityBase: { entity: entityBase } }
+export function rate(agent: string, quantity: number, entity: EntityDef, entityBase: EntityDef): Rate {
+  return { kind: 'rate', agent, quantity, entity: toEntity(entity), entityBase: toEntity(entityBase) }
 }
 export function quota(agent: string, agentQuota, quantity: number, restQuantity = 0): Quota {
   return { kind: 'quota', agent, agentQuota, quantity, restQuantity }
@@ -313,7 +322,9 @@ export function commonSense(description: string): CommonSense {
   return { kind: 'common-sense', description }
 }
 
-
+function toEntity(entity: EntityDef): EntityBase {
+  return isEntityBase(entity) ? entity : { entity }
+}
 function compareRuleEx(a: Container, b: Comparison): Container {
   //check
   if (a.entity != b.entity) {
@@ -413,13 +424,13 @@ function comparisonRatioRule(b: RatioComparison, a: PartWholeRatio): Question {
   }
 }
 
-function convertToUnitEx(a: Container, b: ConvertUnit): Container {
+function convertToUnitEx(a: Container | Comparison, b: ConvertUnit): Container | Comparison {
   if (a.unit == null) {
-    throw `Missing entity unit ${a.agent} a ${a.entity}`;
+    throw `Missing unit ${a.kind === "cont" ? a.agent: `${a.agentA} to ${a.agentB}`} a ${a.entity}`;
   }
   return { ...a, quantity: helpers.convertToUnit(a.quantity, a.unit, b.unit), unit: b.unit }
 }
-function convertToUnit(a: Container, b: ConvertUnit): Question {
+function convertToUnit(a: Container | Comparison, b: ConvertUnit): Question {
   const result = convertToUnitEx(a, b)
   const destination = helpers.unitAnchor(a.unit);
   const origin = helpers.unitAnchor(b.unit);
@@ -438,10 +449,10 @@ function ratioCompareRuleEx(a: Container, b: RatioComparison): Container {
     throw `Mismatch agent ${a.agent} any of ${b.agentA}, ${b.agentB}`
   }
   if (a.agent == b.agentB) {
-    return { kind: 'cont', agent: b.agentA, quantity: b.ratio >= 0 ? a.quantity * b.ratio : a.quantity / Math.abs(b.ratio), entity: a.entity }
+    return { kind: 'cont', agent: b.agentA, quantity: b.ratio >= 0 ? a.quantity * b.ratio : a.quantity / Math.abs(b.ratio), entity: a.entity, unit: a.unit }
   }
   else if (a.agent == b.agentA) {
-    return { kind: 'cont', agent: b.agentB, quantity: b.ratio > 0 ? a.quantity / b.ratio : a.quantity * Math.abs(b.ratio), entity: a.entity }
+    return { kind: 'cont', agent: b.agentB, quantity: b.ratio > 0 ? a.quantity / b.ratio : a.quantity * Math.abs(b.ratio), entity: a.entity, unit: a.unit }
   }
 }
 
@@ -538,6 +549,7 @@ function compRatioToCompRuleEx(a: RatioComparison, b: Comparison): Container {
     kind: 'cont',
     agent: agent,
     entity: b.entity,
+    unit: b.unit,
     quantity: Math.abs(b.quantity / (a.ratio - 1))
   }
 }
@@ -620,11 +632,15 @@ function rateRuleEx(a: Container, rate: Rate): Container {
   if (!(a.entity === rate.entity.entity || a.entity === rate.entityBase.entity)) {
     throw `Mismatch entity ${a.entity} any of ${rate.entity.entity}, ${rate.entityBase.entity}`
   }
+  const isEntityBase = a.entity == rate.entity.entity;
   return {
     kind: 'cont', agent: a.agent,
-    entity: a.entity == rate.entity.entity
+    entity: isEntityBase
       ? rate.entityBase.entity
       : rate.entity.entity,
+    unit: isEntityBase
+      ? rate.entityBase.unit
+      : rate.entity.unit,
     quantity: a.entity == rate.entity.entity
       ? a.quantity / rate.quantity
       : a.quantity * rate.quantity
@@ -759,7 +775,7 @@ function sumRule(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine):
 }
 
 function productRuleEx(items: Container[], b: ProductCombine): Container {
-  return { kind: 'cont', agent: b.wholeAgent, quantity: items.reduce((out, d) => out *= d.quantity, 1), entity: b.wholeEntity.entity }
+  return { kind: 'cont', agent: b.wholeAgent, quantity: items.reduce((out, d) => out *= d.quantity, 1), entity: b.wholeEntity.entity, unit: b.wholeEntity.unit }
 }
 
 function productRule(items: Container[], b: ProductCombine): Question {
@@ -857,8 +873,51 @@ function toTransfer(a: Container, b: Container, last: Delta): Question {
     ]
   }
 }
+function pythagorasRuleEx(a: Container, b: Container, last: Phytagoras): Container {
+  if (a.entity != b.entity) {
+    throw `Mismatch entity ${a.entity}, ${b.entity}`
+  }
+  if (a.unit != b.unit) {
+    throw `Mismatch unit ${a.unit}, ${b.unit}`
+  }
 
-function toRatioComparisonEx(a: Container, b: Container): RatioComparison {
+  const temp = {
+    kind: 'cont' as const,
+    entity: a.entity,
+    unit: a.unit
+  }
+  if (a.agent === last.longest || b.agent === last.longest) {
+    const longest = a.agent === last.longest ? a : b;
+    const otherSite = a.agent === last.longest ? b : a;
+    return {
+      ...temp,
+      quantity: Math.sqrt(Math.pow(longest.quantity,2) - Math.pow(otherSite.quantity,2)),
+      agent: last.sites[1] === otherSite.agent ? last.sites[0] : last.sites[1]
+    }
+  }
+  else {
+    return {
+      ...temp,
+      quantity: Math.sqrt(Math.pow(a.quantity,2) + Math.pow(b.quantity,2)),
+      agent: last.longest
+    }
+  }
+}
+function pythagorasRule(a: Container, b: Container, last: Phytagoras): Question {
+  const result = pythagorasRuleEx(a, b, last)
+  const longest = a.agent === last.longest ? a : b;
+  const otherSite = a.agent === last.longest ? b : a;
+  return {
+    question: `Vypočítej stranu ${result.agent} dle Pythagorovi věty?`,
+    result,
+    options: [
+      { tex: `odmocnina z (${formatNumber(longest.quantity)}^2^ - ${formatNumber(otherSite.quantity)}^2^)`, result: formatNumber(result.quantity), ok: a.agent === last.longest },
+      { tex: `odmocnina z (${formatNumber(a.quantity)}^2^ + ${formatNumber(b.quantity)}^2^)`, result: formatNumber(result.quantity), ok: a.agent !== last.longest },
+    ]
+  }
+}
+
+function toRatioComparisonEx(a: Container, b: Container, ctor: RatioComparison): RatioComparison {
   if (b.agent === a.agent && b.entity != a.entity) {
     //auto convert to
     b = toGenerAgent(b);
@@ -867,10 +926,10 @@ function toRatioComparisonEx(a: Container, b: Container): RatioComparison {
   if (b.entity != a.entity) {
     throw `Mismatch entity ${b.entity}, ${a.entity}`
   }
-  return { kind: 'comp-ratio', agentB: b.agent, agentA: a.agent, ratio: a.quantity / b.quantity }
+  return { kind: 'comp-ratio', agentB: b.agent, agentA: a.agent, ratio: a.quantity / b.quantity, ...(ctor.asPercent && { asPercent: true }) }
 }
-function toRatioComparison(a: Container, b: Container): Question {
-  const result = toRatioComparisonEx(a, b);
+function toRatioComparison(a: Container, b: Container, ctor: RatioComparison): Question {
+  const result = toRatioComparisonEx(a, b, ctor);
   const between = (result.ratio > 1 / 2 && result.ratio < 2);
   return {
     question: `Porovnej ${result.agentA} a ${result.agentB}.${between ? `O kolik z ${result.agentB}?` : `Kolikrát ${result.ratio < 1 ? 'menší' : 'větší'}?`}`,
@@ -1052,19 +1111,16 @@ function divide(total: number, divisor: number, isPartitative: boolean = false) 
   }
 }
 
-function toRatiosEx(a: Container, b: Container, whole: AgentMatcher): TwoPartRatio {
+function toRatiosEx(parts: Container[], whole: AgentMatcher): PartToPartRatio {
   return {
     kind: 'ratios',
-    parts: [
-      a.agent,
-      b.agent
-    ],
-    ratios: [a.quantity, b.quantity],
+    parts: parts.map(d => d.agent),
+    ratios: parts.map(d => d.quantity),
     whole
   }
 }
-function toRatios(a: Container, b: Container, last: PartToPartRatio): Question {
-  const result = toRatiosEx(a, b, last.whole)
+function toRatios(parts: Container[], last: PartToPartRatio): Question {
+  const result = toRatiosEx(parts, last.whole)
   return {
     question: `Vyjádři poměrem mezi ${result.parts.join(":")}?`,
     result,
@@ -1226,7 +1282,7 @@ function isRatioPredicate(value: { ratio: number } | { quantity: number }): valu
 function isRatePredicate(value: Predicate): value is Rate {
   return value.kind === "rate";
 }
-function isEntityBase(value: string | EntityBase): value is EntityBase {
+function isEntityBase(value: EntityDef): value is EntityBase {
   return (value as any).entity != null;
 }
 export function inferenceRule(...args: Predicate[]): Predicate {
@@ -1240,7 +1296,7 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   const [a, b, ...rest] = args;
   const last = rest?.length > 0 ? rest[rest.length - 1] : null;
 
-  if (last?.kind === "sum" || last?.kind === "product" || last?.kind === "lcd" || last?.kind === "gcd" || (last?.kind === "sequence" && args.length > 3)) {
+  if (last?.kind === "sum" || last?.kind === "product" || last?.kind === "lcd" || last?.kind === "gcd" || (last?.kind === "sequence" || (last?.kind === "ratios") && args.length > 3)) {
     const arr = [a, b].concat(rest.slice(0, -1)) as Container[];
 
     return last.kind === "sequence"
@@ -1253,7 +1309,9 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
             ? productRule(arr, last)
             : last.kind === "sum"
               ? sumRule(arr, last)
-              : null
+              : last.kind === "ratios"
+                ? toRatios(arr, last)
+                : null
   }
   else if (a.kind === "cont" && b.kind == "cont") {
     const kind = last?.kind;
@@ -1265,20 +1323,22 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
           ? toQuota(a, b)
           : kind === "delta"
             ? toTransfer(a, b, last)
-            : kind === "rate"
-              ? toRate(a, b)
-              : kind === "ratios"
-                ? toRatios(a, b, last)
-                : kind === "comp-ratio"
-                  ? toRatioComparison(a, b)
-                  : kind === "ratio"
-                    ? toPartWholeRatio(a, b)
-                    : toComparison(a, b)
+            : kind === "pythagoras"
+              ? pythagorasRule(a, b, last)
+              : kind === "rate"
+                ? toRate(a, b)
+                : kind === "ratios"
+                  ? toRatios([a, b], last)
+                  : kind === "comp-ratio"
+                    ? toRatioComparison(a, b, last)
+                    : kind === "ratio"
+                      ? toPartWholeRatio(a, b)
+                      : toComparison(a, b)
   }
-  else if (a.kind === "cont" && b.kind === "unit") {
+  else if ((a.kind === "cont" || a.kind === "comp") && b.kind === "unit") {
     return convertToUnit(a, b);
   }
-  else if (a.kind === "unit" && b.kind === "cont") {
+  else if (a.kind === "unit" && (b.kind === "cont" || b.kind === "comp")) {
     return convertToUnit(b, a);
   }
   else if (a.kind === "cont" && b.kind === "comp-angle") {
@@ -1547,7 +1607,7 @@ function findPositionInQuadraticSequence(
 }
 
 function formatNumber(d: number) {
-  return d.toLocaleString("cs-CZ")
+  return d.toLocaleString("cs-CZ", { maximumFractionDigits: 6, minimumFractionDigits: 0 })
 }
 
 function formatRatio(d: number, asPercent?: boolean) {
@@ -1644,7 +1704,7 @@ function lcdFromPrimeFactors(primeFactors: number[][]): number[] {
 function formatEntity(d: EntityBase) {
   return (d.entity || d.unit) ? `(${[d.unit, d.entity].filter(d => d != null && d != "").join(" ")})` : ''
 }
-export type AngleRelationship = "complementary" | "supplementary" | "vertical" | "corresponding" | "sameSide" | "alternate"
+export type AngleRelationship = "complementary" | "supplementary" | "opposite" | "corresponding" | "sameSide" | "alternate" | "alternate-interior" | "alternate-exterior"
 function computeOtherAngle(angle1, relationship: AngleRelationship) {
   switch (relationship) {
     case "complementary":
@@ -1652,9 +1712,11 @@ function computeOtherAngle(angle1, relationship: AngleRelationship) {
     case "supplementary":
     case "sameSide":
       return 180 - angle1; // Sum must be 180°
-    case "vertical":
+    case "opposite":
     case "corresponding":
     case "alternate":
+    case "alternate-interior":
+    case "alternate-exterior":
       return angle1; // Equal angles
     default:
       throw "Unknown Angle Relationship";
@@ -1669,19 +1731,23 @@ export function formatAngle(relationship: AngleRelationship) {
       return "vedlejší"
     case "sameSide":
       return "přilehlý"
-    case "vertical":
+    case "opposite":
       return "vrcholový";
     case "corresponding":
       return "souhlasný";
     case "alternate":
-      return "střídavý"
+      return "střídavý";
+    case "alternate-interior":
+      return "střídavý vnitřní";
+    case "alternate-exterior":
+      return "střídavý vnější";
     default:
       throw "Neznámý vztah";
 
   }
 }
 
-function formatSequence(type, n: number) {
+export function formatSequence(type, n: number) {
   const simplify = (d, op = '') => d !== 1 ? `${d}${op}` : ''
 
   if (type.kind === "arithmetic")
@@ -1689,7 +1755,7 @@ function formatSequence(type, n: number) {
   if (type.kind === "quadratic") {
     const [first, second] = type.sequence;
     const { A, B, C } = nthQuadraticElements(first, second, type.secondDifference);
-    let parts = [`${simplify(A, "*")}${formatNumber(n)}^2`];
+    let parts = [`${simplify(A, "*")}${formatNumber(n)}^2^`];
     if (B !== 0) {
       parts = parts.concat(`${simplify(B, "*")}${formatNumber(n)}`)
     }
@@ -1699,7 +1765,7 @@ function formatSequence(type, n: number) {
     return `${parts.map((d, i) => `${i !== 0 ? ' + ' : ''}${d}`).join(' ')}`;
   }
   if (type.kind === "geometric") {
-    return `${simplify(type.sequence[0], '*')}${type.commonRatio}^(${formatNumber(n)}-1)`;
+    return `${simplify(type.sequence[0], '*')}${type.commonRatio}^(${formatNumber(n)}-1)^`;
   }
 }
 

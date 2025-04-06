@@ -1,5 +1,5 @@
-import { cont, formatAngle, inferenceRule } from "../components/math.js"
-import type { Predicate, Container, Rate, ComparisonDiff, Comparison } from "../components/math.js"
+import { cont, formatAngle, formatSequencePattern, inferenceRule, nthQuadraticElements } from "../components/math.js"
+import { Predicate, Container, Rate, ComparisonDiff, Comparison } from "../components/math.js"
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
 
 type PredicateLabel = { labelKind?: 'input' | 'deduce', label?: number }
@@ -47,7 +47,7 @@ export function to(...children: Node[]): TreeNode {
 }
 export function toCont(child: Node, { agent }: { agent: string }): TreeNode {
   const node = isPredicate(child) ? child : last(child);
-  if (!(node.kind == "cont" || node.kind === "transfer" || node.kind == "comp" || node.kind === "comp-diff" || node.kind === "rate")) {
+  if (!(node.kind == "cont" || node.kind === "transfer" || node.kind == "comp" || node.kind === "comp-diff" || node.kind === "rate" || node.kind === 'quota')) {
     throw `Non convertable node type: ${node.kind}`
   }
   const typeNode = node as ComparisonDiff | Comparison | Rate;
@@ -216,9 +216,30 @@ const mdFormatting = {
     return isEmptyOrWhiteSpace(res) ? '': `__${res.trim()}__`;  
   },
   formatAgent: d => `**${d}**`,
-  formatSequence: d => `${d.type}`
+  formatSequence: d => `${formatSequence(d)}`
 }
 
+function formatSequence(type) {
+  const simplify = (d, op = '') => d !== 1 ? `${d}${op}` : ''
+
+  if (type.kind === "arithmetic")
+    return `${type.sequence.join()} => a^n^ = ${type.sequence[0]} + ${type.commonDifference}(n-1)`;
+  if (type.kind === "quadratic") {
+    const [first, second] = type.sequence;
+    const { A, B, C } = nthQuadraticElements(first, second, type.secondDifference);
+    const parts = [`${simplify(A)}n^2^`];
+    if (B !== 0) {
+      parts.concat(`${simplify(B)}n`)
+    }
+    if (C !== 0) {
+      parts.concat(`${simplify(C)}n`)
+    }
+    return `${type.sequence.join()} => a^n^ = ${parts.map((d, i) => `${i !== 0 ? ' + ' : ''}${d}`)}`;
+  }
+  if (type.kind === "geometric") {
+    return `${type.sequence.join()} => a^n^ = ${simplify(type.sequence[0], '*')}${type.commonRatio}^(n-1)^`;
+  }
+}
 
 export function formatPredicate(d: Predicate, formatting: any) {
   const { formatKind, formatAgent, formatEntity, formatQuantity, formatRatio, formatSequence, compose } = { ...mdFormatting, ...formatting }

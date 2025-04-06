@@ -11,7 +11,8 @@
     "baml-generate": "baml-cli generate",
     "build:word-problems": "esbuild ./src/math/word-problems.ts --bundle --platform=neutral --outfile=./src/math/word-problems.js",
     "build:deduce-utils": "esbuild ./src/utils/deduce-utils.ts --bundle --platform=neutral --outfile=./src/utils/deduce-utils.js",
-    "generate:word-problems": "node ./src/data/word-problems-solu-[code].txt.js --code M9I-2025"
+    "generate:word-problems": "node ./src/data/word-problems-solu-[code].txt.js --code M9I-2025",
+    "ai:word-problems": "node ./src/data/word-problems-ai-[code].json.js --code M9I-2025 > ./src/data/word-problems-ai-M9I-2025.json"
   },
   "dependencies": {
     "@lezer/common": "^1.2.2",
@@ -31,6 +32,7 @@
     "markdown-it-html5-embed": "^1.0.0",
     "markdown-it-katex": "^2.0.3",
     "markdown-it-sup": "^2.0.0",
+    "openai": "^4.91.1",
     "playwright": "^1.49.0",
     "redux": "^5.0.1",
     "rxjs": "^7.8.1",

@@ -6,7 +6,7 @@ import { jsonToMarkdownChat } from "./utils/deduce-utils.js";
 //import mdPlus from './utils/md-utils.js';
 import Fraction from 'fraction.js';
 const mdFormatting = {
-  formatRatio: (d,asPercent) => asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%`  : new Fraction(d).toFraction(),
+  formatRatio: (d,asPercent) => asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%`  : new Fraction(d).toFraction(),  
 }
 
 const {

@@ -1,8 +1,38 @@
 import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorUnit, primeFactorization, rate, ratio, sum, transfer } from "../../components/math";
 import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
 import { cislaNaOse } from "../cislaNaOse";
+const dveCislaNaOseParams = {
+  input: {
+    mensiCislo: 44,
+    vetsiCislo: 110,
+    pocetUsekuMeziCisly: 6,
+    X: -2,
+    Y: 3,
+  }
+}
 
-export function souctovyTrojuhelnik() {
+export default {
+  3: souctovyTrojuhelnik(),
+  4.1: giftAndBox(),
+  4.2: lukasAccount(),
+  4.3: appleBox(),
+  5.1: timeUnitSum(),
+  5.2: distanceUnitCompareDiff(),
+  6.1: dveCislaNaOse(dveCislaNaOseParams).XandY,
+  6.2: dveCislaNaOse(dveCislaNaOseParams).posun,
+  9: novorocniPrani(),
+  11: sestiuhelnik(),
+  12.1: vyvojObyvatel().panov,
+  12.2: vyvojObyvatel().lidov,
+  12.3: vyvojObyvatel().damov,
+  13.1: carTrip().pocatekCesty,
+  13.2: carTrip().zeleznicniPrejezd,
+  13.3: carTrip().konecCesty,
+  14.1: pyramida().floor8,
+  14.2: pyramida().floor7,
+  14.3: pyramida().stairs,
+}
+function souctovyTrojuhelnik() {
   const entity = 'velikost'
   const zbytekKRozdeleni = "zbytek k rozdělení"
   return {
@@ -23,7 +53,7 @@ export function souctovyTrojuhelnik() {
     )
   }
 }
-export const giftAndBox = () => {
+function giftAndBox() {
   const entity = 'Kč'
   const giftLabel = "dárek";
   const boxLabel = "krabička"
@@ -43,7 +73,7 @@ export const giftAndBox = () => {
 }
 
 
-export const lukasAccount = () => {
+function lukasAccount() {
   const entity = 'Kč'
 
   const grandMotherIn = cont("babička", 500, entity);
@@ -66,7 +96,7 @@ export const lukasAccount = () => {
   }
 }
 
-export const appleBox = () => {
+function appleBox() {
 
   const entity = "jablko";
   const soldLabel = "prodáno";
@@ -87,7 +117,7 @@ export const appleBox = () => {
   }
 }
 
-export const timeUnitSum = () => {
+function timeUnitSum() {
   const entity = "";
   const minutes = "min"
   return {
@@ -102,7 +132,7 @@ export const timeUnitSum = () => {
   }
 }
 
-export const distanceUnitCompareDiff = () => {
+function distanceUnitCompareDiff() {
   const entity = "";
   return {
     deductionTree: deduce(

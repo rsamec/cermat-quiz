@@ -1,6 +1,6 @@
 
-import { cont, ctor, inferenceRule, nth, sum } from "../../components/math.js";
-import { deduce, deduceLbl } from "../../utils/deduce-utils.js";
+import { commonSense, comp, cont, ctor, inferenceRule, nth, product, rate, sum } from "../../components/math.js";
+import { deduce, deduceLbl, last, to } from "../../utils/deduce-utils.js";
 
 
 interface InputParams {
@@ -14,12 +14,15 @@ export default function build({ input }: {
   const whiteEntity = `bílý ${entity}`
   const grayEntity = `šedý ${entity}`
   const nthLabel = "pozice"
-  const nthEntity = nth(nthLabel);
+
 
   const inputContainers = [1, 3, 9].map((d, i) => cont(`${agent} č.${i + 1}`, d, whiteEntity));
 
-  const dSequence = inferenceRule(...inputContainers, ctor('sequence'));
   const soucet = sum("obrazec č.7", [], entity, grayEntity)
+
+  const rule1 = commonSense("V každém kroku se přidává šedý trojúhelník do každého bílého trojúhelníku.")
+  const rule2 = commonSense("Počet šedých trojúhelníků v obrazci n je stejný jako počet bílých trojúhelníků v předchozím obrazci")
+
 
   const dBase = deduce(
     ...inputContainers,
@@ -33,27 +36,32 @@ export default function build({ input }: {
 
   const dTree2 = deduce(
     deduce(
-      dBase,
+      last(dBase),
       cont(`${agent} č.6`, 6, nthLabel),
     ),
-    cont(`${agent} č.6`, 121, grayEntity),
+    to(
+      rule1,
+      rule2,
+      cont(`${agent} č.6`, 121, grayEntity),
+    ),
     soucet
   )
 
-  const dTree3 =
-    deduce(
-      deduce(
-        deduce(
-          dBase,
-          cont("předposlední obrazec", 6_561, entity),
-          nthEntity
-        ),
-        cont("posun na poslední obrazec", 1, nthEntity.entity),
+  const dTree3 = deduce(
+    to(
+      comp("poslední obrazec", "předposlední obrazec", 6_561, grayEntity),
+      rule1,
+      rule2,
+      cont("předposlední obrazec", 6_561, whiteEntity),
+    ),
+    to(
+      last(dBase),
+      cont("následující obrazec (n*3)", 3, "")
+    ),
+    product("poslední obrazec", ["předposlední obrazec", "3"], whiteEntity, whiteEntity),
+  )
 
-        sum("poslední obrazec", [], nthEntity.entity, nthEntity.entity),
-      ),
-      { ...dSequence, ...deduceLbl(1) }
-    )
+
   const templateBase = highlight => highlight
     `Prvním obrazcem je bílý rovnostranný trojúhelník. Každý další obrazec vznikne z předchozího obrazce dle následujících pravidel:.
   ${html => html`<br/>

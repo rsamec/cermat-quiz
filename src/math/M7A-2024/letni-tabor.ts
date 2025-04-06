@@ -1,6 +1,6 @@
 
-import { cont, inferenceRule, rate, sum, ctor, type RatioComparison } from "../../components/math.js";
-import { axiomInput, deduce, deduceLbl, last, to } from "../../utils/deduce-utils.js";
+import { cont, rate, sum, ctor, type RatioComparison } from "../../components/math.js";
+import { axiomInput, deduce, last } from "../../utils/deduce-utils.js";
 
 
 interface PercentPartParams {
@@ -85,9 +85,9 @@ export default function build({ input }: {
   const template3 = (html) => html`<br/>
     <strong>Na táboře je celkem ${dTree3Result.quantity} dětí?</strong>`;
 
-  return [
-    { deductionTree: dTree1, template: highlight => highlight`${() => templateBase(highlight)}${template1}` },
-    { deductionTree: dTree2, template: highlight => highlight`${() => templateBase(highlight)}${template2}` },
-    { deductionTree: dTree3, template: highlight => highlight`${() => templateBase(highlight)}${template3}` },
-  ]
+  return {
+    pocetVedoucichAInstruktoru: { deductionTree: dTree1, template: highlight => highlight`${() => templateBase(highlight)}${template1}` },
+    porovnaniInstrukturuAKucharek: { deductionTree: dTree2, template: highlight => highlight`${() => templateBase(highlight)}${template2}` },
+    pocetDeti: { deductionTree: dTree3, template: highlight => highlight`${() => templateBase(highlight)}${template3}` },
+  }
 }

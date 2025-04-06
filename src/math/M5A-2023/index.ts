@@ -1,7 +1,70 @@
-import { commonSense, compDiff, cont, ctor, gcd, lcd, primeFactorization, product, rate, sum } from "../../components/math";
+import { commonSense, cont, ctor, lcd, primeFactorization, product, rate, sum } from "../../components/math";
 import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
+import { comparingValues } from "../comparing-values";
+import { compass } from "../compass";
+import cetar from "../M7A-2023/cetar";
+import zakusek from "../M7A-2023/zakusek";
+import { obrazce } from "../obrazce";
+import { odmenySoutezici } from "../odmeny-soutezici";
+import { sesity } from "../sesity";
+import { trideni_odpadu } from "../trideni-odpady";
 
-export const hledani_cisel = ({ input }: { input: { value: number } }) => {
+const cetarParams = {
+  input: {
+    kapitan: 1,
+    porucik: 4,
+    cetarPerPorucik: 3,
+    vojinPerCetar: 10
+  }
+};
+export default {
+  2.1: comparingValues({
+    input: {
+      first: {
+        ratio: 1 / 4,
+        value: 24
+      },
+      second: {
+        ratio: 1 / 3,
+        value: 12
+      }
+    }
+  }),
+  2.2: hledani_cisel({
+    input: {
+      value: 180
+    }
+  }),
+  3.1: cetar(cetarParams)[0],
+  3.2: cetar(cetarParams)[1],
+  3.3: cetar(cetarParams)[2],
+  4.1: sesity()[0],
+  4.2: sesity()[1],
+  4.3: compass(),
+  5.1: klubSEN().jedenKrouzek,
+  5.2: klubSEN().klub,
+  6.1: odmenySoutezici()[0],
+  6.2: odmenySoutezici()[1],
+  8.1: desitiuhelnik().whiteTriangle,
+  8.2: desitiuhelnik().grayRectangle,
+  8.3: desitiuhelnik().grayTriangle,
+  9: zakusek({
+    input: {
+      cena: 72
+    }
+  }),
+  11: stavebnice().cube,
+  12: stavebnice().minimalCube,
+  13.1: trideni_odpadu().papirRtoS,
+  13.2: trideni_odpadu().plast,
+  13.3: trideni_odpadu().papirToKovy,
+  14.1: obrazce()[0],
+  14.2: obrazce()[1],
+  14.3: obrazce()[2]
+}
+
+
+function hledani_cisel({ input }: { input: { value: number } }) {
   const entity = "";
   return {
     deductionTree: deduce(
@@ -19,7 +82,7 @@ export const hledani_cisel = ({ input }: { input: { value: number } }) => {
   }
 }
 
-export const klubSEN = () => {
+function klubSEN() {
   const entity = 'dítě'
   const entityKrouzek = "účast kroužek";
   const sportovni = cont("sportovní", 14, entity)
@@ -31,7 +94,7 @@ export const klubSEN = () => {
 
   const three = cont("navštěvuje 3 kroužky", 3, entity)
   const two = cont("navštěvuje 2 kroužky", 8, entity)
-  
+
   const one = deduce(
     deduce(
       sportovni,
@@ -56,18 +119,18 @@ export const klubSEN = () => {
     jedenKrouzek: {
       deductionTree: one
     },
-    klub:{
+    klub: {
       deductionTree: deduce(
         last(one),
         two,
         three,
-        sum("počet dětí",[], entity, entity)
+        sum("počet dětí", [], entity, entity)
       )
     }
   }
 }
 
-export const desitiuhelnik = () => {
+function desitiuhelnik() {
   const squareSizeLabel = "strana čtverce";
   const entity = "cm"
   const entity2d = "cm2"
@@ -147,7 +210,7 @@ export const desitiuhelnik = () => {
   }
 
 }
-export const stavebnice = () => {
+function stavebnice() {
   const entity = "cm";
 
   const cube = ({ length, width, height }) => ({
