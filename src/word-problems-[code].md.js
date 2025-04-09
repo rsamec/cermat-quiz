@@ -30,10 +30,9 @@ const wordProblem = wordProblems[code];
 process.stdout.write(`---
 title: ${formatCodeAlt(code)}
 source: české statní zkoušky
-toc: true
-style: /assets/css/print-solution.css
+toc: false
 ---
-
+\`\`\`md
 ${ids.map(id => {
   const values = (wordProblem?.[id] != null)
     ? [[id, wordProblem[id]]]
@@ -49,5 +48,6 @@ ${quiz.content([id], { ids, render: 'content' })}\n
 ---
 ${values.map(([key, value]) => 
 `**${key} Rozbor řešení úlohy** \n
-${jsonToMarkdownChat(value.deductionTree, mdFormatting).join("")}`).join("")} \n
-`:''}).join('')}`)
+${jsonToMarkdownChat(value.deductionTree, mdFormatting).join("")}`).join("")} \n---`:''}).join('')}
+\`\`\`
+`)

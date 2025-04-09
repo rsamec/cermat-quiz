@@ -28,14 +28,14 @@ const aiAnswers = aiAnswersData ?? {};
 process.stdout.write(`---
 title: ${formatCodeAlt(code)}
 source: české statní zkoušky
-toc: true
-style: /assets/css/print-solution.css
 ---
-
+\`\`\`md
 ${ids.filter(id => aiAnswers[id] != null).map(id => {
   
 return `${quiz.content([id], { ids, render: 'content' })}\n-
 ---
 **${id} Rozbor řešení úlohy** \n
-${aiAnswers[id]}`
-}).join('')}`)
+${normalizeLatex(aiAnswers[id])}`
+}).join('')}
+\`\`\`
+`)

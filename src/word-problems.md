@@ -30,7 +30,7 @@ Slovní úlohy jsou řešeny rozložením na podproblémy, které jsou řešitel
 </div>
 
 
-${wordProblemsKeyValuePairs.map(([code, problems]) => html`<h3>${formatCode(code)}</h3><ul><audio src="/assets/math/${code}.mp3" playsinline muted controls style="min-width: 100px;"></audio>${
+${wordProblemsKeyValuePairs.map(([code, problems]) => html`<h3><a href="solu-${code}">${formatCode(code)}</a> - <a href="word-problems-${code}"><i class="fa-brands fa-markdown"></i></a></h3><audio src="/assets/math/${code}.mp3" playsinline muted controls style="min-width: 100px;"></audio></div><ul>${
   problems.map(key => html`<li><a href="./word-problem-${code}-n-${key}">Řešení úloha ${key}</a></li>`
 )}</ul>`)}
 
