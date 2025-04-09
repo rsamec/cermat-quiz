@@ -7515,9 +7515,9 @@ function build6({ input }) {
   const template3 = (html) => html`<br/>
     <strong>Počet šedých trojúhelníků v posledním a v předposledním obrazci se liší o 6 561.Určete, kolik bílých trojúhelníků obsahuje poslední obrazec</strong>`;
   return [
-    { deductionTree: dTree1, template: (highlight2) => highlight2`${() => templateBase(highlight2)}${template1}` },
-    { deductionTree: dTree2, template: (highlight2) => highlight2`${() => templateBase(highlight2)}${template2}` },
-    { deductionTree: dTree3, template: (highlight2) => highlight2`${() => templateBase(highlight2)}${template3}` }
+    { title: "Po\u010Det b\xEDl\xFDch troj\xFAheln\xEDk\u016F v p\xE1t\xE9m obrazci", deductionTree: dTree1, template: (highlight2) => highlight2`${() => templateBase(highlight2)}${template1}` },
+    { title: "Po\u010Det \u0161ed\xFDch troj\xFAheln\xEDk\u016F v sedm\xE9m obrazci", deductionTree: dTree2, template: (highlight2) => highlight2`${() => templateBase(highlight2)}${template2}` },
+    { title: " Po\u010Det b\xEDl\xFDch troj\xFAheln\xEDk\u016F v posledn\xEDm obrazci", deductionTree: dTree3, template: (highlight2) => highlight2`${() => templateBase(highlight2)}${template3}` }
   ];
 }
 
@@ -7549,6 +7549,7 @@ var M9A_2023_default = {
 function dobaFilmu({ input }) {
   const entity3 = "hodin";
   return {
+    title: "Zb\xFDvaj\xEDc\xED \u010Das filmu",
     deductionTree: deduce(
       deduce(
         axiomInput(cont("film", input.celkovaDobaFilmuVHodina, entity3, "h"), 1),
@@ -7564,6 +7565,7 @@ function dobaFilmu({ input }) {
 function sud() {
   const entity3 = "litr";
   return {
+    title: "Objem konvi\u010Dky",
     deductionTree: deduce(
       deduce(
         deduce(
@@ -7579,6 +7581,7 @@ function sud() {
 function rezaniKvadru() {
   const entity3 = "krychle";
   return {
+    title: "Roz\u0159ez\xE1n\xED kv\xE1dru na krychli\u010Dky",
     deductionTree: deduce(
       deduce(
         cont("kv\xE1dr", 200, entity3),
@@ -7635,6 +7638,7 @@ function povrchValce() {
     product("podstava", [], entity2d, entity3)
   );
   return {
+    title: "Povrch v\xE1lce",
     deductionTree: deduce(
       podstava,
       last(podstava),
@@ -7656,6 +7660,7 @@ function krouzkyATridy() {
   const roboticky8 = cont(`${robotickyLabel} 8.`, 3, entityBase);
   return {
     procent: {
+      title: "Procentu\xE1ln\xED rozd\xEDl \u017E\xE1k\u016F v hudebn\xEDm krou\u017Eku",
       deductionTree: deduce(
         hudebni8,
         hudebni9,
@@ -7663,6 +7668,7 @@ function krouzkyATridy() {
       )
     },
     pocet: {
+      title: "Po\u010Det \u017E\xE1k\u016F 9. t\u0159\xEDd v \u0161achov\xE9m krou\u017Eku",
       deductionTree: deduce(
         deduce(
           comp(hudebniLabel, sachovyLabel, -6, entity3),
@@ -7672,6 +7678,7 @@ function krouzkyATridy() {
       )
     },
     pomer: {
+      title: "Pom\u011Br \u017E\xE1k\u016F 8. a 9. t\u0159\xEDd v robotick\xE9m krou\u017Eku",
       deductionTree: deduce(
         roboticky8,
         deduce(
@@ -7705,9 +7712,11 @@ function pozemekObdelnik() {
   );
   return {
     delkaStrany: {
+      title: "D\xE9lka strany \u010Dtvercov\xE9ho pozemku",
       deductionTree: stranaCtverce
     },
     obsah: {
+      title: "Rozd\xEDl obsah\u016F pozemk\u016F",
       deductionTree: deduce(
         deduce(
           last(stranaCtverce),
@@ -7731,6 +7740,7 @@ function angleBeta() {
   const triangle = "\xFAhel troj\xFAheln\xEDku ABC";
   const alfaA = cont(`vnit\u0159n\xED ${triangle} u vrcholu A`, 4, alfaEntity);
   return {
+    title: "Velikost \xFAhlu \u03B2",
     deductionTree: deduce(
       deduce(
         triangleSum,
@@ -7770,6 +7780,7 @@ function rovinataOblast() {
   const vychazkovaTrasa = cont("vych\xE1zkov\xE1 trasa", 6, entity3, "km");
   return {
     skutecnost: {
+      title: "D\xE9lka trasy na map\u011B a ve skute\u010Dnosti",
       deductionTree: deduce(
         deduce(
           meritko,
@@ -7783,6 +7794,7 @@ function rovinataOblast() {
       )
     },
     vychazkovaTrasa: {
+      title: "Rozd\xEDl d\xE9lek tras na map\u011B",
       deductionTree: deduce(
         deduce(
           deduce(
@@ -7800,6 +7812,7 @@ function rovinataOblast() {
       )
     },
     meritko: {
+      title: "M\u011B\u0159\xEDtko turistick\xE9 mapy",
       deductionTree: deduce(
         last(meritko),
         cont(plan, 3.5, entity3, "cm"),

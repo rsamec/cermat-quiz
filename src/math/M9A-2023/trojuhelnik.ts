@@ -80,8 +80,8 @@ export default function build({ input }: {
 
 
   return [
-    { deductionTree: dTree1, template: highlight => highlight`${() => templateBase(highlight)}${template1}` },
-    { deductionTree: dTree2, template: highlight => highlight`${() => templateBase(highlight)}${template2}` },
-    { deductionTree: dTree3, template: highlight => highlight`${() => templateBase(highlight)}${template3}` },
+    { title: 'Počet bílých trojúhelníků v pátém obrazci', deductionTree: dTree1, template: highlight => highlight`${() => templateBase(highlight)}${template1}` },
+    { title: 'Počet šedých trojúhelníků v sedmém obrazci', deductionTree: dTree2, template: highlight => highlight`${() => templateBase(highlight)}${template2}` },
+    { title: ' Počet bílých trojúhelníků v posledním obrazci', deductionTree: dTree3, template: highlight => highlight`${() => templateBase(highlight)}${template3}` },
   ]
 }

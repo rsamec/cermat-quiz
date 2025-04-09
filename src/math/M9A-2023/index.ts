@@ -31,6 +31,7 @@ export default {
 function dobaFilmu({ input }: { input: { celkovaDobaFilmuVHodina: number } }) {
   const entity = "hodin";
   return {
+    title: 'Zbývající čas filmu',
     deductionTree: deduce(
       deduce(
         axiomInput(cont("film", input.celkovaDobaFilmuVHodina, entity, "h"), 1),
@@ -48,6 +49,7 @@ function dobaFilmu({ input }: { input: { celkovaDobaFilmuVHodina: number } }) {
 export function sud() {
   const entity = "litr";
   return {
+    title: "Objem konvičky",
     deductionTree: deduce(
       deduce(
         deduce(
@@ -63,6 +65,7 @@ export function sud() {
 export function rezaniKvadru() {
   const entity = "krychle"
   return {
+    title: 'Rozřezání kvádru na krychličky',
     deductionTree: deduce(
       deduce(
         cont("kvádr", 200, entity),
@@ -137,6 +140,7 @@ export function povrchValce() {
   )
 
   return {
+    title: 'Povrch válce',
     deductionTree: deduce(
       podstava,
       last(podstava),
@@ -164,6 +168,7 @@ function krouzkyATridy() {
 
   return {
     procent: {
+      title: 'Procentuální rozdíl žáků v hudebním kroužku',
       deductionTree: deduce(
         hudebni8,
         hudebni9,
@@ -171,6 +176,7 @@ function krouzkyATridy() {
       )
     },
     pocet: {
+      title: 'Počet žáků 9. tříd v šachovém kroužku',
       deductionTree: deduce(
         deduce(
           comp(hudebniLabel, sachovyLabel, -6, entity),
@@ -179,6 +185,7 @@ function krouzkyATridy() {
       )
     },
     pomer: {
+      title: 'Poměr žáků 8. a 9. tříd v robotickém kroužku',
       deductionTree: deduce(
         roboticky8,
         deduce(
@@ -216,9 +223,11 @@ export function pozemekObdelnik() {
 
   return {
     delkaStrany: {
+      title: 'Délka strany čtvercového pozemku',
       deductionTree: stranaCtverce,
     },
     obsah: {
+      title: 'Rozdíl obsahů pozemků',
       deductionTree: deduce(
         deduce(
           last(stranaCtverce),
@@ -246,6 +255,7 @@ function angleBeta() {
 
   const alfaA = cont(`vnitřní ${triangle} u vrcholu A`, 4, alfaEntity);
   return {
+    title: 'Velikost úhlu β',
     deductionTree: deduce(
       deduce(
         triangleSum,
@@ -289,6 +299,7 @@ export function rovinataOblast() {
   const vychazkovaTrasa = cont("vycházková trasa", 6, entity, "km");
   return {
     skutecnost: {
+      title: 'Délka trasy na mapě a ve skutečnosti',
       deductionTree: deduce(
         deduce(
           meritko,
@@ -302,6 +313,7 @@ export function rovinataOblast() {
       )
     },
     vychazkovaTrasa: {
+      title: 'Rozdíl délek tras na mapě',
       deductionTree: deduce(
         deduce(
           deduce(
@@ -319,6 +331,7 @@ export function rovinataOblast() {
       )
     },
     meritko: {
+      title: 'Měřítko turistické mapy',
       deductionTree: deduce(
         last(meritko),
         cont(plan, 3.5, entity, "cm"),

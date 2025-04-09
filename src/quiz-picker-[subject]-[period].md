@@ -13,7 +13,7 @@ const filteredQuizes = quizes.filter(d => d.subject === observable.params.subjec
 const quizesByYear = Object.entries(Object.groupBy(filteredQuizes, (d) => parseCode(d).year));
 
 const pdfs = await FileAttachment(`./data/pdf-${observable.params.subject}-${observable.params.period}.json`).json();
-const audios = ['M5A-2024', 'M5A-2023', 'M7A-2024', 'M7A-2023', 'M9I-2025', 'M9A-2024']
+const audios = ['M5A-2024', 'M5A-2023', 'M7A-2024', 'M7A-2023', 'M9I-2025', 'M9A-2024','M9A-2023']
 ```
 
 <!-- Cards with big numbers -->
