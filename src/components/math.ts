@@ -424,9 +424,30 @@ function comparisonRatioRule(b: RatioComparison, a: PartWholeRatio): Question {
   }
 }
 
+function comparisonRatiosRuleEx(b: RatioComparison, a: { whole: AgentMatcher }): PartToPartRatio {
+  if (b.ratio >= 0) {
+    return { kind: 'ratios', whole: a.whole, parts: [b.agentA, b.agentB], ratios: [1 / Math.abs(b.ratio), 1] }
+  }
+  else {
+    return { kind: 'ratios', whole: a.whole, parts: [b.agentA, b.agentB], ratios: [1 / Math.abs(b.ratio), 1] }
+  }
+}
+function comparisonRatiosRule(b: RatioComparison, a: { whole: AgentMatcher }): Question {
+  const result = comparisonRatiosRuleEx(b, a)
+  return {
+    question: `Převeď na poměr dvojice ${[b.agentA, b.agentB].join(":")}?`,
+    result,
+    options: [
+      { tex: `(1 / ${formatRatio(Math.abs(b.ratio))}) ":" 1`, result: result.ratios.map(d => formatRatio(d)).join(":"), ok: b.ratio >= 0 },
+      { tex: `(1 / ${formatRatio(Math.abs(b.ratio))}) ":" 1`, result: result.ratios.map(d => formatRatio(d)).join(":"), ok: b.ratio < 0 },
+    ]
+  }
+}
+
+
 function convertToUnitEx(a: Container | Comparison, b: ConvertUnit): Container | Comparison {
   if (a.unit == null) {
-    throw `Missing unit ${a.kind === "cont" ? a.agent: `${a.agentA} to ${a.agentB}`} a ${a.entity}`;
+    throw `Missing unit ${a.kind === "cont" ? a.agent : `${a.agentA} to ${a.agentB}`} a ${a.entity}`;
   }
   return { ...a, quantity: helpers.convertToUnit(a.quantity, a.unit, b.unit), unit: b.unit }
 }
@@ -891,14 +912,14 @@ function pythagorasRuleEx(a: Container, b: Container, last: Phytagoras): Contain
     const otherSite = a.agent === last.longest ? b : a;
     return {
       ...temp,
-      quantity: Math.sqrt(Math.pow(longest.quantity,2) - Math.pow(otherSite.quantity,2)),
+      quantity: Math.sqrt(Math.pow(longest.quantity, 2) - Math.pow(otherSite.quantity, 2)),
       agent: last.sites[1] === otherSite.agent ? last.sites[0] : last.sites[1]
     }
   }
   else {
     return {
       ...temp,
-      quantity: Math.sqrt(Math.pow(a.quantity,2) + Math.pow(b.quantity,2)),
+      quantity: Math.sqrt(Math.pow(a.quantity, 2) + Math.pow(b.quantity, 2)),
       agent: last.longest
     }
   }
@@ -1401,6 +1422,12 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   }
   else if (a.kind === "ratio" && b.kind === "comp-ratio") {
     return comparisonRatioRule(b, a);
+  }
+  else if (a.kind === "comp-ratio" && b.kind === "ratios") {
+    return comparisonRatiosRule(a, b);
+  }
+  else if (a.kind === "ratios" && b.kind === "comp-ratio") {
+    return comparisonRatiosRule(b, a);
   }
   else if (a.kind === "cont" && b.kind === "ratio") {
     return partToWholeRule(a, b);

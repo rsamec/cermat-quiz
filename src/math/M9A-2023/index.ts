@@ -37,9 +37,9 @@ function dobaFilmu({ input }: { input: { celkovaDobaFilmuVHodina: number } }) {
         axiomInput(cont("film", input.celkovaDobaFilmuVHodina, entity, "h"), 1),
         ctorUnit("min")
       ),
-      to(
-        compRatio("zbytek do konce filmu", "uplynulo od začátku filmu", 1 / 2),
-        ratios("film", ["uplynulo 1. ze 2", "uplynulo 2. ze 2", "zbytek do konce filmu"], [1, 1, 1]),
+      deduce(
+        compRatio("zbytek do konce filmu", "uplynulo od začátku filmu", 1/2),
+        ctorRatios("film"),
       )
     )
   }

@@ -105,6 +105,24 @@ function comparisonRatioRule(b, a) {
     ]
   };
 }
+function comparisonRatiosRuleEx(b, a) {
+  if (b.ratio >= 0) {
+    return { kind: "ratios", whole: a.whole, parts: [b.agentA, b.agentB], ratios: [1 / Math.abs(b.ratio), 1] };
+  } else {
+    return { kind: "ratios", whole: a.whole, parts: [b.agentA, b.agentB], ratios: [1 / Math.abs(b.ratio), 1] };
+  }
+}
+function comparisonRatiosRule(b, a) {
+  const result = comparisonRatiosRuleEx(b, a);
+  return {
+    question: `P\u0159eve\u010F na pom\u011Br dvojice ${[b.agentA, b.agentB].join(":")}?`,
+    result,
+    options: [
+      { tex: `(1 / ${formatRatio(Math.abs(b.ratio))}) ":" 1`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: b.ratio >= 0 },
+      { tex: `(1 / ${formatRatio(Math.abs(b.ratio))}) ":" 1`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: b.ratio < 0 }
+    ]
+  };
+}
 function convertToUnitEx(a, b) {
   if (a.unit == null) {
     throw `Missing unit ${a.kind === "cont" ? a.agent : `${a.agentA} to ${a.agentB}`} a ${a.entity}`;
@@ -900,6 +918,10 @@ function inferenceRuleEx(...args) {
     return comparisonRatioRule(a, b);
   } else if (a.kind === "ratio" && b.kind === "comp-ratio") {
     return comparisonRatioRule(b, a);
+  } else if (a.kind === "comp-ratio" && b.kind === "ratios") {
+    return comparisonRatiosRule(a, b);
+  } else if (a.kind === "ratios" && b.kind === "comp-ratio") {
+    return comparisonRatiosRule(b, a);
   } else if (a.kind === "cont" && b.kind === "ratio") {
     return partToWholeRule(a, b);
   } else if (a.kind === "ratio" && b.kind === "cont") {
