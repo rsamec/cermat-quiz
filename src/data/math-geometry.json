@@ -150,5 +150,36 @@
         }
       ]
     }
+  },
+  "M9A-2025": {
+    "9": {
+      "header": "9",
+      "results": [
+        {
+          "Name": "Sestrojit",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": []
+            }
+          ]
+        }
+      ]
+    },
+    "10": {
+      "header": "10",
+      "results": [
+        {
+          "Name": "Sestrojit",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": []
+            }
+          ]
+        }
+      ]
+    }
   }
+
 }
