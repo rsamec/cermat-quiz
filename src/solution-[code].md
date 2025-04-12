@@ -43,7 +43,7 @@ const result = Object.keys(geometry).reduce((merged, key) => {
 
 
 
-const answers = result[code];
+const answers = result[code] ?? {};
 const ids = quiz.questions.map(d => d.id);
 
 const wordProblem = wordProblems[code] ?? {};

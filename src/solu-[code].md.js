@@ -53,7 +53,7 @@ const result = Object.keys(geometry).reduce((merged, key) => {
 
 
 
-const answers = result[code];
+const answers = result[code] ?? {};
 const videoExclude = videoExlusions[code] ?? {};
 const ids = quiz.questions.map(d => d.id);
 

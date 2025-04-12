@@ -225,6 +225,10 @@ export function ctorDelta(agent: string): Delta {
   return { kind: "delta", agent }
 }
 export function ctorPercent(): RatioComparison {
+  return { kind: "ratio", asPercent: true } as any
+}
+
+export function ctorComparePercent(): RatioComparison {
   return { kind: "comp-ratio", asPercent: true } as any
 }
 
@@ -425,15 +429,16 @@ function comparisonRatioRule(b: RatioComparison, a: PartWholeRatio): Question {
 }
 
 function comparisonRatiosRuleEx(b: RatioComparison, a: { whole: AgentMatcher }): PartToPartRatio {
-  if (b.ratio >= 0) {
-    return { kind: 'ratios', whole: a.whole, parts: [b.agentA, b.agentB], ratios: [1 / Math.abs(b.ratio), 1] }
+  if (b.ratio >= 1) {
+    return { kind: 'ratios', whole: a.whole, parts: [b.agentA, b.agentB], ratios: [Math.abs(b.ratio),1] }
   }
   else {
-    return { kind: 'ratios', whole: a.whole, parts: [b.agentA, b.agentB], ratios: [1 / Math.abs(b.ratio), 1] }
+    return { kind: 'ratios', whole: a.whole, parts: [b.agentA, b.agentB], ratios: [1, 1/Math.abs(b.ratio)] }
   }
 }
 function comparisonRatiosRule(b: RatioComparison, a: { whole: AgentMatcher }): Question {
-  const result = comparisonRatiosRuleEx(b, a)
+  const result = comparisonRatiosRuleEx(b, a);
+
   return {
     question: `Převeď na poměr dvojice ${[b.agentA, b.agentB].join(":")}?`,
     result,
@@ -558,7 +563,34 @@ function ratioConvertRule(a: Complement, b: PartWholeRatio): TwoPartRatio {
   }
 }
 
+function ratiosConvertRuleEx(a: NthPart, b: PartToPartRatio, asPercent: boolean): PartWholeRatio {
+  if (!b.parts.includes(a.agent)) {
+    throw `Missing part ${a.agent} , ${b.parts.join()}.`
+  }
+  const index = b.parts.indexOf(a.agent);
 
+  return {
+    kind: 'ratio',
+    whole: b.whole,
+    ratio: b.ratios[index] / b.ratios.reduce((out, d) => out += d, 0),
+    part: b.parts[index],
+    asPercent
+  }
+}
+function ratiosConvertRule(a: NthPart, b: PartToPartRatio, last: PartWholeRatio): Question {
+  const result = ratiosConvertRuleEx(a, b, last.asPercent)
+  const index = b.parts.indexOf(a.agent);
+  const value = b.ratios[index];
+
+  return {
+    question: `Vyjádři ${last.asPercent ? "procentem" : "poměrem"} ${result.part} z ${result.whole}?`,
+    result,
+    options: [
+      { tex: `${formatNumber(value)} / (${b.ratios.map(d => formatNumber(d)).join(" + ")})`, result: formatRatio(result.ratio, result.asPercent), ok: true },
+      { tex: `${formatNumber(value)} * (${b.ratios.map(d => formatNumber(d)).join(" + ")})`, result: formatRatio(result.ratio, result.asPercent), ok: false },
+    ]
+  }
+}
 function compRatioToCompRuleEx(a: RatioComparison, b: Comparison): Container {
 
   const agent = a.agentB === b.agentA ? b.agentA : b.agentB;
@@ -635,8 +667,8 @@ function partToWholeRuleEx(a: Container, b: PartWholeRatio): Container {
     throw `Mismatch entity ${[a.agent, a.entity].join()} any of ${[b.whole, b.part].join()}`
   }
   return matchAgent(b.whole, a)
-    ? { kind: 'cont', agent: b.part, entity: a.entity, quantity: a.quantity * b.ratio }
-    : { kind: 'cont', agent: b.whole, entity: a.entity, quantity: a.quantity / b.ratio }
+    ? { kind: 'cont', agent: b.part, entity: a.entity, quantity: a.quantity * b.ratio, unit: a.unit }
+    : { kind: 'cont', agent: b.whole, entity: a.entity, quantity: a.quantity / b.ratio, unit: a.unit }
 }
 function partToWholeRule(a: Container, b: PartWholeRatio): Question {
   const result = partToWholeRuleEx(a, b)
@@ -704,22 +736,23 @@ function quotaRule(a: Container, quota: Quota): Question {
   }
 }
 
-function toPartWholeRatioEx(part: Container, whole: Container): PartWholeRatio {
+function toPartWholeRatioEx(part: Container, whole: Container, asPercent?: boolean): PartWholeRatio {
   return {
     kind: 'ratio',
     part: part.agent,
     whole: whole.agent,
-    ratio: part.quantity / whole.quantity
+    ratio: part.quantity / whole.quantity,
+    asPercent
   }
 }
-function toPartWholeRatio(part: Container, whole: Container): Question {
-  const result = toPartWholeRatioEx(part, whole)
+function toPartWholeRatio(part: Container, whole: Container, last: PartWholeRatio): Question {
+  const result = toPartWholeRatioEx(part, whole, last.asPercent)
   return {
-    question: `Vyjádři poměrem ${part.agent} z ${whole.agent}?`,
+    question: `Vyjádři ${last.asPercent ? 'procentem' : 'poměrem'}${part.agent} z ${whole.agent}?`,
     result,
     options: [
-      { tex: `${formatNumber(whole.quantity)} / ${formatNumber(part.quantity)}`, result: formatRatio(part.quantity * whole.quantity), ok: false },
-      { tex: `${formatNumber(part.quantity)} / ${formatNumber(whole.quantity)}`, result: formatRatio(part.quantity / whole.quantity), ok: true }]
+      { tex: `${formatNumber(whole.quantity)} / ${formatNumber(part.quantity)} ${last.asPercent ? ' * 100' : ''}`, result: last.asPercent ? formatNumber(result.ratio * 100) : formatRatio(result.ratio), ok: false },
+      { tex: `${formatNumber(part.quantity)} / ${formatNumber(whole.quantity)} ${last.asPercent ? ' * 100' : ''}`, result: last.asPercent ? formatNumber(result.ratio * 100) : formatRatio(result.ratio), ok: true }]
   }
 }
 
@@ -1102,9 +1135,9 @@ function toRate(a: Container, b: Container): Question {
 }
 
 function toQuota(a: Container, quota: Container): Quota {
-  if (a.entity !== quota.entity) {
-    throw `Mismatch entity ${a.entity}, ${quota.entity}`
-  }
+  // if (a.entity !== quota.entity) {
+  //   throw `Mismatch entity ${a.entity}, ${quota.entity}`
+  // }
   const { groupCount, remainder } = divide(a.quantity, quota.quantity);
   return {
     kind: 'quota',
@@ -1353,7 +1386,7 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
                   : kind === "comp-ratio"
                     ? toRatioComparison(a, b, last)
                     : kind === "ratio"
-                      ? toPartWholeRatio(a, b)
+                      ? toPartWholeRatio(a, b, last)
                       : toComparison(a, b)
   }
   else if ((a.kind === "cont" || a.kind === "comp") && b.kind === "unit") {
@@ -1447,6 +1480,14 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   // else if (a.kind === "ratio" && b.kind === "complement") {
   //   return ratioConvertRule(b, a);
   // }
+  else if (a.kind === "nth-part" && b.kind === "ratios") {
+    const kind = last?.kind;
+    return kind === "ratio" ? ratiosConvertRule(a, b, last) : null;
+  }
+  else if (a.kind === "ratios" && b.kind === "nth-part") {
+    const kind = last?.kind;
+    return kind === "ratio" ? ratiosConvertRule(b, a, last) : null;
+  }
   else if (a.kind === "cont" && b.kind == "ratios") {
     const kind = last?.kind;
     return kind === "factorBy"
@@ -1475,6 +1516,9 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   }
   else if (a.kind === "sequence" && b.kind === "cont") {
     const kind = last?.kind;
+    if (kind === "quota"){
+      return toQuota(a,b)
+    }
     return kind === "nth" ? nthPositionRule(b, a, last.entity) : nthTermRule(b, a);
   }
   else if (a.kind === "cont" && b.kind === "sequence") {

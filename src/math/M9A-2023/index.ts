@@ -1,4 +1,4 @@
-import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorPercent, ctorRatios, ctorUnit, nthPart, pi, product, pythagoras, rate, ratio, ratios, sum } from "../../components/math";
+import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, product, pythagoras, rate, ratio, ratios, sum } from "../../components/math";
 import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 import trojuhelnik from "./trojuhelnik";
@@ -172,7 +172,7 @@ function krouzkyATridy() {
       deductionTree: deduce(
         hudebni8,
         hudebni9,
-        ctorPercent()
+        ctorComparePercent()
       )
     },
     pocet: {

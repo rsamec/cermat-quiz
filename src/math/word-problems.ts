@@ -9,6 +9,7 @@ import M9A_2023 from './M9A-2023/index.js';
 import M9A_2024 from './M9A-2024/index.js';
 //import M9B_2024 from './M9B-2024/index.js';
 import M9I_2025 from './M9I-2025/index.js';
+import M9A_2025 from './M9A-2025/index.js';
 
 //re export - due to static server rendering
 export { inferenceRuleWithQuestion } from '../math/math-configure.js'
@@ -33,5 +34,5 @@ export default {
   // },
   // "M9B-2024": M9B_2024,
   "M9I-2025": M9I_2025,
-
+  "M9A-2025": M9A_2025,
 }

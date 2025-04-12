@@ -1,4 +1,4 @@
-import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorPercent, ctorRatios, ctorUnit, nthPart, pi, product, pythagoras, rate, ratio, ratios, sum } from "../../components/math";
+import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, product, pythagoras, rate, ratio, ratios, sum } from "../../components/math";
 import { deduce, last, to } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 export default {
@@ -45,7 +45,7 @@ function AdamAOta() {
         adam2,
         pythagoras("Ota", ["Adam 1.část", "Adam 2.část"])
       ),
-      ctorPercent()
+      ctorComparePercent()
     )
   }
 }
@@ -208,7 +208,7 @@ export const krouzkyATridy = () => {
       deductionTree: deduce(
         hudebni8,
         hudebni9,
-        ctorPercent()
+        ctorComparePercent()
       )
     },
     pocet: {
