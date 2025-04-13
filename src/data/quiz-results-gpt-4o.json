@@ -1943,7 +1943,7 @@
       "7.3": "3:7",
       "8.1": "0.75a",
       "8.2": 40,
-      "8.3": 10,
+      "8.3": 100,
       "11.1": "Ne",
       "11.2": "Ano",
       "11.3": "Ne",
@@ -8879,8 +8879,8 @@
       "4.1": "4y^2",
       "4.2": "n^2+9",
       "4.3": "(3a-11)^2",
-      "5.1": "x=0",
-      "5.2": "y=2",
+      "5.1": "y=0",
+      "5.2": "x=-1/6, y=2",
       "6.1": 40,
       "6.2": 30,
       "7.1": 760,
@@ -9291,6 +9291,486 @@
       "30": {
         "v": 0,
         "max": 3
+      }
+    }
+  },
+  "M9A-2025": {
+    "metadata": {
+      "info": {
+        "code": "M9PAD25C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 6,
+          "opened": 10
+        }
+      }
+    },
+    "subject": "math",
+    "grade": "4",
+    "totalAnswers": 33,
+    "totalPoints": 11,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": false,
+      "10": false,
+      "12": false,
+      "13": false,
+      "14": true,
+      "2.1": false,
+      "2.2": false,
+      "3.1": true,
+      "3.2": false,
+      "3.3": false,
+      "4.1": false,
+      "4.2": false,
+      "5.1": false,
+      "5.2": false,
+      "6.1": true,
+      "6.2": true,
+      "7.1": false,
+      "7.2": false,
+      "7.3": false,
+      "8.1": true,
+      "8.2": false,
+      "8.3": false,
+      "9.1": false,
+      "9.2": false,
+      "11.1": false,
+      "11.2": false,
+      "11.3": true,
+      "15.1": false,
+      "15.2": true,
+      "15.3": true,
+      "16.1": true,
+      "16.2": false,
+      "16.3": false
+    },
+    "correctAnswers": {
+      "1": 2.5,
+      "10": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9A-2025/image-10.png",
+      "12": "A",
+      "13": "B",
+      "14": "D",
+      "2.1": "1/4",
+      "2.2": "1/2",
+      "3.1": "{\"a\":9,\"b\":81}",
+      "3.2": "4n+5",
+      "3.3": "(12-x)(12+x)",
+      "4.1": 20,
+      "4.2": "Ne",
+      "5.1": 12,
+      "5.2": 558,
+      "6.1": 1.5,
+      "6.2": 20,
+      "7.1": 30,
+      "7.2": 50,
+      "7.3": 140,
+      "8.1": 26,
+      "8.2": 5,
+      "8.3": 39,
+      "9.1": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9A-2025/image-9.png",
+      "9.2": "https://raw.githubusercontent.com/rsamec/cermat/main/public/math/4/M9A-2025/image-9.png",
+      "11.1": "Ano",
+      "11.2": "Ano",
+      "11.3": "Ano",
+      "15.1": "B",
+      "15.2": "E",
+      "15.3": "C",
+      "16.1": 24,
+      "16.2": 12,
+      "16.3": 36
+    },
+    "answers": {
+      "1": 5,
+      "10": "I cannot solve the geometry problem of drawing and marking since it requires physical drawing. However, based on instructions, ensure construction is clear and following constraints where lines p, q intersect at C, point B, and height/tangent align with given lines.",
+      "12": "E",
+      "13": "A",
+      "14": "D",
+      "2.1": "",
+      "2.2": "2/3",
+      "3.1": "{\"a\":\"9\",\"b\":\"81\"}",
+      "3.2": "2+n^2+2n-3n-n=2+n^2+n-3",
+      "3.3": "x(18-x)+9(16-2x)=-(x-3)(x-6)",
+      "4.1": 15,
+      "4.2": "y=10",
+      "5.1": 3,
+      "5.2": 324,
+      "6.1": 1.5,
+      "6.2": 20,
+      "7.1": 45,
+      "7.2": 45,
+      "7.3": 90,
+      "8.1": 26,
+      "8.2": 0,
+      "8.3": 21,
+      "9.1": "As instructed, draw by making the larger of the two angles divided into two equal parts. Line o will be the bisector of the larger angle.",
+      "9.2": "This requires drawing. Ensure rectangle KLMN vertices are on lines p and q, with R inside side MN.",
+      "11.1": "Ne",
+      "11.2": "Ne",
+      "11.3": "Ano",
+      "15.1": "A",
+      "15.2": "E",
+      "15.3": "C",
+      "16.1": 24,
+      "16.2": 4,
+      "16.3": 12
+    },
+    "points": {
+      "1": {
+        "v": 0,
+        "max": 1
+      },
+      "2": {
+        "v": 0,
+        "max": 3
+      },
+      "3": {
+        "v": 1,
+        "max": 4
+      },
+      "4": {
+        "v": 0,
+        "max": 4
+      },
+      "5": {
+        "v": 0,
+        "max": 4
+      },
+      "6": {
+        "v": 2,
+        "max": 2
+      },
+      "7": {
+        "v": 0,
+        "max": 3
+      },
+      "8": {
+        "v": 1,
+        "max": 4
+      },
+      "9": {
+        "v": 0,
+        "max": 3
+      },
+      "10": {
+        "v": 0,
+        "max": 2
+      },
+      "11": {
+        "v": 0,
+        "max": 4
+      },
+      "12": {
+        "v": 0,
+        "max": 2
+      },
+      "13": {
+        "v": 0,
+        "max": 2
+      },
+      "14": {
+        "v": 2,
+        "max": 2
+      },
+      "15": {
+        "v": 4,
+        "max": 6
+      },
+      "16": {
+        "v": 1,
+        "max": 4
+      }
+    }
+  },
+  "C9A-2025": {
+    "metadata": {
+      "info": {
+        "code": "C9PAD25C0T01",
+        "maxPoints": 50,
+        "questions": {
+          "closed": 24,
+          "opened": 6
+        }
+      }
+    },
+    "subject": "cz",
+    "grade": "4",
+    "totalAnswers": 49,
+    "totalPoints": 32,
+    "maxTotalPoints": 50,
+    "corrections": {
+      "1": true,
+      "2": true,
+      "3": true,
+      "4": false,
+      "6": false,
+      "8": false,
+      "9": true,
+      "10": true,
+      "11": true,
+      "12": true,
+      "15": false,
+      "16": false,
+      "17": true,
+      "20": false,
+      "21": true,
+      "22": false,
+      "23": false,
+      "25": true,
+      "26": true,
+      "27": false,
+      "28": true,
+      "29": true,
+      "5.1": true,
+      "5.2": true,
+      "5.3": false,
+      "7.1": true,
+      "7.2": true,
+      "7.3": true,
+      "7.4": true,
+      "13.1": true,
+      "13.2": true,
+      "13.3": true,
+      "13.4": true,
+      "14.1": true,
+      "14.2": false,
+      "18.1": true,
+      "18.2": true,
+      "18.3": true,
+      "18.4": true,
+      "19.1": false,
+      "19.2": false,
+      "24.1": true,
+      "24.2": true,
+      "24.3": true,
+      "24.4": true,
+      "30.1": true,
+      "30.2": true,
+      "30.3": true,
+      "30.4": true
+    },
+    "correctAnswers": {
+      "1": "B",
+      "2": "D",
+      "3": "D",
+      "4": "D",
+      "6": "domorodý,mnohočetný,bohudík",
+      "8": "zloději,příznivců,zvonaře",
+      "9": "C",
+      "10": "C",
+      "11": "A",
+      "12": "A",
+      "15": "E,B,D,C,A,F",
+      "16": "kamenný,zprostředkují,včelí,náramně",
+      "17": "B",
+      "20": "D",
+      "21": "C",
+      "22": "A",
+      "23": "C",
+      "25": "C",
+      "26": "B",
+      "27": "C",
+      "28": "D",
+      "29": "vařený",
+      "5.1": "D",
+      "5.2": "A",
+      "5.3": "C",
+      "7.1": "Ne",
+      "7.2": "Ano",
+      "7.3": "Ne",
+      "7.4": "Ne",
+      "13.1": "Ano",
+      "13.2": "Ano",
+      "13.3": "Ano",
+      "13.4": "Ano",
+      "14.1": "obou",
+      "14.2": "nabízenou",
+      "18.1": "Ne",
+      "18.2": "Ano",
+      "18.3": "Ne",
+      "18.4": "Ne",
+      "19.1": "příčiny",
+      "19.2": "času",
+      "24.1": "Ne",
+      "24.2": "Ano",
+      "24.3": "Ano",
+      "24.4": "Ne",
+      "30.1": "A",
+      "30.2": "D",
+      "30.3": "B",
+      "30.4": "E"
+    },
+    "answers": {
+      "1": "B",
+      "2": "D",
+      "3": "D",
+      "4": "C",
+      "6": "pralidé,domorodý,pravěký",
+      "8": "nacisté,zloději,vojáci",
+      "9": "C",
+      "10": "C",
+      "11": "A",
+      "12": "A",
+      "15": "A,A,A,A",
+      "16": "kamenný,pamětihodnosti,sprostředkují,včelí",
+      "17": "B",
+      "20": "B",
+      "21": "C",
+      "22": "B",
+      "23": "A",
+      "25": "C",
+      "26": "B",
+      "27": "D",
+      "28": "D",
+      "29": "vařený",
+      "5.1": "D",
+      "5.2": "A",
+      "5.3": "B",
+      "7.1": "Ne",
+      "7.2": "Ano",
+      "7.3": "Ne",
+      "7.4": "Ne",
+      "13.1": "Ano",
+      "13.2": "Ano",
+      "13.3": "Ano",
+      "13.4": "Ano",
+      "14.1": "obou",
+      "14.2": "nabízel",
+      "18.1": "Ne",
+      "18.2": "Ano",
+      "18.3": "Ne",
+      "18.4": "Ne",
+      "19.1": "účelu",
+      "19.2": "míry",
+      "24.1": "Ne",
+      "24.2": "Ano",
+      "24.3": "Ano",
+      "24.4": "Ne",
+      "30.1": "A",
+      "30.2": "D",
+      "30.3": "B",
+      "30.4": "E"
+    },
+    "points": {
+      "1": {
+        "v": 1,
+        "max": 1
+      },
+      "2": {
+        "v": 1,
+        "max": 1
+      },
+      "3": {
+        "v": 1,
+        "max": 1
+      },
+      "4": {
+        "v": 0,
+        "max": 1
+      },
+      "5": {
+        "v": 2,
+        "max": 3
+      },
+      "6": {
+        "v": 1,
+        "max": 3
+      },
+      "7": {
+        "v": 2,
+        "max": 2
+      },
+      "8": {
+        "v": 1,
+        "max": 3
+      },
+      "9": {
+        "v": 1,
+        "max": 1
+      },
+      "10": {
+        "v": 1,
+        "max": 1
+      },
+      "11": {
+        "v": 1,
+        "max": 1
+      },
+      "12": {
+        "v": 1,
+        "max": 1
+      },
+      "13": {
+        "v": 2,
+        "max": 2
+      },
+      "14": {
+        "v": 1,
+        "max": 2
+      },
+      "15": {
+        "v": 0,
+        "max": 3
+      },
+      "16": {
+        "v": 2,
+        "max": 4
+      },
+      "17": {
+        "v": 1,
+        "max": 1
+      },
+      "18": {
+        "v": 2,
+        "max": 2
+      },
+      "19": {
+        "v": 0,
+        "max": 2
+      },
+      "20": {
+        "v": 0,
+        "max": 1
+      },
+      "21": {
+        "v": 1,
+        "max": 1
+      },
+      "22": {
+        "v": 0,
+        "max": 1
+      },
+      "23": {
+        "v": 0,
+        "max": 1
+      },
+      "24": {
+        "v": 2,
+        "max": 2
+      },
+      "25": {
+        "v": 1,
+        "max": 1
+      },
+      "26": {
+        "v": 1,
+        "max": 1
+      },
+      "27": {
+        "v": 0,
+        "max": 1
+      },
+      "28": {
+        "v": 1,
+        "max": 1
+      },
+      "29": {
+        "v": 1,
+        "max": 1
+      },
+      "30": {
+        "v": 4,
+        "max": 4
       }
     }
   }
