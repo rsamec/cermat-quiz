@@ -94,7 +94,7 @@ const fileLocation = path.resolve('./src/data/math-answers.json');
 
 if (await fileExists(fileLocation)) {
   const outputData = await readJsonFromFile(fileLocation)
-  const parResults = outputData[code];
+  const parResults = outputData[code] ?? {};
   if (parResults != null) {
     process.stdout.write(JSON.stringify(parResults, null, 2));
   }
