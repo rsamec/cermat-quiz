@@ -47,7 +47,7 @@ const videoExlusions = await readJsonFromFile(path.resolve('./src/data/math-answ
 const geometry = await readJsonFromFile(path.resolve('./src/data/math-geometry.json'))
 
 const result = Object.keys(geometry).reduce((merged, key) => {
-  merged[key] = merge(expressions[key], geometry[key])
+  merged[key] = merge(expressions[key] ?? {}, geometry[key])
   return merged;
 }, { ...expressions })
 
