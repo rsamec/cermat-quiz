@@ -50,17 +50,20 @@ function transfer(agentSender, agentReceiver, quantity, entity3) {
 function toAgentNames(agent) {
   return typeof agent === "string" ? { name: agent } : agent;
 }
-function compRelative(agentA, agentB, ratio4) {
+function compRelative(agentA, agentB, ratio4, asPercent) {
   if (ratio4 <= -1 && ratio4 >= 1) {
     throw "Relative compare should be between (-1,1).";
   }
-  return compRatio(agentA, agentB, 1 + ratio4);
+  return { kind: "comp-ratio", agentA, agentB, ratio: 1 + ratio4, asPercent };
+}
+function compRelativePercent(agentA, agentB, percent3) {
+  return compRelative(agentA, agentB, percent3 / 100, true);
 }
 function compRatio(agentA, agentB, ratio4) {
   return { kind: "comp-ratio", agentA, agentB, ratio: ratio4 };
 }
-function compPercent(agentA, agentB, percent2) {
-  return { kind: "comp-ratio", agentA, agentB, ratio: percent2 / 100, asPercent: true };
+function compPercent(agentA, agentB, percent3) {
+  return { kind: "comp-ratio", agentA, agentB, ratio: percent3 / 100, asPercent: true };
 }
 function compDiff(agentMinuend, agentSubtrahend, quantity, entity3) {
   return { kind: "comp-diff", agentMinuend, agentSubtrahend, quantity, entity: entity3 };
@@ -68,8 +71,8 @@ function compDiff(agentMinuend, agentSubtrahend, quantity, entity3) {
 function ratio(whole, part, ratio4) {
   return { kind: "ratio", whole, part, ratio: ratio4 };
 }
-function percent(whole, part, percent2) {
-  return { kind: "ratio", whole, part, ratio: percent2 / 100, asPercent: true };
+function percent(whole, part, percent3) {
+  return { kind: "ratio", whole, part, ratio: percent3 / 100, asPercent: true };
 }
 function ratios(whole, parts, ratios2) {
   return { kind: "ratios", parts, whole, ratios: ratios2 };
@@ -433,25 +436,25 @@ function rateRule(a, rate3) {
     ]
   };
 }
-function quotaRuleEx(a, quota2) {
-  if (!(a.agent === quota2.agent || a.agent === quota2.agentQuota)) {
-    throw `Mismatch entity ${a.entity} any of ${quota2.agent}, ${quota2.agentQuota}`;
+function quotaRuleEx(a, quota3) {
+  if (!(a.agent === quota3.agent || a.agent === quota3.agentQuota)) {
+    throw `Mismatch entity ${a.entity} any of ${quota3.agent}, ${quota3.agentQuota}`;
   }
   return {
     kind: "cont",
-    agent: a.agent === quota2.agentQuota ? quota2.agent : quota2.agentQuota,
+    agent: a.agent === quota3.agentQuota ? quota3.agent : quota3.agentQuota,
     entity: a.entity,
-    quantity: a.agent === quota2.agentQuota ? a.quantity * quota2.quantity : a.quantity / quota2.quantity
+    quantity: a.agent === quota3.agentQuota ? a.quantity * quota3.quantity : a.quantity / quota3.quantity
   };
 }
-function quotaRule(a, quota2) {
-  const result = quotaRuleEx(a, quota2);
+function quotaRule(a, quota3) {
+  const result = quotaRuleEx(a, quota3);
   return {
     question: containerQuestion(result),
     result,
     options: [
-      { tex: `${formatNumber(a.quantity)} * ${formatNumber(quota2.quantity)}`, result: formatNumber(a.quantity * quota2.quantity), ok: a.agent === quota2.agentQuota },
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(quota2.quantity)}`, result: formatNumber(a.quantity / quota2.quantity), ok: a.agent !== quota2.agentQuota }
+      { tex: `${formatNumber(a.quantity)} * ${formatNumber(quota3.quantity)}`, result: formatNumber(a.quantity * quota3.quantity), ok: a.agent === quota3.agentQuota },
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(quota3.quantity)}`, result: formatNumber(a.quantity / quota3.quantity), ok: a.agent !== quota3.agentQuota }
     ]
   };
 }
@@ -817,11 +820,11 @@ function toRate(a, b) {
     ]
   };
 }
-function toQuota(a, quota2) {
-  const { groupCount, remainder } = divide(a.quantity, quota2.quantity);
+function toQuota(a, quota3) {
+  const { groupCount, remainder } = divide(a.quantity, quota3.quantity);
   return {
     kind: "quota",
-    agentQuota: quota2.agent,
+    agentQuota: quota3.agent,
     agent: a.agent,
     quantity: groupCount,
     restQuantity: remainder
@@ -3615,25 +3618,25 @@ function rateRule2(a, rate3) {
     ]
   };
 }
-function quotaRuleEx2(a, quota2) {
-  if (!(a.agent === quota2.agent || a.agent === quota2.agentQuota)) {
-    throw `Mismatch entity ${a.entity} any of ${quota2.agent}, ${quota2.agentQuota}`;
+function quotaRuleEx2(a, quota3) {
+  if (!(a.agent === quota3.agent || a.agent === quota3.agentQuota)) {
+    throw `Mismatch entity ${a.entity} any of ${quota3.agent}, ${quota3.agentQuota}`;
   }
   return {
     kind: "cont",
-    agent: a.agent === quota2.agentQuota ? quota2.agent : quota2.agentQuota,
+    agent: a.agent === quota3.agentQuota ? quota3.agent : quota3.agentQuota,
     entity: a.entity,
-    quantity: a.agent === quota2.agentQuota ? a.quantity * quota2.quantity : a.quantity / quota2.quantity
+    quantity: a.agent === quota3.agentQuota ? a.quantity * quota3.quantity : a.quantity / quota3.quantity
   };
 }
-function quotaRule2(a, quota2) {
-  const result = quotaRuleEx2(a, quota2);
+function quotaRule2(a, quota3) {
+  const result = quotaRuleEx2(a, quota3);
   return {
     question: containerQuestion2(result),
     result,
     options: [
-      { tex: `${formatNumber2(a.quantity)} * ${formatNumber2(quota2.quantity)}`, result: formatNumber2(a.quantity * quota2.quantity), ok: a.agent === quota2.agentQuota },
-      { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(quota2.quantity)}`, result: formatNumber2(a.quantity / quota2.quantity), ok: a.agent !== quota2.agentQuota }
+      { tex: `${formatNumber2(a.quantity)} * ${formatNumber2(quota3.quantity)}`, result: formatNumber2(a.quantity * quota3.quantity), ok: a.agent === quota3.agentQuota },
+      { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(quota3.quantity)}`, result: formatNumber2(a.quantity / quota3.quantity), ok: a.agent !== quota3.agentQuota }
     ]
   };
 }
@@ -3999,11 +4002,11 @@ function toRate2(a, b) {
     ]
   };
 }
-function toQuota2(a, quota2) {
-  const { groupCount, remainder } = divide2(a.quantity, quota2.quantity);
+function toQuota2(a, quota3) {
+  const { groupCount, remainder } = divide2(a.quantity, quota3.quantity);
   return {
     kind: "quota",
-    agentQuota: quota2.agent,
+    agentQuota: quota3.agent,
     agent: a.agent,
     quantity: groupCount,
     restQuantity: remainder
@@ -8134,9 +8137,9 @@ function example3({ input }) {
   const agentPercentPart = "sleva";
   const entity3 = "K\u010D";
   const entityPercent3 = "%";
-  const percent2 = cont(agentPercentPart, input.percentageDown, entityPercent3);
+  const percent3 = cont(agentPercentPart, input.percentageDown, entityPercent3);
   const celek = cont(agentPercentBase, 100, entityPercent3);
-  const dd1 = inferenceRule(percent2, celek, ctor("ratio"));
+  const dd1 = inferenceRule(percent3, celek, ctor("ratio"));
   const dd1Up = axiomInput2(ratio("cena po slev\u011B", "zdra\u017Eeno", input.percentageNewUp / 100), 3);
   const percentBase2 = cont(agentPercentBase, input.base, entity3);
   const dd2 = inferenceRule(percentBase2, dd1);
@@ -9163,6 +9166,303 @@ function atletika() {
   };
 }
 
+// src/math/M9B-2025/index.ts
+var M9B_2025_default = {
+  1: porovnani(),
+  7.1: salaty().druhyDenTrzba,
+  7.2: salaty().pocetSalatu,
+  8.1: pravouhlyLichobeznik().obsah,
+  8.2: pravouhlyLichobeznik().obvod,
+  8.3: pravouhlyLichobeznik().obvodRovnobeznik,
+  11.1: zahrada().jabloneVsMagnolie,
+  11.2: zahrada().levanduleABazalkaVsHortenzie,
+  11.3: zahrada().ruzePlocha,
+  12: uhelAlfa(),
+  14: dort(),
+  15.1: tabor().percentPerVedouci,
+  15.2: tabor().mladsiPercent
+};
+function porovnani() {
+  const entity3 = "kusy";
+  const vstupenkaDestskaLabel = "vstupenka d\u011Btsk\xE1";
+  const vstupenkaDospelyLabel = "vstupenka dosp\u011Bl\xFD";
+  const porovnat = compRatio(vstupenkaDestskaLabel, vstupenkaDospelyLabel, 2 / 5);
+  const celkem = cont("celkem", 330, "K\u010D");
+  return {
+    deductionTree: deduce(
+      to(
+        porovnat,
+        commonSense(""),
+        cont("vstupenka d\u011Btsk\xE1", 3, entity3),
+        ratios("celkem", [vstupenkaDestskaLabel, vstupenkaDestskaLabel, vstupenkaDestskaLabel, vstupenkaDospelyLabel], [2 / 5, 2 / 5, 2 / 5, 1])
+      ),
+      celkem,
+      nthPart(vstupenkaDestskaLabel)
+    )
+  };
+}
+function salaty() {
+  const entity3 = "sal\xE1t";
+  const den1Ratio = ratio("celkem", "prod\xE1no 1.den", 1 / 3);
+  const den2vsDen1 = compRelative("prod\xE1no 2.den", "prod\xE1no 1.den", -1 / 3);
+  const celkem = cont("celkem", 5400, "K\u010D");
+  const den2 = deduce(
+    den1Ratio,
+    den2vsDen1
+  );
+  const den2Trzba = deduce(
+    den2,
+    celkem
+  );
+  return {
+    druhyDenTrzba: {
+      deductionTree: den2Trzba
+    },
+    pocetSalatu: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            deduce(
+              deduce(
+                den1Ratio,
+                last(den2),
+                sum("prodano za dva dny", [], "", "")
+              ),
+              ctorComplement("prod\xE1no 3.den")
+            ),
+            celkem
+          ),
+          cont("prod\xE1no 3.den", 120, "sal\xE1t"),
+          ctor("rate")
+        ),
+        celkem
+      )
+    }
+  };
+}
+function dort() {
+  const entity3 = "polom\u011Br";
+  const unit = "cm";
+  const entity2d = "obsah";
+  const unit2d = "cm2";
+  const vetsiKorpus = cont("v\u011Bt\u0161\xED korpus", 8, entity3, unit);
+  const mensiKorpus = deduce(
+    vetsiKorpus,
+    compRelative("men\u0161\xED korpus", "v\u011Bt\u0161\xED korpus", -1 / 4)
+  );
+  const height = cont("korpus", 5, entity3, unit);
+  return {
+    deductionTree: deduce(
+      deduce(
+        vetsiKorpus,
+        vetsiKorpus,
+        height,
+        product("v\u011Bt\u0161\xED korpus", [], { entity: entity2d, unit: unit2d }, { entity: entity3, unit })
+      ),
+      deduce(
+        mensiKorpus,
+        last(mensiKorpus),
+        height,
+        product("men\u0161\xED korpus", [], { entity: entity2d, unit: unit2d }, { entity: entity3, unit })
+      ),
+      sum("celkem", [], { entity: entity2d, unit: unit2d }, { entity: entity2d, unit: unit2d })
+    )
+  };
+}
+function uhelAlfa() {
+  const entity3 = "\xFAhel";
+  const unit = "stup\u0148\u016F";
+  const triangleSumLabel = "sou\u010Det \xFAhl\u016F v troj\xFAheln\xEDku";
+  const soucetUhluVTrojuhelniku = cont(triangleSumLabel, 180, entity3, unit);
+  const praveRameho = deduce(
+    ratios(triangleSumLabel, ["vrcholov\xFD \xFAhel", "lev\xE9 rameno", "prav\xE9 rameno"], [40, 70, 70]),
+    soucetUhluVTrojuhelniku
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        soucetUhluVTrojuhelniku,
+        deduce(
+          deduce(
+            deduce(
+              praveRameho,
+              compAngle("prav\xE9 rameno", "\xFAhel p\u0159\xEDmka p", "corresponding")
+            ),
+            compAngle("\xFAhel p\u0159\xEDmka p", "troj\xFAheln\xEDk bod A", "alternate-exterior")
+          ),
+          last(praveRameho),
+          sum("dvojice sou\u010Det", ["troj\xFAheln\xEDk bod A", "troh\xFAheln\xEDk bod B"], { entity: entity3, unit }, { entity: entity3, unit })
+        ),
+        ctorDifference("troj\xFAheln\xEDk bod C")
+      ),
+      compAngle("troj\xFAheln\xEDk bod C", "alfa", "supplementary")
+    )
+  };
+}
+function pravouhlyLichobeznik() {
+  const entity3 = "d\xE9lka";
+  const unit = "cm";
+  const entity2d = "obsah";
+  const unit2d = "cm2";
+  const agentLabel = "lichob\u011B\u017En\xEDk";
+  const spodniZakladna = cont("spodn\xED z\xE1kladna", 140, entity3, unit);
+  const horniZakladna = cont("horn\xED z\xE1kladna", 100, entity3, unit);
+  const height = cont(`${agentLabel} v\xFD\u0161ka`, 30, entity3, unit);
+  const prepona = deduce(
+    deduce(
+      spodniZakladna,
+      horniZakladna,
+      ctorDifference("z\xE1kladna")
+    ),
+    height,
+    pythagoras("p\u0159epona", ["v\xFD\u0161ka", "z\xE1kladna"])
+  );
+  const obvod = deduce(
+    prepona,
+    horniZakladna,
+    spodniZakladna,
+    height,
+    sum(`${agentLabel} obvod`, [], { entity: entity3, unit }, { entity: entity3, unit })
+  );
+  return {
+    obsah: {
+      deductionTree: deduce(
+        triangleArea({
+          size: spodniZakladna,
+          height,
+          triangle: {
+            agent: agentLabel
+          }
+        }),
+        triangleArea({
+          size: horniZakladna,
+          height,
+          triangle: {
+            agent: agentLabel
+          }
+        }),
+        sum(agentLabel, [], { entity: entity2d, unit: unit2d }, { entity: entity2d, unit: unit2d })
+      )
+    },
+    obvod: {
+      deductionTree: obvod
+    },
+    obvodRovnobeznik: {
+      deductionTree: deduce(
+        deduce(
+          last(obvod),
+          ratios(`${agentLabel} obvod`, ["men\u0161\xED lichob\u011B\u017En\xEDk", "rovnob\u011B\u017En\xEDk"], [1, 1])
+        ),
+        prepona,
+        sum("rovnob\u011B\u017En\xEDk obvod", [], { entity: entity3, unit }, { entity: entity3, unit })
+      )
+    }
+  };
+}
+function zahrada() {
+  const magnolieL = "magnolie";
+  const jablonL = "jablo\u0148";
+  const ruzeL = "r\u016F\u017Ee";
+  const hortenzieL = "hortenzie";
+  const levanduleL = "levandule";
+  const bazalkaL = "bazalka";
+  const entity3 = "stupe\u0148";
+  const entity2d = "obsah";
+  const magnoliePlocha = cont(magnolieL, 20, entity2d);
+  const jablon = cont(jablonL, 105, entity3);
+  const magnolie = cont(magnolieL, 60, entity3);
+  const hortenzie = cont(hortenzieL, 30, entity3);
+  const levandule = cont(levanduleL, 60, entity3);
+  const bazalka = cont(bazalkaL, 15, entity3);
+  const celkem = cont("celkem", 360, entity3);
+  const ruze = deduce(
+    celkem,
+    deduce(
+      jablon,
+      magnolie,
+      hortenzie,
+      levandule,
+      bazalka,
+      sum("celkem", [], entity3, entity3)
+    ),
+    ctorDifference(ruzeL)
+  );
+  const plochaCelkem = deduce(
+    deduce(
+      magnolie,
+      celkem,
+      ctor("ratio")
+    ),
+    magnoliePlocha
+  );
+  return {
+    jabloneVsMagnolie: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            jablon,
+            celkem,
+            ctor("ratio")
+          ),
+          plochaCelkem
+        ),
+        magnoliePlocha
+      )
+    },
+    levanduleABazalkaVsHortenzie: {
+      deductionTree: deduce(
+        deduce(
+          levandule,
+          bazalka,
+          sum("dohromady", [], entity3, entity3)
+        ),
+        hortenzie,
+        ctor("comp-ratio")
+      )
+    },
+    ruzePlocha: {
+      deductionTree: deduce(
+        deduce(
+          ruze,
+          celkem,
+          ctor("ratio")
+        ),
+        plochaCelkem
+      )
+    }
+  };
+}
+function tabor() {
+  const entity3 = "d\u011Bti";
+  const entityBase = "vedouc\xED";
+  const deti = cont("t\xE1bor", 80, entity3);
+  const vedouci = cont("t\xE1bor", 5, entityBase);
+  const mladsiLabel = "mlad\u0161\xED d\u011Bti";
+  const starsiLabel = "star\u0161\xED d\u011Bti";
+  return {
+    percentPerVedouci: {
+      deductionTree: deduce(
+        toCont(deduce(
+          deti,
+          vedouci,
+          ctor("rate")
+        ), { agent: "d\u011Bti na starost jeden vedouc\xED" }),
+        deti,
+        ctorPercent()
+      )
+    },
+    mladsiPercent: {
+      deductionTree: to(
+        deduce(
+          compRelative(mladsiLabel, starsiLabel, -1 / 3),
+          ctorRatios("t\xE1bor")
+        ),
+        compRelativePercent(starsiLabel, mladsiLabel, 50)
+      )
+    }
+  };
+}
+
 // src/math/word-problems.ts
 var word_problems_default = {
   "M5A-2023": M5A_2023_default,
@@ -9182,7 +9482,8 @@ var word_problems_default = {
   // },
   // "M9B-2024": M9B_2024,
   "M9I-2025": M9I_2025_default,
-  "M9A-2025": M9A_2025_default
+  "M9A-2025": M9A_2025_default,
+  "M9B-2025": M9B_2025_default
 };
 export {
   word_problems_default as default,

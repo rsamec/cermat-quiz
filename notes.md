@@ -10,10 +10,10 @@ add to source
 - node src/data/pdf-[subject]-[period].json.js --subject <subject> --period <period>
 
 ## Pocast prompt customization
-- create a podcast episode entirely in Czech, avoid using other languages, except to clarify unique terms
 - follow all the quiz questions from the beginning to the end
 - do not use czech language in the podcast
 - do not add any equations with unknowns
+- add some jokes
 
 Na stránce https://www.cermatdata.cz je dostupná nová neoficiální data banka úloh a jejich řešení.
 

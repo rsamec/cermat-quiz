@@ -5395,5 +5395,370 @@
         }
       ]
     }
+  },
+  "M9B-2025": {
+    "3.1": {
+      "header": "3.1",
+      "mathContent": "\\left(\\frac{11}{5}-\\frac{11}{6}\\right):\\left(-\\frac{1}{3}\\right)=\n",
+      "results": [
+        {
+          "Name": "Vyhodnotit",
+          "Answer": "$-\\frac{11}{10}=-1.1$",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": [
+                {
+                  "Hint": null,
+                  "Step": "Nejmenší společný násobek čísel $5$ a $6$ je $30$. Převeďte $\\frac{11}{5}$ a $\\frac{11}{6}$ na zlomky se jmenovatelem $30$.",
+                  "Expression": "$$\\frac{\\frac{66}{30}-\\frac{55}{30}}{-\\frac{1}{3}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vzhledem k tomu, že $\\frac{66}{30}$ a $\\frac{55}{30}$ mají stejného jmenovatele, můžete je odečíst odečtením jejich čitatelů.",
+                  "Expression": "$$\\frac{\\frac{66-55}{30}}{-\\frac{1}{3}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Odečtěte $55$ od $66$ a dostanete $11$.",
+                  "Expression": "$$\\frac{\\frac{11}{30}}{-\\frac{1}{3}}$$ "
+                },
+                {
+                  "Hint": "Pokud chcete číslo vydělit zlomkem, vynásobte ho převráceným zlomkem.",
+                  "Step": "Vydělte číslo $\\frac{11}{30}$ zlomkem $-\\frac{1}{3}$ tak, že číslo $\\frac{11}{30}$ vynásobíte převrácenou hodnotou zlomku $-\\frac{1}{3}$.",
+                  "Expression": "$$\\frac{11}{30}\\left(-3\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vyjádřete $\\frac{11}{30}\\left(-3\\right)$ jako jeden zlomek.",
+                  "Expression": "$$\\frac{11\\left(-3\\right)}{30}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobením $11$ a $-3$ získáte $-33$.",
+                  "Expression": "$$\\frac{-33}{30}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vykraťte zlomek $\\frac{-33}{30}$ na základní tvar vytknutím a vykrácením hodnoty $3$.",
+                  "Expression": "$$-\\frac{11}{10}$$ "
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "3.2": {
+      "header": "3.2",
+      "mathContent": "\\frac{20-\\sqrt{4\\cdot3^2}}{3\\cdot\\sqrt{100−64}}:\\frac{4+3}{4\\cdot3}= \n",
+      "results": [
+        {
+          "Name": "Vyhodnotit",
+          "Answer": "$\\frac{4}{3}\\approx 1.333333333$",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": [
+                {
+                  "Hint": null,
+                  "Step": "Vydělte číslo $\\frac{20-\\sqrt{4\\times 3^{2}}}{3\\sqrt{100-64}}$ zlomkem $\\frac{4+3}{4\\times 3}$ tak, že číslo $\\frac{20-\\sqrt{4\\times 3^{2}}}{3\\sqrt{100-64}}$ vynásobíte převrácenou hodnotou zlomku $\\frac{4+3}{4\\times 3}$.",
+                  "Expression": "$$\\frac{\\left(20-\\sqrt{4\\times 3^{2}}\\right)\\times 4\\times 3}{3\\sqrt{100-64}\\left(4+3\\right)}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vykraťte $3$ v čitateli a jmenovateli.",
+                  "Expression": "$$\\frac{4\\left(-\\sqrt{4\\times 3^{2}}+20\\right)}{\\left(3+4\\right)\\sqrt{100-64}}$$ "
+                },
+                {
+                  "Hint": "Proveďte výpočet.",
+                  "Step": "Výpočtem $3$ na $2$ získáte $9$.",
+                  "Expression": "$$\\frac{4\\left(-\\sqrt{4\\times 9}+20\\right)}{\\left(3+4\\right)\\sqrt{100-64}}$$ "
+                },
+                {
+                  "Hint": "Vynásobte dva činitele.",
+                  "Step": "Vynásobením $4$ a $9$ získáte $36$.",
+                  "Expression": "$$\\frac{4\\left(-\\sqrt{36}+20\\right)}{\\left(3+4\\right)\\sqrt{100-64}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vypočítejte druhou odmocninu z $36$ a dostanete $6$.",
+                  "Expression": "$$\\frac{4\\left(-6+20\\right)}{\\left(3+4\\right)\\sqrt{100-64}}$$ "
+                },
+                {
+                  "Hint": "Sečtěte dva členy.",
+                  "Step": "Sečtením $-6$ a $20$ získáte $14$.",
+                  "Expression": "$$\\frac{4\\times 14}{\\left(3+4\\right)\\sqrt{100-64}}$$ "
+                },
+                {
+                  "Hint": "Vynásobte dva činitele.",
+                  "Step": "Vynásobením $4$ a $14$ získáte $56$.",
+                  "Expression": "$$\\frac{56}{\\left(3+4\\right)\\sqrt{100-64}}$$ "
+                },
+                {
+                  "Hint": "Sečtěte dva členy.",
+                  "Step": "Sečtením $3$ a $4$ získáte $7$.",
+                  "Expression": "$$\\frac{56}{7\\sqrt{100-64}}$$ "
+                },
+                {
+                  "Hint": "Odečtěte jeden člen od druhého.",
+                  "Step": "Odečtěte $64$ od $100$ a dostanete $36$.",
+                  "Expression": "$$\\frac{56}{7\\sqrt{36}}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vypočítejte druhou odmocninu z $36$ a dostanete $6$.",
+                  "Expression": "$$\\frac{56}{7\\times 6}$$ "
+                },
+                {
+                  "Hint": "Vynásobte dva činitele.",
+                  "Step": "Vynásobením $7$ a $6$ získáte $42$.",
+                  "Expression": "$$\\frac{56}{42}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vykraťte zlomek $\\frac{56}{42}$ na základní tvar vytknutím a vykrácením hodnoty $14$.",
+                  "Expression": "$$\\frac{4}{3}$$ "
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "4.1": {
+      "header": "4.1 **Upravte** na co nejjednodušší tvar bez závorek:",
+      "mathContent": "x\\cdot3x-2x\\cdot3-(x-3)^2= \n",
+      "results": [
+        {
+          "Name": "Vyhodnotit",
+          "Answer": "$2x^{2}-9$",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": [
+                {
+                  "Hint": "Proveďte výpočet.",
+                  "Step": "Vynásobením $x$ a $x$ získáte $x^{2}$.",
+                  "Expression": "$$x^{2}\\times 3-2x\\times 3-\\left(x-3\\right)^{2}$$ "
+                },
+                {
+                  "Hint": "Vynásobte dva činitele.",
+                  "Step": "Vynásobením $2$ a $3$ získáte $6$.",
+                  "Expression": "$$x^{2}\\times 3-6x-\\left(x-3\\right)^{2}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Rozviňte výraz $\\left(x-3\\right)^{2}$ podle binomické věty $\\left(a-b\\right)^{2}=a^{2}-2ab+b^{2}$.",
+                  "Expression": "$$x^{2}\\times 3-6x-\\left(x^{2}-6x+9\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Pokud chcete najít opačnou hodnotu k $x^{2}-6x+9$, najděte opačnou hodnotu k jednotlivým členům.",
+                  "Expression": "$$x^{2}\\times 3-6x-x^{2}+6x-9$$ "
+                },
+                {
+                  "Hint": "Slučte stejné členy.",
+                  "Step": "Sloučením $x^{2}\\times 3$ a $-x^{2}$ získáte $2x^{2}$.",
+                  "Expression": "$$2x^{2}-6x+6x-9$$ "
+                },
+                {
+                  "Hint": "Slučte stejné členy.",
+                  "Step": "Sloučením $-6x$ a $6x$ získáte $0$.",
+                  "Expression": "$$2x^{2}-9$$ "
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "4.2": {
+      "header": "4.2 **Upravte** a výsledný výraz r**ozložte na součin** vytknutím:",
+      "mathContent": "(2k)^2-k\\cdot(1+2k)= \n",
+      "results": [
+        {
+          "Name": "Vyhodnotit",
+          "Answer": "$k\\left(2k-1\\right)$",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": [
+                {
+                  "Hint": "Roznásobte mocnitele.",
+                  "Step": "Roznásobte $\\left(2k\\right)^{2}$.",
+                  "Expression": "$$2^{2}k^{2}-k\\left(1+2k\\right)$$ "
+                },
+                {
+                  "Hint": "Proveďte výpočet.",
+                  "Step": "Výpočtem $2$ na $2$ získáte $4$.",
+                  "Expression": "$$4k^{2}-k\\left(1+2k\\right)$$ "
+                },
+                {
+                  "Hint": "Proveďte roznásobení s využitím distributivnosti.",
+                  "Step": "S využitím distributivnosti vynásobte číslo $k$ číslem $1+2k$.",
+                  "Expression": "$$4k^{2}-\\left(k+2k^{2}\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Pokud chcete najít opačnou hodnotu k $k+2k^{2}$, najděte opačnou hodnotu k jednotlivým členům.",
+                  "Expression": "$$4k^{2}-k-2k^{2}$$ "
+                },
+                {
+                  "Hint": "Slučte stejné členy.",
+                  "Step": "Sloučením $4k^{2}$ a $-2k^{2}$ získáte $2k^{2}$.",
+                  "Expression": "$$2k^{2}-k$$ "
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "4.3": {
+      "header": "4.3 **Upravte** na co nejjednodušší tvar bez závorek:",
+      "mathContent": "7a\\cdot(a+3)+2\\cdot(1−3a)\\cdot(a+5)= \n",
+      "results": [
+        {
+          "Name": "Vyhodnotit",
+          "Answer": "$\\left(a-5\\right)\\left(a-2\\right)$",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": [
+                {
+                  "Hint": "Proveďte roznásobení s využitím distributivnosti.",
+                  "Step": "S využitím distributivnosti vynásobte číslo $7a$ číslem $a+3$.",
+                  "Expression": "$$7a^{2}+21a+2\\left(1-3a\\right)\\left(a+5\\right)$$ "
+                },
+                {
+                  "Hint": "Proveďte roznásobení s využitím distributivnosti.",
+                  "Step": "S využitím distributivnosti vynásobte číslo $2$ číslem $1-3a$.",
+                  "Expression": "$$7a^{2}+21a+\\left(2-6a\\right)\\left(a+5\\right)$$ "
+                },
+                {
+                  "Hint": "Proveďte roznásobení s využitím distributivnosti.",
+                  "Step": "S využitím distributivnosti roznásobte každý člen výrazu $2-6a$ každým členem výrazu $a+5$.",
+                  "Expression": "$$7a^{2}+21a+2a+10-6a^{2}-30a$$ "
+                },
+                {
+                  "Hint": "Slučte stejné členy.",
+                  "Step": "Sloučením $2a$ a $-30a$ získáte $-28a$.",
+                  "Expression": "$$7a^{2}+21a-28a+10-6a^{2}$$ "
+                },
+                {
+                  "Hint": "Slučte stejné členy.",
+                  "Step": "Sloučením $21a$ a $-28a$ získáte $-7a$.",
+                  "Expression": "$$7a^{2}-7a+10-6a^{2}$$ "
+                },
+                {
+                  "Hint": "Slučte stejné členy.",
+                  "Step": "Sloučením $7a^{2}$ a $-6a^{2}$ získáte $a^{2}$.",
+                  "Expression": "$$a^{2}-7a+10$$ "
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "5.1": {
+      "header": "5.1 **Řešte** rovnici:",
+      "mathContent": "\\frac{7}{12}x+2\\cdot\\left(\\frac{3}{8}x-1\\right)=-3\\cdot\\left(\\frac{x}{9}+1\\right)\n",
+      "results": [
+        {
+          "Name": "Vyřešte pro: x",
+          "Answer": "$x=-\\frac{3}{5}=-0.6$",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení lineární rovnice",
+              "Steps": [
+                {
+                  "Hint": null,
+                  "Step": "Vynásobte obě strany rovnice číslem $72$, nejmenším společným násobkem čísel $12,8,9$.",
+                  "Expression": "$$42x+144\\left(\\frac{3}{8}x-1\\right)=-216\\left(\\frac{x}{9}+1\\right)$$ "
+                },
+                {
+                  "Hint": "Proveďte roznásobení s využitím distributivnosti.",
+                  "Step": "S využitím distributivnosti vynásobte číslo $144$ číslem $\\frac{3}{8}x-1$.",
+                  "Expression": "$$42x+144\\times \\frac{3}{8}x-144=-216\\left(\\frac{x}{9}+1\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vyjádřete $144\\times \\frac{3}{8}$ jako jeden zlomek.",
+                  "Expression": "$$42x+\\frac{144\\times 3}{8}x-144=-216\\left(\\frac{x}{9}+1\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vynásobením $144$ a $3$ získáte $432$.",
+                  "Expression": "$$42x+\\frac{432}{8}x-144=-216\\left(\\frac{x}{9}+1\\right)$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vydělte číslo $432$ číslem $8$ a dostanete $54$.",
+                  "Expression": "$$42x+54x-144=-216\\left(\\frac{x}{9}+1\\right)$$ "
+                },
+                {
+                  "Hint": "Slučte stejné členy.",
+                  "Step": "Sloučením $42x$ a $54x$ získáte $96x$.",
+                  "Expression": "$$96x-144=-216\\left(\\frac{x}{9}+1\\right)$$ "
+                },
+                {
+                  "Hint": "Proveďte roznásobení s využitím distributivnosti.",
+                  "Step": "S využitím distributivnosti vynásobte číslo $-216$ číslem $\\frac{x}{9}+1$.",
+                  "Expression": "$$96x-144=-216\\times \\frac{x}{9}-216$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vykraťte $9$, tj. největším společným dělitelem pro $216$ a $9$.",
+                  "Expression": "$$96x-144=-24x-216$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Přidat $24x$ na obě strany.",
+                  "Expression": "$$96x-144+24x=-216$$ "
+                },
+                {
+                  "Hint": "Slučte stejné členy.",
+                  "Step": "Sloučením $96x$ a $24x$ získáte $120x$.",
+                  "Expression": "$$120x-144=-216$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Přidat $144$ na obě strany.",
+                  "Expression": "$$120x=-216+144$$ "
+                },
+                {
+                  "Hint": "Sečtěte dva členy.",
+                  "Step": "Sečtením $-216$ a $144$ získáte $-72$.",
+                  "Expression": "$$120x=-72$$ "
+                },
+                {
+                  "Hint": "Zrušte vynásobení vydělením obou stran stejným dělitelem.",
+                  "Step": "Vydělte obě strany hodnotou $120$.",
+                  "Expression": "$$x=\\frac{-72}{120}$$ "
+                },
+                {
+                  "Hint": null,
+                  "Step": "Vykraťte zlomek $\\frac{-72}{120}$ na základní tvar vytknutím a vykrácením hodnoty $24$.",
+                  "Expression": "$$x=-\\frac{3}{5}$$ "
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "5.2": {
+      "header": "5.2 **Řešte** soustavu rovnic:",
+      "mathContent": "\\begin{aligned}\n6x+y=14\\\\\n3x+2y=15\n\\end{aligned}\n",
+      "results": [
+        {
+          "Name": "Error",
+          "Answer": "",
+          "TemplateSteps": []
+        }
+      ]
+    }
   }
 }

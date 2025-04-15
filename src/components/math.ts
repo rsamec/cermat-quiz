@@ -263,12 +263,16 @@ export function transfer(agentSender: string | AgentNames, agentReceiver: string
 function toAgentNames(agent: string | AgentNames) {
   return typeof agent === "string" ? { name: agent } : agent
 }
-export function compRelative(agentA: string, agentB: string, ratio: number): RatioComparison {
+export function compRelative(agentA: string, agentB: string, ratio: number, asPercent?:boolean): RatioComparison {
   if (ratio <= -1 && ratio >= 1) {
     throw 'Relative compare should be between (-1,1).'
   }
-  return compRatio(agentA, agentB, 1 + ratio);
+  return { kind: 'comp-ratio', agentA, agentB, ratio: 1+ ratio, asPercent }
 }
+export function compRelativePercent(agentA: string, agentB: string, percent: number): RatioComparison {  
+  return compRelative(agentA, agentB, percent/ 100, true);
+}
+
 export function compRatio(agentA: string, agentB: string, ratio: number): RatioComparison {
   return { kind: 'comp-ratio', agentA, agentB, ratio }
 }
