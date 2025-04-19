@@ -257,6 +257,41 @@ function compRatioToCompRule(a, b) {
     ]
   };
 }
+function compRatiosToCompRuleEx(a, b) {
+  const aIndex = a.parts.indexOf(b.agentA);
+  const bIndex = a.parts.indexOf(b.agentB);
+  if (aIndex === -1 || bIndex === -1) {
+    throw `Missing parts to compare ${a.parts.join(",")}, required parts ${b.agentA, b.agentB}`;
+  }
+  const aAgent = a.parts[aIndex];
+  const bAgent = a.parts[bIndex];
+  const diff = a.ratios[aIndex] - a.ratios[bIndex];
+  if (!(diff > 0 && b.quantity > 0 || (diff < 0 && b.quantity < 0 || diff == 0 && b.quantity == 0))) {
+    throw `Uncompatible compare rules. Absolute compare ${b.quantity} between ${b.agentA} a ${b.agentB} does not match relative compare.`;
+  }
+  const lastIndex = aIndex > bIndex ? aIndex : bIndex;
+  const nthPartAgent = a.parts[lastIndex];
+  return {
+    kind: "cont",
+    agent: nthPartAgent,
+    entity: b.entity,
+    unit: b.unit,
+    quantity: Math.abs(b.quantity / diff) * a.ratios[lastIndex]
+  };
+}
+function compRatiosToCompRule(a, b) {
+  const result = compRatiosToCompRuleEx(a, b);
+  const aIndex = a.parts.indexOf(b.agentA);
+  const bIndex = a.parts.indexOf(b.agentB);
+  const lastIndex = aIndex > bIndex ? aIndex : bIndex;
+  return {
+    question: containerQuestion(result),
+    result,
+    options: [
+      { tex: `${formatNumber(Math.abs(b.quantity))} / (${formatNumber(a.ratios[aIndex])} - ${formatNumber(a.ratios[bIndex])}) * ${formatNumber(a.ratios[lastIndex])}`, result: formatNumber(result.quantity), ok: true }
+    ]
+  };
+}
 function proportionRuleEx(a, b) {
   return {
     ...a,
@@ -527,11 +562,11 @@ function toTransferEx(a, b, last2) {
 function toTransfer(a, b, last2) {
   const result = toTransferEx(a, b, last2);
   return {
-    question: `Zm\u011Bna stavu ${result.agentSender} => ${result.agentReceiver}. O kolik?`,
+    question: `Zm\u011Bna stavu ${a.agent} => ${b.agent}. O kolik?`,
     result,
     options: [
-      { tex: `${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}`, result: formatNumber(a.quantity - b.quantity), ok: true },
-      { tex: `${formatNumber(b.quantity)} - ${formatNumber(a.quantity)}`, result: formatNumber(b.quantity - a.quantity), ok: false }
+      { tex: `${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}`, result: formatNumber(a.quantity - b.quantity), ok: false },
+      { tex: `${formatNumber(b.quantity)} - ${formatNumber(a.quantity)}`, result: formatNumber(b.quantity - a.quantity), ok: true }
     ]
   };
 }
@@ -922,6 +957,10 @@ function inferenceRuleEx(...args) {
     return compRatioToCompRule(b, a);
   } else if (a.kind === "comp-ratio" && b.kind == "comp") {
     return compRatioToCompRule(a, b);
+  } else if (a.kind === "comp" && b.kind == "ratios") {
+    return compRatiosToCompRule(b, a);
+  } else if (a.kind === "ratios" && b.kind == "comp") {
+    return compRatiosToCompRule(a, b);
   } else if (a.kind === "proportion" && b.kind == "ratios") {
     return proportionRatiosRule(b, a);
   } else if (a.kind === "ratios" && b.kind == "proportion") {

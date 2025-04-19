@@ -5,6 +5,7 @@ import M7A_2023 from './M7A-2023/index.js';
 import M7A_2024 from './M7A-2024/index.js';
 import M5A_2023 from './M5A-2023/index.js';
 import M5A_2024 from './M5A-2024/index.js';
+import M5A_2025 from './M5A-2025/index.js';
 import M9A_2023 from './M9A-2023/index.js';
 import M9A_2024 from './M9A-2024/index.js';
 //import M9B_2024 from './M9B-2024/index.js';
@@ -20,6 +21,7 @@ export { formatSequencePattern } from '../components/math.js';
 export default {
   "M5A-2023": M5A_2023,
   "M5A-2024": M5A_2024,
+  "M5A-2025": M5A_2025,
   "M7A-2023": M7A_2023,
   "M7A-2024": M7A_2024,
   "M9A-2023": M9A_2023,

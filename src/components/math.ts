@@ -263,14 +263,14 @@ export function transfer(agentSender: string | AgentNames, agentReceiver: string
 function toAgentNames(agent: string | AgentNames) {
   return typeof agent === "string" ? { name: agent } : agent
 }
-export function compRelative(agentA: string, agentB: string, ratio: number, asPercent?:boolean): RatioComparison {
+export function compRelative(agentA: string, agentB: string, ratio: number, asPercent?: boolean): RatioComparison {
   if (ratio <= -1 && ratio >= 1) {
     throw 'Relative compare should be between (-1,1).'
   }
-  return { kind: 'comp-ratio', agentA, agentB, ratio: 1+ ratio, asPercent }
+  return { kind: 'comp-ratio', agentA, agentB, ratio: 1 + ratio, asPercent }
 }
-export function compRelativePercent(agentA: string, agentB: string, percent: number): RatioComparison {  
-  return compRelative(agentA, agentB, percent/ 100, true);
+export function compRelativePercent(agentA: string, agentB: string, percent: number): RatioComparison {
+  return compRelative(agentA, agentB, percent / 100, true);
 }
 
 export function compRatio(agentA: string, agentB: string, ratio: number): RatioComparison {
@@ -434,10 +434,10 @@ function comparisonRatioRule(b: RatioComparison, a: PartWholeRatio): Question {
 
 function comparisonRatiosRuleEx(b: RatioComparison, a: { whole: AgentMatcher }): PartToPartRatio {
   if (b.ratio >= 1) {
-    return { kind: 'ratios', whole: a.whole, parts: [b.agentA, b.agentB], ratios: [Math.abs(b.ratio),1] }
+    return { kind: 'ratios', whole: a.whole, parts: [b.agentA, b.agentB], ratios: [Math.abs(b.ratio), 1] }
   }
   else {
-    return { kind: 'ratios', whole: a.whole, parts: [b.agentA, b.agentB], ratios: [1, 1/Math.abs(b.ratio)] }
+    return { kind: 'ratios', whole: a.whole, parts: [b.agentA, b.agentB], ratios: [1, 1 / Math.abs(b.ratio)] }
   }
 }
 function comparisonRatiosRule(b: RatioComparison, a: { whole: AgentMatcher }): Question {
@@ -554,7 +554,7 @@ function ratioComplementRule(a: Complement, b: PartWholeRatio): Question {
   }
 }
 
-function ratioConvertRule(a: Complement, b: PartWholeRatio): TwoPartRatio {
+function convertToRatios(a: Complement, b: PartWholeRatio): TwoPartRatio {
   if (b.ratio > 1) {
     throw `Part to part ratio should be less than 1.`
   }
@@ -564,6 +564,19 @@ function ratioConvertRule(a: Complement, b: PartWholeRatio): TwoPartRatio {
     whole: b.whole,
     ratios: [b.ratio, 1 - b.ratio],
     parts: [b.part, a.part]
+  }
+}
+function convertToCompRatio(b: PartToPartRatio, asPercent?: boolean): RatioComparison {
+  if (!(b.ratios.length === 2 && b.parts.length === 2)) {
+    throw `Part to part ratio has to have exactly two parts.`
+  }
+
+  return {
+    kind: 'comp-ratio',
+    agentA: b.parts[0],
+    agentB: b.parts[1],
+    ratio: b.ratios[0] / b.ratios[1],
+    asPercent
   }
 }
 
@@ -622,6 +635,50 @@ function compRatioToCompRule(a: RatioComparison, b: Comparison): Question {
     ]
   }
 }
+
+function compRatiosToCompRuleEx(a: PartToPartRatio, b: Comparison): Container {
+
+
+  const aIndex = a.parts.indexOf(b.agentA);
+  const bIndex = a.parts.indexOf(b.agentB);
+  if (aIndex === -1 || bIndex === -1) {
+    throw `Missing parts to compare ${a.parts.join(",")}, required parts ${b.agentA, b.agentB}`
+  }
+
+  const aAgent = a.parts[aIndex];
+  const bAgent = a.parts[bIndex];
+  const diff = a.ratios[aIndex] - a.ratios[bIndex];
+  if (!((diff > 0 && b.quantity > 0) || (diff < 0 && b.quantity < 0 || (diff == 0 && b.quantity == 0)))) {
+    throw `Uncompatible compare rules. Absolute compare ${b.quantity} between ${b.agentA} a ${b.agentB} does not match relative compare.`
+  }
+
+  const lastIndex = aIndex > bIndex ? aIndex : bIndex;
+  const nthPartAgent = a.parts[lastIndex]
+
+  return {
+    kind: 'cont',
+    agent: nthPartAgent,
+    entity: b.entity,
+    unit: b.unit,
+    quantity: Math.abs(b.quantity / diff) * a.ratios[lastIndex]
+  }
+}
+
+function compRatiosToCompRule(a: PartToPartRatio, b: Comparison): Question {
+  const result = compRatiosToCompRuleEx(a, b)
+  const aIndex = a.parts.indexOf(b.agentA);
+  const bIndex = a.parts.indexOf(b.agentB);
+  const lastIndex = aIndex > bIndex ? aIndex : bIndex;
+
+  return {
+    question: containerQuestion(result),
+    result,
+    options: [
+      { tex: `${formatNumber(Math.abs(b.quantity))} / (${formatNumber(a.ratios[aIndex])} - ${formatNumber(a.ratios[bIndex])}) * ${formatNumber(a.ratios[lastIndex])}`, result: formatNumber(result.quantity), ok: true },
+    ]
+  }
+}
+
 
 function proportionRuleEx(a: RatioComparison, b: Proportion): RatioComparison {
   return {
@@ -923,11 +980,11 @@ function toTransferEx(a: Container, b: Container, last: Delta): Transfer {
 function toTransfer(a: Container, b: Container, last: Delta): Question {
   const result = toTransferEx(a, b, last)
   return {
-    question: `Změna stavu ${result.agentSender} => ${result.agentReceiver}. O kolik?`,
+    question: `Změna stavu ${a.agent} => ${b.agent}. O kolik?`,
     result,
     options: [
-      { tex: `${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}`, result: formatNumber(a.quantity - b.quantity), ok: true },
-      { tex: `${formatNumber(b.quantity)} - ${formatNumber(a.quantity)}`, result: formatNumber(b.quantity - a.quantity), ok: false },
+      { tex: `${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}`, result: formatNumber(a.quantity - b.quantity), ok: false },
+      { tex: `${formatNumber(b.quantity)} - ${formatNumber(a.quantity)}`, result: formatNumber(b.quantity - a.quantity), ok: true },
     ]
   }
 }
@@ -1430,6 +1487,12 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   else if (a.kind === "comp-ratio" && b.kind == "comp") {
     return compRatioToCompRule(a, b)
   }
+  else if (a.kind === "comp" && b.kind == "ratios") {
+    return compRatiosToCompRule(b, a)
+  }
+  else if (a.kind === "ratios" && b.kind == "comp") {
+    return compRatiosToCompRule(a, b)
+  }
   else if (a.kind === "proportion" && b.kind == "ratios") {
     return proportionRatiosRule(b, a)
   }
@@ -1520,8 +1583,8 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   }
   else if (a.kind === "sequence" && b.kind === "cont") {
     const kind = last?.kind;
-    if (kind === "quota"){
-      return toQuota(a,b)
+    if (kind === "quota") {
+      return toQuota(a, b)
     }
     return kind === "nth" ? nthPositionRule(b, a, last.entity) : nthTermRule(b, a);
   }

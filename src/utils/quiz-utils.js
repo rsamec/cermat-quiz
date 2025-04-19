@@ -68,7 +68,7 @@ export const quizes = [
   { subject: 'cz', period: '4', codes: generateCode("C9", ["A", "B", "C", "D"]).concat("C9I-2025", "C9A-2025")},
   { subject: 'cz', period: '6', codes: generateCode("C7", ["A"]) },
   { subject: 'cz', period: 'diploma', codes: generateCode("CM", ["A", "B"]) },
-  { subject: 'math', period: '8', codes: generateCode("M5", ["A"]).concat("M5A-2025") },
+  { subject: 'math', period: '8', codes: generateCode("M5", ["A"]).concat("M5A-2025", "M5B-2025") },
   { subject: 'math', period: '4', codes: generateCode("M9", ["A", "B", "C", "D"]).concat("M9I-2025", "M9A-2025", "M9B-2025") },
   { subject: 'math', period: '6', codes: generateCode("M7", ["A"]) },
   { subject: 'math', period: 'diploma', codes: ["MMA-2023", "MMB-2023"] },
