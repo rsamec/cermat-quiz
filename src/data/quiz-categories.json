@@ -3490,5 +3490,329 @@
         "category": "PHONETICS_WORD_STRUCTURE"
       }
     ]
+  },
+  "M5A-2025": {
+    "questions": [
+      {
+        "id": "1",
+        "category": "NUM_EXPRESSIONS"
+      },
+      {
+        "id": "2",
+        "category": "GRAPHS_SCHEMES_TABLES"
+      },
+      {
+        "id": "3",
+        "category": "PROPORTIONS"
+      },
+      {
+        "id": "4",
+        "category": "WORD_PROBLEMS"
+      },
+      {
+        "id": "5",
+        "category": "APPLICATION_PROBLEMS"
+      },
+      {
+        "id": "6",
+        "category": "PLANE_GEOMETRY"
+      },
+      {
+        "id": "7",
+        "category": "CONSTRUCTION_PROBLEMS"
+      },
+      {
+        "id": "8",
+        "category": "GRAPHS_SCHEMES_TABLES"
+      },
+      {
+        "id": "9",
+        "category": "WORD_PROBLEMS"
+      },
+      {
+        "id": "10",
+        "category": "PERCENTAGES"
+      },
+      {
+        "id": "11",
+        "category": "PLANE_GEOMETRY"
+      },
+      {
+        "id": "12",
+        "category": "PLANE_GEOMETRY"
+      },
+      {
+        "id": "13",
+        "category": "SOLID_GEOMETRY"
+      },
+      {
+        "id": "14",
+        "category": "WORD_PROBLEMS"
+      }
+    ]
+  },
+  "M5B-2025": {
+    "questions": [
+      {
+        "id": "1",
+        "category": "WORD_PROBLEMS"
+      },
+      {
+        "id": "2",
+        "category": "UNIT_CONVERSIONS"
+      },
+      {
+        "id": "3",
+        "category": "WORD_PROBLEMS"
+      },
+      {
+        "id": "4",
+        "category": "WORD_PROBLEMS"
+      },
+      {
+        "id": "5",
+        "category": "PLANE_GEOMETRY"
+      },
+      {
+        "id": "6",
+        "category": "WORD_PROBLEMS"
+      },
+      {
+        "id": "7",
+        "category": "CONSTRUCTION_PROBLEMS"
+      },
+      {
+        "id": "8",
+        "category": "GRAPHS_SCHEMES_TABLES"
+      },
+      {
+        "id": "9",
+        "category": "GRAPHS_SCHEMES_TABLES"
+      },
+      {
+        "id": "10",
+        "category": "WORD_PROBLEMS"
+      },
+      {
+        "id": "11",
+        "category": "WORD_PROBLEMS"
+      },
+      {
+        "id": "12",
+        "category": "SOLID_GEOMETRY"
+      },
+      {
+        "id": "13",
+        "category": "SYMMETRY"
+      },
+      {
+        "id": "14",
+        "category": "PLANE_GEOMETRY"
+      }
+    ]
+  },
+  "M7A-2025": {
+    "questions": [
+      {
+        "id": "1",
+        "category": "WORD_PROBLEMS"
+      },
+      {
+        "id": "2",
+        "category": "NUM_EXPRESSIONS"
+      },
+      {
+        "id": "3",
+        "category": "GRAPHS_SCHEMES_TABLES"
+      },
+      {
+        "id": "4",
+        "category": "WORD_PROBLEMS"
+      },
+      {
+        "id": "5",
+        "category": "WORD_PROBLEMS"
+      },
+      {
+        "id": "6",
+        "category": "WORD_PROBLEMS"
+      },
+      {
+        "id": "7",
+        "category": "PLANE_GEOMETRY"
+      },
+      {
+        "id": "8",
+        "category": "CONSTRUCTION_PROBLEMS"
+      },
+      {
+        "id": "9",
+        "category": "CONSTRUCTION_PROBLEMS"
+      },
+      {
+        "id": "10",
+        "category": "APPLICATION_PROBLEMS"
+      },
+      {
+        "id": "11",
+        "category": "PERCENTAGES"
+      },
+      {
+        "id": "12",
+        "category": "RATIOS_MAPS"
+      },
+      {
+        "id": "13",
+        "category": "RATIOS_MAPS"
+      },
+      {
+        "id": "14",
+        "category": "SOLID_GEOMETRY"
+      },
+      {
+        "id": "15",
+        "category": "GRAPHS_SCHEMES_TABLES"
+      },
+      {
+        "id": "16",
+        "category": "GRAPHS_SCHEMES_TABLES"
+      }
+    ]
+  },
+  "M7B-2025": {
+    "questions": [
+      {
+        "id": "1",
+        "category": "LINEAR_EQUATIONS"
+      },
+      {
+        "id": "2",
+        "category": "PROPORTIONS"
+      },
+      {
+        "id": "3",
+        "category": "NUM_EXPRESSIONS"
+      },
+      {
+        "id": "4",
+        "category": "WORD_PROBLEMS"
+      },
+      {
+        "id": "5",
+        "category": "WORD_PROBLEMS"
+      },
+      {
+        "id": "6",
+        "category": "APPLICATION_PROBLEMS"
+      },
+      {
+        "id": "7",
+        "category": "SOLID_GEOMETRY"
+      },
+      {
+        "id": "8",
+        "category": "CONSTRUCTION_PROBLEMS"
+      },
+      {
+        "id": "9",
+        "category": "SYMMETRY"
+      },
+      {
+        "id": "10",
+        "category": "PLANE_GEOMETRY"
+      },
+      {
+        "id": "11",
+        "category": "PLANE_GEOMETRY"
+      },
+      {
+        "id": "12",
+        "category": "PLANE_GEOMETRY"
+      },
+      {
+        "id": "13",
+        "category": "GRAPHS_SCHEMES_TABLES"
+      },
+      {
+        "id": "14",
+        "category": "GRAPHS_SCHEMES_TABLES"
+      },
+      {
+        "id": "15",
+        "category": "PERCENTAGES"
+      },
+      {
+        "id": "16",
+        "category": "SOLID_GEOMETRY"
+      }
+    ]
+  },
+  "M9B-2025": {
+    "questions": [
+      {
+        "id": "1",
+        "category": "WORD_PROBLEMS"
+      },
+      {
+        "id": "2",
+        "category": "NUM_EXPRESSIONS"
+      },
+      {
+        "id": "3",
+        "category": "NUM_EXPRESSIONS"
+      },
+      {
+        "id": "4",
+        "category": "POLYNOMIALS"
+      },
+      {
+        "id": "5",
+        "category": "LINEAR_EQUATIONS"
+      },
+      {
+        "id": "6",
+        "category": "NUMBER_OPERATIONS"
+      },
+      {
+        "id": "7",
+        "category": "WORD_PROBLEMS"
+      },
+      {
+        "id": "8",
+        "category": "PLANE_GEOMETRY"
+      },
+      {
+        "id": "9",
+        "category": "CONSTRUCTION_PROBLEMS"
+      },
+      {
+        "id": "10",
+        "category": "CONSTRUCTION_PROBLEMS"
+      },
+      {
+        "id": "11",
+        "category": "GRAPHS_SCHEMES_TABLES"
+      },
+      {
+        "id": "12",
+        "category": "PLANE_GEOMETRY"
+      },
+      {
+        "id": "13",
+        "category": "SOLID_GEOMETRY"
+      },
+      {
+        "id": "14",
+        "category": "SOLID_GEOMETRY"
+      },
+      {
+        "id": "15",
+        "category": "PERCENTAGES"
+      },
+      {
+        "id": "16",
+        "category": "NUMBER_OPERATIONS"
+      }
+    ]
   }
 }
