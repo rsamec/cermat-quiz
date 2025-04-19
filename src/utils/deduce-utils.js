@@ -3166,7 +3166,7 @@ function formatPredicate(d, formatting) {
       result = compose`${formatQuantity(d.quantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} per ${formatEntity2(d.entityBase.entity, d.entityBase.unit)}`;
       break;
     case "quota":
-      result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${d.restQuantity !== 0 ? ` se zbytkem ${formatAgent(d.restQuantity)}` : ""}`;
+      result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${d.restQuantity !== 0 ? ` se zbytkem ${formatQuantity(d.restQuantity)}` : ""}`;
       break;
     case "sequence":
       result = compose`${d.type != null ? formatSequence3(d.type) : ""}`;
