@@ -8,7 +8,7 @@ style: /assets/css/math-deduce.css
 
 ```js
 import {deduce} from './utils/deduce.js';
-import {partion, relativeParts, relativePartsDiff, highlightLabel, deduceTraverse, formatting} from './utils/deduce-components.js';
+import {partion, highlightLabel, deduceTraverse, formatting} from './utils/deduce-components.js';
 import {inferenceRule,cont,sum, comp, ratio, compDiff} from './components/math.js';
 import {computeTreeMetrics, formatPredicate} from './utils/deduce-utils.js';
 
@@ -30,7 +30,7 @@ import {example as percentPercentage} from './math/percent/percentage.js';
 
 import {autobus} from './math/autobus.js';
 
-import  {examplePartToWhole, exampleComparePartToWhole, exampleDiffPartToWhole, examplePartEq}  from './math/comp/comp.js'
+import  {examplePartToWhole, exampleComparePartToWhole,exampleCompareMultiple, exampleDiffPartToWhole, examplePartEq}  from './math/comp/comp.js'
 
 function renderEx({example, unit, showRelativeValues}={}){
   const tree = deduceTraverse(example.deductionTree);
@@ -256,18 +256,28 @@ ${partion([
 ### Porovnávání - část z celku
 
 <div class="badge badge--large">RATIO</div>
-
+<div class="badge badge--large">COMPLEMENT</div>
 ${partion([
     {value: 30, agent:"chlapci", label:{ hidePercent: true, hideFraction: false} },
     {value: 90, agent:"dívky", label:{ hidePercent: true, hideFraction: false}},
   ],
   {unit:1, showRelativeValues: true, multiple:5 })
 }
+
+${partion([
+    {value: 1, agent:"chlapci", label:{ hidePercent: true, hideFraction: false} },
+    {value: 3, agent:"dívky", label:{ hidePercent: true, hideFraction: false}},
+  ],
+  {unit:1, showRelativeValues: true, multiple:1 })
+}
 <div>${renderRules(rules.partToWholeRatio)}</div>
+
+
 
 ### Porovnávání - poměry část ku časti
 
 <div class="badge badge--large">RATIOS</div>
+<div class="badge badge--large">SCALE</div>
 
 ${partion([
     {value: 30, agent:"chlapci", label:{ hidePercent: true, hideFraction: false} },
@@ -275,6 +285,14 @@ ${partion([
   ],
   {unit:1, showRelativeValues: true, multiple:5 })
 }
+
+${partion([
+    {value: 1, agent:"chlapci", label:{ hidePercent: true, hideFraction: false}},
+    {value: 3, agent:"dívky", label:{ hidePercent: true, hideFraction: false}}, 
+  ],
+  {unit:1, showRelativeValues: true, multiple:1, formatAsFraction: true, unit: 1 })
+}
+
 
 <div>${renderRules(rules.partToPartRatio)}</div>
 
@@ -368,39 +386,11 @@ const percentInput = Generators.input(percentForm);
 ### Výpočet procentní části
 
 <div>${renderEx({example:percentPart({input:percentInput})})}</div>
-<div class="h-stack h-stack--wrap">
-${partion([
-    {value: 100, agent:"vypůjčeno (základ)" },
-    {value: percentInput.percentage, agent:"úrok (procetní část)"},
-  ],
-  {unit:1, showSeparate:true, showRelativeValues:false,  multiple:5,  width: 300, height: 100})
-}
-${partion([
-    {value: percentInput.base, agent:"vypůjčeno (základ)" },
-    {value: percentInput.percentage/100 * percentInput.base, agent:"úrok (procetní část)"},
-  ],
-  {unit:20, showSeparate:true, showRelativeValues:false,  multiple:5,  width: 300, height: 100})
-}
-</div>
 
 
 ### Výpočet základu
 
 <div>${renderEx({example:percentBase({input:percentInput})})}</div>
-<div class="h-stack h-stack--wrap">
-${partion([
-    {value: 100, agent:"vypůjčeno (základ)" },
-    {value: percentInput.percentage, agent:"úrok (procetní část)"},
-  ],
-  {unit:1, showSeparate:true, showRelativeValues:false,  multiple:5,  width: 300, height: 100})
-}
-${partion([
-    {value: percentInput.part / percentInput.percentage * 100 , agent:"vypůjčeno (základ)" },
-    {value: percentInput.part, agent:"úrok (procetní část)"},
-  ],
-  {unit:20, showSeparate:true, showRelativeValues:false,  multiple:5,  width: 300, height: 100})
-}
-</div>
 
 
 ### Výpočet procent
@@ -568,7 +558,38 @@ const compDiffInput = Generators.input(compDiffForm);
 
 <div>${renderEx({example:examplePartToWhole({input:compDiffInput})[0]})}</div>
 
+### Porovnání více hodnot
 
+```js
+const compFormMultiple = Inputs.form({  
+  second: Inputs.radio(new Map([["A", false],["B", true]]), {label:"Výrobek", value:false }),
+  part: Inputs.range([1,100], {step: 1, value:10, label: "Cena výrobku (Kč)"}),
+  partRatio: Inputs.range([-0.5, 1], {step: 0.05, value:0.25, label: "O kolik je výrobek A relativně dražší/levnější než výrobek B"}),  
+  partRatio2: Inputs.range([-0.5, 1], {step: 0.05, value:0.25, label: "O kolik je výrobek B relativně dražší/levnější než výrobek C"}),
+});
+const compInputMultiple = Generators.input(compFormMultiple);
+```
+
+<details>
+  <summary>Parametrizace</summary>
+  ${compFormMultiple}
+</details>
+
+#### Porovnání A/B a porovnání B/C
+
+<div>${renderEx({example:exampleCompareMultiple({input:compInputMultiple})[0]})}</div>
+
+#### Porovnání A/B a porovnání C/B
+
+<div>${renderEx({example:exampleCompareMultiple({input:compInputMultiple})[1]})}</div>
+
+#### Porovnání B/A a porovnání B/C
+
+<div>${renderEx({example:exampleCompareMultiple({input:compInputMultiple})[2]})}</div>
+
+#### Porovnání B/A a porovnání C/B
+
+<div>${renderEx({example:exampleCompareMultiple({input:compInputMultiple})[3]})}</div>
 
 ## Měřítko
 
@@ -590,6 +611,7 @@ const measureScaleInput = Generators.input(measureScaleForm);
 <div>${renderEx({example:measureScale({input:measureScaleInput})[0]})}</div>
 <div>${renderEx({example:measureScale({input:measureScaleInput})[1]})}</div>
 <div>${renderEx({example:measureScale({input:measureScaleInput})[2]})}</div>
+
 
 ## Tělesa
 

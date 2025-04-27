@@ -1,11 +1,7 @@
-import { cont, inferenceRule, ratio, sum, ctor, type Container, comp } from "../../components/math.js";
-import { to, deduce, deduceLbl, axiomInput } from "../../utils/deduce-utils.js";
-import { percentPart } from "../percent/part.js";
-
+import { cont, sum, percent, ctorDifference } from "../../components/math.js";
+import { deduce, axiomInput, last } from "../../utils/deduce-utils.js";
 
 const entity = "Kč";
-const entityPercent = "%"
-
 
 export function example3({ input }: {
   input: {
@@ -18,45 +14,24 @@ export function example3({ input }: {
   const agentPercentBase = "cena";
   const agentPercentPart = "sleva";
   const entity = "Kč";
-  const entityPercent = "%"
 
-  const percent = cont(agentPercentPart, input.percentageDown, entityPercent)
-  const celek = cont(agentPercentBase, 100, entityPercent);
-  const dd1 = inferenceRule(percent, celek, ctor('ratio'));
-  const dd1Up = axiomInput(ratio("cena po slevě", "zdraženo", input.percentageNewUp / 100), 3)
+  const zlevneniPercent = axiomInput(percent(agentPercentBase, agentPercentPart, input.percentageDown), 2);
+  const puvodniCena = axiomInput(cont(agentPercentBase, input.base, entity), 1);
+  const zdrazeniPercent = axiomInput(percent("cena po slevě", "zdraženo", input.percentageNewUp), 3)
 
-  const percentBase = cont(agentPercentBase, input.base, entity)
-  const dd2 = inferenceRule(percentBase, dd1);
-
-  const sleva = comp(agentPercentBase, "cena po slevě", dd2.kind === 'cont' && dd2.quantity, entity)
-  const dd3 = inferenceRule(sleva, percentBase);
-
-
-  const soucet = sum("konečná cena", ["cena po slevě", "zdraženo"], entity, entity);
-
-
-  const percentage = axiomInput(cont(agentPercentPart, input.percentageDown, entityPercent), 2);
-  const base = axiomInput(cont(agentPercentBase, input.base, entity), 1);
-
-  const slevaPart = percentPart({ base: base, percentage: percentage });
-
-  //const deductionTree = to(slevaPart, sleva);
-
-  const deductionTree =
+  const cenaPoSleve = deduce(
+    puvodniCena, 
+    deduce(puvodniCena, zlevneniPercent),        
+    ctorDifference("cena po slevě")
+  );
+  const deductionTree = deduce(
+    cenaPoSleve,
     deduce(
-      deduce(
-        deduce(
-          to(
-            slevaPart,
-            sleva
-          ),
-          base,
-        ),
-        dd1Up,
-      ),
-      { ...dd3, ...deduceLbl(3) },
-      soucet,
-    )
+      last(cenaPoSleve),
+      zdrazeniPercent
+    ),
+    sum("konečná cena", ["cena po slevě", "zdraženo"], entity, entity),
+  )
 
   const template = highlightLabel => highlightLabel`Kolo v obchodě stálo ${input.base.toLocaleString("cs-CZ")} Kč.
     Nejdříve bylo zlevněno o ${input.percentageDown} % z původní ceny.
@@ -79,10 +54,13 @@ export function example1({ input }: {
   Kolik korun celkem věřiteli vrátí?`
 
   const vypujceno = axiomInput(cont("vypůjčeno", 20_000, entity), 1);
-  const urok = axiomInput(cont("úrok", 13.5, '%'), 2);
+  const urok = axiomInput(percent("vypůjčeno", "úrok", 13.5), 2);
 
   const deductionTree = deduce(
-    percentPart({ base: vypujceno, percentage: urok }),
+    deduce(
+      urok,
+      vypujceno
+    ),
     vypujceno,
     sum("vráceno", ["úrok", "vypůjčeno"], entity, entity)
   )
@@ -103,18 +81,13 @@ export function example2({ input }: {
   Kolik korun získá paní Dlouhá navíc ke svému vkladu za jeden rok, bude-li jí odečtena daň z úroků ${input.urokPercentage} %?`
 
   const vlozeno = axiomInput(cont("vklad", input.vlozeno, entity), 1);
-  const výnos = axiomInput(cont("výnos", input.urokPercentage, entityPercent), 2);
-  const dan = axiomInput(cont("daň", input.danPercentage, entityPercent), 3);
+  const vynosPercent = axiomInput(percent("vklad", "výnos", input.urokPercentage), 2);
+  const danPercent = axiomInput(percent("výnos", "daň", input.danPercentage), 3);
 
-  const dBase = percentPart({ base: vlozeno, percentage: výnos })
+  const vynos = deduce(vynosPercent, vlozeno)
   const deductionTree = deduce(
-    dBase,
-    percentPart({ base: {...dBase.children[dBase.children.length - 1] as Container,...deduceLbl(2)}, percentage: dan }),
+    vynos,
+    deduce(danPercent, last(vynos))
   )
-
-
-
-
   return { deductionTree, template }
-
 }

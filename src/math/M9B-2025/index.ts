@@ -1,4 +1,4 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, product, quota, rate, ratio, ratios, sum, ctorPercent, percent, compAngle, ctorComplement, ctorComparePercent, compPercent, compRelativePercent, compDiff, pythagoras } from "../../components/math";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, product, quota, rate, ratio, ratios, sum, ctorPercent, percent, compAngle, ctorComplement, ctorComparePercent, compPercent, compRelativePercent, compDiff, pythagoras, nthPartFactor } from "../../components/math";
 import { deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 
@@ -24,14 +24,16 @@ function porovnani() {
   const vstupenkaDospelyLabel = "vstupenka dospělý"
   const porovnat = compRatio(vstupenkaDestskaLabel, vstupenkaDospelyLabel, 2 / 5);
   const celkem = cont("celkem", 330, "Kč");
-
+  const pocetDeti = cont(vstupenkaDestskaLabel, 3, entity);
   return {
     deductionTree: deduce(
-      to(
-        porovnat,
-        commonSense(""),
-        cont("vstupenka dětská", 3, entity),
-        ratios("celkem", [vstupenkaDestskaLabel, vstupenkaDestskaLabel, vstupenkaDestskaLabel, vstupenkaDospelyLabel], [2 / 5, 2 / 5, 2 / 5, 1])
+      deduce(
+        deduce(
+          porovnat,
+          ctorRatios("celkem")
+        ),
+        pocetDeti,
+        nthPartFactor(vstupenkaDestskaLabel)
       ),
       celkem,
       nthPart(vstupenkaDestskaLabel)
@@ -316,12 +318,9 @@ function tabor() {
       )
     },
     mladsiPercent: {
-      deductionTree: to(
-        deduce(
-          compRelative(mladsiLabel, starsiLabel, -1 / 3),
-          ctorRatios("tábor")
-        ),
-        compRelativePercent(starsiLabel, mladsiLabel, 50)
+      deductionTree: deduce(
+        compRelative(mladsiLabel, starsiLabel, -1 / 3),
+        ctorComparePercent()
       ),
     },
   }

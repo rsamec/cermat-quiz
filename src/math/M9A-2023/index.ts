@@ -283,20 +283,20 @@ function angleBeta() {
 
 
 export function rovinataOblast() {
-  const entity = "délka"
+  const agent = "měřítko"
   const plan = "plán";
   const skutecnost = "skutečnost"
 
-  const meritko = deduce(
-    cont(plan, 3.5, entity, "cm"),
+  const meritko = deduce(    
     deduce(
-      cont(skutecnost, 700, entity, "m"),
+      cont(agent, 700, skutecnost, "m"),
       ctorUnit("cm")
     ),
-    ctorRatios("mapa")
+    cont(agent, 3.5, plan, "cm"),
+    ctor("rate")
   );
-
-  const vychazkovaTrasa = cont("vycházková trasa", 6, entity, "km");
+  const vychazkovaTrasaLabel = "vycházková trasa"
+  const vychazkovaTrasa = cont(vychazkovaTrasaLabel, 6, skutecnost, "km");
   return {
     skutecnost: {
       title: 'Délka trasy na mapě a ve skutečnosti',
@@ -304,10 +304,9 @@ export function rovinataOblast() {
         deduce(
           meritko,
           deduce(
-            cont(plan, 49, entity, "mm"),
+            cont("trasa", 49, plan, "mm"),
             ctorUnit("cm")
           ),
-          nthPart(skutecnost)
         ),
         ctorUnit("km"),
       )
@@ -320,9 +319,9 @@ export function rovinataOblast() {
             vychazkovaTrasa,
             deduce(
               vychazkovaTrasa,
-              compRatio("vycházková trasa", "přímá trasa", 3),
+              compRatio(vychazkovaTrasaLabel, "přímá trasa", 3),
             ),
-            ctorDifference(skutecnost)
+            ctorDifference("rozdíl")
           ),
           ctorUnit("cm")
         ),
@@ -332,11 +331,7 @@ export function rovinataOblast() {
     },
     meritko: {
       title: 'Měřítko turistické mapy',
-      deductionTree: deduce(
-        last(meritko),
-        cont(plan, 3.5, entity, "cm"),
-        ctor('simplify')
-      )
+      deductionTree: meritko
     }
   }
 }

@@ -1,4 +1,4 @@
-import { cont, ctor, type Container } from "../../components/math.js";
+import { cont, ctor, ctorPercent, type Container } from "../../components/math.js";
 import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 
@@ -9,7 +9,7 @@ export function percentPart({ base, percentage }: { base: Container, percentage:
     deduce(
       percentage,
       celek,
-      ctor('ratio')
+      ctorPercent()
     ),
     base,
   )

@@ -1,6 +1,7 @@
 
 import { commonSense, cont, ctor, ctorRatios, ctorUnit, gcd, nthPart, type PartToPartRatio, product, ratios } from "../../components/math.js";
 import { axiomInput, deduce, deduceLbl, last, to } from "../../utils/deduce-utils.js";
+import { plnaKrabice } from "../M9I-2025/krabice.js";
 
 
 interface Params {
@@ -16,62 +17,46 @@ export default function build({ input }: {
   const plan = "plán"
   const widthLabel = "šířka"
   const lengthLabel = "délka"
-  const entity = "";
+
   const unit = "cm";
   const unit2D = "cm2";
 
 
-  const width = axiomInput(cont(`${skutecnost} ${widthLabel}`, input.sirkaM, entity, "m"), 1);
-  const widthOnPlan = axiomInput(cont(`${plan} ${widthLabel}`, input.planSirkaCM, entity, unit), 2);
-  const lengthOnPlan = axiomInput(cont(`${plan} ${lengthLabel}`, input.planDelkaDM, entity, "dm"), 3);
+  const width = axiomInput(cont(widthLabel, input.sirkaM, skutecnost, "m"), 1);
+  const widthOnPlan = axiomInput(cont(widthLabel, input.planSirkaCM, plan, unit), 2);
+  const lengthOnPlan = axiomInput(cont(lengthLabel, input.planDelkaDM, plan, "dm"), 3);
 
   const dWidth = deduce(width, ctorUnit(unit));
-  const dBase =
+  const meritko =
     deduce(
-      widthOnPlan,
       dWidth,
-      ctorRatios("měřítko"),
+      widthOnPlan,
+      ctor("rate")
     )
 
-  const dTree1 = deduce(
-    dBase,
-    deduce(widthOnPlan, last(dWidth), gcd("nejmenší společný násobek", entity)),
-    ctor("simplify")
-  )
-
-  const meritko = { ...last(dTree1) as unknown as PartToPartRatio, ...deduceLbl(3) }
+  const lastMeritko = last(meritko);
   const dTree2 = deduce(
-    deduce(lengthOnPlan,ctorUnit(unit)),
-    to(
-      meritko,
-      commonSense("měřítko plánu platí pro celý plán, stejně pro šírku a délku domu"),
-      ratios("měřítko", [`${plan} ${lengthLabel}`, `${skutecnost} ${lengthLabel}`], meritko.ratios)
-    ),
-    nthPart(`${skutecnost} ${lengthLabel}`)
+    deduce(lengthOnPlan, ctorUnit(unit)),
+    lastMeritko
   )
 
   const ddSkutecnost = deduce(
     dTree2,
     dWidth,
-    product(`${skutecnost} obsah`, [lengthLabel, widthLabel], unit2D, entity)
+    product(`obsah`, [lengthLabel, widthLabel], { entity: skutecnost, unit: unit2D }, { entity: skutecnost, unit })
   )
   const ddPlan = deduce(
-    deduce(lengthOnPlan,ctorUnit(unit)),
+    deduce(lengthOnPlan, ctorUnit(unit)),
     widthOnPlan,
-    product(`${plan} obsah`, [lengthLabel, widthLabel], unit2D, entity)
+    product(`obsah`, [lengthLabel, widthLabel], { entity: plan, unit: unit2D }, { entity: plan, unit })
   )
 
 
-  const dTree3 =
-    deduce(
-      deduce(
-        ddPlan,
-        ddSkutecnost,
-        ctorRatios("měřítko"),
-      ),
-      deduce(ddPlan.children[3], ddSkutecnost.children[3], gcd("nejmenší společný násobek", entity)),
-      ctor("simplify")
-    )
+  const dTree3 = deduce(
+    ddSkutecnost,
+    ddPlan,
+    ctor('rate')
+  )
 
 
 
@@ -91,7 +76,7 @@ export default function build({ input }: {
     <strong>Obsah obdélníku na plánu a obsah půdorysu domu jsou v poměru 1:100.</strong>`;
 
   return [
-    { deductionTree: dTree1, template: highlight => highlight`${() => templateBase(highlight)}${template1}` },
+    { deductionTree: meritko, template: highlight => highlight`${() => templateBase(highlight)}${template1}` },
     { deductionTree: dTree2, template: highlight => highlight`${() => templateBase(highlight)}${template2}` },
     { deductionTree: dTree3, template: highlight => highlight`${() => templateBase(highlight)}${template3}` }
   ]

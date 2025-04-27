@@ -1,4 +1,4 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, product, quota, rate, ratio, ratios, sum, ctorPercent, percent, compAngle } from "../../components/math";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, product, quota, rate, ratio, ratios, sum, ctorPercent, percent, compAngle, compPercent } from "../../components/math";
 import { deduce, last, to, toCont } from "../../utils/deduce-utils";
 
 export default {
@@ -17,7 +17,7 @@ export default {
   13: pelhrimov(),
   15.1: organizatoriPercent(),
   15.2: soutez(),
-  15.3: atletika(),
+  15.3: atletika(),  
   //16.1: obrazce().pocetTmavyObrazec,
 }
 
@@ -258,30 +258,25 @@ function bazen() {
   }
 }
 
-
 function pelhrimov() {
   const entity = "osob";
   const entityBase = "termín";
   const prihlasek = cont("tábor přihlášeno", 375, entity);
+  const pocet = cont("tábor nabízeno", 2, entityBase)
   return {
     deductionTree: deduce(
-      prihlasek,
-      deduce(
-        to(
-          deduce(
-            to(
-              commonSense(""),
-              ratio("nabízeno 1. termín", "přihlášeno 1. termín", 6 / 5),
-              percent("nabízeno 2. termín", "přihlášeno 2. termín", 130),
-              commonSense("6/5 + (130/100) = 5/2"),
-              ratio("nabízeno per termín", "tábor přihlášeno", 6 / 5 + 13 / 10),
-            ),
-            prihlasek
-          ),
-          rate("tábor nabízeno", 150, entity, entityBase)
+      deduce(deduce(
+        deduce(
+          ratio("tábor nabízeno", "přihlášeno 1. termín", 6 / 5),
+          percent("tábor nabízeno", "přihlášeno 2. termín", 130),
+          sum("tábor přihlášeno", [], "", "")
         ),
-        cont("tábor nabízeno", 2, entityBase)
-      )
+        prihlasek
+      ),
+        cont("tábor nabízeno", 1, entityBase),
+        ctor('rate')
+      ),
+      pocet
     )
   }
 }

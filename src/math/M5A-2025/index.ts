@@ -1,4 +1,4 @@
-import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorRatios, nthPart, product, rate, ratio, ratios, sum } from "../../components/math";
+import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorRatios, nthPart, nthPartFactor, product, rate, ratio, ratios, sum } from "../../components/math";
 import { deduce, last, to, toCont } from "../../utils/deduce-utils";
 
 export default {
@@ -53,12 +53,16 @@ function kulicka() {
 
   const bigPocet = deduce(
     deduce(
-      to(
-        big,
-        small,
-        pocetSrovnani,
-        ratios("celkem", [bigLabel, smallLabel, smallLabel], [30, 20, 20]),
-      ),
+      deduce(
+        deduce(
+          big,
+          small,
+          ctorRatios("celkem")
+        ),
+        cont(smallLabel, 2, ""),
+        nthPartFactor(smallLabel)
+      )
+      ,
       cont("celkem", 560, entity, unit),
       nthPart(bigLabel)
     ),

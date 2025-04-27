@@ -1,4 +1,4 @@
-import { cont, ratios, proportion, nthPart, ctor, compRatio } from "../components/math";
+import { cont, ratios, proportion, nthPart, ctor, compRatio, nthPartFactor } from "../components/math";
 import { axiomInput, deduce } from "../utils/deduce-utils";
 
 export const sesity = () => {
@@ -6,8 +6,8 @@ export const sesity = () => {
   const linkovanySesitLabel = "linkovaný sešit";
   const entity = "sešit";
   const entityPrice = "Kč";
-  const pocetLabel = "počet sešitů";
-  const cenaLabel = "cena sešitů";
+  const pocetLabel = "cena sešitů výjádřených počtem";
+  const cenaLabel = "nákupu stejného počtu sešitů";
   const ctvereckovanyPocet = axiomInput(cont(ctvereckovaniSesitLabel, 2, entity), 1);
 
   return [
@@ -25,7 +25,7 @@ export const sesity = () => {
             axiomInput(ratios(pocetLabel, [ctvereckovaniSesitLabel, linkovanySesitLabel], [2, 3]), 2),
             proportion(true, [pocetLabel, cenaLabel])
           ),
-          axiomInput(cont(cenaLabel, 180, entityPrice), 3),
+          axiomInput(cont(cenaLabel,180, entityPrice), 3),
           nthPart(ctvereckovaniSesitLabel)
         ),
         ctvereckovanyPocet,

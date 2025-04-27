@@ -135,7 +135,7 @@ function desitiuhelnik() {
   const entity = "cm"
   const entity2d = "cm2"
   const rectangleWidthLabel = "šířka obdelníka"
-  const triangleWidthLabel = " nejdelší straně trojůhelníku"
+  const triangleWidthLabel = " nejdelší straně trojúhelníku"
 
   const squareSize = to(
     axiomInput(cont("nejkratší strana desitiúhelník", 4, entity), 1),
@@ -148,24 +148,24 @@ function desitiuhelnik() {
     cont(rectangleWidthLabel, 20, entity)
   )
   const whiteTriangle = to(
-    commonSense("2 čtverce tvoří výšku bílého rovnostranného trojůhelníku"),
+    commonSense("2 čtverce tvoří výšku bílého rovnostranného trojúhelníku"),
     cont("výška šedého trojúhelníku", 2 * 4, entity),
   )
 
   const triangleHeight = to(
-    commonSense("tři čtverce tvoří nejkratší straně trojůhelníku"),
+    commonSense("tři čtverce tvoří nejkratší straně trojúhelníku"),
     cont("výška šedého trojúhelníku", 3 * 4, entity),
   )
   const triangleWidth = to(
     axiomInput(cont("nejdelší strana desitiúhelník", 20, entity), 2),
-    commonSense("tato délka odpovídá nejdelší straně trojůhelníku"),
+    commonSense("tato délka odpovídá nejdelší straně trojúhelníku"),
     cont(triangleWidthLabel, 20, entity)
   )
 
   //const rectangleWidth = cont(rectangleWidthLabel, 5, entity);
   const whiteTriangleSize = to(
     squareSize,
-    commonSense("2 čtverce tvoří stranu bílého rovnostranného trojůhelníku"),
+    commonSense("2 čtverce tvoří stranu bílého rovnostranného trojúhelníku"),
     cont("strana bílý trojúhelník", 2 * 4, entity)
   );
   return {

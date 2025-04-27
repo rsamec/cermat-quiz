@@ -118,7 +118,7 @@ function krouzky() {
   );
 
   return {
-    divkyAnglictina:{
+    divkyAnglictina: {
       deductionTree: deduce(
         celekPocet,
         deduce(
@@ -128,7 +128,7 @@ function krouzky() {
         ctor('comp-diff')
       )
     },
-    pocetZaku:{
+    pocetZaku: {
       deductionTree: deduce(
         last(celekPocet),
         percent("celek", "basketbal", 16)

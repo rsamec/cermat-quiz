@@ -13,39 +13,35 @@ export default function build({ input }: {
 }) {
   const skutecnost = "skutečnost"
   const mapa = "plán"
-  const entity = ""
   const unit = "cm";
+  const agent = "vzdálenost"
 
-  const reality = axiomInput(cont(skutecnost, input.skutecnost, entity, "km"), 1);
-  const plan = axiomInput(cont(mapa, input.plan, entity, unit), 2);
+  const reality = axiomInput(cont(agent, input.skutecnost, skutecnost, "km"), 1);
+  const plan = axiomInput(cont(agent, input.plan, mapa, unit), 2);
 
 
 
-  const dBase =
-    deduce(
-      deduce(plan,
+  const dBase = deduce(
         deduce(reality, ctorUnit(unit)),
-        ctor('ratios')),
-      deduce(plan, reality, gcd("nejvyšší společný násobek", entity)),
-      ctor('simplify')
-    )
+        plan,
+        ctor('rate')
+      )
+    
 
   const dTree1 = dBase;
 
   const dTree2 =
     deduce(
       deduce(
-        cont(mapa, 3, entity, unit),
+        plan,
         last(dBase),
-        nthPart(skutecnost)
       ),
       ctorUnit("km"))
 
   const dTree3 =
     deduce(
-      deduce(cont(skutecnost, 5, entity, "km"), ctorUnit(unit)),
+      deduce(reality, ctorUnit(unit)),
       last(dBase),
-      nthPart(mapa)
     )
 
 

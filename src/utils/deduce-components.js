@@ -1,7 +1,7 @@
 import { html } from "npm:htl";
 import * as Plot from "npm:@observablehq/plot";
 import Fraction from 'npm:fraction.js';
-import { nthQuadraticElements, primeFactorization } from "../components/math.js";
+import { nthQuadraticElements, primeFactorization, gcdCalc, lcdCalc } from "../components/math.js";
 import { isPredicate, formatPredicate } from "../utils/deduce-utils.js";
 import { deduce } from "./deduce.js";
 import { inferenceRuleWithQuestion } from "../math/math-configure.js";
@@ -25,14 +25,15 @@ export function partion(items, options) {
   }
   return Plot.plot({
     ...(showSeparate && {
-      fy: { label: null, ticks: showTicks ? undefined : [], marginLeft: 0 },
+      fy: { label: null, ticks: showTicks ? undefined : [], marginLeft: 0},
     }),
-    y: { label: null },
+    y: { label: null},
     color: {
       type: "categorical",
-      legend: showLegend
+      legend: showLegend,
+      //domain: data.map(d => d.agent)
     },
-    x: { label: null, ticks: [] },
+    x: { label: null, ticks: []},
     ...(width && { width }),
     ...(height && { height }),
     marginBottom: 0,
@@ -46,13 +47,14 @@ export function partion(items, options) {
         ...(showSeparate && { fy: "agent" }),
         opacity: d => d.opacity ?? 1,
         sort: {
-          x: { order: null }
+          x: { order: null },
+          ...(showSeparate && {fy: {order: null }})
         }
       }),
       ...(showAbsoluteValues ? [
         Plot.textX(data, Plot.stackX({
           x: "value",
-          text: (d, i) => `${formatAsFraction ? new Fraction(d.value).toFraction() : d.value.toLocaleString('cs-CZ')}`,
+          text: (d, i) => `${formatAsFraction ? new Fraction(d.displayValue ?? d.value).toFraction() : (d.displayValue ?? d.value).toLocaleString('cs-CZ')}`,
           fontSize: 16,
           fontWeight: 500,
           textAnchor: 'middle',
@@ -80,7 +82,17 @@ export function partion(items, options) {
   })
 };
 
-export function relativePartsData(value, { first, second, asPercent } = {}) {
+export function relativePartsData(values, { parts } = {}) {
+  
+  const fractions = values.map(d => new Fraction(d));
+  const denominators = fractions.map(d => parseInt(d.d));
+  const numerators = fractions.map(d => parseInt(d.n));
+  const common = lcdCalc(denominators);
+  const final = fractions.map(d => parseInt(d.n) * common/parseInt(d.d))
+  return final.map((d, i) => ({ agent: parts[i], value: d, displayValue: values[i] })).reverse()
+}
+
+export function relativeTwoPartsData(value, { first, second, asPercent } = {}) {
   const d = asPercent ? value * 100 : value;
   const whole = asPercent ? 100 : 1;
 
@@ -89,7 +101,7 @@ export function relativePartsData(value, { first, second, asPercent } = {}) {
     { agent: second, value: whole - d },
   ]
 }
-export function relativePartsDiffData(value, { first, second, asPercent } = {}) {
+export function relativeTwoPartsDiffData(value, { first, second, asPercent } = {}) {
   const d = asPercent ? value * 100 : value;
   const whole = asPercent ? 100 : 1;
 
@@ -99,12 +111,15 @@ export function relativePartsDiffData(value, { first, second, asPercent } = {}) 
     ...(d != 0 ? [{ agent: first, value: Math.abs(d), opacity: 0.2 }] : []),
     { agent: second, value: whole }]
 }
-
 export function relativeParts(d, options) {
   return partion(relativePartsData(d, options), { width: 300, height: 50, formatAsFraction: !options.asPercent, showRelativeValues: false, unit: 1, multiple: options.asPercent ? 5 : undefined })
 }
-export function relativePartsDiff(d, options) {
-  return partion(relativePartsDiffData(d, options), { width: 300, height: 60, formatAsFraction: !options.asPercent, showRelativeValues: false, unit: 1, multiple: options.asPercent ? 5 : undefined, showSeparate: true })
+
+export function relativeTwoParts(d, options) {
+  return partion(relativeTwoPartsData(d, options), { width: 300, height: 50, formatAsFraction: !options.asPercent, showRelativeValues: false, unit: 1, multiple: options.asPercent ? 5 : undefined })
+}
+export function relativeTwoPartsDiff(d, options) {
+  return partion(relativeTwoPartsDiffData(d, options), { width: 300, height: 60, formatAsFraction: !options.asPercent, showRelativeValues: false, unit: 1, multiple: options.asPercent ? 5 : undefined, showSeparate: true })
 }
 
 function label(d) {
@@ -115,7 +130,7 @@ export const formatting = {
   compose: (strings, ...args) => concatHtml(strings, ...args),
   formatKind: d => html`<div class="badge">${d.kind === "cont" ? "C" : d.kind.toUpperCase()}</div>`,
   formatQuantity: d => d.toLocaleString('cs-CZ'),
-  formatRatio: (d,asPercent) => asPercent ? `${(d * 100).toLocaleString('cs-CZ')}%` : new Fraction(d).toFraction(),
+  formatRatio: (d, asPercent) => asPercent ? `${(d * 100).toLocaleString('cs-CZ')}%` : new Fraction(d).toFraction(),
   formatEntity: (d, u) => [u, d].filter(d => d != null).join(" "),
   formatAgent: d => html`<b>${d}</b>`,
   formatSequence: d => formatSequence(d),
@@ -245,17 +260,17 @@ export function deduceTraverse(node) {
 
         if (!isLast) {
           if (newChild?.kind === "ratio" && newChild?.ratio != null) {
-            args.push(relativePartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole), asPercent: newChild.asPercent }))
+            args.push(relativeTwoPartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole), asPercent: newChild.asPercent }))
           }
-          // else if (newChild?.kind === "ratios" && newChild?.ratios?.length === 2) {
-          //   args.push(relativeParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
-          // }
+          else if (newChild?.kind === "ratios" && newChild?.ratios?.length === 2) {
+            args.push(relativeTwoParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
+          }
           if (newChild?.kind === "gcd" || newChild?.kind === "lcd") {
             const numbers = node.children.slice(0, -2).map(d => d.quantity);
             args.push(html`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d, i) => html`<div>${numbers[i]} = ${d.join()}</div>`)}</div>`)
           }
           else if (newChild?.kind === "comp-ratio" && newChild?.ratio != null) {
-            args.push(relativePartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: newChild.agentB, asPercent: newChild.asPercent }))
+            args.push(relativeTwoPartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: newChild.agentB, asPercent: newChild.asPercent }))
           }
         }
       }
@@ -319,17 +334,17 @@ export function stepsTraverse(node) {
 
         if (!isLast) {
           if (newChild?.kind === "ratio" && newChild?.ratio != null) {
-            args.push(relativePartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole), asPercent: newChild.asPercent  }))
+            args.push(relativeTwoPartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole), asPercent: newChild.asPercent }))
           }
-          // else if (newChild?.kind === "ratios" && newChild?.ratios?.length === 2) {
-          //   args.push(relativeParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
-          // }
+          else if (newChild?.kind === "ratios" && newChild?.parts != null) {
+            args.push(relativeParts(newChild.ratios, { parts: newChild.parts}))
+          }
           if (newChild?.kind === "gcd" || newChild?.kind === "lcd") {
             const numbers = node.children.slice(0, -2).map(d => d.quantity);
             args.push(html`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d, i) => html`<div>${formatNumber(numbers[i])} = ${d.join()}</div>`)}</div>`)
           }
           else if (newChild?.kind === "comp-ratio" && newChild?.ratio != null) {
-            args.push(relativePartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: newChild.agentB, asPercent: newChild.asPercent }))
+            args.push(relativeTwoPartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: newChild.agentB, asPercent: newChild.asPercent }))
           }
         }
 
@@ -342,7 +357,7 @@ export function stepsTraverse(node) {
 
       const premises = arr.slice(0, -1);
       //const questions = premises.filter(d => d?.result != null)
-      const conclusion = arr[arr.length - 1];
+      const conclusion = arr[arr.length - 1];          
       flatStructure.push({ premises, conclusion, questions: [question] });
 
     }

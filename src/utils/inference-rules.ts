@@ -1,6 +1,6 @@
 
 import type { Predicate } from "../components/math.js";
-import { cont, ratio, comp, rate, ratios, compRatio, compDiff, sum, lcd, gcd, ctor, inferenceRule, nth, quota, product, ctorRatios, ctorUnit, transfer, ctorDelta, compAngle } from "../components/math.js";
+import { cont, ratio, comp, rate, ratios, compRatio, compDiff, sum, lcd, gcd, ctor, inferenceRule, nth, quota, product, ctorRatios, ctorUnit, transfer, ctorDelta, compAngle, ctorComplement } from "../components/math.js";
 
 export default function rules() {
 
@@ -46,10 +46,11 @@ export default function rules() {
     ],
     ratioCompare: [deduceRule(a, b, ctor('comp-ratio')), deduceRule(a, compareRatioAtoB), deduceRule(b, compareRatioAtoB)],
     angleCompare: [deduceRule(alfa, compAngle("beta", "alfa", "supplementary")), deduceRule(alfa, compAngle("beta", "alfa", "complementary")), deduceRule(alfa, compAngle("beta", "alfa", "corresponding"))],
-    partToWholeRatio: [deduceRule(cont("třída", 120, ""), partToWholeRatio), deduceRule(cont("chlapci", 30, ""), partToWholeRatio)],
+    partToWholeRatio: [deduceRule(cont("třída", 120, ""), partToWholeRatio), deduceRule(cont("chlapci", 30, ""), partToWholeRatio), deduceRule(partToWholeRatio, ctorComplement("dívky"))],
     partToPartRatio: [
       deduceRule(cont("třída", 120, ""), partToPartRatios), deduceRule(cont("dívky", 90, ""), partToPartRatios),
-      deduceRule(cont("chlapci", 30, ""), cont("dívky", 90, ""), ctorRatios("třída"))
+      deduceRule(cont("chlapci", 30, ""), cont("dívky", 90, ""), ctorRatios("třída")),
+      deduceRule(partToPartRatios, cont("rozšíření", 3, ""), ctor("scale")),
     ],
     rate: [
       deduceRule(cont("Petr", 20, "Kč"), cont("Petr", 5, "rohlík"), ctor('rate')),
