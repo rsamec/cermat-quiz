@@ -302,11 +302,11 @@ ${partion([
 
 ## Stav a změna stavu
 
-<div class="badge badge--large">TRANSFER</div>
 <div class="badge badge--large">DELTA</div>
+<div class="badge badge--large">TRANSFER</div>
 
 <div class="warning" label="Záleží na pořadí">
-   Predikát <div class="badge badge--large">TRANSFER</div> není komutativní. Záleží na pořadí, které umožňuje representovat čas.
+   Predikát <div class="badge badge--large">DELTA</div>, <div class="badge badge--large">TRANSFER</div> není komutativní. Záleží na pořadí, které umožňuje representovat čas.
 </div>
 
 

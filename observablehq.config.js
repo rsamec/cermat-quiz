@@ -94,6 +94,7 @@ export default {
         { name: "Slovní úlohy - matematizace", path: "/math-deduction" },
         { name: "Výrazy, rovnice", path: "/math" },
         { name: "Konstrukční úlohy", path: "/math-geometry" },
+        // { name: "Prostředí", path:"math-environments"},
       ]
     },
   ],

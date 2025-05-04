@@ -47,7 +47,7 @@ export function to(...children: Node[]): TreeNode {
 }
 export function toCont(child: Node, { agent }: { agent: string }): TreeNode {
   const node = isPredicate(child) ? child : last(child);
-  if (!(node.kind == "cont" || node.kind === "transfer" || node.kind == "comp" || node.kind === "comp-diff" || node.kind === "rate" || node.kind === 'quota')) {
+  if (!(node.kind == "cont" || node.kind === "transfer" || node.kind == "comp" || node.kind === "comp-diff" || node.kind === "rate" || node.kind === 'quota' || node.kind === 'delta')) {
     throw `Non convertable node type: ${node.kind}`
   }
   const typeNode = node as ComparisonDiff | Comparison | Rate;
@@ -243,7 +243,7 @@ function formatSequence(type) {
 
 export function formatPredicate(d: Predicate, formatting: any) {
   const { formatKind, formatAgent, formatEntity, formatQuantity, formatRatio, formatSequence, compose } = { ...mdFormatting, ...formatting }
-  if ((d.kind == "ratio" || d.kind == "transfer" || d.kind === "comp-ratio" || d.kind === "rate" || d.kind === "quota" || d.kind === "comp-diff" || d.kind === "comp-part-eq" || d.kind === 'ratio-c' || d.kind === 'ratios-c') && (d.quantity == null && d.ratio == null)) {
+  if ((d.kind == "ratio" || d.kind == "transfer" || d.kind === "comp-ratio" || d.kind === "rate" || d.kind === "quota" || d.kind === "comp-diff" || d.kind === "comp-part-eq" || d.kind === 'delta') && (d.quantity == null && d.ratio == null)) {
     return formatKind(d);
   }
 
@@ -263,6 +263,11 @@ export function formatPredicate(d: Predicate, formatting: any) {
         : d.agentReceiver === d.agentSender 
           ? compose`změna o ${formatQuantity(d.quantity)} ${formatEntity(d.entity, d.unit)} mezi ${formatAgent(d.agentSender.nameBefore)} a ${formatAgent(d.agentSender.nameAfter)}`
           : compose`${formatQuantity(Math.abs(d.quantity))} ${formatEntity(d.entity, d.unit)}, ${formatAgent(d.quantity > 0 ? d.agentSender.name : d.agentReceiver.name)} => ${formatAgent(d.quantity > 0 ? d.agentReceiver.name : d.agentSender.name)}`
+      break;
+    case "delta":
+      result = d.quantity === 0
+        ? compose`${formatAgent(d.agent.nameBefore ?? d.agent.name)} je rovno ${formatAgent(d.agent.nameAfter ?? d.agent.name)}`
+        : compose`změna o ${formatQuantity(d.quantity)} ${formatEntity(d.entity, d.unit)} mezi ${formatAgent(d.agent.nameBefore ?? d.agent.name)} a ${formatAgent(d.agent.nameAfter ?? d.agent.name)}`;
       break;
     case "comp-ratio":
       const between = (d.ratio > 1 / 2 && d.ratio < 2);

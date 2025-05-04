@@ -4,6 +4,7 @@
 import M7A_2023 from './M7A-2023/index.js';
 import M7A_2024 from './M7A-2024/index.js';
 import M7A_2025 from './M7A-2025/index.js';
+import M7B_2025 from './M7B-2025/index.js';
 
 import M5A_2023 from './M5A-2023/index.js';
 import M5A_2024 from './M5A-2024/index.js';
@@ -29,6 +30,8 @@ export default {
   "M7A-2023": M7A_2023,
   "M7A-2024": M7A_2024,
   "M7A-2025": M7A_2025,
+  "M7B-2025": M7B_2025,
+
   "M9A-2023": M9A_2023,
   // "M9B-2023": {
   //   16.1: ctvercovaSit({ input: {} })[0],

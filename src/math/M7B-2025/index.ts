@@ -1,9 +1,22 @@
-import { cont, ctor } from "../../components/math"
-import { deduce } from "../../utils/deduce-utils"
+import { commonSense, compRelative, cont, ctor, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorPercent, ctorRatios, gcd, nthPart, PartToPartRatio, percent, product, proportion, rate, ratio, ratios, sum } from "../../components/math"
+import { deduce, last, to, toCont, TreeNode } from "../../utils/deduce-utils"
 
 export default {
   1: hledaneCislo(),
+  2: pomer(),
+  4.1: vodniNadrz().pomer,
+  4.2: vodniNadrz().pocetCerpadel,
+  4.3: vodniNadrz().pocetHodin,
+  5.1: zaciSkupiny().dvojic,
+  5.2: zaciSkupiny().zaku,
+  13: kapesne().utratila,
+  14: kapesne().usetrila,
+  15.1: cislo(),
+  15.2: zahradnictvi(),
+  15.3: predstaveni(),
 }
+
+
 function hledaneCislo() {
   const entity = ""
   const prvniL = "první"
@@ -25,6 +38,296 @@ function hledaneCislo() {
         prvni,
         druhy,
       ),
+    )
+  }
+}
+
+function pomer() {
+  const entity = ""
+  const a3 = cont("3. číslo", 72, entity)
+  const a4 = cont("4. číslo", 108, entity)
+
+  const sousedniCislaPomerLabel = "sousední čísla";
+
+  const sousedniCislaPomer = deduce(
+    deduce(
+      a3, a4,
+      ctorRatios(sousedniCislaPomerLabel)
+    ),
+    deduce(a3, a4, gcd("největší společný násobek", entity)),
+    ctor('invert-scale')
+  );
+
+  const createRatios = (treeNode: TreeNode, n1: number, n2: number) => {
+    const newRatio = last(treeNode) as any as PartToPartRatio
+    return {
+      ...newRatio,
+      parts: [`${n1}. číslo`, `${n2}. číslo`],
+    }
+  }
+
+  return {
+    deductionTree: to(
+      deduce(
+        deduce(
+          to(
+            sousedniCislaPomer,
+            createRatios(sousedniCislaPomer, 2, 3)
+          ),
+          a3,
+          nthPart("2. číslo")
+        ),
+        createRatios(sousedniCislaPomer, 1, 2),
+        nthPart("1. číslo")
+      ),
+      commonSense(""),
+      deduce(
+        deduce(
+          createRatios(sousedniCislaPomer, 4, 5),
+          a4,
+          nthPart("5. číslo")
+        ),
+        createRatios(sousedniCislaPomer, 5, 6),
+        nthPart("6. číslo")
+      ),
+
+      commonSense("hledaná čísla jsou 1. číslo a 6. číslo")
+    )
+
+  }
+}
+
+function vodniNadrz() {
+  const entity = "doba"
+  const unit = "h"
+  const entityCerpadlo = "čerpadlo"
+  return {
+    pomer: {
+      deductionTree: deduce(
+        deduce(
+          cont("doplněno", 4, entity, unit),
+          cont("plně naplněno", 6, entity, unit),
+          ctor('ratio')
+        ),
+        ctorComplement("ráno již naplněno")
+      )
+    },
+    pocetCerpadel: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            cont("původně", 6, entity, unit),
+            cont("nově", 8, entity, unit),
+            ctor("comp-ratio")
+          ),
+          proportion(true, [entity, entityCerpadlo])
+        ),
+        cont("původně", 4, entityCerpadlo)
+      )
+    },
+    pocetHodin: {
+      deductionTree: 
+      deduce(
+        deduce(
+          deduce(
+            deduce(
+              cont("původně", 4, entityCerpadlo),
+              cont("nově", 2, entityCerpadlo),
+              ctor("comp-ratio")
+            ),
+            proportion(true, [entityCerpadlo, entity])
+          ),
+          cont("původně", 6, entity, unit)
+        ),
+        ratio("nově", "nově polovina nádrže", 1 / 2)
+      )
+    }
+  }
+}
+
+function zaciSkupiny() {
+  const entityGroup = "skupina";
+  const entityDvojic = "dvojic"
+  const entityTrojic = "trojic"
+  const entity = "žáků"
+
+
+  const pomer = deduce(
+    deduce(
+      cont("dvojice", 3, entityGroup),
+      cont("trojice", 2, entityGroup),
+      ctorRatios("rozložení při rovnosti")
+    ),
+    deduce(
+      deduce(
+        cont("dvojice", 3, entityGroup),
+        cont("trojice", 2, entityGroup),
+        ctorDifference("jednotkový rozdíl při rovnosti")
+      ),
+      cont("rozdíl při rovnosti", 2, entityGroup),
+      product("rozdíl při rovnosti", [], entityGroup, entityGroup)
+    ),
+    ctor("scale")
+  )
+
+  const dvojic = deduce(
+    to(
+      pomer,
+      cont("skupina dvojic", 6, entityDvojic)
+    ),
+    cont("zbývající žáci", 1, entityDvojic),
+    sum("skupina dvojic", [], entityDvojic, entityDvojic)
+  )
+
+
+
+
+  return {
+    dvojic: {
+      deductionTree: dvojic,
+
+    },
+    zaku: {
+      deductionTree: deduce(
+        deduce(
+          last(dvojic),
+          rate("skupina", 2, entity, entityDvojic)
+        ),
+        deduce(
+          to(
+            last(pomer),
+            cont("skupina trojic", 4, entityTrojic)
+          ),
+          rate("skupina", 3, entity, entityTrojic)
+        ),
+        sum("celkem", [entityDvojic, entityTrojic], entity, entity)
+      )
+    }
+
+  }
+}
+
+function kapesne() {
+  const entity = "korun"
+  const entityBase = "měsíc"
+  const agentHelena = "Helena";
+  const agentTereza = "Tereza";
+
+  const ledenPocatekHelena = cont("počátek leden", 550, entity);
+  const brezenPocatekHelena = cont("počátek březen", 1000, entity);
+
+  const kapesneRateHelena = rate(agentHelena, 400, entity, entityBase)
+  const kapesneRateTereza = rate(agentTereza, 400, entity, entityBase)
+
+  const ledenPocateTereza = cont("počátek leden", 400, entity);
+  const dubenPocateTereza = cont("počátek duben", 1200, entity);
+
+  return {
+    utratila: {
+      deductionTree: deduce(
+        deduce(
+          kapesneRateHelena,
+          cont("přijmy z kapesného", 2, entityBase)
+        ),
+        toCont(
+          deduce(
+            ledenPocatekHelena,
+            brezenPocatekHelena,
+            ctorDelta(agentHelena),
+          ), { agent: "změna stavu účtu" }),
+        ctorDifference("utraceno")
+      )
+    },
+    usetrila: {
+      deductionTree: deduce(
+        toCont(
+          deduce(
+            ledenPocateTereza,
+            dubenPocateTereza,
+            ctorDelta(agentTereza),
+          ), { agent: "ušetřila" }),
+        deduce(
+          kapesneRateTereza,
+          cont("přijmy z kapesného", 3, entityBase)
+        ),
+        ctor('ratio')
+      )
+    }
+  }
+}
+
+function cislo() {
+  const entity = ""
+
+  return {
+    deductionTree: deduce(
+      cont("zvětšené číslo", 98, entity),
+      cont("zadané číslo", 56, entity),
+      ctorComparePercent()
+    )
+  }
+}
+
+function zahradnictvi() {
+  const entity = "sazenic"
+  const celkemLabel = "květina";
+  const kopretinyLabel = "kopretina";
+  const hvozdikyLabel = "hvozdík";
+  const astraLabel = "astra";
+
+
+
+  const celkem = cont(celkemLabel, 120, entity)
+  const hvozdiky = deduce(
+    rate(hvozdikyLabel, 24, entity, "bedna"),
+    cont(hvozdikyLabel, 2, "bedna")
+  )
+
+  return {
+    deductionTree: deduce(
+      deduce(
+        celkem,
+        deduce(
+          deduce(
+            celkem,
+            ratio(celkemLabel, kopretinyLabel, 1 / 4)
+          ),
+          hvozdiky,
+          sum("dohromady", [kopretinyLabel, hvozdikyLabel], entity, entity)
+        ),
+        ctorDifference(astraLabel)
+      ),
+      celkem,
+      ctorPercent()
+    )
+  }
+}
+
+function predstaveni() {
+  const entity = "diváků";
+  const dospeliLabel = "dospělý"
+  const detiLabel = "děti"
+  const predskolniDetiLabel = "předškoláci"
+
+  const dospely = cont(dospeliLabel, 100, entity)
+
+  const deti = deduce(
+    dospely,
+    compRelative(detiLabel, dospeliLabel, 1 / 2)
+  )
+  const predskolaci = deduce(
+    deti,
+    percent(detiLabel, predskolniDetiLabel, 60)
+  )
+  return {
+    deductionTree: deduce(
+      predskolaci,
+      deduce(
+        last(deti),
+        dospely,
+        sum("celkem", [detiLabel, dospeliLabel], entity, entity)
+      ),
+      ctorPercent()
     )
   }
 }

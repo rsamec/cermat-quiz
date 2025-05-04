@@ -82,9 +82,10 @@ export type Transfer = EntityBase & {
   quantity: Quantity
 }
 
-export type Delta = {
+export type Delta = EntityBase & {
   kind: 'delta'
-  agent: string
+  agent: AgentNames,
+  quantity: Quantity
 }
 
 export type Rate = {
@@ -179,6 +180,11 @@ export type Scale = {
   quantity: number
 }
 
+export type InvertScale = {
+  kind: "invert-scale"
+  quantity: number
+}
+
 export type NthRule = {
   kind: 'nth'
   entity: string
@@ -214,16 +220,17 @@ export type Question = {
 
 export type EntityDef = string | EntityBase
 export type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | SumCombine | ProductCombine | PartWholeRatio | PartToPartRatio | ComparisonDiff |
-  CommonSense | GCD | LCD | CompareAndPartEqual | Sequence | NthRule | Quota | Scale | Complement | NthPart | NthPartFactor | Transfer | Proportion | ConvertUnit | AngleComparison | Delta | Difference | Phytagoras
+  CommonSense | GCD | LCD | CompareAndPartEqual | Sequence | NthRule | Quota | Scale | Complement | NthPart | NthPartFactor | Transfer | Proportion | ConvertUnit | AngleComparison | Delta | Difference | Phytagoras | InvertScale
 
-export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | 'quota' | "comp-diff" | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'scale' | 'complement') {
+export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | 'quota' | "comp-diff" | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'scale' | 'invert-scale' | 'complement' | 'delta') {
   return { kind } as Predicate
 }
+
 export function ctorUnit(unit: Unit): ConvertUnit {
   return { kind: "unit", unit }
 }
 export function ctorDelta(agent: string): Delta {
-  return { kind: "delta", agent }
+  return { kind: "delta", agent: { name: agent } } as Delta
 }
 export function ctorPercent(): RatioComparison {
   return { kind: "ratio", asPercent: true } as any
@@ -248,6 +255,9 @@ export function ctorDifference(differenceAgent: AgentMatcher): Difference {
 
 export function cont(agent: string, quantity: number, entity: string, unit?: string): Container {
   return { kind: 'cont', agent, quantity, entity, unit };
+}
+export function delta(agent: AgentNames, quantity: number, entity: string, unit?: string): Delta {
+  return { kind: 'delta', agent, quantity, entity, unit };
 }
 export function pi(): Container {
   return { kind: 'cont', agent: "PI", quantity: 3.14, entity: '' }
@@ -557,8 +567,35 @@ function transferRule(a: Container, b: Transfer, transferOrder: "after" | "befor
     question: `Vypočti ${a.agent}${formatEntity(result)}?`,
     result,
     options: [
-      { tex: `${formatNumber(a.quantity)} ${b.quantity > 0 ? ' + ' : ' - '} ${formatNumber(Math.abs(b.quantity))}`, result: formatNumber(result.quantity), ok: a.agent == b.agentReceiver.name },
-      { tex: `${formatNumber(a.quantity)} ${b.quantity > 0 ? ' - ' : ' + '} ${formatNumber(Math.abs(b.quantity))}`, result: formatNumber(result.quantity), ok: a.agent == b.agentSender.name },
+      { tex: `${formatNumber(a.quantity)} ${transferOrder === "before" && a.agent == b.agentSender.name ? ' + ' : ' - '} ${formatNumber(Math.abs(b.quantity))}`, result: formatNumber(result.quantity), ok: a.agent == b.agentSender.name },
+      { tex: `${formatNumber(a.quantity)} ${transferOrder !== "before" && a.agent == b.agentSender.name ? ' - ' : ' + '} ${formatNumber(Math.abs(b.quantity))}`, result: formatNumber(result.quantity), ok: a.agent == b.agentReceiver.name },
+    ]
+  }
+}
+
+function deltaRuleEx(a: Container, b: Delta, transferOrder: "after" | "before"): Container {
+  if (a.entity != b.entity) {
+    throw `Mismatch entity ${a.entity}, ${b.entity}`
+  }
+
+  const quantity = transferOrder === "before"
+    ? a.quantity - b.quantity
+    : a.quantity + b.quantity;
+
+  const agent = b.agent.name;
+
+  return { kind: 'cont', agent, quantity, entity: a.entity }
+
+}
+
+function deltaRule(a: Container, b: Delta, transferOrder: "after" | "before"): Question {
+  const result = deltaRuleEx(a, b, transferOrder)
+  return {
+    question: `Vypočti ${result.agent}${formatEntity(result)}?`,
+    result,
+    options: [
+      { tex: `${formatNumber(a.quantity)} ${transferOrder === "before" ? ' - ' : ' + '} ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: true },
+      { tex: `${formatNumber(a.quantity)} ${transferOrder == "before" ? ' + ' : ' - '} ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: false },
     ]
   }
 }
@@ -786,6 +823,8 @@ function proportionRule(a: RatioComparison, b: Proportion): Question {
     ]
   }
 }
+
+
 function proportionRatiosRuleEx(a: PartToPartRatio, b: Proportion): PartToPartRatio {
   if (a.ratios.length != 2) {
     throw 'Only two part ratios is supported.'
@@ -1063,7 +1102,7 @@ function toTransferEx(a: Container, b: Container, last: Delta): Transfer {
     throw `Mismatch entity ${a.entity}, ${b.entity}`
   }
   const agent = { name: last.agent, nameBefore: a.agent, nameAfter: b.agent }
-  return { kind: 'transfer', agentReceiver: agent, agentSender: agent, quantity: b.quantity - a.quantity, entity: a.entity, unit: a.unit }
+  return { kind: 'transfer', agentReceiver: agent.name, agentSender: agent.name, quantity: b.quantity - a.quantity, entity: a.entity, unit: a.unit }
 }
 function toTransfer(a: Container, b: Container, last: Delta): Question {
   const result = toTransferEx(a, b, last)
@@ -1076,6 +1115,35 @@ function toTransfer(a: Container, b: Container, last: Delta): Question {
     ]
   }
 }
+
+function toDeltaEx(a: Container, b: Container, last: Delta): Delta {
+  if (a.entity != b.entity) {
+    throw `Mismatch entity ${a.entity}, ${b.entity}`
+  }
+  return { kind: 'delta', agent: { name: last.agent?.name ?? b.agent, nameBefore: a.agent, nameAfter: b.agent }, quantity: b.quantity - a.quantity, entity: a.entity, unit: a.unit }
+}
+function toDelta(a: Container, b: Container, last: Delta): Question {
+  const result = toDeltaEx(a, b, last)
+  return {
+    question: `Změna stavu ${a.agent} => ${b.agent}. O kolik?`,
+    result,
+    options: [
+      { tex: `${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}`, result: formatNumber(a.quantity - b.quantity), ok: false },
+      { tex: `${formatNumber(b.quantity)} - ${formatNumber(a.quantity)}`, result: formatNumber(b.quantity - a.quantity), ok: true },
+    ]
+  }
+}
+
+function convertCompareToDeltaEx(a: Comparison, b: Delta): Delta {
+  const { name, nameBefore, nameAfter } = b.agent;
+  return { kind: 'delta', agent: { name, nameBefore: nameBefore ?? a.agentA, nameAfter: nameAfter ?? a.agentB }, quantity: a.quantity, entity: a.entity, unit: a.unit }
+}
+
+function convertDeltaToCompareEx(a: Delta, b: Comparison): Comparison {
+  const { agentA, agentB, entity, unit } = b;
+  return { kind: 'comp', agentA, agentB, quantity: a.quantity, entity, unit }
+}
+
 function pythagorasRuleEx(a: Container, b: Container, last: Phytagoras): Container {
   if (a.entity != b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`
@@ -1390,7 +1458,7 @@ function mapRatiosByFactor(multi: PartToPartRatio, quantity: number): Question {
   const result = mapRatiosByFactorEx(multi, quantity)
 
   return {
-    question: `${quantity > 1 ? "Roznásob " : "Zkrať "} poměr číslem ${formatNumber(quantity)}`,
+    question: `${quantity > 1 ? "Roznásob " : "Zkrať "} poměr číslem ${quantity > 1 ? formatNumber(quantity) : formatNumber(1 / quantity)}`,
     result,
     options: []
 
@@ -1558,7 +1626,7 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
         : kind === "quota"
           ? toQuota(a, b)
           : kind === "delta"
-            ? toTransfer(a, b, last)
+            ? toDelta(a, b, last)
             : kind === "pythagoras"
               ? pythagorasRule(a, b, last)
               : kind === "rate"
@@ -1571,8 +1639,8 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
                       ? toPartWholeRatio(a, b, last)
                       : toComparison(a, b)
   }
-  if (a.kind === "rate" && b.kind === "rate" && last.kind === "ratios"){
-    return toRatios([a,b],last)
+  if (a.kind === "rate" && b.kind === "rate" && last.kind === "ratios") {
+    return toRatios([a, b], last)
   }
   else if ((a.kind === "cont" || a.kind === "comp") && b.kind === "unit") {
     return convertToUnit(a, b);
@@ -1696,21 +1764,26 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   }
   else if (a.kind === "cont" && b.kind == "ratios") {
     const kind = last?.kind;
+
     return kind === "scale"
       ? mapRatiosByFactor(b, a.quantity)
-      : kind === "nth-factor"
-        ? nthPartFactorBy(b, a, last)
-        : kind === "nth-part"
-          ? partToPartRule(a, b, last) : partToPartRule(a, b);
+      : kind === "invert-scale"
+        ? mapRatiosByFactor(b, 1 / a.quantity)
+        : kind === "nth-factor"
+          ? nthPartFactorBy(b, a, last)
+          : kind === "nth-part"
+            ? partToPartRule(a, b, last) : partToPartRule(a, b);
   }
   else if (a.kind === "ratios" && b.kind == "cont") {
     const kind = last?.kind;
     return kind === "scale"
       ? mapRatiosByFactor(a, b.quantity)
-      : kind === "nth-factor"
-        ? nthPartFactorBy(a, b, last)
-        : kind === "nth-part"
-          ? partToPartRule(b, a, last) : partToPartRule(b, a);
+      : kind === "invert-scale"
+        ? mapRatiosByFactor(a, 1 / b.quantity)
+        : kind === "nth-factor"
+          ? nthPartFactorBy(a, b, last)
+          : kind === "nth-part"
+            ? partToPartRule(b, a, last) : partToPartRule(b, a);
 
 
   }
@@ -1737,6 +1810,22 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   else if (a.kind === "transfer" && b.kind === "cont") {
     return transferRule(b, a, "before")
   }
+  else if (a.kind === "cont" && b.kind === "delta") {
+    return deltaRule(a, b, "after")
+  }
+  else if (a.kind === "delta" && b.kind === "cont") {
+    return deltaRule(b, a, "before")
+  }
+  else if (a.kind === "comp" && b.kind === "delta") {
+    return convertCompareToDeltaEx(a, b)
+  }
+  else if (a.kind === "delta" && b.kind === "comp") {
+    return convertDeltaToCompareEx(a, b)
+  }
+  else if (a.kind === "comp" && b.kind === "delta") {
+    return convertCompareToDeltaEx(a, b)
+  }
+
   else if (a.kind === "comp" && b.kind === "comp") {
     return compareToCompareRule(b, a)
   }

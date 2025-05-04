@@ -1,4 +1,4 @@
-import { commonSense, comp, compRatio, compRelative, cont, ctor, ctorComplement, ctorDelta, ctorDifference, ctorRatios, nthPart, product, quota, rate, ratio, ratios, sum } from "../../components/math";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, product, rate, ratio, ratios, sum } from "../../components/math";
 import { deduce, last, to, toCont } from "../../utils/deduce-utils";
 
 export default {

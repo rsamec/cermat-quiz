@@ -198,8 +198,27 @@ function transferRule(a, b, transferOrder) {
     question: `Vypo\u010Dti ${a.agent}${formatEntity(result)}?`,
     result,
     options: [
-      { tex: `${formatNumber(a.quantity)} ${b.quantity > 0 ? " + " : " - "} ${formatNumber(Math.abs(b.quantity))}`, result: formatNumber(result.quantity), ok: a.agent == b.agentReceiver.name },
-      { tex: `${formatNumber(a.quantity)} ${b.quantity > 0 ? " - " : " + "} ${formatNumber(Math.abs(b.quantity))}`, result: formatNumber(result.quantity), ok: a.agent == b.agentSender.name }
+      { tex: `${formatNumber(a.quantity)} ${transferOrder === "before" && a.agent == b.agentSender.name ? " + " : " - "} ${formatNumber(Math.abs(b.quantity))}`, result: formatNumber(result.quantity), ok: a.agent == b.agentSender.name },
+      { tex: `${formatNumber(a.quantity)} ${transferOrder !== "before" && a.agent == b.agentSender.name ? " - " : " + "} ${formatNumber(Math.abs(b.quantity))}`, result: formatNumber(result.quantity), ok: a.agent == b.agentReceiver.name }
+    ]
+  };
+}
+function deltaRuleEx(a, b, transferOrder) {
+  if (a.entity != b.entity) {
+    throw `Mismatch entity ${a.entity}, ${b.entity}`;
+  }
+  const quantity = transferOrder === "before" ? a.quantity - b.quantity : a.quantity + b.quantity;
+  const agent = b.agent.name;
+  return { kind: "cont", agent, quantity, entity: a.entity };
+}
+function deltaRule(a, b, transferOrder) {
+  const result = deltaRuleEx(a, b, transferOrder);
+  return {
+    question: `Vypo\u010Dti ${result.agent}${formatEntity(result)}?`,
+    result,
+    options: [
+      { tex: `${formatNumber(a.quantity)} ${transferOrder === "before" ? " - " : " + "} ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: true },
+      { tex: `${formatNumber(a.quantity)} ${transferOrder == "before" ? " + " : " - "} ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: false }
     ]
   };
 }
@@ -633,15 +652,14 @@ function toComparison(a, b) {
     ]
   };
 }
-function toTransferEx(a, b, last2) {
+function toDeltaEx(a, b, last2) {
   if (a.entity != b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`;
   }
-  const agent = { name: last2.agent, nameBefore: a.agent, nameAfter: b.agent };
-  return { kind: "transfer", agentReceiver: agent, agentSender: agent, quantity: b.quantity - a.quantity, entity: a.entity, unit: a.unit };
+  return { kind: "delta", agent: { name: last2.agent?.name ?? b.agent, nameBefore: a.agent, nameAfter: b.agent }, quantity: b.quantity - a.quantity, entity: a.entity, unit: a.unit };
 }
-function toTransfer(a, b, last2) {
-  const result = toTransferEx(a, b, last2);
+function toDelta(a, b, last2) {
+  const result = toDeltaEx(a, b, last2);
   return {
     question: `Zm\u011Bna stavu ${a.agent} => ${b.agent}. O kolik?`,
     result,
@@ -650,6 +668,14 @@ function toTransfer(a, b, last2) {
       { tex: `${formatNumber(b.quantity)} - ${formatNumber(a.quantity)}`, result: formatNumber(b.quantity - a.quantity), ok: true }
     ]
   };
+}
+function convertCompareToDeltaEx(a, b) {
+  const { name, nameBefore, nameAfter } = b.agent;
+  return { kind: "delta", agent: { name, nameBefore: nameBefore ?? a.agentA, nameAfter: nameAfter ?? a.agentB }, quantity: a.quantity, entity: a.entity, unit: a.unit };
+}
+function convertDeltaToCompareEx(a, b) {
+  const { agentA, agentB, entity, unit } = b;
+  return { kind: "comp", agentA, agentB, quantity: a.quantity, entity, unit };
 }
 function pythagorasRuleEx(a, b, last2) {
   if (a.entity != b.entity) {
@@ -1041,7 +1067,7 @@ function inferenceRuleEx(...args) {
     return last2.kind === "sequence" ? sequenceRule(arr) : last2.kind === "gcd" ? gcdRule(arr, last2) : last2.kind === "lcd" ? lcdRule(arr, last2) : last2.kind === "product" ? productRule(arr, last2) : last2.kind === "sum" ? sumRule(arr, last2) : last2.kind === "ratios" ? toRatios(arr, last2) : null;
   } else if (a.kind === "cont" && b.kind == "cont") {
     const kind = last2?.kind;
-    return kind === "comp-diff" ? toComparisonDiff(a, b) : kind === "diff" ? toDifference(a, b, last2) : kind === "quota" ? toQuota(a, b) : kind === "delta" ? toTransfer(a, b, last2) : kind === "pythagoras" ? pythagorasRule(a, b, last2) : kind === "rate" ? toRate(a, b) : kind === "ratios" ? toRatios([a, b], last2) : kind === "comp-ratio" ? toRatioComparison(a, b, last2) : kind === "ratio" ? toPartWholeRatio(a, b, last2) : toComparison(a, b);
+    return kind === "comp-diff" ? toComparisonDiff(a, b) : kind === "diff" ? toDifference(a, b, last2) : kind === "quota" ? toQuota(a, b) : kind === "delta" ? toDelta(a, b, last2) : kind === "pythagoras" ? pythagorasRule(a, b, last2) : kind === "rate" ? toRate(a, b) : kind === "ratios" ? toRatios([a, b], last2) : kind === "comp-ratio" ? toRatioComparison(a, b, last2) : kind === "ratio" ? toPartWholeRatio(a, b, last2) : toComparison(a, b);
   }
   if (a.kind === "rate" && b.kind === "rate" && last2.kind === "ratios") {
     return toRatios([a, b], last2);
@@ -1124,10 +1150,10 @@ function inferenceRuleEx(...args) {
     return kind === "ratio" ? ratiosConvertRule(b, a, last2) : null;
   } else if (a.kind === "cont" && b.kind == "ratios") {
     const kind = last2?.kind;
-    return kind === "scale" ? mapRatiosByFactor(b, a.quantity) : kind === "nth-factor" ? nthPartFactorBy(b, a, last2) : kind === "nth-part" ? partToPartRule(a, b, last2) : partToPartRule(a, b);
+    return kind === "scale" ? mapRatiosByFactor(b, a.quantity) : kind === "invert-scale" ? mapRatiosByFactor(b, 1 / a.quantity) : kind === "nth-factor" ? nthPartFactorBy(b, a, last2) : kind === "nth-part" ? partToPartRule(a, b, last2) : partToPartRule(a, b);
   } else if (a.kind === "ratios" && b.kind == "cont") {
     const kind = last2?.kind;
-    return kind === "scale" ? mapRatiosByFactor(a, b.quantity) : kind === "nth-factor" ? nthPartFactorBy(a, b, last2) : kind === "nth-part" ? partToPartRule(b, a, last2) : partToPartRule(b, a);
+    return kind === "scale" ? mapRatiosByFactor(a, b.quantity) : kind === "invert-scale" ? mapRatiosByFactor(a, 1 / b.quantity) : kind === "nth-factor" ? nthPartFactorBy(a, b, last2) : kind === "nth-part" ? partToPartRule(b, a, last2) : partToPartRule(b, a);
   } else if (a.kind === "cont" && b.kind === "comp-diff") {
     return diffRule(a, b);
   } else if (a.kind === "comp-diff" && b.kind === "cont") {
@@ -1145,6 +1171,16 @@ function inferenceRuleEx(...args) {
     return transferRule(a, b, "after");
   } else if (a.kind === "transfer" && b.kind === "cont") {
     return transferRule(b, a, "before");
+  } else if (a.kind === "cont" && b.kind === "delta") {
+    return deltaRule(a, b, "after");
+  } else if (a.kind === "delta" && b.kind === "cont") {
+    return deltaRule(b, a, "before");
+  } else if (a.kind === "comp" && b.kind === "delta") {
+    return convertCompareToDeltaEx(a, b);
+  } else if (a.kind === "delta" && b.kind === "comp") {
+    return convertDeltaToCompareEx(a, b);
+  } else if (a.kind === "comp" && b.kind === "delta") {
+    return convertCompareToDeltaEx(a, b);
   } else if (a.kind === "comp" && b.kind === "comp") {
     return compareToCompareRule(b, a);
   } else {
@@ -3107,7 +3143,7 @@ function to(...children) {
 }
 function toCont(child, { agent }) {
   const node = isPredicate(child) ? child : last(child);
-  if (!(node.kind == "cont" || node.kind === "transfer" || node.kind == "comp" || node.kind === "comp-diff" || node.kind === "rate" || node.kind === "quota")) {
+  if (!(node.kind == "cont" || node.kind === "transfer" || node.kind == "comp" || node.kind === "comp-diff" || node.kind === "rate" || node.kind === "quota" || node.kind === "delta")) {
     throw `Non convertable node type: ${node.kind}`;
   }
   const typeNode = node;
@@ -3252,7 +3288,7 @@ function formatSequence2(type) {
 }
 function formatPredicate(d, formatting) {
   const { formatKind, formatAgent, formatEntity: formatEntity2, formatQuantity, formatRatio: formatRatio2, formatSequence: formatSequence3, compose } = { ...mdFormatting, ...formatting };
-  if ((d.kind == "ratio" || d.kind == "transfer" || d.kind === "comp-ratio" || d.kind === "rate" || d.kind === "quota" || d.kind === "comp-diff" || d.kind === "comp-part-eq" || d.kind === "ratio-c" || d.kind === "ratios-c") && (d.quantity == null && d.ratio == null)) {
+  if ((d.kind == "ratio" || d.kind == "transfer" || d.kind === "comp-ratio" || d.kind === "rate" || d.kind === "quota" || d.kind === "comp-diff" || d.kind === "comp-part-eq" || d.kind === "delta") && (d.quantity == null && d.ratio == null)) {
     return formatKind(d);
   }
   let result = "";
@@ -3265,6 +3301,9 @@ function formatPredicate(d, formatting) {
       break;
     case "transfer":
       result = d.quantity === 0 ? compose`${formatAgent(d.agentReceiver.name)} je rovno ${formatAgent(d.agentSender.name)}` : d.agentReceiver === d.agentSender ? compose`změna o ${formatQuantity(d.quantity)} ${formatEntity2(d.entity, d.unit)} mezi ${formatAgent(d.agentSender.nameBefore)} a ${formatAgent(d.agentSender.nameAfter)}` : compose`${formatQuantity(Math.abs(d.quantity))} ${formatEntity2(d.entity, d.unit)}, ${formatAgent(d.quantity > 0 ? d.agentSender.name : d.agentReceiver.name)} => ${formatAgent(d.quantity > 0 ? d.agentReceiver.name : d.agentSender.name)}`;
+      break;
+    case "delta":
+      result = d.quantity === 0 ? compose`${formatAgent(d.agent.nameBefore ?? d.agent.name)} je rovno ${formatAgent(d.agent.nameAfter ?? d.agent.name)}` : compose`změna o ${formatQuantity(d.quantity)} ${formatEntity2(d.entity, d.unit)} mezi ${formatAgent(d.agent.nameBefore ?? d.agent.name)} a ${formatAgent(d.agent.nameAfter ?? d.agent.name)}`;
       break;
     case "comp-ratio":
       const between = d.ratio > 1 / 2 && d.ratio < 2;

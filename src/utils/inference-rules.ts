@@ -1,6 +1,6 @@
 
 import type { Predicate } from "../components/math.js";
-import { cont, ratio, comp, rate, ratios, compRatio, compDiff, sum, lcd, gcd, ctor, inferenceRule, nth, quota, product, ctorRatios, ctorUnit, transfer, ctorDelta, compAngle, ctorComplement } from "../components/math.js";
+import { cont, ratio, comp, rate, ratios, compRatio, compDiff, sum, lcd, gcd, ctor, inferenceRule, nth, quota, product, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta } from "../components/math.js";
 
 export default function rules() {
 
@@ -27,6 +27,10 @@ export default function rules() {
 
   const a1 = (quantity: number) => cont("Ája dnes", quantity, "sešity");
   const a2 = (quantity: number) => cont("Ája zítra", quantity, "sešity");
+
+  const aja = cont("Ája", 5, "sešity")
+  const ajaDelta = delta({ name: "Ája", nameBefore: "Ája dnes", nameAfter: "Ája zítra" }, 3, "sešity");
+
   const partToWholeRatio = ratio("třída", "chlapci", 1 / 4);
   const partToPartRatios = ratios("třída", ["chlapci", "dívky"], [1, 3]);
 
@@ -40,9 +44,10 @@ export default function rules() {
   return {
     compare: [deduceRule(a, b), deduceRule(a, compareAtoB), deduceRule(b, compareAtoB)],
     transfer: [
-      deduceRule(a, transferAtoB), deduceRule(b, transferAtoB), deduceRule(a, b,),
+      deduceRule(a1(2), a2(5), ctor('delta')), deduceRule(a1(5), a2(2), ctor('delta')),
+      deduceRule(aja, ajaDelta), deduceRule(ajaDelta, aja),
+      deduceRule(a, transferAtoB), deduceRule(b, transferAtoB),
       deduceRule(transferAtoB, a), deduceRule(transferAtoB, b),
-      deduceRule(a1(2), a2(5), ctorDelta('Ája')), deduceRule(a1(5), a2(2), ctorDelta('Ája'))
     ],
     ratioCompare: [deduceRule(a, b, ctor('comp-ratio')), deduceRule(a, compareRatioAtoB), deduceRule(b, compareRatioAtoB)],
     angleCompare: [deduceRule(alfa, compAngle("beta", "alfa", "supplementary")), deduceRule(alfa, compAngle("beta", "alfa", "complementary")), deduceRule(alfa, compAngle("beta", "alfa", "corresponding"))],

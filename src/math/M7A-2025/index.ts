@@ -1,4 +1,4 @@
-import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorPercent, ctorUnit, percent, rate, ratio, ratios, sum } from "../../components/math"
+import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorUnit, percent, rate, ratio, ratios, sum, transfer } from "../../components/math"
 import { deduce, last, to } from "../../utils/deduce-utils"
 
 export default {
@@ -7,6 +7,7 @@ export default {
   4.1: asistencniPes().bara,
   4.2: asistencniPes().rozdilBaraACyril,
   4.3: asistencniPes().sum,
+  6.1: karticky().petr,
   11: tornado(),
   12: cestaKeStudance().meritko,
   13: cestaKeStudance().delkaTrasa,
@@ -130,6 +131,41 @@ function asistencniPes() {
   }
 }
 
+
+function karticky() {
+  const entity = "kartičky"
+  const tondaToPeter = transfer("Tonda", "Petr", 4, entity);
+  const petrToTonda = transfer("Petr", "Tonda", 6, entity);
+
+  //const tondaToJirka = transfer("Tonda","Jirka")
+  const jirkaToTonda = transfer("Jirka", "Tonda", 3, entity)
+
+  const petrToJirka = transfer("Petr", "Jirka", 2, entity)
+  const jirkaToPetr = transfer("Jirka", "Petr", 3, entity)
+
+  const vedouciToPetr = transfer("vedouci", "Petr", 4, entity)
+  const petr = cont("Petr", 80, entity);
+  return {
+    petr: {
+      deductionTree: deduce(
+        petrToTonda,
+        deduce(
+          tondaToPeter,
+          deduce(
+            petrToJirka,
+            deduce(
+              jirkaToPetr,
+              deduce(
+                vedouciToPetr,
+                petr
+              )
+            )
+          )
+        )
+      )
+    }
+  }
+}
 
 function cestaKeStudance() {
   const entity = "skutečnost"
