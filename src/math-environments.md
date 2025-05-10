@@ -11,17 +11,23 @@ import {deduce} from './utils/deduce.js';
 import {partion, relativeTwoParts, relativeTowPartsDiff, deduceTraverse, highlightLabel, renderChat } from './utils/deduce-components.js';
 import { renderChatStepper, useInput } from './utils/deduce-chat.js';
 import {inferenceRule, cont, sum, comp, ratio} from './components/math.js';
-import {computeTreeMetrics, jsonToMarkdownTree, jsonToMarkdownChat, highlight, generateAIMessages} from './utils/deduce-utils.js';
+import {computeTreeMetrics, jsonToMarkdownTree, jsonToMarkdownChat, highlight, generateAIMessages, last} from './utils/deduce-utils.js';
 import mdPlus from './utils/md-utils.js';
 import { html as rhtml } from './utils/reactive-htl.js';
 import { signal, computed } from '@preact/signals-core';
+import {toEquation} from './utils/math-solver.js';
 
 import {autobus, autobus2} from './math/autobus.js';
+import {okurkyASalaty} from './math/M9I-2025/okurky.js';
+import MMA_2025 from './math/MMA-2025/index.js';
 
 ```
 
 ```js
 
+
+// console.log(`Standard:${toEquation(last(MMA_2025["5.1"].deductionTree)).evaluate({d: 10})}`)
+// console.log(`Power:${toEquation(last(MMA_2025["5.2"].deductionTree)).evaluate({d: 10, x: 3})}`)
 function renderChatButton(label, query){
   return html`<a style="height:34px;" href="#" onclick=${(e) => {
                     e.preventDefault();
@@ -33,7 +39,7 @@ function renderChatButton(label, query){
 function renderExample({example, unit, showRelativeValues}={}){
   const tree = deduceTraverse(example.deductionTree);  
   const {depth, width} = computeTreeMetrics(example.deductionTree);
-  const renderType = Inputs.radio(new Map([['Textový strom','text-tree'],['Dedukční strom','deduce-tree'],['Textový chat','text-chat'],['Chat', 'chat'],['Chat dialog', 'stepper-chat']]), {value:'chat', label:'Zobrazit'})  
+  const renderType = Inputs.radio(new Map([['Textový strom','text-tree'],['Dedukční strom','deduce-tree'],['Textový chat','text-chat'],['Chat', 'chat'],['Chat dialog', 'stepper-chat']]), {value:'text-tree', label:'Zobrazit'})  
   const renderType$ = useInput(renderType);
 
   const {explainSolution, vizualizeSolution, generateMoreQuizes} = generateAIMessages({template: example.template(highlight), deductionTrees:[["Řešení",example.deductionTree]]})
@@ -65,8 +71,27 @@ return html`
 ```
 
 # Slovní úlohy
- 
-    
+```js
+const okurkyForm = Inputs.form({
+  salatyNavic: Inputs.range([1, 400], {step: 1, value: 4, label: "Saláty navíc o"}),
+});
+const okurkyInput = Generators.input(okurkyForm);
+```
+
+## Okurky a salaty
+
+<details>
+  <summary>Parametrizace</summary>
+  ${okurkyForm}
+</details>
+
+<div>${renderExample({example:okurkyASalaty({input:okurkyInput})[0]})}</div>
+
+<div>${renderExample({example:MMA_2025["1"]})}</div>
+<div>${renderExample({example:MMA_2025["5.1"]})}</div>
+<div>${renderExample({example:MMA_2025["5.2"]})}</div>
+<div>${renderExample({example:MMA_2025["6"]})}</div>
+<!-- <div>${renderExample({example:MMA_2025["8"]})}</div> -->
 <div>${renderExample({example:autobus()})}</div>
 <div>${renderExample({example:autobus2()})}</div>
 

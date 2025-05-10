@@ -6,6 +6,7 @@ import { readJsonFromFile } from './utils/file.utils.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, isEmptyOrWhiteSpace } from './utils/quiz-string-utils.js';
 import wordProblems, { inferenceRuleWithQuestion, formatPredicate, formatSequencePattern } from './math/word-problems.js';
 import Fraction from 'fraction.js';
+import { toEquationExpr } from "./utils/math-solver.js"
 
 const {
   values: { code }
@@ -16,7 +17,17 @@ const {
 const formatting = {
   compose: (strings, ...args) => concatString(strings, ...args),
   formatKind: d => ``,
-  formatQuantity: d => d.toLocaleString('cs-CZ'),
+  formatQuantity: d => {
+     if (typeof d === "number") {
+       return d.toLocaleString("cs-CZ");
+     }
+     else if (typeof d === "string") {
+       return d;
+     }
+     else {
+       return `<div class="badge badge--warning">${toEquationExpr(d)}</div>`
+     }
+  },
   formatRatio: (d, asPercent) => d != null
     ? (asPercent
       ? `${(d * 100).toLocaleString('cs-CZ')}%`

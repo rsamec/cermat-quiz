@@ -1,35 +1,39 @@
-import { comp, compRatio, cont, ratio } from "../../components/math.js";
+import { comp, compRatio, cont, ctorLinearEquation, ratio } from "../../components/math.js";
 import { axiomInput, deduce, last } from "../../utils/deduce-utils.js";
 
-
 interface InputParameters {
-  okurky: number
+  salatyNavic: number,  
 }
 export function okurkyASalaty({ input }: { input: InputParameters }) {
-  const entity = "sazenic";
+  const entity = "sazenice";
   const okurkaLabel = "zasazeno okurek"
   const salatLabel = "zasazeno salátů"
 
   const ujaloOkurekLabel = "ujalo okurek";
   const ujaloSalatLabel = "ujalo salátů";
+  const variableName = "okurky"
 
-  const okurka = axiomInput(cont(okurkaLabel, input.okurky, entity), 1);
+  const salatyAndOkurkyCompare = axiomInput(comp(salatLabel, okurkaLabel, input.salatyNavic, entity), 1)
+  const ujaloSalataRatio = axiomInput(ratio(salatLabel, ujaloSalatLabel, 3 / 4), 2)
+  const ujaloOkurekRatio = axiomInput(ratio(okurkaLabel, ujaloOkurekLabel, 5 / 6), 3)
 
-
-  const salat = deduce(
+  const okurka = axiomInput(cont(okurkaLabel, variableName, entity), 1);
+  const sazenicSalatu = deduce(
     okurka,
-    comp(salatLabel, okurkaLabel, 4, entity)
+    salatyAndOkurkyCompare
   )
-
-  const dd1 = deduce(
-    salat,
-    ratio(salatLabel, ujaloSalatLabel, 3 / 4)
+  const ujaloSalatu = deduce(
+    sazenicSalatu,
+    ujaloSalataRatio
   )
-
-  const dd2 = deduce(
+  const ujaloOkurek = deduce(
     okurka,
-    ratio(okurkaLabel, ujaloOkurekLabel, 5 / 6)
+    ujaloOkurekRatio
   )
 
-  return [{ deductionTree: deduce(dd1,dd2) }, { deductionTree: dd2 }]
+  const sazenicOkurek = deduce(ujaloSalatu, ujaloOkurek, ctorLinearEquation(okurkaLabel,{ entity}, variableName));
+
+  return [
+    { deductionTree: deduce(sazenicOkurek, salatyAndOkurkyCompare), template: () => '' },
+    { deductionTree: deduce(last(sazenicOkurek), ujaloOkurekRatio), template: () => '' }]
 }

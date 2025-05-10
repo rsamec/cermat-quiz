@@ -24,7 +24,8 @@ export function renderChatStepper(deductionTree){
 function renderStep({premises, conclusion, questions, index}, steps$, addStep, answers$, stepsCount){
   
   const q = questions[0];
-  const options = shuffle(q?.options ?? [{tex:'Další krok', ok: true}]);
+  const rawOptions = q?.options == null || q.options.length === 0 ?  [{tex:'Další krok', ok: true}]: q.options;
+  const options = shuffle(rawOptions);
   const qInput = Inputs.button(options.map(d => ([d.tex,value => {
     if (d.ok) {
       addStep();

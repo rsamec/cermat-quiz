@@ -2,7 +2,8 @@
 var defaultHelpers = {
   convertToFraction: (d) => d,
   convertToUnit: (d) => d,
-  unitAnchor: () => 1
+  unitAnchor: () => 1,
+  solveLinearEquation: (fist, second, variable) => NaN
 };
 var helpers = defaultHelpers;
 function configure(config) {
@@ -15,16 +16,25 @@ function areNumbers(ratios4) {
   return ratios4.every((d) => isNumber(d));
 }
 function wrapToQuantity(expression, context) {
-  return { expression, context };
+  return { expression, context: convertContext(context) };
 }
 function wrapToRatio(expression, context) {
-  return { expression, context };
+  return { expression, context: convertContext(context) };
+}
+function convertContext(context) {
+  return Object.fromEntries(Object.entries(context).map(([key, value]) => [key, convertRatioKeysToFractions(value)]));
+}
+function convertRatioKeysToFractions(obj) {
+  return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, key === "ratio" ? helpers.convertToFraction(value) : value]));
 }
 function ctor(kind) {
   return { kind };
 }
 function ctorUnit(unit) {
   return { kind: "unit", unit };
+}
+function ctorLinearEquation(agent, entity3, variable = "x") {
+  return { kind: "linear-equation", agent, variable, entity: entity3 };
 }
 function ctorDelta(agent) {
   return { kind: "delta", agent: { name: agent } };
@@ -787,7 +797,7 @@ function sumRule(items, b) {
   const result = sumRuleEx(items, b);
   const isQuantity = isQuantityPredicate(result);
   return {
-    question: result.kind === "cont" ? combineQuestion(result) : result.kind === "rate" ? `Vypo\u010Dti ${result.agent}` : `Vypo\u010Dti ${result.part}`,
+    question: result.kind === "cont" ? containerQuestion(result) : result.kind === "rate" ? `Vypo\u010Dti ${result.agent}` : `Vypo\u010Dti ${result.part}`,
     result,
     options: [
       {
@@ -808,7 +818,7 @@ function productRuleEx(items, b) {
   return {
     kind: "cont",
     agent: b.wholeAgent,
-    quantity: areNumbers(values) ? values.reduce((out, d) => out *= d, 1) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity`).join(" * "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d]))),
+    quantity: areNumbers(values) ? values.reduce((out, d) => out *= d, 1) : wrapToQuantity(items.map((d, i) => `y${i + 1}.quantity`).join(" * "), Object.fromEntries(items.map((d, i) => [`y${i + 1}`, d]))),
     entity: b.wholeEntity.entity,
     unit: b.wholeEntity.unit
   };
@@ -817,7 +827,7 @@ function productRule(items, b) {
   const result = productRuleEx(items, b);
   const values = items.map((d) => d.quantity);
   return {
-    question: combineQuestion(result),
+    question: containerQuestion(result),
     result,
     options: areNumbers(values) ? [
       { tex: values.map((d) => formatNumber(d)).join(" * "), result: formatNumber(values.reduce((out, d) => out *= d, 1)), ok: true },
@@ -837,7 +847,7 @@ function gcdRule(items, b) {
   const values = items.map((d) => d.quantity);
   const result = gcdRuleEx(values, b);
   return {
-    question: combineQuestion(result),
+    question: containerQuestion(result),
     result,
     options: areNumbers(values) && isNumber(result.quantity) ? [
       { tex: gcdFromPrimeFactors(primeFactorization(values)).join(" * "), result: formatNumber(result.quantity), ok: true }
@@ -857,7 +867,7 @@ function lcdRule(items, b) {
   const values = items.map((d) => d.quantity);
   const result = lcdRuleEx(values, b);
   return {
-    question: combineQuestion(result),
+    question: containerQuestion(result),
     result,
     options: areNumbers(values) && isNumber(result.quantity) ? [
       { tex: lcdFromPrimeFactors(primeFactorization(values)).join(" * "), result: formatNumber(result.quantity), ok: true }
@@ -1139,6 +1149,22 @@ function toRate(a, b) {
     return resultAsQuestion(result);
   }
 }
+function solveEquationEx(a, b, last4) {
+  return {
+    kind: "cont",
+    agent: last4.agent,
+    quantity: helpers.solveLinearEquation(a.quantity, b.quantity, last4.variable),
+    ...last4.entity
+  };
+}
+function solveEquation(a, b, last4) {
+  const result = solveEquationEx(a, b, last4);
+  return {
+    question: `Vy\u0159e\u0161 line\xE1rn\xED rovnici ${a.agent} = ${b.agent} pro nezn\xE1mou ${last4.variable}.`,
+    result,
+    options: []
+  };
+}
 function toQuota(a, quota3) {
   if (!isNumber(a.quantity) || !isNumber(quota3.quantity)) {
     throw "quota does not support non quantity type";
@@ -1375,10 +1401,13 @@ function inferenceRuleEx(...args) {
     return last4.kind === "sequence" ? sequenceRule(arr) : last4.kind === "gcd" ? gcdRule(arr, last4) : last4.kind === "lcd" ? lcdRule(arr, last4) : last4.kind === "product" ? productRule(arr, last4) : last4.kind === "sum" ? sumRule(arr, last4) : last4.kind === "ratios" ? toRatios(arr, last4) : null;
   } else if (a.kind === "cont" && b.kind == "cont") {
     const kind = last4?.kind;
-    return kind === "comp-diff" ? toComparisonDiff(a, b) : kind === "diff" ? toDifference(a, b, last4) : kind === "quota" ? toQuota(a, b) : kind === "delta" ? toDelta(a, b, last4) : kind === "pythagoras" ? pythagorasRule(a, b, last4) : kind === "rate" ? toRate(a, b) : kind === "ratios" ? toRatios([a, b], last4) : kind === "comp-ratio" ? toRatioComparison(a, b, last4) : kind === "ratio" ? toPartWholeRatio(a, b, last4) : toComparison(a, b);
+    return kind === "comp-diff" ? toComparisonDiff(a, b) : kind === "diff" ? toDifference(a, b, last4) : kind === "quota" ? toQuota(a, b) : kind === "delta" ? toDelta(a, b, last4) : kind === "pythagoras" ? pythagorasRule(a, b, last4) : kind === "rate" ? toRate(a, b) : kind === "ratios" ? toRatios([a, b], last4) : kind === "comp-ratio" ? toRatioComparison(a, b, last4) : kind === "ratio" ? toPartWholeRatio(a, b, last4) : kind === "linear-equation" ? solveEquation(a, b, last4) : toComparison(a, b);
   }
   if (a.kind === "rate" && b.kind === "rate" && last4.kind === "ratios") {
     return toRatios([a, b], last4);
+  }
+  if (a.kind === "rate" && b.kind === "rate" && last4.kind === "linear-equation") {
+    return solveEquation(a, b, last4);
   } else if ((a.kind === "cont" || a.kind === "comp") && b.kind === "unit") {
     return convertToUnit(a, b);
   } else if (a.kind === "unit" && (b.kind === "cont" || b.kind === "comp")) {
@@ -1468,9 +1497,6 @@ function inferenceRuleEx(...args) {
     return diffRule(b, a);
   } else if (a.kind === "sequence" && b.kind === "cont") {
     const kind = last4?.kind;
-    if (kind === "quota") {
-      return toQuota(a, b);
-    }
     return kind === "nth" ? nthPositionRule(b, a, last4.entity) : nthTermRule(b, a);
   } else if (a.kind === "cont" && b.kind === "sequence") {
     const kind = last4?.kind;
@@ -1591,13 +1617,15 @@ function formatRatio(d, asPercent) {
   return d > -2 && d < 2 ? helpers.convertToFraction(d) : formatNumber(d);
 }
 function containerQuestion(d) {
-  return `Vypo\u010Dti ${d.agent}${formatEntity(d)}?`;
+  return isNumber(d.quantity) ? `Vypo\u010Dti ${d.agent}${formatEntity(d)}?` : `Vyj\xE1d\u0159i v\xFDrazem s prom\u011Bnnou ${d.agent}${formatEntity(d)}?`;
 }
-function combineQuestion(d) {
-  return `Vypo\u010Dti ${d.agent}${formatEntity(d)}?`;
-}
-function toGenerAgent(a, entity3 = "") {
-  return cont(a.entity, a.quantity, entity3);
+function toGenerAgent(a) {
+  return {
+    kind: "cont",
+    agent: a.entity,
+    quantity: a.quantity,
+    entity: ""
+  };
 }
 function primeFactorization(numbers) {
   const getPrimeFactors = (num) => {
@@ -1693,23 +1721,23 @@ function formatAngle(relationship) {
   }
 }
 function formatSequence(type, n) {
-  const simplify = (d, op = "") => d !== 1 ? `${d}${op}` : "";
+  const simplify3 = (d, op = "") => d !== 1 ? `${d}${op}` : "";
   if (type.kind === "arithmetic")
     return `${type.sequence[0]} + ${type.commonDifference}(${formatNumber(n)}-1)`;
   if (type.kind === "quadratic") {
     const [first, second] = type.sequence;
     const { A, B, C } = nthQuadraticElements(first, second, type.secondDifference);
-    let parts = [`${simplify(A, "*")}${formatNumber(n)}^2^`];
+    let parts = [`${simplify3(A, "*")}${formatNumber(n)}^2^`];
     if (B !== 0) {
-      parts = parts.concat(`${simplify(B, "*")}${formatNumber(n)}`);
+      parts = parts.concat(`${simplify3(B, "*")}${formatNumber(n)}`);
     }
     if (C !== 0) {
-      parts = parts.concat(`${simplify(C, "*")}${formatNumber(n)}`);
+      parts = parts.concat(`${simplify3(C, "*")}${formatNumber(n)}`);
     }
     return `${parts.map((d, i) => `${i !== 0 ? " + " : ""}${d}`).join(" ")}`;
   }
   if (type.kind === "geometric") {
-    return `${simplify(type.sequence[0], "*")}${type.commonRatio}^(${formatNumber(n)}-1)^`;
+    return `${simplify3(type.sequence[0], "*")}${type.commonRatio}^(${formatNumber(n)}-1)^`;
   }
 }
 function sequenceOptions(seqType) {
@@ -3414,6 +3442,1789 @@ var measure5 = {
 };
 var time_default = measure5;
 
+// src/utils/math-solver.js
+var INUMBER = "INUMBER";
+var IOP1 = "IOP1";
+var IOP2 = "IOP2";
+var IOP3 = "IOP3";
+var IVAR = "IVAR";
+var IVARNAME = "IVARNAME";
+var IFUNCALL = "IFUNCALL";
+var IFUNDEF = "IFUNDEF";
+var IEXPR = "IEXPR";
+var IEXPREVAL = "IEXPREVAL";
+var IMEMBER = "IMEMBER";
+var IENDSTATEMENT = "IENDSTATEMENT";
+var IARRAY = "IARRAY";
+function Instruction(type, value) {
+  this.type = type;
+  this.value = value !== void 0 && value !== null ? value : 0;
+}
+Instruction.prototype.toString = function() {
+  switch (this.type) {
+    case INUMBER:
+    case IOP1:
+    case IOP2:
+    case IOP3:
+    case IVAR:
+    case IVARNAME:
+    case IENDSTATEMENT:
+      return this.value;
+    case IFUNCALL:
+      return "CALL " + this.value;
+    case IFUNDEF:
+      return "DEF " + this.value;
+    case IARRAY:
+      return "ARRAY " + this.value;
+    case IMEMBER:
+      return "." + this.value;
+    default:
+      return "Invalid Instruction";
+  }
+};
+function unaryInstruction(value) {
+  return new Instruction(IOP1, value);
+}
+function binaryInstruction(value) {
+  return new Instruction(IOP2, value);
+}
+function ternaryInstruction(value) {
+  return new Instruction(IOP3, value);
+}
+function simplify(tokens, unaryOps, binaryOps, ternaryOps, values) {
+  var nstack = [];
+  var newexpression = [];
+  var n1, n2, n3;
+  var f;
+  for (var i = 0; i < tokens.length; i++) {
+    var item = tokens[i];
+    var type = item.type;
+    if (type === INUMBER || type === IVARNAME) {
+      if (Array.isArray(item.value)) {
+        nstack.push.apply(nstack, simplify(item.value.map(function(x) {
+          return new Instruction(INUMBER, x);
+        }).concat(new Instruction(IARRAY, item.value.length)), unaryOps, binaryOps, ternaryOps, values));
+      } else {
+        nstack.push(item);
+      }
+    } else if (type === IVAR && values.hasOwnProperty(item.value)) {
+      item = new Instruction(INUMBER, values[item.value]);
+      nstack.push(item);
+    } else if (type === IOP2 && nstack.length > 1) {
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      f = binaryOps[item.value];
+      item = new Instruction(INUMBER, f(n1.value, n2.value));
+      nstack.push(item);
+    } else if (type === IOP3 && nstack.length > 2) {
+      n3 = nstack.pop();
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      if (item.value === "?") {
+        nstack.push(n1.value ? n2.value : n3.value);
+      } else {
+        f = ternaryOps[item.value];
+        item = new Instruction(INUMBER, f(n1.value, n2.value, n3.value));
+        nstack.push(item);
+      }
+    } else if (type === IOP1 && nstack.length > 0) {
+      n1 = nstack.pop();
+      f = unaryOps[item.value];
+      item = new Instruction(INUMBER, f(n1.value));
+      nstack.push(item);
+    } else if (type === IEXPR) {
+      while (nstack.length > 0) {
+        newexpression.push(nstack.shift());
+      }
+      newexpression.push(new Instruction(IEXPR, simplify(item.value, unaryOps, binaryOps, ternaryOps, values)));
+    } else if (type === IMEMBER && nstack.length > 0) {
+      n1 = nstack.pop();
+      nstack.push(new Instruction(INUMBER, n1.value[item.value]));
+    } else {
+      while (nstack.length > 0) {
+        newexpression.push(nstack.shift());
+      }
+      newexpression.push(item);
+    }
+  }
+  while (nstack.length > 0) {
+    newexpression.push(nstack.shift());
+  }
+  return newexpression;
+}
+function substitute(tokens, variable, expr) {
+  var newexpression = [];
+  for (var i = 0; i < tokens.length; i++) {
+    var item = tokens[i];
+    var type = item.type;
+    if (type === IVAR && item.value === variable) {
+      for (var j = 0; j < expr.tokens.length; j++) {
+        var expritem = expr.tokens[j];
+        var replitem;
+        if (expritem.type === IOP1) {
+          replitem = unaryInstruction(expritem.value);
+        } else if (expritem.type === IOP2) {
+          replitem = binaryInstruction(expritem.value);
+        } else if (expritem.type === IOP3) {
+          replitem = ternaryInstruction(expritem.value);
+        } else {
+          replitem = new Instruction(expritem.type, expritem.value);
+        }
+        newexpression.push(replitem);
+      }
+    } else if (type === IEXPR) {
+      newexpression.push(new Instruction(IEXPR, substitute(item.value, variable, expr)));
+    } else {
+      newexpression.push(item);
+    }
+  }
+  return newexpression;
+}
+function evaluate(tokens, expr, values) {
+  var nstack = [];
+  var n1, n2, n3;
+  var f, args, argCount;
+  if (isExpressionEvaluator(tokens)) {
+    return resolveExpression(tokens, values);
+  }
+  var numTokens = tokens.length;
+  for (var i = 0; i < numTokens; i++) {
+    var item = tokens[i];
+    var type = item.type;
+    if (type === INUMBER || type === IVARNAME) {
+      nstack.push(item.value);
+    } else if (type === IOP2) {
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      if (item.value === "and") {
+        nstack.push(n1 ? !!evaluate(n2, expr, values) : false);
+      } else if (item.value === "or") {
+        nstack.push(n1 ? true : !!evaluate(n2, expr, values));
+      } else if (item.value === "=") {
+        f = expr.binaryOps[item.value];
+        nstack.push(f(n1, evaluate(n2, expr, values), values));
+      } else {
+        f = expr.binaryOps[item.value];
+        nstack.push(f(resolveExpression(n1, values), resolveExpression(n2, values)));
+      }
+    } else if (type === IOP3) {
+      n3 = nstack.pop();
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      if (item.value === "?") {
+        nstack.push(evaluate(n1 ? n2 : n3, expr, values));
+      } else {
+        f = expr.ternaryOps[item.value];
+        nstack.push(f(resolveExpression(n1, values), resolveExpression(n2, values), resolveExpression(n3, values)));
+      }
+    } else if (type === IVAR) {
+      if (item.value in expr.functions) {
+        nstack.push(expr.functions[item.value]);
+      } else if (item.value in expr.unaryOps && expr.parser.isOperatorEnabled(item.value)) {
+        nstack.push(expr.unaryOps[item.value]);
+      } else {
+        var v = values[item.value];
+        if (v !== void 0) {
+          nstack.push(v);
+        } else {
+          throw new Error("undefined variable: " + item.value);
+        }
+      }
+    } else if (type === IOP1) {
+      n1 = nstack.pop();
+      f = expr.unaryOps[item.value];
+      nstack.push(f(resolveExpression(n1, values)));
+    } else if (type === IFUNCALL) {
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(resolveExpression(nstack.pop(), values));
+      }
+      f = nstack.pop();
+      if (f.apply && f.call) {
+        nstack.push(f.apply(void 0, args));
+      } else {
+        throw new Error(f + " is not a function");
+      }
+    } else if (type === IFUNDEF) {
+      nstack.push(function() {
+        var n22 = nstack.pop();
+        var args2 = [];
+        var argCount2 = item.value;
+        while (argCount2-- > 0) {
+          args2.unshift(nstack.pop());
+        }
+        var n12 = nstack.pop();
+        var f2 = function() {
+          var scope = Object.assign({}, values);
+          for (var i2 = 0, len = args2.length; i2 < len; i2++) {
+            scope[args2[i2]] = arguments[i2];
+          }
+          return evaluate(n22, expr, scope);
+        };
+        Object.defineProperty(f2, "name", {
+          value: n12,
+          writable: false
+        });
+        values[n12] = f2;
+        return f2;
+      }());
+    } else if (type === IEXPR) {
+      nstack.push(createExpressionEvaluator(item, expr));
+    } else if (type === IEXPREVAL) {
+      nstack.push(item);
+    } else if (type === IMEMBER) {
+      n1 = nstack.pop();
+      nstack.push(n1[item.value]);
+    } else if (type === IENDSTATEMENT) {
+      nstack.pop();
+    } else if (type === IARRAY) {
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+      }
+      nstack.push(args);
+    } else {
+      throw new Error("invalid Expression");
+    }
+  }
+  if (nstack.length > 1) {
+    throw new Error("invalid Expression (parity)");
+  }
+  return nstack[0] === 0 ? 0 : resolveExpression(nstack[0], values);
+}
+function createExpressionEvaluator(token, expr, values) {
+  if (isExpressionEvaluator(token))
+    return token;
+  return {
+    type: IEXPREVAL,
+    value: function(scope) {
+      return evaluate(token.value, expr, scope);
+    }
+  };
+}
+function isExpressionEvaluator(n) {
+  return n && n.type === IEXPREVAL;
+}
+function resolveExpression(n, values) {
+  return isExpressionEvaluator(n) ? n.value(values) : n;
+}
+function expressionToString(tokens, toJS) {
+  var nstack = [];
+  var n1, n2, n3;
+  var f, args, argCount;
+  for (var i = 0; i < tokens.length; i++) {
+    var item = tokens[i];
+    var type = item.type;
+    if (type === INUMBER) {
+      if (typeof item.value === "number" && item.value < 0) {
+        nstack.push("(" + item.value + ")");
+      } else if (Array.isArray(item.value)) {
+        nstack.push("[" + item.value.map(escapeValue).join(", ") + "]");
+      } else {
+        nstack.push(escapeValue(item.value));
+      }
+    } else if (type === IOP2) {
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      f = item.value;
+      if (toJS) {
+        if (f === "^") {
+          nstack.push("Math.pow(" + n1 + ", " + n2 + ")");
+        } else if (f === "and") {
+          nstack.push("(!!" + n1 + " && !!" + n2 + ")");
+        } else if (f === "or") {
+          nstack.push("(!!" + n1 + " || !!" + n2 + ")");
+        } else if (f === "||") {
+          nstack.push("(function(a,b){ return Array.isArray(a) && Array.isArray(b) ? a.concat(b) : String(a) + String(b); }((" + n1 + "),(" + n2 + ")))");
+        } else if (f === "==") {
+          nstack.push("(" + n1 + " === " + n2 + ")");
+        } else if (f === "!=") {
+          nstack.push("(" + n1 + " !== " + n2 + ")");
+        } else if (f === "[") {
+          nstack.push(n1 + "[(" + n2 + ") | 0]");
+        } else {
+          nstack.push("(" + n1 + " " + f + " " + n2 + ")");
+        }
+      } else {
+        if (f === "[") {
+          nstack.push(n1 + "[" + n2 + "]");
+        } else {
+          nstack.push("(" + n1 + " " + f + " " + n2 + ")");
+        }
+      }
+    } else if (type === IOP3) {
+      n3 = nstack.pop();
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      f = item.value;
+      if (f === "?") {
+        nstack.push("(" + n1 + " ? " + n2 + " : " + n3 + ")");
+      } else {
+        throw new Error("invalid Expression");
+      }
+    } else if (type === IVAR || type === IVARNAME) {
+      nstack.push(item.value);
+    } else if (type === IOP1) {
+      n1 = nstack.pop();
+      f = item.value;
+      if (f === "-" || f === "+") {
+        nstack.push("(" + f + n1 + ")");
+      } else if (toJS) {
+        if (f === "not") {
+          nstack.push("(!" + n1 + ")");
+        } else if (f === "!") {
+          nstack.push("fac(" + n1 + ")");
+        } else {
+          nstack.push(f + "(" + n1 + ")");
+        }
+      } else if (f === "!") {
+        nstack.push("(" + n1 + "!)");
+      } else {
+        nstack.push("(" + f + " " + n1 + ")");
+      }
+    } else if (type === IFUNCALL) {
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+      }
+      f = nstack.pop();
+      nstack.push(f + "(" + args.join(", ") + ")");
+    } else if (type === IFUNDEF) {
+      n2 = nstack.pop();
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+      }
+      n1 = nstack.pop();
+      if (toJS) {
+        nstack.push("(" + n1 + " = function(" + args.join(", ") + ") { return " + n2 + " })");
+      } else {
+        nstack.push("(" + n1 + "(" + args.join(", ") + ") = " + n2 + ")");
+      }
+    } else if (type === IMEMBER) {
+      n1 = nstack.pop();
+      nstack.push(n1 + "." + item.value);
+    } else if (type === IARRAY) {
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+      }
+      nstack.push("[" + args.join(", ") + "]");
+    } else if (type === IEXPR) {
+      nstack.push("(" + expressionToString(item.value, toJS) + ")");
+    } else if (type === IENDSTATEMENT)
+      ;
+    else {
+      throw new Error("invalid Expression");
+    }
+  }
+  if (nstack.length > 1) {
+    if (toJS) {
+      nstack = [nstack.join(",")];
+    } else {
+      nstack = [nstack.join(";")];
+    }
+  }
+  return String(nstack[0]);
+}
+function escapeValue(v) {
+  if (typeof v === "string") {
+    return JSON.stringify(v).replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
+  }
+  return v;
+}
+function contains(array, obj) {
+  for (var i = 0; i < array.length; i++) {
+    if (array[i] === obj) {
+      return true;
+    }
+  }
+  return false;
+}
+function getSymbols(tokens, symbols, options) {
+  options = options || {};
+  var withMembers = !!options.withMembers;
+  var prevVar = null;
+  for (var i = 0; i < tokens.length; i++) {
+    var item = tokens[i];
+    if (item.type === IVAR || item.type === IVARNAME) {
+      if (!withMembers && !contains(symbols, item.value)) {
+        symbols.push(item.value);
+      } else if (prevVar !== null) {
+        if (!contains(symbols, prevVar)) {
+          symbols.push(prevVar);
+        }
+        prevVar = item.value;
+      } else {
+        prevVar = item.value;
+      }
+    } else if (item.type === IMEMBER && withMembers && prevVar !== null) {
+      prevVar += "." + item.value;
+    } else if (item.type === IEXPR) {
+      getSymbols(item.value, symbols, options);
+    } else if (prevVar !== null) {
+      if (!contains(symbols, prevVar)) {
+        symbols.push(prevVar);
+      }
+      prevVar = null;
+    }
+  }
+  if (prevVar !== null && !contains(symbols, prevVar)) {
+    symbols.push(prevVar);
+  }
+}
+function Expression(tokens, parser22) {
+  this.tokens = tokens;
+  this.parser = parser22;
+  this.unaryOps = parser22.unaryOps;
+  this.binaryOps = parser22.binaryOps;
+  this.ternaryOps = parser22.ternaryOps;
+  this.functions = parser22.functions;
+}
+Expression.prototype.simplify = function(values) {
+  values = values || {};
+  return new Expression(simplify(this.tokens, this.unaryOps, this.binaryOps, this.ternaryOps, values), this.parser);
+};
+Expression.prototype.substitute = function(variable, expr) {
+  if (!(expr instanceof Expression)) {
+    expr = this.parser.parse(String(expr));
+  }
+  return new Expression(substitute(this.tokens, variable, expr), this.parser);
+};
+Expression.prototype.evaluate = function(values) {
+  values = values || {};
+  return evaluate(this.tokens, this, values);
+};
+Expression.prototype.toString = function() {
+  return expressionToString(this.tokens, false);
+};
+Expression.prototype.symbols = function(options) {
+  options = options || {};
+  var vars = [];
+  getSymbols(this.tokens, vars, options);
+  return vars;
+};
+Expression.prototype.variables = function(options) {
+  options = options || {};
+  var vars = [];
+  getSymbols(this.tokens, vars, options);
+  var functions = this.functions;
+  return vars.filter(function(name) {
+    return !(name in functions);
+  });
+};
+Expression.prototype.toJSFunction = function(param, variables) {
+  var expr = this;
+  var f = new Function(param, "with(this.functions) with (this.ternaryOps) with (this.binaryOps) with (this.unaryOps) { return " + expressionToString(this.simplify(variables).tokens, true) + "; }");
+  return function() {
+    return f.apply(expr, arguments);
+  };
+};
+var TEOF = "TEOF";
+var TOP = "TOP";
+var TNUMBER = "TNUMBER";
+var TSTRING = "TSTRING";
+var TPAREN = "TPAREN";
+var TBRACKET = "TBRACKET";
+var TCOMMA = "TCOMMA";
+var TNAME = "TNAME";
+var TSEMICOLON = "TSEMICOLON";
+function Token(type, value, index) {
+  this.type = type;
+  this.value = value;
+  this.index = index;
+}
+Token.prototype.toString = function() {
+  return this.type + ": " + this.value;
+};
+function TokenStream(parser22, expression) {
+  this.pos = 0;
+  this.current = null;
+  this.unaryOps = parser22.unaryOps;
+  this.binaryOps = parser22.binaryOps;
+  this.ternaryOps = parser22.ternaryOps;
+  this.consts = parser22.consts;
+  this.expression = expression;
+  this.savedPosition = 0;
+  this.savedCurrent = null;
+  this.options = parser22.options;
+  this.parser = parser22;
+}
+TokenStream.prototype.newToken = function(type, value, pos) {
+  return new Token(type, value, pos != null ? pos : this.pos);
+};
+TokenStream.prototype.save = function() {
+  this.savedPosition = this.pos;
+  this.savedCurrent = this.current;
+};
+TokenStream.prototype.restore = function() {
+  this.pos = this.savedPosition;
+  this.current = this.savedCurrent;
+};
+TokenStream.prototype.next = function() {
+  if (this.pos >= this.expression.length) {
+    return this.newToken(TEOF, "EOF");
+  }
+  if (this.isWhitespace() || this.isComment()) {
+    return this.next();
+  } else if (this.isRadixInteger() || this.isNumber() || this.isOperator() || this.isString() || this.isParen() || this.isBracket() || this.isComma() || this.isSemicolon() || this.isNamedOp() || this.isConst() || this.isName()) {
+    return this.current;
+  } else {
+    this.parseError('Unknown character "' + this.expression.charAt(this.pos) + '"');
+  }
+};
+TokenStream.prototype.isString = function() {
+  var r = false;
+  var startPos = this.pos;
+  var quote = this.expression.charAt(startPos);
+  if (quote === "'" || quote === '"') {
+    var index = this.expression.indexOf(quote, startPos + 1);
+    while (index >= 0 && this.pos < this.expression.length) {
+      this.pos = index + 1;
+      if (this.expression.charAt(index - 1) !== "\\") {
+        var rawString = this.expression.substring(startPos + 1, index);
+        this.current = this.newToken(TSTRING, this.unescape(rawString), startPos);
+        r = true;
+        break;
+      }
+      index = this.expression.indexOf(quote, index + 1);
+    }
+  }
+  return r;
+};
+TokenStream.prototype.isParen = function() {
+  var c = this.expression.charAt(this.pos);
+  if (c === "(" || c === ")") {
+    this.current = this.newToken(TPAREN, c);
+    this.pos++;
+    return true;
+  }
+  return false;
+};
+TokenStream.prototype.isBracket = function() {
+  var c = this.expression.charAt(this.pos);
+  if ((c === "[" || c === "]") && this.isOperatorEnabled("[")) {
+    this.current = this.newToken(TBRACKET, c);
+    this.pos++;
+    return true;
+  }
+  return false;
+};
+TokenStream.prototype.isComma = function() {
+  var c = this.expression.charAt(this.pos);
+  if (c === ",") {
+    this.current = this.newToken(TCOMMA, ",");
+    this.pos++;
+    return true;
+  }
+  return false;
+};
+TokenStream.prototype.isSemicolon = function() {
+  var c = this.expression.charAt(this.pos);
+  if (c === ";") {
+    this.current = this.newToken(TSEMICOLON, ";");
+    this.pos++;
+    return true;
+  }
+  return false;
+};
+TokenStream.prototype.isConst = function() {
+  var startPos = this.pos;
+  var i = startPos;
+  for (; i < this.expression.length; i++) {
+    var c = this.expression.charAt(i);
+    if (c.toUpperCase() === c.toLowerCase()) {
+      if (i === this.pos || c !== "_" && c !== "." && (c < "0" || c > "9")) {
+        break;
+      }
+    }
+  }
+  if (i > startPos) {
+    var str = this.expression.substring(startPos, i);
+    if (str in this.consts) {
+      this.current = this.newToken(TNUMBER, this.consts[str]);
+      this.pos += str.length;
+      return true;
+    }
+  }
+  return false;
+};
+TokenStream.prototype.isNamedOp = function() {
+  var startPos = this.pos;
+  var i = startPos;
+  for (; i < this.expression.length; i++) {
+    var c = this.expression.charAt(i);
+    if (c.toUpperCase() === c.toLowerCase()) {
+      if (i === this.pos || c !== "_" && (c < "0" || c > "9")) {
+        break;
+      }
+    }
+  }
+  if (i > startPos) {
+    var str = this.expression.substring(startPos, i);
+    if (this.isOperatorEnabled(str) && (str in this.binaryOps || str in this.unaryOps || str in this.ternaryOps)) {
+      this.current = this.newToken(TOP, str);
+      this.pos += str.length;
+      return true;
+    }
+  }
+  return false;
+};
+TokenStream.prototype.isName = function() {
+  var startPos = this.pos;
+  var i = startPos;
+  var hasLetter = false;
+  for (; i < this.expression.length; i++) {
+    var c = this.expression.charAt(i);
+    if (c.toUpperCase() === c.toLowerCase()) {
+      if (i === this.pos && (c === "$" || c === "_")) {
+        if (c === "_") {
+          hasLetter = true;
+        }
+        continue;
+      } else if (i === this.pos || !hasLetter || c !== "_" && (c < "0" || c > "9")) {
+        break;
+      }
+    } else {
+      hasLetter = true;
+    }
+  }
+  if (hasLetter) {
+    var str = this.expression.substring(startPos, i);
+    this.current = this.newToken(TNAME, str);
+    this.pos += str.length;
+    return true;
+  }
+  return false;
+};
+TokenStream.prototype.isWhitespace = function() {
+  var r = false;
+  var c = this.expression.charAt(this.pos);
+  while (c === " " || c === "	" || c === "\n" || c === "\r") {
+    r = true;
+    this.pos++;
+    if (this.pos >= this.expression.length) {
+      break;
+    }
+    c = this.expression.charAt(this.pos);
+  }
+  return r;
+};
+var codePointPattern = /^[0-9a-f]{4}$/i;
+TokenStream.prototype.unescape = function(v) {
+  var index = v.indexOf("\\");
+  if (index < 0) {
+    return v;
+  }
+  var buffer = v.substring(0, index);
+  while (index >= 0) {
+    var c = v.charAt(++index);
+    switch (c) {
+      case "'":
+        buffer += "'";
+        break;
+      case '"':
+        buffer += '"';
+        break;
+      case "\\":
+        buffer += "\\";
+        break;
+      case "/":
+        buffer += "/";
+        break;
+      case "b":
+        buffer += "\b";
+        break;
+      case "f":
+        buffer += "\f";
+        break;
+      case "n":
+        buffer += "\n";
+        break;
+      case "r":
+        buffer += "\r";
+        break;
+      case "t":
+        buffer += "	";
+        break;
+      case "u":
+        var codePoint = v.substring(index + 1, index + 5);
+        if (!codePointPattern.test(codePoint)) {
+          this.parseError("Illegal escape sequence: \\u" + codePoint);
+        }
+        buffer += String.fromCharCode(parseInt(codePoint, 16));
+        index += 4;
+        break;
+      default:
+        throw this.parseError('Illegal escape sequence: "\\' + c + '"');
+    }
+    ++index;
+    var backslash = v.indexOf("\\", index);
+    buffer += v.substring(index, backslash < 0 ? v.length : backslash);
+    index = backslash;
+  }
+  return buffer;
+};
+TokenStream.prototype.isComment = function() {
+  var c = this.expression.charAt(this.pos);
+  if (c === "/" && this.expression.charAt(this.pos + 1) === "*") {
+    this.pos = this.expression.indexOf("*/", this.pos) + 2;
+    if (this.pos === 1) {
+      this.pos = this.expression.length;
+    }
+    return true;
+  }
+  return false;
+};
+TokenStream.prototype.isRadixInteger = function() {
+  var pos = this.pos;
+  if (pos >= this.expression.length - 2 || this.expression.charAt(pos) !== "0") {
+    return false;
+  }
+  ++pos;
+  var radix;
+  var validDigit;
+  if (this.expression.charAt(pos) === "x") {
+    radix = 16;
+    validDigit = /^[0-9a-f]$/i;
+    ++pos;
+  } else if (this.expression.charAt(pos) === "b") {
+    radix = 2;
+    validDigit = /^[01]$/i;
+    ++pos;
+  } else {
+    return false;
+  }
+  var valid = false;
+  var startPos = pos;
+  while (pos < this.expression.length) {
+    var c = this.expression.charAt(pos);
+    if (validDigit.test(c)) {
+      pos++;
+      valid = true;
+    } else {
+      break;
+    }
+  }
+  if (valid) {
+    this.current = this.newToken(TNUMBER, parseInt(this.expression.substring(startPos, pos), radix));
+    this.pos = pos;
+  }
+  return valid;
+};
+TokenStream.prototype.isNumber = function() {
+  var valid = false;
+  var pos = this.pos;
+  var startPos = pos;
+  var resetPos = pos;
+  var foundDot = false;
+  var foundDigits = false;
+  var c;
+  while (pos < this.expression.length) {
+    c = this.expression.charAt(pos);
+    if (c >= "0" && c <= "9" || !foundDot && c === ".") {
+      if (c === ".") {
+        foundDot = true;
+      } else {
+        foundDigits = true;
+      }
+      pos++;
+      valid = foundDigits;
+    } else {
+      break;
+    }
+  }
+  if (valid) {
+    resetPos = pos;
+  }
+  if (c === "e" || c === "E") {
+    pos++;
+    var acceptSign = true;
+    var validExponent = false;
+    while (pos < this.expression.length) {
+      c = this.expression.charAt(pos);
+      if (acceptSign && (c === "+" || c === "-")) {
+        acceptSign = false;
+      } else if (c >= "0" && c <= "9") {
+        validExponent = true;
+        acceptSign = false;
+      } else {
+        break;
+      }
+      pos++;
+    }
+    if (!validExponent) {
+      pos = resetPos;
+    }
+  }
+  if (valid) {
+    this.current = this.newToken(TNUMBER, parseFloat(this.expression.substring(startPos, pos)));
+    this.pos = pos;
+  } else {
+    this.pos = resetPos;
+  }
+  return valid;
+};
+TokenStream.prototype.isOperator = function() {
+  var startPos = this.pos;
+  var c = this.expression.charAt(this.pos);
+  if (c === "+" || c === "-" || c === "*" || c === "/" || c === "%" || c === "^" || c === "?" || c === ":" || c === ".") {
+    this.current = this.newToken(TOP, c);
+  } else if (c === "\u2219" || c === "\u2022") {
+    this.current = this.newToken(TOP, "*");
+  } else if (c === ">") {
+    if (this.expression.charAt(this.pos + 1) === "=") {
+      this.current = this.newToken(TOP, ">=");
+      this.pos++;
+    } else {
+      this.current = this.newToken(TOP, ">");
+    }
+  } else if (c === "<") {
+    if (this.expression.charAt(this.pos + 1) === "=") {
+      this.current = this.newToken(TOP, "<=");
+      this.pos++;
+    } else {
+      this.current = this.newToken(TOP, "<");
+    }
+  } else if (c === "|") {
+    if (this.expression.charAt(this.pos + 1) === "|") {
+      this.current = this.newToken(TOP, "||");
+      this.pos++;
+    } else {
+      return false;
+    }
+  } else if (c === "=") {
+    if (this.expression.charAt(this.pos + 1) === "=") {
+      this.current = this.newToken(TOP, "==");
+      this.pos++;
+    } else {
+      this.current = this.newToken(TOP, c);
+    }
+  } else if (c === "!") {
+    if (this.expression.charAt(this.pos + 1) === "=") {
+      this.current = this.newToken(TOP, "!=");
+      this.pos++;
+    } else {
+      this.current = this.newToken(TOP, c);
+    }
+  } else {
+    return false;
+  }
+  this.pos++;
+  if (this.isOperatorEnabled(this.current.value)) {
+    return true;
+  } else {
+    this.pos = startPos;
+    return false;
+  }
+};
+TokenStream.prototype.isOperatorEnabled = function(op) {
+  return this.parser.isOperatorEnabled(op);
+};
+TokenStream.prototype.getCoordinates = function() {
+  var line = 0;
+  var column;
+  var newline = -1;
+  do {
+    line++;
+    column = this.pos - newline;
+    newline = this.expression.indexOf("\n", newline + 1);
+  } while (newline >= 0 && newline < this.pos);
+  return {
+    line,
+    column
+  };
+};
+TokenStream.prototype.parseError = function(msg) {
+  var coords = this.getCoordinates();
+  throw new Error("parse error [" + coords.line + ":" + coords.column + "]: " + msg);
+};
+function ParserState(parser22, tokenStream, options) {
+  this.parser = parser22;
+  this.tokens = tokenStream;
+  this.current = null;
+  this.nextToken = null;
+  this.next();
+  this.savedCurrent = null;
+  this.savedNextToken = null;
+  this.allowMemberAccess = options.allowMemberAccess !== false;
+}
+ParserState.prototype.next = function() {
+  this.current = this.nextToken;
+  return this.nextToken = this.tokens.next();
+};
+ParserState.prototype.tokenMatches = function(token, value) {
+  if (typeof value === "undefined") {
+    return true;
+  } else if (Array.isArray(value)) {
+    return contains(value, token.value);
+  } else if (typeof value === "function") {
+    return value(token);
+  } else {
+    return token.value === value;
+  }
+};
+ParserState.prototype.save = function() {
+  this.savedCurrent = this.current;
+  this.savedNextToken = this.nextToken;
+  this.tokens.save();
+};
+ParserState.prototype.restore = function() {
+  this.tokens.restore();
+  this.current = this.savedCurrent;
+  this.nextToken = this.savedNextToken;
+};
+ParserState.prototype.accept = function(type, value) {
+  if (this.nextToken.type === type && this.tokenMatches(this.nextToken, value)) {
+    this.next();
+    return true;
+  }
+  return false;
+};
+ParserState.prototype.expect = function(type, value) {
+  if (!this.accept(type, value)) {
+    var coords = this.tokens.getCoordinates();
+    throw new Error("parse error [" + coords.line + ":" + coords.column + "]: Expected " + (value || type));
+  }
+};
+ParserState.prototype.parseAtom = function(instr) {
+  var unaryOps = this.tokens.unaryOps;
+  function isPrefixOperator(token) {
+    return token.value in unaryOps;
+  }
+  if (this.accept(TNAME) || this.accept(TOP, isPrefixOperator)) {
+    instr.push(new Instruction(IVAR, this.current.value));
+  } else if (this.accept(TNUMBER)) {
+    instr.push(new Instruction(INUMBER, this.current.value));
+  } else if (this.accept(TSTRING)) {
+    instr.push(new Instruction(INUMBER, this.current.value));
+  } else if (this.accept(TPAREN, "(")) {
+    this.parseExpression(instr);
+    this.expect(TPAREN, ")");
+  } else if (this.accept(TBRACKET, "[")) {
+    if (this.accept(TBRACKET, "]")) {
+      instr.push(new Instruction(IARRAY, 0));
+    } else {
+      var argCount = this.parseArrayList(instr);
+      instr.push(new Instruction(IARRAY, argCount));
+    }
+  } else {
+    throw new Error("unexpected " + this.nextToken);
+  }
+};
+ParserState.prototype.parseExpression = function(instr) {
+  var exprInstr = [];
+  if (this.parseUntilEndStatement(instr, exprInstr)) {
+    return;
+  }
+  this.parseVariableAssignmentExpression(exprInstr);
+  if (this.parseUntilEndStatement(instr, exprInstr)) {
+    return;
+  }
+  this.pushExpression(instr, exprInstr);
+};
+ParserState.prototype.pushExpression = function(instr, exprInstr) {
+  for (var i = 0, len = exprInstr.length; i < len; i++) {
+    instr.push(exprInstr[i]);
+  }
+};
+ParserState.prototype.parseUntilEndStatement = function(instr, exprInstr) {
+  if (!this.accept(TSEMICOLON))
+    return false;
+  if (this.nextToken && this.nextToken.type !== TEOF && !(this.nextToken.type === TPAREN && this.nextToken.value === ")")) {
+    exprInstr.push(new Instruction(IENDSTATEMENT));
+  }
+  if (this.nextToken.type !== TEOF) {
+    this.parseExpression(exprInstr);
+  }
+  instr.push(new Instruction(IEXPR, exprInstr));
+  return true;
+};
+ParserState.prototype.parseArrayList = function(instr) {
+  var argCount = 0;
+  while (!this.accept(TBRACKET, "]")) {
+    this.parseExpression(instr);
+    ++argCount;
+    while (this.accept(TCOMMA)) {
+      this.parseExpression(instr);
+      ++argCount;
+    }
+  }
+  return argCount;
+};
+ParserState.prototype.parseVariableAssignmentExpression = function(instr) {
+  this.parseConditionalExpression(instr);
+  while (this.accept(TOP, "=")) {
+    var varName = instr.pop();
+    var varValue = [];
+    var lastInstrIndex = instr.length - 1;
+    if (varName.type === IFUNCALL) {
+      if (!this.tokens.isOperatorEnabled("()=")) {
+        throw new Error("function definition is not permitted");
+      }
+      for (var i = 0, len = varName.value + 1; i < len; i++) {
+        var index = lastInstrIndex - i;
+        if (instr[index].type === IVAR) {
+          instr[index] = new Instruction(IVARNAME, instr[index].value);
+        }
+      }
+      this.parseVariableAssignmentExpression(varValue);
+      instr.push(new Instruction(IEXPR, varValue));
+      instr.push(new Instruction(IFUNDEF, varName.value));
+      continue;
+    }
+    if (varName.type !== IVAR && varName.type !== IMEMBER) {
+      throw new Error("expected variable for assignment");
+    }
+    this.parseVariableAssignmentExpression(varValue);
+    instr.push(new Instruction(IVARNAME, varName.value));
+    instr.push(new Instruction(IEXPR, varValue));
+    instr.push(binaryInstruction("="));
+  }
+};
+ParserState.prototype.parseConditionalExpression = function(instr) {
+  this.parseOrExpression(instr);
+  while (this.accept(TOP, "?")) {
+    var trueBranch = [];
+    var falseBranch = [];
+    this.parseConditionalExpression(trueBranch);
+    this.expect(TOP, ":");
+    this.parseConditionalExpression(falseBranch);
+    instr.push(new Instruction(IEXPR, trueBranch));
+    instr.push(new Instruction(IEXPR, falseBranch));
+    instr.push(ternaryInstruction("?"));
+  }
+};
+ParserState.prototype.parseOrExpression = function(instr) {
+  this.parseAndExpression(instr);
+  while (this.accept(TOP, "or")) {
+    var falseBranch = [];
+    this.parseAndExpression(falseBranch);
+    instr.push(new Instruction(IEXPR, falseBranch));
+    instr.push(binaryInstruction("or"));
+  }
+};
+ParserState.prototype.parseAndExpression = function(instr) {
+  this.parseComparison(instr);
+  while (this.accept(TOP, "and")) {
+    var trueBranch = [];
+    this.parseComparison(trueBranch);
+    instr.push(new Instruction(IEXPR, trueBranch));
+    instr.push(binaryInstruction("and"));
+  }
+};
+var COMPARISON_OPERATORS = ["==", "!=", "<", "<=", ">=", ">", "in"];
+ParserState.prototype.parseComparison = function(instr) {
+  this.parseAddSub(instr);
+  while (this.accept(TOP, COMPARISON_OPERATORS)) {
+    var op = this.current;
+    this.parseAddSub(instr);
+    instr.push(binaryInstruction(op.value));
+  }
+};
+var ADD_SUB_OPERATORS = ["+", "-", "||"];
+ParserState.prototype.parseAddSub = function(instr) {
+  this.parseTerm(instr);
+  while (this.accept(TOP, ADD_SUB_OPERATORS)) {
+    var op = this.current;
+    this.parseTerm(instr);
+    instr.push(binaryInstruction(op.value));
+  }
+};
+var TERM_OPERATORS = ["*", "/", "%"];
+ParserState.prototype.parseTerm = function(instr) {
+  this.parseFactor(instr);
+  while (this.accept(TOP, TERM_OPERATORS)) {
+    var op = this.current;
+    this.parseFactor(instr);
+    instr.push(binaryInstruction(op.value));
+  }
+};
+ParserState.prototype.parseFactor = function(instr) {
+  var unaryOps = this.tokens.unaryOps;
+  function isPrefixOperator(token) {
+    return token.value in unaryOps;
+  }
+  this.save();
+  if (this.accept(TOP, isPrefixOperator)) {
+    if (this.current.value !== "-" && this.current.value !== "+") {
+      if (this.nextToken.type === TPAREN && this.nextToken.value === "(") {
+        this.restore();
+        this.parseExponential(instr);
+        return;
+      } else if (this.nextToken.type === TSEMICOLON || this.nextToken.type === TCOMMA || this.nextToken.type === TEOF || this.nextToken.type === TPAREN && this.nextToken.value === ")") {
+        this.restore();
+        this.parseAtom(instr);
+        return;
+      }
+    }
+    var op = this.current;
+    this.parseFactor(instr);
+    instr.push(unaryInstruction(op.value));
+  } else {
+    this.parseExponential(instr);
+  }
+};
+ParserState.prototype.parseExponential = function(instr) {
+  this.parsePostfixExpression(instr);
+  while (this.accept(TOP, "^")) {
+    this.parseFactor(instr);
+    instr.push(binaryInstruction("^"));
+  }
+};
+ParserState.prototype.parsePostfixExpression = function(instr) {
+  this.parseFunctionCall(instr);
+  while (this.accept(TOP, "!")) {
+    instr.push(unaryInstruction("!"));
+  }
+};
+ParserState.prototype.parseFunctionCall = function(instr) {
+  var unaryOps = this.tokens.unaryOps;
+  function isPrefixOperator(token) {
+    return token.value in unaryOps;
+  }
+  if (this.accept(TOP, isPrefixOperator)) {
+    var op = this.current;
+    this.parseAtom(instr);
+    instr.push(unaryInstruction(op.value));
+  } else {
+    this.parseMemberExpression(instr);
+    while (this.accept(TPAREN, "(")) {
+      if (this.accept(TPAREN, ")")) {
+        instr.push(new Instruction(IFUNCALL, 0));
+      } else {
+        var argCount = this.parseArgumentList(instr);
+        instr.push(new Instruction(IFUNCALL, argCount));
+      }
+    }
+  }
+};
+ParserState.prototype.parseArgumentList = function(instr) {
+  var argCount = 0;
+  while (!this.accept(TPAREN, ")")) {
+    this.parseExpression(instr);
+    ++argCount;
+    while (this.accept(TCOMMA)) {
+      this.parseExpression(instr);
+      ++argCount;
+    }
+  }
+  return argCount;
+};
+ParserState.prototype.parseMemberExpression = function(instr) {
+  this.parseAtom(instr);
+  while (this.accept(TOP, ".") || this.accept(TBRACKET, "[")) {
+    var op = this.current;
+    if (op.value === ".") {
+      if (!this.allowMemberAccess) {
+        throw new Error('unexpected ".", member access is not permitted');
+      }
+      this.expect(TNAME);
+      instr.push(new Instruction(IMEMBER, this.current.value));
+    } else if (op.value === "[") {
+      if (!this.tokens.isOperatorEnabled("[")) {
+        throw new Error('unexpected "[]", arrays are disabled');
+      }
+      this.parseExpression(instr);
+      this.expect(TBRACKET, "]");
+      instr.push(binaryInstruction("["));
+    } else {
+      throw new Error("unexpected symbol: " + op.value);
+    }
+  }
+};
+function add(a, b) {
+  return Number(a) + Number(b);
+}
+function sub(a, b) {
+  return a - b;
+}
+function mul(a, b) {
+  return a * b;
+}
+function div(a, b) {
+  return a / b;
+}
+function mod(a, b) {
+  return a % b;
+}
+function concat(a, b) {
+  if (Array.isArray(a) && Array.isArray(b)) {
+    return a.concat(b);
+  }
+  return "" + a + b;
+}
+function equal(a, b) {
+  return a === b;
+}
+function notEqual(a, b) {
+  return a !== b;
+}
+function greaterThan(a, b) {
+  return a > b;
+}
+function lessThan(a, b) {
+  return a < b;
+}
+function greaterThanEqual(a, b) {
+  return a >= b;
+}
+function lessThanEqual(a, b) {
+  return a <= b;
+}
+function andOperator(a, b) {
+  return Boolean(a && b);
+}
+function orOperator(a, b) {
+  return Boolean(a || b);
+}
+function inOperator(a, b) {
+  return contains(b, a);
+}
+function sinh(a) {
+  return (Math.exp(a) - Math.exp(-a)) / 2;
+}
+function cosh(a) {
+  return (Math.exp(a) + Math.exp(-a)) / 2;
+}
+function tanh(a) {
+  if (a === Infinity)
+    return 1;
+  if (a === -Infinity)
+    return -1;
+  return (Math.exp(a) - Math.exp(-a)) / (Math.exp(a) + Math.exp(-a));
+}
+function asinh(a) {
+  if (a === -Infinity)
+    return a;
+  return Math.log(a + Math.sqrt(a * a + 1));
+}
+function acosh(a) {
+  return Math.log(a + Math.sqrt(a * a - 1));
+}
+function atanh(a) {
+  return Math.log((1 + a) / (1 - a)) / 2;
+}
+function log10(a) {
+  return Math.log(a) * Math.LOG10E;
+}
+function neg(a) {
+  return -a;
+}
+function not(a) {
+  return !a;
+}
+function trunc2(a) {
+  return a < 0 ? Math.ceil(a) : Math.floor(a);
+}
+function random(a) {
+  return Math.random() * (a || 1);
+}
+function factorial(a) {
+  return gamma(a + 1);
+}
+function isInteger(value) {
+  return isFinite(value) && value === Math.round(value);
+}
+var GAMMA_G = 4.7421875;
+var GAMMA_P = [
+  0.9999999999999971,
+  57.15623566586292,
+  -59.59796035547549,
+  14.136097974741746,
+  -0.4919138160976202,
+  3399464998481189e-20,
+  4652362892704858e-20,
+  -9837447530487956e-20,
+  1580887032249125e-19,
+  -21026444172410488e-20,
+  21743961811521265e-20,
+  -1643181065367639e-19,
+  8441822398385275e-20,
+  -26190838401581408e-21,
+  36899182659531625e-22
+];
+function gamma(n) {
+  var t, x;
+  if (isInteger(n)) {
+    if (n <= 0) {
+      return isFinite(n) ? Infinity : NaN;
+    }
+    if (n > 171) {
+      return Infinity;
+    }
+    var value = n - 2;
+    var res = n - 1;
+    while (value > 1) {
+      res *= value;
+      value--;
+    }
+    if (res === 0) {
+      res = 1;
+    }
+    return res;
+  }
+  if (n < 0.5) {
+    return Math.PI / (Math.sin(Math.PI * n) * gamma(1 - n));
+  }
+  if (n >= 171.35) {
+    return Infinity;
+  }
+  if (n > 85) {
+    var twoN = n * n;
+    var threeN = twoN * n;
+    var fourN = threeN * n;
+    var fiveN = fourN * n;
+    return Math.sqrt(2 * Math.PI / n) * Math.pow(n / Math.E, n) * (1 + 1 / (12 * n) + 1 / (288 * twoN) - 139 / (51840 * threeN) - 571 / (2488320 * fourN) + 163879 / (209018880 * fiveN) + 5246819 / (75246796800 * fiveN * n));
+  }
+  --n;
+  x = GAMMA_P[0];
+  for (var i = 1; i < GAMMA_P.length; ++i) {
+    x += GAMMA_P[i] / (n + i);
+  }
+  t = n + GAMMA_G + 0.5;
+  return Math.sqrt(2 * Math.PI) * Math.pow(t, n + 0.5) * Math.exp(-t) * x;
+}
+function stringOrArrayLength(s) {
+  if (Array.isArray(s)) {
+    return s.length;
+  }
+  return String(s).length;
+}
+function hypot() {
+  var sum3 = 0;
+  var larg = 0;
+  for (var i = 0; i < arguments.length; i++) {
+    var arg = Math.abs(arguments[i]);
+    var div22;
+    if (larg < arg) {
+      div22 = larg / arg;
+      sum3 = sum3 * div22 * div22 + 1;
+      larg = arg;
+    } else if (arg > 0) {
+      div22 = arg / larg;
+      sum3 += div22 * div22;
+    } else {
+      sum3 += arg;
+    }
+  }
+  return larg === Infinity ? Infinity : larg * Math.sqrt(sum3);
+}
+function condition(cond, yep, nope) {
+  return cond ? yep : nope;
+}
+function roundTo(value, exp) {
+  if (typeof exp === "undefined" || +exp === 0) {
+    return Math.round(value);
+  }
+  value = +value;
+  exp = -+exp;
+  if (isNaN(value) || !(typeof exp === "number" && exp % 1 === 0)) {
+    return NaN;
+  }
+  value = value.toString().split("e");
+  value = Math.round(+(value[0] + "e" + (value[1] ? +value[1] - exp : -exp)));
+  value = value.toString().split("e");
+  return +(value[0] + "e" + (value[1] ? +value[1] + exp : exp));
+}
+function setVar(name, value, variables) {
+  if (variables)
+    variables[name] = value;
+  return value;
+}
+function arrayIndex(array, index) {
+  return array[index | 0];
+}
+function max(array) {
+  if (arguments.length === 1 && Array.isArray(array)) {
+    return Math.max.apply(Math, array);
+  } else {
+    return Math.max.apply(Math, arguments);
+  }
+}
+function min(array) {
+  if (arguments.length === 1 && Array.isArray(array)) {
+    return Math.min.apply(Math, array);
+  } else {
+    return Math.min.apply(Math, arguments);
+  }
+}
+function arrayMap(f, a) {
+  if (typeof f !== "function") {
+    throw new Error("First argument to map is not a function");
+  }
+  if (!Array.isArray(a)) {
+    throw new Error("Second argument to map is not an array");
+  }
+  return a.map(function(x, i) {
+    return f(x, i);
+  });
+}
+function arrayFold(f, init, a) {
+  if (typeof f !== "function") {
+    throw new Error("First argument to fold is not a function");
+  }
+  if (!Array.isArray(a)) {
+    throw new Error("Second argument to fold is not an array");
+  }
+  return a.reduce(function(acc, x, i) {
+    return f(acc, x, i);
+  }, init);
+}
+function arrayFilter(f, a) {
+  if (typeof f !== "function") {
+    throw new Error("First argument to filter is not a function");
+  }
+  if (!Array.isArray(a)) {
+    throw new Error("Second argument to filter is not an array");
+  }
+  return a.filter(function(x, i) {
+    return f(x, i);
+  });
+}
+function stringOrArrayIndexOf(target, s) {
+  if (!(Array.isArray(s) || typeof s === "string")) {
+    throw new Error("Second argument to indexOf is not a string or array");
+  }
+  return s.indexOf(target);
+}
+function arrayJoin(sep, a) {
+  if (!Array.isArray(a)) {
+    throw new Error("Second argument to join is not an array");
+  }
+  return a.join(sep);
+}
+function sign(x) {
+  return (x > 0) - (x < 0) || +x;
+}
+var ONE_THIRD = 1 / 3;
+function cbrt(x) {
+  return x < 0 ? -Math.pow(-x, ONE_THIRD) : Math.pow(x, ONE_THIRD);
+}
+function expm1(x) {
+  return Math.exp(x) - 1;
+}
+function log1p(x) {
+  return Math.log(1 + x);
+}
+function log2(x) {
+  return Math.log(x) / Math.LN2;
+}
+function Parser(options) {
+  this.options = options || {};
+  this.unaryOps = {
+    sin: Math.sin,
+    cos: Math.cos,
+    tan: Math.tan,
+    asin: Math.asin,
+    acos: Math.acos,
+    atan: Math.atan,
+    sinh: Math.sinh || sinh,
+    cosh: Math.cosh || cosh,
+    tanh: Math.tanh || tanh,
+    asinh: Math.asinh || asinh,
+    acosh: Math.acosh || acosh,
+    atanh: Math.atanh || atanh,
+    sqrt: Math.sqrt,
+    cbrt: Math.cbrt || cbrt,
+    log: Math.log,
+    log2: Math.log2 || log2,
+    ln: Math.log,
+    lg: Math.log10 || log10,
+    log10: Math.log10 || log10,
+    expm1: Math.expm1 || expm1,
+    log1p: Math.log1p || log1p,
+    abs: Math.abs,
+    ceil: Math.ceil,
+    floor: Math.floor,
+    round: Math.round,
+    trunc: Math.trunc || trunc2,
+    "-": neg,
+    "+": Number,
+    exp: Math.exp,
+    not,
+    length: stringOrArrayLength,
+    "!": factorial,
+    sign: Math.sign || sign
+  };
+  this.binaryOps = {
+    "+": add,
+    "-": sub,
+    "*": mul,
+    "/": div,
+    "%": mod,
+    "^": Math.pow,
+    "||": concat,
+    "==": equal,
+    "!=": notEqual,
+    ">": greaterThan,
+    "<": lessThan,
+    ">=": greaterThanEqual,
+    "<=": lessThanEqual,
+    and: andOperator,
+    or: orOperator,
+    "in": inOperator,
+    "=": setVar,
+    "[": arrayIndex
+  };
+  this.ternaryOps = {
+    "?": condition
+  };
+  this.functions = {
+    random,
+    fac: factorial,
+    min,
+    max,
+    hypot: Math.hypot || hypot,
+    pyt: Math.hypot || hypot,
+    // backward compat
+    pow: Math.pow,
+    atan2: Math.atan2,
+    "if": condition,
+    gamma,
+    roundTo,
+    map: arrayMap,
+    fold: arrayFold,
+    filter: arrayFilter,
+    indexOf: stringOrArrayIndexOf,
+    join: arrayJoin
+  };
+  this.consts = {
+    E: Math.E,
+    PI: Math.PI,
+    "true": true,
+    "false": false
+  };
+}
+Parser.prototype.parse = function(expr) {
+  var instr = [];
+  var parserState = new ParserState(
+    this,
+    new TokenStream(this, expr),
+    { allowMemberAccess: this.options.allowMemberAccess }
+  );
+  parserState.parseExpression(instr);
+  parserState.expect(TEOF, "EOF");
+  return new Expression(instr, this);
+};
+Parser.prototype.evaluate = function(expr, variables) {
+  return this.parse(expr).evaluate(variables);
+};
+var sharedParser = new Parser();
+Parser.parse = function(expr) {
+  return sharedParser.parse(expr);
+};
+Parser.evaluate = function(expr, variables) {
+  return sharedParser.parse(expr).evaluate(variables);
+};
+var optionNameMap = {
+  "+": "add",
+  "-": "subtract",
+  "*": "multiply",
+  "/": "divide",
+  "%": "remainder",
+  "^": "power",
+  "!": "factorial",
+  "<": "comparison",
+  ">": "comparison",
+  "<=": "comparison",
+  ">=": "comparison",
+  "==": "comparison",
+  "!=": "comparison",
+  "||": "concatenate",
+  "and": "logical",
+  "or": "logical",
+  "not": "logical",
+  "?": "conditional",
+  ":": "conditional",
+  "=": "assignment",
+  "[": "array",
+  "()=": "fndef"
+};
+function getOptionName(op) {
+  return optionNameMap.hasOwnProperty(op) ? optionNameMap[op] : op;
+}
+Parser.prototype.isOperatorEnabled = function(op) {
+  var optionName = getOptionName(op);
+  var operators = this.options.operators || {};
+  return !(optionName in operators) || !!operators[optionName];
+};
+var parser = new Parser({
+  operators: {
+    add: true,
+    substract: true,
+    divide: true,
+    multiply: true,
+    power: true,
+    remainder: true,
+    conditional: true,
+    logical: true,
+    comparison: true
+  }
+});
+parser.functions.gcd = function(...args) {
+  return gcdCalc2(args);
+};
+parser.functions.lcd = function(...args) {
+  return lcdCalc2(args);
+};
+function gcdCalc2(numbers) {
+  let num = 2, res = 1;
+  while (num <= Math.min(...numbers)) {
+    if (numbers.every((n) => n % num === 0)) {
+      res = num;
+    }
+    num++;
+  }
+  return res;
+}
+function lcdCalcEx2(a, b) {
+  return Math.abs(a * b) / gcdCalc2([a, b]);
+}
+function lcdCalc2(numbers) {
+  return numbers.reduce((acc, num) => lcdCalcEx2(acc, num), 1);
+}
+function recurExpr(node) {
+  const quantity = node.quantity ?? node.ratio ?? {};
+  const { context, expression } = quantity;
+  if (expression) {
+    let expr = parser.parse(expression);
+    const variables = expr.variables();
+    for (let variable of variables) {
+      const res = recurExpr(context[variable]);
+      if (res.substitute != null) {
+        expr = expr.substitute(variable, res);
+      } else {
+        const q = res.quantity ?? res.ratio;
+        if (typeof q == "number") {
+          expr = expr.simplify({ [variable]: res });
+        } else {
+          expr = expr.substitute(variable, q);
+        }
+      }
+    }
+    return expr;
+  } else {
+    return node;
+  }
+}
+function toEquationExpr(lastExpr) {
+  const final = recurExpr({ quantity: lastExpr });
+  return parser.parse(cleanUpExpression(final));
+}
+function cleanUpExpression(exp) {
+  return exp.toString().replaceAll(".quantity", "").replaceAll(".ratio", "");
+}
+function solveLinearEquation(lhs, rhs, variable = "x") {
+  const expr = `(${typeof lhs === "number" ? lhs : toEquationExpr(lhs)}) - (${typeof rhs === "number" ? rhs : toEquationExpr(rhs)})`;
+  const terms = evaluateLinearExpression(expr, variable);
+  const a = terms[variable] || 0;
+  const b = terms.constant || 0;
+  if (a === 0) {
+    if (b === 0)
+      throw "Infinite solutions (identity)";
+    else
+      throw "No solution";
+  }
+  const x = -b / a;
+  return x;
+}
+function evaluateLinearExpression(expr, variable) {
+  const tokens = tokenize(expr);
+  const rpn = toRPN(tokens);
+  return evalRPN(rpn, variable);
+}
+function tokenize(str) {
+  const regex = /\d+\.\d+|\d+|[a-zA-Z]+|[\+\-\*\/\(\)]/g;
+  return str.match(regex);
+}
+function toRPN(tokens) {
+  const output = [];
+  const ops = [];
+  const precedence = { "+": 1, "-": 1, "*": 2, "/": 2 };
+  const associativity = { "+": "L", "-": "L", "*": "L", "/": "L" };
+  tokens.forEach((token) => {
+    if (!isNaN(token) || /^[a-zA-Z]+$/.test(token)) {
+      output.push(token);
+    } else if ("+-*/".includes(token)) {
+      while (ops.length > 0 && "*/+-".includes(ops[ops.length - 1])) {
+        const top = ops[ops.length - 1];
+        if (associativity[token] === "L" && precedence[token] <= precedence[top] || associativity[token] === "R" && precedence[token] < precedence[top]) {
+          output.push(ops.pop());
+        } else
+          break;
+      }
+      ops.push(token);
+    } else if (token === "(") {
+      ops.push(token);
+    } else if (token === ")") {
+      while (ops.length && ops[ops.length - 1] !== "(") {
+        output.push(ops.pop());
+      }
+      ops.pop();
+    }
+  });
+  while (ops.length)
+    output.push(ops.pop());
+  return output;
+}
+function evalRPN(rpn, variable) {
+  const stack = [];
+  rpn.forEach((token) => {
+    if (!isNaN(token)) {
+      stack.push({ constant: parseFloat(token) });
+    } else if (token === variable) {
+      stack.push({ [variable]: 1 });
+    } else if ("+-*/".includes(token)) {
+      const b = stack.pop();
+      const a = stack.pop();
+      stack.push(applyOp(a, b, token, variable));
+    }
+  });
+  return stack.pop();
+}
+function applyOp(a, b, op, variable) {
+  const aCoeff = a[variable] || 0;
+  const bCoeff = b[variable] || 0;
+  const aConst = a.constant || 0;
+  const bConst = b.constant || 0;
+  if (op === "+") {
+    return {
+      [variable]: aCoeff + bCoeff,
+      constant: aConst + bConst
+    };
+  }
+  if (op === "-") {
+    return {
+      [variable]: aCoeff - bCoeff,
+      constant: aConst - bConst
+    };
+  }
+  if (op === "*") {
+    if (aCoeff !== 0 && bCoeff !== 0) {
+      throw new Error("Non-linear term produced \u2014 equation must remain linear.");
+    }
+    return {
+      [variable]: aCoeff * bConst + bCoeff * aConst,
+      constant: aConst * bConst
+    };
+  }
+  if (op === "/") {
+    if (bCoeff !== 0) {
+      throw new Error("Division by a variable not supported.");
+    }
+    return {
+      [variable]: aCoeff / bConst,
+      constant: aConst / bConst
+    };
+  }
+}
+
 // src/math/math-configure.ts
 var convert = configureMeasurements({
   length: length_default,
@@ -3425,7 +5236,8 @@ var convert = configureMeasurements({
 configure({
   convertToFraction: (d) => new Fraction(d).toFraction(),
   convertToUnit: (d, from, to4) => convert(d).from(from).to(to4),
-  unitAnchor: (unit) => convert().getUnit(unit)?.unit?.to_anchor
+  unitAnchor: (unit) => convert().getUnit(unit)?.unit?.to_anchor,
+  solveLinearEquation: (first, second, variable) => solveLinearEquation(first, second, variable)
 });
 var inferenceRuleWithQuestion2 = inferenceRuleWithQuestion;
 
@@ -3457,13 +5269,19 @@ function deduce(...children) {
 function to(...children) {
   return { children };
 }
-function toCont(child, { agent }) {
+function toCont(child, { agent, entity: entity3 }) {
   const node = isPredicate(child) ? child : last(child);
   if (!(node.kind == "cont" || node.kind === "transfer" || node.kind == "comp" || node.kind === "comp-diff" || node.kind === "rate" || node.kind === "quota" || node.kind === "delta")) {
     throw `Non convertable node type: ${node.kind}`;
   }
   const typeNode = node;
-  return to(child, cont(agent, typeNode.quantity, typeNode.kind == "rate" ? typeNode.entity.entity : typeNode.entity, typeNode.kind == "rate" ? typeNode.entity.unit : typeNode.unit));
+  return to(child, {
+    kind: "cont",
+    agent,
+    quantity: typeNode.quantity,
+    entity: entity3 != null ? entity3.entity : typeNode.kind == "rate" ? typeNode.entity.entity : typeNode.entity,
+    unit: entity3 != null ? entity3.unit : typeNode.kind == "rate" ? typeNode.entity.unit : typeNode.unit
+  });
 }
 
 // src/math/comparing-values.ts
@@ -3697,7 +5515,8 @@ var trideni_odpadu = () => {
 var defaultHelpers2 = {
   convertToFraction: (d) => d,
   convertToUnit: (d) => d,
-  unitAnchor: () => 1
+  unitAnchor: () => 1,
+  solveLinearEquation: (fist, second, variable) => NaN
 };
 var helpers2 = defaultHelpers2;
 function configure2(config) {
@@ -3706,17 +5525,20 @@ function configure2(config) {
 function isNumber2(quantity) {
   return typeof quantity === "number";
 }
-function areNumbers2(ratios4) {
+function areNumbers3(ratios4) {
   return ratios4.every((d) => isNumber2(d));
 }
 function wrapToQuantity2(expression, context) {
-  return { expression, context };
+  return { expression, context: convertContext2(context) };
 }
 function wrapToRatio2(expression, context) {
-  return { expression, context };
+  return { expression, context: convertContext2(context) };
 }
-function cont2(agent, quantity, entity3, unit) {
-  return { kind: "cont", agent, quantity, entity: entity3, unit };
+function convertContext2(context) {
+  return Object.fromEntries(Object.entries(context).map(([key, value]) => [key, convertRatioKeysToFractions2(value)]));
+}
+function convertRatioKeysToFractions2(obj) {
+  return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, key === "ratio" ? helpers2.convertToFraction(value) : value]));
 }
 function compDiff2(agentMinuend, agentSubtrahend, quantity, entity3) {
   return { kind: "comp-diff", agentMinuend, agentSubtrahend, quantity, entity: entity3 };
@@ -3899,7 +5721,7 @@ function convertToPartToPartRatios2(b, a) {
   return {
     question: `Vyj\xE1d\u0159i pom\u011Brem \u010D\xE1st\xED ${[b.agentA, b.agentB].join(":")}?`,
     result,
-    options: areNumbers2(result.ratios) ? [
+    options: areNumbers3(result.ratios) ? [
       { tex: `(${formatRatio2(abs2(b.ratio))}) ku 1`, result: result.ratios.map((d) => formatRatio2(d)).join(":"), ok: true },
       { tex: `(1 / ${formatRatio2(abs2(b.ratio))}) ku 1`, result: result.ratios.map((d) => formatRatio2(d)).join(":"), ok: false }
     ] : []
@@ -4030,7 +5852,7 @@ function ratioComplementRule2(a, b) {
   };
 }
 function convertToCompRatioEx2(b, { agentB, asPercent }) {
-  if (!areNumbers2(b.ratios)) {
+  if (!areNumbers3(b.ratios)) {
     throw "ratios does not support non quantity type";
   }
   const bRatios = b.ratios;
@@ -4098,7 +5920,7 @@ function reverseCompRatio2(b, asPercent) {
   };
 }
 function ratiosConvertRuleEx2(a, b, asPercent) {
-  if (!areNumbers2(b.ratios)) {
+  if (!areNumbers3(b.ratios)) {
     throw "ratios does not support non quantity type";
   }
   if (!b.parts.includes(a.agent)) {
@@ -4115,7 +5937,7 @@ function ratiosConvertRuleEx2(a, b, asPercent) {
 }
 function ratiosConvertRule2(a, b, last22) {
   const result = ratiosConvertRuleEx2(a, b, last22.asPercent);
-  if (!areNumbers2(b.ratios) || !isNumber2(result.ratio)) {
+  if (!areNumbers3(b.ratios) || !isNumber2(result.ratio)) {
     throw "ratios does not support non quantity type";
   }
   const index = b.parts.indexOf(a.agent);
@@ -4157,7 +5979,7 @@ function compRatioToCompRule2(a, b) {
   };
 }
 function compRatiosToCompRuleEx2(a, b) {
-  if (!areNumbers2(a.ratios) || !isNumber2(b.quantity)) {
+  if (!areNumbers3(a.ratios) || !isNumber2(b.quantity)) {
     throw "ratios does not support non quantity type";
   }
   const aIndex = a.parts.indexOf(b.agentA);
@@ -4189,7 +6011,7 @@ function compRatiosToCompRule2(a, b) {
   return {
     question: containerQuestion2(result),
     result,
-    options: areNumbers2(a.ratios) && isNumber2(b.quantity) && isNumber2(result.quantity) ? [
+    options: areNumbers3(a.ratios) && isNumber2(b.quantity) && isNumber2(result.quantity) ? [
       { tex: `${formatNumber2(abs2(b.quantity))} / (${formatNumber2(a.ratios[aIndex])} - ${formatNumber2(a.ratios[bIndex])}) * ${formatNumber2(a.ratios[lastIndex])}`, result: formatNumber2(result.quantity), ok: true }
     ] : []
   };
@@ -4363,11 +6185,11 @@ function sumRuleEx2(items, b) {
     }
     ;
     const ratios4 = items.map((d) => d.ratio);
-    const ratio4 = areNumbers2(ratios4) ? ratios4.reduce((out, d) => out += d, 0) : wrapToRatio2(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
+    const ratio4 = areNumbers3(ratios4) ? ratios4.reduce((out, d) => out += d, 0) : wrapToRatio2(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
     return { kind: "ratio", whole: wholes[0], ratio: ratio4, part: b.wholeAgent };
   } else if (items.every((d) => isQuantityPredicate2(d))) {
     const values = items.map((d) => d.quantity);
-    const quantity = areNumbers2(values) ? values.reduce((out, d) => out += d, 0) : wrapToQuantity2(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
+    const quantity = areNumbers3(values) ? values.reduce((out, d) => out += d, 0) : wrapToQuantity2(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
     if (items.every((d) => isRatePredicate2(d))) {
       const { entity: entity3, entityBase } = items[0];
       return { kind: "rate", agent: b.wholeAgent, quantity, entity: entity3, entityBase };
@@ -4380,7 +6202,7 @@ function sumRule2(items, b) {
   const result = sumRuleEx2(items, b);
   const isQuantity = isQuantityPredicate2(result);
   return {
-    question: result.kind === "cont" ? combineQuestion2(result) : result.kind === "rate" ? `Vypo\u010Dti ${result.agent}` : `Vypo\u010Dti ${result.part}`,
+    question: result.kind === "cont" ? containerQuestion2(result) : result.kind === "rate" ? `Vypo\u010Dti ${result.agent}` : `Vypo\u010Dti ${result.part}`,
     result,
     options: [
       {
@@ -4401,7 +6223,7 @@ function productRuleEx2(items, b) {
   return {
     kind: "cont",
     agent: b.wholeAgent,
-    quantity: areNumbers2(values) ? values.reduce((out, d) => out *= d, 1) : wrapToQuantity2(items.map((d, i) => `x${i + 1}.quantity`).join(" * "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d]))),
+    quantity: areNumbers3(values) ? values.reduce((out, d) => out *= d, 1) : wrapToQuantity2(items.map((d, i) => `y${i + 1}.quantity`).join(" * "), Object.fromEntries(items.map((d, i) => [`y${i + 1}`, d]))),
     entity: b.wholeEntity.entity,
     unit: b.wholeEntity.unit
   };
@@ -4410,9 +6232,9 @@ function productRule2(items, b) {
   const result = productRuleEx2(items, b);
   const values = items.map((d) => d.quantity);
   return {
-    question: combineQuestion2(result),
+    question: containerQuestion2(result),
     result,
-    options: areNumbers2(values) ? [
+    options: areNumbers3(values) ? [
       { tex: values.map((d) => formatNumber2(d)).join(" * "), result: formatNumber2(values.reduce((out, d) => out *= d, 1)), ok: true },
       { tex: values.map((d) => formatNumber2(d)).join(" + "), result: formatNumber2(values.reduce((out, d) => out += d, 0)), ok: false }
     ] : []
@@ -4422,7 +6244,7 @@ function gcdRuleEx2(values, b) {
   return {
     kind: "cont",
     agent: b.agent,
-    quantity: areNumbers2(values) ? gcdCalc2(values) : wrapToQuantity2(`gcd(${values.join(",")})`),
+    quantity: areNumbers3(values) ? gcdCalc3(values) : wrapToQuantity2(`gcd(${values.join(",")})`),
     entity: b.entity
   };
 }
@@ -4430,9 +6252,9 @@ function gcdRule2(items, b) {
   const values = items.map((d) => d.quantity);
   const result = gcdRuleEx2(values, b);
   return {
-    question: combineQuestion2(result),
+    question: containerQuestion2(result),
     result,
-    options: areNumbers2(values) && isNumber2(result.quantity) ? [
+    options: areNumbers3(values) && isNumber2(result.quantity) ? [
       { tex: gcdFromPrimeFactors2(primeFactorization2(values)).join(" * "), result: formatNumber2(result.quantity), ok: true }
       //{ tex: lcdFromPrimeFactors(factors).join(" * "), result: formatNumber(result.quantity), ok: false },
     ] : []
@@ -4442,7 +6264,7 @@ function lcdRuleEx2(values, b) {
   return {
     kind: "cont",
     agent: b.agent,
-    quantity: areNumbers2(values) ? lcdCalc2(values) : wrapToQuantity2(`gcd(${values.join(",")})`),
+    quantity: areNumbers3(values) ? lcdCalc3(values) : wrapToQuantity2(`gcd(${values.join(",")})`),
     entity: b.entity
   };
 }
@@ -4450,9 +6272,9 @@ function lcdRule2(items, b) {
   const values = items.map((d) => d.quantity);
   const result = lcdRuleEx2(values, b);
   return {
-    question: combineQuestion2(result),
+    question: containerQuestion2(result),
     result,
-    options: areNumbers2(values) && isNumber2(result.quantity) ? [
+    options: areNumbers3(values) && isNumber2(result.quantity) ? [
       { tex: lcdFromPrimeFactors2(primeFactorization2(values)).join(" * "), result: formatNumber2(result.quantity), ok: true }
       //{ tex: gcdFromPrimeFactors(factors).join(" * "), result: formatNumber(result.quantity), ok: false },
     ] : []
@@ -4460,7 +6282,7 @@ function lcdRule2(items, b) {
 }
 function sequenceRuleEx2(items) {
   const values = items.map((d) => d.quantity);
-  if (!areNumbers2(values)) {
+  if (!areNumbers3(values)) {
     throw "quota does not support non quantity type";
   }
   if (new Set(items.map((d) => d.entity)).size > 1) {
@@ -4732,6 +6554,22 @@ function toRate2(a, b) {
     return resultAsQuestion2(result);
   }
 }
+function solveEquationEx2(a, b, last22) {
+  return {
+    kind: "cont",
+    agent: last22.agent,
+    quantity: helpers2.solveLinearEquation(a.quantity, b.quantity, last22.variable),
+    ...last22.entity
+  };
+}
+function solveEquation2(a, b, last22) {
+  const result = solveEquationEx2(a, b, last22);
+  return {
+    question: `Vy\u0159e\u0161 line\xE1rn\xED rovnici ${a.agent} = ${b.agent} pro nezn\xE1mou ${last22.variable}.`,
+    result,
+    options: []
+  };
+}
 function toQuota2(a, quota3) {
   if (!isNumber2(a.quantity) || !isNumber2(quota3.quantity)) {
     throw "quota does not support non quantity type";
@@ -4771,7 +6609,7 @@ function toRatios2(parts, last22) {
   return {
     question: `Vyj\xE1d\u0159i pom\u011Brem mezi ${result.parts.join(":")}?`,
     result,
-    options: areNumbers2(result.ratios) ? [
+    options: areNumbers3(result.ratios) ? [
       { tex: `${result.ratios.map((d) => formatNumber2(d)).join(":")}`, result: result.ratios.map((d) => formatNumber2(d)).join(":"), ok: true },
       { tex: `${result.ratios.map((d) => formatNumber2(d)).join(":")}`, result: result.ratios.map((d) => formatNumber2(d)).join(":"), ok: false }
     ] : []
@@ -4783,13 +6621,13 @@ function partToPartRuleEx2(a, partToPartRatio, nth2) {
   }
   const sourcePartIndex = partToPartRatio.parts.findIndex((d) => matchAgent2(d, a));
   const targetPartIndex = nth2 != null ? partToPartRatio.parts.findIndex((d) => d === nth2.agent) : matchAgent2(partToPartRatio[0], a) ? 0 : partToPartRatio.parts.length - 1;
-  const partsSum = areNumbers2(partToPartRatio.ratios) ? partToPartRatio.ratios.reduce((out, d) => out += d, 0) : partToPartRatio.ratios.join(" + ");
+  const partsSum = areNumbers3(partToPartRatio.ratios) ? partToPartRatio.ratios.reduce((out, d) => out += d, 0) : partToPartRatio.ratios.join(" + ");
   const matchedWhole = matchAgent2(partToPartRatio.whole, a);
   return {
     kind: "cont",
     agent: (matchedWhole || nth2 != null) && targetPartIndex != -1 ? partToPartRatio.parts[targetPartIndex] : partToPartRatio.whole,
     entity: a.entity,
-    quantity: matchedWhole ? areNumbers2(partToPartRatio.ratios) && isNumber2(a.quantity) ? a.quantity / partToPartRatio.ratios.reduce((out, d) => out += d, 0) * partToPartRatio.ratios[targetPartIndex] : wrapToQuantity2(`a.quantity / (${partToPartRatio.ratios.map((d, i) => `partToPartRatio.ratios[${i}]`).join(" + ")}) * partToPartRatio.ratios[${targetPartIndex}]`, { a, partToPartRatio }) : areNumbers2(partToPartRatio.ratios) && isNumber2(a.quantity) ? a.quantity / partToPartRatio.ratios[sourcePartIndex] * (nth2 != null ? partToPartRatio.ratios[targetPartIndex] : partToPartRatio.ratios.reduce((out, d) => out += d, 0)) : nth2 != null ? wrapToQuantity2(`a.quantity / partToPartRatio.ratios[${sourcePartIndex}] * partToPartRatio.ratios[${targetPartIndex}]`, { a, partToPartRatio }) : wrapToQuantity2(`a.quantity / partToPartRatio.ratios[${sourcePartIndex}] * (${partToPartRatio.ratios.map((d, i) => `partToPartRatio.ratios[${i}]`).join(" + ")})`, { a, partToPartRatio }),
+    quantity: matchedWhole ? areNumbers3(partToPartRatio.ratios) && isNumber2(a.quantity) ? a.quantity / partToPartRatio.ratios.reduce((out, d) => out += d, 0) * partToPartRatio.ratios[targetPartIndex] : wrapToQuantity2(`a.quantity / (${partToPartRatio.ratios.map((d, i) => `partToPartRatio.ratios[${i}]`).join(" + ")}) * partToPartRatio.ratios[${targetPartIndex}]`, { a, partToPartRatio }) : areNumbers3(partToPartRatio.ratios) && isNumber2(a.quantity) ? a.quantity / partToPartRatio.ratios[sourcePartIndex] * (nth2 != null ? partToPartRatio.ratios[targetPartIndex] : partToPartRatio.ratios.reduce((out, d) => out += d, 0)) : nth2 != null ? wrapToQuantity2(`a.quantity / partToPartRatio.ratios[${sourcePartIndex}] * partToPartRatio.ratios[${targetPartIndex}]`, { a, partToPartRatio }) : wrapToQuantity2(`a.quantity / partToPartRatio.ratios[${sourcePartIndex}] * (${partToPartRatio.ratios.map((d, i) => `partToPartRatio.ratios[${i}]`).join(" + ")})`, { a, partToPartRatio }),
     unit: a.unit
   };
 }
@@ -4804,20 +6642,20 @@ function partToPartRule2(a, partToPartRatio, nth2) {
   return {
     question: containerQuestion2(result),
     result,
-    options: areNumbers2(partToPartRatio.ratios) && isNumber2(a.quantity) && isNumber2(result.quantity) ? [
+    options: areNumbers3(partToPartRatio.ratios) && isNumber2(a.quantity) && isNumber2(result.quantity) ? [
       { tex: `${formatNumber2(a.quantity)} / ${partsSum} * ${formatNumber2(partToPartRatio.ratios[targetPartIndex])}`, result: formatNumber2(result.quantity), ok: matchedWhole },
       { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(partToPartRatio.ratios[sourcePartIndex])} * ${nth2 != null ? partToPartRatio.ratios[targetPartIndex] : partsSum}`, result: formatNumber2(result.quantity), ok: !matchedWhole }
     ] : []
   };
 }
 function mapRatiosByFactorEx2(multi, quantity) {
-  if (!areNumbers2(multi.ratios)) {
+  if (!areNumbers3(multi.ratios)) {
     throw "ratios are not supported by non quantity types";
   }
   return { ...multi, ratios: multi.ratios.map((d) => d * quantity) };
 }
 function mapRatiosByFactor2(multi, factor, inverse) {
-  if (!areNumbers2(multi.ratios) || !isNumber2(factor.quantity)) {
+  if (!areNumbers3(multi.ratios) || !isNumber2(factor.quantity)) {
     throw "ratios are not supported by non quantity types";
   }
   const quantity = inverse ? factor.quantity : 1 / factor.quantity;
@@ -4829,7 +6667,7 @@ function mapRatiosByFactor2(multi, factor, inverse) {
   };
 }
 function nthPartFactorByEx2(multi, factor, nthPart3) {
-  if (!areNumbers2(multi.ratios) || !isNumber2(factor)) {
+  if (!areNumbers3(multi.ratios) || !isNumber2(factor)) {
     throw "ratios are not supported by non quantity types";
   }
   if (factor < 1) {
@@ -4851,7 +6689,7 @@ function nthPartFactorByEx2(multi, factor, nthPart3) {
   };
 }
 function nthPartFactorBy2(multi, factor, nthPart3) {
-  if (!areNumbers2(multi.ratios) || !isNumber2(factor.quantity)) {
+  if (!areNumbers3(multi.ratios) || !isNumber2(factor.quantity)) {
     throw "ratios are not supported by non quantity types";
   }
   const result = nthPartFactorByEx2(multi, factor.quantity, nthPart3);
@@ -4962,10 +6800,13 @@ function inferenceRuleEx2(...args) {
     return last22.kind === "sequence" ? sequenceRule2(arr) : last22.kind === "gcd" ? gcdRule2(arr, last22) : last22.kind === "lcd" ? lcdRule2(arr, last22) : last22.kind === "product" ? productRule2(arr, last22) : last22.kind === "sum" ? sumRule2(arr, last22) : last22.kind === "ratios" ? toRatios2(arr, last22) : null;
   } else if (a.kind === "cont" && b.kind == "cont") {
     const kind = last22?.kind;
-    return kind === "comp-diff" ? toComparisonDiff2(a, b) : kind === "diff" ? toDifference2(a, b, last22) : kind === "quota" ? toQuota2(a, b) : kind === "delta" ? toDelta2(a, b, last22) : kind === "pythagoras" ? pythagorasRule2(a, b, last22) : kind === "rate" ? toRate2(a, b) : kind === "ratios" ? toRatios2([a, b], last22) : kind === "comp-ratio" ? toRatioComparison2(a, b, last22) : kind === "ratio" ? toPartWholeRatio2(a, b, last22) : toComparison2(a, b);
+    return kind === "comp-diff" ? toComparisonDiff2(a, b) : kind === "diff" ? toDifference2(a, b, last22) : kind === "quota" ? toQuota2(a, b) : kind === "delta" ? toDelta2(a, b, last22) : kind === "pythagoras" ? pythagorasRule2(a, b, last22) : kind === "rate" ? toRate2(a, b) : kind === "ratios" ? toRatios2([a, b], last22) : kind === "comp-ratio" ? toRatioComparison2(a, b, last22) : kind === "ratio" ? toPartWholeRatio2(a, b, last22) : kind === "linear-equation" ? solveEquation2(a, b, last22) : toComparison2(a, b);
   }
   if (a.kind === "rate" && b.kind === "rate" && last22.kind === "ratios") {
     return toRatios2([a, b], last22);
+  }
+  if (a.kind === "rate" && b.kind === "rate" && last22.kind === "linear-equation") {
+    return solveEquation2(a, b, last22);
   } else if ((a.kind === "cont" || a.kind === "comp") && b.kind === "unit") {
     return convertToUnit2(a, b);
   } else if (a.kind === "unit" && (b.kind === "cont" || b.kind === "comp")) {
@@ -5055,9 +6896,6 @@ function inferenceRuleEx2(...args) {
     return diffRule2(b, a);
   } else if (a.kind === "sequence" && b.kind === "cont") {
     const kind = last22?.kind;
-    if (kind === "quota") {
-      return toQuota2(a, b);
-    }
     return kind === "nth" ? nthPositionRule2(b, a, last22.entity) : nthTermRule2(b, a);
   } else if (a.kind === "cont" && b.kind === "sequence") {
     const kind = last22?.kind;
@@ -5082,7 +6920,7 @@ function inferenceRuleEx2(...args) {
     return null;
   }
 }
-function gcdCalc2(numbers) {
+function gcdCalc3(numbers) {
   let num = 2, res = 1;
   while (num <= Math.min(...numbers)) {
     if (numbers.every((n) => n % num === 0)) {
@@ -5092,11 +6930,11 @@ function gcdCalc2(numbers) {
   }
   return res;
 }
-function lcdCalcEx2(a, b) {
-  return abs2(a * b) / gcdCalc2([a, b]);
+function lcdCalcEx3(a, b) {
+  return abs2(a * b) / gcdCalc3([a, b]);
 }
-function lcdCalc2(numbers) {
-  return numbers.reduce((acc, num) => lcdCalcEx2(acc, num), 1);
+function lcdCalc3(numbers) {
+  return numbers.reduce((acc, num) => lcdCalcEx3(acc, num), 1);
 }
 function sequencer2(sequence) {
   if (sequence.length < 2) {
@@ -5178,13 +7016,15 @@ function formatRatio2(d, asPercent) {
   return d > -2 && d < 2 ? helpers2.convertToFraction(d) : formatNumber2(d);
 }
 function containerQuestion2(d) {
-  return `Vypo\u010Dti ${d.agent}${formatEntity2(d)}?`;
+  return isNumber2(d.quantity) ? `Vypo\u010Dti ${d.agent}${formatEntity2(d)}?` : `Vyj\xE1d\u0159i v\xFDrazem s prom\u011Bnnou ${d.agent}${formatEntity2(d)}?`;
 }
-function combineQuestion2(d) {
-  return `Vypo\u010Dti ${d.agent}${formatEntity2(d)}?`;
-}
-function toGenerAgent2(a, entity3 = "") {
-  return cont2(a.entity, a.quantity, entity3);
+function toGenerAgent2(a) {
+  return {
+    kind: "cont",
+    agent: a.entity,
+    quantity: a.quantity,
+    entity: ""
+  };
 }
 function primeFactorization2(numbers) {
   const getPrimeFactors = (num) => {
@@ -5280,23 +7120,23 @@ function formatAngle2(relationship) {
   }
 }
 function formatSequence2(type, n) {
-  const simplify = (d, op = "") => d !== 1 ? `${d}${op}` : "";
+  const simplify22 = (d, op = "") => d !== 1 ? `${d}${op}` : "";
   if (type.kind === "arithmetic")
     return `${type.sequence[0]} + ${type.commonDifference}(${formatNumber2(n)}-1)`;
   if (type.kind === "quadratic") {
     const [first, second] = type.sequence;
     const { A, B, C } = nthQuadraticElements2(first, second, type.secondDifference);
-    let parts = [`${simplify(A, "*")}${formatNumber2(n)}^2^`];
+    let parts = [`${simplify22(A, "*")}${formatNumber2(n)}^2^`];
     if (B !== 0) {
-      parts = parts.concat(`${simplify(B, "*")}${formatNumber2(n)}`);
+      parts = parts.concat(`${simplify22(B, "*")}${formatNumber2(n)}`);
     }
     if (C !== 0) {
-      parts = parts.concat(`${simplify(C, "*")}${formatNumber2(n)}`);
+      parts = parts.concat(`${simplify22(C, "*")}${formatNumber2(n)}`);
     }
     return `${parts.map((d, i) => `${i !== 0 ? " + " : ""}${d}`).join(" ")}`;
   }
   if (type.kind === "geometric") {
-    return `${simplify(type.sequence[0], "*")}${type.commonRatio}^(${formatNumber2(n)}-1)^`;
+    return `${simplify22(type.sequence[0], "*")}${type.commonRatio}^(${formatNumber2(n)}-1)^`;
   }
 }
 function sequenceOptions2(seqType) {
@@ -5342,7 +7182,7 @@ function assign2(n, s) {
   }
   return n * s;
 }
-function trunc2(x) {
+function trunc3(x) {
   return typeof x === "bigint" ? x : Math.floor(x);
 }
 function newFraction2(n, d) {
@@ -5893,7 +7733,7 @@ Fraction2.prototype = {
   "ceil": function(places) {
     places = C_TEN2 ** BigInt(places || 0);
     return newFraction2(
-      trunc2(this["s"] * places * this["n"] / this["d"]) + (places * this["n"] % this["d"] > C_ZERO2 && this["s"] >= C_ZERO2 ? C_ONE2 : C_ZERO2),
+      trunc3(this["s"] * places * this["n"] / this["d"]) + (places * this["n"] % this["d"] > C_ZERO2 && this["s"] >= C_ZERO2 ? C_ONE2 : C_ZERO2),
       places
     );
   },
@@ -5905,7 +7745,7 @@ Fraction2.prototype = {
   "floor": function(places) {
     places = C_TEN2 ** BigInt(places || 0);
     return newFraction2(
-      trunc2(this["s"] * places * this["n"] / this["d"]) - (places * this["n"] % this["d"] > C_ZERO2 && this["s"] < C_ZERO2 ? C_ONE2 : C_ZERO2),
+      trunc3(this["s"] * places * this["n"] / this["d"]) - (places * this["n"] % this["d"] > C_ZERO2 && this["s"] < C_ZERO2 ? C_ONE2 : C_ZERO2),
       places
     );
   },
@@ -5917,7 +7757,7 @@ Fraction2.prototype = {
   "round": function(places) {
     places = C_TEN2 ** BigInt(places || 0);
     return newFraction2(
-      trunc2(this["s"] * places * this["n"] / this["d"]) + this["s"] * ((this["s"] >= C_ZERO2 ? C_ONE2 : C_ZERO2) + C_TWO2 * (places * this["n"] % this["d"]) > this["d"] ? C_ONE2 : C_ZERO2),
+      trunc3(this["s"] * places * this["n"] / this["d"]) + this["s"] * ((this["s"] >= C_ZERO2 ? C_ONE2 : C_ZERO2) + C_TWO2 * (places * this["n"] % this["d"]) > this["d"] ? C_ONE2 : C_ZERO2),
       places
     );
   },
@@ -5931,7 +7771,7 @@ Fraction2.prototype = {
     const n = this["n"] * P2["d"];
     const d = this["d"] * P2["n"];
     const r = n % d;
-    let k = trunc2(n / d);
+    let k = trunc3(n / d);
     if (r + r >= d) {
       k++;
     }
@@ -5966,27 +7806,27 @@ Fraction2.prototype = {
     let cycLen = cycleLen2(N, D);
     let cycOff = cycleStart2(N, D, cycLen);
     let str = this["s"] < C_ZERO2 ? "-" : "";
-    str += trunc2(N / D);
+    str += trunc3(N / D);
     N %= D;
     N *= C_TEN2;
     if (N)
       str += ".";
     if (cycLen) {
       for (let i = cycOff; i--; ) {
-        str += trunc2(N / D);
+        str += trunc3(N / D);
         N %= D;
         N *= C_TEN2;
       }
       str += "(";
       for (let i = cycLen; i--; ) {
-        str += trunc2(N / D);
+        str += trunc3(N / D);
         N %= D;
         N *= C_TEN2;
       }
       str += ")";
     } else {
       for (let i = dec; N && i--; ) {
-        str += trunc2(N / D);
+        str += trunc3(N / D);
         N %= D;
         N *= C_TEN2;
       }
@@ -6005,7 +7845,7 @@ Fraction2.prototype = {
     if (d === C_ONE2) {
       str += n;
     } else {
-      let whole = trunc2(n / d);
+      let whole = trunc3(n / d);
       if (showMixed && whole > C_ZERO2) {
         str += whole;
         str += " ";
@@ -6029,7 +7869,7 @@ Fraction2.prototype = {
     if (d === C_ONE2) {
       str += n;
     } else {
-      let whole = trunc2(n / d);
+      let whole = trunc3(n / d);
       if (showMixed && whole > C_ZERO2) {
         str += whole;
         n %= d;
@@ -6052,7 +7892,7 @@ Fraction2.prototype = {
     let b = this["d"];
     let res = [];
     do {
-      res.push(trunc2(a / b));
+      res.push(trunc3(a / b));
       let t = a % b;
       a = b;
       b = t;
@@ -6982,6 +8822,1787 @@ var measure52 = {
   }
 };
 var time_default2 = measure52;
+var INUMBER2 = "INUMBER";
+var IOP12 = "IOP1";
+var IOP22 = "IOP2";
+var IOP32 = "IOP3";
+var IVAR2 = "IVAR";
+var IVARNAME2 = "IVARNAME";
+var IFUNCALL2 = "IFUNCALL";
+var IFUNDEF2 = "IFUNDEF";
+var IEXPR2 = "IEXPR";
+var IEXPREVAL2 = "IEXPREVAL";
+var IMEMBER2 = "IMEMBER";
+var IENDSTATEMENT2 = "IENDSTATEMENT";
+var IARRAY2 = "IARRAY";
+function Instruction2(type, value) {
+  this.type = type;
+  this.value = value !== void 0 && value !== null ? value : 0;
+}
+Instruction2.prototype.toString = function() {
+  switch (this.type) {
+    case INUMBER2:
+    case IOP12:
+    case IOP22:
+    case IOP32:
+    case IVAR2:
+    case IVARNAME2:
+    case IENDSTATEMENT2:
+      return this.value;
+    case IFUNCALL2:
+      return "CALL " + this.value;
+    case IFUNDEF2:
+      return "DEF " + this.value;
+    case IARRAY2:
+      return "ARRAY " + this.value;
+    case IMEMBER2:
+      return "." + this.value;
+    default:
+      return "Invalid Instruction";
+  }
+};
+function unaryInstruction2(value) {
+  return new Instruction2(IOP12, value);
+}
+function binaryInstruction2(value) {
+  return new Instruction2(IOP22, value);
+}
+function ternaryInstruction2(value) {
+  return new Instruction2(IOP32, value);
+}
+function simplify2(tokens, unaryOps, binaryOps, ternaryOps, values) {
+  var nstack = [];
+  var newexpression = [];
+  var n1, n2, n3;
+  var f;
+  for (var i = 0; i < tokens.length; i++) {
+    var item = tokens[i];
+    var type = item.type;
+    if (type === INUMBER2 || type === IVARNAME2) {
+      if (Array.isArray(item.value)) {
+        nstack.push.apply(nstack, simplify2(item.value.map(function(x) {
+          return new Instruction2(INUMBER2, x);
+        }).concat(new Instruction2(IARRAY2, item.value.length)), unaryOps, binaryOps, ternaryOps, values));
+      } else {
+        nstack.push(item);
+      }
+    } else if (type === IVAR2 && values.hasOwnProperty(item.value)) {
+      item = new Instruction2(INUMBER2, values[item.value]);
+      nstack.push(item);
+    } else if (type === IOP22 && nstack.length > 1) {
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      f = binaryOps[item.value];
+      item = new Instruction2(INUMBER2, f(n1.value, n2.value));
+      nstack.push(item);
+    } else if (type === IOP32 && nstack.length > 2) {
+      n3 = nstack.pop();
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      if (item.value === "?") {
+        nstack.push(n1.value ? n2.value : n3.value);
+      } else {
+        f = ternaryOps[item.value];
+        item = new Instruction2(INUMBER2, f(n1.value, n2.value, n3.value));
+        nstack.push(item);
+      }
+    } else if (type === IOP12 && nstack.length > 0) {
+      n1 = nstack.pop();
+      f = unaryOps[item.value];
+      item = new Instruction2(INUMBER2, f(n1.value));
+      nstack.push(item);
+    } else if (type === IEXPR2) {
+      while (nstack.length > 0) {
+        newexpression.push(nstack.shift());
+      }
+      newexpression.push(new Instruction2(IEXPR2, simplify2(item.value, unaryOps, binaryOps, ternaryOps, values)));
+    } else if (type === IMEMBER2 && nstack.length > 0) {
+      n1 = nstack.pop();
+      nstack.push(new Instruction2(INUMBER2, n1.value[item.value]));
+    } else {
+      while (nstack.length > 0) {
+        newexpression.push(nstack.shift());
+      }
+      newexpression.push(item);
+    }
+  }
+  while (nstack.length > 0) {
+    newexpression.push(nstack.shift());
+  }
+  return newexpression;
+}
+function substitute2(tokens, variable, expr) {
+  var newexpression = [];
+  for (var i = 0; i < tokens.length; i++) {
+    var item = tokens[i];
+    var type = item.type;
+    if (type === IVAR2 && item.value === variable) {
+      for (var j = 0; j < expr.tokens.length; j++) {
+        var expritem = expr.tokens[j];
+        var replitem;
+        if (expritem.type === IOP12) {
+          replitem = unaryInstruction2(expritem.value);
+        } else if (expritem.type === IOP22) {
+          replitem = binaryInstruction2(expritem.value);
+        } else if (expritem.type === IOP32) {
+          replitem = ternaryInstruction2(expritem.value);
+        } else {
+          replitem = new Instruction2(expritem.type, expritem.value);
+        }
+        newexpression.push(replitem);
+      }
+    } else if (type === IEXPR2) {
+      newexpression.push(new Instruction2(IEXPR2, substitute2(item.value, variable, expr)));
+    } else {
+      newexpression.push(item);
+    }
+  }
+  return newexpression;
+}
+function evaluate2(tokens, expr, values) {
+  var nstack = [];
+  var n1, n2, n3;
+  var f, args, argCount;
+  if (isExpressionEvaluator2(tokens)) {
+    return resolveExpression2(tokens, values);
+  }
+  var numTokens = tokens.length;
+  for (var i = 0; i < numTokens; i++) {
+    var item = tokens[i];
+    var type = item.type;
+    if (type === INUMBER2 || type === IVARNAME2) {
+      nstack.push(item.value);
+    } else if (type === IOP22) {
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      if (item.value === "and") {
+        nstack.push(n1 ? !!evaluate2(n2, expr, values) : false);
+      } else if (item.value === "or") {
+        nstack.push(n1 ? true : !!evaluate2(n2, expr, values));
+      } else if (item.value === "=") {
+        f = expr.binaryOps[item.value];
+        nstack.push(f(n1, evaluate2(n2, expr, values), values));
+      } else {
+        f = expr.binaryOps[item.value];
+        nstack.push(f(resolveExpression2(n1, values), resolveExpression2(n2, values)));
+      }
+    } else if (type === IOP32) {
+      n3 = nstack.pop();
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      if (item.value === "?") {
+        nstack.push(evaluate2(n1 ? n2 : n3, expr, values));
+      } else {
+        f = expr.ternaryOps[item.value];
+        nstack.push(f(resolveExpression2(n1, values), resolveExpression2(n2, values), resolveExpression2(n3, values)));
+      }
+    } else if (type === IVAR2) {
+      if (item.value in expr.functions) {
+        nstack.push(expr.functions[item.value]);
+      } else if (item.value in expr.unaryOps && expr.parser.isOperatorEnabled(item.value)) {
+        nstack.push(expr.unaryOps[item.value]);
+      } else {
+        var v = values[item.value];
+        if (v !== void 0) {
+          nstack.push(v);
+        } else {
+          throw new Error("undefined variable: " + item.value);
+        }
+      }
+    } else if (type === IOP12) {
+      n1 = nstack.pop();
+      f = expr.unaryOps[item.value];
+      nstack.push(f(resolveExpression2(n1, values)));
+    } else if (type === IFUNCALL2) {
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(resolveExpression2(nstack.pop(), values));
+      }
+      f = nstack.pop();
+      if (f.apply && f.call) {
+        nstack.push(f.apply(void 0, args));
+      } else {
+        throw new Error(f + " is not a function");
+      }
+    } else if (type === IFUNDEF2) {
+      nstack.push(function() {
+        var n22 = nstack.pop();
+        var args2 = [];
+        var argCount2 = item.value;
+        while (argCount2-- > 0) {
+          args2.unshift(nstack.pop());
+        }
+        var n12 = nstack.pop();
+        var f2 = function() {
+          var scope = Object.assign({}, values);
+          for (var i2 = 0, len = args2.length; i2 < len; i2++) {
+            scope[args2[i2]] = arguments[i2];
+          }
+          return evaluate2(n22, expr, scope);
+        };
+        Object.defineProperty(f2, "name", {
+          value: n12,
+          writable: false
+        });
+        values[n12] = f2;
+        return f2;
+      }());
+    } else if (type === IEXPR2) {
+      nstack.push(createExpressionEvaluator2(item, expr));
+    } else if (type === IEXPREVAL2) {
+      nstack.push(item);
+    } else if (type === IMEMBER2) {
+      n1 = nstack.pop();
+      nstack.push(n1[item.value]);
+    } else if (type === IENDSTATEMENT2) {
+      nstack.pop();
+    } else if (type === IARRAY2) {
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+      }
+      nstack.push(args);
+    } else {
+      throw new Error("invalid Expression");
+    }
+  }
+  if (nstack.length > 1) {
+    throw new Error("invalid Expression (parity)");
+  }
+  return nstack[0] === 0 ? 0 : resolveExpression2(nstack[0], values);
+}
+function createExpressionEvaluator2(token, expr, values) {
+  if (isExpressionEvaluator2(token))
+    return token;
+  return {
+    type: IEXPREVAL2,
+    value: function(scope) {
+      return evaluate2(token.value, expr, scope);
+    }
+  };
+}
+function isExpressionEvaluator2(n) {
+  return n && n.type === IEXPREVAL2;
+}
+function resolveExpression2(n, values) {
+  return isExpressionEvaluator2(n) ? n.value(values) : n;
+}
+function expressionToString2(tokens, toJS) {
+  var nstack = [];
+  var n1, n2, n3;
+  var f, args, argCount;
+  for (var i = 0; i < tokens.length; i++) {
+    var item = tokens[i];
+    var type = item.type;
+    if (type === INUMBER2) {
+      if (typeof item.value === "number" && item.value < 0) {
+        nstack.push("(" + item.value + ")");
+      } else if (Array.isArray(item.value)) {
+        nstack.push("[" + item.value.map(escapeValue2).join(", ") + "]");
+      } else {
+        nstack.push(escapeValue2(item.value));
+      }
+    } else if (type === IOP22) {
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      f = item.value;
+      if (toJS) {
+        if (f === "^") {
+          nstack.push("Math.pow(" + n1 + ", " + n2 + ")");
+        } else if (f === "and") {
+          nstack.push("(!!" + n1 + " && !!" + n2 + ")");
+        } else if (f === "or") {
+          nstack.push("(!!" + n1 + " || !!" + n2 + ")");
+        } else if (f === "||") {
+          nstack.push("(function(a,b){ return Array.isArray(a) && Array.isArray(b) ? a.concat(b) : String(a) + String(b); }((" + n1 + "),(" + n2 + ")))");
+        } else if (f === "==") {
+          nstack.push("(" + n1 + " === " + n2 + ")");
+        } else if (f === "!=") {
+          nstack.push("(" + n1 + " !== " + n2 + ")");
+        } else if (f === "[") {
+          nstack.push(n1 + "[(" + n2 + ") | 0]");
+        } else {
+          nstack.push("(" + n1 + " " + f + " " + n2 + ")");
+        }
+      } else {
+        if (f === "[") {
+          nstack.push(n1 + "[" + n2 + "]");
+        } else {
+          nstack.push("(" + n1 + " " + f + " " + n2 + ")");
+        }
+      }
+    } else if (type === IOP32) {
+      n3 = nstack.pop();
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      f = item.value;
+      if (f === "?") {
+        nstack.push("(" + n1 + " ? " + n2 + " : " + n3 + ")");
+      } else {
+        throw new Error("invalid Expression");
+      }
+    } else if (type === IVAR2 || type === IVARNAME2) {
+      nstack.push(item.value);
+    } else if (type === IOP12) {
+      n1 = nstack.pop();
+      f = item.value;
+      if (f === "-" || f === "+") {
+        nstack.push("(" + f + n1 + ")");
+      } else if (toJS) {
+        if (f === "not") {
+          nstack.push("(!" + n1 + ")");
+        } else if (f === "!") {
+          nstack.push("fac(" + n1 + ")");
+        } else {
+          nstack.push(f + "(" + n1 + ")");
+        }
+      } else if (f === "!") {
+        nstack.push("(" + n1 + "!)");
+      } else {
+        nstack.push("(" + f + " " + n1 + ")");
+      }
+    } else if (type === IFUNCALL2) {
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+      }
+      f = nstack.pop();
+      nstack.push(f + "(" + args.join(", ") + ")");
+    } else if (type === IFUNDEF2) {
+      n2 = nstack.pop();
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+      }
+      n1 = nstack.pop();
+      if (toJS) {
+        nstack.push("(" + n1 + " = function(" + args.join(", ") + ") { return " + n2 + " })");
+      } else {
+        nstack.push("(" + n1 + "(" + args.join(", ") + ") = " + n2 + ")");
+      }
+    } else if (type === IMEMBER2) {
+      n1 = nstack.pop();
+      nstack.push(n1 + "." + item.value);
+    } else if (type === IARRAY2) {
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+      }
+      nstack.push("[" + args.join(", ") + "]");
+    } else if (type === IEXPR2) {
+      nstack.push("(" + expressionToString2(item.value, toJS) + ")");
+    } else if (type === IENDSTATEMENT2)
+      ;
+    else {
+      throw new Error("invalid Expression");
+    }
+  }
+  if (nstack.length > 1) {
+    if (toJS) {
+      nstack = [nstack.join(",")];
+    } else {
+      nstack = [nstack.join(";")];
+    }
+  }
+  return String(nstack[0]);
+}
+function escapeValue2(v) {
+  if (typeof v === "string") {
+    return JSON.stringify(v).replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
+  }
+  return v;
+}
+function contains2(array, obj) {
+  for (var i = 0; i < array.length; i++) {
+    if (array[i] === obj) {
+      return true;
+    }
+  }
+  return false;
+}
+function getSymbols2(tokens, symbols, options) {
+  options = options || {};
+  var withMembers = !!options.withMembers;
+  var prevVar = null;
+  for (var i = 0; i < tokens.length; i++) {
+    var item = tokens[i];
+    if (item.type === IVAR2 || item.type === IVARNAME2) {
+      if (!withMembers && !contains2(symbols, item.value)) {
+        symbols.push(item.value);
+      } else if (prevVar !== null) {
+        if (!contains2(symbols, prevVar)) {
+          symbols.push(prevVar);
+        }
+        prevVar = item.value;
+      } else {
+        prevVar = item.value;
+      }
+    } else if (item.type === IMEMBER2 && withMembers && prevVar !== null) {
+      prevVar += "." + item.value;
+    } else if (item.type === IEXPR2) {
+      getSymbols2(item.value, symbols, options);
+    } else if (prevVar !== null) {
+      if (!contains2(symbols, prevVar)) {
+        symbols.push(prevVar);
+      }
+      prevVar = null;
+    }
+  }
+  if (prevVar !== null && !contains2(symbols, prevVar)) {
+    symbols.push(prevVar);
+  }
+}
+function Expression2(tokens, parser22) {
+  this.tokens = tokens;
+  this.parser = parser22;
+  this.unaryOps = parser22.unaryOps;
+  this.binaryOps = parser22.binaryOps;
+  this.ternaryOps = parser22.ternaryOps;
+  this.functions = parser22.functions;
+}
+Expression2.prototype.simplify = function(values) {
+  values = values || {};
+  return new Expression2(simplify2(this.tokens, this.unaryOps, this.binaryOps, this.ternaryOps, values), this.parser);
+};
+Expression2.prototype.substitute = function(variable, expr) {
+  if (!(expr instanceof Expression2)) {
+    expr = this.parser.parse(String(expr));
+  }
+  return new Expression2(substitute2(this.tokens, variable, expr), this.parser);
+};
+Expression2.prototype.evaluate = function(values) {
+  values = values || {};
+  return evaluate2(this.tokens, this, values);
+};
+Expression2.prototype.toString = function() {
+  return expressionToString2(this.tokens, false);
+};
+Expression2.prototype.symbols = function(options) {
+  options = options || {};
+  var vars = [];
+  getSymbols2(this.tokens, vars, options);
+  return vars;
+};
+Expression2.prototype.variables = function(options) {
+  options = options || {};
+  var vars = [];
+  getSymbols2(this.tokens, vars, options);
+  var functions = this.functions;
+  return vars.filter(function(name) {
+    return !(name in functions);
+  });
+};
+Expression2.prototype.toJSFunction = function(param, variables) {
+  var expr = this;
+  var f = new Function(param, "with(this.functions) with (this.ternaryOps) with (this.binaryOps) with (this.unaryOps) { return " + expressionToString2(this.simplify(variables).tokens, true) + "; }");
+  return function() {
+    return f.apply(expr, arguments);
+  };
+};
+var TEOF2 = "TEOF";
+var TOP2 = "TOP";
+var TNUMBER2 = "TNUMBER";
+var TSTRING2 = "TSTRING";
+var TPAREN2 = "TPAREN";
+var TBRACKET2 = "TBRACKET";
+var TCOMMA2 = "TCOMMA";
+var TNAME2 = "TNAME";
+var TSEMICOLON2 = "TSEMICOLON";
+function Token2(type, value, index) {
+  this.type = type;
+  this.value = value;
+  this.index = index;
+}
+Token2.prototype.toString = function() {
+  return this.type + ": " + this.value;
+};
+function TokenStream2(parser22, expression) {
+  this.pos = 0;
+  this.current = null;
+  this.unaryOps = parser22.unaryOps;
+  this.binaryOps = parser22.binaryOps;
+  this.ternaryOps = parser22.ternaryOps;
+  this.consts = parser22.consts;
+  this.expression = expression;
+  this.savedPosition = 0;
+  this.savedCurrent = null;
+  this.options = parser22.options;
+  this.parser = parser22;
+}
+TokenStream2.prototype.newToken = function(type, value, pos) {
+  return new Token2(type, value, pos != null ? pos : this.pos);
+};
+TokenStream2.prototype.save = function() {
+  this.savedPosition = this.pos;
+  this.savedCurrent = this.current;
+};
+TokenStream2.prototype.restore = function() {
+  this.pos = this.savedPosition;
+  this.current = this.savedCurrent;
+};
+TokenStream2.prototype.next = function() {
+  if (this.pos >= this.expression.length) {
+    return this.newToken(TEOF2, "EOF");
+  }
+  if (this.isWhitespace() || this.isComment()) {
+    return this.next();
+  } else if (this.isRadixInteger() || this.isNumber() || this.isOperator() || this.isString() || this.isParen() || this.isBracket() || this.isComma() || this.isSemicolon() || this.isNamedOp() || this.isConst() || this.isName()) {
+    return this.current;
+  } else {
+    this.parseError('Unknown character "' + this.expression.charAt(this.pos) + '"');
+  }
+};
+TokenStream2.prototype.isString = function() {
+  var r = false;
+  var startPos = this.pos;
+  var quote = this.expression.charAt(startPos);
+  if (quote === "'" || quote === '"') {
+    var index = this.expression.indexOf(quote, startPos + 1);
+    while (index >= 0 && this.pos < this.expression.length) {
+      this.pos = index + 1;
+      if (this.expression.charAt(index - 1) !== "\\") {
+        var rawString = this.expression.substring(startPos + 1, index);
+        this.current = this.newToken(TSTRING2, this.unescape(rawString), startPos);
+        r = true;
+        break;
+      }
+      index = this.expression.indexOf(quote, index + 1);
+    }
+  }
+  return r;
+};
+TokenStream2.prototype.isParen = function() {
+  var c = this.expression.charAt(this.pos);
+  if (c === "(" || c === ")") {
+    this.current = this.newToken(TPAREN2, c);
+    this.pos++;
+    return true;
+  }
+  return false;
+};
+TokenStream2.prototype.isBracket = function() {
+  var c = this.expression.charAt(this.pos);
+  if ((c === "[" || c === "]") && this.isOperatorEnabled("[")) {
+    this.current = this.newToken(TBRACKET2, c);
+    this.pos++;
+    return true;
+  }
+  return false;
+};
+TokenStream2.prototype.isComma = function() {
+  var c = this.expression.charAt(this.pos);
+  if (c === ",") {
+    this.current = this.newToken(TCOMMA2, ",");
+    this.pos++;
+    return true;
+  }
+  return false;
+};
+TokenStream2.prototype.isSemicolon = function() {
+  var c = this.expression.charAt(this.pos);
+  if (c === ";") {
+    this.current = this.newToken(TSEMICOLON2, ";");
+    this.pos++;
+    return true;
+  }
+  return false;
+};
+TokenStream2.prototype.isConst = function() {
+  var startPos = this.pos;
+  var i = startPos;
+  for (; i < this.expression.length; i++) {
+    var c = this.expression.charAt(i);
+    if (c.toUpperCase() === c.toLowerCase()) {
+      if (i === this.pos || c !== "_" && c !== "." && (c < "0" || c > "9")) {
+        break;
+      }
+    }
+  }
+  if (i > startPos) {
+    var str = this.expression.substring(startPos, i);
+    if (str in this.consts) {
+      this.current = this.newToken(TNUMBER2, this.consts[str]);
+      this.pos += str.length;
+      return true;
+    }
+  }
+  return false;
+};
+TokenStream2.prototype.isNamedOp = function() {
+  var startPos = this.pos;
+  var i = startPos;
+  for (; i < this.expression.length; i++) {
+    var c = this.expression.charAt(i);
+    if (c.toUpperCase() === c.toLowerCase()) {
+      if (i === this.pos || c !== "_" && (c < "0" || c > "9")) {
+        break;
+      }
+    }
+  }
+  if (i > startPos) {
+    var str = this.expression.substring(startPos, i);
+    if (this.isOperatorEnabled(str) && (str in this.binaryOps || str in this.unaryOps || str in this.ternaryOps)) {
+      this.current = this.newToken(TOP2, str);
+      this.pos += str.length;
+      return true;
+    }
+  }
+  return false;
+};
+TokenStream2.prototype.isName = function() {
+  var startPos = this.pos;
+  var i = startPos;
+  var hasLetter = false;
+  for (; i < this.expression.length; i++) {
+    var c = this.expression.charAt(i);
+    if (c.toUpperCase() === c.toLowerCase()) {
+      if (i === this.pos && (c === "$" || c === "_")) {
+        if (c === "_") {
+          hasLetter = true;
+        }
+        continue;
+      } else if (i === this.pos || !hasLetter || c !== "_" && (c < "0" || c > "9")) {
+        break;
+      }
+    } else {
+      hasLetter = true;
+    }
+  }
+  if (hasLetter) {
+    var str = this.expression.substring(startPos, i);
+    this.current = this.newToken(TNAME2, str);
+    this.pos += str.length;
+    return true;
+  }
+  return false;
+};
+TokenStream2.prototype.isWhitespace = function() {
+  var r = false;
+  var c = this.expression.charAt(this.pos);
+  while (c === " " || c === "	" || c === "\n" || c === "\r") {
+    r = true;
+    this.pos++;
+    if (this.pos >= this.expression.length) {
+      break;
+    }
+    c = this.expression.charAt(this.pos);
+  }
+  return r;
+};
+var codePointPattern2 = /^[0-9a-f]{4}$/i;
+TokenStream2.prototype.unescape = function(v) {
+  var index = v.indexOf("\\");
+  if (index < 0) {
+    return v;
+  }
+  var buffer = v.substring(0, index);
+  while (index >= 0) {
+    var c = v.charAt(++index);
+    switch (c) {
+      case "'":
+        buffer += "'";
+        break;
+      case '"':
+        buffer += '"';
+        break;
+      case "\\":
+        buffer += "\\";
+        break;
+      case "/":
+        buffer += "/";
+        break;
+      case "b":
+        buffer += "\b";
+        break;
+      case "f":
+        buffer += "\f";
+        break;
+      case "n":
+        buffer += "\n";
+        break;
+      case "r":
+        buffer += "\r";
+        break;
+      case "t":
+        buffer += "	";
+        break;
+      case "u":
+        var codePoint = v.substring(index + 1, index + 5);
+        if (!codePointPattern2.test(codePoint)) {
+          this.parseError("Illegal escape sequence: \\u" + codePoint);
+        }
+        buffer += String.fromCharCode(parseInt(codePoint, 16));
+        index += 4;
+        break;
+      default:
+        throw this.parseError('Illegal escape sequence: "\\' + c + '"');
+    }
+    ++index;
+    var backslash = v.indexOf("\\", index);
+    buffer += v.substring(index, backslash < 0 ? v.length : backslash);
+    index = backslash;
+  }
+  return buffer;
+};
+TokenStream2.prototype.isComment = function() {
+  var c = this.expression.charAt(this.pos);
+  if (c === "/" && this.expression.charAt(this.pos + 1) === "*") {
+    this.pos = this.expression.indexOf("*/", this.pos) + 2;
+    if (this.pos === 1) {
+      this.pos = this.expression.length;
+    }
+    return true;
+  }
+  return false;
+};
+TokenStream2.prototype.isRadixInteger = function() {
+  var pos = this.pos;
+  if (pos >= this.expression.length - 2 || this.expression.charAt(pos) !== "0") {
+    return false;
+  }
+  ++pos;
+  var radix;
+  var validDigit;
+  if (this.expression.charAt(pos) === "x") {
+    radix = 16;
+    validDigit = /^[0-9a-f]$/i;
+    ++pos;
+  } else if (this.expression.charAt(pos) === "b") {
+    radix = 2;
+    validDigit = /^[01]$/i;
+    ++pos;
+  } else {
+    return false;
+  }
+  var valid = false;
+  var startPos = pos;
+  while (pos < this.expression.length) {
+    var c = this.expression.charAt(pos);
+    if (validDigit.test(c)) {
+      pos++;
+      valid = true;
+    } else {
+      break;
+    }
+  }
+  if (valid) {
+    this.current = this.newToken(TNUMBER2, parseInt(this.expression.substring(startPos, pos), radix));
+    this.pos = pos;
+  }
+  return valid;
+};
+TokenStream2.prototype.isNumber = function() {
+  var valid = false;
+  var pos = this.pos;
+  var startPos = pos;
+  var resetPos = pos;
+  var foundDot = false;
+  var foundDigits = false;
+  var c;
+  while (pos < this.expression.length) {
+    c = this.expression.charAt(pos);
+    if (c >= "0" && c <= "9" || !foundDot && c === ".") {
+      if (c === ".") {
+        foundDot = true;
+      } else {
+        foundDigits = true;
+      }
+      pos++;
+      valid = foundDigits;
+    } else {
+      break;
+    }
+  }
+  if (valid) {
+    resetPos = pos;
+  }
+  if (c === "e" || c === "E") {
+    pos++;
+    var acceptSign = true;
+    var validExponent = false;
+    while (pos < this.expression.length) {
+      c = this.expression.charAt(pos);
+      if (acceptSign && (c === "+" || c === "-")) {
+        acceptSign = false;
+      } else if (c >= "0" && c <= "9") {
+        validExponent = true;
+        acceptSign = false;
+      } else {
+        break;
+      }
+      pos++;
+    }
+    if (!validExponent) {
+      pos = resetPos;
+    }
+  }
+  if (valid) {
+    this.current = this.newToken(TNUMBER2, parseFloat(this.expression.substring(startPos, pos)));
+    this.pos = pos;
+  } else {
+    this.pos = resetPos;
+  }
+  return valid;
+};
+TokenStream2.prototype.isOperator = function() {
+  var startPos = this.pos;
+  var c = this.expression.charAt(this.pos);
+  if (c === "+" || c === "-" || c === "*" || c === "/" || c === "%" || c === "^" || c === "?" || c === ":" || c === ".") {
+    this.current = this.newToken(TOP2, c);
+  } else if (c === "\u2219" || c === "\u2022") {
+    this.current = this.newToken(TOP2, "*");
+  } else if (c === ">") {
+    if (this.expression.charAt(this.pos + 1) === "=") {
+      this.current = this.newToken(TOP2, ">=");
+      this.pos++;
+    } else {
+      this.current = this.newToken(TOP2, ">");
+    }
+  } else if (c === "<") {
+    if (this.expression.charAt(this.pos + 1) === "=") {
+      this.current = this.newToken(TOP2, "<=");
+      this.pos++;
+    } else {
+      this.current = this.newToken(TOP2, "<");
+    }
+  } else if (c === "|") {
+    if (this.expression.charAt(this.pos + 1) === "|") {
+      this.current = this.newToken(TOP2, "||");
+      this.pos++;
+    } else {
+      return false;
+    }
+  } else if (c === "=") {
+    if (this.expression.charAt(this.pos + 1) === "=") {
+      this.current = this.newToken(TOP2, "==");
+      this.pos++;
+    } else {
+      this.current = this.newToken(TOP2, c);
+    }
+  } else if (c === "!") {
+    if (this.expression.charAt(this.pos + 1) === "=") {
+      this.current = this.newToken(TOP2, "!=");
+      this.pos++;
+    } else {
+      this.current = this.newToken(TOP2, c);
+    }
+  } else {
+    return false;
+  }
+  this.pos++;
+  if (this.isOperatorEnabled(this.current.value)) {
+    return true;
+  } else {
+    this.pos = startPos;
+    return false;
+  }
+};
+TokenStream2.prototype.isOperatorEnabled = function(op) {
+  return this.parser.isOperatorEnabled(op);
+};
+TokenStream2.prototype.getCoordinates = function() {
+  var line = 0;
+  var column;
+  var newline = -1;
+  do {
+    line++;
+    column = this.pos - newline;
+    newline = this.expression.indexOf("\n", newline + 1);
+  } while (newline >= 0 && newline < this.pos);
+  return {
+    line,
+    column
+  };
+};
+TokenStream2.prototype.parseError = function(msg) {
+  var coords = this.getCoordinates();
+  throw new Error("parse error [" + coords.line + ":" + coords.column + "]: " + msg);
+};
+function ParserState2(parser22, tokenStream, options) {
+  this.parser = parser22;
+  this.tokens = tokenStream;
+  this.current = null;
+  this.nextToken = null;
+  this.next();
+  this.savedCurrent = null;
+  this.savedNextToken = null;
+  this.allowMemberAccess = options.allowMemberAccess !== false;
+}
+ParserState2.prototype.next = function() {
+  this.current = this.nextToken;
+  return this.nextToken = this.tokens.next();
+};
+ParserState2.prototype.tokenMatches = function(token, value) {
+  if (typeof value === "undefined") {
+    return true;
+  } else if (Array.isArray(value)) {
+    return contains2(value, token.value);
+  } else if (typeof value === "function") {
+    return value(token);
+  } else {
+    return token.value === value;
+  }
+};
+ParserState2.prototype.save = function() {
+  this.savedCurrent = this.current;
+  this.savedNextToken = this.nextToken;
+  this.tokens.save();
+};
+ParserState2.prototype.restore = function() {
+  this.tokens.restore();
+  this.current = this.savedCurrent;
+  this.nextToken = this.savedNextToken;
+};
+ParserState2.prototype.accept = function(type, value) {
+  if (this.nextToken.type === type && this.tokenMatches(this.nextToken, value)) {
+    this.next();
+    return true;
+  }
+  return false;
+};
+ParserState2.prototype.expect = function(type, value) {
+  if (!this.accept(type, value)) {
+    var coords = this.tokens.getCoordinates();
+    throw new Error("parse error [" + coords.line + ":" + coords.column + "]: Expected " + (value || type));
+  }
+};
+ParserState2.prototype.parseAtom = function(instr) {
+  var unaryOps = this.tokens.unaryOps;
+  function isPrefixOperator(token) {
+    return token.value in unaryOps;
+  }
+  if (this.accept(TNAME2) || this.accept(TOP2, isPrefixOperator)) {
+    instr.push(new Instruction2(IVAR2, this.current.value));
+  } else if (this.accept(TNUMBER2)) {
+    instr.push(new Instruction2(INUMBER2, this.current.value));
+  } else if (this.accept(TSTRING2)) {
+    instr.push(new Instruction2(INUMBER2, this.current.value));
+  } else if (this.accept(TPAREN2, "(")) {
+    this.parseExpression(instr);
+    this.expect(TPAREN2, ")");
+  } else if (this.accept(TBRACKET2, "[")) {
+    if (this.accept(TBRACKET2, "]")) {
+      instr.push(new Instruction2(IARRAY2, 0));
+    } else {
+      var argCount = this.parseArrayList(instr);
+      instr.push(new Instruction2(IARRAY2, argCount));
+    }
+  } else {
+    throw new Error("unexpected " + this.nextToken);
+  }
+};
+ParserState2.prototype.parseExpression = function(instr) {
+  var exprInstr = [];
+  if (this.parseUntilEndStatement(instr, exprInstr)) {
+    return;
+  }
+  this.parseVariableAssignmentExpression(exprInstr);
+  if (this.parseUntilEndStatement(instr, exprInstr)) {
+    return;
+  }
+  this.pushExpression(instr, exprInstr);
+};
+ParserState2.prototype.pushExpression = function(instr, exprInstr) {
+  for (var i = 0, len = exprInstr.length; i < len; i++) {
+    instr.push(exprInstr[i]);
+  }
+};
+ParserState2.prototype.parseUntilEndStatement = function(instr, exprInstr) {
+  if (!this.accept(TSEMICOLON2))
+    return false;
+  if (this.nextToken && this.nextToken.type !== TEOF2 && !(this.nextToken.type === TPAREN2 && this.nextToken.value === ")")) {
+    exprInstr.push(new Instruction2(IENDSTATEMENT2));
+  }
+  if (this.nextToken.type !== TEOF2) {
+    this.parseExpression(exprInstr);
+  }
+  instr.push(new Instruction2(IEXPR2, exprInstr));
+  return true;
+};
+ParserState2.prototype.parseArrayList = function(instr) {
+  var argCount = 0;
+  while (!this.accept(TBRACKET2, "]")) {
+    this.parseExpression(instr);
+    ++argCount;
+    while (this.accept(TCOMMA2)) {
+      this.parseExpression(instr);
+      ++argCount;
+    }
+  }
+  return argCount;
+};
+ParserState2.prototype.parseVariableAssignmentExpression = function(instr) {
+  this.parseConditionalExpression(instr);
+  while (this.accept(TOP2, "=")) {
+    var varName = instr.pop();
+    var varValue = [];
+    var lastInstrIndex = instr.length - 1;
+    if (varName.type === IFUNCALL2) {
+      if (!this.tokens.isOperatorEnabled("()=")) {
+        throw new Error("function definition is not permitted");
+      }
+      for (var i = 0, len = varName.value + 1; i < len; i++) {
+        var index = lastInstrIndex - i;
+        if (instr[index].type === IVAR2) {
+          instr[index] = new Instruction2(IVARNAME2, instr[index].value);
+        }
+      }
+      this.parseVariableAssignmentExpression(varValue);
+      instr.push(new Instruction2(IEXPR2, varValue));
+      instr.push(new Instruction2(IFUNDEF2, varName.value));
+      continue;
+    }
+    if (varName.type !== IVAR2 && varName.type !== IMEMBER2) {
+      throw new Error("expected variable for assignment");
+    }
+    this.parseVariableAssignmentExpression(varValue);
+    instr.push(new Instruction2(IVARNAME2, varName.value));
+    instr.push(new Instruction2(IEXPR2, varValue));
+    instr.push(binaryInstruction2("="));
+  }
+};
+ParserState2.prototype.parseConditionalExpression = function(instr) {
+  this.parseOrExpression(instr);
+  while (this.accept(TOP2, "?")) {
+    var trueBranch = [];
+    var falseBranch = [];
+    this.parseConditionalExpression(trueBranch);
+    this.expect(TOP2, ":");
+    this.parseConditionalExpression(falseBranch);
+    instr.push(new Instruction2(IEXPR2, trueBranch));
+    instr.push(new Instruction2(IEXPR2, falseBranch));
+    instr.push(ternaryInstruction2("?"));
+  }
+};
+ParserState2.prototype.parseOrExpression = function(instr) {
+  this.parseAndExpression(instr);
+  while (this.accept(TOP2, "or")) {
+    var falseBranch = [];
+    this.parseAndExpression(falseBranch);
+    instr.push(new Instruction2(IEXPR2, falseBranch));
+    instr.push(binaryInstruction2("or"));
+  }
+};
+ParserState2.prototype.parseAndExpression = function(instr) {
+  this.parseComparison(instr);
+  while (this.accept(TOP2, "and")) {
+    var trueBranch = [];
+    this.parseComparison(trueBranch);
+    instr.push(new Instruction2(IEXPR2, trueBranch));
+    instr.push(binaryInstruction2("and"));
+  }
+};
+var COMPARISON_OPERATORS2 = ["==", "!=", "<", "<=", ">=", ">", "in"];
+ParserState2.prototype.parseComparison = function(instr) {
+  this.parseAddSub(instr);
+  while (this.accept(TOP2, COMPARISON_OPERATORS2)) {
+    var op = this.current;
+    this.parseAddSub(instr);
+    instr.push(binaryInstruction2(op.value));
+  }
+};
+var ADD_SUB_OPERATORS2 = ["+", "-", "||"];
+ParserState2.prototype.parseAddSub = function(instr) {
+  this.parseTerm(instr);
+  while (this.accept(TOP2, ADD_SUB_OPERATORS2)) {
+    var op = this.current;
+    this.parseTerm(instr);
+    instr.push(binaryInstruction2(op.value));
+  }
+};
+var TERM_OPERATORS2 = ["*", "/", "%"];
+ParserState2.prototype.parseTerm = function(instr) {
+  this.parseFactor(instr);
+  while (this.accept(TOP2, TERM_OPERATORS2)) {
+    var op = this.current;
+    this.parseFactor(instr);
+    instr.push(binaryInstruction2(op.value));
+  }
+};
+ParserState2.prototype.parseFactor = function(instr) {
+  var unaryOps = this.tokens.unaryOps;
+  function isPrefixOperator(token) {
+    return token.value in unaryOps;
+  }
+  this.save();
+  if (this.accept(TOP2, isPrefixOperator)) {
+    if (this.current.value !== "-" && this.current.value !== "+") {
+      if (this.nextToken.type === TPAREN2 && this.nextToken.value === "(") {
+        this.restore();
+        this.parseExponential(instr);
+        return;
+      } else if (this.nextToken.type === TSEMICOLON2 || this.nextToken.type === TCOMMA2 || this.nextToken.type === TEOF2 || this.nextToken.type === TPAREN2 && this.nextToken.value === ")") {
+        this.restore();
+        this.parseAtom(instr);
+        return;
+      }
+    }
+    var op = this.current;
+    this.parseFactor(instr);
+    instr.push(unaryInstruction2(op.value));
+  } else {
+    this.parseExponential(instr);
+  }
+};
+ParserState2.prototype.parseExponential = function(instr) {
+  this.parsePostfixExpression(instr);
+  while (this.accept(TOP2, "^")) {
+    this.parseFactor(instr);
+    instr.push(binaryInstruction2("^"));
+  }
+};
+ParserState2.prototype.parsePostfixExpression = function(instr) {
+  this.parseFunctionCall(instr);
+  while (this.accept(TOP2, "!")) {
+    instr.push(unaryInstruction2("!"));
+  }
+};
+ParserState2.prototype.parseFunctionCall = function(instr) {
+  var unaryOps = this.tokens.unaryOps;
+  function isPrefixOperator(token) {
+    return token.value in unaryOps;
+  }
+  if (this.accept(TOP2, isPrefixOperator)) {
+    var op = this.current;
+    this.parseAtom(instr);
+    instr.push(unaryInstruction2(op.value));
+  } else {
+    this.parseMemberExpression(instr);
+    while (this.accept(TPAREN2, "(")) {
+      if (this.accept(TPAREN2, ")")) {
+        instr.push(new Instruction2(IFUNCALL2, 0));
+      } else {
+        var argCount = this.parseArgumentList(instr);
+        instr.push(new Instruction2(IFUNCALL2, argCount));
+      }
+    }
+  }
+};
+ParserState2.prototype.parseArgumentList = function(instr) {
+  var argCount = 0;
+  while (!this.accept(TPAREN2, ")")) {
+    this.parseExpression(instr);
+    ++argCount;
+    while (this.accept(TCOMMA2)) {
+      this.parseExpression(instr);
+      ++argCount;
+    }
+  }
+  return argCount;
+};
+ParserState2.prototype.parseMemberExpression = function(instr) {
+  this.parseAtom(instr);
+  while (this.accept(TOP2, ".") || this.accept(TBRACKET2, "[")) {
+    var op = this.current;
+    if (op.value === ".") {
+      if (!this.allowMemberAccess) {
+        throw new Error('unexpected ".", member access is not permitted');
+      }
+      this.expect(TNAME2);
+      instr.push(new Instruction2(IMEMBER2, this.current.value));
+    } else if (op.value === "[") {
+      if (!this.tokens.isOperatorEnabled("[")) {
+        throw new Error('unexpected "[]", arrays are disabled');
+      }
+      this.parseExpression(instr);
+      this.expect(TBRACKET2, "]");
+      instr.push(binaryInstruction2("["));
+    } else {
+      throw new Error("unexpected symbol: " + op.value);
+    }
+  }
+};
+function add2(a, b) {
+  return Number(a) + Number(b);
+}
+function sub2(a, b) {
+  return a - b;
+}
+function mul2(a, b) {
+  return a * b;
+}
+function div2(a, b) {
+  return a / b;
+}
+function mod2(a, b) {
+  return a % b;
+}
+function concat2(a, b) {
+  if (Array.isArray(a) && Array.isArray(b)) {
+    return a.concat(b);
+  }
+  return "" + a + b;
+}
+function equal2(a, b) {
+  return a === b;
+}
+function notEqual2(a, b) {
+  return a !== b;
+}
+function greaterThan2(a, b) {
+  return a > b;
+}
+function lessThan2(a, b) {
+  return a < b;
+}
+function greaterThanEqual2(a, b) {
+  return a >= b;
+}
+function lessThanEqual2(a, b) {
+  return a <= b;
+}
+function andOperator2(a, b) {
+  return Boolean(a && b);
+}
+function orOperator2(a, b) {
+  return Boolean(a || b);
+}
+function inOperator2(a, b) {
+  return contains2(b, a);
+}
+function sinh2(a) {
+  return (Math.exp(a) - Math.exp(-a)) / 2;
+}
+function cosh2(a) {
+  return (Math.exp(a) + Math.exp(-a)) / 2;
+}
+function tanh2(a) {
+  if (a === Infinity)
+    return 1;
+  if (a === -Infinity)
+    return -1;
+  return (Math.exp(a) - Math.exp(-a)) / (Math.exp(a) + Math.exp(-a));
+}
+function asinh2(a) {
+  if (a === -Infinity)
+    return a;
+  return Math.log(a + Math.sqrt(a * a + 1));
+}
+function acosh2(a) {
+  return Math.log(a + Math.sqrt(a * a - 1));
+}
+function atanh2(a) {
+  return Math.log((1 + a) / (1 - a)) / 2;
+}
+function log102(a) {
+  return Math.log(a) * Math.LOG10E;
+}
+function neg2(a) {
+  return -a;
+}
+function not2(a) {
+  return !a;
+}
+function trunc22(a) {
+  return a < 0 ? Math.ceil(a) : Math.floor(a);
+}
+function random2(a) {
+  return Math.random() * (a || 1);
+}
+function factorial2(a) {
+  return gamma2(a + 1);
+}
+function isInteger2(value) {
+  return isFinite(value) && value === Math.round(value);
+}
+var GAMMA_G2 = 4.7421875;
+var GAMMA_P2 = [
+  0.9999999999999971,
+  57.15623566586292,
+  -59.59796035547549,
+  14.136097974741746,
+  -0.4919138160976202,
+  3399464998481189e-20,
+  4652362892704858e-20,
+  -9837447530487956e-20,
+  1580887032249125e-19,
+  -21026444172410488e-20,
+  21743961811521265e-20,
+  -1643181065367639e-19,
+  8441822398385275e-20,
+  -26190838401581408e-21,
+  36899182659531625e-22
+];
+function gamma2(n) {
+  var t, x;
+  if (isInteger2(n)) {
+    if (n <= 0) {
+      return isFinite(n) ? Infinity : NaN;
+    }
+    if (n > 171) {
+      return Infinity;
+    }
+    var value = n - 2;
+    var res = n - 1;
+    while (value > 1) {
+      res *= value;
+      value--;
+    }
+    if (res === 0) {
+      res = 1;
+    }
+    return res;
+  }
+  if (n < 0.5) {
+    return Math.PI / (Math.sin(Math.PI * n) * gamma2(1 - n));
+  }
+  if (n >= 171.35) {
+    return Infinity;
+  }
+  if (n > 85) {
+    var twoN = n * n;
+    var threeN = twoN * n;
+    var fourN = threeN * n;
+    var fiveN = fourN * n;
+    return Math.sqrt(2 * Math.PI / n) * Math.pow(n / Math.E, n) * (1 + 1 / (12 * n) + 1 / (288 * twoN) - 139 / (51840 * threeN) - 571 / (2488320 * fourN) + 163879 / (209018880 * fiveN) + 5246819 / (75246796800 * fiveN * n));
+  }
+  --n;
+  x = GAMMA_P2[0];
+  for (var i = 1; i < GAMMA_P2.length; ++i) {
+    x += GAMMA_P2[i] / (n + i);
+  }
+  t = n + GAMMA_G2 + 0.5;
+  return Math.sqrt(2 * Math.PI) * Math.pow(t, n + 0.5) * Math.exp(-t) * x;
+}
+function stringOrArrayLength2(s) {
+  if (Array.isArray(s)) {
+    return s.length;
+  }
+  return String(s).length;
+}
+function hypot2() {
+  var sum3 = 0;
+  var larg = 0;
+  for (var i = 0; i < arguments.length; i++) {
+    var arg = Math.abs(arguments[i]);
+    var div22;
+    if (larg < arg) {
+      div22 = larg / arg;
+      sum3 = sum3 * div22 * div22 + 1;
+      larg = arg;
+    } else if (arg > 0) {
+      div22 = arg / larg;
+      sum3 += div22 * div22;
+    } else {
+      sum3 += arg;
+    }
+  }
+  return larg === Infinity ? Infinity : larg * Math.sqrt(sum3);
+}
+function condition2(cond, yep, nope) {
+  return cond ? yep : nope;
+}
+function roundTo2(value, exp) {
+  if (typeof exp === "undefined" || +exp === 0) {
+    return Math.round(value);
+  }
+  value = +value;
+  exp = -+exp;
+  if (isNaN(value) || !(typeof exp === "number" && exp % 1 === 0)) {
+    return NaN;
+  }
+  value = value.toString().split("e");
+  value = Math.round(+(value[0] + "e" + (value[1] ? +value[1] - exp : -exp)));
+  value = value.toString().split("e");
+  return +(value[0] + "e" + (value[1] ? +value[1] + exp : exp));
+}
+function setVar2(name, value, variables) {
+  if (variables)
+    variables[name] = value;
+  return value;
+}
+function arrayIndex2(array, index) {
+  return array[index | 0];
+}
+function max2(array) {
+  if (arguments.length === 1 && Array.isArray(array)) {
+    return Math.max.apply(Math, array);
+  } else {
+    return Math.max.apply(Math, arguments);
+  }
+}
+function min2(array) {
+  if (arguments.length === 1 && Array.isArray(array)) {
+    return Math.min.apply(Math, array);
+  } else {
+    return Math.min.apply(Math, arguments);
+  }
+}
+function arrayMap2(f, a) {
+  if (typeof f !== "function") {
+    throw new Error("First argument to map is not a function");
+  }
+  if (!Array.isArray(a)) {
+    throw new Error("Second argument to map is not an array");
+  }
+  return a.map(function(x, i) {
+    return f(x, i);
+  });
+}
+function arrayFold2(f, init, a) {
+  if (typeof f !== "function") {
+    throw new Error("First argument to fold is not a function");
+  }
+  if (!Array.isArray(a)) {
+    throw new Error("Second argument to fold is not an array");
+  }
+  return a.reduce(function(acc, x, i) {
+    return f(acc, x, i);
+  }, init);
+}
+function arrayFilter2(f, a) {
+  if (typeof f !== "function") {
+    throw new Error("First argument to filter is not a function");
+  }
+  if (!Array.isArray(a)) {
+    throw new Error("Second argument to filter is not an array");
+  }
+  return a.filter(function(x, i) {
+    return f(x, i);
+  });
+}
+function stringOrArrayIndexOf2(target, s) {
+  if (!(Array.isArray(s) || typeof s === "string")) {
+    throw new Error("Second argument to indexOf is not a string or array");
+  }
+  return s.indexOf(target);
+}
+function arrayJoin2(sep, a) {
+  if (!Array.isArray(a)) {
+    throw new Error("Second argument to join is not an array");
+  }
+  return a.join(sep);
+}
+function sign2(x) {
+  return (x > 0) - (x < 0) || +x;
+}
+var ONE_THIRD2 = 1 / 3;
+function cbrt2(x) {
+  return x < 0 ? -Math.pow(-x, ONE_THIRD2) : Math.pow(x, ONE_THIRD2);
+}
+function expm12(x) {
+  return Math.exp(x) - 1;
+}
+function log1p2(x) {
+  return Math.log(1 + x);
+}
+function log22(x) {
+  return Math.log(x) / Math.LN2;
+}
+function Parser2(options) {
+  this.options = options || {};
+  this.unaryOps = {
+    sin: Math.sin,
+    cos: Math.cos,
+    tan: Math.tan,
+    asin: Math.asin,
+    acos: Math.acos,
+    atan: Math.atan,
+    sinh: Math.sinh || sinh2,
+    cosh: Math.cosh || cosh2,
+    tanh: Math.tanh || tanh2,
+    asinh: Math.asinh || asinh2,
+    acosh: Math.acosh || acosh2,
+    atanh: Math.atanh || atanh2,
+    sqrt: Math.sqrt,
+    cbrt: Math.cbrt || cbrt2,
+    log: Math.log,
+    log2: Math.log2 || log22,
+    ln: Math.log,
+    lg: Math.log10 || log102,
+    log10: Math.log10 || log102,
+    expm1: Math.expm1 || expm12,
+    log1p: Math.log1p || log1p2,
+    abs: Math.abs,
+    ceil: Math.ceil,
+    floor: Math.floor,
+    round: Math.round,
+    trunc: Math.trunc || trunc22,
+    "-": neg2,
+    "+": Number,
+    exp: Math.exp,
+    not: not2,
+    length: stringOrArrayLength2,
+    "!": factorial2,
+    sign: Math.sign || sign2
+  };
+  this.binaryOps = {
+    "+": add2,
+    "-": sub2,
+    "*": mul2,
+    "/": div2,
+    "%": mod2,
+    "^": Math.pow,
+    "||": concat2,
+    "==": equal2,
+    "!=": notEqual2,
+    ">": greaterThan2,
+    "<": lessThan2,
+    ">=": greaterThanEqual2,
+    "<=": lessThanEqual2,
+    and: andOperator2,
+    or: orOperator2,
+    "in": inOperator2,
+    "=": setVar2,
+    "[": arrayIndex2
+  };
+  this.ternaryOps = {
+    "?": condition2
+  };
+  this.functions = {
+    random: random2,
+    fac: factorial2,
+    min: min2,
+    max: max2,
+    hypot: Math.hypot || hypot2,
+    pyt: Math.hypot || hypot2,
+    // backward compat
+    pow: Math.pow,
+    atan2: Math.atan2,
+    "if": condition2,
+    gamma: gamma2,
+    roundTo: roundTo2,
+    map: arrayMap2,
+    fold: arrayFold2,
+    filter: arrayFilter2,
+    indexOf: stringOrArrayIndexOf2,
+    join: arrayJoin2
+  };
+  this.consts = {
+    E: Math.E,
+    PI: Math.PI,
+    "true": true,
+    "false": false
+  };
+}
+Parser2.prototype.parse = function(expr) {
+  var instr = [];
+  var parserState = new ParserState2(
+    this,
+    new TokenStream2(this, expr),
+    { allowMemberAccess: this.options.allowMemberAccess }
+  );
+  parserState.parseExpression(instr);
+  parserState.expect(TEOF2, "EOF");
+  return new Expression2(instr, this);
+};
+Parser2.prototype.evaluate = function(expr, variables) {
+  return this.parse(expr).evaluate(variables);
+};
+var sharedParser2 = new Parser2();
+Parser2.parse = function(expr) {
+  return sharedParser2.parse(expr);
+};
+Parser2.evaluate = function(expr, variables) {
+  return sharedParser2.parse(expr).evaluate(variables);
+};
+var optionNameMap2 = {
+  "+": "add",
+  "-": "subtract",
+  "*": "multiply",
+  "/": "divide",
+  "%": "remainder",
+  "^": "power",
+  "!": "factorial",
+  "<": "comparison",
+  ">": "comparison",
+  "<=": "comparison",
+  ">=": "comparison",
+  "==": "comparison",
+  "!=": "comparison",
+  "||": "concatenate",
+  "and": "logical",
+  "or": "logical",
+  "not": "logical",
+  "?": "conditional",
+  ":": "conditional",
+  "=": "assignment",
+  "[": "array",
+  "()=": "fndef"
+};
+function getOptionName2(op) {
+  return optionNameMap2.hasOwnProperty(op) ? optionNameMap2[op] : op;
+}
+Parser2.prototype.isOperatorEnabled = function(op) {
+  var optionName = getOptionName2(op);
+  var operators = this.options.operators || {};
+  return !(optionName in operators) || !!operators[optionName];
+};
+var parser2 = new Parser2({
+  operators: {
+    add: true,
+    substract: true,
+    divide: true,
+    multiply: true,
+    power: true,
+    remainder: true,
+    conditional: true,
+    logical: true,
+    comparison: true
+  }
+});
+parser2.functions.gcd = function(...args) {
+  return gcdCalc22(args);
+};
+parser2.functions.lcd = function(...args) {
+  return lcdCalc22(args);
+};
+function gcdCalc22(numbers) {
+  let num = 2, res = 1;
+  while (num <= Math.min(...numbers)) {
+    if (numbers.every((n) => n % num === 0)) {
+      res = num;
+    }
+    num++;
+  }
+  return res;
+}
+function lcdCalcEx22(a, b) {
+  return Math.abs(a * b) / gcdCalc22([a, b]);
+}
+function lcdCalc22(numbers) {
+  return numbers.reduce((acc, num) => lcdCalcEx22(acc, num), 1);
+}
+function recurExpr2(node) {
+  const quantity = node.quantity ?? node.ratio ?? {};
+  const { context, expression } = quantity;
+  if (expression) {
+    let expr = parser2.parse(expression);
+    const variables = expr.variables();
+    for (let variable of variables) {
+      const res = recurExpr2(context[variable]);
+      if (res.substitute != null) {
+        expr = expr.substitute(variable, res);
+      } else {
+        const q = res.quantity ?? res.ratio;
+        if (typeof q == "number") {
+          expr = expr.simplify({ [variable]: res });
+        } else {
+          expr = expr.substitute(variable, q);
+        }
+      }
+    }
+    return expr;
+  } else {
+    return node;
+  }
+}
+function toEquationExpr2(lastExpr) {
+  const final = recurExpr2({ quantity: lastExpr });
+  return parser2.parse(cleanUpExpression2(final));
+}
+function cleanUpExpression2(exp) {
+  return exp.toString().replaceAll(".quantity", "").replaceAll(".ratio", "");
+}
+function solveLinearEquation2(lhs, rhs, variable = "x") {
+  const expr = `(${typeof lhs === "number" ? lhs : toEquationExpr2(lhs)}) - (${typeof rhs === "number" ? rhs : toEquationExpr2(rhs)})`;
+  const terms = evaluateLinearExpression2(expr, variable);
+  const a = terms[variable] || 0;
+  const b = terms.constant || 0;
+  if (a === 0) {
+    if (b === 0)
+      throw "Infinite solutions (identity)";
+    else
+      throw "No solution";
+  }
+  const x = -b / a;
+  return x;
+}
+function evaluateLinearExpression2(expr, variable) {
+  const tokens = tokenize2(expr);
+  const rpn = toRPN2(tokens);
+  return evalRPN2(rpn, variable);
+}
+function tokenize2(str) {
+  const regex = /\d+\.\d+|\d+|[a-zA-Z]+|[\+\-\*\/\(\)]/g;
+  return str.match(regex);
+}
+function toRPN2(tokens) {
+  const output = [];
+  const ops = [];
+  const precedence = { "+": 1, "-": 1, "*": 2, "/": 2 };
+  const associativity = { "+": "L", "-": "L", "*": "L", "/": "L" };
+  tokens.forEach((token) => {
+    if (!isNaN(token) || /^[a-zA-Z]+$/.test(token)) {
+      output.push(token);
+    } else if ("+-*/".includes(token)) {
+      while (ops.length > 0 && "*/+-".includes(ops[ops.length - 1])) {
+        const top = ops[ops.length - 1];
+        if (associativity[token] === "L" && precedence[token] <= precedence[top] || associativity[token] === "R" && precedence[token] < precedence[top]) {
+          output.push(ops.pop());
+        } else
+          break;
+      }
+      ops.push(token);
+    } else if (token === "(") {
+      ops.push(token);
+    } else if (token === ")") {
+      while (ops.length && ops[ops.length - 1] !== "(") {
+        output.push(ops.pop());
+      }
+      ops.pop();
+    }
+  });
+  while (ops.length)
+    output.push(ops.pop());
+  return output;
+}
+function evalRPN2(rpn, variable) {
+  const stack = [];
+  rpn.forEach((token) => {
+    if (!isNaN(token)) {
+      stack.push({ constant: parseFloat(token) });
+    } else if (token === variable) {
+      stack.push({ [variable]: 1 });
+    } else if ("+-*/".includes(token)) {
+      const b = stack.pop();
+      const a = stack.pop();
+      stack.push(applyOp2(a, b, token, variable));
+    }
+  });
+  return stack.pop();
+}
+function applyOp2(a, b, op, variable) {
+  const aCoeff = a[variable] || 0;
+  const bCoeff = b[variable] || 0;
+  const aConst = a.constant || 0;
+  const bConst = b.constant || 0;
+  if (op === "+") {
+    return {
+      [variable]: aCoeff + bCoeff,
+      constant: aConst + bConst
+    };
+  }
+  if (op === "-") {
+    return {
+      [variable]: aCoeff - bCoeff,
+      constant: aConst - bConst
+    };
+  }
+  if (op === "*") {
+    if (aCoeff !== 0 && bCoeff !== 0) {
+      throw new Error("Non-linear term produced \u2014 equation must remain linear.");
+    }
+    return {
+      [variable]: aCoeff * bConst + bCoeff * aConst,
+      constant: aConst * bConst
+    };
+  }
+  if (op === "/") {
+    if (bCoeff !== 0) {
+      throw new Error("Division by a variable not supported.");
+    }
+    return {
+      [variable]: aCoeff / bConst,
+      constant: aConst / bConst
+    };
+  }
+}
 var convert2 = configureMeasurements2({
   length: length_default2,
   area: area_default2,
@@ -6992,7 +10613,8 @@ var convert2 = configureMeasurements2({
 configure2({
   convertToFraction: (d) => new Fraction2(d).toFraction(),
   convertToUnit: (d, from, to22) => convert2(d).from(from).to(to22),
-  unitAnchor: (unit) => convert2().getUnit(unit)?.unit?.to_anchor
+  unitAnchor: (unit) => convert2().getUnit(unit)?.unit?.to_anchor,
+  solveLinearEquation: (first, second, variable) => solveLinearEquation2(first, second, variable)
 });
 function axiomInput2(predicate, label) {
   return {
@@ -7021,13 +10643,19 @@ function deduce2(...children) {
 function to2(...children) {
   return { children };
 }
-function toCont2(child, { agent }) {
+function toCont2(child, { agent, entity: entity3 }) {
   const node = isPredicate2(child) ? child : last2(child);
   if (!(node.kind == "cont" || node.kind === "transfer" || node.kind == "comp" || node.kind === "comp-diff" || node.kind === "rate" || node.kind === "quota" || node.kind === "delta")) {
     throw `Non convertable node type: ${node.kind}`;
   }
   const typeNode = node;
-  return to2(child, cont2(agent, typeNode.quantity, typeNode.kind == "rate" ? typeNode.entity.entity : typeNode.entity, typeNode.kind == "rate" ? typeNode.entity.unit : typeNode.unit));
+  return to2(child, {
+    kind: "cont",
+    agent,
+    quantity: typeNode.quantity,
+    entity: entity3 != null ? entity3.entity : typeNode.kind == "rate" ? typeNode.entity.entity : typeNode.entity,
+    unit: entity3 != null ? entity3.unit : typeNode.kind == "rate" ? typeNode.entity.unit : typeNode.unit
+  });
 }
 function connectTo(node, input) {
   let inputState = {
@@ -7061,7 +10689,15 @@ function isEmptyOrWhiteSpace(value) {
 var mdFormatting = {
   compose: (strings, ...args) => concatString(strings, ...args),
   formatKind: (d) => `[${d.kind.toUpperCase()}]`,
-  formatQuantity: (d) => d.toLocaleString("cs-CZ"),
+  formatQuantity: (d) => {
+    if (typeof d === "number") {
+      return d.toLocaleString("cs-CZ");
+    } else if (typeof d === "string") {
+      return d;
+    } else {
+      return toEquationExpr2(d);
+    }
+  },
   formatRatio: (d, asPercent) => asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : d.toLocaleString("cs-CZ"),
   formatEntity: (d, unit) => {
     const res = [unit, d].filter((d2) => d2 != null).join(" ");
@@ -7071,28 +10707,28 @@ var mdFormatting = {
   formatSequence: (d) => `${formatSequence22(d)}`
 };
 function formatSequence22(type) {
-  const simplify = (d, op = "") => d !== 1 ? `${d}${op}` : "";
+  const simplify22 = (d, op = "") => d !== 1 ? `${d}${op}` : "";
   if (type.kind === "arithmetic")
     return `${type.sequence.join()} => a^n^ = ${type.sequence[0]} + ${type.commonDifference}(n-1)`;
   if (type.kind === "quadratic") {
     const [first, second] = type.sequence;
     const { A, B, C } = nthQuadraticElements2(first, second, type.secondDifference);
-    const parts = [`${simplify(A)}n^2^`];
+    const parts = [`${simplify22(A)}n^2^`];
     if (B !== 0) {
-      parts.concat(`${simplify(B)}n`);
+      parts.concat(`${simplify22(B)}n`);
     }
     if (C !== 0) {
-      parts.concat(`${simplify(C)}n`);
+      parts.concat(`${simplify22(C)}n`);
     }
     return `${type.sequence.join()} => a^n^ = ${parts.map((d, i) => `${i !== 0 ? " + " : ""}${d}`)}`;
   }
   if (type.kind === "geometric") {
-    return `${type.sequence.join()} => a^n^ = ${simplify(type.sequence[0], "*")}${type.commonRatio}^(n-1)^`;
+    return `${type.sequence.join()} => a^n^ = ${simplify22(type.sequence[0], "*")}${type.commonRatio}^(n-1)^`;
   }
 }
 function formatPredicate(d, formatting) {
   const { formatKind, formatAgent, formatEntity: formatEntity22, formatQuantity, formatRatio: formatRatio22, formatSequence: formatSequence3, compose } = { ...mdFormatting, ...formatting };
-  if ((d.kind == "ratio" || d.kind == "transfer" || d.kind === "comp-ratio" || d.kind === "rate" || d.kind === "quota" || d.kind === "comp-diff" || d.kind === "comp-part-eq" || d.kind === "delta") && (d.quantity == null && d.ratio == null)) {
+  if ((d.kind == "transfer" || d.kind === "rate" || d.kind === "quota" || d.kind === "comp-diff" || d.kind === "delta") && d.quantity == null || (d.kind == "ratio" || d.kind === "comp-ratio") && d.ratio == null || d.kind === "comp-part-eq") {
     return formatKind(d);
   }
   let result = "";
@@ -7101,17 +10737,29 @@ function formatPredicate(d, formatting) {
       result = compose`${formatAgent(d.agent)}=${formatQuantity(d.quantity)} ${formatEntity22(d.entity, d.unit)}`;
       break;
     case "comp":
-      result = d.quantity === 0 ? compose`${formatAgent(d.agentA)} je rovno ${formatAgent(d.agentB)}` : compose`${formatAgent(d.agentA)} ${d.quantity > 0 ? "v\xEDce" : "m\xE9n\u011B"} než ${formatAgent(d.agentB)} o ${formatQuantity(Math.abs(d.quantity))} ${formatEntity22(d.entity, d.unit)}`;
+      if (isNumber2(d.quantity)) {
+        result = d.quantity === 0 ? compose`${formatAgent(d.agentA)} je rovno ${formatAgent(d.agentB)}` : compose`${formatAgent(d.agentA)} ${d.quantity > 0 ? "v\xEDce" : "m\xE9n\u011B"} než ${formatAgent(d.agentB)} o ${formatQuantity(Math.abs(d.quantity))} ${formatEntity22(d.entity, d.unit)}`;
+      } else {
+        result = compose`rozdíl o ${formatQuantity(d.quantity)} ${formatEntity22(d.entity, d.unit)} mezi ${formatAgent(d.agentA)} a ${formatAgent(d.agentB)}`;
+      }
       break;
     case "transfer":
-      result = d.quantity === 0 ? compose`${formatAgent(d.agentReceiver.name)} je rovno ${formatAgent(d.agentSender.name)}` : d.agentReceiver === d.agentSender ? compose`změna o ${formatQuantity(d.quantity)} ${formatEntity22(d.entity, d.unit)} mezi ${formatAgent(d.agentSender.nameBefore)} a ${formatAgent(d.agentSender.nameAfter)}` : compose`${formatQuantity(Math.abs(d.quantity))} ${formatEntity22(d.entity, d.unit)}, ${formatAgent(d.quantity > 0 ? d.agentSender.name : d.agentReceiver.name)} => ${formatAgent(d.quantity > 0 ? d.agentReceiver.name : d.agentSender.name)}`;
+      if (isNumber2(d.quantity)) {
+        result = d.quantity === 0 ? compose`${formatAgent(d.agentReceiver.name)} je rovno ${formatAgent(d.agentSender.name)}` : d.agentReceiver === d.agentSender ? compose`změna o ${formatQuantity(d.quantity)} ${formatEntity22(d.entity, d.unit)} mezi ${formatAgent(d.agentSender.nameBefore)} a ${formatAgent(d.agentSender.nameAfter)}` : compose`${formatQuantity(Math.abs(d.quantity))} ${formatEntity22(d.entity, d.unit)}, ${formatAgent(d.quantity > 0 ? d.agentSender.name : d.agentReceiver.name)} => ${formatAgent(d.quantity > 0 ? d.agentReceiver.name : d.agentSender.name)}`;
+      } else {
+        result = d.agentReceiver === d.agentSender ? compose`změna o ${formatQuantity(d.quantity)} ${formatEntity22(d.entity, d.unit)} mezi ${formatAgent(d.agentSender.nameBefore)} a ${formatAgent(d.agentSender.nameAfter)}` : compose`transfer o ${formatQuantity(d.quantity)} ${formatEntity22(d.entity, d.unit)} mezi ${formatAgent(d.agentSender.name)} a ${formatAgent(d.agentReceiver.name)}`;
+      }
       break;
     case "delta":
       result = d.quantity === 0 ? compose`${formatAgent(d.agent.nameBefore ?? d.agent.name)} je rovno ${formatAgent(d.agent.nameAfter ?? d.agent.name)}` : compose`změna o ${formatQuantity(d.quantity)} ${formatEntity22(d.entity, d.unit)} mezi ${formatAgent(d.agent.nameBefore ?? d.agent.name)} a ${formatAgent(d.agent.nameAfter ?? d.agent.name)}`;
       break;
     case "comp-ratio":
-      const between = d.ratio > 1 / 2 && d.ratio < 2;
-      result = between ? compose`${formatAgent(d.agentA)} ${d.ratio < 1 ? "m\xE9n\u011B" : "v\xEDce"} o ${formatRatio22(d.ratio > 1 ? d.ratio - 1 : 1 - d.ratio, d.asPercent)} než ${formatAgent(d.agentB)} ` : compose`${formatAgent(d.agentA)} ${formatRatio22(d.ratio > 1 ? Math.abs(d.ratio) : 1 / Math.abs(d.ratio), false)} krát ${d.ratio > 1 ? "v\xEDce" : "m\xE9n\u011B"} než ${formatAgent(d.agentB)} `;
+      if (isNumber2(d.ratio)) {
+        const between = d.ratio > 1 / 2 && d.ratio < 2;
+        result = between ? compose`${formatAgent(d.agentA)} ${d.ratio < 1 ? "m\xE9n\u011B" : "v\xEDce"} o ${formatRatio22(d.ratio > 1 ? d.ratio - 1 : 1 - d.ratio, d.asPercent)} než ${formatAgent(d.agentB)} ` : compose`${formatAgent(d.agentA)} ${formatRatio22(d.ratio > 1 ? Math.abs(d.ratio) : 1 / Math.abs(d.ratio), false)} krát ${d.ratio > 1 ? "v\xEDce" : "m\xE9n\u011B"} než ${formatAgent(d.agentB)} `;
+      } else {
+        result = compose`poměr ${formatQuantity(d.ratio)} mezi ${formatAgent(d.agentA)} a ${formatAgent(d.agentB)}`;
+      }
       break;
     case "comp-diff":
       result = compose`${formatAgent(d.agentMinuend)} - ${formatAgent(d.agentSubtrahend)}=${formatQuantity(d.quantity)} ${formatEntity22(d.entity, d.unit)}`;
@@ -10634,6 +14282,37 @@ function objemNadoby3({ input }) {
   };
 }
 
+// src/math/M9I-2025/okurky.ts
+function okurkyASalaty({ input }) {
+  const entity3 = "sazenice";
+  const okurkaLabel = "zasazeno okurek";
+  const salatLabel = "zasazeno sal\xE1t\u016F";
+  const ujaloOkurekLabel = "ujalo okurek";
+  const ujaloSalatLabel = "ujalo sal\xE1t\u016F";
+  const variableName = "okurky";
+  const salatyAndOkurkyCompare = axiomInput2(comp(salatLabel, okurkaLabel, input.salatyNavic, entity3), 1);
+  const ujaloSalataRatio = axiomInput2(ratio(salatLabel, ujaloSalatLabel, 3 / 4), 2);
+  const ujaloOkurekRatio = axiomInput2(ratio(okurkaLabel, ujaloOkurekLabel, 5 / 6), 3);
+  const okurka = axiomInput2(cont(okurkaLabel, variableName, entity3), 1);
+  const sazenicSalatu = deduce2(
+    okurka,
+    salatyAndOkurkyCompare
+  );
+  const ujaloSalatu = deduce2(
+    sazenicSalatu,
+    ujaloSalataRatio
+  );
+  const ujaloOkurek = deduce2(
+    okurka,
+    ujaloOkurekRatio
+  );
+  const sazenicOkurek = deduce2(ujaloSalatu, ujaloOkurek, ctorLinearEquation(okurkaLabel, { entity: entity3 }, variableName));
+  return [
+    { deductionTree: deduce2(sazenicOkurek, salatyAndOkurkyCompare), template: () => "" },
+    { deductionTree: deduce2(last2(sazenicOkurek), ujaloOkurekRatio), template: () => "" }
+  ];
+}
+
 // src/math/M9I-2025/papirACary.ts
 function caryNaPapire({ input }) {
   const entity3 = "\u010D\xE1st";
@@ -10676,8 +14355,8 @@ function porovnani2Ploch({}) {
 var krabiceParams = { pocetKusuVKrabice: 12, missingVyrobku: 5 };
 var M9I_2025_default = {
   1: porovnani2Ploch({ input: {} }),
-  // 6.1: okurkyASalaty({ input: { okurky: 36 } })[0],
-  // 6.2: okurkyASalaty({ input: { okurky: 36 } })[1],
+  6.1: okurkyASalaty({ input: { salatyNavic: 4 } })[0],
+  6.2: okurkyASalaty({ input: { salatyNavic: 4 } })[1],
   7.1: plnaKrabice({ input: krabiceParams })[0],
   7.2: plnaKrabice({ input: krabiceParams })[1],
   7.3: plnaKrabice({ input: krabiceParams })[2],
@@ -10709,6 +14388,7 @@ var M9A_2025_default = {
   8.3: zahon2().nejmensiPocetCerveneKvetoucich,
   12: bazen(),
   13: pelhrimov(),
+  14: znamkyPrumer(),
   15.1: organizatoriPercent(),
   15.2: soutez(),
   15.3: atletika()
@@ -10953,6 +14633,38 @@ function organizatoriPercent() {
       ), { agent: "organiz\xE1to\u0159i" }),
       celkem,
       ctorPercent()
+    )
+  };
+}
+function znamkyPrumer() {
+  const entity3 = "hodnota";
+  const entityPocet = "zn\xE1mka";
+  const pocetJednicek = cont("jedni\u010Dky", "x", entityPocet);
+  const pocetDvojek = cont("dvojky", "x", entityPocet);
+  const pocetCelkem = cont("celkem", 20, entityPocet);
+  const pocetTrojekk = deduce(
+    pocetCelkem,
+    deduce(
+      pocetJednicek,
+      pocetDvojek,
+      sum("celkem", [], entityPocet, entityPocet)
+    ),
+    ctorDifference("")
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          pocetJednicek,
+          deduce(pocetDvojek, cont("dvojka", 2, entity3), product("dvojka", [], entity3, entity3)),
+          deduce(pocetTrojekk, cont("trojka", 3, entity3), product("trojka", [], entity3, entity3)),
+          sum("celkem", [], entity3, entity3)
+        ),
+        pocetCelkem,
+        ctor("rate")
+      ),
+      rate("aritmetick\xFD pr\u016Fm\u011Br", 1.8, entity3, entityPocet),
+      ctorLinearEquation("jedni\u010Dka", { entity: entityPocet }, "x")
     )
   };
 }
@@ -11344,3 +15056,13 @@ export {
   formatSequencePattern,
   inferenceRuleWithQuestion2 as inferenceRuleWithQuestion
 };
+/*!
+ Based on ndef.parser, by Raphael Graf(r@undefined.ch)
+ http://www.undefined.ch/mparser/index.html
+
+ Ported to JavaScript and modified by Matthew Crumley (email@matthewcrumley.com, http://silentmatt.com/)
+
+ You are free to use and modify this code in anyway you find useful. Please leave this comment in the code
+ to acknowledge its original source. If you feel like it, I enjoy hearing about projects that use my code,
+ but don't feel like you have to let me know or ask permission.
+*/
