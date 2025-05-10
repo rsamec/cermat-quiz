@@ -4,12 +4,15 @@ export type Helpers = {
   convertToUnit?: (quantity: number, from: UnitType, to: UnitType) => number
   unitAnchor?: (unit: UnitType) => number;
   solveLinearEquation?: (first: Quantity, second: Quantity, variable: string) => number
+  evalExpression?: (expression: Expression, quantity: number) => number
 }
 const defaultHelpers: Helpers = {
   convertToFraction: d => d,
   convertToUnit: d => d,
   unitAnchor: () => 1,
-  solveLinearEquation: (fist, second, variable) => NaN
+  solveLinearEquation: (fist, second, variable) => NaN,
+  evalExpression: (expression, context) => NaN
+
 }
 
 let helpers = defaultHelpers
@@ -61,23 +64,27 @@ type AgentNames = {
 
 export type Container = EntityBase &
 {
-  kind: 'cont';
+  kind: 'cont',
   agent: string,
   quantity: Quantity
 }
 
-export type ConvertUnit =
-  {
-    kind: 'unit';
-    unit: Unit
-  }
-export type AngleComparison =
-  {
-    kind: 'comp-angle';
-    agentA: string,
-    agentB: string,
-    relationship: AngleRelationship
-  }
+export type EvalExpr = {
+  kind: 'eval-expr',
+  expression: Expression
+}
+
+export type ConvertUnit = {
+  kind: 'unit',
+  unit: Unit
+}
+
+export type AngleComparison = {
+  kind: 'comp-angle',
+  agentA: string,
+  agentB: string,
+  relationship: AngleRelationship
+}
 
 export type Comparison = EntityBase & {
   kind: 'comp'
@@ -255,7 +262,8 @@ export type Question = {
 
 export type EntityDef = string | EntityBase
 export type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | SumCombine | ProductCombine | PartWholeRatio | PartToPartRatio | ComparisonDiff |
-  CommonSense | GCD | LCD | CompareAndPartEqual | Sequence | NthRule | Quota | Scale | Complement | NthPart | NthPartFactor | Transfer | Proportion | ConvertUnit | AngleComparison | Delta | Difference | Phytagoras | InvertScale | LinearEquation
+  CommonSense | GCD | LCD | CompareAndPartEqual | Sequence | NthRule | Quota | Scale | Complement | NthPart | NthPartFactor | Transfer | Proportion | ConvertUnit |
+  AngleComparison | Delta | Difference | Phytagoras | InvertScale | LinearEquation | EvalExpr
 
 export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | 'quota' | "comp-diff" | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'scale' | 'invert-scale' | 'complement' | 'delta') {
   return { kind } as Predicate
@@ -293,6 +301,10 @@ export function ctorDifference(differenceAgent: AgentMatcher): Difference {
 
 export function cont(agent: string, quantity: NumberOrVariable, entity: string, unit?: string): Container {
   return { kind: 'cont', agent, quantity: quantity as NumberOrExpression, entity, unit };
+}
+
+export function evalExpr(expression: string): EvalExpr {
+  return { kind: 'eval-expr', expression }
 }
 export function delta(agent: AgentNames, quantity: number, entity: string, unit?: string): Delta {
   return { kind: 'delta', agent, quantity, entity, unit };
@@ -1604,6 +1616,26 @@ function toRatios(parts: Container[] | Rate[], last: PartToPartRatio): Question 
   }
 }
 
+function evalToQuantityEx<T extends Predicate & { quantity: Quantity }>(a: T, b: EvalExpr): T {
+  if (!isNumber(a.quantity)) {
+    throw `evalToQuantity does not support non quantity types`
+  }
+
+  return {
+    ...a,
+    quantity: helpers.evalExpression(b.expression, a.quantity)
+
+  }
+}
+function evalToQuantity<T extends Predicate & { quantity: Quantity }>(a: T, b: EvalExpr): Question {
+  const result = evalToQuantityEx(a, b);
+  return {
+    question: `Vypočti výraz ${b.expression}?`,
+    result,
+    options: []
+  }
+}
+
 
 
 
@@ -1875,10 +1907,16 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
                         ? solveEquation(a, b, last)
                         : toComparison(a, b)
   }
-  if (a.kind === "rate" && b.kind === "rate" && last.kind === "ratios") {
+  else if (a.kind === "cont" && b.kind === "eval-expr") {
+    return evalToQuantity(a, b)
+  }
+  else if (a.kind === "eval-expr" && b.kind === "cont") {
+    return evalToQuantity(b, a)
+  }
+  else if (a.kind === "rate" && b.kind === "rate" && last.kind === "ratios") {
     return toRatios([a, b], last)
   }
-  if (a.kind === "rate" && b.kind === "rate" && last.kind === "linear-equation") {
+  else if (a.kind === "rate" && b.kind === "rate" && last.kind === "linear-equation") {
     return solveEquation(a, b, last)
   }
   else if ((a.kind === "cont" || a.kind === "comp") && b.kind === "unit") {
@@ -2221,7 +2259,7 @@ function containerQuestion(d: Container) {
   return `${computeQuestion(d.quantity)} ${d.agent}${formatEntity(d)}?`
 }
 
-function computeQuestion(d: NumberOrExpression){
+function computeQuestion(d: NumberOrExpression) {
   return isNumber(d) ? 'Vypočti' : 'Vyjádři výrazem s proměnnou'
 }
 

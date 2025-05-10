@@ -1650,6 +1650,14 @@ function lcdCalc(numbers) {
 function evaluate2(expression, context) {
   return parser.parse(expression).evaluate(context);
 }
+function evalExpression(expression, quantity) {
+  const expr = parser.parse(expression);
+  const variables = expr.variables();
+  if (variables.length !== 1) {
+    throw `Eval only expression with exactly one variable. Variables ${variables.join(",")}`;
+  }
+  return expr.evaluate({ [variables]: quantity });
+}
 function recurExpr(node) {
   const quantity = node.quantity ?? node.ratio ?? {};
   const { context, expression } = quantity;
@@ -1791,6 +1799,7 @@ function applyOp(a, b, op, variable) {
   }
 }
 export {
+  evalExpression,
   evaluate2 as evaluate,
   solveLinearEquation,
   toEquation,

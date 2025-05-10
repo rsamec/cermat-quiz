@@ -7,7 +7,7 @@ import volume from 'convert-units/definitions/volume'
 import time from 'convert-units/definitions/time'
 import { configure, inferenceRuleWithQuestion as IRWQ } from '../components/math.js';
 
-import { solveLinearEquation } from "../utils/math-solver.js";
+import { solveLinearEquation, evalExpression } from "../utils/math-solver.js";
 
 const convert = configureMeasurements<any, any, any>({
   length,
@@ -22,6 +22,7 @@ configure({
   convertToUnit: (d, from, to) => convert(d).from(from).to(to),
   unitAnchor: (unit) => convert().getUnit(unit)?.unit?.to_anchor,
   solveLinearEquation: (first, second, variable) => solveLinearEquation(first, second, variable),
+  evalExpression: (expression, quantity: number) => evalExpression(expression,quantity)
 })
 
 //re export

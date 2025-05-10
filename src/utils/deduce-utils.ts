@@ -352,6 +352,9 @@ export function formatPredicate(d: Predicate, formatting: any) {
     case "comp-angle":
       result = compose`${formatAngle(d.relationship)}`
       break;
+    case "eval-expr":
+      result = compose`${d.expression}`
+      break;
     default:
       break;
   }

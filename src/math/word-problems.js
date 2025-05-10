@@ -3,7 +3,8 @@ var defaultHelpers = {
   convertToFraction: (d) => d,
   convertToUnit: (d) => d,
   unitAnchor: () => 1,
-  solveLinearEquation: (fist, second, variable) => NaN
+  solveLinearEquation: (fist, second, variable) => NaN,
+  evalExpression: (expression, context) => NaN
 };
 var helpers = defaultHelpers;
 function configure(config) {
@@ -163,7 +164,7 @@ function compareRuleEx(a, b) {
 function compareRule(a, b) {
   const result = compareRuleEx(a, b);
   return {
-    question: `Vypo\u010Dti ${a.agent == b.agentB ? b.agentA : b.agentB}${formatEntity(result)}?`,
+    question: `${computeQuestion(result.quantity)} ${a.agent == b.agentB ? b.agentA : b.agentB}${formatEntity(result)}?`,
     result,
     options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.quantity) ? [
       { tex: `${formatNumber(a.quantity)} ${b.quantity > 0 ? " + " : " - "} ${formatNumber(abs(b.quantity))}`, result: formatNumber(result.quantity), ok: a.agent == b.agentB },
@@ -253,7 +254,7 @@ function comparisonRatioRuleEx(b, a) {
 function comparisonRatioRule(b, a) {
   const result = comparisonRatioRuleEx(b, a);
   return {
-    question: `Vypo\u010Dti ${a.part == b.agentB ? b.agentA : b.agentB}?`,
+    question: `${computeQuestion(result.ratio)}} ${a.part == b.agentB ? b.agentA : b.agentB}?`,
     result,
     options: isNumber(a.ratio) && isNumber(b.ratio) ? [
       { tex: `${formatRatio(a.ratio)} * ${formatRatio(abs(b.ratio))}`, result: formatRatio(a.ratio * b.ratio), ok: a.part == b.agentB && b.ratio >= 0 || a.part == b.agentA && b.ratio < 0 },
@@ -372,7 +373,7 @@ function ratioCompareRuleEx(a, b) {
 function ratioCompareRule(a, b) {
   const result = ratioCompareRuleEx(a, b);
   return {
-    question: `Vypo\u010Dti ${a.agent == b.agentB ? b.agentA : b.agentB}${formatEntity(result)}?`,
+    question: `${computeQuestion(result.quantity)} ${a.agent == b.agentB ? b.agentA : b.agentB}${formatEntity(result)}?`,
     result,
     options: isNumber(a.quantity) && isNumber(b.ratio) ? [
       { tex: `${formatNumber(a.quantity)} * ${formatRatio(abs(b.ratio))}`, result: formatNumber(a.quantity * b.ratio), ok: a.agent == b.agentB && b.ratio >= 0 || a.agent == b.agentA && b.ratio < 0 },
@@ -397,7 +398,7 @@ function getAgentName(agent, transferOrder) {
 function transferRule(a, b, transferOrder) {
   const result = transferRuleEx(a, b, transferOrder);
   return {
-    question: `Vypo\u010Dti ${a.agent}${formatEntity(result)}?`,
+    question: `${computeQuestion(result.quantity)} ${a.agent}${formatEntity(result)}?`,
     result,
     options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.quantity) ? [
       { tex: `${formatNumber(a.quantity)} ${transferOrder === "before" && a.agent == b.agentSender.name ? " + " : " - "} ${formatNumber(abs(b.quantity))}`, result: formatNumber(result.quantity), ok: a.agent == b.agentSender.name },
@@ -418,7 +419,7 @@ function deltaRuleEx(a, b, transferOrder) {
 function deltaRule(a, b, transferOrder) {
   const result = deltaRuleEx(a, b, transferOrder);
   return {
-    question: `Vypo\u010Dti ${result.agent}${formatEntity(result)}?`,
+    question: `${computeQuestion(result.quantity)} ${result.agent}${formatEntity(result)}?`,
     result,
     options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.quantity) ? [
       { tex: `${formatNumber(a.quantity)} ${transferOrder === "before" ? " - " : " + "} ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: true },
@@ -797,9 +798,9 @@ function sumRule(items, b) {
   const result = sumRuleEx(items, b);
   const isQuantity = isQuantityPredicate(result);
   return {
-    question: result.kind === "cont" ? containerQuestion(result) : result.kind === "rate" ? `Vypo\u010Dti ${result.agent}` : `Vypo\u010Dti ${result.part}`,
+    question: result.kind === "cont" ? containerQuestion(result) : result.kind === "rate" ? `${computeQuestion(result.quantity)} ${result.agent}` : `${computeQuestion(result.ratio)} ${result.part}`,
     result,
-    options: [
+    options: isQuantity && isNumber(result.quantity) || isRatioPredicate(result) && isNumber(result.ratio) ? [
       {
         tex: items.map((d) => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio)).join(" + "),
         result: isQuantity ? isNumber(result.quantity) ? formatNumber(result.quantity) : "N/A" : isNumber(result.ratio) ? formatRatio(result.ratio) : "N/A",
@@ -810,7 +811,7 @@ function sumRule(items, b) {
         result: isQuantity ? isNumber(result.quantity) ? formatNumber(result.quantity) : "N/A" : isNumber(result.ratio) ? formatRatio(result.ratio) : "N/A",
         ok: false
       }
-    ]
+    ] : []
   };
 }
 function productRuleEx(items, b) {
@@ -1060,7 +1061,7 @@ function toComparisonDiffEx(a, b) {
 function toComparisonDiff(a, b) {
   const result = toComparisonDiffEx(a, b);
   return {
-    question: `Vypo\u010Dti rozd\xEDl mezi ${a.quantity} a ${b.quantity}`,
+    question: `${computeQuestion(result.quantity)} rozd\xEDl mezi ${a.quantity} a ${b.quantity}`,
     result,
     options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.quantity) ? [
       { tex: `${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: true },
@@ -1086,7 +1087,7 @@ function toDifferenceEx(a, b, diff) {
 function toDifference(a, b, diff) {
   const result = toDifferenceEx(a, b, diff);
   return {
-    question: `Vypo\u010Dti rozd\xEDl mezi ${a.agent} a ${b.agent}`,
+    question: `${computeQuestion(result.quantity)} rozd\xEDl mezi ${a.agent} a ${b.agent}`,
     result,
     options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.quantity) ? [
       { tex: `${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: true },
@@ -1108,7 +1109,7 @@ function toDifferenceAsRatioEx(a, b, diff) {
 function toDifferenceAsRatio(a, b, diff) {
   const result = toDifferenceAsRatioEx(a, b, diff);
   return {
-    question: `Vypo\u010Dti rozd\xEDl mezi ${a.part} a ${b.part}`,
+    question: `${computeQuestion(result.ratio)} rozd\xEDl mezi ${a.part} a ${b.part}`,
     result,
     options: isNumber(a.ratio) && isNumber(b.ratio) && isNumber(result.ratio) ? [
       { tex: `${formatRatio(a.ratio)} - ${formatRatio(b.ratio)}`, result: formatRatio(result.ratio), ok: true },
@@ -1208,6 +1209,23 @@ function toRatios(parts, last4) {
       { tex: `${result.ratios.map((d) => formatNumber(d)).join(":")}`, result: result.ratios.map((d) => formatNumber(d)).join(":"), ok: true },
       { tex: `${result.ratios.map((d) => formatNumber(d)).join(":")}`, result: result.ratios.map((d) => formatNumber(d)).join(":"), ok: false }
     ] : []
+  };
+}
+function evalToQuantityEx(a, b) {
+  if (!isNumber(a.quantity)) {
+    throw `evalToQuantity does not support non quantity types`;
+  }
+  return {
+    ...a,
+    quantity: helpers.evalExpression(b.expression, a.quantity)
+  };
+}
+function evalToQuantity(a, b) {
+  const result = evalToQuantityEx(a, b);
+  return {
+    question: `Vypo\u010Dti v\xFDraz ${b.expression}?`,
+    result,
+    options: []
   };
 }
 function partToPartRuleEx(a, partToPartRatio, nth2) {
@@ -1402,11 +1420,13 @@ function inferenceRuleEx(...args) {
   } else if (a.kind === "cont" && b.kind == "cont") {
     const kind = last4?.kind;
     return kind === "comp-diff" ? toComparisonDiff(a, b) : kind === "diff" ? toDifference(a, b, last4) : kind === "quota" ? toQuota(a, b) : kind === "delta" ? toDelta(a, b, last4) : kind === "pythagoras" ? pythagorasRule(a, b, last4) : kind === "rate" ? toRate(a, b) : kind === "ratios" ? toRatios([a, b], last4) : kind === "comp-ratio" ? toRatioComparison(a, b, last4) : kind === "ratio" ? toPartWholeRatio(a, b, last4) : kind === "linear-equation" ? solveEquation(a, b, last4) : toComparison(a, b);
-  }
-  if (a.kind === "rate" && b.kind === "rate" && last4.kind === "ratios") {
+  } else if (a.kind === "cont" && b.kind === "eval-expr") {
+    return evalToQuantity(a, b);
+  } else if (a.kind === "eval-expr" && b.kind === "cont") {
+    return evalToQuantity(b, a);
+  } else if (a.kind === "rate" && b.kind === "rate" && last4.kind === "ratios") {
     return toRatios([a, b], last4);
-  }
-  if (a.kind === "rate" && b.kind === "rate" && last4.kind === "linear-equation") {
+  } else if (a.kind === "rate" && b.kind === "rate" && last4.kind === "linear-equation") {
     return solveEquation(a, b, last4);
   } else if ((a.kind === "cont" || a.kind === "comp") && b.kind === "unit") {
     return convertToUnit(a, b);
@@ -1617,7 +1637,10 @@ function formatRatio(d, asPercent) {
   return d > -2 && d < 2 ? helpers.convertToFraction(d) : formatNumber(d);
 }
 function containerQuestion(d) {
-  return isNumber(d.quantity) ? `Vypo\u010Dti ${d.agent}${formatEntity(d)}?` : `Vyj\xE1d\u0159i v\xFDrazem s prom\u011Bnnou ${d.agent}${formatEntity(d)}?`;
+  return `${computeQuestion(d.quantity)} ${d.agent}${formatEntity(d)}?`;
+}
+function computeQuestion(d) {
+  return isNumber(d) ? "Vypo\u010Dti" : "Vyj\xE1d\u0159i v\xFDrazem s prom\u011Bnnou";
 }
 function toGenerAgent(a) {
   return {
@@ -5089,6 +5112,14 @@ function lcdCalcEx2(a, b) {
 function lcdCalc2(numbers) {
   return numbers.reduce((acc, num) => lcdCalcEx2(acc, num), 1);
 }
+function evalExpression(expression, quantity) {
+  const expr = parser.parse(expression);
+  const variables = expr.variables();
+  if (variables.length !== 1) {
+    throw `Eval only expression with exactly one variable. Variables ${variables.join(",")}`;
+  }
+  return expr.evaluate({ [variables]: quantity });
+}
 function recurExpr(node) {
   const quantity = node.quantity ?? node.ratio ?? {};
   const { context, expression } = quantity;
@@ -5237,7 +5268,8 @@ configure({
   convertToFraction: (d) => new Fraction(d).toFraction(),
   convertToUnit: (d, from, to4) => convert(d).from(from).to(to4),
   unitAnchor: (unit) => convert().getUnit(unit)?.unit?.to_anchor,
-  solveLinearEquation: (first, second, variable) => solveLinearEquation(first, second, variable)
+  solveLinearEquation: (first, second, variable) => solveLinearEquation(first, second, variable),
+  evalExpression: (expression, quantity) => evalExpression(expression, quantity)
 });
 var inferenceRuleWithQuestion2 = inferenceRuleWithQuestion;
 
@@ -5516,7 +5548,8 @@ var defaultHelpers2 = {
   convertToFraction: (d) => d,
   convertToUnit: (d) => d,
   unitAnchor: () => 1,
-  solveLinearEquation: (fist, second, variable) => NaN
+  solveLinearEquation: (fist, second, variable) => NaN,
+  evalExpression: (expression, context) => NaN
 };
 var helpers2 = defaultHelpers2;
 function configure2(config) {
@@ -5568,7 +5601,7 @@ function compareRuleEx2(a, b) {
 function compareRule2(a, b) {
   const result = compareRuleEx2(a, b);
   return {
-    question: `Vypo\u010Dti ${a.agent == b.agentB ? b.agentA : b.agentB}${formatEntity2(result)}?`,
+    question: `${computeQuestion2(result.quantity)} ${a.agent == b.agentB ? b.agentA : b.agentB}${formatEntity2(result)}?`,
     result,
     options: isNumber2(a.quantity) && isNumber2(b.quantity) && isNumber2(result.quantity) ? [
       { tex: `${formatNumber2(a.quantity)} ${b.quantity > 0 ? " + " : " - "} ${formatNumber2(abs2(b.quantity))}`, result: formatNumber2(result.quantity), ok: a.agent == b.agentB },
@@ -5658,7 +5691,7 @@ function comparisonRatioRuleEx2(b, a) {
 function comparisonRatioRule2(b, a) {
   const result = comparisonRatioRuleEx2(b, a);
   return {
-    question: `Vypo\u010Dti ${a.part == b.agentB ? b.agentA : b.agentB}?`,
+    question: `${computeQuestion2(result.ratio)}} ${a.part == b.agentB ? b.agentA : b.agentB}?`,
     result,
     options: isNumber2(a.ratio) && isNumber2(b.ratio) ? [
       { tex: `${formatRatio2(a.ratio)} * ${formatRatio2(abs2(b.ratio))}`, result: formatRatio2(a.ratio * b.ratio), ok: a.part == b.agentB && b.ratio >= 0 || a.part == b.agentA && b.ratio < 0 },
@@ -5777,7 +5810,7 @@ function ratioCompareRuleEx2(a, b) {
 function ratioCompareRule2(a, b) {
   const result = ratioCompareRuleEx2(a, b);
   return {
-    question: `Vypo\u010Dti ${a.agent == b.agentB ? b.agentA : b.agentB}${formatEntity2(result)}?`,
+    question: `${computeQuestion2(result.quantity)} ${a.agent == b.agentB ? b.agentA : b.agentB}${formatEntity2(result)}?`,
     result,
     options: isNumber2(a.quantity) && isNumber2(b.ratio) ? [
       { tex: `${formatNumber2(a.quantity)} * ${formatRatio2(abs2(b.ratio))}`, result: formatNumber2(a.quantity * b.ratio), ok: a.agent == b.agentB && b.ratio >= 0 || a.agent == b.agentA && b.ratio < 0 },
@@ -5802,7 +5835,7 @@ function getAgentName2(agent, transferOrder) {
 function transferRule2(a, b, transferOrder) {
   const result = transferRuleEx2(a, b, transferOrder);
   return {
-    question: `Vypo\u010Dti ${a.agent}${formatEntity2(result)}?`,
+    question: `${computeQuestion2(result.quantity)} ${a.agent}${formatEntity2(result)}?`,
     result,
     options: isNumber2(a.quantity) && isNumber2(b.quantity) && isNumber2(result.quantity) ? [
       { tex: `${formatNumber2(a.quantity)} ${transferOrder === "before" && a.agent == b.agentSender.name ? " + " : " - "} ${formatNumber2(abs2(b.quantity))}`, result: formatNumber2(result.quantity), ok: a.agent == b.agentSender.name },
@@ -5823,7 +5856,7 @@ function deltaRuleEx2(a, b, transferOrder) {
 function deltaRule2(a, b, transferOrder) {
   const result = deltaRuleEx2(a, b, transferOrder);
   return {
-    question: `Vypo\u010Dti ${result.agent}${formatEntity2(result)}?`,
+    question: `${computeQuestion2(result.quantity)} ${result.agent}${formatEntity2(result)}?`,
     result,
     options: isNumber2(a.quantity) && isNumber2(b.quantity) && isNumber2(result.quantity) ? [
       { tex: `${formatNumber2(a.quantity)} ${transferOrder === "before" ? " - " : " + "} ${formatNumber2(b.quantity)}`, result: formatNumber2(result.quantity), ok: true },
@@ -6202,9 +6235,9 @@ function sumRule2(items, b) {
   const result = sumRuleEx2(items, b);
   const isQuantity = isQuantityPredicate2(result);
   return {
-    question: result.kind === "cont" ? containerQuestion2(result) : result.kind === "rate" ? `Vypo\u010Dti ${result.agent}` : `Vypo\u010Dti ${result.part}`,
+    question: result.kind === "cont" ? containerQuestion2(result) : result.kind === "rate" ? `${computeQuestion2(result.quantity)} ${result.agent}` : `${computeQuestion2(result.ratio)} ${result.part}`,
     result,
-    options: [
+    options: isQuantity && isNumber2(result.quantity) || isRatioPredicate2(result) && isNumber2(result.ratio) ? [
       {
         tex: items.map((d) => isQuantity ? formatNumber2(d.quantity) : formatRatio2(d.ratio)).join(" + "),
         result: isQuantity ? isNumber2(result.quantity) ? formatNumber2(result.quantity) : "N/A" : isNumber2(result.ratio) ? formatRatio2(result.ratio) : "N/A",
@@ -6215,7 +6248,7 @@ function sumRule2(items, b) {
         result: isQuantity ? isNumber2(result.quantity) ? formatNumber2(result.quantity) : "N/A" : isNumber2(result.ratio) ? formatRatio2(result.ratio) : "N/A",
         ok: false
       }
-    ]
+    ] : []
   };
 }
 function productRuleEx2(items, b) {
@@ -6465,7 +6498,7 @@ function toComparisonDiffEx2(a, b) {
 function toComparisonDiff2(a, b) {
   const result = toComparisonDiffEx2(a, b);
   return {
-    question: `Vypo\u010Dti rozd\xEDl mezi ${a.quantity} a ${b.quantity}`,
+    question: `${computeQuestion2(result.quantity)} rozd\xEDl mezi ${a.quantity} a ${b.quantity}`,
     result,
     options: isNumber2(a.quantity) && isNumber2(b.quantity) && isNumber2(result.quantity) ? [
       { tex: `${formatNumber2(a.quantity)} - ${formatNumber2(b.quantity)}`, result: formatNumber2(result.quantity), ok: true },
@@ -6491,7 +6524,7 @@ function toDifferenceEx2(a, b, diff) {
 function toDifference2(a, b, diff) {
   const result = toDifferenceEx2(a, b, diff);
   return {
-    question: `Vypo\u010Dti rozd\xEDl mezi ${a.agent} a ${b.agent}`,
+    question: `${computeQuestion2(result.quantity)} rozd\xEDl mezi ${a.agent} a ${b.agent}`,
     result,
     options: isNumber2(a.quantity) && isNumber2(b.quantity) && isNumber2(result.quantity) ? [
       { tex: `${formatNumber2(a.quantity)} - ${formatNumber2(b.quantity)}`, result: formatNumber2(result.quantity), ok: true },
@@ -6513,7 +6546,7 @@ function toDifferenceAsRatioEx2(a, b, diff) {
 function toDifferenceAsRatio2(a, b, diff) {
   const result = toDifferenceAsRatioEx2(a, b, diff);
   return {
-    question: `Vypo\u010Dti rozd\xEDl mezi ${a.part} a ${b.part}`,
+    question: `${computeQuestion2(result.ratio)} rozd\xEDl mezi ${a.part} a ${b.part}`,
     result,
     options: isNumber2(a.ratio) && isNumber2(b.ratio) && isNumber2(result.ratio) ? [
       { tex: `${formatRatio2(a.ratio)} - ${formatRatio2(b.ratio)}`, result: formatRatio2(result.ratio), ok: true },
@@ -6613,6 +6646,23 @@ function toRatios2(parts, last22) {
       { tex: `${result.ratios.map((d) => formatNumber2(d)).join(":")}`, result: result.ratios.map((d) => formatNumber2(d)).join(":"), ok: true },
       { tex: `${result.ratios.map((d) => formatNumber2(d)).join(":")}`, result: result.ratios.map((d) => formatNumber2(d)).join(":"), ok: false }
     ] : []
+  };
+}
+function evalToQuantityEx2(a, b) {
+  if (!isNumber2(a.quantity)) {
+    throw `evalToQuantity does not support non quantity types`;
+  }
+  return {
+    ...a,
+    quantity: helpers2.evalExpression(b.expression, a.quantity)
+  };
+}
+function evalToQuantity2(a, b) {
+  const result = evalToQuantityEx2(a, b);
+  return {
+    question: `Vypo\u010Dti v\xFDraz ${b.expression}?`,
+    result,
+    options: []
   };
 }
 function partToPartRuleEx2(a, partToPartRatio, nth2) {
@@ -6801,11 +6851,13 @@ function inferenceRuleEx2(...args) {
   } else if (a.kind === "cont" && b.kind == "cont") {
     const kind = last22?.kind;
     return kind === "comp-diff" ? toComparisonDiff2(a, b) : kind === "diff" ? toDifference2(a, b, last22) : kind === "quota" ? toQuota2(a, b) : kind === "delta" ? toDelta2(a, b, last22) : kind === "pythagoras" ? pythagorasRule2(a, b, last22) : kind === "rate" ? toRate2(a, b) : kind === "ratios" ? toRatios2([a, b], last22) : kind === "comp-ratio" ? toRatioComparison2(a, b, last22) : kind === "ratio" ? toPartWholeRatio2(a, b, last22) : kind === "linear-equation" ? solveEquation2(a, b, last22) : toComparison2(a, b);
-  }
-  if (a.kind === "rate" && b.kind === "rate" && last22.kind === "ratios") {
+  } else if (a.kind === "cont" && b.kind === "eval-expr") {
+    return evalToQuantity2(a, b);
+  } else if (a.kind === "eval-expr" && b.kind === "cont") {
+    return evalToQuantity2(b, a);
+  } else if (a.kind === "rate" && b.kind === "rate" && last22.kind === "ratios") {
     return toRatios2([a, b], last22);
-  }
-  if (a.kind === "rate" && b.kind === "rate" && last22.kind === "linear-equation") {
+  } else if (a.kind === "rate" && b.kind === "rate" && last22.kind === "linear-equation") {
     return solveEquation2(a, b, last22);
   } else if ((a.kind === "cont" || a.kind === "comp") && b.kind === "unit") {
     return convertToUnit2(a, b);
@@ -7016,7 +7068,10 @@ function formatRatio2(d, asPercent) {
   return d > -2 && d < 2 ? helpers2.convertToFraction(d) : formatNumber2(d);
 }
 function containerQuestion2(d) {
-  return isNumber2(d.quantity) ? `Vypo\u010Dti ${d.agent}${formatEntity2(d)}?` : `Vyj\xE1d\u0159i v\xFDrazem s prom\u011Bnnou ${d.agent}${formatEntity2(d)}?`;
+  return `${computeQuestion2(d.quantity)} ${d.agent}${formatEntity2(d)}?`;
+}
+function computeQuestion2(d) {
+  return isNumber2(d) ? "Vypo\u010Dti" : "Vyj\xE1d\u0159i v\xFDrazem s prom\u011Bnnou";
 }
 function toGenerAgent2(a) {
   return {
@@ -10468,6 +10523,14 @@ function lcdCalcEx22(a, b) {
 function lcdCalc22(numbers) {
   return numbers.reduce((acc, num) => lcdCalcEx22(acc, num), 1);
 }
+function evalExpression2(expression, quantity) {
+  const expr = parser2.parse(expression);
+  const variables = expr.variables();
+  if (variables.length !== 1) {
+    throw `Eval only expression with exactly one variable. Variables ${variables.join(",")}`;
+  }
+  return expr.evaluate({ [variables]: quantity });
+}
 function recurExpr2(node) {
   const quantity = node.quantity ?? node.ratio ?? {};
   const { context, expression } = quantity;
@@ -10614,7 +10677,8 @@ configure2({
   convertToFraction: (d) => new Fraction2(d).toFraction(),
   convertToUnit: (d, from, to22) => convert2(d).from(from).to(to22),
   unitAnchor: (unit) => convert2().getUnit(unit)?.unit?.to_anchor,
-  solveLinearEquation: (first, second, variable) => solveLinearEquation2(first, second, variable)
+  solveLinearEquation: (first, second, variable) => solveLinearEquation2(first, second, variable),
+  evalExpression: (expression, quantity) => evalExpression2(expression, quantity)
 });
 function axiomInput2(predicate, label) {
   return {
@@ -10802,6 +10866,9 @@ function formatPredicate(d, formatting) {
       break;
     case "comp-angle":
       result = compose`${formatAngle2(d.relationship)}`;
+      break;
+    case "eval-expr":
+      result = compose`${d.expression}`;
       break;
     default:
       break;

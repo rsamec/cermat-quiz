@@ -349,6 +349,12 @@ ${partion([
 <div class="badge badge--large">GCD</div>
 <div>${renderRules(rules.gcd)}</div>
 
+
+## Výrazy
+<div class="badge badge--large">EVAL-EXPR</div>
+<div>${renderRules(rules.eval)}</div>
+
+
 ## Posloupnosti
 <div class="badge badge--large">SEQUENCE</div>
 

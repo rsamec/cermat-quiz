@@ -39,8 +39,17 @@ function lcdCalc(numbers: number[]) {
   return numbers.reduce((acc, num) => lcdCalcEx(acc, num), 1);
 }
 
-export function evaluate(expression: string, context?: Record<string, any>){  
+export function evaluate(expression: string, context?: Record<string, any>) {
   return parser.parse(expression).evaluate(context)
+}
+
+export function evalExpression(expression: string, quantity: number) {
+  const expr = parser.parse(expression);
+  const variables = expr.variables();
+  if (variables.length !== 1) {
+    throw `Eval only expression with exactly one variable. Variables ${variables.join(",")}`
+  }
+  return expr.evaluate({ [variables]: quantity })
 }
 
 function recurExpr(node) {
@@ -78,7 +87,7 @@ function recurExpr(node) {
   }
 }
 export function toEquation(lastNode) {
-  
+
 
   const final = recurExpr(lastNode);
   console.log(final.toString())
