@@ -4,6 +4,7 @@ import { plnaKrabice } from "./krabice";
 import { kytice } from "./kytice";
 import { letajiciCtverecky } from "./letajiciCtverecky";
 import { objemNadoby1, objemNadoby2, objemNadoby3 } from "./nadoba";
+import { okurkyASalaty } from "./okurky";
 import { caryNaPapire } from "./papirACary";
 import { porovnani2Ploch } from "./plocha";
 
@@ -11,8 +12,8 @@ const krabiceParams = { pocetKusuVKrabice: 12, missingVyrobku: 5 }
 
 export default {
   1: porovnani2Ploch({ input: {} }),
-  // 6.1: okurkyASalaty({ input: { okurky: 36 } })[0],
-  // 6.2: okurkyASalaty({ input: { okurky: 36 } })[1],
+  6.1: okurkyASalaty({ input: { salatyNavic: 4 } })[0],
+  6.2: okurkyASalaty({ input: { salatyNavic: 4 } })[1],
   7.1: plnaKrabice({ input: krabiceParams })[0],
   7.2: plnaKrabice({ input: krabiceParams })[1],
   7.3: plnaKrabice({ input: krabiceParams })[2],

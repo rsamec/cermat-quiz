@@ -1,4 +1,4 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, product, quota, rate, ratio, ratios, sum, ctorPercent, percent, compAngle, compPercent } from "../../components/math";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, product, quota, rate, ratio, ratios, sum, ctorPercent, percent, compAngle, compPercent, ctorLinearEquation } from "../../components/math";
 import { deduce, last, to, toCont } from "../../utils/deduce-utils";
 
 export default {
@@ -15,9 +15,10 @@ export default {
   8.3: zahon().nejmensiPocetCerveneKvetoucich,
   12: bazen(),
   13: pelhrimov(),
+  14: znamkyPrumer(),
   15.1: organizatoriPercent(),
   15.2: soutez(),
-  15.3: atletika(),  
+  15.3: atletika(),
   //16.1: obrazce().pocetTmavyObrazec,
 }
 
@@ -301,7 +302,40 @@ function organizatoriPercent() {
     )
   }
 }
+function znamkyPrumer() {
+  const entity = "hodnota";
+  const entityPocet = "známka";
+  const pocetJednicek = cont("jedničky", "x", entityPocet);
+  const pocetDvojek = cont("dvojky", "x", entityPocet);
 
+  const pocetCelkem = cont("celkem", 20, entityPocet);
+  const pocetTrojekk = deduce(
+    pocetCelkem,
+    deduce(
+      pocetJednicek,
+      pocetDvojek,
+      sum("celkem", [], entityPocet, entityPocet)
+    ),
+    ctorDifference("")
+  )
+
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          pocetJednicek,
+          deduce(pocetDvojek, cont("dvojka", 2, entity), product("dvojka", [], entity, entity)),
+          deduce(pocetTrojekk, cont("trojka", 3, entity), product("trojka", [], entity, entity)),
+          sum("celkem", [], entity, entity)
+        ),
+        pocetCelkem,
+        ctor("rate")
+      ),
+      rate("aritmetický průměr", 1.8, entity, entityPocet),
+      ctorLinearEquation("jednička", { entity: entityPocet }, "x")
+    )
+  }
+}
 function soutez() {
   const entity = "osoby";
   const entityBase = "družstvo"

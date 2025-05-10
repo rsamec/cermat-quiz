@@ -5,6 +5,7 @@ import { nthQuadraticElements, primeFactorization, gcdCalc, lcdCalc } from "../c
 import { isPredicate, formatPredicate } from "../utils/deduce-utils.js";
 import { deduce } from "./deduce.js";
 import { inferenceRuleWithQuestion } from "../math/math-configure.js";
+import { toEquationExpr } from "./math-solver.js";
 
 export function partion(items, options) {
   const total = items.reduce((out, d) => out += d.value, 0);
@@ -129,7 +130,17 @@ function label(d) {
 export const formatting = {
   compose: (strings, ...args) => concatHtml(strings, ...args),
   formatKind: d => html`<div class="badge">${d.kind === "cont" ? "C" : d.kind.toUpperCase()}</div>`,
-  formatQuantity: d => d.toLocaleString('cs-CZ'),
+  formatQuantity: d => {
+    if (typeof d === "number") {
+      return  d.toLocaleString("cs-CZ");
+    }
+    else if (typeof d === "string"){
+      return d;
+    }
+    else {      
+      return html`<div class="badge badge--warning">${toEquationExpr(d)}</div>`
+    }
+  },
   formatRatio: (d, asPercent) => asPercent ? `${(d * 100).toLocaleString('cs-CZ')}%` : new Fraction(d).toFraction(),
   formatEntity: (d, u) => [u, d].filter(d => d != null).join(" "),
   formatAgent: d => html`<b>${d}</b>`,

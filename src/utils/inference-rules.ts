@@ -1,6 +1,6 @@
 
 import type { Predicate } from "../components/math.js";
-import { cont, ratio, comp, rate, ratios, compRatio, compDiff, sum, lcd, gcd, ctor, inferenceRule, nth, quota, product, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta } from "../components/math.js";
+import { cont, ratio, comp, rate, ratios, compRatio, compDiff, sum, lcd, gcd, ctor, inferenceRule, nth, quota, product, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExpr } from "../components/math.js";
 
 export default function rules() {
 
@@ -81,7 +81,7 @@ export default function rules() {
     aritmeticSequence: [...nthRule(arithmetic, tenthTerm)],
     quadraticSequence: [...nthRule(quadratic, tenthTerm)],
     geometricSequence: [...nthRule(geometric, tenthTerm)],
-
-    unit: [deduceRule(cont("Honzík", 4, "jablek", "kg"), ctorUnit("g")), deduceRule(cont("Ája", 400, "mléka", "cm3"), ctorUnit("l"))]
+    unit: [deduceRule(cont("Honzík", 4, "jablek", "kg"), ctorUnit("g")), deduceRule(cont("Ája", 400, "mléka", "cm3"), ctorUnit("l"))],
+    eval: [deduceRule(cont("poloměr", 4, "délka", "cm"), evalExpr("PI*r^2"))]
   }
 }
