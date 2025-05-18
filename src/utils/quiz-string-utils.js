@@ -1,5 +1,5 @@
-//export const baseDomain = "https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main";
-export const baseDomain = 'https://www.eforms.cz';
+export const baseDomain = "https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main";
+//export const baseDomain = 'https://www.eforms.cz';
 export const baseDomainPublic = `${baseDomain}/public`;
 
 export function formatPdfFileName({ pageSize, columnsCount, orientation }) {
@@ -117,14 +117,26 @@ export function formatVersion({ order, period } = {}) {
   }
   return version;
 }
-
+const auth = import.meta.env?.GH_TOKEN != null ? {
+  Authorization: `Bearer ${import.meta.env.GH_TOKEN}`,  
+} : {}
 export async function text(url) {
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    headers: {
+      'Content-Type': 'text/plain',
+      ...auth,
+    }
+  });
   if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
   return await response.text();
 }
 async function jsonGet(url) {
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    headers: {
+      'content-type': 'application/json',
+      ...auth,
+    }
+  });
   if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
   return await response.json();
 }
@@ -136,7 +148,8 @@ export async function json(url, data) {
   const response = await fetch(url,
     {
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
+        ...auth,
       },
       method: data != null ? "POST" : "GET",
       ...(data && { body: JSON.stringify(data) })
