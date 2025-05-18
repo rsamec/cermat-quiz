@@ -1,4 +1,4 @@
-import { cont, ratio, ctorComplement, comp, transfer, percent, ctorPercent, commonSense } from "../../components/math.js";
+import { cont, ratio, ctorComplement, comp, transfer, percent, ctorPercent, commonSense, ctorOption } from "../../components/math.js";
 import { deduce, axiomInput, to } from "../../utils/deduce-utils.js";
 
 
@@ -16,8 +16,11 @@ export function objemNadoby1({ input }: {
 
 
   const deductionTree = deduce(
-    deduce(percentage, ctorComplement("zbytek")),
-    part,
+    deduce(
+      deduce(percentage, ctorComplement("zbytek")),
+      part,
+    ),
+    ctorOption("C", 35)
   )
 
   return { deductionTree }
@@ -36,14 +39,18 @@ export function objemNadoby2({ input }: {
   const zaplnenoPoOddebrani = axiomInput(ratio("celek", "nově zaplněno", input.zaplnenoPoOdebraniRatio), 3);
   const celek = cont("celek", 100, entityPercent);
 
-  const deductionTree = deduce(deduce(
+  const deductionTree = deduce(
     deduce(
-      percentage,
-      deduce(zaplnenoPoOddebrani, celek),
-    ),
-    odebrano
+      deduce(
+        deduce(
+          percentage,
+          deduce(zaplnenoPoOddebrani, celek),
+        ),
+        odebrano
 
-  ), celek)
+      ), celek),
+    ctorOption("E", 40)
+  )
 
   return { deductionTree }
 }
@@ -64,13 +71,17 @@ export function objemNadoby3({ input }: {
 
   return {
     deductionTree: deduce(
-      to(
-        nadoba1,
-        commonSense(""),
-        nadoba2,
-        deduce(prumer, ctorPercent()),
-        transfer("nádoba 3", "nádoba 1", 10, entityPercent),
-        percent("nádoba celkem", "nádoba 3", 50)
-      ), nadoba3)
+      deduce(
+        to(
+          nadoba1,
+          commonSense(""),
+          nadoba2,
+          deduce(prumer, ctorPercent()),
+          transfer("nádoba 3", "nádoba 1", 10, entityPercent),
+          percent("nádoba celkem", "nádoba 3", 50)
+        ),
+        nadoba3),
+      ctorOption("D", 38)
+    )
   }
 }

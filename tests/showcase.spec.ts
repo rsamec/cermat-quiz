@@ -12,8 +12,10 @@ test.use({
   viewport: { width: 3200, height: 1200 },
   colorScheme
 })
+
+
 for (const { subject, color } of variants) {
-  
+
   test(`cards ${subject} ${color}`, async ({ page }) => {
 
     await page.goto(getTestUrl(`quiz-sel-${subject}`));
@@ -44,11 +46,11 @@ for (const { subject, color } of variants) {
 
     await page.getByText("Filtrování úloh", { selector: "details > summary" }).click();
     await page.getByText("Možnosti zobrazení", { selector: "details > summary" }).click();
-    
+
     //await page.getByLabel('Rok').selectOption("2024");
 
-    
-    
+
+
     await page.getByLabel('Sloupce').click();
     await page.getByRole('button', { name: color }).click();
     await page.getByLabel("Formulář").uncheck();
@@ -68,7 +70,7 @@ for (const { subject, color } of variants) {
   });
 }
 
-for (const { subject, color } of variants.filter(d => d.subject.split('-')[0]== "math")) {
+for (const { subject, color } of variants.filter(d => d.subject.split('-')[0] == "math")) {
   //test.use({ ...scope, colorScheme: colorScheme })
   test(`cards-grid ${subject} ${color}`, async ({ page }) => {
     await page.goto(getTestUrl(`quiz-sel-${subject}`));

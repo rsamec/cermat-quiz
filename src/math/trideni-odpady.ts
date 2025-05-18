@@ -1,4 +1,4 @@
-import { cont, ctor, sum } from "../components/math";
+import { cont, ctor, ctorBooleanOption, ctorOption, sum } from "../components/math";
 import { deduce } from "../utils/deduce-utils";
 
 export const trideni_odpadu = () => {
@@ -23,45 +23,67 @@ export const trideni_odpadu = () => {
     cont(oddilT, 1, entityPapir),
     sum(`papír všechny oddíly`, [], entityVaha, entityPlast)
   )
+  const plast = deduce(
+    deduce(
+      cont(oddilT, 9, entityPlast),
+      cont(oddilS, 11, entityPlast),
+      sum(`oddíl S a T`, [], entityPlast, entityPlast)
+    ),
+    cont(oddilR, 15, entityPlast),
+    ctor('comp-ratio')
+  );
 
   return {
     papirStoR: {
       deductionTree: deduce(
-        cont(oddilS, 8, entityPapir),
-        cont(oddilR, 6, entityPapir),
-        ctor('comp-ratio')
+        deduce(
+          cont(oddilS, 8, entityPapir),
+          cont(oddilR, 6, entityPapir),
+          ctor('comp-ratio')
+        ),
+        ctorBooleanOption(1 / 4)
       )
     },
     papirRtoS: {
       deductionTree: deduce(
-        cont(oddilR, 6, entityPapir),
-        cont(oddilS, 8, entityPapir),
-        ctor('comp-ratio')
+        deduce(
+          cont(oddilR, 6, entityPapir),
+          cont(oddilS, 8, entityPapir),
+          ctor('comp-ratio')
+        ),
+        ctorOption('C', 1 / 4)
       )
     },
-    plast: {
+    plast1: {
       deductionTree: deduce(
-        deduce(
-          cont(oddilT, 9, entityPlast),
-          cont(oddilS, 11, entityPlast),
-          sum(`oddíl S a T`, [], entityPlast, entityPlast)
-        ),
-        cont(oddilR, 15, entityPlast),
-        ctor('comp-ratio')
+        plast,
+        ctorOption("D", 1 / 3)
+      )
+    },
+    plast2: {
+      deductionTree: deduce(
+        plast,
+        ctorBooleanOption(1 / 3)
       )
     },
     kovyToPapir: {
       deductionTree: deduce(
-        kovyCelkem,
-        papirCelkem,
-        ctor('comp-ratio')
+        deduce(
+          kovyCelkem,
+          papirCelkem,
+          ctor('comp-ratio')
+        ),
+        ctorBooleanOption(1 / 2)
       )
     },
     papirToKovy: {
       deductionTree: deduce(
-        papirCelkem,
-        kovyCelkem,
-        ctor('comp-ratio')
+        deduce(
+          papirCelkem,
+          kovyCelkem,
+          ctor('comp-ratio')
+        ),
+        ctorOption("E", 1 / 2)
       )
     }
   }

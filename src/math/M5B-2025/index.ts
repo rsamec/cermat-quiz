@@ -1,5 +1,5 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, product, rate, ratio, ratios, sum } from "../../components/math";
-import { deduce, last, to, toCont } from "../../utils/deduce-utils";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorOption, ctorRatios, nthPart, product, rate, ratio, ratios, sum } from "../../components/math";
+import { deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default {
   1.1: hledaneCisla().cislo1,
@@ -68,9 +68,9 @@ function hledaneCisla() {
         commonSense("abychom zachovali součet a zároveň vzniknul požadovaný rozdíl"),
         rozdil,
         commonSense("první neznámé číslo zvýšíme o polovinu rozdílu"),
-        cont("první neznámé číslo", last(soucet).quantity + last(rozdil).quantity, entity),
+        cont("první neznámé číslo", lastQuantity(soucet) + lastQuantity(rozdil), entity),
         commonSense("druhé neznámé číslo snížíme o polovinu rozdílu"),
-        cont("druhé neznámé číslo", last(soucet).quantity - last(rozdil).quantity, entity),
+        cont("druhé neznámé číslo", lastQuantity(soucet) - lastQuantity(rozdil), entity),
       )
     }
   }
@@ -127,7 +127,7 @@ function koralky() {
           colorQuota,
           commonSense("každá skupina obsahuje 1 bílý"),
           commonSense("zbytek obsahuje 1 bílý"),
-          cont("bílé", last(colorQuota).quantity + 1, entity),
+          cont("bílé", lastQuantity(colorQuota) + 1, entity),
         ),
         ctorDifference("černé")
       )
@@ -199,36 +199,42 @@ function zahon() {
 
   return {
     yellow: {
-      deductionTree: to(
-        deduce(
-          to(
-            deduce(
+      deductionTree: deduce(
+        to(
+          deduce(
+            to(
               deduce(
-                celkem,
-                rohove,
-                ctorDifference("záhon")
+                deduce(
+                  celkem,
+                  rohove,
+                  ctorDifference("záhon")
+                ),
+                strany,
+                ctor("rate")
               ),
-              strany,
-              ctor("rate")
+              commonSense("2 z těchto rostli jsou fialové a zároveň jsou na každé straně 2 rohové"),
+              cont("po obvodu ke každé straně", 12, entityYellow)
             ),
-            commonSense("2 z těchto rostli jsou fialové a zároveň jsou na každé straně 2 rohové"),
-            cont("po obvodu ke každé straně", 12, entityYellow)
+            subZahon,
+            ctor("rate")
           ),
-          subZahon,
-          ctor("rate")
+          commonSense("vzor žluté -> 1 + 2 + 3 + 4 = 10"),
+          cont("záhon", 10, entityYellow)
         ),
-        commonSense("vzor žluté -> 1 + 2 + 3 + 4 = 10"),
-        cont("záhon", 10, entityYellow)
+        ctorOption("C", 10)
       )
     },
     velvet: {
       deductionTree: deduce(
-        to(
-          commonSense("vzor žluté -> 1 + 2 + 3 + 4 = 10"),
-          commonSense("vzor fialové -> 1 + 2 + 3 + 4 + 5 = 15"),
-          rate("záhon", 15, entityVelvet, entityBase)
+        deduce(
+          to(
+            commonSense("vzor žluté -> 1 + 2 + 3 + 4 = 10"),
+            commonSense("vzor fialové -> 1 + 2 + 3 + 4 + 5 = 15"),
+            rate("záhon", 15, entityVelvet, entityBase)
+          ),
+          cont("záhon", 3, entityBase)
         ),
-        cont("záhon", 3, entityBase)
+        ctorOption("B", 45)
       )
     }
   }
@@ -255,7 +261,7 @@ function ctverce() {
   const matchSiteLabel3 = "strana 2. obrazce = 6 tmavě šedé čtverce"
   const tempMatchSiteLabel3 = "kratší strany 3. obrazce  = 5 světle šedé čtverce"
 
-  
+
 
   const strana1 = toCont(deduce(
     obvod1,
@@ -300,7 +306,6 @@ function ctverce() {
     },
     obrazecWidthToLength: {
       deductionTree: deduce(
-        width3,
         deduce(
           last(strana2),
           deduce(
@@ -309,7 +314,8 @@ function ctverce() {
             ctor('rate')
           ),
           sum("delší strana 3. obrazce", [], { entity, unit }, { entity, unit })
-        )
+        ),
+        width3
       )
     }
   }

@@ -1,5 +1,5 @@
 import { comp, cont, ctor, ctorComplement, ctorLinearEquation, ctorUnit, product, quota, rate, ratio, sum } from "../../components/math.js";
-import { deduce, last, to, toCont } from "../../utils/deduce-utils.js";
+import { deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils.js";
 
 
 export default {
@@ -87,7 +87,7 @@ function spotrebaPaliva() {
           ),
           to(
             powerPrice,
-            rate(power, last(powerPrice).quantity, entityPrice, { entity, unit })
+            rate(power, lastQuantity(powerPrice), entityPrice, { entity, unit })
           )
         )
     },
@@ -101,7 +101,7 @@ function spotrebaPaliva() {
           ),
           to(
             powerPrice,
-            rate(power, last(powerPrice).quantity, entityPrice, { entity, unit })
+            rate(power, lastQuantity(powerPrice), entityPrice, { entity, unit })
           )
         ),
         deduce(

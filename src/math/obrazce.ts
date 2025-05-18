@@ -1,5 +1,5 @@
 import { cont, sum, ctor, commonSense, ratios, rate } from "../components/math"
-import { deduce, to, last } from "../utils/deduce-utils"
+import { deduce, to, last, lastQuantity } from "../utils/deduce-utils"
 
 export const obrazce = () => {
   const entityRow = "řádků"
@@ -24,7 +24,7 @@ export const obrazce = () => {
       deductionTree: to(
         dd1,
         commonSense("horní řada tmavých čtverčků bez krajních sloupců rozšířeného obrazce odpovídá počtu sloupců základního obrazce"),
-        cont(base, last(dd1).quantity, entityColumn)
+        cont(base, lastQuantity(dd1), entityColumn)
       )
     },
     {

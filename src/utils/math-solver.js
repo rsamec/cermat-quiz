@@ -1631,6 +1631,12 @@ parser.functions.gcd = function(...args) {
 parser.functions.lcd = function(...args) {
   return lcdCalc(args);
 };
+var eps = 1e-3;
+parser.functions.closeTo = function(value, center) {
+  const start = center - eps;
+  const end = center + eps;
+  return start <= value && value <= end;
+};
 function gcdCalc(numbers) {
   let num = 2, res = 1;
   while (num <= Math.min(...numbers)) {

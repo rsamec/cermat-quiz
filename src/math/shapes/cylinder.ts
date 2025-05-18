@@ -1,5 +1,5 @@
 
-import { cont, type Container, pi, product, ratio, sum } from "../../components/math.js";
+import { cont, type Container, pi, piNumber, product, ratio, sum } from "../../components/math.js";
 import { axiomInput, connectTo, deduce, last, type TreeNode } from "../../utils/deduce-utils.js";
 import { volume } from "./rectangle.js";
 
@@ -58,7 +58,7 @@ export function baseCircumference(
   }
 
   return deduce(
-    cont("2 * PI", 2 * pi().quantity, ""),
+    cont("2 * PI", 2 * piNumber(), ""),
     radius,
     product(baseCircumferenceLabel, ["2 * PI", radiusLabel], radius.entity, radius.entity)
   )

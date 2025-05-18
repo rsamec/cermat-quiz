@@ -1,4 +1,4 @@
-import { commonSense, cont, ctor, lcd, primeFactorization, product, rate, sum } from "../../components/math";
+import { commonSense, cont, ctor, ctorBooleanOption, ctorExpressionOption, ctorOption, evalExpr, lcd, primeFactorization, product, rate, sum } from "../../components/math";
 import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
@@ -56,7 +56,7 @@ export default {
   11: stavebnice().cube,
   12: stavebnice().minimalCube,
   13.1: trideni_odpadu().papirRtoS,
-  13.2: trideni_odpadu().plast,
+  13.2: trideni_odpadu().plast1,
   13.3: trideni_odpadu().papirToKovy,
   14.1: obrazce()[0],
   14.2: obrazce()[1],
@@ -171,40 +171,49 @@ function desitiuhelnik() {
   return {
     whiteTriangle: {
       deductionTree: deduce(
-        whiteTriangleSize,
-        cont("počet stran trojúhelníku", 3, ""),
-        product("obvod", [], entity, entity)
+        deduce(
+          whiteTriangleSize,
+          cont("počet stran trojúhelníku", 3, ""),
+          product("obvod", [], entity, entity)
+        ),
+        ctorBooleanOption(12)
       )
     },
     grayRectangle: {
       deductionTree: deduce(
         deduce(
-          to(
-            last(whiteTriangleSize),
-            commonSense("strana bíleho trojúhelníku odpovídá výška šedého obdelníku"),
-            cont("výška šedého obdelníku", 8, entity)
+          deduce(
+            to(
+              last(whiteTriangleSize),
+              commonSense("strana bíleho trojúhelníku odpovídá výška šedého obdelníku"),
+              cont("výška šedého obdelníku", 8, entity)
+            ),
+            cont("počet", 2, ""),
+            product("horní a dolní strana", [], entity, entity)
           ),
-          cont("počet", 2, ""),
-          product("horní a dolní strana", [], entity, entity)
+          deduce(
+            rectangleWidth,
+            cont("počet", 2, ""),
+            product("levá a pravá strana", [], entity, entity)
+          ),
+          sum("obvod", [], entity, entity)
         ),
-        deduce(
-          rectangleWidth,
-          cont("počet", 2, ""),
-          product("levá a pravá strana", [], entity, entity)
-        ),
-        sum("obvod", [], entity, entity)
+        ctorBooleanOption(56)
       )
     },
     grayTriangle: {
       deductionTree: deduce(
-        triangleHeight,
-        triangleWidth,
         deduce(
-          last(triangleWidth),
-          last(squareSize),
-          ctor('comp-diff')
+          triangleHeight,
+          triangleWidth,
+          deduce(
+            last(triangleWidth),
+            last(squareSize),
+            ctor('comp-diff')
+          ),
+          sum("obvod", [], entity, entity)
         ),
-        sum("obvod", [], entity, entity)
+        ctorBooleanOption(50, "greater")
       )
     }
   }
@@ -233,35 +242,41 @@ function stavebnice() {
     cube: {
       deductionTree: deduce(
         deduce(
-          inputCube.length,
-          inputCube.width,
-          inputCube.height,
-          product("objem", [], "cm3", entity)
+          deduce(
+            inputCube.length,
+            inputCube.width,
+            inputCube.height,
+            product("objem", [], "cm3", entity)
+          ),
+          deduce(
+            base.length,
+            base.width,
+            base.height,
+            product("objem", [], "cm3", entity)
+          ),
+          ctor("rate")
         ),
-        deduce(
-          base.length,
-          base.width,
-          base.height,
-          product("objem", [], "cm3", entity)
-        ),
-        ctor("rate")
+        ctorOption("C", 16)
       )
     },
     minimalCube: {
       deductionTree: deduce(
         deduce(
-          minimalSize,
-          last(minimalSize),
-          last(minimalSize),
-          product("objem", [], "cm3", entity)
+          deduce(
+            minimalSize,
+            last(minimalSize),
+            last(minimalSize),
+            product("objem", [], "cm3", entity)
+          ),
+          deduce(
+            base.length,
+            base.width,
+            base.height,
+            product("objem", [], "cm3", entity)
+          ),
+          ctor("rate")
         ),
-        deduce(
-          base.length,
-          base.width,
-          base.height,
-          product("objem", [], "cm3", entity)
-        ),
-        ctor("rate")
+        ctorOption("D", 18)
       )
     }
 

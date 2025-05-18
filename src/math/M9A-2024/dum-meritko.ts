@@ -1,5 +1,5 @@
 
-import { commonSense, cont, ctor, ctorRatios, ctorUnit, gcd, nthPart, type PartToPartRatio, product, ratios } from "../../components/math.js";
+import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, ctorRatios, ctorUnit, gcd, nthPart, type PartToPartRatio, product, ratios } from "../../components/math.js";
 import { axiomInput, deduce, deduceLbl, last, to } from "../../utils/deduce-utils.js";
 import { plnaKrabice } from "../M9I-2025/krabice.js";
 
@@ -76,8 +76,8 @@ export default function build({ input }: {
     <strong>Obsah obdélníku na plánu a obsah půdorysu domu jsou v poměru 1:100.</strong>`;
 
   return [
-    { deductionTree: meritko, template: highlight => highlight`${() => templateBase(highlight)}${template1}` },
-    { deductionTree: dTree2, template: highlight => highlight`${() => templateBase(highlight)}${template2}` },
-    { deductionTree: dTree3, template: highlight => highlight`${() => templateBase(highlight)}${template3}` }
+    { deductionTree: deduce(meritko, ctorBooleanOption(1_000)), template: highlight => highlight`${() => templateBase(highlight)}${template1}` },
+    { deductionTree: deduce(deduce(dTree2, ctorUnit("m")), ctorBooleanOption(20)), template: highlight => highlight`${() => templateBase(highlight)}${template2}` },
+    { deductionTree: deduce(dTree3, ctorBooleanOption(100)), template: highlight => highlight`${() => templateBase(highlight)}${template3}` }
   ]
 }

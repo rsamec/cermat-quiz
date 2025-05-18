@@ -1,6 +1,6 @@
 
-import { commonSense, compRatio, cont, product, sum, type Container } from "../../components/math.js";
-import { axiomInput, deduce, last, to } from "../../utils/deduce-utils.js";
+import { commonSense, compRatio, cont, ctorRound, product, sum, type Container } from "../../components/math.js";
+import { axiomInput, deduce, last, lastQuantity, to } from "../../utils/deduce-utils.js";
 import { baseCircumference, surfaceBaseArea } from "../shapes/cylinder.js"
 
 
@@ -17,7 +17,7 @@ export default function build({ input }: {
   const baseCircleLabel = "obvod kruhu";
   const circelPartLabel = "bílá čtvrtkružnice";
   const rectangleLabel = "celý obdelník";
-  const reactangleHeight = `${rectangleLabel} výška`;  
+  const reactangleHeight = `${rectangleLabel} výška`;
   const entity = "cm"
   const entity2d = "cm čtverečních"
 
@@ -40,7 +40,7 @@ export default function build({ input }: {
       to(
         dRadius,
         commonSense(`${radiusLabel} = ${reactangleHeight}`),
-        cont(reactangleHeight, (dRadius.children[2] as Container).quantity, entity)),
+        cont(reactangleHeight, lastQuantity(dRadius), entity)),
       product(`${rectangleLabel} obsah`, [], entity2d, entity)
     ),
     deduce(
@@ -59,10 +59,13 @@ export default function build({ input }: {
 
   const obvodCvrtkruh = deduce(obvod, compRatio(baseCircleLabel, circelPartLabel, 4));
   const dd2 = deduce(
-    obvodCvrtkruh,
-    last(obvodCvrtkruh),
-    width,
-    sum(`obvod šedého obrazce`, [circelPartLabel, circelPartLabel, 'šířka' ], entity, entity)
+    deduce(
+      obvodCvrtkruh,
+      last(obvodCvrtkruh),
+      width,
+      sum(`obvod šedého obrazce`, [circelPartLabel, circelPartLabel, 'šířka'], entity, entity)
+    ),
+    ctorRound()
   )
 
   return [{ deductionTree: dd1 }, { deductionTree: dd2 }]

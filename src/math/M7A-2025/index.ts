@@ -1,4 +1,4 @@
-import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorUnit, percent, rate, ratio, ratios, sum, transfer } from "../../components/math"
+import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, percent, rate, ratio, ratios, sum, transfer } from "../../components/math"
 import { deduce, last, to } from "../../utils/deduce-utils"
 
 export default {
@@ -187,15 +187,21 @@ function cestaKeStudance() {
   return {
     meritko: {
       deductionTree: deduce(
-        trasaSkutecnost,
-        deduce(matyasTrasaPlan, ctorUnit("cm")),
-        ctor('rate')
+        deduce(
+          trasaSkutecnost,
+          deduce(matyasTrasaPlan, ctorUnit("cm")),
+          ctor('rate')
+        ),
+        ctorOption("C", 75_000)
       )
     },
     delkaTrasa: {
       deductionTree: deduce(
-        last(trasaSkutecnost),
-        ctorUnit("km")
+        deduce(
+          last(trasaSkutecnost),
+          ctorUnit("km")
+        ),
+        ctorOption("A", 2.1)
       )
     }
   }
@@ -213,14 +219,17 @@ function tornado() {
       deduce(
         deduce(
           deduce(
-            poskozenoRate,
-            ctorComplement(neposkozenoLabel)
+            deduce(
+              poskozenoRate,
+              ctorComplement(neposkozenoLabel)
+            ),
+            domuBezeSkod,
           ),
-          domuBezeSkod,
+          poskozenoRate
         ),
-        poskozenoRate
+        percent(poskozenoLabel, "demolice", 30)
       ),
-      percent(poskozenoLabel, "demolice", 30)
+      ctorOption("B", 54)
     )
   }
 }

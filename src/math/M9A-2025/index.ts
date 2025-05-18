@@ -1,5 +1,5 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, product, quota, rate, ratio, ratios, sum, ctorPercent, percent, compAngle, compPercent, ctorLinearEquation } from "../../components/math";
-import { deduce, last, to, toCont } from "../../utils/deduce-utils";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, product, quota, rate, ratio, ratios, sum, ctorPercent, percent, compAngle, compPercent, ctorLinearEquation, ctorOption, ctorExpressionOption } from "../../components/math";
+import { deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default {
   //1: porovnani(),
@@ -119,7 +119,7 @@ function sud() {
       deductionTree: deduce(
         to(
           vzestupHladiny,
-          cont("vzestup hladiny", last(vzestupHladiny).quantity, entity, unit),
+          cont("vzestup hladiny", lastQuantity(vzestupHladiny), entity, unit),
         ),
         ctorUnit("mm"))
     }
@@ -167,7 +167,8 @@ function zahon() {
   const unit1d = "cm";
 
   const entity = "počet";
-  const pocetRostlin = cont("rostliny", 65, entity);
+  const pocetRostlinQuantity = 65;
+  const pocetRostlin = cont("rostliny", pocetRostlinQuantity, entity);
   const rozestup = rate("rostliny", 40, { entity: entity1d, unit: unit1d }, entity);
 
 
@@ -208,7 +209,7 @@ function zahon() {
           deduce(
             to(
               pocetRostlin,
-              commonSense(`rozklad na prvočísla:${primeFactorization([pocetRostlin.quantity]).join(",")}`),
+              commonSense(`rozklad na prvočísla:${primeFactorization([pocetRostlinQuantity]).join(",")}`),
               commonSense(`kombinace 5x13 nebo 13x5, vybereme větší počet opakování, aby jsme docílili menšího počtu červených růží`),
               quota("rostliny", "skupina dohromady bílé a červené rostliny", 13)
             ),
@@ -240,21 +241,24 @@ function bazen() {
   return {
     deductionTree: deduce(
       deduce(
-        delka,
-        sirka,
-        vyska,
-        product(agentLabel, [], { entity: entity3d, unit: unit3d }, { entity, unit })
-      ),
-      deduce(
         deduce(
-          cont(zonaLabel, 20, "délka", unit),
-          cont(zonaLabel, 1, "výška", unit),
+          delka,
           sirka,
-          product(zonaLabel, [], { entity: entity3d, unit: unit3d }, { entity, unit })
+          vyska,
+          product(agentLabel, [], { entity: entity3d, unit: unit3d }, { entity, unit })
         ),
-        ratio(zonaLabel, dnoLabel, 1 / 2)
+        deduce(
+          deduce(
+            cont(zonaLabel, 20, "délka", unit),
+            cont(zonaLabel, 1, "výška", unit),
+            sirka,
+            product(zonaLabel, [], { entity: entity3d, unit: unit3d }, { entity, unit })
+          ),
+          ratio(zonaLabel, dnoLabel, 1 / 2)
+        ),
+        sum("bazén celkem", [], { entity: entity3d, unit: unit3d }, { entity: entity3d, unit: unit3d })
       ),
-      sum("bazén celkem", [], { entity: entity3d, unit: unit3d }, { entity: entity3d, unit: unit3d })
+      ctorOption("A", 500)
     )
   }
 }
@@ -266,18 +270,25 @@ function pelhrimov() {
   const pocet = cont("tábor nabízeno", 2, entityBase)
   return {
     deductionTree: deduce(
-      deduce(deduce(
+      deduce(
+        prihlasek,
         deduce(
-          ratio("tábor nabízeno", "přihlášeno 1. termín", 6 / 5),
-          percent("tábor nabízeno", "přihlášeno 2. termín", 130),
-          sum("tábor přihlášeno", [], "", "")
+          deduce(deduce(
+            deduce(
+              ratio("tábor nabízeno", "přihlášeno 1. termín", 6 / 5),
+              percent("tábor nabízeno", "přihlášeno 2. termín", 130),
+              sum("tábor přihlášeno", [], "", "")
+            ),
+            prihlasek
+          ),
+            cont("tábor nabízeno", 1, entityBase),
+            ctor('rate')
+          ),
+          pocet
         ),
-        prihlasek
+        ctorDifference("odmítnuto")
       ),
-        cont("tábor nabízeno", 1, entityBase),
-        ctor('rate')
-      ),
-      pocet
+      ctorOption("B", 75)
     )
   }
 }
@@ -289,16 +300,19 @@ function organizatoriPercent() {
   const celkem = cont("nastoupilo", 200, entity);
   return {
     deductionTree: deduce(
-      toCont(deduce(
+      deduce(
+        toCont(deduce(
+          celkem,
+          deduce(
+            cont("hráči", 10, entityBase),
+            rate("hráči", 11, entity, entityBase),
+          ),
+          ctorDifference("organizátoři")
+        ), { agent: 'organizátoři' }),
         celkem,
-        deduce(
-          cont("hráči", 10, entityBase),
-          rate("hráči", 11, entity, entityBase),
-        ),
-        ctorDifference("organizátoři")
-      ), { agent: 'organizátoři' }),
-      celkem,
-      ctorPercent(),
+        ctorPercent(),
+      ),
+      ctorOption("B", 45, {asPercent:true})
     )
   }
 }
@@ -323,16 +337,19 @@ function znamkyPrumer() {
     deductionTree: deduce(
       deduce(
         deduce(
-          pocetJednicek,
-          deduce(pocetDvojek, cont("dvojka", 2, entity), product("dvojka", [], entity, entity)),
-          deduce(pocetTrojekk, cont("trojka", 3, entity), product("trojka", [], entity, entity)),
-          sum("celkem", [], entity, entity)
+          deduce(
+            pocetJednicek,
+            deduce(pocetDvojek, cont("dvojka", 2, entity), product("dvojka", [], entity, entity)),
+            deduce(pocetTrojekk, cont("trojka", 3, entity), product("trojka", [], entity, entity)),
+            sum("celkem", [], entity, entity)
+          ),
+          pocetCelkem,
+          ctor("rate")
         ),
-        pocetCelkem,
-        ctor("rate")
+        rate("aritmetický průměr", 1.8, entity, entityPocet),
+        ctorLinearEquation("jednička", { entity: entityPocet }, "x")
       ),
-      rate("aritmetický průměr", 1.8, entity, entityPocet),
-      ctorLinearEquation("jednička", { entity: entityPocet }, "x")
+      ctorOption("D", 8)
     )
   }
 }
@@ -356,21 +373,24 @@ function soutez() {
     deductionTree: deduce(
       deduce(
         deduce(
-          ratiosDruzstva,
-          druzstva,
-          nthPart(viceMuzuLabel),
-        ),
-        deduce(
           deduce(
-            last(ratiosDruzstva),
+            ratiosDruzstva,
             druzstva,
-            nthPart(viceZenLabel),
+            nthPart(viceMuzuLabel),
           ),
-          rate(viceZenLabel, 2, entity, entityBase)),
-        sum(women, [], entity, entity)
+          deduce(
+            deduce(
+              last(ratiosDruzstva),
+              druzstva,
+              nthPart(viceZenLabel),
+            ),
+            rate(viceZenLabel, 2, entity, entityBase)),
+          sum(women, [], entity, entity)
+        ),
+        deduce(druzstva, rate("celkem", 3, entity, entityBase)),
+        ctorPercent()
       ),
-      deduce(druzstva, rate("celkem", 3, entity, entityBase)),
-      ctorPercent()
+      ctorOption("E", 60, {asPercent:true})
     )
   }
 }
@@ -387,14 +407,17 @@ function atletika() {
   )
   return {
     deductionTree: deduce(
-      beh,
       deduce(
-        ostep,
-        last(skok),
-        last(beh),
-        sum("celkem", [], entity, entity)
+        beh,
+        deduce(
+          ostep,
+          last(skok),
+          last(beh),
+          sum("celkem", [], entity, entity)
+        ),
+        ctorPercent()
       ),
-      ctorPercent()
+      ctorOption("C", 50, {asPercent:true})
     )
   }
 }

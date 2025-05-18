@@ -1,4 +1,4 @@
-import { commonSense, compRatio, cont, product, ratios, sum } from "../../components/math.js";
+import { commonSense, compRatio, cont, ctorOption, product, ratios, sum } from "../../components/math.js";
 import { axiomInput, deduce, last, to } from "../../utils/deduce-utils.js";
 
 export default function example({ input }: {
@@ -30,13 +30,16 @@ export default function example({ input }: {
 
   const deductionTree = deduce(
     deduce(
-      rameno,
-      ramenoCount,
-      product("obvod obrazce (ramena)", ["délka ramena", "počet stran"], entity, entity)
+      deduce(
+        rameno,
+        ramenoCount,
+        product("obvod obrazce (ramena)", ["délka ramena", "počet stran"], entity, entity)
+      ),
+      deduce(
+        zakladna, zakladnaCount, product("obvod obrazce (zakladny)", ["délka základny", "počet stran"], entity, entity)),
+      sum("obvod obrazce", [], entity, entity)
     ),
-    deduce(
-      zakladna, zakladnaCount, product("obvod obrazce (zakladny)", ["délka základny", "počet stran"], entity, entity)),
-    sum("obvod obrazce", [], entity, entity)
+    ctorOption("C", 66)
   )
 
 

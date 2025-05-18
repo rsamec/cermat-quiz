@@ -1,5 +1,5 @@
 import { cont, Container, ctor } from "../components/math";
-import { deduce, to, last } from "../utils/deduce-utils";
+import { deduce, to, last, lastQuantity } from "../utils/deduce-utils";
 
 
 export function cislaNaOse({ mensi, vetsi, pocetUseku }: { mensi: Container, vetsi: Container, pocetUseku: Container }) {
@@ -13,7 +13,7 @@ export function cislaNaOse({ mensi, vetsi, pocetUseku }: { mensi: Container, vet
   const usekRate = deduce(
     to(
       rozdil,
-      cont('vzdálenost mezi zadanými čísly', last(rozdil).quantity, entityLength)
+      cont('vzdálenost mezi zadanými čísly', lastQuantity(rozdil), entityLength)
     ),
     pocetUseku,
     ctor("rate")

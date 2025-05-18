@@ -1,5 +1,5 @@
-import { commonSense, cont, primeFactorization, quota, ratio, sum } from "../../components/math.js";
-import { axiomInput, connectTo, deduce, deduceLbl, last, to } from "../../utils/deduce-utils.js";
+import { commonSense, cont, ctorOption, primeFactorization, quota, ratio, sum } from "../../components/math.js";
+import { axiomInput, connectTo, deduce, deduceLbl, last, lastQuantity, to } from "../../utils/deduce-utils.js";
 import { volume } from "../shapes/rectangle.js";
 
 
@@ -23,15 +23,18 @@ export function domecek({ input }: { input: InputParameters }) {
 
   const strana = to(
     ctverec,
-    commonSense(`rozklad na prvočísla:${primeFactorization([last(ctverec).quantity]).join(",")}`),
+    commonSense(`rozklad na prvočísla:${primeFactorization([lastQuantity(ctverec)]).join(",")}`),
     cont("šířka", 2, entity)
   );
 
-  const rectangleVolume = connectTo(volume({ width: last(strana), height: cont("výška", 2, entity), length: cont("délka", 8, entity) }, {volumeLabel:"objem přízemí"}), strana);
+  const rectangleVolume = connectTo(volume({ width: last(strana), height: cont("výška", 2, entity), length: cont("délka", 8, entity) }, { volumeLabel: "objem přízemí" }), strana);
   const deductionTree = deduce(
-    rectangleVolume,
-    deduce({ ...last(rectangleVolume), ...deduceLbl(3) }, ratio("objem přízemí", "objem střecha", 1 / 2)),
-    sum("objem domeček", [], entity3d, entity)
+    deduce(
+      rectangleVolume,
+      deduce({ ...last(rectangleVolume), ...deduceLbl(3) }, ratio("objem přízemí", "objem střecha", 1 / 2)),
+      sum("objem domeček", [], entity3d, entity)
+    ),
+    ctorOption("B", 48)
   )
 
 

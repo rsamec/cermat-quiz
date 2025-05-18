@@ -1,5 +1,5 @@
 import { compDiff, cont, ctor } from "../../components/math.js";
-import { axiomInput, deduce, deduceLbl, last, to } from "../../utils/deduce-utils.js";
+import { axiomInput, deduce, deduceLbl, last, lastQuantity, to } from "../../utils/deduce-utils.js";
 
 
 interface InputParameters {
@@ -38,7 +38,7 @@ export function plnaKrabice({ input }: { input: InputParameters }) {
   const deductionTree2 = deduce(
     to(
       rozdilGram,
-      cont(missingVyrobkyLabel, last(rozdilGram).quantity, entity)
+      cont(missingVyrobkyLabel, lastQuantity(rozdilGram), entity)
     ),
     missingVyrobkyPocet,
     ctor("rate")
@@ -47,7 +47,7 @@ export function plnaKrabice({ input }: { input: InputParameters }) {
   const deductionTree3 = deduce(
     to(
       { ...last(deductionTree1), ...deduceLbl(2) },
-      cont(plnaKrabiceLabel, last(deductionTree1).quantity, entity)),
+      cont(plnaKrabiceLabel, lastQuantity(deductionTree1), entity)),
     deduce(
       { ...last(deductionTree2), ...deduceLbl(4) },
       plnaKrabiceVyrobkuPocet),

@@ -1,4 +1,4 @@
-import { commonSense, compRelative, cont, ctor, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorPercent, ctorRatios, gcd, nthPart, PartToPartRatio, percent, product, proportion, rate, ratio, ratios, sum } from "../../components/math"
+import { commonSense, compRelative, cont, ctor, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, gcd, nthPart, PartToPartRatio, percent, product, proportion, rate, ratio, ratios, sum } from "../../components/math"
 import { deduce, last, to, toCont, TreeNode } from "../../utils/deduce-utils"
 
 export default {
@@ -126,21 +126,21 @@ function vodniNadrz() {
       )
     },
     pocetHodin: {
-      deductionTree: 
-      deduce(
+      deductionTree:
         deduce(
           deduce(
             deduce(
-              cont("původně", 4, entityCerpadlo),
-              cont("nově", 2, entityCerpadlo),
-              ctor("comp-ratio")
+              deduce(
+                cont("původně", 4, entityCerpadlo),
+                cont("nově", 2, entityCerpadlo),
+                ctor("comp-ratio")
+              ),
+              proportion(true, [entityCerpadlo, entity])
             ),
-            proportion(true, [entityCerpadlo, entity])
+            cont("původně", 6, entity, unit)
           ),
-          cont("původně", 6, entity, unit)
-        ),
-        ratio("nově", "nově polovina nádrže", 1 / 2)
-      )
+          ratio("nově", "nově polovina nádrže", 1 / 2)
+        )
     }
   }
 }
@@ -226,31 +226,37 @@ function kapesne() {
     utratila: {
       deductionTree: deduce(
         deduce(
-          kapesneRateHelena,
-          cont("přijmy z kapesného", 2, entityBase)
-        ),
-        toCont(
           deduce(
-            ledenPocatekHelena,
-            brezenPocatekHelena,
-            ctorDelta(agentHelena),
-          ), { agent: "změna stavu účtu" }),
-        ctorDifference("utraceno")
+            kapesneRateHelena,
+            cont("přijmy z kapesného", 2, entityBase)
+          ),
+          toCont(
+            deduce(
+              ledenPocatekHelena,
+              brezenPocatekHelena,
+              ctorDelta(agentHelena),
+            ), { agent: "změna stavu účtu" }),
+          ctorDifference("utraceno")
+        ),
+        ctorOption("A", 350)
       )
     },
     usetrila: {
       deductionTree: deduce(
-        toCont(
-          deduce(
-            ledenPocateTereza,
-            dubenPocateTereza,
-            ctorDelta(agentTereza),
-          ), { agent: "ušetřila" }),
         deduce(
-          kapesneRateTereza,
-          cont("přijmy z kapesného", 3, entityBase)
+          toCont(
+            deduce(
+              ledenPocateTereza,
+              dubenPocateTereza,
+              ctorDelta(agentTereza),
+            ), { agent: "ušetřila" }),
+          deduce(
+            kapesneRateTereza,
+            cont("přijmy z kapesného", 3, entityBase)
+          ),
+          ctor('ratio')
         ),
-        ctor('ratio')
+        ctorOption("B", 2 / 3)
       )
     }
   }
@@ -261,9 +267,12 @@ function cislo() {
 
   return {
     deductionTree: deduce(
-      cont("zvětšené číslo", 98, entity),
-      cont("zadané číslo", 56, entity),
-      ctorComparePercent()
+      deduce(
+        cont("zvětšené číslo", 98, entity),
+        cont("zadané číslo", 56, entity),
+        ctorComparePercent()
+      ),
+      ctorOption("F", 75, { asPercent: true })
     )
   }
 }
@@ -286,19 +295,22 @@ function zahradnictvi() {
   return {
     deductionTree: deduce(
       deduce(
-        celkem,
         deduce(
+          celkem,
           deduce(
-            celkem,
-            ratio(celkemLabel, kopretinyLabel, 1 / 4)
+            deduce(
+              celkem,
+              ratio(celkemLabel, kopretinyLabel, 1 / 4)
+            ),
+            hvozdiky,
+            sum("dohromady", [kopretinyLabel, hvozdikyLabel], entity, entity)
           ),
-          hvozdiky,
-          sum("dohromady", [kopretinyLabel, hvozdikyLabel], entity, entity)
+          ctorDifference(astraLabel)
         ),
-        ctorDifference(astraLabel)
+        celkem,
+        ctorPercent()
       ),
-      celkem,
-      ctorPercent()
+      ctorOption("B", 35, { asPercent: true })
     )
   }
 }
@@ -321,13 +333,16 @@ function predstaveni() {
   )
   return {
     deductionTree: deduce(
-      predskolaci,
       deduce(
-        last(deti),
-        dospely,
-        sum("celkem", [detiLabel, dospeliLabel], entity, entity)
+        predskolaci,
+        deduce(
+          last(deti),
+          dospely,
+          sum("celkem", [detiLabel, dospeliLabel], entity, entity)
+        ),
+        ctorPercent()
       ),
-      ctorPercent()
+      ctorOption("C", 36, { asPercent: true })
     )
   }
 }

@@ -1,5 +1,5 @@
 
-import { cont, comp, rate, ctor } from "../../components/math.js";
+import { cont, comp, rate, ctor, ctorOption } from "../../components/math.js";
 import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 interface ZvirataVOhradeParams {
@@ -34,11 +34,14 @@ export default function build({ input }: {
 
   const deductionTree = deduce(
     deduce(
-      deduce(total, perHlava),
-      slepicePlus,
-      ctor('comp-part-eq'),
+      deduce(
+        deduce(total, perHlava),
+        slepicePlus,
+        ctor('comp-part-eq'),
+      ),
+      slepicePlus
     ),
-    slepicePlus
+    ctorOption("E", 21)
   )
 
   const template = highlight => highlight`V ohradě pobíhali králíci a slepice.

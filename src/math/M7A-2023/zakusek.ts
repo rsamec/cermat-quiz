@@ -1,5 +1,5 @@
 
-import { cont, inferenceRule, ratio, sum, compRelative, ctorComplement } from "../../components/math.js";
+import { cont, inferenceRule, ratio, sum, compRelative, ctorComplement, ctorExpressionOption } from "../../components/math.js";
 import { axiomInput, deduce, deduceLbl } from "../../utils/deduce-utils.js";
 
 interface ZakuseParams {
@@ -36,7 +36,7 @@ export default function build({ input }: {
   const dd3 = inferenceRule(dd2, p3Ratio);
 
 
-  const deductionTree =
+  const deductionTree = deduce(
     deduce(
       { ...dd1, ...deduceLbl(2) },
       deduce(
@@ -55,7 +55,9 @@ export default function build({ input }: {
           )
         ),
         oneThird)
-    )
+    ),
+    ctorExpressionOption("A", "x < 12")
+  )
 
 
   const zak2 = dd2.kind === "cont" ? dd2.quantity - input.cena : 0;

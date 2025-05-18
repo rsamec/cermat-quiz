@@ -1,4 +1,4 @@
-import { cont, sum, percent, ctorDifference } from "../../components/math.js";
+import { cont, sum, percent, ctorDifference, ctorOption } from "../../components/math.js";
 import { deduce, axiomInput, last } from "../../utils/deduce-utils.js";
 
 const entity = "Kč";
@@ -20,17 +20,20 @@ export function example3({ input }: {
   const zdrazeniPercent = axiomInput(percent("cena po slevě", "zdraženo", input.percentageNewUp), 3)
 
   const cenaPoSleve = deduce(
-    puvodniCena, 
-    deduce(puvodniCena, zlevneniPercent),        
+    puvodniCena,
+    deduce(puvodniCena, zlevneniPercent),
     ctorDifference("cena po slevě")
   );
   const deductionTree = deduce(
-    cenaPoSleve,
     deduce(
-      last(cenaPoSleve),
-      zdrazeniPercent
+      cenaPoSleve,
+      deduce(
+        last(cenaPoSleve),
+        zdrazeniPercent
+      ),
+      sum("konečná cena", ["cena po slevě", "zdraženo"], entity, entity),
     ),
-    sum("konečná cena", ["cena po slevě", "zdraženo"], entity, entity),
+    ctorOption("E", 19_800)
   )
 
   const template = highlightLabel => highlightLabel`Kolo v obchodě stálo ${input.base.toLocaleString("cs-CZ")} Kč.
@@ -58,11 +61,14 @@ export function example1({ input }: {
 
   const deductionTree = deduce(
     deduce(
-      urok,
-      vypujceno
+      deduce(
+        urok,
+        vypujceno
+      ),
+      vypujceno,
+      sum("vráceno", ["úrok", "vypůjčeno"], entity, entity)
     ),
-    vypujceno,
-    sum("vráceno", ["úrok", "vypůjčeno"], entity, entity)
+    ctorOption("A", 22_700)
   )
 
   return { deductionTree, template }
@@ -86,8 +92,11 @@ export function example2({ input }: {
 
   const vynos = deduce(vynosPercent, vlozeno)
   const deductionTree = deduce(
-    vynos,
-    deduce(danPercent, last(vynos))
+    deduce(
+      vynos,
+      deduce(danPercent, last(vynos))
+    ),
+    ctorOption("C", 21_250)
   )
   return { deductionTree, template }
 }

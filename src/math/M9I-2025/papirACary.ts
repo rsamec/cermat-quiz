@@ -1,4 +1,4 @@
-import { commonSense, compDiff, cont, primeFactorization, sum } from "../../components/math.js";
+import { commonSense, compDiff, cont, ctorOption, primeFactorization, sum } from "../../components/math.js";
 import { axiomInput, deduce, deduceLbl, to } from "../../utils/deduce-utils.js";
 
 
@@ -26,9 +26,12 @@ export function caryNaPapire({ input }: { input: InputParameters }) {
   )
 
   const deductionTree = deduce(
-    deduce(dvojice, diff),
-    deduce({ ...cont(usekLabel, 5, emptyEntity), ...deduceLbl(1) }, diff),
-    sum(`součet čar`, [], emptyEntity, emptyEntity)
+    deduce(
+      deduce(dvojice, diff),
+      deduce({ ...cont(usekLabel, 5, emptyEntity), ...deduceLbl(1) }, diff),
+      sum(`součet čar`, [], emptyEntity, emptyEntity)
+    ),
+    ctorOption("A", 11)
   )
 
 

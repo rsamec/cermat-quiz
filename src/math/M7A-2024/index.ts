@@ -1,5 +1,5 @@
-import { compAngle, compPercent, cont, ctor, ctorUnit, nthPart, percent, ratios, sum } from "../../components/math.js";
-import { axiomInput, deduce, last, to, toCont } from "../../utils/deduce-utils.js";
+import { compAngle, compPercent, cont, ctor, ctorOption, ctorUnit, nthPart, percent, ratios, sum } from "../../components/math.js";
+import { axiomInput, deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils.js";
 import { porovnatAaB, najitMensiCislo } from "./1.js";
 import { porovnatObsahObdelnikACtverec } from "./13.js";
 import { triCislaNaOse } from "./3.js";
@@ -13,7 +13,7 @@ const letniTaborInput = {
     kucharPerZdravotnik: 4,
     vedouciPerKuchar: 2,
     instruktorPerVedouci: 2,
-    ditePerInstruktor: 2
+    ditePerInstruktor: 4
   }
 }
 
@@ -53,8 +53,11 @@ function koupaliste() {
 
   return {
     deductionTree: deduce(
-      axiomInput(percent("koupaliště loni", "koupaliště letos", 80), 1),
-      axiomInput(cont("koupaliště letos", 680, entity), 2)
+      deduce(
+        axiomInput(percent("koupaliště loni", "koupaliště letos", 80), 1),
+        axiomInput(cont("koupaliště letos", 680, entity), 2)
+      ),
+      ctorOption("E", 850)
     )
   }
 }
@@ -64,8 +67,11 @@ function cestovni_kancelar() {
 
   return {
     deductionTree: deduce(
-      axiomInput(cont("červen", 330, entity), 1),
-      axiomInput(compPercent("červen", "červenec", 100 - 40), 2),
+      deduce(
+        axiomInput(cont("červen", 330, entity), 1),
+        axiomInput(compPercent("červen", "červenec", 100 - 40), 2),
+      ),
+      ctorOption("B", 550)
     )
   }
 }
@@ -78,11 +84,14 @@ function pozemek() {
   return {
     deductionTree: deduce(
       deduce(
-        axiomInput(ratios("pozemek měřítko", [mapa, skutecnost], [1, 3_000]), 1),
-        axiomInput(cont(mapa, 15, entity, "cm"), 2),
-        nthPart(skutecnost)
+        deduce(
+          axiomInput(ratios("pozemek měřítko", [mapa, skutecnost], [1, 3_000]), 1),
+          axiomInput(cont(mapa, 15, entity, "cm"), 2),
+          nthPart(skutecnost)
+        ),
+        ctorUnit("m")
       ),
-      ctorUnit("m")
+      ctorOption("A", 450)
     )
   }
 }
@@ -113,7 +122,7 @@ function krouzky() {
   );
 
   const celekPocet = deduce(
-    to(florbalDiff, percent("celek", "florbal", last(florbalDiff).quantity)),
+    to(florbalDiff, percent("celek", "florbal", lastQuantity(florbalDiff))),
     florbalPocet
   );
 
@@ -155,24 +164,27 @@ function angle() {
     deductionTree: deduce(
       deduce(
         deduce(
-          toCont(
-            deduce(
-              triangleSum,
-              deduce(
-                axiomInput(cont(inputAngleLabel, 105, entity), 1),
-                compAngle(inputAngleLabel, `${triangle} u vrcholu C`, 'supplementary')
-              ),
-              ctor('comp-diff'))
-            , { agent: `beta`, }),
           deduce(
-            doubleBeta,
-            cont(`${triangle} u vrcholu B`, 1, betaEntity),
-            sum("beta", [], betaEntity, betaEntity)
-          ),
-          ctor('rate')),
-        last(doubleBeta)
+            toCont(
+              deduce(
+                triangleSum,
+                deduce(
+                  axiomInput(cont(inputAngleLabel, 105, entity), 1),
+                  compAngle(inputAngleLabel, `${triangle} u vrcholu C`, 'supplementary')
+                ),
+                ctor('comp-diff'))
+              , { agent: `beta`, }),
+            deduce(
+              doubleBeta,
+              cont(`${triangle} u vrcholu B`, 1, betaEntity),
+              sum("beta", [], betaEntity, betaEntity)
+            ),
+            ctor('rate')),
+          last(doubleBeta)
+        ),
+        compAngle(`${triangle} u vrcholu A`, 'alfa', 'supplementary')
       ),
-      compAngle(`${triangle} u vrcholu A`, 'alfa', 'supplementary')
+      ctorOption("B", 110)
     )
   }
 }

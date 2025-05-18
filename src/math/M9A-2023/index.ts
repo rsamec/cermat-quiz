@@ -1,4 +1,4 @@
-import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, product, pythagoras, rate, ratio, ratios, sum } from "../../components/math";
+import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, product, pythagoras, rate, ratio, ratios, sum, ctorOption, ctorBooleanOption } from "../../components/math";
 import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 import trojuhelnik from "./trojuhelnik";
@@ -38,7 +38,7 @@ function dobaFilmu({ input }: { input: { celkovaDobaFilmuVHodina: number } }) {
         ctorUnit("min")
       ),
       deduce(
-        compRatio("zbytek do konce filmu", "uplynulo od začátku filmu", 1/2),
+        compRatio("zbytek do konce filmu", "uplynulo od začátku filmu", 1 / 2),
         ctorRatios("film"),
       )
     )
@@ -81,10 +81,13 @@ export function vyrobenoVyrobku() {
   return {
     deductionTree: deduce(
       deduce(
-        cont("vyrobeno 2020", 250, entity),
-        compPercent("vyrobeno 2021", "vyrobeno 2020", 120)
+        deduce(
+          cont("vyrobeno 2020", 250, entity),
+          compPercent("vyrobeno 2021", "vyrobeno 2020", 120)
+        ),
+        compPercent("vyrobeno 2022", "vyrobeno 2021", 120)
       ),
-      compPercent("vyrobeno 2022", "vyrobeno 2021", 120)
+      ctorOption("E", 360)
     )
   }
 }
@@ -94,9 +97,12 @@ export function dovolenaNaKole() {
   const unit = "km"
   return {
     deductionTree: deduce(
-      cont("Roman", 400, entity, unit),
-      compRatio("Roman", "Jana", 5 / 4)
-    ),
+      deduce(
+        cont("Roman", 400, entity, unit),
+        compRatio("Roman", "Jana", 5 / 4)
+      ),
+      ctorOption("C", 320)
+    )
   }
 }
 
@@ -117,10 +123,13 @@ export function propousteniVeFirme() {
   return {
     deductionTree: deduce(
       deduce(
-        comp("nově přijato", "konec krize", 42, entity),
-        compPercent("nově přijato", "konec krize", 125)),
-      compPercent("konec krize", "počátek krize", 60)
-    ),
+        deduce(
+          comp("nově přijato", "konec krize", 42, entity),
+          compPercent("nově přijato", "konec krize", 125)),
+        compPercent("konec krize", "počátek krize", 60)
+      ),
+      ctorOption("A", 280)
+    )
   }
 }
 
@@ -142,10 +151,13 @@ export function povrchValce() {
   return {
     title: 'Povrch válce',
     deductionTree: deduce(
-      podstava,
-      last(podstava),
-      deduce(last(podstava), compRatio("plášť", "podstava", 3)),
-      sum("válec", ["dolní podstava", "horní podstava", "plášť"], entity2d, entity2d)
+      deduce(
+        podstava,
+        last(podstava),
+        deduce(last(podstava), compRatio("plášť", "podstava", 3)),
+        sum("válec", ["dolní podstava", "horní podstava", "plášť"], entity2d, entity2d)
+      ),
+      ctorOption("D", 1570)
     )
   }
 }
@@ -258,25 +270,28 @@ function angleBeta() {
     title: 'Velikost úhlu β',
     deductionTree: deduce(
       deduce(
-        triangleSum,
         deduce(
-          to(
-            cont(`zadaný úhel u vnějšího ${triangle} u vrcholu A`, 4, alfaEntity),
-            compAngle(`zadaný úhel u vnějšího ${triangle} u vrcholu A`, `vnitřní ${triangle} u vrcholu A`, 'corresponding'),
-            alfaA,
+          triangleSum,
+          deduce(
+            to(
+              cont(`zadaný úhel u vnějšího ${triangle} u vrcholu A`, 4, alfaEntity),
+              compAngle(`zadaný úhel u vnějšího ${triangle} u vrcholu A`, `vnitřní ${triangle} u vrcholu A`, 'corresponding'),
+              alfaA,
+            ),
+            cont(`zadaný úhel vnitřní ${triangle} u vrcholu B`, 4, alfaEntity),
+            to(
+              cont(`zadaný úhel u ${triangle} u vrcholu C`, 2, alfaEntity),
+              compAngle(`zadaný úhel u ${triangle} u vrcholu C`, `vnitřní ${triangle} u vrcholu A`, 'opposite'),
+              cont(`vnitřní ${triangle} u vrcholu C`, 2, alfaEntity),
+            ),
+            ctorRatios(triangleSumLabel)
           ),
-          cont(`zadaný úhel vnitřní ${triangle} u vrcholu B`, 4, alfaEntity),
-          to(
-            cont(`zadaný úhel u ${triangle} u vrcholu C`, 2, alfaEntity),
-            compAngle(`zadaný úhel u ${triangle} u vrcholu C`, `vnitřní ${triangle} u vrcholu A`, 'opposite'),
-            cont(`vnitřní ${triangle} u vrcholu C`, 2, alfaEntity),
-          ),
-          ctorRatios(triangleSumLabel)
+          alfaA,
+          nthPart(`vnitřní ${triangle} u vrcholu A`)
         ),
-        alfaA,
-        nthPart(`vnitřní ${triangle} u vrcholu A`)
+        compAngle(`vnitřní ${triangle} u vrcholu A`, 'beta', 'supplementary')
       ),
-      compAngle(`vnitřní ${triangle} u vrcholu A`, 'beta', 'supplementary')
+      ctorOption("B", 108)
     )
   }
 }
@@ -287,7 +302,7 @@ export function rovinataOblast() {
   const plan = "plán";
   const skutecnost = "skutečnost"
 
-  const meritko = deduce(    
+  const meritko = deduce(
     deduce(
       cont(agent, 700, skutecnost, "m"),
       ctorUnit("cm")
@@ -302,13 +317,16 @@ export function rovinataOblast() {
       title: 'Délka trasy na mapě a ve skutečnosti',
       deductionTree: deduce(
         deduce(
-          meritko,
           deduce(
-            cont("trasa", 49, plan, "mm"),
-            ctorUnit("cm")
+            meritko,
+            deduce(
+              cont("trasa", 49, plan, "mm"),
+              ctorUnit("cm")
+            ),
           ),
+          ctorUnit("km"),
         ),
-        ctorUnit("km"),
+        ctorBooleanOption(1,"greater")
       )
     },
     vychazkovaTrasa: {
@@ -316,22 +334,28 @@ export function rovinataOblast() {
       deductionTree: deduce(
         deduce(
           deduce(
-            vychazkovaTrasa,
             deduce(
               vychazkovaTrasa,
-              compRatio(vychazkovaTrasaLabel, "přímá trasa", 3),
+              deduce(
+                vychazkovaTrasa,
+                compRatio(vychazkovaTrasaLabel, "přímá trasa", 3),
+              ),
+              ctorDifference("rozdíl")
             ),
-            ctorDifference("rozdíl")
+            ctorUnit("cm")
           ),
-          ctorUnit("cm")
+          last(meritko),
+          nthPart(plan)
         ),
-        last(meritko),
-        nthPart(plan)
+        ctorBooleanOption(20)
       )
     },
     meritko: {
       title: 'Měřítko turistické mapy',
-      deductionTree: meritko
+      deductionTree: deduce(
+        meritko,
+        ctorBooleanOption(200_000)
+      )
     }
   }
 }
@@ -350,15 +374,18 @@ export function lomanaCaraACFHA() {
     deductionTree: deduce(
       deduce(
         deduce(
-          bc,
-          cont("BF", 6, entity, unit),
-          pythagoras("CF", ["BF", "BC"])
+          deduce(
+            bc,
+            cont("BF", 6, entity, unit),
+            pythagoras("CF", ["BF", "BC"])
+          ),
+          ac,
+          sum("úhlopříčka na podlaze (AC) + úhlopříčka na stěně (CF)", ["AC", "CF"], { entity, unit }, { entity, unit })
         ),
-        ac,
-        sum("úhlopříčka na podlaze (AC) + úhlopříčka na stěně (CF)", ["AC", "CF"], { entity, unit }, { entity, unit })
+        cont("stejně dlouhá úhlopříčka na stropě (FH) i stejně dlouhá úhlopříčka na druhé stěně (HA)", 2, ""),
+        product("lomené čáry ACFHA", [], { entity, unit }, { entity, unit })
       ),
-      cont("stejně dlouhá úhlopříčka na stropě (FH) i stejně dlouhá úhlopříčka na druhé stěně (HA)", 2, ""),
-      product("lomené čáry ACFHA", [], { entity, unit }, { entity, unit })
+      ctorOption("C", 54)
     )
   }
 }

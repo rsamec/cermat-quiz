@@ -40,6 +40,10 @@ export function isPredicate(node: Node): node is Predicate {
 export function last(input: TreeNode) {
   return input.children[input.children.length - 1] as Container;
 }
+export function lastQuantity(input: TreeNode) {
+  const lastPredicate = last(input);
+  return isNumber(lastPredicate.quantity) ? lastPredicate.quantity : NaN;
+}
 export function deduce(...children: Node[]): TreeNode {
   return to(...children.concat(inferenceRule.apply(null, children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]))));
 }
@@ -326,7 +330,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = compose`${joinArray(d.partAgents?.map(d => formatAgent(d)), " * ")}`;
       break;
     case "rate":
-      result = compose`${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} per ${formatEntity(d.entityBase.entity, d.entityBase.unit)}`
+      result = compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} per ${formatEntity(d.entityBase.entity, d.entityBase.unit)}`
       break;
     case "quota":
       result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${d.restQuantity !== 0 ? ` se zbytkem ${formatQuantity(d.restQuantity)}` : ''}`
@@ -354,6 +358,11 @@ export function formatPredicate(d: Predicate, formatting: any) {
       break;
     case "eval-expr":
       result = compose`${d.expression}`
+      break;
+    case "eval-option":
+      result = d.value === undefined 
+      ? compose`${d.optionValue !=null ? `Volba [${d.optionValue}]: ${d.expectedValue != null ? formatRatio(d.expectedValue):d.expression}`: d.expression }`
+      : compose`${d.value === true ? "Pravda" : d.value === false ? "Nepravda" : d.value != null ? `Volba [${d.value}]` : 'N/A'}`
       break;
     default:
       break;

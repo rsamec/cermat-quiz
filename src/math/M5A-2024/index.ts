@@ -1,4 +1,4 @@
-import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorUnit, primeFactorization, rate, ratio, sum, transfer } from "../../components/math";
+import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, primeFactorization, rate, ratio, sum, transfer } from "../../components/math";
 import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
 import { cislaNaOse } from "../cislaNaOse";
 const dveCislaNaOseParams = {
@@ -65,8 +65,8 @@ function giftAndBox() {
   const box = deduce(giftToBox, paidTotal, ctor('comp-part-eq'));
   return {
     deductionTree: deduce(
-      box,
       deduce(giftToBox, last(box)),
+      box,
       ctor("comp-ratio")
     )
   }
@@ -181,12 +181,15 @@ export function novorocniPrani() {
   const spolecne = cont("společně", 120, entity)
   return {
     deductionTree: deduce(
-      spolecne,
       deduce(
-        deduce(cont("Tereza", 14, entity), cont("Tereza", 5, entityBase), ctor('rate')),
-        deduce(cont("Nikola", 10, entity), cont("Nikola", 5, entityBase), ctor('rate')),
-        sum("společně", [], entity, entity)
-      )
+        spolecne,
+        deduce(
+          deduce(cont("Tereza", 14, entity), cont("Tereza", 5, entityBase), ctor('rate')),
+          deduce(cont("Nikola", 10, entity), cont("Nikola", 5, entityBase), ctor('rate')),
+          sum("společně", [], entity, entity)
+        )
+      ),
+      ctorOption("B", 25)
     )
   }
 }
@@ -205,19 +208,28 @@ export function carTrip() {
 
   return {
     pocatekCesty: {
-      deductionTree: pocatek
+      deductionTree: deduce(
+        pocatek,
+        ctorOption("E", 0)
+      )
     },
     zeleznicniPrejezd: {
       deductionTree: deduce(
-        dobaCesta,
-        ratio("cesta", "polovina cesty", 1 / 2)
+        deduce(
+          dobaCesta,
+          ratio("cesta", "polovina cesty", 1 / 2)
+        ),
+        ctorOption("C", 12)
       )
     },
     konecCesty: {
       deductionTree: deduce(
-        deduce(last(pocatek), dobaCesta, sum("čas odjezdu", [], entity, entity)),
-        cont("posun odjezdu o", 6, entity),
-        sum("posunutý čas příjezdu", [], entity, entity),
+        deduce(
+          deduce(last(pocatek), dobaCesta, sum("čas odjezdu", [], entity, entity)),
+          cont("posun odjezdu o", 6, entity),
+          sum("posunutý čas příjezdu", [], entity, entity),
+        ),
+        ctorOption("A", 30)
       )
     },
   }
@@ -232,14 +244,17 @@ export function sestiuhelnik() {
     deductionTree: deduce(
       deduce(
         deduce(
-          cont("pravidelný šestiúhleník", 6, entity),
+          deduce(
+            cont("pravidelný šestiúhleník", 6, entity),
+            dark,
+            ctorDifference("světlá část")
+          ),
           dark,
-          ctorDifference("světlá část")
+          ctor('comp-ratio')
         ),
-        dark,
-        ctor('comp-ratio')
+        obsah,
       ),
-      obsah,
+      ctorOption("D", 224)
     )
   }
 }
@@ -249,29 +264,38 @@ export function vyvojObyvatel() {
   const lidovLabel = "Lidov"
   return {
     panov: {
-      deductionTree: to(
-        cont("přírůstek 2021", 10, entity)
+      deductionTree: deduce(
+        to(
+          cont("přírůstek 2021", 10, entity)
+        ),
+        ctorOption("E", 10)
       )
     },
     lidov: {
       deductionTree: deduce(
         deduce(
           deduce(
-            cont(lidovLabel, 300, entity),
-            transfer(`přírůstek 2019`, lidovLabel, 10, entity),
+            deduce(
+              cont(lidovLabel, 300, entity),
+              transfer(`přírůstek 2019`, lidovLabel, 10, entity),
+            ),
+            transfer(`přírůstek 2020`, lidovLabel, 5, entity)
           ),
-          transfer(`přírůstek 2020`, lidovLabel, 5, entity)
+          transfer(lidovLabel, 'úbytek 2021', 5, entity)
         ),
-        transfer(lidovLabel, 'úbytek 2021', 5, entity)
+        ctorOption("D", 310)
       )
     },
     damov: {
       deductionTree: deduce(
-        cont("2019", -5, entity),
-        cont("2020", -10, entity),
-        cont("2021", 10, entity),
-        cont("2022", 5, entity),
-        sum("změna obyvatel", ["2019", "2020", "2021", "2022"], entity, entity)
+        deduce(
+          cont("2019", -5, entity),
+          cont("2020", -10, entity),
+          cont("2021", 10, entity),
+          cont("2022", 5, entity),
+          sum("změna obyvatel", ["2019", "2020", "2021", "2022"], entity, entity)
+        ),
+        ctorOption("B", 0)
       )
     }
   }

@@ -1,4 +1,4 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, product, quota, rate, ratio, ratios, sum, ctorPercent, percent, compAngle, ctorComplement, ctorComparePercent, compPercent, compRelativePercent, compDiff, pythagoras, nthPartFactor } from "../../components/math";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, product, quota, rate, ratio, ratios, sum, ctorPercent, percent, compAngle, ctorComplement, ctorComparePercent, compPercent, compRelativePercent, compDiff, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, comp, ctorLinearEquation } from "../../components/math";
 import { deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 
@@ -16,6 +16,7 @@ export default {
   14: dort(),
   15.1: tabor().percentPerVedouci,
   15.2: tabor().mladsiPercent,
+  15.3: tabor().pocetDivek,
 }
 
 function porovnani() {
@@ -103,18 +104,21 @@ function dort() {
   return {
     deductionTree: deduce(
       deduce(
-        vetsiKorpus,
-        vetsiKorpus,
-        height,
-        product("větší korpus", [], { entity: entity2d, unit: unit2d }, { entity, unit })
+        deduce(
+          vetsiKorpus,
+          vetsiKorpus,
+          height,
+          product("větší korpus", [], { entity: entity2d, unit: unit2d }, { entity, unit })
+        ),
+        deduce(
+          mensiKorpus,
+          last(mensiKorpus),
+          height,
+          product("menší korpus", [], { entity: entity2d, unit: unit2d }, { entity, unit })
+        ),
+        sum("celkem", [], { entity: entity2d, unit: unit2d }, { entity: entity2d, unit: unit2d })
       ),
-      deduce(
-        mensiKorpus,
-        last(mensiKorpus),
-        height,
-        product("menší korpus", [], { entity: entity2d, unit: unit2d }, { entity, unit })
-      ),
-      sum("celkem", [], { entity: entity2d, unit: unit2d }, { entity: entity2d, unit: unit2d })
+      ctorOption("D", 500)
     )
   }
 }
@@ -134,21 +138,24 @@ function uhelAlfa() {
   return {
     deductionTree: deduce(
       deduce(
-        soucetUhluVTrojuhelniku,
         deduce(
+          soucetUhluVTrojuhelniku,
           deduce(
             deduce(
-              praveRameho,
-              compAngle("pravé rameno", "úhel přímka p", "corresponding")
+              deduce(
+                praveRameho,
+                compAngle("pravé rameno", "úhel přímka p", "corresponding")
+              ),
+              compAngle("úhel přímka p", "trojúhelník bod A", "alternate-exterior")
             ),
-            compAngle("úhel přímka p", "trojúhelník bod A", "alternate-exterior")
+            last(praveRameho),
+            sum("dvojice součet", ["trojúhelník bod A", "trohúhelník bod B"], { entity, unit }, { entity, unit }),
           ),
-          last(praveRameho),
-          sum("dvojice součet", ["trojúhelník bod A", "trohúhelník bod B"], { entity, unit }, { entity, unit }),
+          ctorDifference("trojúhelník bod C")
         ),
-        ctorDifference("trojúhelník bod C")
+        compAngle("trojúhelník bod C", "alfa", "supplementary")
       ),
-      compAngle("trojúhelník bod C", "alfa", "supplementary")
+      ctorOption("B", 140)
     )
   }
 }
@@ -262,34 +269,43 @@ function zahrada() {
       deductionTree: deduce(
         deduce(
           deduce(
-            jablon,
-            celkem,
-            ctor('ratio')
+            deduce(
+              jablon,
+              celkem,
+              ctor('ratio')
+            ),
+            plochaCelkem,
           ),
-          plochaCelkem,
+          magnoliePlocha
         ),
-        magnoliePlocha
+        ctorBooleanOption(15)
       )
     },
     levanduleABazalkaVsHortenzie: {
       deductionTree: deduce(
         deduce(
-          levandule,
-          bazalka,
-          sum("dohromady", [], entity, entity)
+          deduce(
+            levandule,
+            bazalka,
+            sum("dohromady", [], entity, entity)
+          ),
+          hortenzie,
+          ctor('comp-ratio')
         ),
-        hortenzie,
-        ctor('comp-ratio')
+        ctorBooleanOption(1.5)
       )
     },
     ruzePlocha: {
       deductionTree: deduce(
         deduce(
-          ruze,
-          celkem,
-          ctor('ratio')
+          deduce(
+            ruze,
+            celkem,
+            ctor('ratio')
+          ),
+          plochaCelkem,
         ),
-        plochaCelkem,
+        ctorBooleanOption(30, "smaller")
       )
     }
 
@@ -305,24 +321,65 @@ function tabor() {
 
   const mladsiLabel = "mladší děti"
   const starsiLabel = "starší děti"
+
+  const divkyL = "všechny dívky"
+  const chlapciL = "všichni chlapci"
+
+  const divky = cont(divkyL, "x", entity)
+
+  const chlapci = deduce(
+    deti,
+    divky,
+    ctorDifference(chlapciL)
+  );
   return {
     percentPerVedouci: {
       deductionTree: deduce(
-        toCont(deduce(
+        deduce(
+          toCont(deduce(
+            deti,
+            vedouci,
+            ctor('rate')
+          ), { agent: "děti na starost jeden vedoucí" }),
           deti,
-          vedouci,
-          ctor('rate')
-        ), { agent: "děti na starost jeden vedoucí" }),
-        deti,
-        ctorPercent(),
+          ctorPercent(),
+        ),
+        ctorOption("A", 20, { asPercent: true })
       )
     },
     mladsiPercent: {
       deductionTree: deduce(
-        compRelative(mladsiLabel, starsiLabel, -1 / 3),
-        ctorComparePercent()
-      ),
+        deduce(
+          compRelative(mladsiLabel, starsiLabel, -1 / 3),
+          ctorComparePercent()
+        ),
+        ctorOption("F", 50, { asPercent: true })
+      )
     },
+    pocetDivek: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            deduce(
+              deduce(
+                divky,
+                ratio(divkyL, "dívky na výlet", 1 / 2)
+              ),
+              deduce(
+                chlapci,
+                ratio(chlapciL, "chlapci na výlet", 1 / 4)
+              ),
+              ctorDifference("rozdil")
+            ),
+            cont("rozdil", 4, entity),
+            ctorLinearEquation("počet dívek", { entity }, "x")
+          ),
+          deti,
+          ctorPercent()
+        ),
+        ctorOption("D", 40, { asPercent: true })
+      )
+    }
   }
 }
 

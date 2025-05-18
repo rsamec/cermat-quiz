@@ -1,5 +1,5 @@
 
-import { cont, rate, sum, ctor, type RatioComparison } from "../../components/math.js";
+import { cont, rate, sum, ctor, type RatioComparison, ctorBooleanOption } from "../../components/math.js";
 import { axiomInput, deduce, last } from "../../utils/deduce-utils.js";
 
 
@@ -86,8 +86,8 @@ export default function build({ input }: {
     <strong>Na táboře je celkem ${dTree3Result.quantity} dětí?</strong>`;
 
   return {
-    pocetVedoucichAInstruktoru: { deductionTree: dTree1, template: highlight => highlight`${() => templateBase(highlight)}${template1}` },
-    porovnaniInstrukturuAKucharek: { deductionTree: dTree2, template: highlight => highlight`${() => templateBase(highlight)}${template2}` },
-    pocetDeti: { deductionTree: dTree3, template: highlight => highlight`${() => templateBase(highlight)}${template3}` },
+    pocetVedoucichAInstruktoru: { deductionTree: deduce(dTree1, ctorBooleanOption(22)), template: highlight => highlight`${() => templateBase(highlight)}${template1}` },
+    porovnaniInstrukturuAKucharek: { deductionTree: deduce(dTree2, ctorBooleanOption(4)), template: highlight => highlight`${() => templateBase(highlight)}${template2}` },
+    pocetDeti: { deductionTree: deduce(dTree3, ctorBooleanOption(64)), template: highlight => highlight`${() => templateBase(highlight)}${template3}` },
   }
 }

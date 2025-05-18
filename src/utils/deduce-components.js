@@ -350,7 +350,17 @@ export function stepsTraverse(node) {
           else if (newChild?.kind === "ratios" && newChild?.parts != null) {
             args.push(relativeParts(newChild.ratios, { parts: newChild.parts}))
           }
-          if (newChild?.kind === "gcd" || newChild?.kind === "lcd") {
+          else if (newChild?.kind === "rate" && newChild?.quantity) {
+            args.push(partion([
+              { agent: `${newChild.entity?.entity}` , value: newChild.quantity },
+            ], { width: 300, height: 50, formatAsFraction: false,  showRelativeValues: false, showSeparate:true }))
+          }
+          else if (newChild?.kind === "quota" && newChild?.quantity) {
+            args.push(partion([
+              { agent: `${newChild.agentQuota}` , value: newChild.quantity },
+            ], { width: 300, height: 50, formatAsFraction: false,  showRelativeValues: false, showSeparate:true }))
+          }
+          else if (newChild?.kind === "gcd" || newChild?.kind === "lcd") {
             const numbers = node.children.slice(0, -2).map(d => d.quantity);
             args.push(html`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d, i) => html`<div>${formatNumber(numbers[i])} = ${d.join()}</div>`)}</div>`)
           }

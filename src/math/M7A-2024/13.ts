@@ -1,4 +1,4 @@
-import { cont, ctor, product } from "../../components/math.js";
+import { cont, ctor, ctorOption, product } from "../../components/math.js";
 import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 export function porovnatObsahObdelnikACtverec({ input }: { input: { obdelnik: { a: number, b: number }, ctverec: { a: number } } }) {
@@ -10,16 +10,19 @@ export function porovnatObsahObdelnikACtverec({ input }: { input: { obdelnik: { 
   return {
     deductionTree: deduce(
       deduce(
-        axiomInput(cont('obdélník a', input.obdelnik.a, entity, unit), 1),
-        axiomInput(cont('obdélník b', input.obdelnik.b, entity, unit), 2),
-        product("obsah obdélník", ["a", "b"], unit2d, entity)
+        deduce(
+          axiomInput(cont('obdélník a', input.obdelnik.a, entity, unit), 1),
+          axiomInput(cont('obdélník b', input.obdelnik.b, entity, unit), 2),
+          product("obsah obdélník", ["a", "b"], unit2d, entity)
+        ),
+        deduce(
+          ctverec,
+          ctverec,
+          product("obsah čtverec", ["a", "a"], unit2d, entity)
+        ),
+        ctor('comp-ratio')
       ),
-      deduce(
-        ctverec,
-        ctverec,
-        product("obsah čtverec", ["a", "a"], unit2d, entity)
-      ),
-      ctor('comp-ratio')
+      ctorOption("D", 12)
     )
   }
 }

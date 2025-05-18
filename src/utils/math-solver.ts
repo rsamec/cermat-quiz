@@ -21,6 +21,12 @@ parser.functions.gcd = function (...args: number[]) {
 parser.functions.lcd = function (...args: number[]) {
   return lcdCalc(args)
 }
+const eps = 0.001;
+parser.functions.closeTo = function(value: number, center: number ){
+  const start = center - eps;
+  const end = center + eps;
+  return start <= value && value <= end;
+}
 
 function gcdCalc(numbers: number[]) {
   let num = 2, res = 1;

@@ -1,4 +1,4 @@
-import { comp, compRatio, nthPart, rate, ratios, sum } from "../../components/math.js";
+import { comp, compRatio, ctorOption, nthPart, rate, ratios, sum } from "../../components/math.js";
 import { axiomInput, deduce, last } from "../../utils/deduce-utils.js";
 
 export function kytice({ input }: { input: { cenaZaKus: { ruze: number, chryzantema: number, statice: number } } }) {
@@ -37,10 +37,13 @@ export function kytice({ input }: { input: { cenaZaKus: { ruze: number, chryzant
   return {
     audio: true,
     deductionTree: deduce(
-      deduce(ruze, ruzeRate),
-      deduce(last(statice), staticeRate),
-      deduce(chryzantem, chryzantemaRate),
-      sum(kyticeAgent, [ruzeAgent, chryzatemaAgent, staticAgent], entity, entity)
+      deduce(
+        deduce(ruze, ruzeRate),
+        deduce(last(statice), staticeRate),
+        deduce(chryzantem, chryzantemaRate),
+        sum(kyticeAgent, [ruzeAgent, chryzatemaAgent, staticAgent], entity, entity)
+      ),
+      ctorOption("D", 1_300)
     )
   }
 }

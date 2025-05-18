@@ -12,8 +12,8 @@ add to source
 ## Pocast prompt customization
 - follow all the quiz questions from the beginning to the end
 - do not solve using any equations with unknowns, do not introduce any variables x or y, follow the presented solutions
-- do not use czech language in the podcast
 - add some jokes
+- do not use czech language in the podcast
 
 
 Na stránce https://www.cermatdata.cz je dostupná nová neoficiální data banka úloh a jejich řešení.

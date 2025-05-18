@@ -1,5 +1,5 @@
-import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorRatios, nthPart, nthPartFactor, product, rate, ratio, ratios, sum } from "../../components/math";
-import { deduce, last, to, toCont } from "../../utils/deduce-utils";
+import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, product, rate, ratio, ratios, sum } from "../../components/math";
+import { deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default {
   3.1: jizdniKolo().a,
@@ -151,17 +151,20 @@ function penize() {
   return {
     deductionTree: deduce(
       deduce(
-        to(
-          janaRatio,
-          deduce(
+        deduce(
+          to(
             janaRatio,
-            ivoCompare
+            deduce(
+              janaRatio,
+              ivoCompare
+            ),
+            ratio("celkem", "Ivo + Jana", 3 / 5)
           ),
-          ratio("celkem", "Ivo + Jana", 3 / 5)
+          ctorComplement("Eva")
         ),
-        ctorComplement("Eva")
+        eva
       ),
-      eva
+      ctorOption("B", 600)
     )
   }
 }
@@ -203,7 +206,6 @@ function domecek() {
     },
     kratsiStranaObdelni: {
       deductionTree: deduce(
-
         deduce(
           deduce(
             dum,
@@ -235,23 +237,26 @@ function farmar() {
       deduce(
         deduce(
           deduce(
-            farmaPuvodne,
+            deduce(
+              farmaPuvodne,
+              puvodneMlekoPerKrava
+            ),
+            cont(farmaPuvodneLabel, 2, "doba", "den"),
+            product(farmaNove, [], { entity, unit }, { entity, unit })
+          ),
+          deduce(
+            deduce(
+              farmaPuvodne,
+              prodano,
+              ctorDifference(farmaPuvodneLabel)
+            ),
             puvodneMlekoPerKrava
           ),
-          cont(farmaPuvodneLabel, 2, "doba", "den"),
-          product(farmaNove, [], { entity, unit }, { entity, unit })
+          ctorDifference(farmaNove)
         ),
-        deduce(
-          deduce(
-            farmaPuvodne,
-            prodano,
-            ctorDifference(farmaPuvodneLabel)
-          ),
-          puvodneMlekoPerKrava
-        ),
-        ctorDifference(farmaNove)
+        noveMlekoPerKrava
       ),
-      noveMlekoPerKrava
+      ctorOption("A", 9)
     )
   }
 }
@@ -280,7 +285,7 @@ export function poutnik() {
   const kouzelnik2 = deduce(
     deduce(
       last(kouzelnik1),
-      cont("poutník", last(kouzelnik1).quantity, entity),
+      cont("poutník", lastQuantity(kouzelnik1), entity),
       sum("celkem", [], entity, entity)
     ),
     ratiosKvP
@@ -299,7 +304,7 @@ export function poutnik() {
         deduce(
           deduce(
             last(kouzelnik1),
-            cont("poutník", last(kouzelnik1).quantity, entity),
+            cont("poutník", lastQuantity(kouzelnik1), entity),
             sum("celkem", [], entity, entity)
           ),
           last(ratiosKvP),
@@ -316,7 +321,7 @@ export function poutnik() {
           deduce(
             deduce(
               last(kouzelnik2),
-              cont("poutník", last(kouzelnik2).quantity, entity),
+              cont("poutník", lastQuantity(kouzelnik2), entity),
               sum("celkem", [], entity, entity)
             ),
             last(ratiosKvP),

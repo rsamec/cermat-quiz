@@ -1,5 +1,5 @@
 import { comp, compRatio, cont, ctor, ctorDelta } from "../components/math.js";
-import { deduce, last, to, type TreeNode } from "../utils/deduce-utils.js";
+import { deduce, last, lastQuantity, to, type TreeNode } from "../utils/deduce-utils.js";
 
 export function autobus() {
   const entity = "lidí"
@@ -26,7 +26,7 @@ export function autobus() {
   const end = cont(endLabel, 0, entity)
   const AB = cont(`${autobusL} AB`, 7, entity);
 
-  const toComp = (predicate: TreeNode, agent: string) => to(predicate, comp(`nastoupili ${agent}`, `vystoupili ${agent}`, last(predicate).quantity, entity))
+  const toComp = (predicate: TreeNode, agent: string) => to(predicate, comp(`nastoupili ${agent}`, `vystoupili ${agent}`, lastQuantity(predicate), entity))
 
   const deltaB = deduce(deduce(deduce(compB, outB), outB), ctorDelta(`${autobusL} BC`))
   const deltaD = deduce(deduce(inD, deduce(compD, inD)), ctorDelta(`${autobusL} CD`))

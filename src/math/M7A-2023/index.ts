@@ -1,4 +1,4 @@
-import { commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, ctorComplement, percent, product, rate, ratios, sum } from "../../components/math";
+import { commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, ctorComplement, ctorOption, percent, product, rate, ratios, sum } from "../../components/math";
 import { axiomInput, deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
@@ -20,45 +20,45 @@ var cetarParams = {
 
 export default {
   1: comparingValues({
-        input: {
-          first: {
-            ratio: 3 / 4,
-            value: 24
-          },
-          second: {
-            ratio: 1 / 3,
-            value: 12
-          }
-        }
-      }),
-      3.1: cetar(cetarParams)[0],
-      3.2: cetar(cetarParams)[1],
-      3.3: cetar(cetarParams)[2],
-      4.1: example_4_1(),
-      4.2: example_4_2(),
-      5.1: sesity()[1],
-      5.2: compass(),
-      6.1: odmenySoutezici()[0],
-      6.2: odmenySoutezici()[1],
-      10.1: trideni_odpadu().papirStoR,
-      10.2: trideni_odpadu().plast,
-      10.3: trideni_odpadu().kovyToPapir,
-      11: example_11(),
-      12: example_12(),
-      // 13: example_13(),
-      14: zakusek({
-        input: {
-          cena: 72
-        }
-      }),
-      15.1: example_15_1(),
-      15.2: example_15_2(),
-      15.3: example_15_3(),
-      16.1: obrazce()[0],
-      16.2: obrazce()[1],
-      16.3: obrazce()[2]
+    input: {
+      first: {
+        ratio: 3 / 4,
+        value: 24
+      },
+      second: {
+        ratio: 1 / 3,
+        value: 12
+      }
+    }
+  }),
+  3.1: cetar(cetarParams)[0],
+  3.2: cetar(cetarParams)[1],
+  3.3: cetar(cetarParams)[2],
+  4.1: example_4_1(),
+  4.2: example_4_2(),
+  5.1: sesity()[1],
+  5.2: compass(),
+  6.1: odmenySoutezici()[0],
+  6.2: odmenySoutezici()[1],
+  10.1: trideni_odpadu().papirStoR,
+  10.2: trideni_odpadu().plast2,
+  10.3: trideni_odpadu().kovyToPapir,
+  11: example_11(),
+  12: example_12(),
+  // 13: example_13(),
+  14: zakusek({
+    input: {
+      cena: 72
+    }
+  }),
+  15.1: example_15_1(),
+  15.2: example_15_2(),
+  15.3: example_15_3(),
+  16.1: obrazce()[0],
+  16.2: obrazce()[1],
+  16.3: obrazce()[2]
 }
-function example_4_1 () {
+function example_4_1() {
   const entity = "žáci";
   return {
     deductionTree: toCont(
@@ -79,7 +79,7 @@ function example_4_1 () {
     )
   }
 }
-function example_4_2 () {
+function example_4_2() {
   return {
     deductionTree: to(
       compRatio("chlapci", "dívky", 3 / 2),
@@ -88,7 +88,7 @@ function example_4_2 () {
   }
 }
 
-function example_13 () {
+function example_13() {
   const dvou = "dvoukorunové"
   const peti = "pětikorunové"
   const deseti = "desitikorunové"
@@ -116,7 +116,7 @@ function example_13 () {
   }
 }
 
-function example_11 () {
+function example_11() {
   const entity = "stupňů";
 
   const inputAngleLabel = `zadaný úhel`;
@@ -124,7 +124,7 @@ function example_11 () {
   const triangle = "úhel trojúhelníku ABD";
 
   return {
-    deductionTree:
+    deductionTree: deduce(
       deduce(
         toCont(
           deduce(
@@ -140,12 +140,14 @@ function example_11 () {
           , { agent: `${triangle} u vrcholu D` }),
         compAngle(`${triangle} u vrcholu D`, "φ", 'supplementary')
 
-      )
+      ),
+      ctorOption("D", 150)
+    )
 
   }
 }
 
-function example_12 () {
+function example_12() {
   const ctverecDelkaLabel = "strana čtverce";
   const entity = "cm"
   const entity2d = "cm2"
@@ -167,38 +169,41 @@ function example_12 () {
   return {
     deductionTree: deduce(
       deduce(
-        axiomInput(cont(ctverecDelkaLabel, 1, entity), 1),
-        cont("počet čtverců", 3, ""),
-        product("obsah tři shodné čtverce", [], entity2d, entity)
-      ),
-      deduce(
-        rectangleWidth,
         deduce(
-          last(rectangleWidth),
-          compDiff(rectangleWidthLabel, "výška obdelníku", 3, entity)
+          axiomInput(cont(ctverecDelkaLabel, 1, entity), 1),
+          cont("počet čtverců", 3, ""),
+          product("obsah tři shodné čtverce", [], entity2d, entity)
         ),
-        product("obsah obdelníku", [], entity2d, entity)
-      ),
-      deduce(
         deduce(
-          triangleHeight,
+          rectangleWidth,
           deduce(
             last(rectangleWidth),
-            compDiff(rectangleWidthLabel, "základna šedého trojúhelníku", 1, entity)
+            compDiff(rectangleWidthLabel, "výška obdelníku", 3, entity)
           ),
-          cont("polovina", 1 / 2, ""),
-          product("obsah šedého trojúhelníku", [], entity2d, entity)
+          product("obsah obdelníku", [], entity2d, entity)
         ),
-        cont("počet šedých trojúhleníků", 3, ""),
-        product("obsah tří šedých trojúhelníku", [], entity2d, entity2d)
+        deduce(
+          deduce(
+            triangleHeight,
+            deduce(
+              last(rectangleWidth),
+              compDiff(rectangleWidthLabel, "základna šedého trojúhelníku", 1, entity)
+            ),
+            cont("polovina", 1 / 2, ""),
+            product("obsah šedého trojúhelníku", [], entity2d, entity)
+          ),
+          cont("počet šedých trojúhleníků", 3, ""),
+          product("obsah tří šedých trojúhelníku", [], entity2d, entity2d)
+        ),
+        sum("obsah sedmiúhelníku", [], entity2d, entity2d)
       ),
-      sum("obsah sedmiúhelníku", [], entity2d, entity2d)
+      ctorOption("B", 31)
     )
   }
 
 }
 
-function example_15_1 () {
+function example_15_1() {
 
   const deducePercent = deduce(
     axiomInput(percent("celá kniha", "Róza přečteno", 60), 2),
@@ -208,24 +213,31 @@ function example_15_1 () {
 
   return {
     deductionTree: deduce(
-      axiomInput(cont("celá kniha", 1200, "stran"), 1),
-      deducePercent)
+      deduce(
+        axiomInput(cont("celá kniha", 1200, "stran"), 1),
+        deducePercent),
+      ctorOption("C", 480)
+    )
   }
 }
 
-function example_15_2 () {
+function example_15_2() {
   const entity = "Kč"
   const compare = axiomInput(comp("dospělé vstupné", "dětské vstupné", 210, entity), 2);
 
   return {
-    deductionTree: deduce(deduce(
-      axiomInput(compPercent("dětské vstupné", "dospělé vstupné", 70), 1),
-      compare,
-    ), compare)
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          axiomInput(compPercent("dětské vstupné", "dospělé vstupné", 70), 1),
+          compare,
+        ), compare),
+      ctorOption("D", 490)
+    )
   }
 }
 
-function example_15_3 () {
+function example_15_3() {
   const entity = "obyvatel";
   const den1 = axiomInput(cont("přišlo 1.den", 500, entity), 2)
   const obec = deduce(
@@ -235,7 +247,7 @@ function example_15_3 () {
 
 
   return {
-    deductionTree:
+    deductionTree: deduce(
       deduce(
         last(obec),
         deduce(
@@ -249,7 +261,9 @@ function example_15_3 () {
           sum("přišlo celkem", [], entity, entity)
         ),
         ctor('comp-diff')
-      )
+      ),
+      ctorOption("B", 450)
+    )
   }
 }
 

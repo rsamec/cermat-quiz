@@ -1,4 +1,4 @@
-import { commonSense, comp, compDiff, compRatio, compRelative, cont, ctor, product, ratio, sum } from "../../components/math.js";
+import { commonSense, comp, compDiff, compRatio, compRelative, cont, ctor, ctorOption, product, ratio, sum } from "../../components/math.js";
 import { axiomInput, deduce, last, to } from "../../utils/deduce-utils.js";
 
 export default function example({ input }: {
@@ -32,9 +32,12 @@ export default function example({ input }: {
   )
 
   const deductionTree = deduce(
-    delsiStrana,
-    cont("čtverec", 4, "strany"),
-    product("obvod čtverce", ["délka strany", "počet stran"], entity, entity)
+    deduce(
+      delsiStrana,
+      cont("čtverec", 4, "strany"),
+      product("obvod čtverce", ["délka strany", "počet stran"], entity, entity)
+    ),
+    ctorOption("A", 40)
   )
 
   return { deductionTree }

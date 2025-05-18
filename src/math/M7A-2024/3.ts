@@ -1,5 +1,5 @@
 import { cont, ctor, sum } from "../../components/math.js";
-import { axiomInput, deduce, last, to } from "../../utils/deduce-utils.js";
+import { axiomInput, deduce, last, lastQuantity, to } from "../../utils/deduce-utils.js";
 import { cislaNaOse } from "../cislaNaOse.js";
 
 export function triCislaNaOse({ input }: { input: { mensiCislo: number, vetsiCislo: number, pocetUsekuMeziCisly: number, A: number, B: number, C: number } }) {
@@ -20,7 +20,7 @@ export function triCislaNaOse({ input }: { input: { mensiCislo: number, vetsiCis
   const rozdilPostion = deduce(positionB, positionA, ctor('comp-diff'));
   const dd1 = deduce(deduce(positionC, usekRate), mensi, sum("pozice C", [], entityLength, entityLength));
   const dd2 = deduce(deduce(deduce(positionB, last(usekRate)), mensi, sum("pozice B", [], entityLength, entityLength)), mensi, ctor('comp-ratio'));
-  const dd3 = deduce(to(rozdilPostion, cont('rozdíl', last(rozdilPostion).quantity, entity)), last(usekRate))
+  const dd3 = deduce(to(rozdilPostion, cont('rozdíl', lastQuantity(rozdilPostion), entity)), last(usekRate))
 
   return { "C": { deductionTree: dd1 }, "B": { deductionTree: dd2 }, "rozdil": { deductionTree: dd3 } }
 }

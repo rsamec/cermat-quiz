@@ -1,5 +1,5 @@
 import { comp, compDiff, cont, ctor, sum } from "../../components/math.js";
-import { axiomInput, deduce, last, to } from "../../utils/deduce-utils.js";
+import { axiomInput, deduce, last, lastQuantity, to } from "../../utils/deduce-utils.js";
 
 export function porovnatAaB({ input }: { input: { a: number, b: number } }) {
   const entity = ""
@@ -18,7 +18,7 @@ export function porovnatAaB({ input }: { input: { a: number, b: number } }) {
       ),
       to(
         rozdil,
-        cont("rozdíl", last(rozdil).quantity, entity)
+        cont("rozdíl", lastQuantity(rozdil), entity)
       ),
       ctor('comp-ratio')
     )

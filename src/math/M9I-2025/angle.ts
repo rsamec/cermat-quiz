@@ -1,5 +1,5 @@
-import { cont, ctor } from "../../components/math.js";
-import { axiomInput, connectTo, deduce, last, toCont } from "../../utils/deduce-utils.js";
+import { cont, ctor, ctorBooleanOption } from "../../components/math.js";
+import { axiomInput, connectTo, deduce, last, lastQuantity, toCont } from "../../utils/deduce-utils.js";
 
 
 
@@ -38,34 +38,21 @@ export function desetiuhelnik({ input }: {
   const beta = connectTo(uhelRamenaRovnoramennehoTrojuhelniku({
     vrcholovyUhel: last(vrcholovyUhel)
   },
-    { uhelRamenoLabel: 'beta' }),vrcholovyUhel)
+    { uhelRamenoLabel: 'beta' }), vrcholovyUhel)
 
 
 
   const gama = deduce(
     last(alfa),
     uhelRamenaRovnoramennehoTrojuhelniku({
-      vrcholovyUhel: cont(vrcholovyUhelLabel, last(minUhel).quantity, entity)
+      vrcholovyUhel: cont(vrcholovyUhelLabel, lastQuantity(minUhel), entity)
     },
       { uhelRamenoLabel: 'gama' }),
   )
 
-
-
-
-  // const deductionTree = deduce(
-  //   deduce(
-  //     deminUhel
-  //     deduce(
-  //       beta,
-  //       alfa,
-  //       sum("dvojice úhlů v trojúhelníku", ["alfa", "beta"], entity, entity)
-  //     ),
-  //     ctorDiff("gama")
-  //   ),
-  //   last(alfa),
-  //   ctor("comp-diff")
-  // )
-
-  return [{ deductionTree: alfa }, { deductionTree: beta }, { deductionTree: gama }]
+  return [
+    { deductionTree: deduce(alfa, ctorBooleanOption(72)) },
+    { deductionTree: deduce(beta, ctorBooleanOption(36, "smaller")) },
+    { deductionTree: deduce(gama, ctorBooleanOption(0)) }
+  ]
 }
