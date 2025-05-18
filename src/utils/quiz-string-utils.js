@@ -127,7 +127,7 @@ export async function text(url) {
       ...auth,
     }
   });
-  if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
+  if (!response.ok) throw new Error(`fetch failed: ${response.status}, ${auth}`);
   return await response.text();
 }
 async function jsonGet(url) {
@@ -137,7 +137,7 @@ async function jsonGet(url) {
       ...auth,
     }
   });
-  if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
+  if (!response.ok) throw new Error(`fetch failed: ${response.status}, ${auth}`);
   return await response.json();
 }
 
@@ -154,7 +154,7 @@ export async function json(url, data) {
       method: data != null ? "POST" : "GET",
       ...(data && { body: JSON.stringify(data) })
     });
-  if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
+  if (!response.ok) throw new Error(`fetch failed: ${response.status}, ${auth}`);
   return await response.json();
 }
 export function getQuestionIds(metadata, code) {
