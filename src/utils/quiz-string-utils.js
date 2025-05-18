@@ -1,4 +1,5 @@
-export const baseDomain = "https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main";
+//export const baseDomain = "https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main";
+export const baseDomain = 'https://www.eforms.cz';
 export const baseDomainPublic = `${baseDomain}/public`;
 
 export function formatPdfFileName({ pageSize, columnsCount, orientation }) {
