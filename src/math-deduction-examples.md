@@ -5,7 +5,7 @@ pager: true
 toc: true
 style: /assets/css/math-deduce.css
 ---
-
+<!-- 
 ```js
 import {deduce} from './utils/deduce.js';
 import {partion, relativeTwoParts, relativeTowPartsDiff, deduceTraverse, highlightLabel, renderChat } from './utils/deduce-components.js';
@@ -285,4 +285,4 @@ const milkForm = Inputs.form({
 });
 const milkInput = Generators.input(milkForm);
 ```
-
+ -->

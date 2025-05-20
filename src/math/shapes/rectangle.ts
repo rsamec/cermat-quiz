@@ -1,6 +1,6 @@
 
-import { cont, type Container, product, sum } from "../../components/math";
-import { axiomInput, deduce, highlight } from "../../utils/deduce-utils";
+import { cont, type Container, product, sum } from "../../components/math.js";
+import { axiomInput, deduce, highlight } from "../../utils/deduce-utils.js";
 
 
 interface Params {

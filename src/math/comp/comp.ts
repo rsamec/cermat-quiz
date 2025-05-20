@@ -1,7 +1,7 @@
 
-import { cont, ratio, ctor, comp, compRelative, compRatio, ctorComplement } from "../../components/math";
-import type { PartWholeRatio, Container } from "../../components/math";
-import { axiomInput, deduce } from "../../utils/deduce-utils";
+import { cont, ratio, ctor, comp, compRelative, compRatio, ctorComplement } from "../../components/math.js";
+import type { PartWholeRatio, Container } from "../../components/math.js";
+import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 
 

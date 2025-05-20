@@ -1,5 +1,5 @@
-import { type Container, product, cont } from "../../components/math"
-import { deduce, last, type TreeNode } from "../../utils/deduce-utils"
+import { type Container, product, cont } from "../../components/math.js"
+import { deduce, last, type TreeNode } from "../../utils/deduce-utils.js"
 
 export function triangleArea({ size, height, triangle }: { size: Container | TreeNode, height: Container, triangle: { agent: string, entity?: string, unit?: string } }) {
   const agent = triangle.agent;

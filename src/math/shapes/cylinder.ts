@@ -1,6 +1,6 @@
 
-import { cont, type Container, pi, piNumber, product, sum } from "../../components/math";
-import { axiomInput, connectTo, deduce, last, type TreeNode } from "../../utils/deduce-utils";
+import { cont, type Container, pi, piNumber, product, sum } from "../../components/math.js";
+import { axiomInput, connectTo, deduce, last, type TreeNode } from "../../utils/deduce-utils.js";
 
 
 export interface CylinderOut {
