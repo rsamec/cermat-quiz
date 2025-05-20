@@ -1,6 +1,6 @@
-import { cont, ctor, sum } from "../../components/math.js";
-import { axiomInput, deduce, last, lastQuantity, to } from "../../utils/deduce-utils.js";
-import { cislaNaOse } from "../cislaNaOse.js";
+import { cont, ctor, sum } from "../../components/math";
+import { axiomInput, deduce, last, lastQuantity, to } from "../../utils/deduce-utils";
+import { cislaNaOse } from "../cislaNaOse";
 
 export function triCislaNaOse({ input }: { input: { mensiCislo: number, vetsiCislo: number, pocetUsekuMeziCisly: number, A: number, B: number, C: number } }) {
   const entityLength = "délka";

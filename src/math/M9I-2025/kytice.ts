@@ -1,5 +1,5 @@
-import { comp, compRatio, ctorOption, nthPart, rate, ratios, sum } from "../../components/math.js";
-import { axiomInput, deduce, last } from "../../utils/deduce-utils.js";
+import { comp, compRatio, ctorOption, nthPart, rate, ratios, sum } from "../../components/math";
+import { axiomInput, deduce, last } from "../../utils/deduce-utils";
 
 export function kytice({ input }: { input: { cenaZaKus: { ruze: number, chryzantema: number, statice: number } } }) {
   //agent names and entities

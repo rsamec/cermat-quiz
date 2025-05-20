@@ -1,6 +1,6 @@
 
-import { cont, comp, ctor } from "../../components/math.js";
-import { axiomInput, deduce } from "../../utils/deduce-utils.js";
+import { cont, comp, ctor } from "../../components/math";
+import { axiomInput, deduce } from "../../utils/deduce-utils";
 
 
 interface PocetObyvatelParams {

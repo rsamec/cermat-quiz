@@ -1,6 +1,6 @@
 
-import { cont, ratio, inferenceRule } from "../components/math.js";
-import { axiomInput, deduce } from "../utils/deduce-utils.js";
+import { cont, ratio, inferenceRule } from "../components/math";
+import { axiomInput, deduce } from "../utils/deduce-utils";
 
 interface MlekoParams {
   vekRozdil: number;

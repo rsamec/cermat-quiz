@@ -1,6 +1,6 @@
 
-import { cont, rate, sum, ctor, type RatioComparison, ctorBooleanOption } from "../../components/math.js";
-import { axiomInput, deduce, last } from "../../utils/deduce-utils.js";
+import { cont, rate, sum, ctor, type RatioComparison, ctorBooleanOption } from "../../components/math";
+import { axiomInput, deduce, last } from "../../utils/deduce-utils";
 
 
 interface PercentPartParams {

@@ -1,5 +1,5 @@
-import { cont, ctor, ctorPercent, type Container } from "../../components/math.js";
-import { axiomInput, deduce } from "../../utils/deduce-utils.js";
+import { cont, ctor, ctorPercent, type Container } from "../../components/math";
+import { axiomInput, deduce } from "../../utils/deduce-utils";
 
 
 export function percentPart({ base, percentage }: { base: Container, percentage: Container }) {

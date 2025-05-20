@@ -1,7 +1,7 @@
 
-import { commonSense, compRatio, cont, ctorRound, product, sum, type Container } from "../../components/math.js";
-import { axiomInput, deduce, last, lastQuantity, to } from "../../utils/deduce-utils.js";
-import { baseCircumference, surfaceBaseArea } from "../shapes/cylinder.js"
+import { commonSense, compRatio, cont, ctorRound, product, sum} from "../../components/math";
+import { axiomInput, deduce, last, lastQuantity, to } from "../../utils/deduce-utils";
+import { baseCircumference, surfaceBaseArea } from "../shapes/cylinder"
 
 
 interface Params {

@@ -1,5 +1,5 @@
-import { cont, ctor, ctorOption, product } from "../../components/math.js";
-import { axiomInput, deduce } from "../../utils/deduce-utils.js";
+import { cont, ctor, ctorOption, product } from "../../components/math";
+import { axiomInput, deduce } from "../../utils/deduce-utils";
 
 export function porovnatObsahObdelnikACtverec({ input }: { input: { obdelnik: { a: number, b: number }, ctverec: { a: number } } }) {
   const entity = "";

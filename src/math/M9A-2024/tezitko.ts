@@ -1,7 +1,7 @@
 
-import { cont } from "../../components/math.js";
-import { axiomInput, deduce } from "../../utils/deduce-utils.js";
-import { cylinder } from "../shapes/cylinder.js"
+import { cont } from "../../components/math";
+import { axiomInput, deduce } from "../../utils/deduce-utils";
+import { cylinder } from "../shapes/cylinder"
 
 interface BaseParams {
   radius: number,

@@ -1,5 +1,5 @@
 import { commonSense, compRelative, cont, ctor, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, gcd, nthPart, PartToPartRatio, percent, product, proportion, rate, ratio, ratios, sum } from "../../components/math"
-import { deduce, last, to, toCont, TreeNode } from "../../utils/deduce-utils"
+import { deduce, last, to, toCont, type TreeNode } from "../../utils/deduce-utils"
 
 export default {
   1: hledaneCislo(),

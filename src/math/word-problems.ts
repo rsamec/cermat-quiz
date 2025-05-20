@@ -1,26 +1,26 @@
 
 
 
-import M7A_2023 from './M7A-2023/index.js';
-import M7A_2024 from './M7A-2024/index.js';
-import M7A_2025 from './M7A-2025/index.js';
-import M7B_2025 from './M7B-2025/index.js';
+import M7A_2023 from './M7A-2023/index';
+import M7A_2024 from './M7A-2024/index';
+import M7A_2025 from './M7A-2025/index';
+import M7B_2025 from './M7B-2025/index';
 
-import M5A_2023 from './M5A-2023/index.js';
-import M5A_2024 from './M5A-2024/index.js';
-import M5A_2025 from './M5A-2025/index.js';
-import M5B_2025 from './M5B-2025/index.js';
-import M9A_2023 from './M9A-2023/index.js';
-import M9A_2024 from './M9A-2024/index.js';
-//import M9B_2024 from './M9B-2024/index.js';
-import M9I_2025 from './M9I-2025/index.js';
-import M9A_2025 from './M9A-2025/index.js';
-import M9B_2025 from './M9B-2025/index.js';
+import M5A_2023 from './M5A-2023/index';
+import M5A_2024 from './M5A-2024/index';
+import M5A_2025 from './M5A-2025/index';
+import M5B_2025 from './M5B-2025/index';
+import M9A_2023 from './M9A-2023/index';
+import M9A_2024 from './M9A-2024/index';
+//import M9B_2024 from './M9B-2024/index';
+import M9I_2025 from './M9I-2025/index';
+import M9A_2025 from './M9A-2025/index';
+import M9B_2025 from './M9B-2025/index';
 
 //re export - due to static server rendering
-export { inferenceRuleWithQuestion } from '../math/math-configure.js'
-export { formatPredicate } from '../utils/deduce-utils.js';
-export { formatSequencePattern } from '../components/math.js';
+export { inferenceRuleWithQuestion } from '../math/math-configure'
+export { formatPredicate } from '../utils/deduce-utils';
+export { formatSequencePattern } from '../components/math';
 
 export default {
   "M5A-2023": M5A_2023,

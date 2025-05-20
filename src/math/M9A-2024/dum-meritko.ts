@@ -1,8 +1,6 @@
 
-import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, ctorRatios, ctorUnit, gcd, nthPart, type PartToPartRatio, product, ratios } from "../../components/math.js";
-import { axiomInput, deduce, deduceLbl, last, to } from "../../utils/deduce-utils.js";
-import { plnaKrabice } from "../M9I-2025/krabice.js";
-
+import { cont, ctor, ctorBooleanOption, ctorUnit, product } from "../../components/math";
+import { axiomInput, deduce, last } from "../../utils/deduce-utils";
 
 interface Params {
   sirkaM: number

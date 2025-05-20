@@ -1,7 +1,7 @@
 import { html } from "htl";
-import { cont, inferenceRule, ratio, comp, ctor } from "../components/math.js";
-import { deduce, } from "../utils/deduce.js";
-import { relativePartsDiff, formatNode as format, inputLabel, deduceLabel, highlight } from "../utils/deduce-components.js";
+import { cont, inferenceRule, ratio, comp, ctor } from "../components/math";
+import { deduce } from "../utils/deduce-utils";
+import { relativePartsDiff, formatNode as format, inputLabel, deduceLabel, highlight } from "../utils/deduce-components";
 
 interface MlekoParams {
   zdrazeni: number;

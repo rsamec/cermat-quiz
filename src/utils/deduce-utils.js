@@ -2463,11 +2463,11 @@ Fraction.prototype = {
   "simplify": function(eps2) {
     const ieps = BigInt(1 / (eps2 || 1e-3) | 0);
     const thisABS = this["abs"]();
-    const cont2 = thisABS["toContinued"]();
-    for (let i = 1; i < cont2.length; i++) {
-      let s = newFraction(cont2[i - 1], C_ONE);
+    const cont = thisABS["toContinued"]();
+    for (let i = 1; i < cont.length; i++) {
+      let s = newFraction(cont[i - 1], C_ONE);
       for (let k = i - 2; k >= 0; k--) {
-        s = s["inverse"]()["add"](cont2[k]);
+        s = s["inverse"]()["add"](cont[k]);
       }
       let t = s["sub"](thisABS);
       if (t["n"] * ieps < t["d"]) {

@@ -1,5 +1,5 @@
-import { cont, ratio, ctorComplement, comp, transfer, percent, ctorPercent, commonSense, ctorOption } from "../../components/math.js";
-import { deduce, axiomInput, to } from "../../utils/deduce-utils.js";
+import { cont, ratio, ctorComplement, comp, transfer, percent, ctorPercent, commonSense, ctorOption } from "../../components/math";
+import { deduce, axiomInput, to } from "../../utils/deduce-utils";
 
 
 const entity = "litrů";

@@ -1,7 +1,7 @@
 import { html } from "npm:htl";
 import * as Plot from "npm:@observablehq/plot";
 import Fraction from 'npm:fraction.js';
-import { nthQuadraticElements, primeFactorization, gcdCalc, lcdCalc } from "../components/math.js";
+import { nthQuadraticElements, primeFactorization, lcdCalc, isNumber } from "../components/math.js";
 import { isPredicate, formatPredicate } from "../utils/deduce-utils.js";
 import { deduce } from "./deduce.js";
 import { inferenceRuleWithQuestion } from "../math/math-configure.js";
@@ -26,15 +26,15 @@ export function partion(items, options) {
   }
   return Plot.plot({
     ...(showSeparate && {
-      fy: { label: null, ticks: showTicks ? undefined : [], marginLeft: 0},
+      fy: { label: null, ticks: showTicks ? undefined : [], marginLeft: 0 },
     }),
-    y: { label: null},
+    y: { label: null },
     color: {
       type: "categorical",
       legend: showLegend,
       //domain: data.map(d => d.agent)
     },
-    x: { label: null, ticks: []},
+    x: { label: null, ticks: [] },
     ...(width && { width }),
     ...(height && { height }),
     marginBottom: 0,
@@ -42,6 +42,7 @@ export function partion(items, options) {
     marks: [
       Plot.waffleX(data, {
         x: 'value',
+        ...(data.some(d => d.yValue) && { y: "yValue" }),
         fill,
         ...(unit && { unit }),
         ...(multiple && { multiple }),
@@ -49,7 +50,7 @@ export function partion(items, options) {
         opacity: d => d.opacity ?? 1,
         sort: {
           x: { order: null },
-          ...(showSeparate && {fy: {order: null }})
+          ...(showSeparate && { fy: { order: null } })
         }
       }),
       ...(showAbsoluteValues ? [
@@ -84,12 +85,12 @@ export function partion(items, options) {
 };
 
 export function relativePartsData(values, { parts } = {}) {
-  
+
   const fractions = values.map(d => new Fraction(d));
   const denominators = fractions.map(d => parseInt(d.d));
   const numerators = fractions.map(d => parseInt(d.n));
   const common = lcdCalc(denominators);
-  const final = fractions.map(d => parseInt(d.n) * common/parseInt(d.d))
+  const final = fractions.map(d => parseInt(d.n) * common / parseInt(d.d))
   return final.map((d, i) => ({ agent: parts[i], value: d, displayValue: values[i] })).reverse()
 }
 
@@ -132,12 +133,12 @@ export const formatting = {
   formatKind: d => html`<div class="badge">${d.kind === "cont" ? "C" : d.kind.toUpperCase()}</div>`,
   formatQuantity: d => {
     if (typeof d === "number") {
-      return  d.toLocaleString("cs-CZ");
+      return d.toLocaleString("cs-CZ");
     }
-    else if (typeof d === "string"){
+    else if (typeof d === "string") {
       return d;
     }
-    else {      
+    else {
       return html`<div class="badge badge--warning">${toEquationExpr(d)}</div>`
     }
   },
@@ -343,22 +344,22 @@ export function stepsTraverse(node) {
         const res = traverseEx(newChild);
         args.push(res)
 
-        if (!isLast) {
+        if (true) {
           if (newChild?.kind === "ratio" && newChild?.ratio != null) {
             args.push(relativeTwoPartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole), asPercent: newChild.asPercent }))
           }
           else if (newChild?.kind === "ratios" && newChild?.parts != null) {
-            args.push(relativeParts(newChild.ratios, { parts: newChild.parts}))
+            args.push(relativeParts(newChild.ratios, { parts: newChild.parts }))
           }
-          else if (newChild?.kind === "rate" && newChild?.quantity) {
+          else if (newChild?.kind === "rate" && newChild?.quantity && isNumber(newChild?.quantity)) {
             args.push(partion([
-              { agent: `${newChild.entity?.entity}` , value: newChild.quantity },
-            ], { width: 300, height: 50, formatAsFraction: false,  showRelativeValues: false, showSeparate:true }))
+              { agent: `${newChild.entity?.entity}`, value: newChild.quantity, yValue: `1 ${newChild.entityBase?.entity}` },
+            ], { width: 300, height: 50, formatAsFraction: false, showRelativeValues: false, showSeparate: true }))
           }
-          else if (newChild?.kind === "quota" && newChild?.quantity) {
+          else if (newChild?.kind === "quota" && newChild?.quantity && isNumber(newChild?.quantity)) {
             args.push(partion([
-              { agent: `${newChild.agentQuota}` , value: newChild.quantity },
-            ], { width: 300, height: 50, formatAsFraction: false,  showRelativeValues: false, showSeparate:true }))
+              { agent: `${newChild.agentQuota}`, value: newChild.quantity, yValue: `1 ${newChild.entityBase?.entity}` },
+            ], { width: 300, height: 50, formatAsFraction: false, showRelativeValues: false, showSeparate: true }))
           }
           else if (newChild?.kind === "gcd" || newChild?.kind === "lcd") {
             const numbers = node.children.slice(0, -2).map(d => d.quantity);
@@ -378,7 +379,7 @@ export function stepsTraverse(node) {
 
       const premises = arr.slice(0, -1);
       //const questions = premises.filter(d => d?.result != null)
-      const conclusion = arr[arr.length - 1];          
+      const conclusion = arr[arr.length - 1];
       flatStructure.push({ premises, conclusion, questions: [question] });
 
     }

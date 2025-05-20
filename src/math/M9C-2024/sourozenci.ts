@@ -1,5 +1,5 @@
-import { cont, sum, ctor, ctorComplement } from "../../components/math.js";
-import { axiomInput, deduce } from "../../utils/deduce-utils.js";
+import { cont, sum, ctor, ctorComplement } from "../../components/math";
+import { axiomInput, deduce } from "../../utils/deduce-utils";
 
 interface SourozenciParams {
   evaPodil;

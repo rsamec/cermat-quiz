@@ -1,6 +1,6 @@
 
-import { comp, cont, ctor, inferenceRule, nth, rate, sum } from "../../components/math.js";
-import { deduce, deduceLbl } from "../../utils/deduce-utils.js";
+import { comp, cont, ctor, inferenceRule, nth, rate, sum } from "../../components/math";
+import { deduce, deduceLbl } from "../../utils/deduce-utils";
 
 
 interface InputParams {

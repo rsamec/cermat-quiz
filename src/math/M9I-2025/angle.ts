@@ -1,5 +1,5 @@
-import { cont, ctor, ctorBooleanOption } from "../../components/math.js";
-import { axiomInput, connectTo, deduce, last, lastQuantity, toCont } from "../../utils/deduce-utils.js";
+import { cont, ctor, ctorBooleanOption } from "../../components/math";
+import { axiomInput, connectTo, deduce, last, lastQuantity, toCont } from "../../utils/deduce-utils";
 
 
 

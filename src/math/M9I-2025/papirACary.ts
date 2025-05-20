@@ -1,5 +1,5 @@
-import { commonSense, compDiff, cont, ctorOption, primeFactorization, sum } from "../../components/math.js";
-import { axiomInput, deduce, deduceLbl, to } from "../../utils/deduce-utils.js";
+import { commonSense, compDiff, cont, ctorOption, primeFactorization, sum } from "../../components/math";
+import { axiomInput, deduce, deduceLbl, to } from "../../utils/deduce-utils";
 
 
 interface InputParameters {

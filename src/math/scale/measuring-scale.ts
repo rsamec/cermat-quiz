@@ -1,6 +1,6 @@
 
-import { cont, ctor, ctorUnit, gcd, nthPart } from "../../components/math.js";
-import { axiomInput, deduce, last } from "../../utils/deduce-utils.js";
+import { cont, ctor, ctorUnit, gcd, nthPart } from "../../components/math";
+import { axiomInput, deduce, last } from "../../utils/deduce-utils";
 
 
 interface Params {

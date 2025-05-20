@@ -1,5 +1,5 @@
-import { commonSense, comp, compDiff, compRatio, compRelative, cont, ctor, ctorOption, product, ratio, sum } from "../../components/math.js";
-import { axiomInput, deduce, last, to } from "../../utils/deduce-utils.js";
+import { commonSense, comp, compDiff, compRatio, compRelative, cont, ctor, ctorOption, product, ratio, sum } from "../../components/math";
+import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
 
 export default function example({ input }: {
   input: {

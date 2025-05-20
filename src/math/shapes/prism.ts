@@ -1,6 +1,6 @@
 
-import { compRatio, cont, product, sum } from "../../components/math.js";
-import { axiomInput, deduce } from "../../utils/deduce-utils.js";
+import { compRatio, cont, product, sum } from "../../components/math";
+import { axiomInput, deduce } from "../../utils/deduce-utils";
 
 
 interface Params {

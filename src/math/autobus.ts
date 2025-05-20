@@ -1,5 +1,5 @@
 import { comp, compRatio, cont, ctor, ctorDelta } from "../components/math.js";
-import { deduce, last, lastQuantity, to, type TreeNode } from "../utils/deduce-utils.js";
+import { deduce, lastQuantity, to, type TreeNode } from "../utils/deduce-utils.js";
 
 export function autobus() {
   const entity = "lidí"

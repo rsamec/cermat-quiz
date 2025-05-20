@@ -1,5 +1,5 @@
-import { cont, ctorUnit } from "../../components/math.js";
-import { axiomInput, deduce } from "../../utils/deduce-utils.js";
+import { cont, ctorUnit } from "../../components/math";
+import { axiomInput, deduce } from "../../utils/deduce-utils";
 
 export function porovnani2Ploch({ }: { input: {} }) {
   const entity = "";

@@ -1,6 +1,6 @@
 
-import type { Predicate } from "../components/math.js";
-import { cont, ratio, comp, rate, ratios, compRatio, compDiff, sum, lcd, gcd, ctor, inferenceRule, nth, quota, product, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExpr } from "../components/math.js";
+import type { Predicate } from "../components/math";
+import { cont, ratio, comp, rate, ratios, compRatio, compDiff, sum, lcd, gcd, ctor, inferenceRule, nth, quota, product, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExpr } from "../components/math";
 
 export default function rules() {
 

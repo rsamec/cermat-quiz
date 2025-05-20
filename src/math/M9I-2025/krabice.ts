@@ -1,5 +1,5 @@
-import { compDiff, cont, ctor } from "../../components/math.js";
-import { axiomInput, deduce, deduceLbl, last, lastQuantity, to } from "../../utils/deduce-utils.js";
+import { compDiff, cont, ctor } from "../../components/math";
+import { axiomInput, deduce, deduceLbl, last, lastQuantity, to } from "../../utils/deduce-utils";
 
 
 interface InputParameters {

@@ -1,5 +1,5 @@
-import { cont, compDiff, inferenceRule, lcd } from "../../components/math.js";
-import { axiomInput, deduce } from "../../utils/deduce-utils.js";
+import { cont, compDiff, inferenceRule, lcd } from "../../components/math";
+import { axiomInput, deduce } from "../../utils/deduce-utils";
 
 interface SportovciParams {
 

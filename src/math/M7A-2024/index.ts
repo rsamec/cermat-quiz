@@ -1,11 +1,11 @@
-import { compAngle, compPercent, cont, ctor, ctorOption, ctorUnit, nthPart, percent, ratios, sum } from "../../components/math.js";
-import { axiomInput, deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils.js";
-import { porovnatAaB, najitMensiCislo } from "./1.js";
-import { porovnatObsahObdelnikACtverec } from "./13.js";
-import { triCislaNaOse } from "./3.js";
-import letniTabor from "./letni-tabor.js";
-import pocetSportovcu from "./pocet-sportovcu.js";
-import kraliciASlepice from "./kralice-a-slepice-v-ohrade.js"
+import { compAngle, compPercent, cont, ctor, ctorOption, ctorUnit, nthPart, percent, ratios, sum } from "../../components/math";
+import { axiomInput, deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
+import { porovnatAaB, najitMensiCislo } from "./1";
+import { porovnatObsahObdelnikACtverec } from "./13";
+import { triCislaNaOse } from "./3";
+import letniTabor from "./letni-tabor";
+import pocetSportovcu from "./pocet-sportovcu";
+import kraliciASlepice from "./kralice-a-slepice-v-ohrade"
 
 const letniTaborInput = {
   input: {

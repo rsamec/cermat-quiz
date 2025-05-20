@@ -1,6 +1,6 @@
 
-import { cont, comp, rate, ctor, ctorOption } from "../../components/math.js";
-import { axiomInput, deduce } from "../../utils/deduce-utils.js";
+import { cont, comp, rate, ctor, ctorOption } from "../../components/math";
+import { axiomInput, deduce } from "../../utils/deduce-utils";
 
 interface ZvirataVOhradeParams {
   pocetHlav: number;

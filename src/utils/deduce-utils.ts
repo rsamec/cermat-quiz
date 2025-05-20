@@ -1,5 +1,5 @@
-import { cont, formatAngle, formatSequencePattern, inferenceRule, nthQuadraticElements, isNumber, areNumbers } from "../components/math.js"
-import { Predicate, Container, Rate, ComparisonDiff, Comparison } from "../components/math.js"
+import { formatAngle, inferenceRule, nthQuadraticElements, isNumber } from "../components/math.js"
+import type { Predicate, Container, Rate, ComparisonDiff, Comparison } from "../components/math.js"
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
 import { toEquationExpr } from "./math-solver.js"
 

@@ -1,6 +1,6 @@
 
-import { commonSense, comp, cont, ctor, inferenceRule, nth, product, rate, sum } from "../../components/math.js";
-import { deduce, deduceLbl, last, to } from "../../utils/deduce-utils.js";
+import { commonSense, comp, cont, ctor, inferenceRule, nth, product, rate, sum } from "../../components/math";
+import { deduce, deduceLbl, last, to } from "../../utils/deduce-utils";
 
 
 interface InputParams {

@@ -1,6 +1,6 @@
-import { commonSense, cont, ctorOption, primeFactorization, quota, ratio, sum } from "../../components/math.js";
-import { axiomInput, connectTo, deduce, deduceLbl, last, lastQuantity, to } from "../../utils/deduce-utils.js";
-import { volume } from "../shapes/rectangle.js";
+import { commonSense, cont, ctorOption, primeFactorization, quota, ratio, sum } from "../../components/math";
+import { axiomInput, connectTo, deduce, deduceLbl, last, lastQuantity, to } from "../../utils/deduce-utils";
+import { volume } from "../shapes/rectangle";
 
 
 interface InputParameters {

@@ -1,5 +1,5 @@
-import { cont, ctor, proportion } from "../../components/math.js";
-import { axiomInput, deduce } from "../../utils/deduce-utils.js";
+import { cont, ctor, proportion } from "../../components/math";
+import { axiomInput, deduce } from "../../utils/deduce-utils";
 
 
 interface InversProportionParams {

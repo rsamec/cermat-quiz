@@ -1,5 +1,5 @@
-import { comp, compDiff, cont, ctor, sum } from "../../components/math.js";
-import { axiomInput, deduce, last, lastQuantity, to } from "../../utils/deduce-utils.js";
+import { comp, cont, ctor, sum } from "../../components/math";
+import { axiomInput, deduce, lastQuantity, to } from "../../utils/deduce-utils";
 
 export function porovnatAaB({ input }: { input: { a: number, b: number } }) {
   const entity = ""

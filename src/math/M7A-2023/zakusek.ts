@@ -1,6 +1,6 @@
 
-import { cont, inferenceRule, ratio, sum, compRelative, ctorComplement, ctorExpressionOption } from "../../components/math.js";
-import { axiomInput, deduce, deduceLbl } from "../../utils/deduce-utils.js";
+import { cont, inferenceRule, ratio, sum, compRelative, ctorComplement, ctorExpressionOption } from "../../components/math";
+import { axiomInput, deduce, deduceLbl } from "../../utils/deduce-utils";
 
 interface ZakuseParams {
   cena: number;

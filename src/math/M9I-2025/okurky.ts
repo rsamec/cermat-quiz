@@ -1,5 +1,5 @@
-import { comp, compRatio, cont, ctorLinearEquation, ratio } from "../../components/math.js";
-import { axiomInput, deduce, last } from "../../utils/deduce-utils.js";
+import { comp, cont, ctorLinearEquation, ratio } from "../../components/math";
+import { axiomInput, deduce, last } from "../../utils/deduce-utils";
 
 interface InputParameters {
   salatyNavic: number,  

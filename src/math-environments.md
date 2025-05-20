@@ -18,9 +18,12 @@ import { signal, computed } from '@preact/signals-core';
 import {toEquation} from './utils/math-solver.js';
 
 import {autobus, autobus2} from './math/autobus.js';
-import {okurkyASalaty} from './math/M9I-2025/okurky.js';
-import MMA_2025 from './math/MMA-2025/index.js';
 
+
+import wordProblems from './math/word-problems.js';
+
+const MMA_2025 = wordProblems["MMA-2025"];
+const M9I_2025 = wordProblems["M9I-2025"];
 ```
 
 ```js
@@ -85,7 +88,7 @@ const okurkyInput = Generators.input(okurkyForm);
   ${okurkyForm}
 </details>
 
-<div>${renderExample({example:okurkyASalaty({input:okurkyInput})[0]})}</div>
+<div>${renderExample({example:M9I_2025["6.1"]})}</div>
 
 <div>${renderExample({example:MMA_2025["1"]})}</div>
 <div>${renderExample({example:MMA_2025["5.1"]})}</div>

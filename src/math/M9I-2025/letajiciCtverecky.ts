@@ -1,5 +1,5 @@
-import { commonSense, cont, primeFactorization, product } from "../../components/math.js";
-import { axiomInput, deduce, to } from "../../utils/deduce-utils.js";
+import { commonSense, cont, primeFactorization, product } from "../../components/math";
+import { axiomInput, deduce, to } from "../../utils/deduce-utils";
 
 
 interface InputParameters {
