@@ -90,7 +90,7 @@ export default {
       open: false,
       name: "Matematika",
       pages: [        
-        { name: "Slovní úlohy", path: "/word-problems" },
+        { name: "Slovní úlohy", path: "/word-problems-summary" },
         { name: "Slovní úlohy - matematizace", path: "/math-deduction" },
         { name: "Výrazy, rovnice", path: "/math" },
         { name: "Konstrukční úlohy", path: "/math-geometry" },
