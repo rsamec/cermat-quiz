@@ -5,11 +5,9 @@ toc: true
 ---
 
 ```js
-import { baseDomain, baseDomainPublic, formatSubject, formatPeriod, formatCode, parseCode, formatShortCode} from './utils/quiz-string-utils.js';
+import { formatCode, parseCode} from './utils/quiz-string-utils.js';
 import { unique } from "./utils/common-utils.js";
-import { quizes } from "./utils/quiz-utils.js";
-import mdPlus from './utils/md-utils.js';
-import wordProblems, {  } from './math/word-problems.js';
+import wordProblems from './math/word-problems.js';
 
 const wordProblemsKeyValuePairs = Object.entries(wordProblems).sort(([fKey],[sKey]) => {
   const f = parseCode(sKey);

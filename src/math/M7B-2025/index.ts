@@ -1,4 +1,4 @@
-import { commonSense, compRelative, cont, ctor, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, gcd, nthPart, PartToPartRatio, percent, product, proportion, rate, ratio, ratios, sum } from "../../components/math"
+import { commonSense, compRelative, cont, ctor, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, gcd, nthPart, percent, product, proportion, rate, ratio, ratios, sum } from "../../components/math"
 import { deduce, last, to, toCont, type TreeNode } from "../../utils/deduce-utils"
 
 export default {
@@ -59,7 +59,7 @@ function pomer() {
   );
 
   const createRatios = (treeNode: TreeNode, n1: number, n2: number) => {
-    const newRatio = last(treeNode) as any as PartToPartRatio
+    const newRatio = last(treeNode)
     return {
       ...newRatio,
       parts: [`${n1}. číslo`, `${n2}. číslo`],
