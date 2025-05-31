@@ -1,0 +1,489 @@
+messages:
+  - role: system
+    content: >-
+      You are an expert at math.You will be given quiz with questions. The quiz
+      format is markdown text.
+
+
+      Each question is identified by markdown headings. Some question can have
+      sub questions.
+
+
+      - # heading is root questions - question id is identified by format #
+      {number}
+
+      - ## heading is sub question - question id is identified by format ##
+      {number}.{number}
+  - role: user
+    content: >-
+      Solve the quiz questions and return the final answer for each question or
+      sub question. Do not include steps to explain the result.
+
+      {{input}}
+model: openai/gpt-4o
+responseFormat: json_schema
+jsonSchema: |-
+  {
+    "name": "M5A-2023",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "9": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "enum": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F"
+              ]
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "10": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "$ref": "#/definitions/M5A-2023_properties_9_properties_value"
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "11": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "$ref": "#/definitions/M5A-2023_properties_9_properties_value"
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "12": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "$ref": "#/definitions/M5A-2023_properties_9_properties_value"
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "1.1": {
+          "type": "number"
+        },
+        "1.2": {
+          "type": "number"
+        },
+        "2.1": {
+          "type": "number"
+        },
+        "2.2": {
+          "type": "number"
+        },
+        "3.1": {
+          "type": "number"
+        },
+        "3.2": {
+          "type": "number"
+        },
+        "3.3": {
+          "type": "number"
+        },
+        "4.1": {
+          "type": "number"
+        },
+        "4.2": {
+          "type": "number"
+        },
+        "4.3": {
+          "type": "number"
+        },
+        "5.1": {
+          "type": "number"
+        },
+        "5.2": {
+          "type": "number"
+        },
+        "6.1": {
+          "type": "number"
+        },
+        "6.2": {
+          "type": "number"
+        },
+        "7.1": {
+          "type": "string"
+        },
+        "7.2": {
+          "type": "string"
+        },
+        "8.1": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "8.2": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "8.3": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "13.1": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "$ref": "#/definitions/M5A-2023_properties_9_properties_value"
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "13.2": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "$ref": "#/definitions/M5A-2023_properties_9_properties_value"
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "13.3": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "$ref": "#/definitions/M5A-2023_properties_9_properties_value"
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "14.1": {
+          "type": "number"
+        },
+        "14.2": {
+          "type": "number"
+        },
+        "14.3": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "9",
+        "10",
+        "11",
+        "12",
+        "1.1",
+        "1.2",
+        "2.1",
+        "2.2",
+        "3.1",
+        "3.2",
+        "3.3",
+        "4.1",
+        "4.2",
+        "4.3",
+        "5.1",
+        "5.2",
+        "6.1",
+        "6.2",
+        "7.1",
+        "7.2",
+        "8.1",
+        "8.2",
+        "8.3",
+        "13.1",
+        "13.2",
+        "13.3",
+        "14.1",
+        "14.2",
+        "14.3"
+      ],
+      "additionalProperties": false,
+      "definitions": {
+        "M5A-2023_properties_9_properties_value": {
+          "type": "string",
+          "enum": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ]
+        },
+        "M5A-2023": {
+          "type": "object",
+          "properties": {
+            "9": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string",
+                  "enum": [
+                    "A",
+                    "B",
+                    "C",
+                    "D",
+                    "E",
+                    "F"
+                  ]
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "10": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "$ref": "#/definitions/M5A-2023_properties_9_properties_value"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "11": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "$ref": "#/definitions/M5A-2023_properties_9_properties_value"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "12": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "$ref": "#/definitions/M5A-2023_properties_9_properties_value"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "1.1": {
+              "type": "number"
+            },
+            "1.2": {
+              "type": "number"
+            },
+            "2.1": {
+              "type": "number"
+            },
+            "2.2": {
+              "type": "number"
+            },
+            "3.1": {
+              "type": "number"
+            },
+            "3.2": {
+              "type": "number"
+            },
+            "3.3": {
+              "type": "number"
+            },
+            "4.1": {
+              "type": "number"
+            },
+            "4.2": {
+              "type": "number"
+            },
+            "4.3": {
+              "type": "number"
+            },
+            "5.1": {
+              "type": "number"
+            },
+            "5.2": {
+              "type": "number"
+            },
+            "6.1": {
+              "type": "number"
+            },
+            "6.2": {
+              "type": "number"
+            },
+            "7.1": {
+              "type": "string"
+            },
+            "7.2": {
+              "type": "string"
+            },
+            "8.1": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "8.2": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "8.3": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "13.1": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "$ref": "#/definitions/M5A-2023_properties_9_properties_value"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "13.2": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "$ref": "#/definitions/M5A-2023_properties_9_properties_value"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "13.3": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "$ref": "#/definitions/M5A-2023_properties_9_properties_value"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "14.1": {
+              "type": "number"
+            },
+            "14.2": {
+              "type": "number"
+            },
+            "14.3": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "9",
+            "10",
+            "11",
+            "12",
+            "1.1",
+            "1.2",
+            "2.1",
+            "2.2",
+            "3.1",
+            "3.2",
+            "3.3",
+            "4.1",
+            "4.2",
+            "4.3",
+            "5.1",
+            "5.2",
+            "6.1",
+            "6.2",
+            "7.1",
+            "7.2",
+            "8.1",
+            "8.2",
+            "8.3",
+            "13.1",
+            "13.2",
+            "13.3",
+            "14.1",
+            "14.2",
+            "14.3"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+  }
+testData: []
+evaluators: []
