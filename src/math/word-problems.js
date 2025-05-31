@@ -5574,6 +5574,2663 @@ function concatString(strings, ...substitutions) {
   return formattedString;
 }
 
+// src/math/comparing-values.ts
+var comparingValues = ({ input }) => {
+  const { first, second } = input;
+  const entity3 = "litr";
+  return {
+    deductionTree: deduce(
+      deduce(
+        axiomInput(ratio("zadan\xE1 hodnota", "prvn\xED hodnota", first.ratio), 1),
+        axiomInput(cont("zadan\xE1 hodnota", first.value, entity3), 2)
+      ),
+      deduce(
+        axiomInput(ratio("zadan\xE1 hodnota", "druh\xE1 hodnota", second.ratio), 3),
+        axiomInput(cont("zadan\xE1 hodnota", second.value, entity3), 4)
+      )
+    )
+  };
+};
+
+// src/math/compass.ts
+var compass = () => {
+  const agent = "n\xE1kup kru\u017E\xEDtek";
+  const entityPrice = "korun";
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          axiomInput(cont("chyb\u011Blo", 160, entityPrice), 2),
+          axiomInput(cont("zbylo", 100, entityPrice), 3),
+          sum(agent, [], entityPrice, entityPrice)
+        ),
+        axiomInput(cont(agent, 2, "kus"), 1),
+        ctor("rate")
+      ),
+      axiomInput(cont(agent, 4, "kus"), 4)
+    )
+  };
+};
+
+// src/math/obrazce.ts
+var obrazce = () => {
+  const entityRow = "\u0159\xE1dk\u016F";
+  const entityColumn = "sloupc\u016F";
+  const entityTmave = "tmav\xFD \u010Dtvere\u010Dek";
+  const entitySvetle = "sv\u011Btl\xE9 \u010Dtvere\u010Dek";
+  const entity3 = "\u010Dtvere\u010Dk\u016F";
+  const base = "z\xE1kladn\xED obrazec";
+  const extended = "roz\u0161\xED\u0159en\xFD obrazec";
+  const dd1 = deduce(
+    cont(`p\u0159id\xE1no ${extended}`, 30, entityTmave),
+    deduce(
+      cont(`lev\xFD sloupec ${extended}`, 6, entityTmave),
+      cont(`prav\xFD sloupec ${extended}`, 6, entityTmave),
+      sum("oba krajn\xED sloupce", [], entityTmave, entityTmave)
+    ),
+    ctor("comp-diff")
+  );
+  return [
+    {
+      deductionTree: to(
+        dd1,
+        commonSense("horn\xED \u0159ada tmav\xFDch \u010Dtver\u010Dk\u016F bez krajn\xEDch sloupc\u016F roz\u0161\xED\u0159en\xE9ho obrazce odpov\xEDd\xE1 po\u010Dtu sloupc\u016F z\xE1kladn\xEDho obrazce"),
+        cont(base, lastQuantity(dd1), entityColumn)
+      )
+    },
+    {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            cont(`lev\xFD sloupec`, 3, entity3),
+            cont(`prav\xFD sloupec`, 3, entity3),
+            sum("oba krajn\xED sloupce", [], entity3, entity3)
+          ),
+          ratios(extended, [entitySvetle, "horn\xED \u0159ada", "oba krajn\xED sloupce"], [2, 1, 1])
+        ),
+        cont(extended, 3, entityRow),
+        ctor("rate")
+      )
+    },
+    {
+      deductionTree: to(
+        deduce(
+          rate("oba krajn\xED sloupce", 2, entityTmave, entityRow),
+          cont("oba krajn\xED sloupce", 24, entityRow)
+        ),
+        commonSense("z\xE1kladn\xED obrazec je tvo\u0159en jednou nebo v\xEDce \u0159adami sv\u011Btl\xFDch \u010Dtvere\u010Dk\u016F."),
+        commonSense("2 \u0159\xE1dky jsou minimum a 24 \u0159\xE1dk\u016F je maximum."),
+        commonSense("mo\u017En\xFDch roz\u0161\xED\u0159en\xFDch obrazc\u016F tvo\u0159\xED obrazce s 2, 3, 4... 24 \u0159\xE1dk\u016F"),
+        cont("mo\u017En\xFDch roz\u0161\xED\u0159en\xFDch obrazc\u016F s 50 tmav\xFDmi \u010Dtvere\u010Dky", 23, extended)
+      )
+    }
+  ];
+};
+
+// src/math/odmeny-soutezici.ts
+var odmenySoutezici = () => {
+  const souteziciLabel = "sout\u011B\u017E\xEDc\xED";
+  const odmenaLabel = "odm\u011Bna";
+  const entity3 = "K\u010D";
+  const druhy = axiomInput(cont(`2.${souteziciLabel}`, 300, entity3), 3);
+  const prvni = axiomInput(ratio(odmenaLabel, `1.${souteziciLabel}`, 1 / 2), 1);
+  const treti = deduce(
+    prvni,
+    axiomInput(compRatio(`1.${souteziciLabel}`, `3.${souteziciLabel}`, 3), 3)
+  );
+  const druhyRelative = deduce(
+    deduce(
+      prvni,
+      treti,
+      sum(`1. a 3. ${souteziciLabel}`, [], "", "")
+    ),
+    ctorComplement(`2.${souteziciLabel}`)
+  );
+  return [
+    {
+      deductionTree: deduce(
+        druhyRelative,
+        { ...last(treti), ...deduceLbl(1) },
+        ctor("comp-ratio")
+      )
+    },
+    {
+      deductionTree: deduce(
+        { ...last(druhyRelative), ...deduceLbl(3) },
+        druhy
+      )
+    }
+  ];
+};
+
+// src/math/sesity.ts
+var sesity = () => {
+  const ctvereckovaniSesitLabel = "\u010Dtvere\u010Dkovan\xFD se\u0161it";
+  const linkovanySesitLabel = "linkovan\xFD se\u0161it";
+  const entity3 = "se\u0161it";
+  const entityPrice = "K\u010D";
+  const pocetLabel = "cena se\u0161it\u016F v\xFDj\xE1d\u0159en\xFDch po\u010Dtem";
+  const cenaLabel = "n\xE1kupu stejn\xE9ho po\u010Dtu se\u0161it\u016F";
+  const ctvereckovanyPocet = axiomInput(cont(ctvereckovaniSesitLabel, 2, entity3), 1);
+  return [
+    {
+      deductionTree: deduce(
+        cont(pocetLabel, 36, entity3),
+        ratios(pocetLabel, [linkovanySesitLabel, ctvereckovaniSesitLabel], [3, 1]),
+        nthPart(linkovanySesitLabel)
+      )
+    },
+    {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            axiomInput(ratios(pocetLabel, [ctvereckovaniSesitLabel, linkovanySesitLabel], [2, 3]), 2),
+            proportion(true, [pocetLabel, cenaLabel])
+          ),
+          axiomInput(cont(cenaLabel, 180, entityPrice), 3),
+          nthPart(ctvereckovaniSesitLabel)
+        ),
+        ctvereckovanyPocet,
+        ctor("rate")
+      )
+    }
+  ];
+};
+
+// src/math/trideni-odpady.ts
+var trideni_odpadu = () => {
+  const oddilR = "odd\xEDl R";
+  const oddilS = "odd\xEDl S";
+  const oddilT = "odd\xEDl T";
+  const entityPapir = "pap\xEDr";
+  const entityPlast = "plast";
+  const entityKovy = "kovy";
+  const entityVaha = "kg";
+  const kovyCelkem = deduce(
+    cont(oddilR, 3, entityKovy),
+    cont(oddilS, 3, entityKovy),
+    cont(oddilT, 4, entityKovy),
+    sum(`kovy v\u0161echny odd\xEDly`, [], entityVaha, entityPlast)
+  );
+  const papirCelkem = deduce(
+    cont(oddilR, 6, entityPapir),
+    cont(oddilS, 8, entityPapir),
+    cont(oddilT, 1, entityPapir),
+    sum(`pap\xEDr v\u0161echny odd\xEDly`, [], entityVaha, entityPlast)
+  );
+  const plast = deduce(
+    deduce(
+      cont(oddilT, 9, entityPlast),
+      cont(oddilS, 11, entityPlast),
+      sum(`odd\xEDl S a T`, [], entityPlast, entityPlast)
+    ),
+    cont(oddilR, 15, entityPlast),
+    ctor("comp-ratio")
+  );
+  return {
+    papirStoR: {
+      deductionTree: deduce(
+        deduce(
+          cont(oddilS, 8, entityPapir),
+          cont(oddilR, 6, entityPapir),
+          ctor("comp-ratio")
+        ),
+        ctorBooleanOption(1 / 4)
+      )
+    },
+    papirRtoS: {
+      deductionTree: deduce(
+        deduce(
+          cont(oddilR, 6, entityPapir),
+          cont(oddilS, 8, entityPapir),
+          ctor("comp-ratio")
+        ),
+        ctorOption("C", 1 / 4)
+      )
+    },
+    plast1: {
+      deductionTree: deduce(
+        plast,
+        ctorOption("D", 1 / 3)
+      )
+    },
+    plast2: {
+      deductionTree: deduce(
+        plast,
+        ctorBooleanOption(1 / 3)
+      )
+    },
+    kovyToPapir: {
+      deductionTree: deduce(
+        deduce(
+          kovyCelkem,
+          papirCelkem,
+          ctor("comp-ratio")
+        ),
+        ctorBooleanOption(1 / 2)
+      )
+    },
+    papirToKovy: {
+      deductionTree: deduce(
+        deduce(
+          papirCelkem,
+          kovyCelkem,
+          ctor("comp-ratio")
+        ),
+        ctorOption("E", 1 / 2)
+      )
+    }
+  };
+};
+
+// src/math/M7A-2023/cetar.ts
+function build({ input }) {
+  const agent = "rota";
+  const kapitanLabel = "kapit\xE1n";
+  const porucikLabel = "poru\u010D\xEDk";
+  const cetarLabel = "\u010Deta\u0159";
+  const vojinLabel = "voj\xEDn";
+  const entity3 = "osob";
+  const kapitan = axiomInput(cont(agent, input.kapitan, kapitanLabel), 1);
+  const porucik = axiomInput(cont(agent, input.porucik, porucikLabel), 2);
+  const cetarPerPorucik = axiomInput(rate(agent, input.cetarPerPorucik, cetarLabel, porucikLabel), 3);
+  const vojinPerCetar = axiomInput(rate(agent, input.vojinPerCetar, vojinLabel, cetarLabel), 4);
+  const vydaneRozkazy = sum("vydan\xE9 rozkazy", [kapitanLabel, porucikLabel, cetarLabel], entity3, entity3);
+  const dostaneRozkazy = sum("p\u0159ijat\xE9 rozkazy", [porucikLabel, cetarLabel, vojinLabel], entity3, entity3);
+  const pocetCetaru = deduce(
+    porucik,
+    cetarPerPorucik
+  );
+  const pocetVojinu = deduce(
+    pocetCetaru,
+    vojinPerCetar
+  );
+  const dTree2 = deduce(
+    kapitan,
+    porucik,
+    last(pocetCetaru),
+    vydaneRozkazy
+  );
+  const dTree3 = deduce(
+    porucik,
+    last(pocetCetaru),
+    last(pocetVojinu),
+    dostaneRozkazy
+  );
+  const template1 = (html) => html`<br/><strong>Kolik osob v rotě dostalo rozkaz k nástupu?</strong>`;
+  const template = (highlight2) => highlight2`V rotě je ${input.kapitan} kapitán a má pod sebou ${input.porucik} poručíky.Každý poručík má pod sebou ${input.cetarPerPorucik} své četaře
+a každý četař má pod sebou ${input.vojinPerCetar} svých vojínů. (Další osoby v rotě nejsou.)
+Kapitán se rozhodl svolat celou rotu k nástupu.Rozkaz k nástupu se předával tak, že
+kapitán vydal rozkaz všem poručíkům, z nichž každý vydal tento rozkaz svým četařům
+a každý četař jej vydal svým vojínům.Poté celá rota nastoupila.
+  ${template1}`;
+  return [
+    {
+      deductionTree: pocetVojinu
+    },
+    {
+      deductionTree: dTree2
+    },
+    {
+      deductionTree: dTree3,
+      template
+    }
+  ];
+}
+
+// src/math/M7A-2023/zakusek.ts
+function build2({ input }) {
+  const piece1 = "1.z\xE1kusek";
+  const piece2 = "2.z\xE1kusek";
+  const piece3 = "3.z\xE1kusek";
+  const entity3 = "K\u010D";
+  const totalPrice = "celkem";
+  const partTotalPrice = "1.z\xE1k.+2.z\xE1k";
+  const p1p2 = axiomInput(compRelative(piece2, piece1, -1 / 4), 2);
+  const p1 = axiomInput(cont(piece1, input.cena, entity3), 1);
+  const p2Ratio = ratio(piece1, piece2, 3 / 4);
+  const p3Ratio = ratio(totalPrice, partTotalPrice, 2 / 3);
+  const oneThird = axiomInput(ratio(totalPrice, piece3, 1 / 3), 3);
+  const soucet = sum(partTotalPrice, [], "K\u010D", "K\u010D");
+  const dd1 = inferenceRule(p1, p2Ratio);
+  const dd2 = inferenceRule(p1, dd1, soucet);
+  const dd3 = inferenceRule(dd2, p3Ratio);
+  const deductionTree = deduce(
+    deduce(
+      { ...dd1, ...deduceLbl(2) },
+      deduce(
+        deduce(
+          deduce(
+            p1,
+            deduce(
+              p1,
+              p1p2
+            ),
+            soucet
+          ),
+          deduce(
+            oneThird,
+            ctorComplement(partTotalPrice)
+          )
+        ),
+        oneThird
+      )
+    ),
+    ctorExpressionOption("A", "x < 12")
+  );
+  const zak2 = dd2.kind === "cont" ? dd2.quantity - input.cena : 0;
+  const celkemVse = dd3.kind === "cont" ? dd3.quantity : 0;
+  const data = [
+    { agent: "\u010D.1", value: input.cena },
+    { agent: "\u010D.2", value: zak2 },
+    { agent: "\u010D.3", value: celkemVse - (input.cena + zak2) }
+  ];
+  const template = (highlight2) => highlight2`
+  Maminka koupila v cukrárně tři různé zákusky.
+  První zákusek stál ${input.cena} korun.
+  Druhý zákusek byl o ${"\u010Dtvrtinu levn\u011Bj\u0161\xED ne\u017E prvn\xED"}.
+  Cena třetího zákusku byla ${"t\u0159etinou celkov\xE9 ceny v\u0161ech t\u0159\xED z\xE1kusk\u016F"}.
+  ${(html) => html`<br/><strong>O kolik korun byl třetí zákusek dražší než druhý?</strong>`}`;
+  return { deductionTree, data, template };
+}
+
+// src/math/M7A-2023/index.ts
+var cetarParams = {
+  input: {
+    kapitan: 1,
+    porucik: 4,
+    cetarPerPorucik: 3,
+    vojinPerCetar: 10
+  }
+};
+var M7A_2023_default = {
+  1: comparingValues({
+    input: {
+      first: {
+        ratio: 3 / 4,
+        value: 24
+      },
+      second: {
+        ratio: 1 / 3,
+        value: 12
+      }
+    }
+  }),
+  3.1: build(cetarParams)[0],
+  3.2: build(cetarParams)[1],
+  3.3: build(cetarParams)[2],
+  4.1: example_4_1(),
+  4.2: example_4_2(),
+  5.1: sesity()[1],
+  5.2: compass(),
+  6.1: odmenySoutezici()[0],
+  6.2: odmenySoutezici()[1],
+  10.1: trideni_odpadu().papirStoR,
+  10.2: trideni_odpadu().plast2,
+  10.3: trideni_odpadu().kovyToPapir,
+  11: example_11(),
+  12: example_12(),
+  // 13: example_13(),
+  14: build2({
+    input: {
+      cena: 72
+    }
+  }),
+  15.1: example_15_1(),
+  15.2: example_15_2(),
+  15.3: example_15_3(),
+  16.1: obrazce()[0],
+  16.2: obrazce()[1],
+  16.3: obrazce()[2]
+};
+function example_4_1() {
+  const entity3 = "\u017E\xE1ci";
+  return {
+    deductionTree: toCont(
+      deduce(
+        deduce(
+          axiomInput(cont("pr\u016Fm\u011B\u0159", 21, entity3), 2),
+          cont("po\u010Det m\xED\u010Dov\xFDch sport\u016F", 3, ""),
+          product("po\u010Det v\u0161ech \u017E\xE1k\u016F m\xED\u010Dov\xE9 sporty", [], entity3, entity3)
+        ),
+        deduce(
+          cont("volejbal", 28, entity3),
+          cont("fotbal", 16, entity3),
+          sum("fotbal a volejbal", [], entity3, entity3)
+        ),
+        ctor("comp-diff")
+      ),
+      { agent: "vyb\xEDjen\xE1" }
+    )
+  };
+}
+function example_4_2() {
+  return {
+    deductionTree: to(
+      compRatio("chlapci", "d\xEDvky", 3 / 2),
+      ratios("plav\xE1n\xED", ["d\xEDvky", "chlapci"], [2, 3])
+    )
+  };
+}
+function example_11() {
+  const entity3 = "stup\u0148\u016F";
+  const inputAngleLabel = `zadan\xFD \xFAhel`;
+  const triangleSum = cont("sou\u010Det \xFAhl\u016F v troj\xFAheln\xEDku", 180, entity3);
+  const triangle = "\xFAhel troj\xFAheln\xEDku ABD";
+  return {
+    deductionTree: deduce(
+      deduce(
+        toCont(
+          deduce(
+            triangleSum,
+            deduce(
+              deduce(axiomInput(cont(inputAngleLabel, 40, entity3), 2), compAngle(inputAngleLabel, `${triangle} u vrcholu B`, "alternate")),
+              deduce(
+                axiomInput(cont(inputAngleLabel, 70, entity3), 1),
+                compAngle(inputAngleLabel, `${triangle} u vrcholu A`, "supplementary")
+              ),
+              sum("dvojice \xFAhl\u016F v troj\xFAheln\xEDku", [], entity3, entity3)
+            ),
+            ctor("comp-diff")
+          ),
+          { agent: `${triangle} u vrcholu D` }
+        ),
+        compAngle(`${triangle} u vrcholu D`, "\u03C6", "supplementary")
+      ),
+      ctorOption("D", 150)
+    )
+  };
+}
+function example_12() {
+  const ctverecDelkaLabel = "strana \u010Dtverce";
+  const entity3 = "cm";
+  const entity2d = "cm2";
+  const rectangleWidthLabel = "\u0161\xED\u0159ka obdeln\xEDka";
+  const rectangleWidth = to(
+    axiomInput(cont("nejdel\u0161\xED strana sedmi\xFAheln\xEDku", 5, entity3), 2),
+    commonSense("tato d\xE9lka odpov\xEDd\xE1 \u0161\xED\u0159ce obd\xE9ln\xEDku"),
+    cont(rectangleWidthLabel, 5, entity3)
+  );
+  const triangleHeight = to(
+    commonSense("t\u0159i \u010Dtverce tvo\u0159\xED v\xFD\u0161ku troj\u016Fheln\xEDku"),
+    cont("v\xFD\u0161ka \u0161ed\xE9ho troj\xFAheln\xEDku", 3, entity3)
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          axiomInput(cont(ctverecDelkaLabel, 1, entity3), 1),
+          cont("po\u010Det \u010Dtverc\u016F", 3, ""),
+          product("obsah t\u0159i shodn\xE9 \u010Dtverce", [], entity2d, entity3)
+        ),
+        deduce(
+          rectangleWidth,
+          deduce(
+            last(rectangleWidth),
+            compDiff(rectangleWidthLabel, "v\xFD\u0161ka obdeln\xEDku", 3, entity3)
+          ),
+          product("obsah obdeln\xEDku", [], entity2d, entity3)
+        ),
+        deduce(
+          deduce(
+            triangleHeight,
+            deduce(
+              last(rectangleWidth),
+              compDiff(rectangleWidthLabel, "z\xE1kladna \u0161ed\xE9ho troj\xFAheln\xEDku", 1, entity3)
+            ),
+            cont("polovina", 1 / 2, ""),
+            product("obsah \u0161ed\xE9ho troj\xFAheln\xEDku", [], entity2d, entity3)
+          ),
+          cont("po\u010Det \u0161ed\xFDch troj\xFAhlen\xEDk\u016F", 3, ""),
+          product("obsah t\u0159\xED \u0161ed\xFDch troj\xFAheln\xEDku", [], entity2d, entity2d)
+        ),
+        sum("obsah sedmi\xFAheln\xEDku", [], entity2d, entity2d)
+      ),
+      ctorOption("B", 31)
+    )
+  };
+}
+function example_15_1() {
+  const deducePercent = deduce(
+    axiomInput(percent("cel\xE1 kniha", "R\xF3za p\u0159e\u010Dteno", 60), 2),
+    ctorComplement("R\xF3za nep\u0159e\u010Dteno")
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        axiomInput(cont("cel\xE1 kniha", 1200, "stran"), 1),
+        deducePercent
+      ),
+      ctorOption("C", 480)
+    )
+  };
+}
+function example_15_2() {
+  const entity3 = "K\u010D";
+  const compare = axiomInput(comp("dosp\u011Bl\xE9 vstupn\xE9", "d\u011Btsk\xE9 vstupn\xE9", 210, entity3), 2);
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          axiomInput(compPercent("d\u011Btsk\xE9 vstupn\xE9", "dosp\u011Bl\xE9 vstupn\xE9", 70), 1),
+          compare
+        ),
+        compare
+      ),
+      ctorOption("D", 490)
+    )
+  };
+}
+function example_15_3() {
+  const entity3 = "obyvatel";
+  const den1 = axiomInput(cont("p\u0159i\u0161lo 1.den", 500, entity3), 2);
+  const obec = deduce(
+    axiomInput(percent("obec", "p\u0159i\u0161lo 1.den", 25), 1),
+    den1
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        last(obec),
+        deduce(
+          deduce(
+            deduce(
+              obec,
+              compDiff("obec", "zb\xFDvaj\xEDc\xED dosp\u011Bl\xFD", 500, entity3)
+            ),
+            axiomInput(percent("zb\xFDvaj\xEDc\xED dosp\u011Bl\xFD", "p\u0159i\u0161lo 2.den", 70), 3)
+          ),
+          den1,
+          sum("p\u0159i\u0161lo celkem", [], entity3, entity3)
+        ),
+        ctor("comp-diff")
+      ),
+      ctorOption("B", 450)
+    )
+  };
+}
+
+// src/math/M7A-2024/1.ts
+function porovnatAaB({ input }) {
+  const entity3 = "";
+  const a = axiomInput(cont("a", input.a, entity3), 1);
+  const b = axiomInput(cont("b", input.b, entity3), 2);
+  const rozdil = deduce(
+    a,
+    b,
+    ctor("comp-diff")
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        a,
+        b,
+        sum("sou\u010Det", ["a", "b"], entity3, entity3)
+      ),
+      to(
+        rozdil,
+        cont("rozd\xEDl", lastQuantity(rozdil), entity3)
+      ),
+      ctor("comp-ratio")
+    )
+  };
+}
+function najitMensiCislo({ input }) {
+  const entity3 = "";
+  const a = axiomInput(cont("zadan\xE9 \u010D\xEDslo", input.zadane, entity3), 1);
+  const comparsion = axiomInput(comp("hledan\xE9 \u010D\xEDslo", "zadan\xE9 \u010D\xEDslo", -input.mensiO, entity3), 2);
+  return {
+    deductionTree: deduce(
+      a,
+      comparsion
+    )
+  };
+}
+
+// src/math/M7A-2024/13.ts
+function porovnatObsahObdelnikACtverec({ input }) {
+  const entity3 = "";
+  const unit2d = "cm2";
+  const unit = "cm";
+  const ctverec = axiomInput(cont("\u010Dtverec a", input.ctverec.a, entity3, unit), 3);
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          axiomInput(cont("obd\xE9ln\xEDk a", input.obdelnik.a, entity3, unit), 1),
+          axiomInput(cont("obd\xE9ln\xEDk b", input.obdelnik.b, entity3, unit), 2),
+          product("obsah obd\xE9ln\xEDk", ["a", "b"], unit2d, entity3)
+        ),
+        deduce(
+          ctverec,
+          ctverec,
+          product("obsah \u010Dtverec", ["a", "a"], unit2d, entity3)
+        ),
+        ctor("comp-ratio")
+      ),
+      ctorOption("D", 12)
+    )
+  };
+}
+
+// src/math/cislaNaOse.ts
+function cislaNaOse({ mensi, vetsi, pocetUseku }) {
+  const entityLength = "d\xE9lka";
+  const entity3 = "\xFAsek";
+  const rozdil = deduce(
+    vetsi,
+    mensi
+  );
+  const usekRate = deduce(
+    to(
+      rozdil,
+      cont("vzd\xE1lenost mezi zadan\xFDmi \u010D\xEDsly", lastQuantity(rozdil), entityLength)
+    ),
+    pocetUseku,
+    ctor("rate")
+  );
+  return usekRate;
+}
+
+// src/math/M7A-2024/3.ts
+function triCislaNaOse({ input }) {
+  const entityLength = "d\xE9lka";
+  const entity3 = "\xFAsek";
+  const mensi = axiomInput(cont("men\u0161\xED zadan\xE9 \u010D\xEDslo", input.mensiCislo, entityLength), 1);
+  const vetsi = axiomInput(cont("v\u011Bt\u0161\xED zadnan\xE9 \u010D\xEDslo", input.vetsiCislo, entityLength), 2);
+  const pocetUseku = axiomInput(cont("vzd\xE1lenost mezi zadan\xFDmi \u010D\xEDsly", input.pocetUsekuMeziCisly, "\xFAsek"), 3);
+  const positionA = axiomInput(cont("posun A", input.A, entity3), 1);
+  const positionB = axiomInput(cont("posun B", input.B, entity3), 1);
+  const positionC = axiomInput(cont("posun C", input.C, entity3), 1);
+  const usekRate = cislaNaOse({ mensi, vetsi, pocetUseku });
+  const rozdilPostion = deduce(positionB, positionA, ctor("comp-diff"));
+  const dd1 = deduce(deduce(positionC, usekRate), mensi, sum("pozice C", [], entityLength, entityLength));
+  const dd2 = deduce(deduce(deduce(positionB, last(usekRate)), mensi, sum("pozice B", [], entityLength, entityLength)), mensi, ctor("comp-ratio"));
+  const dd3 = deduce(to(rozdilPostion, cont("rozd\xEDl", lastQuantity(rozdilPostion), entity3)), last(usekRate));
+  return { "C": { deductionTree: dd1 }, "B": { deductionTree: dd2 }, "rozdil": { deductionTree: dd3 } };
+}
+
+// src/math/M7A-2024/letni-tabor.ts
+function build3({ input }) {
+  const agent = "tabor";
+  const zdravotniLabel = "zdravotn\xEDk";
+  const kucharLabel = "kucha\u0159ka";
+  const vedouciLabel = "vedouc\xED";
+  const instruktorLabel = "instruktor";
+  const diteLabel = "d\xEDt\u011B";
+  const entity3 = "osob";
+  const zdravotnik = axiomInput(cont(agent, input.zdravotnik, zdravotniLabel), 1);
+  const kucharPerZdravotnik = axiomInput(rate(agent, input.kucharPerZdravotnik, kucharLabel, zdravotniLabel), 2);
+  const vedouciPerKuchar = axiomInput(rate(agent, input.vedouciPerKuchar, vedouciLabel, kucharLabel), 3);
+  const instruktorPerVedouci = axiomInput(rate(agent, input.instruktorPerVedouci, instruktorLabel, vedouciLabel), 4);
+  const ditePerInstruktor = axiomInput(rate(agent, input.ditePerInstruktor, diteLabel, instruktorLabel), 5);
+  const kuchari = deduce(
+    zdravotnik,
+    kucharPerZdravotnik
+  );
+  const vedouci = deduce(
+    kuchari,
+    vedouciPerKuchar
+  );
+  const instruktori = deduce(
+    vedouci,
+    instruktorPerVedouci
+  );
+  const dTree1 = deduce(
+    instruktori,
+    last(vedouci),
+    sum("vedouc\xEDch a instruktor\u016F", [vedouciLabel, instruktorLabel], entity3, entity3)
+  );
+  const dTree1Result = last(dTree1);
+  const dTree2 = deduce(
+    instruktori,
+    last(kuchari),
+    ctor("comp-ratio")
+  );
+  const dTree2Result = last(dTree2);
+  const dTree3 = deduce(
+    instruktori,
+    ditePerInstruktor
+  );
+  const dTree3Result = last(dTree3);
+  const templateBase = (highlight2) => highlight2`Na letním táboře jsou kromě dětí také instruktoři, vedoucí, kuchařky a ${input.zdravotnik} zdravotník.
+     Počet zdravotníků a počet kuchařek je v poměru ${`1:${input.kucharPerZdravotnik}`},
+     počet kuchařek a vedoucích ${`1:${input.vedouciPerKuchar}`},
+     počet vedoucích a instruktorů ${`1:${input.instruktorPerVedouci}`},
+     a počet instruktorů a dětí ${`1:${input.ditePerInstruktor}`}.
+     Všichni jsou ubytováni ve stanech. Zdravotník je ve stanu sám, ostatní jsou ubytováni po dvou.`;
+  const template1 = (html) => html`<br/>
+     <strong>Na táboře je dohromady ${dTree1Result.quantity} vedoucích a instruktorů?</strong>`;
+  const template2 = (html) => html`<br/>
+     <strong>Instruktorů je ${dTree2Result.ratio} krát více než kuchařek.?</strong>`;
+  const template3 = (html) => html`<br/>
+    <strong>Na táboře je celkem ${dTree3Result.quantity} dětí?</strong>`;
+  return {
+    pocetVedoucichAInstruktoru: { deductionTree: deduce(dTree1, ctorBooleanOption(22)), template: (highlight2) => highlight2`${() => templateBase(highlight2)}${template1}` },
+    porovnaniInstrukturuAKucharek: { deductionTree: deduce(dTree2, ctorBooleanOption(4)), template: (highlight2) => highlight2`${() => templateBase(highlight2)}${template2}` },
+    pocetDeti: { deductionTree: deduce(dTree3, ctorBooleanOption(64)), template: (highlight2) => highlight2`${() => templateBase(highlight2)}${template3}` }
+  };
+}
+
+// src/math/M7A-2024/pocet-sportovcu.ts
+function build4({ input }) {
+  const entity3 = "sportovc\u016F";
+  const dvojice = axiomInput(cont("dvojice", 2, entity3), 1);
+  const trojice = axiomInput(cont("trojice", 3, entity3), 2);
+  const ctverice = axiomInput(cont("\u010Dtve\u0159ice", 4, entity3), 3);
+  const petice = axiomInput(cont("p\u011Btice", 5, entity3), 4);
+  const lcdLabel = "nejmen\u0161\xED mo\u017En\xE1 skupina";
+  const nasobek = lcd(lcdLabel, entity3);
+  const dd1 = inferenceRule(dvojice, trojice, ctverice, petice, nasobek);
+  const rozdil = axiomInput(compDiff("po\u010Det sportovc\u016F", lcdLabel, 1, entity3), 5);
+  const dd2 = inferenceRule(dd1, rozdil);
+  const deductionTree = deduce(
+    deduce(
+      dvojice,
+      trojice,
+      ctverice,
+      petice,
+      nasobek
+    ),
+    rozdil
+  );
+  const template = (highlight2) => highlight2`Počet sportovců na závodech byl více než 1 a zároveň méně než 90. 
+  Pořadatel chtěl sportovce seřadit do slavnostního průvodu, ale ať je rozděloval do ${"dvojic"}, ${"trojic"}, ${"\u010Dtve\u0159ic"} nebo ${"p\u011Btic"}, vždy mu ${"jeden"} sportovec zbyl.
+  ${(html) => html`<br/><strong>Kolik sportovců se sešlo na závodech?</strong>`}`;
+  return { deductionTree, template };
+}
+
+// src/math/M7A-2024/kralice-a-slepice-v-ohrade.ts
+function build5({ input }) {
+  const rozdil = input.pocetHlav - input.kralikuMene;
+  const halfTotal = Math.round(rozdil / 2);
+  const nohy = (halfTotal + input.kralikuMene) * 2 + halfTotal * 4;
+  const data = [
+    { value: halfTotal, agent: "kr\xE1l\xEDci" },
+    { value: halfTotal, agent: "slepice" },
+    { value: input.kralikuMene, agent: "slepice", opacity: 0.6 }
+  ];
+  const hlava = "hlava";
+  const celkem = "slepice a kr\xE1l\xEDci";
+  const entity3 = "zv\xED\u0159e";
+  const slepice = "slepice";
+  const kralik = "kr\xE1l\xEDk";
+  const total = axiomInput(cont(celkem, input.pocetHlav, hlava), 1);
+  const perHlava = rate(celkem, 1, hlava, entity3);
+  const slepicePlus = axiomInput(comp(kralik, slepice, -input.kralikuMene, entity3), 2);
+  const deductionTree = deduce(
+    deduce(
+      deduce(
+        deduce(total, perHlava),
+        slepicePlus,
+        ctor("comp-part-eq")
+      ),
+      slepicePlus
+    ),
+    ctorOption("E", 21)
+  );
+  const template = (highlight2) => highlight2`V ohradě pobíhali králíci a slepice.
+  Králíků bylo o ${input.kralikuMene} méně.
+  Králíci a slepice měli dohromady ${nohy} nohou a ${input.pocetHlav} hlav.
+  ${(html) => html`<br/><strong> Kolik bylo v ohradě slepic?</strong>`}`;
+  return { deductionTree, data, template };
+}
+
+// src/math/M7A-2024/index.ts
+var letniTaborInput = {
+  input: {
+    zdravotnik: 1,
+    kucharPerZdravotnik: 4,
+    vedouciPerKuchar: 2,
+    instruktorPerVedouci: 2,
+    ditePerInstruktor: 4
+  }
+};
+var osaParams = { mensiCislo: 1.4, vetsiCislo: 5.6, pocetUsekuMeziCisly: 6, A: 4, B: 7, C: -2 };
+var M7A_2024_default = {
+  1.1: porovnatAaB({ input: { a: 1.6, b: -1.2 } }),
+  1.2: najitMensiCislo({ input: { zadane: 7 / 8, mensiO: 0.093 } }),
+  3.1: triCislaNaOse({ input: osaParams }).C,
+  3.2: triCislaNaOse({ input: osaParams }).B,
+  3.3: triCislaNaOse({ input: osaParams }).rozdil,
+  5.1: krouzky().divkyAnglictina,
+  5.2: krouzky().pocetZaku,
+  6: build4({ input: {} }),
+  10.1: build3(letniTaborInput).pocetVedoucichAInstruktoru,
+  10.2: build3(letniTaborInput).porovnaniInstrukturuAKucharek,
+  10.3: build3(letniTaborInput).pocetDeti,
+  11: build5({
+    input: {
+      kralikuMene: 5,
+      pocetHlav: 37
+    }
+  }),
+  13: porovnatObsahObdelnikACtverec({
+    input: {
+      obdelnik: { a: 36, b: 12 },
+      ctverec: { a: 6 }
+    }
+  }),
+  14: angle(),
+  15.1: koupaliste(),
+  15.2: cestovni_kancelar(),
+  15.3: pozemek()
+};
+function koupaliste() {
+  const entity3 = "n\xE1v\u0161t\u011Bvn\xEDk\u016F";
+  return {
+    deductionTree: deduce(
+      deduce(
+        axiomInput(percent("koupali\u0161t\u011B loni", "koupali\u0161t\u011B letos", 80), 1),
+        axiomInput(cont("koupali\u0161t\u011B letos", 680, entity3), 2)
+      ),
+      ctorOption("E", 850)
+    )
+  };
+}
+function cestovni_kancelar() {
+  const entity3 = "klient\u016F";
+  return {
+    deductionTree: deduce(
+      deduce(
+        axiomInput(cont("\u010Derven", 330, entity3), 1),
+        axiomInput(compPercent("\u010Derven", "\u010Dervenec", 100 - 40), 2)
+      ),
+      ctorOption("B", 550)
+    )
+  };
+}
+function pozemek() {
+  const skutecnost = "skute\u010Dnost";
+  const mapa = "pl\xE1n";
+  const entity3 = "";
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          axiomInput(ratios("pozemek m\u011B\u0159\xEDtko", [mapa, skutecnost], [1, 3e3]), 1),
+          axiomInput(cont(mapa, 15, entity3, "cm"), 2),
+          nthPart(skutecnost)
+        ),
+        ctorUnit("m")
+      ),
+      ctorOption("A", 450)
+    )
+  };
+}
+function krouzky() {
+  const entity3 = "d\u011Bti";
+  const entityPercent2 = "%";
+  const basketabal = cont("basketbal", 16, entityPercent2);
+  const tanecni = cont("tane\u010Dn\xED", 15, entityPercent2);
+  const lezeckaStena = cont("lezeck\xE1 st\u011Bna", 25, entityPercent2);
+  const bezKrouzku = cont("\u017E\xE1dn\xFD krou\u017Eek", 6, entityPercent2);
+  const celek = cont("celek", 100, entityPercent2);
+  const florbalPocet = cont("florbal", 114, entity3);
+  const florbalDiff = deduce(
+    celek,
+    deduce(
+      bezKrouzku,
+      basketabal,
+      tanecni,
+      lezeckaStena,
+      sum(`zadan\xE9 \xFAdaje`, [], entityPercent2, entityPercent2)
+    ),
+    ctor("comp-diff")
+  );
+  const celekPocet = deduce(
+    to(florbalDiff, percent("celek", "florbal", lastQuantity(florbalDiff))),
+    florbalPocet
+  );
+  return {
+    divkyAnglictina: {
+      deductionTree: deduce(
+        celekPocet,
+        deduce(
+          last(celekPocet),
+          percent("celek", "\u017E\xE1dn\xFD krou\u017Eek", 6)
+        ),
+        ctor("comp-diff")
+      )
+    },
+    pocetZaku: {
+      deductionTree: deduce(
+        last(celekPocet),
+        percent("celek", "basketbal", 16)
+      )
+    }
+  };
+}
+function angle() {
+  const entity3 = "stup\u0148\u016F";
+  const betaEntity = "beta \xFAhel";
+  const inputAngleLabel = `zadan\xFD \xFAhel`;
+  const triangleSumLabel = "sou\u010Det \xFAhl\u016F v troj\xFAheln\xEDku";
+  const triangleSum = cont(triangleSumLabel, 180, entity3);
+  const triangle = "\xFAhel troj\xFAheln\xEDku ABC";
+  const doubleBeta = deduce(
+    cont(inputAngleLabel, 2, betaEntity),
+    compAngle(inputAngleLabel, `${triangle} u vrcholu A`, "alternate")
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          deduce(
+            toCont(
+              deduce(
+                triangleSum,
+                deduce(
+                  axiomInput(cont(inputAngleLabel, 105, entity3), 1),
+                  compAngle(inputAngleLabel, `${triangle} u vrcholu C`, "supplementary")
+                ),
+                ctor("comp-diff")
+              ),
+              { agent: `beta` }
+            ),
+            deduce(
+              doubleBeta,
+              cont(`${triangle} u vrcholu B`, 1, betaEntity),
+              sum("beta", [], betaEntity, betaEntity)
+            ),
+            ctor("rate")
+          ),
+          last(doubleBeta)
+        ),
+        compAngle(`${triangle} u vrcholu A`, "alfa", "supplementary")
+      ),
+      ctorOption("B", 110)
+    )
+  };
+}
+
+// src/math/M7A-2025/index.ts
+var M7A_2025_default = {
+  1.1: ceremonial().polovina,
+  1.2: ceremonial().pocetMinut,
+  4.1: asistencniPes().bara,
+  4.2: asistencniPes().rozdilBaraACyril,
+  4.3: asistencniPes().sum,
+  6.1: karticky().petr,
+  11: tornado(),
+  12: cestaKeStudance().meritko,
+  13: cestaKeStudance().delkaTrasa
+};
+function ceremonial() {
+  const entity3 = "doba";
+  const unit = "minut";
+  const ceremonial2 = "ceremoni\xE1l";
+  const promitani = "prom\xEDt\xE1n\xED";
+  const zacatekLabel = "zacatek";
+  const konecLabel = "konec";
+  const dobaCeremonial = to(
+    commonSense(`${zacatekLabel} (17:45) - ${konecLabel} (19:35)`),
+    cont(ceremonial2, 110, entity3, unit)
+  );
+  const dobaPrvniPulka = deduce(
+    dobaCeremonial,
+    ratios(ceremonial2, ["1. p\u016Flka", "2. p\u016Flka"], [1, 1])
+  );
+  return {
+    polovina: {
+      deductionTree: dobaPrvniPulka
+    },
+    pocetMinut: {
+      deductionTree: deduce(
+        last(dobaCeremonial),
+        deduce(
+          last(dobaPrvniPulka),
+          deduce(
+            last(dobaCeremonial),
+            ratio(ceremonial2, promitani, 1 / 5)
+          ),
+          sum("konec promitani", [], { entity: entity3, unit }, { entity: entity3, unit })
+        ),
+        ctorDifference("rozdil")
+      )
+    }
+  };
+}
+function asistencniPes() {
+  const adamL = "Adam";
+  const baraL = "B\xE1ra";
+  const cyrilL = "Cyril";
+  const entity3 = "korun";
+  const entityArtifical = "pomysln\xFD d\xEDlek";
+  const adamToBara = comp(adamL, baraL, 300, entity3);
+  const adamEqualBaraL = `1/3 ${adamL} = 1/2 ${baraL}`;
+  const baraEqualCyrilL = `1/3 ${baraL} = 1/2 ${cyrilL}`;
+  const baraPolovina = ratio(baraL, adamEqualBaraL, 1 / 2);
+  const baraTretina = ratio(baraL, baraEqualCyrilL, 1 / 3);
+  const adamTretina = ratio(adamL, adamEqualBaraL, 1 / 3);
+  const cyrilPolovina = ratio(cyrilL, baraEqualCyrilL, 1 / 2);
+  const baraDilku = to(
+    commonSense("B\xE1\u0159ina \u010D\xE1stku - d\u011Bliteln\xE1 3 a 2."),
+    commonSense("B\xE1\u0159ina \u010D\xE1stce p\u0159i\u0159ad\xEDme 6 pomysln\xFDch d\xEDlk\u016F."),
+    cont(baraL, 6, entityArtifical)
+  );
+  const adamDilku = deduce(
+    deduce(baraDilku, baraPolovina),
+    adamTretina
+  );
+  const cyrilDilku = deduce(
+    deduce(baraDilku, baraTretina),
+    cyrilPolovina
+  );
+  const bara = deduce(
+    deduce(
+      adamDilku,
+      baraDilku,
+      ctor("comp-ratio")
+    ),
+    adamToBara
+  );
+  const rate3 = deduce(
+    cont("rozd\xEDl", 300, entity3),
+    deduce(
+      last(adamDilku),
+      last(baraDilku),
+      ctorDifference("rozd\xEDl")
+    ),
+    ctor("rate")
+  );
+  const cyril = deduce(rate3, cyrilDilku);
+  const adam = deduce(rate3, last(adamDilku));
+  return {
+    bara: {
+      deductionTree: bara
+    },
+    rozdilBaraACyril: {
+      deductionTree: deduce(
+        last(bara),
+        cyril,
+        ctorDifference("rozd\xEDl")
+      )
+    },
+    sum: {
+      deductionTree: deduce(
+        last(bara),
+        last(cyril),
+        adam,
+        sum("dohromady", [], entity3, entity3)
+      )
+    }
+  };
+}
+function karticky() {
+  const entity3 = "karti\u010Dky";
+  const tondaToPeter = transfer("Tonda", "Petr", 4, entity3);
+  const petrToTonda = transfer("Petr", "Tonda", 6, entity3);
+  const jirkaToTonda = transfer("Jirka", "Tonda", 3, entity3);
+  const petrToJirka = transfer("Petr", "Jirka", 2, entity3);
+  const jirkaToPetr = transfer("Jirka", "Petr", 3, entity3);
+  const vedouciToPetr = transfer("vedouci", "Petr", 4, entity3);
+  const petr = cont("Petr", 80, entity3);
+  return {
+    petr: {
+      deductionTree: deduce(
+        petrToTonda,
+        deduce(
+          tondaToPeter,
+          deduce(
+            petrToJirka,
+            deduce(
+              jirkaToPetr,
+              deduce(
+                vedouciToPetr,
+                petr
+              )
+            )
+          )
+        )
+      )
+    }
+  };
+}
+function cestaKeStudance() {
+  const entity3 = "skute\u010Dnost";
+  const entityBase = "mapa";
+  const unit = "cm";
+  const tiborAgent = "pl\xE1novan\xE1 trasa";
+  const tiborMeritko = rate(tiborAgent, 5e4, { entity: entity3, unit }, entityBase);
+  const tiborTrasaPlan = cont(tiborAgent, 4.2, entityBase, unit);
+  const matyasAgent = "pl\xE1novan\xE1 trasa";
+  const matyasTrasaPlan = cont(matyasAgent, 28, entityBase, "mm");
+  const trasaSkutecnost = deduce(
+    tiborMeritko,
+    tiborTrasaPlan
+  );
+  return {
+    meritko: {
+      deductionTree: deduce(
+        deduce(
+          trasaSkutecnost,
+          deduce(matyasTrasaPlan, ctorUnit("cm")),
+          ctor("rate")
+        ),
+        ctorOption("C", 75e3)
+      )
+    },
+    delkaTrasa: {
+      deductionTree: deduce(
+        deduce(
+          last(trasaSkutecnost),
+          ctorUnit("km")
+        ),
+        ctorOption("A", 2.1)
+      )
+    }
+  };
+}
+function tornado() {
+  const entity3 = "d\u016Fm";
+  const neposkozenoLabel = "nepo\u0161kozeno";
+  const poskozenoLabel = "po\u0161kozeno";
+  const domuBezeSkod = cont(neposkozenoLabel, 270, entity3);
+  const poskozenoRate = percent("celkem", poskozenoLabel, 40);
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          deduce(
+            deduce(
+              poskozenoRate,
+              ctorComplement(neposkozenoLabel)
+            ),
+            domuBezeSkod
+          ),
+          poskozenoRate
+        ),
+        percent(poskozenoLabel, "demolice", 30)
+      ),
+      ctorOption("B", 54)
+    )
+  };
+}
+
+// src/math/M7B-2025/index.ts
+var M7B_2025_default = {
+  1: hledaneCislo(),
+  2: pomer(),
+  4.1: vodniNadrz().pomer,
+  4.2: vodniNadrz().pocetCerpadel,
+  4.3: vodniNadrz().pocetHodin,
+  5.1: zaciSkupiny().dvojic,
+  5.2: zaciSkupiny().zaku,
+  13: kapesne().utratila,
+  14: kapesne().usetrila,
+  15.1: cislo(),
+  15.2: zahradnictvi(),
+  15.3: predstaveni()
+};
+function hledaneCislo() {
+  const entity3 = "";
+  const prvniL = "prvn\xED";
+  const druhyL = "druh\xFD";
+  const prvniRelative = cont(prvniL, 1 / 8, entity3);
+  const druhyRelative = cont(druhyL, 1 / 2, entity3);
+  const prvni = cont(prvniL, 1, entity3);
+  const druhy = cont(druhyL, 16, entity3);
+  return {
+    deductionTree: deduce(
+      deduce(
+        prvniRelative,
+        druhyRelative,
+        ctor("comp-ratio")
+      ),
+      deduce(
+        prvni,
+        druhy
+      )
+    )
+  };
+}
+function pomer() {
+  const entity3 = "";
+  const a3 = cont("3. \u010D\xEDslo", 72, entity3);
+  const a4 = cont("4. \u010D\xEDslo", 108, entity3);
+  const sousedniCislaPomerLabel = "sousedn\xED \u010D\xEDsla";
+  const sousedniCislaPomer = deduce(
+    deduce(
+      a3,
+      a4,
+      ctorRatios(sousedniCislaPomerLabel)
+    ),
+    deduce(a3, a4, gcd("nejv\u011Bt\u0161\xED spole\u010Dn\xFD n\xE1sobek", entity3)),
+    ctor("invert-scale")
+  );
+  const createRatios = (treeNode, n1, n2) => {
+    const newRatio = last(treeNode);
+    return {
+      ...newRatio,
+      parts: [`${n1}. \u010D\xEDslo`, `${n2}. \u010D\xEDslo`]
+    };
+  };
+  return {
+    deductionTree: to(
+      deduce(
+        deduce(
+          to(
+            sousedniCislaPomer,
+            createRatios(sousedniCislaPomer, 2, 3)
+          ),
+          a3,
+          nthPart("2. \u010D\xEDslo")
+        ),
+        createRatios(sousedniCislaPomer, 1, 2),
+        nthPart("1. \u010D\xEDslo")
+      ),
+      commonSense(""),
+      deduce(
+        deduce(
+          createRatios(sousedniCislaPomer, 4, 5),
+          a4,
+          nthPart("5. \u010D\xEDslo")
+        ),
+        createRatios(sousedniCislaPomer, 5, 6),
+        nthPart("6. \u010D\xEDslo")
+      ),
+      commonSense("hledan\xE1 \u010D\xEDsla jsou 1. \u010D\xEDslo a 6. \u010D\xEDslo")
+    )
+  };
+}
+function vodniNadrz() {
+  const entity3 = "doba";
+  const unit = "h";
+  const entityCerpadlo = "\u010Derpadlo";
+  return {
+    pomer: {
+      deductionTree: deduce(
+        deduce(
+          cont("dopln\u011Bno", 4, entity3, unit),
+          cont("pln\u011B napln\u011Bno", 6, entity3, unit),
+          ctor("ratio")
+        ),
+        ctorComplement("r\xE1no ji\u017E napln\u011Bno")
+      )
+    },
+    pocetCerpadel: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            cont("p\u016Fvodn\u011B", 6, entity3, unit),
+            cont("nov\u011B", 8, entity3, unit),
+            ctor("comp-ratio")
+          ),
+          proportion(true, [entity3, entityCerpadlo])
+        ),
+        cont("p\u016Fvodn\u011B", 4, entityCerpadlo)
+      )
+    },
+    pocetHodin: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            deduce(
+              cont("p\u016Fvodn\u011B", 4, entityCerpadlo),
+              cont("nov\u011B", 2, entityCerpadlo),
+              ctor("comp-ratio")
+            ),
+            proportion(true, [entityCerpadlo, entity3])
+          ),
+          cont("p\u016Fvodn\u011B", 6, entity3, unit)
+        ),
+        ratio("nov\u011B", "nov\u011B polovina n\xE1dr\u017Ee", 1 / 2)
+      )
+    }
+  };
+}
+function zaciSkupiny() {
+  const entityGroup = "skupina";
+  const entityDvojic = "dvojic";
+  const entityTrojic = "trojic";
+  const entity3 = "\u017E\xE1k\u016F";
+  const pomer2 = deduce(
+    deduce(
+      cont("dvojice", 3, entityGroup),
+      cont("trojice", 2, entityGroup),
+      ctorRatios("rozlo\u017Een\xED p\u0159i rovnosti")
+    ),
+    deduce(
+      deduce(
+        cont("dvojice", 3, entityGroup),
+        cont("trojice", 2, entityGroup),
+        ctorDifference("jednotkov\xFD rozd\xEDl p\u0159i rovnosti")
+      ),
+      cont("rozd\xEDl p\u0159i rovnosti", 2, entityGroup),
+      product("rozd\xEDl p\u0159i rovnosti", [], entityGroup, entityGroup)
+    ),
+    ctor("scale")
+  );
+  const dvojic = deduce(
+    to(
+      pomer2,
+      cont("skupina dvojic", 6, entityDvojic)
+    ),
+    cont("zb\xFDvaj\xEDc\xED \u017E\xE1ci", 1, entityDvojic),
+    sum("skupina dvojic", [], entityDvojic, entityDvojic)
+  );
+  return {
+    dvojic: {
+      deductionTree: dvojic
+    },
+    zaku: {
+      deductionTree: deduce(
+        deduce(
+          last(dvojic),
+          rate("skupina", 2, entity3, entityDvojic)
+        ),
+        deduce(
+          to(
+            last(pomer2),
+            cont("skupina trojic", 4, entityTrojic)
+          ),
+          rate("skupina", 3, entity3, entityTrojic)
+        ),
+        sum("celkem", [entityDvojic, entityTrojic], entity3, entity3)
+      )
+    }
+  };
+}
+function kapesne() {
+  const entity3 = "korun";
+  const entityBase = "m\u011Bs\xEDc";
+  const agentHelena = "Helena";
+  const agentTereza = "Tereza";
+  const ledenPocatekHelena = cont("po\u010D\xE1tek leden", 550, entity3);
+  const brezenPocatekHelena = cont("po\u010D\xE1tek b\u0159ezen", 1e3, entity3);
+  const kapesneRateHelena = rate(agentHelena, 400, entity3, entityBase);
+  const kapesneRateTereza = rate(agentTereza, 400, entity3, entityBase);
+  const ledenPocateTereza = cont("po\u010D\xE1tek leden", 400, entity3);
+  const dubenPocateTereza = cont("po\u010D\xE1tek duben", 1200, entity3);
+  return {
+    utratila: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            kapesneRateHelena,
+            cont("p\u0159ijmy z kapesn\xE9ho", 2, entityBase)
+          ),
+          toCont(
+            deduce(
+              ledenPocatekHelena,
+              brezenPocatekHelena,
+              ctorDelta(agentHelena)
+            ),
+            { agent: "zm\u011Bna stavu \xFA\u010Dtu" }
+          ),
+          ctorDifference("utraceno")
+        ),
+        ctorOption("A", 350)
+      )
+    },
+    usetrila: {
+      deductionTree: deduce(
+        deduce(
+          toCont(
+            deduce(
+              ledenPocateTereza,
+              dubenPocateTereza,
+              ctorDelta(agentTereza)
+            ),
+            { agent: "u\u0161et\u0159ila" }
+          ),
+          deduce(
+            kapesneRateTereza,
+            cont("p\u0159ijmy z kapesn\xE9ho", 3, entityBase)
+          ),
+          ctor("ratio")
+        ),
+        ctorOption("B", 2 / 3)
+      )
+    }
+  };
+}
+function cislo() {
+  const entity3 = "";
+  return {
+    deductionTree: deduce(
+      deduce(
+        cont("zv\u011Bt\u0161en\xE9 \u010D\xEDslo", 98, entity3),
+        cont("zadan\xE9 \u010D\xEDslo", 56, entity3),
+        ctorComparePercent()
+      ),
+      ctorOption("F", 75, { asPercent: true })
+    )
+  };
+}
+function zahradnictvi() {
+  const entity3 = "sazenic";
+  const celkemLabel = "kv\u011Btina";
+  const kopretinyLabel = "kopretina";
+  const hvozdikyLabel = "hvozd\xEDk";
+  const astraLabel = "astra";
+  const celkem = cont(celkemLabel, 120, entity3);
+  const hvozdiky = deduce(
+    rate(hvozdikyLabel, 24, entity3, "bedna"),
+    cont(hvozdikyLabel, 2, "bedna")
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          celkem,
+          deduce(
+            deduce(
+              celkem,
+              ratio(celkemLabel, kopretinyLabel, 1 / 4)
+            ),
+            hvozdiky,
+            sum("dohromady", [kopretinyLabel, hvozdikyLabel], entity3, entity3)
+          ),
+          ctorDifference(astraLabel)
+        ),
+        celkem,
+        ctorPercent()
+      ),
+      ctorOption("B", 35, { asPercent: true })
+    )
+  };
+}
+function predstaveni() {
+  const entity3 = "div\xE1k\u016F";
+  const dospeliLabel = "dosp\u011Bl\xFD";
+  const detiLabel = "d\u011Bti";
+  const predskolniDetiLabel = "p\u0159ed\u0161kol\xE1ci";
+  const dospely = cont(dospeliLabel, 100, entity3);
+  const deti = deduce(
+    dospely,
+    compRelative(detiLabel, dospeliLabel, 1 / 2)
+  );
+  const predskolaci = deduce(
+    deti,
+    percent(detiLabel, predskolniDetiLabel, 60)
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        predskolaci,
+        deduce(
+          last(deti),
+          dospely,
+          sum("celkem", [detiLabel, dospeliLabel], entity3, entity3)
+        ),
+        ctorPercent()
+      ),
+      ctorOption("C", 36, { asPercent: true })
+    )
+  };
+}
+
+// src/math/M5A-2023/index.ts
+var cetarParams2 = {
+  input: {
+    kapitan: 1,
+    porucik: 4,
+    cetarPerPorucik: 3,
+    vojinPerCetar: 10
+  }
+};
+var M5A_2023_default = {
+  2.1: comparingValues({
+    input: {
+      first: {
+        ratio: 1 / 4,
+        value: 24
+      },
+      second: {
+        ratio: 1 / 3,
+        value: 12
+      }
+    }
+  }),
+  2.2: hledani_cisel({
+    input: {
+      value: 180
+    }
+  }),
+  3.1: build(cetarParams2)[0],
+  3.2: build(cetarParams2)[1],
+  3.3: build(cetarParams2)[2],
+  4.1: sesity()[0],
+  4.2: sesity()[1],
+  4.3: compass(),
+  5.1: klubSEN().jedenKrouzek,
+  5.2: klubSEN().klub,
+  6.1: odmenySoutezici()[0],
+  6.2: odmenySoutezici()[1],
+  8.1: desitiuhelnik().whiteTriangle,
+  8.2: desitiuhelnik().grayRectangle,
+  8.3: desitiuhelnik().grayTriangle,
+  9: build2({
+    input: {
+      cena: 72
+    }
+  }),
+  11: stavebnice().cube,
+  12: stavebnice().minimalCube,
+  13.1: trideni_odpadu().papirRtoS,
+  13.2: trideni_odpadu().plast1,
+  13.3: trideni_odpadu().papirToKovy,
+  14.1: obrazce()[0],
+  14.2: obrazce()[1],
+  14.3: obrazce()[2]
+};
+function hledani_cisel({ input }) {
+  const entity3 = "";
+  return {
+    deductionTree: deduce(
+      to(
+        axiomInput(cont("zadan\xE1 hodnota", input.value, entity3), 1),
+        commonSense(`rozklad na prvo\u010D\xEDsla:${primeFactorization([input.value]).join(",")}`),
+        commonSense(`rozd\u011Bl\xEDm na 2 skupiny, tak aby bylo lehce d\u011Bliteln\xE9 6`),
+        commonSense("prvni skupina 2 x 3 = 6, resp. \u010D\xEDslo zv\u011Bt\u0161en\xE9 = 6 x 2"),
+        commonSense("druhe skupina 2 x 3 x 5 = 30, resp. \u010D\xEDslo zmen\u0161en\xE9 = 30 / 6 = 5"),
+        cont("prvni zm\u011Bn\u011Bn\xE9 \u010D\xEDslo", 12, entity3)
+      ),
+      cont("druhe zm\u011Bn\u011Bn\xE9 \u010Dislo", 5, entity3),
+      product("sou\u010Din", [], entity3, entity3)
+    )
+  };
+}
+function klubSEN() {
+  const entity3 = "d\xEDt\u011B";
+  const entityKrouzek = "\xFA\u010Dast krou\u017Eek";
+  const sportovni = cont("sportovn\xED", 14, entity3);
+  const divadelni = cont("divadeln\xED", 12, entity3);
+  const roboticky = cont("robotick\xFD", 6, entity3);
+  const threeRate = rate("nav\u0161t\u011Bvuje 3 krou\u017Eky", 3, entityKrouzek, entity3);
+  const twoRate = rate("nav\u0161t\u011Bvuje 2 krou\u017Eky", 2, entityKrouzek, entity3);
+  const three = cont("nav\u0161t\u011Bvuje 3 krou\u017Eky", 3, entity3);
+  const two = cont("nav\u0161t\u011Bvuje 2 krou\u017Eky", 8, entity3);
+  const one = deduce(
+    deduce(
+      sportovni,
+      divadelni,
+      roboticky,
+      sum("celkem u\u010Dastn\xEDk\u016F", [], entity3, entity3)
+    ),
+    deduce(
+      deduce(
+        threeRate,
+        three
+      ),
+      deduce(
+        twoRate,
+        two
+      ),
+      sum("nav\u0161t\u011Bvuje v\xEDce krou\u017Ek\u016F", [], entity3, entity3)
+    ),
+    ctor("comp-diff")
+  );
+  return {
+    jedenKrouzek: {
+      deductionTree: one
+    },
+    klub: {
+      deductionTree: deduce(
+        last(one),
+        two,
+        three,
+        sum("po\u010Det d\u011Bt\xED", [], entity3, entity3)
+      )
+    }
+  };
+}
+function desitiuhelnik() {
+  const squareSizeLabel = "strana \u010Dtverce";
+  const entity3 = "cm";
+  const entity2d = "cm2";
+  const rectangleWidthLabel = "\u0161\xED\u0159ka obdeln\xEDka";
+  const triangleWidthLabel = " nejdel\u0161\xED stran\u011B troj\xFAheln\xEDku";
+  const squareSize = to(
+    axiomInput(cont("nejkrat\u0161\xED strana desiti\xFAheln\xEDk", 4, entity3), 1),
+    commonSense("tato d\xE9lka odpov\xEDd\xE1 stran\u011B \u010Dtverce"),
+    cont(squareSizeLabel, 4, entity3)
+  );
+  const rectangleWidth = to(
+    axiomInput(cont("nejdel\u0161\xED strana desiti\xFAheln\xEDk", 20, entity3), 2),
+    commonSense("tato d\xE9lka odpov\xEDd\xE1 \u0161\xED\u0159ce obd\xE9ln\xEDku"),
+    cont(rectangleWidthLabel, 20, entity3)
+  );
+  const whiteTriangle = to(
+    commonSense("2 \u010Dtverce tvo\u0159\xED v\xFD\u0161ku b\xEDl\xE9ho rovnostrann\xE9ho troj\xFAheln\xEDku"),
+    cont("v\xFD\u0161ka \u0161ed\xE9ho troj\xFAheln\xEDku", 2 * 4, entity3)
+  );
+  const triangleHeight = to(
+    commonSense("t\u0159i \u010Dtverce tvo\u0159\xED nejkrat\u0161\xED stran\u011B troj\xFAheln\xEDku"),
+    cont("v\xFD\u0161ka \u0161ed\xE9ho troj\xFAheln\xEDku", 3 * 4, entity3)
+  );
+  const triangleWidth = to(
+    axiomInput(cont("nejdel\u0161\xED strana desiti\xFAheln\xEDk", 20, entity3), 2),
+    commonSense("tato d\xE9lka odpov\xEDd\xE1 nejdel\u0161\xED stran\u011B troj\xFAheln\xEDku"),
+    cont(triangleWidthLabel, 20, entity3)
+  );
+  const whiteTriangleSize = to(
+    squareSize,
+    commonSense("2 \u010Dtverce tvo\u0159\xED stranu b\xEDl\xE9ho rovnostrann\xE9ho troj\xFAheln\xEDku"),
+    cont("strana b\xEDl\xFD troj\xFAheln\xEDk", 2 * 4, entity3)
+  );
+  return {
+    whiteTriangle: {
+      deductionTree: deduce(
+        deduce(
+          whiteTriangleSize,
+          cont("po\u010Det stran troj\xFAheln\xEDku", 3, ""),
+          product("obvod", [], entity3, entity3)
+        ),
+        ctorBooleanOption(12)
+      )
+    },
+    grayRectangle: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            to(
+              last(whiteTriangleSize),
+              commonSense("strana b\xEDleho troj\xFAheln\xEDku odpov\xEDd\xE1 v\xFD\u0161ka \u0161ed\xE9ho obdeln\xEDku"),
+              cont("v\xFD\u0161ka \u0161ed\xE9ho obdeln\xEDku", 8, entity3)
+            ),
+            cont("po\u010Det", 2, ""),
+            product("horn\xED a doln\xED strana", [], entity3, entity3)
+          ),
+          deduce(
+            rectangleWidth,
+            cont("po\u010Det", 2, ""),
+            product("lev\xE1 a prav\xE1 strana", [], entity3, entity3)
+          ),
+          sum("obvod", [], entity3, entity3)
+        ),
+        ctorBooleanOption(56)
+      )
+    },
+    grayTriangle: {
+      deductionTree: deduce(
+        deduce(
+          triangleHeight,
+          triangleWidth,
+          deduce(
+            last(triangleWidth),
+            last(squareSize),
+            ctor("comp-diff")
+          ),
+          sum("obvod", [], entity3, entity3)
+        ),
+        ctorBooleanOption(50, "greater")
+      )
+    }
+  };
+}
+function stavebnice() {
+  const entity3 = "cm";
+  const cube = ({ length, width, height }) => ({
+    length: cont("d\xE9lka", length, entity3),
+    width: cont("\u0161\xED\u0159ka", width, entity3),
+    height: cont("v\xFD\u0161ka", height, entity3)
+  });
+  const base = cube({ length: 4, width: 4, height: 6 });
+  const inputCube = cube({ length: 8, width: 12, height: 16 });
+  const minimalSize = deduce(
+    base.length,
+    base.width,
+    base.height,
+    lcd("nejmen\u0161\xED mo\u017En\xE1 velikost strany krychle", entity3)
+  );
+  return {
+    cube: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            inputCube.length,
+            inputCube.width,
+            inputCube.height,
+            product("objem", [], "cm3", entity3)
+          ),
+          deduce(
+            base.length,
+            base.width,
+            base.height,
+            product("objem", [], "cm3", entity3)
+          ),
+          ctor("rate")
+        ),
+        ctorOption("C", 16)
+      )
+    },
+    minimalCube: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            minimalSize,
+            last(minimalSize),
+            last(minimalSize),
+            product("objem", [], "cm3", entity3)
+          ),
+          deduce(
+            base.length,
+            base.width,
+            base.height,
+            product("objem", [], "cm3", entity3)
+          ),
+          ctor("rate")
+        ),
+        ctorOption("D", 18)
+      )
+    }
+  };
+}
+
+// src/math/M5A-2024/index.ts
+var dveCislaNaOseParams = {
+  input: {
+    mensiCislo: 44,
+    vetsiCislo: 110,
+    pocetUsekuMeziCisly: 6,
+    X: -2,
+    Y: 3
+  }
+};
+var M5A_2024_default = {
+  3: souctovyTrojuhelnik(),
+  4.1: giftAndBox(),
+  4.2: lukasAccount(),
+  4.3: appleBox(),
+  5.1: timeUnitSum(),
+  5.2: distanceUnitCompareDiff(),
+  6.1: dveCislaNaOse(dveCislaNaOseParams).XandY,
+  6.2: dveCislaNaOse(dveCislaNaOseParams).posun,
+  9: novorocniPrani(),
+  11: sestiuhelnik(),
+  12.1: vyvojObyvatel().panov,
+  12.2: vyvojObyvatel().lidov,
+  12.3: vyvojObyvatel().damov,
+  13.1: carTrip().pocatekCesty,
+  13.2: carTrip().zeleznicniPrejezd,
+  13.3: carTrip().konecCesty,
+  14.1: pyramida().floor8,
+  14.2: pyramida().floor7,
+  14.3: pyramida().stairs
+};
+function souctovyTrojuhelnik() {
+  const entity3 = "velikost";
+  const zbytekKRozdeleni = "zbytek k rozd\u011Blen\xED";
+  return {
+    deductionTree: deduce(
+      deduce(
+        cont("zadan\xE1 hodnota v poli v t\u0159et\xED \u0159ad\u011B troj\xFAheln\xEDku", 25, entity3),
+        cont("zadan\xE1 hodnota v poli v prvn\xED \u0159ad\u011B", 7, entity3),
+        ctorDifference(zbytekKRozdeleni)
+      ),
+      to(
+        cont("hledan\xFDch \u010D\xEDsla v \u0161ed\xFDch pol\xEDch v prvn\xED \u0159ad\u011B", 2, "\u010D\xEDsel"),
+        commonSense("sou\u010Dtov\xFD troj\xFAheln\xEDk obsahuje 3 \u0159ady, kde jsou 3 pole, pot\xE9 2 pole a 1 pole ve spodn\xED \u0159ad\u011B"),
+        commonSense("Ka\u017Ed\xE9 \u010D\xEDslo je sou\u010Dtem dvou \u010D\xEDsel nad n\xEDm."),
+        commonSense("hledan\xFDch \u010D\xEDslo napravo je zapo\u010D\xEDt\xE1no 2 kr\xE1t, proto\u017Ee je pou\u017Eito v lev\xE9m i prav\xE9m sou\u010Dtu v prost\u0159edn\xED \u0159ad\u011B"),
+        cont(zbytekKRozdeleni, 3, "\u010D\xEDsel")
+      ),
+      ctor("rate")
+    )
+  };
+}
+function giftAndBox() {
+  const entity3 = "K\u010D";
+  const giftLabel = "d\xE1rek";
+  const boxLabel = "krabi\u010Dka";
+  const paidTotal = axiomInput(cont("zaplaceno", 84, entity3), 2);
+  const giftToBox = axiomInput(comp(giftLabel, boxLabel, 72, entity3), 1);
+  const box = deduce(giftToBox, paidTotal, ctor("comp-part-eq"));
+  return {
+    deductionTree: deduce(
+      deduce(giftToBox, last(box)),
+      box,
+      ctor("comp-ratio")
+    )
+  };
+}
+function lukasAccount() {
+  const entity3 = "K\u010D";
+  const grandMotherIn = cont("babi\u010Dka", 500, entity3);
+  const bookCostOut = cont("kniha", 186, entity3);
+  const pocketMoneyIn = cont("kapesn\xE9", 150, entity3);
+  const fatherGiftOut = cont("d\xE1rek pro tat\xEDnka", 263, entity3);
+  const newState = cont("\xFA\u010Det nov\u011B", 470, entity3);
+  const moneyIn = deduce(grandMotherIn, pocketMoneyIn, sum("p\u0159ijato", [], entity3, entity3));
+  const moneyOut = deduce(bookCostOut, fatherGiftOut, sum("vyd\xE1no", [], entity3, entity3));
+  const balance = deduce(moneyIn, moneyOut, ctorDifference("zm\u011Bna na \xFA\u010Dt\u011B"));
+  return {
+    deductionTree: deduce(
+      newState,
+      balance,
+      ctorDifference("\xFA\u010Det p\u016Fvodn\u011B")
+    )
+  };
+}
+function appleBox() {
+  const entity3 = "jablko";
+  const soldLabel = "prod\xE1no";
+  const boxLabel = "pln\xE1 bedna";
+  const soldRatio = ratio(boxLabel, `${soldLabel} dopoledne`, 1 / 5);
+  const sold = cont(`${soldLabel} odpoledne`, 20, entity3);
+  const restRatio = ratio(boxLabel, "2. den zbytek", 2 / 5);
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(restRatio, ctorComplement("1. den prod\xE1no")),
+        soldRatio,
+        ctorDifference(`${soldLabel} odpoledne`)
+      ),
+      sold
+    )
+  };
+}
+function timeUnitSum() {
+  const entity3 = "";
+  const minutes = "min";
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(cont("hodin", 1, entity3, "h"), ctorUnit(minutes)),
+        cont("minut", 20, entity3, minutes),
+        sum("celkem", [], { entity: entity3, unit: minutes }, { entity: entity3, unit: minutes })
+      ),
+      ctorUnit("s")
+    )
+  };
+}
+function distanceUnitCompareDiff() {
+  const entity3 = "";
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          deduce(cont("m", 1, entity3, "m"), ctorUnit("cm")),
+          cont("cm", 26, entity3, "cm"),
+          ctorDifference("prav\xE1 strana")
+        ),
+        deduce(cont("lev\xE1 strana", 1 / 2, entity3, "m"), ctorUnit("cm")),
+        ctorDifference("v\xFDsledek")
+      ),
+      ctorUnit("mm")
+    )
+  };
+}
+function dveCislaNaOse({ input }) {
+  const entityLength = "d\xE9lka";
+  const entity3 = "\xFAsek";
+  const mensi = axiomInput(cont("men\u0161\xED zadan\xE9 \u010D\xEDslo", input.mensiCislo, entityLength), 1);
+  const vetsi = axiomInput(cont("v\u011Bt\u0161\xED zadnan\xE9 \u010D\xEDslo", input.vetsiCislo, entityLength), 2);
+  const pocetUseku = axiomInput(cont("vzd\xE1lenost mezi zadan\xFDmi \u010D\xEDsly", input.pocetUsekuMeziCisly, "\xFAsek"), 3);
+  const positionX = axiomInput(cont("posun X", input.X, entity3), 1);
+  const positionY = axiomInput(cont("posun Y", input.Y, entity3), 1);
+  const usekRate = cislaNaOse({ mensi, vetsi, pocetUseku });
+  const dd1 = deduce(deduce(positionX, usekRate), mensi, sum("pozice X", [], entityLength, entityLength));
+  const dd2 = deduce(deduce(positionY, last(usekRate)), mensi, sum("pozice Y", [], entityLength, entityLength));
+  const zeroPositionPosun = deduce(mensi, usekRate);
+  return { "XandY": { deductionTree: to(dd1, dd2) }, "posun": { deductionTree: zeroPositionPosun } };
+}
+function novorocniPrani() {
+  const entity3 = "p\u0159\xE1n\xED";
+  const entityBase = "minuty";
+  const spolecne = cont("spole\u010Dn\u011B", 120, entity3);
+  return {
+    deductionTree: deduce(
+      deduce(
+        spolecne,
+        deduce(
+          deduce(cont("Tereza", 14, entity3), cont("Tereza", 5, entityBase), ctor("rate")),
+          deduce(cont("Nikola", 10, entity3), cont("Nikola", 5, entityBase), ctor("rate")),
+          sum("spole\u010Dn\u011B", [], entity3, entity3)
+        )
+      ),
+      ctorOption("B", 25)
+    )
+  };
+}
+function carTrip() {
+  const entity3 = "minuty";
+  const pocatekLabel = "\u010Das odjezdu";
+  const pocatekMinut = axiomInput(cont(pocatekLabel, 8, entity3), 1);
+  const dobaCesta = axiomInput(cont("cesta", 24, entity3), 1);
+  const pocatekPosun = deduce(
+    dobaCesta,
+    ratio("cesta", "1. t\u0159etina cesty", 1 / 3)
+  );
+  const pocatek = deduce(pocatekMinut, pocatekPosun, ctorDifference(pocatekLabel));
+  return {
+    pocatekCesty: {
+      deductionTree: deduce(
+        pocatek,
+        ctorOption("E", 0)
+      )
+    },
+    zeleznicniPrejezd: {
+      deductionTree: deduce(
+        deduce(
+          dobaCesta,
+          ratio("cesta", "polovina cesty", 1 / 2)
+        ),
+        ctorOption("C", 12)
+      )
+    },
+    konecCesty: {
+      deductionTree: deduce(
+        deduce(
+          deduce(last(pocatek), dobaCesta, sum("\u010Das odjezdu", [], entity3, entity3)),
+          cont("posun odjezdu o", 6, entity3),
+          sum("posunut\xFD \u010Das p\u0159\xEDjezdu", [], entity3, entity3)
+        ),
+        ctorOption("A", 30)
+      )
+    }
+  };
+}
+function sestiuhelnik() {
+  const entity3 = "troj\xFAhlen\xEDk";
+  const entity2d = "cm2";
+  const dark = cont("tmav\xE1 \u010D\xE1st", 2, entity3);
+  const obsah = cont("tmav\xE1 \u010D\xE1st", 112, entity2d);
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          deduce(
+            cont("pravideln\xFD \u0161esti\xFAhlen\xEDk", 6, entity3),
+            dark,
+            ctorDifference("sv\u011Btl\xE1 \u010D\xE1st")
+          ),
+          dark,
+          ctor("comp-ratio")
+        ),
+        obsah
+      ),
+      ctorOption("D", 224)
+    )
+  };
+}
+function vyvojObyvatel() {
+  const entity3 = "obyvatel";
+  const lidovLabel = "Lidov";
+  return {
+    panov: {
+      deductionTree: deduce(
+        to(
+          cont("p\u0159\xEDr\u016Fstek 2021", 10, entity3)
+        ),
+        ctorOption("E", 10)
+      )
+    },
+    lidov: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            deduce(
+              cont(lidovLabel, 300, entity3),
+              transfer(`p\u0159\xEDr\u016Fstek 2019`, lidovLabel, 10, entity3)
+            ),
+            transfer(`p\u0159\xEDr\u016Fstek 2020`, lidovLabel, 5, entity3)
+          ),
+          transfer(lidovLabel, "\xFAbytek 2021", 5, entity3)
+        ),
+        ctorOption("D", 310)
+      )
+    },
+    damov: {
+      deductionTree: deduce(
+        deduce(
+          cont("2019", -5, entity3),
+          cont("2020", -10, entity3),
+          cont("2021", 10, entity3),
+          cont("2022", 5, entity3),
+          sum("zm\u011Bna obyvatel", ["2019", "2020", "2021", "2022"], entity3, entity3)
+        ),
+        ctorOption("B", 0)
+      )
+    }
+  };
+}
+function pyramida() {
+  const entity3 = "schody";
+  const entityFloor = "patra";
+  const pyramida7 = cont("pyramida", 7, entityFloor);
+  const pyramida90 = cont("pyramida", 90, entity3);
+  return {
+    floor8: {
+      deductionTree: deduce(
+        cont("\u010Dern\xE9 schody", 48, entity3),
+        deduce(
+          cont("pyramida", 8, entityFloor),
+          ratio("pyramida", "\u010Dern\xE9 schody", 1 / 2)
+        ),
+        ctor("rate")
+      )
+    },
+    floor7: {
+      deductionTree: deduce(
+        deduce(
+          cont("b\xEDl\xE9 schody", 84, entity3),
+          to(
+            pyramida7,
+            commonSense("patra se st\u0159\xEDdaj\xED pravideln\u011B, prvn\xED patro je \u010Dern\xE9"),
+            cont("b\xEDl\xE9 schody", 3, entityFloor)
+          ),
+          ctor("rate")
+        ),
+        pyramida7
+      )
+    },
+    stairs: {
+      deductionTree: deduce(
+        to(
+          pyramida90,
+          commonSense(`rozklad na prvo\u010D\xEDsla:${primeFactorization([pyramida90.quantity]).join(",")}`),
+          commonSense(`hled\xE1me co nejmen\u0161\xED periodu opakov\xE1n\xED schod\u016F z rozkladu`),
+          commonSense(`2 a 3 m\u016F\u017Eeme vylou\u010Dit, proto\u017Ee opakov\xE1n schod\u016F po 2,3 nespl\u0148ujem podm\xEDnku stejn\xE9 barvnosti pro 27.patro = 30.patro`),
+          commonSense(`5 je nejmen\u0161\xED mo\u017En\xFD po\u010Det schod\u016F, kter\xFD spl\u0148uje podm\xEDnku podm\xEDnku stejn\xE9 barvnosti pro 27.patro = 30.patro`),
+          rate("pyramida", 5, entity3, entityFloor)
+        ),
+        pyramida90
+      )
+    }
+  };
+}
+
+// src/math/M5A-2025/index.ts
+var M5A_2025_default = {
+  3.1: jizdniKolo().a,
+  3.2: jizdniKolo().b,
+  4.1: kulicka().pocet,
+  4.2: kulicka().hmotnost,
+  5.1: patrovyDum().druhePatroChlapci,
+  5.2: patrovyDum().prvniPatroPocetDeti,
+  5.3: patrovyDum().pocetDivek,
+  6.1: domecek().obvod,
+  6.2: domecek().kratsiStranaObdelni,
+  9: farmar(),
+  10: penize(),
+  14.1: poutnik().prvniKouzlo,
+  14.2: poutnik().druheKouzlo,
+  14.3: poutnik().maximumKouzel
+};
+function jizdniKolo() {
+  const entity3 = "oto\u010Den\xED";
+  const otaceniKola = ratios("ot\xE1\u010Den\xED kola", ["t\xE1ta", "Mirek"], [25, 30]);
+  return {
+    a: {
+      deductionTree: deduce(
+        otaceniKola,
+        cont("t\xE1ta", 30, entity3),
+        nthPart("Mirek")
+      )
+    },
+    b: {
+      deductionTree: deduce(
+        otaceniKola,
+        comp("t\xE1ta", "Mirek", -30, entity3)
+      )
+    }
+  };
+}
+function kulicka() {
+  const entity3 = "v\xE1ha";
+  const unit = "g";
+  const entityBase = "kuli\u010Dka";
+  const bigLabel = "velk\xE1 kuli\u010Dka";
+  const smallLabel = "mal\xE1 kuli\u010Dka";
+  const big = rate(bigLabel, 30, { entity: entity3, unit }, entityBase);
+  const small = rate(smallLabel, 20, { entity: entity3, unit }, entityBase);
+  const pocetSrovnani = compRatio(smallLabel, bigLabel, 2);
+  const bigPocet = deduce(
+    deduce(
+      deduce(
+        deduce(
+          big,
+          small,
+          ctorRatios("celkem")
+        ),
+        cont(smallLabel, 2, ""),
+        nthPartFactor(smallLabel)
+      ),
+      cont("celkem", 560, entity3, unit),
+      nthPart(bigLabel)
+    ),
+    big
+  );
+  const smallPocet = deduce(
+    bigPocet,
+    pocetSrovnani
+  );
+  return {
+    pocet: {
+      deductionTree: deduce(
+        smallPocet,
+        last(bigPocet),
+        sum("celkem", [], entityBase, entityBase)
+      )
+    },
+    hmotnost: {
+      deductionTree: deduce(
+        last(smallPocet),
+        small
+      )
+    }
+  };
+}
+function patrovyDum() {
+  const boyLabel = "chlapci";
+  const girlLabel = "d\xEDvky";
+  const entity3 = "d\xEDt\u011B";
+  const prvniL = "prvn\xED patro";
+  const druheL = "druh\xE9 patro";
+  const tretiL = "t\u0159et\xED patro";
+  const rozlozeniChlapcuVPatrech = to(
+    commonSense("Ve druh\xE9m pat\u0159e bydl\xED jen d\xEDvky."),
+    commonSense("V prvn\xEDm a t\u0159et\xEDm pat\u0159e bydl\xED dohromady 5 chlapc\u016F a 3 d\xEDvky."),
+    commonSense("Ze v\u0161ech chlapc\u016F z na\u0161eho domu pouze 3 chlapci nebydl\xED ve t\u0159et\xEDm pat\u0159e."),
+    ratios("rozlo\u017Een\xED chlapc\u016F v patrech", [prvniL, druheL, tretiL], [3, 0, 2])
+  );
+  const celkem = cont("celkem", 11, entity3);
+  const chlapci = to(
+    commonSense("Ve druh\xE9m pat\u0159e bydl\xED jen d\xEDvky."),
+    commonSense("V prvn\xEDm a t\u0159et\xEDm pat\u0159e bydl\xED dohromady 5 chlapc\u016F a 3 d\xEDvky."),
+    cont(boyLabel, 5, entity3)
+  );
+  const celkovyPocetDivek = deduce(
+    celkem,
+    chlapci,
+    ctorDifference(girlLabel)
+  );
+  return {
+    druhePatroChlapci: {
+      deductionTree: to(
+        commonSense("Ve druh\xE9m pat\u0159e bydl\xED jen d\xEDvky."),
+        cont(druheL, 0, boyLabel)
+      )
+    },
+    prvniPatroPocetDeti: {
+      deductionTree: deduce(
+        cont("v prvn\xEDm a t\u0159et\xEDm pat\u0159e", 8, entity3),
+        deduce(
+          celkem,
+          cont("v prvn\xEDm a druh\xE9m pat\u0159e", 8, entity3),
+          ctorDifference(tretiL)
+        ),
+        ctorDifference(prvniL)
+      )
+    },
+    pocetDivek: {
+      deductionTree: celkovyPocetDivek
+    }
+  };
+}
+function penize() {
+  const entity3 = "K\u010D";
+  const janaRatio = ratio("celkem", "Jana", 1 / 5);
+  const ivoCompare = compRatio("Ivo", "Jana", 2);
+  const eva = cont("Eva", 240, entity3);
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          to(
+            janaRatio,
+            deduce(
+              janaRatio,
+              ivoCompare
+            ),
+            ratio("celkem", "Ivo + Jana", 3 / 5)
+          ),
+          ctorComplement("Eva")
+        ),
+        eva
+      ),
+      ctorOption("B", 600)
+    )
+  };
+}
+function domecek() {
+  const entity3 = "d\xE9lka";
+  const unit = "cm";
+  const dumLabel = "dome\u010Dek";
+  const strechaLabel = "st\u0159echa";
+  const onlyStrechLabel = `${strechaLabel} bez spole\u010Den\xE9 \u010D\xE1sti`;
+  const sharedLabel = "sd\xEDlen\xE1 \u010D\xE1st mezi p\u0159izem\xED a st\u0159echa";
+  const prizemiLabel = "p\u0159\xEDzem\xED";
+  const onlyPrizemiLabel = `${prizemiLabel} bez spole\u010Den\xE9 \u010D\xE1sti`;
+  const kratsiStranaLabel = "krat\u0161\xED strana obdeln\xEDku";
+  const delsiStranLabel = "del\u0161\xED strana obdeln\xEDku";
+  const dum = cont(dumLabel, 24, entity3, unit);
+  const obvodJenStrecha = deduce(
+    dum,
+    ratios(dumLabel, [onlyPrizemiLabel, onlyStrechLabel], [1, 1])
+  );
+  const shared = deduce(
+    obvodJenStrecha,
+    ratios(strechaLabel, [onlyStrechLabel, sharedLabel], [3, 2]),
+    nthPart(sharedLabel)
+  );
+  return {
+    obvod: {
+      deductionTree: deduce(
+        obvodJenStrecha,
+        to(
+          commonSense("st\u0159echa je slo\u017Eena ze t\u0159\xED rovnostrann\xFDch troj\xFAheln\xEDk\u016F"),
+          commonSense("tyto troj\xFAheln\xEDky jsou spojeny tak, \u017Ee dv\u011B strany tvo\u0159\xED spole\u010Dnou z\xE1kladnu s p\u0159\xEDzem\xEDm"),
+          ratios(strechaLabel, [onlyStrechLabel, sharedLabel], [3, 2])
+        )
+      )
+    },
+    kratsiStranaObdelni: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            dum,
+            ratios(dumLabel, [onlyPrizemiLabel, onlyStrechLabel], [1, 1]),
+            nthPart(onlyPrizemiLabel)
+          ),
+          last(shared),
+          ctorDifference(`2x${kratsiStranaLabel}`)
+        ),
+        ratios(`2x${kratsiStranaLabel}`, [kratsiStranaLabel, kratsiStranaLabel], [1, 1])
+      )
+    }
+  };
+}
+function farmar() {
+  const entityBase = "kr\xE1va";
+  const entity3 = "objem";
+  const unit = "l";
+  const farmaPuvodneLabel = "farma p\u016Fvodn\u011B";
+  const farmaNove = "farma nov\u011B";
+  const farmaPuvodne = cont(farmaPuvodneLabel, 7, entityBase);
+  const prodano = cont("prod\xE1no", 5, entityBase);
+  const puvodneMlekoPerKrava = rate(farmaPuvodneLabel, 15, { entity: entity3, unit }, entityBase);
+  const noveMlekoPerKrava = rate(farmaNove, 20, { entity: entity3, unit }, entityBase);
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          deduce(
+            deduce(
+              farmaPuvodne,
+              puvodneMlekoPerKrava
+            ),
+            cont(farmaPuvodneLabel, 2, "doba", "den"),
+            product(farmaNove, [], { entity: entity3, unit }, { entity: entity3, unit })
+          ),
+          deduce(
+            deduce(
+              farmaPuvodne,
+              prodano,
+              ctorDifference(farmaPuvodneLabel)
+            ),
+            puvodneMlekoPerKrava
+          ),
+          ctorDifference(farmaNove)
+        ),
+        noveMlekoPerKrava
+      ),
+      ctorOption("A", 9)
+    )
+  };
+}
+function poutnik() {
+  const entity3 = "duk\xE1ty";
+  const kouzelnik = cont("kouzeln\xEDk", 54, entity3);
+  const poutnik2 = cont("poutn\xEDk", 54, entity3);
+  const compareKvP = compRatio("poutn\xEDk", "kouzeln\xEDk", 1 / 2);
+  const ratiosKvP = deduce(
+    compareKvP,
+    ctorRatios("celkem")
+  );
+  const kouzelnik1 = deduce(
+    deduce(
+      kouzelnik,
+      poutnik2,
+      sum("celkem", [], entity3, entity3)
+    ),
+    ratiosKvP
+  );
+  const kouzelnik2 = deduce(
+    deduce(
+      last(kouzelnik1),
+      cont("poutn\xEDk", lastQuantity(kouzelnik1), entity3),
+      sum("celkem", [], entity3, entity3)
+    ),
+    ratiosKvP
+  );
+  return {
+    prvniKouzlo: {
+      deductionTree: deduce(
+        toCont(kouzelnik, { agent: "kouzeln\xEDk p\u016Fvodn\u011B" }),
+        toCont(kouzelnik1, { agent: "kouzeln\xEDk po 1.kouzle " }),
+        ctorDelta("kouzeln\xEDk")
+      )
+    },
+    druheKouzlo: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            last(kouzelnik1),
+            cont("poutn\xEDk", lastQuantity(kouzelnik1), entity3),
+            sum("celkem", [], entity3, entity3)
+          ),
+          last(ratiosKvP),
+          nthPart("poutn\xEDk")
+        ),
+        cont("dvojn\xE1sobek", 2, ""),
+        product("poutn\xEDk", [], entity3, entity3)
+      )
+    },
+    maximumKouzel: {
+      deductionTree: to(
+        commonSense("\u010D\xE1stka mus\xED b\xFD d\u011Bliteln\xE1 3, tak aby \u0161lo rozd\u011Blit v pom\u011Bru 1:2, resp. aby \u010D\xE1sti byla cel\xE1 \u010D\xEDsla"),
+        deduce(
+          deduce(
+            deduce(
+              last(kouzelnik2),
+              cont("poutn\xEDk", lastQuantity(kouzelnik2), entity3),
+              sum("celkem", [], entity3, entity3)
+            ),
+            last(ratiosKvP),
+            nthPart("poutn\xEDk")
+          ),
+          cont("dvojn\xE1sobek", 2, ""),
+          product("poutn\xEDk", [], entity3, entity3)
+        )
+      )
+    }
+  };
+}
+
+// src/math/M5B-2025/index.ts
+var M5B_2025_default = {
+  1.1: hledaneCisla().cislo1,
+  1.2: hledaneCisla().cislo2,
+  1.3: hledaneCisla().cisla3,
+  3.1: koralky().celkem,
+  3.2: koralky().porovnani4To2,
+  3.3: koralky().cerneKoralky,
+  4.1: restaurace().celkemStolu,
+  4.2: restaurace().celkemMist,
+  10: zahon().yellow,
+  11: zahon().velvet,
+  14.1: ctverce().obvodObrazec2,
+  14.2: ctverce().obrazecWidthToLength
+};
+function hledaneCisla() {
+  const entity3 = "";
+  const unknownNumberLabel = "nezn\xE1m\xE9 \u010D\xEDslo";
+  const prvniL = "prvn\xED";
+  const druhyL = "druh\xFD";
+  const soucet = toCont(
+    deduce(
+      cont("sou\u010Det", 109, entity3),
+      cont("sou\u010Det", 2, "nezn\xE1m\xE9 \u010D\xEDslo"),
+      ctor("rate")
+    ),
+    { agent: "schodn\xE1 nezn\xE1m\xE1 \u010D\xEDsla" }
+  );
+  const rozdil = toCont(deduce(
+    cont("rozd\xEDl", 13, entity3),
+    cont("rozd\xEDl", 2, "druh\xE9 nezn\xE1m\xE9 \u010D\xEDslo"),
+    ctor("rate")
+  ), { agent: "polovina rozd\xEDlu" });
+  return {
+    cislo1: {
+      deductionTree: deduce(
+        deduce(
+          toCont(deduce(
+            cont("zn\xE1m\xFD v\xFDsledek", 20, entity3),
+            cont("zn\xE1m\xFD v\xFDsledek", 2, "n\xE1sobek"),
+            ctor("rate")
+          ), { agent: "\u010D\xEDslo bez zdojn\xE1soben\xED" }),
+          cont("opak p\u0159i\u010Dten\xE9 \u010D\xEDslo", 3, entity3),
+          ctorDifference("\u010D\xEDslo bez p\u0159i\u010Dten\xE9ho \u010D\xEDsla 3")
+        ),
+        cont("opak d\u011Blen\xED", 7, entity3),
+        product("nezn\xE1n\xE9 \u010D\xEDslo", [], entity3, entity3)
+      )
+    },
+    cislo2: {
+      deductionTree: deduce(
+        deduce(
+          compRelative("zv\u011Bt\u0161en\xED", unknownNumberLabel, -1 / 2),
+          ctorRatios("zn\xE1m\xFD v\xFDsledek")
+        ),
+        cont("zn\xE1m\xFD v\xFDsledek", 198, entity3),
+        nthPart(unknownNumberLabel)
+      )
+    },
+    cisla3: {
+      deductionTree: to(
+        soucet,
+        commonSense("abychom zachovali sou\u010Det a z\xE1rove\u0148 vzniknul po\u017Eadovan\xFD rozd\xEDl"),
+        rozdil,
+        commonSense("prvn\xED nezn\xE1m\xE9 \u010D\xEDslo zv\xFD\u0161\xEDme o polovinu rozd\xEDlu"),
+        cont("prvn\xED nezn\xE1m\xE9 \u010D\xEDslo", lastQuantity(soucet) + lastQuantity(rozdil), entity3),
+        commonSense("druh\xE9 nezn\xE1m\xE9 \u010D\xEDslo sn\xED\u017E\xEDme o polovinu rozd\xEDlu"),
+        cont("druh\xE9 nezn\xE1m\xE9 \u010D\xEDslo", lastQuantity(soucet) - lastQuantity(rozdil), entity3)
+      )
+    }
+  };
+}
+function koralky() {
+  const entity3 = "kor\xE1lky";
+  const skupina3 = cont(`3. skupina`, 32, entity3);
+  const groupRatioFactory = (num) => compRatio(`${num}. skupina`, `${num - 1}. skupina`, 4);
+  const skupina2 = deduce(
+    skupina3,
+    groupRatioFactory(3)
+  );
+  const skupina1 = deduce(
+    last(skupina2),
+    groupRatioFactory(2)
+  );
+  const skupina4 = deduce(
+    skupina3,
+    groupRatioFactory(4)
+  );
+  const celkem = deduce(
+    skupina4,
+    skupina3,
+    skupina2,
+    skupina1,
+    sum("celkem", [], entity3, entity3)
+  );
+  const name = "skupina barev (\u010Dern\xE9 a b\xEDl\xFD)";
+  const colorQuota = deduce(
+    last(skupina4),
+    cont(name, 5, ""),
+    ctor("quota")
+  );
+  return {
+    celkem: {
+      deductionTree: celkem
+    },
+    porovnani4To2: {
+      deductionTree: deduce(
+        last(skupina4),
+        last(skupina2),
+        ctor("comp-ratio")
+      )
+    },
+    cerneKoralky: {
+      deductionTree: deduce(
+        last(skupina4),
+        to(
+          colorQuota,
+          commonSense("ka\u017Ed\xE1 skupina obsahuje 1 b\xEDl\xFD"),
+          commonSense("zbytek obsahuje 1 b\xEDl\xFD"),
+          cont("b\xEDl\xE9", lastQuantity(colorQuota) + 1, entity3)
+        ),
+        ctorDifference("\u010Dern\xE9")
+      )
+    }
+  };
+}
+function restaurace() {
+  const entity3 = "host";
+  const entityBase = "st\u016Fl";
+  const bigLabel = "velk\xE9 st\u016Fl";
+  const mediumLabel = "standardn\xED st\u016Fl";
+  const smallLabel = "mal\xE9 st\u016Fl";
+  const bigRate = rate(bigLabel, 4, entity3, entityBase);
+  const mediumRate = rate(mediumLabel, 3, entity3, entityBase);
+  const smallRate = rate(smallLabel, 2, entity3, entityBase);
+  const celkemStolu = deduce(
+    ratio("restaurace", "rezervace", 1 / 4),
+    cont("rezervace", 9, entityBase)
+  );
+  const medium = deduce(
+    last(celkemStolu),
+    ratio("restaurace", mediumLabel, 1 / 3)
+  );
+  const small = deduce(
+    last(celkemStolu),
+    ratio("restaurace", smallLabel, 1 / 2)
+  );
+  const big = deduce(
+    last(celkemStolu),
+    deduce(
+      last(small),
+      last(medium),
+      sum("dohromady", [smallLabel, mediumLabel], entityBase, entityBase)
+    ),
+    ctorDifference(bigLabel)
+  );
+  return {
+    celkemStolu: {
+      deductionTree: celkemStolu
+    },
+    celkemMist: {
+      deductionTree: deduce(
+        deduce(small, smallRate),
+        deduce(medium, mediumRate),
+        deduce(big, bigRate),
+        sum("celkem", [], entity3, entity3)
+      )
+    }
+  };
+}
+function zahon() {
+  const entity3 = "rostlina";
+  const entityYellow = "\u017Elut\xE1 rostlina";
+  const entityVelvet = "fialov\xE1 rostlina";
+  const entityBase = "mal\xFD troj\xFAhlen\xEDkov\xFD z\xE1hon";
+  const strany = cont("z\xE1hon", 3, "strana");
+  const subZahon = cont("po obvodu ke ka\u017Ed\xE9 stran\u011B", 3, entityBase);
+  const rohove = cont("rohov\xE9", 3, entity3);
+  const celkem = cont("z\xE1hon celkem", 39, entity3);
+  return {
+    yellow: {
+      deductionTree: deduce(
+        to(
+          deduce(
+            to(
+              deduce(
+                deduce(
+                  celkem,
+                  rohove,
+                  ctorDifference("z\xE1hon")
+                ),
+                strany,
+                ctor("rate")
+              ),
+              commonSense("2 z t\u011Bchto rostli jsou fialov\xE9 a z\xE1rove\u0148 jsou na ka\u017Ed\xE9 stran\u011B 2 rohov\xE9"),
+              cont("po obvodu ke ka\u017Ed\xE9 stran\u011B", 12, entityYellow)
+            ),
+            subZahon,
+            ctor("rate")
+          ),
+          commonSense("vzor \u017Elut\xE9 -> 1 + 2 + 3 + 4 = 10"),
+          cont("z\xE1hon", 10, entityYellow)
+        ),
+        ctorOption("C", 10)
+      )
+    },
+    velvet: {
+      deductionTree: deduce(
+        deduce(
+          to(
+            commonSense("vzor \u017Elut\xE9 -> 1 + 2 + 3 + 4 = 10"),
+            commonSense("vzor fialov\xE9 -> 1 + 2 + 3 + 4 + 5 = 15"),
+            rate("z\xE1hon", 15, entityVelvet, entityBase)
+          ),
+          cont("z\xE1hon", 3, entityBase)
+        ),
+        ctorOption("B", 45)
+      )
+    }
+  };
+}
+function ctverce() {
+  const entity3 = "d\xE9lka";
+  const unit = "cm";
+  const entityBase = "strana";
+  const entitySquare = "\u010Dtverec";
+  const obrazec1 = "1. obrazec";
+  const obrazec2 = "2. obrazec";
+  const obrazec3 = "3. obrazec";
+  const obvod1 = cont(obrazec1, 80, entity3, unit);
+  const ctverec1PocetStran = cont(obrazec1, 4, entityBase);
+  const ctverec2PocetStran = cont(obrazec2, 4, entityBase);
+  const matchSiteLabel2 = "strana 1. obrazce = 5 sv\u011Btle \u0161ed\xE9 \u010Dtverce";
+  const tempMatchSiteLabel2 = "2. obrazec - 4 tmav\u011B \u0161ed\xE9 \u010Dtverce =  6 \u0161v\u011Btle \u0161ed\xE9 \u010Dtverce";
+  const matchSiteLabel3 = "strana 2. obrazce = 6 tmav\u011B \u0161ed\xE9 \u010Dtverce";
+  const tempMatchSiteLabel3 = "krat\u0161\xED strany 3. obrazce  = 5 sv\u011Btle \u0161ed\xE9 \u010Dtverce";
+  const strana1 = toCont(deduce(
+    obvod1,
+    ctverec1PocetStran,
+    ctor("rate")
+  ), { agent: matchSiteLabel2 });
+  const strana1Add = deduce(
+    last(strana1),
+    cont(matchSiteLabel2, 5, entitySquare),
+    ctor("rate")
+  );
+  const strana2 = deduce(
+    deduce(
+      strana1,
+      strana1Add,
+      sum(tempMatchSiteLabel2, [], { entity: entity3, unit }, { entity: entity3, unit })
+    ),
+    ratios(matchSiteLabel3, [tempMatchSiteLabel2, "b\xEDl\xFD \u010Dtverec"], [4, 1])
+  );
+  const widthAdd = deduce(
+    last(strana2),
+    cont(matchSiteLabel3, 6, entitySquare),
+    ctor("rate")
+  );
+  const width3 = deduce(
+    last(strana2),
+    widthAdd,
+    sum(tempMatchSiteLabel3, [], { entity: entity3, unit }, { entity: entity3, unit })
+  );
+  return {
+    obvodObrazec2: {
+      deductionTree: deduce(
+        strana2,
+        ctverec2PocetStran,
+        product(obrazec2, [], { entity: entity3, unit }, { entity: entity3, unit })
+      )
+    },
+    obrazecWidthToLength: {
+      deductionTree: deduce(
+        deduce(
+          last(strana2),
+          deduce(
+            last(width3),
+            cont(tempMatchSiteLabel3, 5, entitySquare),
+            ctor("rate")
+          ),
+          sum("del\u0161\xED strana 3. obrazce", [], { entity: entity3, unit }, { entity: entity3, unit })
+        ),
+        width3
+      )
+    }
+  };
+}
+
 // src/utils/deduce-utils.js
 var defaultHelpers2 = {
   convertToFraction: (d) => d,
@@ -10763,19 +13420,10 @@ configure2({
   solveLinearEquation: (first, second, variable) => solveLinearEquation2(first, second, variable),
   evalExpression: (expression, quantity) => evalExpression2(expression, quantity)
 });
-function axiomInput2(predicate, label) {
-  return {
-    ...predicate,
-    ...{
-      labelKind: "input",
-      label
-    }
-  };
-}
 function isPredicate2(node) {
   return node.kind != null;
 }
-function last2(input) {
+function last3(input) {
   return input.children[input.children.length - 1];
 }
 function deduce2(...children) {
@@ -10785,2669 +13433,12 @@ function to2(...children) {
   return { children };
 }
 
-// src/math/comparing-values.ts
-var comparingValues = ({ input }) => {
-  const { first, second } = input;
-  const entity3 = "litr";
-  return {
-    deductionTree: deduce2(
-      deduce2(
-        axiomInput2(ratio("zadan\xE1 hodnota", "prvn\xED hodnota", first.ratio), 1),
-        axiomInput2(cont("zadan\xE1 hodnota", first.value, entity3), 2)
-      ),
-      deduce2(
-        axiomInput2(ratio("zadan\xE1 hodnota", "druh\xE1 hodnota", second.ratio), 3),
-        axiomInput2(cont("zadan\xE1 hodnota", second.value, entity3), 4)
-      )
-    )
-  };
-};
-
-// src/math/compass.ts
-var compass = () => {
-  const agent = "n\xE1kup kru\u017E\xEDtek";
-  const entityPrice = "korun";
-  return {
-    deductionTree: deduce(
-      deduce(
-        deduce(
-          axiomInput(cont("chyb\u011Blo", 160, entityPrice), 2),
-          axiomInput(cont("zbylo", 100, entityPrice), 3),
-          sum(agent, [], entityPrice, entityPrice)
-        ),
-        axiomInput(cont(agent, 2, "kus"), 1),
-        ctor("rate")
-      ),
-      axiomInput(cont(agent, 4, "kus"), 4)
-    )
-  };
-};
-
-// src/math/obrazce.ts
-var obrazce = () => {
-  const entityRow = "\u0159\xE1dk\u016F";
-  const entityColumn = "sloupc\u016F";
-  const entityTmave = "tmav\xFD \u010Dtvere\u010Dek";
-  const entitySvetle = "sv\u011Btl\xE9 \u010Dtvere\u010Dek";
-  const entity3 = "\u010Dtvere\u010Dk\u016F";
-  const base = "z\xE1kladn\xED obrazec";
-  const extended = "roz\u0161\xED\u0159en\xFD obrazec";
-  const dd1 = deduce(
-    cont(`p\u0159id\xE1no ${extended}`, 30, entityTmave),
-    deduce(
-      cont(`lev\xFD sloupec ${extended}`, 6, entityTmave),
-      cont(`prav\xFD sloupec ${extended}`, 6, entityTmave),
-      sum("oba krajn\xED sloupce", [], entityTmave, entityTmave)
-    ),
-    ctor("comp-diff")
-  );
-  return [
-    {
-      deductionTree: to(
-        dd1,
-        commonSense("horn\xED \u0159ada tmav\xFDch \u010Dtver\u010Dk\u016F bez krajn\xEDch sloupc\u016F roz\u0161\xED\u0159en\xE9ho obrazce odpov\xEDd\xE1 po\u010Dtu sloupc\u016F z\xE1kladn\xEDho obrazce"),
-        cont(base, lastQuantity(dd1), entityColumn)
-      )
-    },
-    {
-      deductionTree: deduce(
-        deduce(
-          deduce(
-            cont(`lev\xFD sloupec`, 3, entity3),
-            cont(`prav\xFD sloupec`, 3, entity3),
-            sum("oba krajn\xED sloupce", [], entity3, entity3)
-          ),
-          ratios(extended, [entitySvetle, "horn\xED \u0159ada", "oba krajn\xED sloupce"], [2, 1, 1])
-        ),
-        cont(extended, 3, entityRow),
-        ctor("rate")
-      )
-    },
-    {
-      deductionTree: to(
-        deduce(
-          rate("oba krajn\xED sloupce", 2, entityTmave, entityRow),
-          cont("oba krajn\xED sloupce", 24, entityRow)
-        ),
-        commonSense("z\xE1kladn\xED obrazec je tvo\u0159en jednou nebo v\xEDce \u0159adami sv\u011Btl\xFDch \u010Dtvere\u010Dk\u016F."),
-        commonSense("2 \u0159\xE1dky jsou minimum a 24 \u0159\xE1dk\u016F je maximum."),
-        commonSense("mo\u017En\xFDch roz\u0161\xED\u0159en\xFDch obrazc\u016F tvo\u0159\xED obrazce s 2, 3, 4... 24 \u0159\xE1dk\u016F"),
-        cont("mo\u017En\xFDch roz\u0161\xED\u0159en\xFDch obrazc\u016F s 50 tmav\xFDmi \u010Dtvere\u010Dky", 23, extended)
-      )
-    }
-  ];
-};
-
-// src/math/odmeny-soutezici.ts
-var odmenySoutezici = () => {
-  const souteziciLabel = "sout\u011B\u017E\xEDc\xED";
-  const odmenaLabel = "odm\u011Bna";
-  const entity3 = "K\u010D";
-  const druhy = axiomInput(cont(`2.${souteziciLabel}`, 300, entity3), 3);
-  const prvni = axiomInput(ratio(odmenaLabel, `1.${souteziciLabel}`, 1 / 2), 1);
-  const treti = deduce(
-    prvni,
-    axiomInput(compRatio(`1.${souteziciLabel}`, `3.${souteziciLabel}`, 3), 3)
-  );
-  const druhyRelative = deduce(
-    deduce(
-      prvni,
-      treti,
-      sum(`1. a 3. ${souteziciLabel}`, [], "", "")
-    ),
-    ctorComplement(`2.${souteziciLabel}`)
-  );
-  return [
-    {
-      deductionTree: deduce(
-        druhyRelative,
-        { ...last(treti), ...deduceLbl(1) },
-        ctor("comp-ratio")
-      )
-    },
-    {
-      deductionTree: deduce(
-        { ...last(druhyRelative), ...deduceLbl(3) },
-        druhy
-      )
-    }
-  ];
-};
-
-// src/math/sesity.ts
-var sesity = () => {
-  const ctvereckovaniSesitLabel = "\u010Dtvere\u010Dkovan\xFD se\u0161it";
-  const linkovanySesitLabel = "linkovan\xFD se\u0161it";
-  const entity3 = "se\u0161it";
-  const entityPrice = "K\u010D";
-  const pocetLabel = "cena se\u0161it\u016F v\xFDj\xE1d\u0159en\xFDch po\u010Dtem";
-  const cenaLabel = "n\xE1kupu stejn\xE9ho po\u010Dtu se\u0161it\u016F";
-  const ctvereckovanyPocet = axiomInput(cont(ctvereckovaniSesitLabel, 2, entity3), 1);
-  return [
-    {
-      deductionTree: deduce(
-        cont(pocetLabel, 36, entity3),
-        ratios(pocetLabel, [linkovanySesitLabel, ctvereckovaniSesitLabel], [3, 1]),
-        nthPart(linkovanySesitLabel)
-      )
-    },
-    {
-      deductionTree: deduce(
-        deduce(
-          deduce(
-            axiomInput(ratios(pocetLabel, [ctvereckovaniSesitLabel, linkovanySesitLabel], [2, 3]), 2),
-            proportion(true, [pocetLabel, cenaLabel])
-          ),
-          axiomInput(cont(cenaLabel, 180, entityPrice), 3),
-          nthPart(ctvereckovaniSesitLabel)
-        ),
-        ctvereckovanyPocet,
-        ctor("rate")
-      )
-    }
-  ];
-};
-
-// src/math/trideni-odpady.ts
-var trideni_odpadu = () => {
-  const oddilR = "odd\xEDl R";
-  const oddilS = "odd\xEDl S";
-  const oddilT = "odd\xEDl T";
-  const entityPapir = "pap\xEDr";
-  const entityPlast = "plast";
-  const entityKovy = "kovy";
-  const entityVaha = "kg";
-  const kovyCelkem = deduce(
-    cont(oddilR, 3, entityKovy),
-    cont(oddilS, 3, entityKovy),
-    cont(oddilT, 4, entityKovy),
-    sum(`kovy v\u0161echny odd\xEDly`, [], entityVaha, entityPlast)
-  );
-  const papirCelkem = deduce(
-    cont(oddilR, 6, entityPapir),
-    cont(oddilS, 8, entityPapir),
-    cont(oddilT, 1, entityPapir),
-    sum(`pap\xEDr v\u0161echny odd\xEDly`, [], entityVaha, entityPlast)
-  );
-  const plast = deduce(
-    deduce(
-      cont(oddilT, 9, entityPlast),
-      cont(oddilS, 11, entityPlast),
-      sum(`odd\xEDl S a T`, [], entityPlast, entityPlast)
-    ),
-    cont(oddilR, 15, entityPlast),
-    ctor("comp-ratio")
-  );
-  return {
-    papirStoR: {
-      deductionTree: deduce(
-        deduce(
-          cont(oddilS, 8, entityPapir),
-          cont(oddilR, 6, entityPapir),
-          ctor("comp-ratio")
-        ),
-        ctorBooleanOption(1 / 4)
-      )
-    },
-    papirRtoS: {
-      deductionTree: deduce(
-        deduce(
-          cont(oddilR, 6, entityPapir),
-          cont(oddilS, 8, entityPapir),
-          ctor("comp-ratio")
-        ),
-        ctorOption("C", 1 / 4)
-      )
-    },
-    plast1: {
-      deductionTree: deduce(
-        plast,
-        ctorOption("D", 1 / 3)
-      )
-    },
-    plast2: {
-      deductionTree: deduce(
-        plast,
-        ctorBooleanOption(1 / 3)
-      )
-    },
-    kovyToPapir: {
-      deductionTree: deduce(
-        deduce(
-          kovyCelkem,
-          papirCelkem,
-          ctor("comp-ratio")
-        ),
-        ctorBooleanOption(1 / 2)
-      )
-    },
-    papirToKovy: {
-      deductionTree: deduce(
-        deduce(
-          papirCelkem,
-          kovyCelkem,
-          ctor("comp-ratio")
-        ),
-        ctorOption("E", 1 / 2)
-      )
-    }
-  };
-};
-
-// src/math/M7A-2023/cetar.ts
-function build({ input }) {
-  const agent = "rota";
-  const kapitanLabel = "kapit\xE1n";
-  const porucikLabel = "poru\u010D\xEDk";
-  const cetarLabel = "\u010Deta\u0159";
-  const vojinLabel = "voj\xEDn";
-  const entity3 = "osob";
-  const kapitan = axiomInput(cont(agent, input.kapitan, kapitanLabel), 1);
-  const porucik = axiomInput(cont(agent, input.porucik, porucikLabel), 2);
-  const cetarPerPorucik = axiomInput(rate(agent, input.cetarPerPorucik, cetarLabel, porucikLabel), 3);
-  const vojinPerCetar = axiomInput(rate(agent, input.vojinPerCetar, vojinLabel, cetarLabel), 4);
-  const vydaneRozkazy = sum("vydan\xE9 rozkazy", [kapitanLabel, porucikLabel, cetarLabel], entity3, entity3);
-  const dostaneRozkazy = sum("p\u0159ijat\xE9 rozkazy", [porucikLabel, cetarLabel, vojinLabel], entity3, entity3);
-  const pocetCetaru = deduce(
-    porucik,
-    cetarPerPorucik
-  );
-  const pocetVojinu = deduce(
-    pocetCetaru,
-    vojinPerCetar
-  );
-  const dTree2 = deduce(
-    kapitan,
-    porucik,
-    last(pocetCetaru),
-    vydaneRozkazy
-  );
-  const dTree3 = deduce(
-    porucik,
-    last(pocetCetaru),
-    last(pocetVojinu),
-    dostaneRozkazy
-  );
-  const template1 = (html) => html`<br/><strong>Kolik osob v rotě dostalo rozkaz k nástupu?</strong>`;
-  const template = (highlight2) => highlight2`V rotě je ${input.kapitan} kapitán a má pod sebou ${input.porucik} poručíky.Každý poručík má pod sebou ${input.cetarPerPorucik} své četaře
-a každý četař má pod sebou ${input.vojinPerCetar} svých vojínů. (Další osoby v rotě nejsou.)
-Kapitán se rozhodl svolat celou rotu k nástupu.Rozkaz k nástupu se předával tak, že
-kapitán vydal rozkaz všem poručíkům, z nichž každý vydal tento rozkaz svým četařům
-a každý četař jej vydal svým vojínům.Poté celá rota nastoupila.
-  ${template1}`;
-  return [
-    {
-      deductionTree: pocetVojinu
-    },
-    {
-      deductionTree: dTree2
-    },
-    {
-      deductionTree: dTree3,
-      template
-    }
-  ];
-}
-
-// src/math/M7A-2023/zakusek.ts
-function build2({ input }) {
-  const piece1 = "1.z\xE1kusek";
-  const piece2 = "2.z\xE1kusek";
-  const piece3 = "3.z\xE1kusek";
-  const entity3 = "K\u010D";
-  const totalPrice = "celkem";
-  const partTotalPrice = "1.z\xE1k.+2.z\xE1k";
-  const p1p2 = axiomInput(compRelative(piece2, piece1, -1 / 4), 2);
-  const p1 = axiomInput(cont(piece1, input.cena, entity3), 1);
-  const p2Ratio = ratio(piece1, piece2, 3 / 4);
-  const p3Ratio = ratio(totalPrice, partTotalPrice, 2 / 3);
-  const oneThird = axiomInput(ratio(totalPrice, piece3, 1 / 3), 3);
-  const soucet = sum(partTotalPrice, [], "K\u010D", "K\u010D");
-  const dd1 = inferenceRule(p1, p2Ratio);
-  const dd2 = inferenceRule(p1, dd1, soucet);
-  const dd3 = inferenceRule(dd2, p3Ratio);
-  const deductionTree = deduce(
-    deduce(
-      { ...dd1, ...deduceLbl(2) },
-      deduce(
-        deduce(
-          deduce(
-            p1,
-            deduce(
-              p1,
-              p1p2
-            ),
-            soucet
-          ),
-          deduce(
-            oneThird,
-            ctorComplement(partTotalPrice)
-          )
-        ),
-        oneThird
-      )
-    ),
-    ctorExpressionOption("A", "x < 12")
-  );
-  const zak2 = dd2.kind === "cont" ? dd2.quantity - input.cena : 0;
-  const celkemVse = dd3.kind === "cont" ? dd3.quantity : 0;
-  const data = [
-    { agent: "\u010D.1", value: input.cena },
-    { agent: "\u010D.2", value: zak2 },
-    { agent: "\u010D.3", value: celkemVse - (input.cena + zak2) }
-  ];
-  const template = (highlight2) => highlight2`
-  Maminka koupila v cukrárně tři různé zákusky.
-  První zákusek stál ${input.cena} korun.
-  Druhý zákusek byl o ${"\u010Dtvrtinu levn\u011Bj\u0161\xED ne\u017E prvn\xED"}.
-  Cena třetího zákusku byla ${"t\u0159etinou celkov\xE9 ceny v\u0161ech t\u0159\xED z\xE1kusk\u016F"}.
-  ${(html) => html`<br/><strong>O kolik korun byl třetí zákusek dražší než druhý?</strong>`}`;
-  return { deductionTree, data, template };
-}
-
-// src/math/M7A-2023/index.ts
-var cetarParams = {
-  input: {
-    kapitan: 1,
-    porucik: 4,
-    cetarPerPorucik: 3,
-    vojinPerCetar: 10
-  }
-};
-var M7A_2023_default = {
-  1: comparingValues({
-    input: {
-      first: {
-        ratio: 3 / 4,
-        value: 24
-      },
-      second: {
-        ratio: 1 / 3,
-        value: 12
-      }
-    }
-  }),
-  3.1: build(cetarParams)[0],
-  3.2: build(cetarParams)[1],
-  3.3: build(cetarParams)[2],
-  4.1: example_4_1(),
-  4.2: example_4_2(),
-  5.1: sesity()[1],
-  5.2: compass(),
-  6.1: odmenySoutezici()[0],
-  6.2: odmenySoutezici()[1],
-  10.1: trideni_odpadu().papirStoR,
-  10.2: trideni_odpadu().plast2,
-  10.3: trideni_odpadu().kovyToPapir,
-  11: example_11(),
-  12: example_12(),
-  // 13: example_13(),
-  14: build2({
-    input: {
-      cena: 72
-    }
-  }),
-  15.1: example_15_1(),
-  15.2: example_15_2(),
-  15.3: example_15_3(),
-  16.1: obrazce()[0],
-  16.2: obrazce()[1],
-  16.3: obrazce()[2]
-};
-function example_4_1() {
-  const entity3 = "\u017E\xE1ci";
-  return {
-    deductionTree: toCont(
-      deduce(
-        deduce(
-          axiomInput(cont("pr\u016Fm\u011B\u0159", 21, entity3), 2),
-          cont("po\u010Det m\xED\u010Dov\xFDch sport\u016F", 3, ""),
-          product("po\u010Det v\u0161ech \u017E\xE1k\u016F m\xED\u010Dov\xE9 sporty", [], entity3, entity3)
-        ),
-        deduce(
-          cont("volejbal", 28, entity3),
-          cont("fotbal", 16, entity3),
-          sum("fotbal a volejbal", [], entity3, entity3)
-        ),
-        ctor("comp-diff")
-      ),
-      { agent: "vyb\xEDjen\xE1" }
-    )
-  };
-}
-function example_4_2() {
-  return {
-    deductionTree: to(
-      compRatio("chlapci", "d\xEDvky", 3 / 2),
-      ratios("plav\xE1n\xED", ["d\xEDvky", "chlapci"], [2, 3])
-    )
-  };
-}
-function example_11() {
-  const entity3 = "stup\u0148\u016F";
-  const inputAngleLabel = `zadan\xFD \xFAhel`;
-  const triangleSum = cont("sou\u010Det \xFAhl\u016F v troj\xFAheln\xEDku", 180, entity3);
-  const triangle = "\xFAhel troj\xFAheln\xEDku ABD";
-  return {
-    deductionTree: deduce(
-      deduce(
-        toCont(
-          deduce(
-            triangleSum,
-            deduce(
-              deduce(axiomInput(cont(inputAngleLabel, 40, entity3), 2), compAngle(inputAngleLabel, `${triangle} u vrcholu B`, "alternate")),
-              deduce(
-                axiomInput(cont(inputAngleLabel, 70, entity3), 1),
-                compAngle(inputAngleLabel, `${triangle} u vrcholu A`, "supplementary")
-              ),
-              sum("dvojice \xFAhl\u016F v troj\xFAheln\xEDku", [], entity3, entity3)
-            ),
-            ctor("comp-diff")
-          ),
-          { agent: `${triangle} u vrcholu D` }
-        ),
-        compAngle(`${triangle} u vrcholu D`, "\u03C6", "supplementary")
-      ),
-      ctorOption("D", 150)
-    )
-  };
-}
-function example_12() {
-  const ctverecDelkaLabel = "strana \u010Dtverce";
-  const entity3 = "cm";
-  const entity2d = "cm2";
-  const rectangleWidthLabel = "\u0161\xED\u0159ka obdeln\xEDka";
-  const rectangleWidth = to(
-    axiomInput(cont("nejdel\u0161\xED strana sedmi\xFAheln\xEDku", 5, entity3), 2),
-    commonSense("tato d\xE9lka odpov\xEDd\xE1 \u0161\xED\u0159ce obd\xE9ln\xEDku"),
-    cont(rectangleWidthLabel, 5, entity3)
-  );
-  const triangleHeight = to(
-    commonSense("t\u0159i \u010Dtverce tvo\u0159\xED v\xFD\u0161ku troj\u016Fheln\xEDku"),
-    cont("v\xFD\u0161ka \u0161ed\xE9ho troj\xFAheln\xEDku", 3, entity3)
-  );
-  return {
-    deductionTree: deduce(
-      deduce(
-        deduce(
-          axiomInput(cont(ctverecDelkaLabel, 1, entity3), 1),
-          cont("po\u010Det \u010Dtverc\u016F", 3, ""),
-          product("obsah t\u0159i shodn\xE9 \u010Dtverce", [], entity2d, entity3)
-        ),
-        deduce(
-          rectangleWidth,
-          deduce(
-            last(rectangleWidth),
-            compDiff(rectangleWidthLabel, "v\xFD\u0161ka obdeln\xEDku", 3, entity3)
-          ),
-          product("obsah obdeln\xEDku", [], entity2d, entity3)
-        ),
-        deduce(
-          deduce(
-            triangleHeight,
-            deduce(
-              last(rectangleWidth),
-              compDiff(rectangleWidthLabel, "z\xE1kladna \u0161ed\xE9ho troj\xFAheln\xEDku", 1, entity3)
-            ),
-            cont("polovina", 1 / 2, ""),
-            product("obsah \u0161ed\xE9ho troj\xFAheln\xEDku", [], entity2d, entity3)
-          ),
-          cont("po\u010Det \u0161ed\xFDch troj\xFAhlen\xEDk\u016F", 3, ""),
-          product("obsah t\u0159\xED \u0161ed\xFDch troj\xFAheln\xEDku", [], entity2d, entity2d)
-        ),
-        sum("obsah sedmi\xFAheln\xEDku", [], entity2d, entity2d)
-      ),
-      ctorOption("B", 31)
-    )
-  };
-}
-function example_15_1() {
-  const deducePercent = deduce(
-    axiomInput(percent("cel\xE1 kniha", "R\xF3za p\u0159e\u010Dteno", 60), 2),
-    ctorComplement("R\xF3za nep\u0159e\u010Dteno")
-  );
-  return {
-    deductionTree: deduce(
-      deduce(
-        axiomInput(cont("cel\xE1 kniha", 1200, "stran"), 1),
-        deducePercent
-      ),
-      ctorOption("C", 480)
-    )
-  };
-}
-function example_15_2() {
-  const entity3 = "K\u010D";
-  const compare = axiomInput(comp("dosp\u011Bl\xE9 vstupn\xE9", "d\u011Btsk\xE9 vstupn\xE9", 210, entity3), 2);
-  return {
-    deductionTree: deduce(
-      deduce(
-        deduce(
-          axiomInput(compPercent("d\u011Btsk\xE9 vstupn\xE9", "dosp\u011Bl\xE9 vstupn\xE9", 70), 1),
-          compare
-        ),
-        compare
-      ),
-      ctorOption("D", 490)
-    )
-  };
-}
-function example_15_3() {
-  const entity3 = "obyvatel";
-  const den1 = axiomInput(cont("p\u0159i\u0161lo 1.den", 500, entity3), 2);
-  const obec = deduce(
-    axiomInput(percent("obec", "p\u0159i\u0161lo 1.den", 25), 1),
-    den1
-  );
-  return {
-    deductionTree: deduce(
-      deduce(
-        last(obec),
-        deduce(
-          deduce(
-            deduce(
-              obec,
-              compDiff("obec", "zb\xFDvaj\xEDc\xED dosp\u011Bl\xFD", 500, entity3)
-            ),
-            axiomInput(percent("zb\xFDvaj\xEDc\xED dosp\u011Bl\xFD", "p\u0159i\u0161lo 2.den", 70), 3)
-          ),
-          den1,
-          sum("p\u0159i\u0161lo celkem", [], entity3, entity3)
-        ),
-        ctor("comp-diff")
-      ),
-      ctorOption("B", 450)
-    )
-  };
-}
-
-// src/math/M7A-2024/1.ts
-function porovnatAaB({ input }) {
-  const entity3 = "";
-  const a = axiomInput(cont("a", input.a, entity3), 1);
-  const b = axiomInput(cont("b", input.b, entity3), 2);
-  const rozdil = deduce(
-    a,
-    b,
-    ctor("comp-diff")
-  );
-  return {
-    deductionTree: deduce(
-      deduce(
-        a,
-        b,
-        sum("sou\u010Det", ["a", "b"], entity3, entity3)
-      ),
-      to(
-        rozdil,
-        cont("rozd\xEDl", lastQuantity(rozdil), entity3)
-      ),
-      ctor("comp-ratio")
-    )
-  };
-}
-function najitMensiCislo({ input }) {
-  const entity3 = "";
-  const a = axiomInput(cont("zadan\xE9 \u010D\xEDslo", input.zadane, entity3), 1);
-  const comparsion = axiomInput(comp("hledan\xE9 \u010D\xEDslo", "zadan\xE9 \u010D\xEDslo", -input.mensiO, entity3), 2);
-  return {
-    deductionTree: deduce(
-      a,
-      comparsion
-    )
-  };
-}
-
-// src/math/M7A-2024/13.ts
-function porovnatObsahObdelnikACtverec({ input }) {
-  const entity3 = "";
-  const unit2d = "cm2";
-  const unit = "cm";
-  const ctverec = axiomInput(cont("\u010Dtverec a", input.ctverec.a, entity3, unit), 3);
-  return {
-    deductionTree: deduce(
-      deduce(
-        deduce(
-          axiomInput(cont("obd\xE9ln\xEDk a", input.obdelnik.a, entity3, unit), 1),
-          axiomInput(cont("obd\xE9ln\xEDk b", input.obdelnik.b, entity3, unit), 2),
-          product("obsah obd\xE9ln\xEDk", ["a", "b"], unit2d, entity3)
-        ),
-        deduce(
-          ctverec,
-          ctverec,
-          product("obsah \u010Dtverec", ["a", "a"], unit2d, entity3)
-        ),
-        ctor("comp-ratio")
-      ),
-      ctorOption("D", 12)
-    )
-  };
-}
-
-// src/math/cislaNaOse.ts
-function cislaNaOse({ mensi, vetsi, pocetUseku }) {
-  const entityLength = "d\xE9lka";
-  const entity3 = "\xFAsek";
-  const rozdil = deduce(
-    vetsi,
-    mensi
-  );
-  const usekRate = deduce(
-    to(
-      rozdil,
-      cont("vzd\xE1lenost mezi zadan\xFDmi \u010D\xEDsly", lastQuantity(rozdil), entityLength)
-    ),
-    pocetUseku,
-    ctor("rate")
-  );
-  return usekRate;
-}
-
-// src/math/M7A-2024/3.ts
-function triCislaNaOse({ input }) {
-  const entityLength = "d\xE9lka";
-  const entity3 = "\xFAsek";
-  const mensi = axiomInput(cont("men\u0161\xED zadan\xE9 \u010D\xEDslo", input.mensiCislo, entityLength), 1);
-  const vetsi = axiomInput(cont("v\u011Bt\u0161\xED zadnan\xE9 \u010D\xEDslo", input.vetsiCislo, entityLength), 2);
-  const pocetUseku = axiomInput(cont("vzd\xE1lenost mezi zadan\xFDmi \u010D\xEDsly", input.pocetUsekuMeziCisly, "\xFAsek"), 3);
-  const positionA = axiomInput(cont("posun A", input.A, entity3), 1);
-  const positionB = axiomInput(cont("posun B", input.B, entity3), 1);
-  const positionC = axiomInput(cont("posun C", input.C, entity3), 1);
-  const usekRate = cislaNaOse({ mensi, vetsi, pocetUseku });
-  const rozdilPostion = deduce(positionB, positionA, ctor("comp-diff"));
-  const dd1 = deduce(deduce(positionC, usekRate), mensi, sum("pozice C", [], entityLength, entityLength));
-  const dd2 = deduce(deduce(deduce(positionB, last(usekRate)), mensi, sum("pozice B", [], entityLength, entityLength)), mensi, ctor("comp-ratio"));
-  const dd3 = deduce(to(rozdilPostion, cont("rozd\xEDl", lastQuantity(rozdilPostion), entity3)), last(usekRate));
-  return { "C": { deductionTree: dd1 }, "B": { deductionTree: dd2 }, "rozdil": { deductionTree: dd3 } };
-}
-
-// src/math/M7A-2024/letni-tabor.ts
-function build3({ input }) {
-  const agent = "tabor";
-  const zdravotniLabel = "zdravotn\xEDk";
-  const kucharLabel = "kucha\u0159ka";
-  const vedouciLabel = "vedouc\xED";
-  const instruktorLabel = "instruktor";
-  const diteLabel = "d\xEDt\u011B";
-  const entity3 = "osob";
-  const zdravotnik = axiomInput(cont(agent, input.zdravotnik, zdravotniLabel), 1);
-  const kucharPerZdravotnik = axiomInput(rate(agent, input.kucharPerZdravotnik, kucharLabel, zdravotniLabel), 2);
-  const vedouciPerKuchar = axiomInput(rate(agent, input.vedouciPerKuchar, vedouciLabel, kucharLabel), 3);
-  const instruktorPerVedouci = axiomInput(rate(agent, input.instruktorPerVedouci, instruktorLabel, vedouciLabel), 4);
-  const ditePerInstruktor = axiomInput(rate(agent, input.ditePerInstruktor, diteLabel, instruktorLabel), 5);
-  const kuchari = deduce(
-    zdravotnik,
-    kucharPerZdravotnik
-  );
-  const vedouci = deduce(
-    kuchari,
-    vedouciPerKuchar
-  );
-  const instruktori = deduce(
-    vedouci,
-    instruktorPerVedouci
-  );
-  const dTree1 = deduce(
-    instruktori,
-    last(vedouci),
-    sum("vedouc\xEDch a instruktor\u016F", [vedouciLabel, instruktorLabel], entity3, entity3)
-  );
-  const dTree1Result = last(dTree1);
-  const dTree2 = deduce(
-    instruktori,
-    last(kuchari),
-    ctor("comp-ratio")
-  );
-  const dTree2Result = last(dTree2);
-  const dTree3 = deduce(
-    instruktori,
-    ditePerInstruktor
-  );
-  const dTree3Result = last(dTree3);
-  const templateBase = (highlight2) => highlight2`Na letním táboře jsou kromě dětí také instruktoři, vedoucí, kuchařky a ${input.zdravotnik} zdravotník.
-     Počet zdravotníků a počet kuchařek je v poměru ${`1:${input.kucharPerZdravotnik}`},
-     počet kuchařek a vedoucích ${`1:${input.vedouciPerKuchar}`},
-     počet vedoucích a instruktorů ${`1:${input.instruktorPerVedouci}`},
-     a počet instruktorů a dětí ${`1:${input.ditePerInstruktor}`}.
-     Všichni jsou ubytováni ve stanech. Zdravotník je ve stanu sám, ostatní jsou ubytováni po dvou.`;
-  const template1 = (html) => html`<br/>
-     <strong>Na táboře je dohromady ${dTree1Result.quantity} vedoucích a instruktorů?</strong>`;
-  const template2 = (html) => html`<br/>
-     <strong>Instruktorů je ${dTree2Result.ratio} krát více než kuchařek.?</strong>`;
-  const template3 = (html) => html`<br/>
-    <strong>Na táboře je celkem ${dTree3Result.quantity} dětí?</strong>`;
-  return {
-    pocetVedoucichAInstruktoru: { deductionTree: deduce(dTree1, ctorBooleanOption(22)), template: (highlight2) => highlight2`${() => templateBase(highlight2)}${template1}` },
-    porovnaniInstrukturuAKucharek: { deductionTree: deduce(dTree2, ctorBooleanOption(4)), template: (highlight2) => highlight2`${() => templateBase(highlight2)}${template2}` },
-    pocetDeti: { deductionTree: deduce(dTree3, ctorBooleanOption(64)), template: (highlight2) => highlight2`${() => templateBase(highlight2)}${template3}` }
-  };
-}
-
-// src/math/M7A-2024/pocet-sportovcu.ts
-function build4({ input }) {
-  const entity3 = "sportovc\u016F";
-  const dvojice = axiomInput(cont("dvojice", 2, entity3), 1);
-  const trojice = axiomInput(cont("trojice", 3, entity3), 2);
-  const ctverice = axiomInput(cont("\u010Dtve\u0159ice", 4, entity3), 3);
-  const petice = axiomInput(cont("p\u011Btice", 5, entity3), 4);
-  const lcdLabel = "nejmen\u0161\xED mo\u017En\xE1 skupina";
-  const nasobek = lcd(lcdLabel, entity3);
-  const dd1 = inferenceRule(dvojice, trojice, ctverice, petice, nasobek);
-  const rozdil = axiomInput(compDiff("po\u010Det sportovc\u016F", lcdLabel, 1, entity3), 5);
-  const dd2 = inferenceRule(dd1, rozdil);
-  const deductionTree = deduce(
-    deduce(
-      dvojice,
-      trojice,
-      ctverice,
-      petice,
-      nasobek
-    ),
-    rozdil
-  );
-  const template = (highlight2) => highlight2`Počet sportovců na závodech byl více než 1 a zároveň méně než 90. 
-  Pořadatel chtěl sportovce seřadit do slavnostního průvodu, ale ať je rozděloval do ${"dvojic"}, ${"trojic"}, ${"\u010Dtve\u0159ic"} nebo ${"p\u011Btic"}, vždy mu ${"jeden"} sportovec zbyl.
-  ${(html) => html`<br/><strong>Kolik sportovců se sešlo na závodech?</strong>`}`;
-  return { deductionTree, template };
-}
-
-// src/math/M7A-2024/kralice-a-slepice-v-ohrade.ts
-function build5({ input }) {
-  const rozdil = input.pocetHlav - input.kralikuMene;
-  const halfTotal = Math.round(rozdil / 2);
-  const nohy = (halfTotal + input.kralikuMene) * 2 + halfTotal * 4;
-  const data = [
-    { value: halfTotal, agent: "kr\xE1l\xEDci" },
-    { value: halfTotal, agent: "slepice" },
-    { value: input.kralikuMene, agent: "slepice", opacity: 0.6 }
-  ];
-  const hlava = "hlava";
-  const celkem = "slepice a kr\xE1l\xEDci";
-  const entity3 = "zv\xED\u0159e";
-  const slepice = "slepice";
-  const kralik = "kr\xE1l\xEDk";
-  const total = axiomInput(cont(celkem, input.pocetHlav, hlava), 1);
-  const perHlava = rate(celkem, 1, hlava, entity3);
-  const slepicePlus = axiomInput(comp(kralik, slepice, -input.kralikuMene, entity3), 2);
-  const deductionTree = deduce(
-    deduce(
-      deduce(
-        deduce(total, perHlava),
-        slepicePlus,
-        ctor("comp-part-eq")
-      ),
-      slepicePlus
-    ),
-    ctorOption("E", 21)
-  );
-  const template = (highlight2) => highlight2`V ohradě pobíhali králíci a slepice.
-  Králíků bylo o ${input.kralikuMene} méně.
-  Králíci a slepice měli dohromady ${nohy} nohou a ${input.pocetHlav} hlav.
-  ${(html) => html`<br/><strong> Kolik bylo v ohradě slepic?</strong>`}`;
-  return { deductionTree, data, template };
-}
-
-// src/math/M7A-2024/index.ts
-var letniTaborInput = {
-  input: {
-    zdravotnik: 1,
-    kucharPerZdravotnik: 4,
-    vedouciPerKuchar: 2,
-    instruktorPerVedouci: 2,
-    ditePerInstruktor: 4
-  }
-};
-var osaParams = { mensiCislo: 1.4, vetsiCislo: 5.6, pocetUsekuMeziCisly: 6, A: 4, B: 7, C: -2 };
-var M7A_2024_default = {
-  1.1: porovnatAaB({ input: { a: 1.6, b: -1.2 } }),
-  1.2: najitMensiCislo({ input: { zadane: 7 / 8, mensiO: 0.093 } }),
-  3.1: triCislaNaOse({ input: osaParams }).C,
-  3.2: triCislaNaOse({ input: osaParams }).B,
-  3.3: triCislaNaOse({ input: osaParams }).rozdil,
-  5.1: krouzky().divkyAnglictina,
-  5.2: krouzky().pocetZaku,
-  6: build4({ input: {} }),
-  10.1: build3(letniTaborInput).pocetVedoucichAInstruktoru,
-  10.2: build3(letniTaborInput).porovnaniInstrukturuAKucharek,
-  10.3: build3(letniTaborInput).pocetDeti,
-  11: build5({
-    input: {
-      kralikuMene: 5,
-      pocetHlav: 37
-    }
-  }),
-  13: porovnatObsahObdelnikACtverec({
-    input: {
-      obdelnik: { a: 36, b: 12 },
-      ctverec: { a: 6 }
-    }
-  }),
-  14: angle(),
-  15.1: koupaliste(),
-  15.2: cestovni_kancelar(),
-  15.3: pozemek()
-};
-function koupaliste() {
-  const entity3 = "n\xE1v\u0161t\u011Bvn\xEDk\u016F";
-  return {
-    deductionTree: deduce(
-      deduce(
-        axiomInput(percent("koupali\u0161t\u011B loni", "koupali\u0161t\u011B letos", 80), 1),
-        axiomInput(cont("koupali\u0161t\u011B letos", 680, entity3), 2)
-      ),
-      ctorOption("E", 850)
-    )
-  };
-}
-function cestovni_kancelar() {
-  const entity3 = "klient\u016F";
-  return {
-    deductionTree: deduce(
-      deduce(
-        axiomInput(cont("\u010Derven", 330, entity3), 1),
-        axiomInput(compPercent("\u010Derven", "\u010Dervenec", 100 - 40), 2)
-      ),
-      ctorOption("B", 550)
-    )
-  };
-}
-function pozemek() {
-  const skutecnost = "skute\u010Dnost";
-  const mapa = "pl\xE1n";
-  const entity3 = "";
-  return {
-    deductionTree: deduce(
-      deduce(
-        deduce(
-          axiomInput(ratios("pozemek m\u011B\u0159\xEDtko", [mapa, skutecnost], [1, 3e3]), 1),
-          axiomInput(cont(mapa, 15, entity3, "cm"), 2),
-          nthPart(skutecnost)
-        ),
-        ctorUnit("m")
-      ),
-      ctorOption("A", 450)
-    )
-  };
-}
-function krouzky() {
-  const entity3 = "d\u011Bti";
-  const entityPercent2 = "%";
-  const basketabal = cont("basketbal", 16, entityPercent2);
-  const tanecni = cont("tane\u010Dn\xED", 15, entityPercent2);
-  const lezeckaStena = cont("lezeck\xE1 st\u011Bna", 25, entityPercent2);
-  const bezKrouzku = cont("\u017E\xE1dn\xFD krou\u017Eek", 6, entityPercent2);
-  const celek = cont("celek", 100, entityPercent2);
-  const florbalPocet = cont("florbal", 114, entity3);
-  const florbalDiff = deduce(
-    celek,
-    deduce(
-      bezKrouzku,
-      basketabal,
-      tanecni,
-      lezeckaStena,
-      sum(`zadan\xE9 \xFAdaje`, [], entityPercent2, entityPercent2)
-    ),
-    ctor("comp-diff")
-  );
-  const celekPocet = deduce(
-    to(florbalDiff, percent("celek", "florbal", lastQuantity(florbalDiff))),
-    florbalPocet
-  );
-  return {
-    divkyAnglictina: {
-      deductionTree: deduce(
-        celekPocet,
-        deduce(
-          last(celekPocet),
-          percent("celek", "\u017E\xE1dn\xFD krou\u017Eek", 6)
-        ),
-        ctor("comp-diff")
-      )
-    },
-    pocetZaku: {
-      deductionTree: deduce(
-        last(celekPocet),
-        percent("celek", "basketbal", 16)
-      )
-    }
-  };
-}
-function angle() {
-  const entity3 = "stup\u0148\u016F";
-  const betaEntity = "beta \xFAhel";
-  const inputAngleLabel = `zadan\xFD \xFAhel`;
-  const triangleSumLabel = "sou\u010Det \xFAhl\u016F v troj\xFAheln\xEDku";
-  const triangleSum = cont(triangleSumLabel, 180, entity3);
-  const triangle = "\xFAhel troj\xFAheln\xEDku ABC";
-  const doubleBeta = deduce(
-    cont(inputAngleLabel, 2, betaEntity),
-    compAngle(inputAngleLabel, `${triangle} u vrcholu A`, "alternate")
-  );
-  return {
-    deductionTree: deduce(
-      deduce(
-        deduce(
-          deduce(
-            toCont(
-              deduce(
-                triangleSum,
-                deduce(
-                  axiomInput(cont(inputAngleLabel, 105, entity3), 1),
-                  compAngle(inputAngleLabel, `${triangle} u vrcholu C`, "supplementary")
-                ),
-                ctor("comp-diff")
-              ),
-              { agent: `beta` }
-            ),
-            deduce(
-              doubleBeta,
-              cont(`${triangle} u vrcholu B`, 1, betaEntity),
-              sum("beta", [], betaEntity, betaEntity)
-            ),
-            ctor("rate")
-          ),
-          last(doubleBeta)
-        ),
-        compAngle(`${triangle} u vrcholu A`, "alfa", "supplementary")
-      ),
-      ctorOption("B", 110)
-    )
-  };
-}
-
-// src/math/M7A-2025/index.ts
-var M7A_2025_default = {
-  1.1: ceremonial().polovina,
-  1.2: ceremonial().pocetMinut,
-  4.1: asistencniPes().bara,
-  4.2: asistencniPes().rozdilBaraACyril,
-  4.3: asistencniPes().sum,
-  6.1: karticky().petr,
-  11: tornado(),
-  12: cestaKeStudance().meritko,
-  13: cestaKeStudance().delkaTrasa
-};
-function ceremonial() {
-  const entity3 = "doba";
-  const unit = "minut";
-  const ceremonial2 = "ceremoni\xE1l";
-  const promitani = "prom\xEDt\xE1n\xED";
-  const zacatekLabel = "zacatek";
-  const konecLabel = "konec";
-  const dobaCeremonial = to(
-    commonSense(`${zacatekLabel} (17:45) - ${konecLabel} (19:35)`),
-    cont(ceremonial2, 110, entity3, unit)
-  );
-  const dobaPrvniPulka = deduce(
-    dobaCeremonial,
-    ratios(ceremonial2, ["1. p\u016Flka", "2. p\u016Flka"], [1, 1])
-  );
-  return {
-    polovina: {
-      deductionTree: dobaPrvniPulka
-    },
-    pocetMinut: {
-      deductionTree: deduce(
-        last(dobaCeremonial),
-        deduce(
-          last(dobaPrvniPulka),
-          deduce(
-            last(dobaCeremonial),
-            ratio(ceremonial2, promitani, 1 / 5)
-          ),
-          sum("konec promitani", [], { entity: entity3, unit }, { entity: entity3, unit })
-        ),
-        ctorDifference("rozdil")
-      )
-    }
-  };
-}
-function asistencniPes() {
-  const adamL = "Adam";
-  const baraL = "B\xE1ra";
-  const cyrilL = "Cyril";
-  const entity3 = "korun";
-  const entityArtifical = "pomysln\xFD d\xEDlek";
-  const adamToBara = comp(adamL, baraL, 300, entity3);
-  const adamEqualBaraL = `1/3 ${adamL} = 1/2 ${baraL}`;
-  const baraEqualCyrilL = `1/3 ${baraL} = 1/2 ${cyrilL}`;
-  const baraPolovina = ratio(baraL, adamEqualBaraL, 1 / 2);
-  const baraTretina = ratio(baraL, baraEqualCyrilL, 1 / 3);
-  const adamTretina = ratio(adamL, adamEqualBaraL, 1 / 3);
-  const cyrilPolovina = ratio(cyrilL, baraEqualCyrilL, 1 / 2);
-  const baraDilku = to(
-    commonSense("B\xE1\u0159ina \u010D\xE1stku - d\u011Bliteln\xE1 3 a 2."),
-    commonSense("B\xE1\u0159ina \u010D\xE1stce p\u0159i\u0159ad\xEDme 6 pomysln\xFDch d\xEDlk\u016F."),
-    cont(baraL, 6, entityArtifical)
-  );
-  const adamDilku = deduce(
-    deduce(baraDilku, baraPolovina),
-    adamTretina
-  );
-  const cyrilDilku = deduce(
-    deduce(baraDilku, baraTretina),
-    cyrilPolovina
-  );
-  const bara = deduce(
-    deduce(
-      adamDilku,
-      baraDilku,
-      ctor("comp-ratio")
-    ),
-    adamToBara
-  );
-  const rate3 = deduce(
-    cont("rozd\xEDl", 300, entity3),
-    deduce(
-      last(adamDilku),
-      last(baraDilku),
-      ctorDifference("rozd\xEDl")
-    ),
-    ctor("rate")
-  );
-  const cyril = deduce(rate3, cyrilDilku);
-  const adam = deduce(rate3, last(adamDilku));
-  return {
-    bara: {
-      deductionTree: bara
-    },
-    rozdilBaraACyril: {
-      deductionTree: deduce(
-        last(bara),
-        cyril,
-        ctorDifference("rozd\xEDl")
-      )
-    },
-    sum: {
-      deductionTree: deduce(
-        last(bara),
-        last(cyril),
-        adam,
-        sum("dohromady", [], entity3, entity3)
-      )
-    }
-  };
-}
-function karticky() {
-  const entity3 = "karti\u010Dky";
-  const tondaToPeter = transfer("Tonda", "Petr", 4, entity3);
-  const petrToTonda = transfer("Petr", "Tonda", 6, entity3);
-  const jirkaToTonda = transfer("Jirka", "Tonda", 3, entity3);
-  const petrToJirka = transfer("Petr", "Jirka", 2, entity3);
-  const jirkaToPetr = transfer("Jirka", "Petr", 3, entity3);
-  const vedouciToPetr = transfer("vedouci", "Petr", 4, entity3);
-  const petr = cont("Petr", 80, entity3);
-  return {
-    petr: {
-      deductionTree: deduce(
-        petrToTonda,
-        deduce(
-          tondaToPeter,
-          deduce(
-            petrToJirka,
-            deduce(
-              jirkaToPetr,
-              deduce(
-                vedouciToPetr,
-                petr
-              )
-            )
-          )
-        )
-      )
-    }
-  };
-}
-function cestaKeStudance() {
-  const entity3 = "skute\u010Dnost";
-  const entityBase = "mapa";
-  const unit = "cm";
-  const tiborAgent = "pl\xE1novan\xE1 trasa";
-  const tiborMeritko = rate(tiborAgent, 5e4, { entity: entity3, unit }, entityBase);
-  const tiborTrasaPlan = cont(tiborAgent, 4.2, entityBase, unit);
-  const matyasAgent = "pl\xE1novan\xE1 trasa";
-  const matyasTrasaPlan = cont(matyasAgent, 28, entityBase, "mm");
-  const trasaSkutecnost = deduce(
-    tiborMeritko,
-    tiborTrasaPlan
-  );
-  return {
-    meritko: {
-      deductionTree: deduce(
-        deduce(
-          trasaSkutecnost,
-          deduce(matyasTrasaPlan, ctorUnit("cm")),
-          ctor("rate")
-        ),
-        ctorOption("C", 75e3)
-      )
-    },
-    delkaTrasa: {
-      deductionTree: deduce(
-        deduce(
-          last(trasaSkutecnost),
-          ctorUnit("km")
-        ),
-        ctorOption("A", 2.1)
-      )
-    }
-  };
-}
-function tornado() {
-  const entity3 = "d\u016Fm";
-  const neposkozenoLabel = "nepo\u0161kozeno";
-  const poskozenoLabel = "po\u0161kozeno";
-  const domuBezeSkod = cont(neposkozenoLabel, 270, entity3);
-  const poskozenoRate = percent("celkem", poskozenoLabel, 40);
-  return {
-    deductionTree: deduce(
-      deduce(
-        deduce(
-          deduce(
-            deduce(
-              poskozenoRate,
-              ctorComplement(neposkozenoLabel)
-            ),
-            domuBezeSkod
-          ),
-          poskozenoRate
-        ),
-        percent(poskozenoLabel, "demolice", 30)
-      ),
-      ctorOption("B", 54)
-    )
-  };
-}
-
-// src/math/M7B-2025/index.ts
-var M7B_2025_default = {
-  1: hledaneCislo(),
-  2: pomer(),
-  4.1: vodniNadrz().pomer,
-  4.2: vodniNadrz().pocetCerpadel,
-  4.3: vodniNadrz().pocetHodin,
-  5.1: zaciSkupiny().dvojic,
-  5.2: zaciSkupiny().zaku,
-  13: kapesne().utratila,
-  14: kapesne().usetrila,
-  15.1: cislo(),
-  15.2: zahradnictvi(),
-  15.3: predstaveni()
-};
-function hledaneCislo() {
-  const entity3 = "";
-  const prvniL = "prvn\xED";
-  const druhyL = "druh\xFD";
-  const prvniRelative = cont(prvniL, 1 / 8, entity3);
-  const druhyRelative = cont(druhyL, 1 / 2, entity3);
-  const prvni = cont(prvniL, 1, entity3);
-  const druhy = cont(druhyL, 16, entity3);
-  return {
-    deductionTree: deduce(
-      deduce(
-        prvniRelative,
-        druhyRelative,
-        ctor("comp-ratio")
-      ),
-      deduce(
-        prvni,
-        druhy
-      )
-    )
-  };
-}
-function pomer() {
-  const entity3 = "";
-  const a3 = cont("3. \u010D\xEDslo", 72, entity3);
-  const a4 = cont("4. \u010D\xEDslo", 108, entity3);
-  const sousedniCislaPomerLabel = "sousedn\xED \u010D\xEDsla";
-  const sousedniCislaPomer = deduce(
-    deduce(
-      a3,
-      a4,
-      ctorRatios(sousedniCislaPomerLabel)
-    ),
-    deduce(a3, a4, gcd("nejv\u011Bt\u0161\xED spole\u010Dn\xFD n\xE1sobek", entity3)),
-    ctor("invert-scale")
-  );
-  const createRatios = (treeNode, n1, n2) => {
-    const newRatio = last(treeNode);
-    return {
-      ...newRatio,
-      parts: [`${n1}. \u010D\xEDslo`, `${n2}. \u010D\xEDslo`]
-    };
-  };
-  return {
-    deductionTree: to(
-      deduce(
-        deduce(
-          to(
-            sousedniCislaPomer,
-            createRatios(sousedniCislaPomer, 2, 3)
-          ),
-          a3,
-          nthPart("2. \u010D\xEDslo")
-        ),
-        createRatios(sousedniCislaPomer, 1, 2),
-        nthPart("1. \u010D\xEDslo")
-      ),
-      commonSense(""),
-      deduce(
-        deduce(
-          createRatios(sousedniCislaPomer, 4, 5),
-          a4,
-          nthPart("5. \u010D\xEDslo")
-        ),
-        createRatios(sousedniCislaPomer, 5, 6),
-        nthPart("6. \u010D\xEDslo")
-      ),
-      commonSense("hledan\xE1 \u010D\xEDsla jsou 1. \u010D\xEDslo a 6. \u010D\xEDslo")
-    )
-  };
-}
-function vodniNadrz() {
-  const entity3 = "doba";
-  const unit = "h";
-  const entityCerpadlo = "\u010Derpadlo";
-  return {
-    pomer: {
-      deductionTree: deduce(
-        deduce(
-          cont("dopln\u011Bno", 4, entity3, unit),
-          cont("pln\u011B napln\u011Bno", 6, entity3, unit),
-          ctor("ratio")
-        ),
-        ctorComplement("r\xE1no ji\u017E napln\u011Bno")
-      )
-    },
-    pocetCerpadel: {
-      deductionTree: deduce(
-        deduce(
-          deduce(
-            cont("p\u016Fvodn\u011B", 6, entity3, unit),
-            cont("nov\u011B", 8, entity3, unit),
-            ctor("comp-ratio")
-          ),
-          proportion(true, [entity3, entityCerpadlo])
-        ),
-        cont("p\u016Fvodn\u011B", 4, entityCerpadlo)
-      )
-    },
-    pocetHodin: {
-      deductionTree: deduce(
-        deduce(
-          deduce(
-            deduce(
-              cont("p\u016Fvodn\u011B", 4, entityCerpadlo),
-              cont("nov\u011B", 2, entityCerpadlo),
-              ctor("comp-ratio")
-            ),
-            proportion(true, [entityCerpadlo, entity3])
-          ),
-          cont("p\u016Fvodn\u011B", 6, entity3, unit)
-        ),
-        ratio("nov\u011B", "nov\u011B polovina n\xE1dr\u017Ee", 1 / 2)
-      )
-    }
-  };
-}
-function zaciSkupiny() {
-  const entityGroup = "skupina";
-  const entityDvojic = "dvojic";
-  const entityTrojic = "trojic";
-  const entity3 = "\u017E\xE1k\u016F";
-  const pomer2 = deduce(
-    deduce(
-      cont("dvojice", 3, entityGroup),
-      cont("trojice", 2, entityGroup),
-      ctorRatios("rozlo\u017Een\xED p\u0159i rovnosti")
-    ),
-    deduce(
-      deduce(
-        cont("dvojice", 3, entityGroup),
-        cont("trojice", 2, entityGroup),
-        ctorDifference("jednotkov\xFD rozd\xEDl p\u0159i rovnosti")
-      ),
-      cont("rozd\xEDl p\u0159i rovnosti", 2, entityGroup),
-      product("rozd\xEDl p\u0159i rovnosti", [], entityGroup, entityGroup)
-    ),
-    ctor("scale")
-  );
-  const dvojic = deduce(
-    to(
-      pomer2,
-      cont("skupina dvojic", 6, entityDvojic)
-    ),
-    cont("zb\xFDvaj\xEDc\xED \u017E\xE1ci", 1, entityDvojic),
-    sum("skupina dvojic", [], entityDvojic, entityDvojic)
-  );
-  return {
-    dvojic: {
-      deductionTree: dvojic
-    },
-    zaku: {
-      deductionTree: deduce(
-        deduce(
-          last(dvojic),
-          rate("skupina", 2, entity3, entityDvojic)
-        ),
-        deduce(
-          to(
-            last(pomer2),
-            cont("skupina trojic", 4, entityTrojic)
-          ),
-          rate("skupina", 3, entity3, entityTrojic)
-        ),
-        sum("celkem", [entityDvojic, entityTrojic], entity3, entity3)
-      )
-    }
-  };
-}
-function kapesne() {
-  const entity3 = "korun";
-  const entityBase = "m\u011Bs\xEDc";
-  const agentHelena = "Helena";
-  const agentTereza = "Tereza";
-  const ledenPocatekHelena = cont("po\u010D\xE1tek leden", 550, entity3);
-  const brezenPocatekHelena = cont("po\u010D\xE1tek b\u0159ezen", 1e3, entity3);
-  const kapesneRateHelena = rate(agentHelena, 400, entity3, entityBase);
-  const kapesneRateTereza = rate(agentTereza, 400, entity3, entityBase);
-  const ledenPocateTereza = cont("po\u010D\xE1tek leden", 400, entity3);
-  const dubenPocateTereza = cont("po\u010D\xE1tek duben", 1200, entity3);
-  return {
-    utratila: {
-      deductionTree: deduce(
-        deduce(
-          deduce(
-            kapesneRateHelena,
-            cont("p\u0159ijmy z kapesn\xE9ho", 2, entityBase)
-          ),
-          toCont(
-            deduce(
-              ledenPocatekHelena,
-              brezenPocatekHelena,
-              ctorDelta(agentHelena)
-            ),
-            { agent: "zm\u011Bna stavu \xFA\u010Dtu" }
-          ),
-          ctorDifference("utraceno")
-        ),
-        ctorOption("A", 350)
-      )
-    },
-    usetrila: {
-      deductionTree: deduce(
-        deduce(
-          toCont(
-            deduce(
-              ledenPocateTereza,
-              dubenPocateTereza,
-              ctorDelta(agentTereza)
-            ),
-            { agent: "u\u0161et\u0159ila" }
-          ),
-          deduce(
-            kapesneRateTereza,
-            cont("p\u0159ijmy z kapesn\xE9ho", 3, entityBase)
-          ),
-          ctor("ratio")
-        ),
-        ctorOption("B", 2 / 3)
-      )
-    }
-  };
-}
-function cislo() {
-  const entity3 = "";
-  return {
-    deductionTree: deduce(
-      deduce(
-        cont("zv\u011Bt\u0161en\xE9 \u010D\xEDslo", 98, entity3),
-        cont("zadan\xE9 \u010D\xEDslo", 56, entity3),
-        ctorComparePercent()
-      ),
-      ctorOption("F", 75, { asPercent: true })
-    )
-  };
-}
-function zahradnictvi() {
-  const entity3 = "sazenic";
-  const celkemLabel = "kv\u011Btina";
-  const kopretinyLabel = "kopretina";
-  const hvozdikyLabel = "hvozd\xEDk";
-  const astraLabel = "astra";
-  const celkem = cont(celkemLabel, 120, entity3);
-  const hvozdiky = deduce(
-    rate(hvozdikyLabel, 24, entity3, "bedna"),
-    cont(hvozdikyLabel, 2, "bedna")
-  );
-  return {
-    deductionTree: deduce(
-      deduce(
-        deduce(
-          celkem,
-          deduce(
-            deduce(
-              celkem,
-              ratio(celkemLabel, kopretinyLabel, 1 / 4)
-            ),
-            hvozdiky,
-            sum("dohromady", [kopretinyLabel, hvozdikyLabel], entity3, entity3)
-          ),
-          ctorDifference(astraLabel)
-        ),
-        celkem,
-        ctorPercent()
-      ),
-      ctorOption("B", 35, { asPercent: true })
-    )
-  };
-}
-function predstaveni() {
-  const entity3 = "div\xE1k\u016F";
-  const dospeliLabel = "dosp\u011Bl\xFD";
-  const detiLabel = "d\u011Bti";
-  const predskolniDetiLabel = "p\u0159ed\u0161kol\xE1ci";
-  const dospely = cont(dospeliLabel, 100, entity3);
-  const deti = deduce(
-    dospely,
-    compRelative(detiLabel, dospeliLabel, 1 / 2)
-  );
-  const predskolaci = deduce(
-    deti,
-    percent(detiLabel, predskolniDetiLabel, 60)
-  );
-  return {
-    deductionTree: deduce(
-      deduce(
-        predskolaci,
-        deduce(
-          last(deti),
-          dospely,
-          sum("celkem", [detiLabel, dospeliLabel], entity3, entity3)
-        ),
-        ctorPercent()
-      ),
-      ctorOption("C", 36, { asPercent: true })
-    )
-  };
-}
-
-// src/math/M5A-2023/index.ts
-var cetarParams2 = {
-  input: {
-    kapitan: 1,
-    porucik: 4,
-    cetarPerPorucik: 3,
-    vojinPerCetar: 10
-  }
-};
-var M5A_2023_default = {
-  2.1: comparingValues({
-    input: {
-      first: {
-        ratio: 1 / 4,
-        value: 24
-      },
-      second: {
-        ratio: 1 / 3,
-        value: 12
-      }
-    }
-  }),
-  2.2: hledani_cisel({
-    input: {
-      value: 180
-    }
-  }),
-  3.1: build(cetarParams2)[0],
-  3.2: build(cetarParams2)[1],
-  3.3: build(cetarParams2)[2],
-  4.1: sesity()[0],
-  4.2: sesity()[1],
-  4.3: compass(),
-  5.1: klubSEN().jedenKrouzek,
-  5.2: klubSEN().klub,
-  6.1: odmenySoutezici()[0],
-  6.2: odmenySoutezici()[1],
-  8.1: desitiuhelnik().whiteTriangle,
-  8.2: desitiuhelnik().grayRectangle,
-  8.3: desitiuhelnik().grayTriangle,
-  9: build2({
-    input: {
-      cena: 72
-    }
-  }),
-  11: stavebnice().cube,
-  12: stavebnice().minimalCube,
-  13.1: trideni_odpadu().papirRtoS,
-  13.2: trideni_odpadu().plast1,
-  13.3: trideni_odpadu().papirToKovy,
-  14.1: obrazce()[0],
-  14.2: obrazce()[1],
-  14.3: obrazce()[2]
-};
-function hledani_cisel({ input }) {
-  const entity3 = "";
-  return {
-    deductionTree: deduce(
-      to(
-        axiomInput(cont("zadan\xE1 hodnota", input.value, entity3), 1),
-        commonSense(`rozklad na prvo\u010D\xEDsla:${primeFactorization([input.value]).join(",")}`),
-        commonSense(`rozd\u011Bl\xEDm na 2 skupiny, tak aby bylo lehce d\u011Bliteln\xE9 6`),
-        commonSense("prvni skupina 2 x 3 = 6, resp. \u010D\xEDslo zv\u011Bt\u0161en\xE9 = 6 x 2"),
-        commonSense("druhe skupina 2 x 3 x 5 = 30, resp. \u010D\xEDslo zmen\u0161en\xE9 = 30 / 6 = 5"),
-        cont("prvni zm\u011Bn\u011Bn\xE9 \u010D\xEDslo", 12, entity3)
-      ),
-      cont("druhe zm\u011Bn\u011Bn\xE9 \u010Dislo", 5, entity3),
-      product("sou\u010Din", [], entity3, entity3)
-    )
-  };
-}
-function klubSEN() {
-  const entity3 = "d\xEDt\u011B";
-  const entityKrouzek = "\xFA\u010Dast krou\u017Eek";
-  const sportovni = cont("sportovn\xED", 14, entity3);
-  const divadelni = cont("divadeln\xED", 12, entity3);
-  const roboticky = cont("robotick\xFD", 6, entity3);
-  const threeRate = rate("nav\u0161t\u011Bvuje 3 krou\u017Eky", 3, entityKrouzek, entity3);
-  const twoRate = rate("nav\u0161t\u011Bvuje 2 krou\u017Eky", 2, entityKrouzek, entity3);
-  const three = cont("nav\u0161t\u011Bvuje 3 krou\u017Eky", 3, entity3);
-  const two = cont("nav\u0161t\u011Bvuje 2 krou\u017Eky", 8, entity3);
-  const one = deduce(
-    deduce(
-      sportovni,
-      divadelni,
-      roboticky,
-      sum("celkem u\u010Dastn\xEDk\u016F", [], entity3, entity3)
-    ),
-    deduce(
-      deduce(
-        threeRate,
-        three
-      ),
-      deduce(
-        twoRate,
-        two
-      ),
-      sum("nav\u0161t\u011Bvuje v\xEDce krou\u017Ek\u016F", [], entity3, entity3)
-    ),
-    ctor("comp-diff")
-  );
-  return {
-    jedenKrouzek: {
-      deductionTree: one
-    },
-    klub: {
-      deductionTree: deduce(
-        last(one),
-        two,
-        three,
-        sum("po\u010Det d\u011Bt\xED", [], entity3, entity3)
-      )
-    }
-  };
-}
-function desitiuhelnik() {
-  const squareSizeLabel = "strana \u010Dtverce";
-  const entity3 = "cm";
-  const entity2d = "cm2";
-  const rectangleWidthLabel = "\u0161\xED\u0159ka obdeln\xEDka";
-  const triangleWidthLabel = " nejdel\u0161\xED stran\u011B troj\xFAheln\xEDku";
-  const squareSize = to(
-    axiomInput(cont("nejkrat\u0161\xED strana desiti\xFAheln\xEDk", 4, entity3), 1),
-    commonSense("tato d\xE9lka odpov\xEDd\xE1 stran\u011B \u010Dtverce"),
-    cont(squareSizeLabel, 4, entity3)
-  );
-  const rectangleWidth = to(
-    axiomInput(cont("nejdel\u0161\xED strana desiti\xFAheln\xEDk", 20, entity3), 2),
-    commonSense("tato d\xE9lka odpov\xEDd\xE1 \u0161\xED\u0159ce obd\xE9ln\xEDku"),
-    cont(rectangleWidthLabel, 20, entity3)
-  );
-  const whiteTriangle = to(
-    commonSense("2 \u010Dtverce tvo\u0159\xED v\xFD\u0161ku b\xEDl\xE9ho rovnostrann\xE9ho troj\xFAheln\xEDku"),
-    cont("v\xFD\u0161ka \u0161ed\xE9ho troj\xFAheln\xEDku", 2 * 4, entity3)
-  );
-  const triangleHeight = to(
-    commonSense("t\u0159i \u010Dtverce tvo\u0159\xED nejkrat\u0161\xED stran\u011B troj\xFAheln\xEDku"),
-    cont("v\xFD\u0161ka \u0161ed\xE9ho troj\xFAheln\xEDku", 3 * 4, entity3)
-  );
-  const triangleWidth = to(
-    axiomInput(cont("nejdel\u0161\xED strana desiti\xFAheln\xEDk", 20, entity3), 2),
-    commonSense("tato d\xE9lka odpov\xEDd\xE1 nejdel\u0161\xED stran\u011B troj\xFAheln\xEDku"),
-    cont(triangleWidthLabel, 20, entity3)
-  );
-  const whiteTriangleSize = to(
-    squareSize,
-    commonSense("2 \u010Dtverce tvo\u0159\xED stranu b\xEDl\xE9ho rovnostrann\xE9ho troj\xFAheln\xEDku"),
-    cont("strana b\xEDl\xFD troj\xFAheln\xEDk", 2 * 4, entity3)
-  );
-  return {
-    whiteTriangle: {
-      deductionTree: deduce(
-        deduce(
-          whiteTriangleSize,
-          cont("po\u010Det stran troj\xFAheln\xEDku", 3, ""),
-          product("obvod", [], entity3, entity3)
-        ),
-        ctorBooleanOption(12)
-      )
-    },
-    grayRectangle: {
-      deductionTree: deduce(
-        deduce(
-          deduce(
-            to(
-              last(whiteTriangleSize),
-              commonSense("strana b\xEDleho troj\xFAheln\xEDku odpov\xEDd\xE1 v\xFD\u0161ka \u0161ed\xE9ho obdeln\xEDku"),
-              cont("v\xFD\u0161ka \u0161ed\xE9ho obdeln\xEDku", 8, entity3)
-            ),
-            cont("po\u010Det", 2, ""),
-            product("horn\xED a doln\xED strana", [], entity3, entity3)
-          ),
-          deduce(
-            rectangleWidth,
-            cont("po\u010Det", 2, ""),
-            product("lev\xE1 a prav\xE1 strana", [], entity3, entity3)
-          ),
-          sum("obvod", [], entity3, entity3)
-        ),
-        ctorBooleanOption(56)
-      )
-    },
-    grayTriangle: {
-      deductionTree: deduce(
-        deduce(
-          triangleHeight,
-          triangleWidth,
-          deduce(
-            last(triangleWidth),
-            last(squareSize),
-            ctor("comp-diff")
-          ),
-          sum("obvod", [], entity3, entity3)
-        ),
-        ctorBooleanOption(50, "greater")
-      )
-    }
-  };
-}
-function stavebnice() {
-  const entity3 = "cm";
-  const cube = ({ length, width, height }) => ({
-    length: cont("d\xE9lka", length, entity3),
-    width: cont("\u0161\xED\u0159ka", width, entity3),
-    height: cont("v\xFD\u0161ka", height, entity3)
-  });
-  const base = cube({ length: 4, width: 4, height: 6 });
-  const inputCube = cube({ length: 8, width: 12, height: 16 });
-  const minimalSize = deduce(
-    base.length,
-    base.width,
-    base.height,
-    lcd("nejmen\u0161\xED mo\u017En\xE1 velikost strany krychle", entity3)
-  );
-  return {
-    cube: {
-      deductionTree: deduce(
-        deduce(
-          deduce(
-            inputCube.length,
-            inputCube.width,
-            inputCube.height,
-            product("objem", [], "cm3", entity3)
-          ),
-          deduce(
-            base.length,
-            base.width,
-            base.height,
-            product("objem", [], "cm3", entity3)
-          ),
-          ctor("rate")
-        ),
-        ctorOption("C", 16)
-      )
-    },
-    minimalCube: {
-      deductionTree: deduce(
-        deduce(
-          deduce(
-            minimalSize,
-            last(minimalSize),
-            last(minimalSize),
-            product("objem", [], "cm3", entity3)
-          ),
-          deduce(
-            base.length,
-            base.width,
-            base.height,
-            product("objem", [], "cm3", entity3)
-          ),
-          ctor("rate")
-        ),
-        ctorOption("D", 18)
-      )
-    }
-  };
-}
-
-// src/math/M5A-2024/index.ts
-var dveCislaNaOseParams = {
-  input: {
-    mensiCislo: 44,
-    vetsiCislo: 110,
-    pocetUsekuMeziCisly: 6,
-    X: -2,
-    Y: 3
-  }
-};
-var M5A_2024_default = {
-  3: souctovyTrojuhelnik(),
-  4.1: giftAndBox(),
-  4.2: lukasAccount(),
-  4.3: appleBox(),
-  5.1: timeUnitSum(),
-  5.2: distanceUnitCompareDiff(),
-  6.1: dveCislaNaOse(dveCislaNaOseParams).XandY,
-  6.2: dveCislaNaOse(dveCislaNaOseParams).posun,
-  9: novorocniPrani(),
-  11: sestiuhelnik(),
-  12.1: vyvojObyvatel().panov,
-  12.2: vyvojObyvatel().lidov,
-  12.3: vyvojObyvatel().damov,
-  13.1: carTrip().pocatekCesty,
-  13.2: carTrip().zeleznicniPrejezd,
-  13.3: carTrip().konecCesty,
-  14.1: pyramida().floor8,
-  14.2: pyramida().floor7,
-  14.3: pyramida().stairs
-};
-function souctovyTrojuhelnik() {
-  const entity3 = "velikost";
-  const zbytekKRozdeleni = "zbytek k rozd\u011Blen\xED";
-  return {
-    deductionTree: deduce(
-      deduce(
-        cont("zadan\xE1 hodnota v poli v t\u0159et\xED \u0159ad\u011B troj\xFAheln\xEDku", 25, entity3),
-        cont("zadan\xE1 hodnota v poli v prvn\xED \u0159ad\u011B", 7, entity3),
-        ctorDifference(zbytekKRozdeleni)
-      ),
-      to(
-        cont("hledan\xFDch \u010D\xEDsla v \u0161ed\xFDch pol\xEDch v prvn\xED \u0159ad\u011B", 2, "\u010D\xEDsel"),
-        commonSense("sou\u010Dtov\xFD troj\xFAheln\xEDk obsahuje 3 \u0159ady, kde jsou 3 pole, pot\xE9 2 pole a 1 pole ve spodn\xED \u0159ad\u011B"),
-        commonSense("Ka\u017Ed\xE9 \u010D\xEDslo je sou\u010Dtem dvou \u010D\xEDsel nad n\xEDm."),
-        commonSense("hledan\xFDch \u010D\xEDslo napravo je zapo\u010D\xEDt\xE1no 2 kr\xE1t, proto\u017Ee je pou\u017Eito v lev\xE9m i prav\xE9m sou\u010Dtu v prost\u0159edn\xED \u0159ad\u011B"),
-        cont(zbytekKRozdeleni, 3, "\u010D\xEDsel")
-      ),
-      ctor("rate")
-    )
-  };
-}
-function giftAndBox() {
-  const entity3 = "K\u010D";
-  const giftLabel = "d\xE1rek";
-  const boxLabel = "krabi\u010Dka";
-  const paidTotal = axiomInput(cont("zaplaceno", 84, entity3), 2);
-  const giftToBox = axiomInput(comp(giftLabel, boxLabel, 72, entity3), 1);
-  const box = deduce(giftToBox, paidTotal, ctor("comp-part-eq"));
-  return {
-    deductionTree: deduce(
-      deduce(giftToBox, last(box)),
-      box,
-      ctor("comp-ratio")
-    )
-  };
-}
-function lukasAccount() {
-  const entity3 = "K\u010D";
-  const grandMotherIn = cont("babi\u010Dka", 500, entity3);
-  const bookCostOut = cont("kniha", 186, entity3);
-  const pocketMoneyIn = cont("kapesn\xE9", 150, entity3);
-  const fatherGiftOut = cont("d\xE1rek pro tat\xEDnka", 263, entity3);
-  const newState = cont("\xFA\u010Det nov\u011B", 470, entity3);
-  const moneyIn = deduce(grandMotherIn, pocketMoneyIn, sum("p\u0159ijato", [], entity3, entity3));
-  const moneyOut = deduce(bookCostOut, fatherGiftOut, sum("vyd\xE1no", [], entity3, entity3));
-  const balance = deduce(moneyIn, moneyOut, ctorDifference("zm\u011Bna na \xFA\u010Dt\u011B"));
-  return {
-    deductionTree: deduce(
-      newState,
-      balance,
-      ctorDifference("\xFA\u010Det p\u016Fvodn\u011B")
-    )
-  };
-}
-function appleBox() {
-  const entity3 = "jablko";
-  const soldLabel = "prod\xE1no";
-  const boxLabel = "pln\xE1 bedna";
-  const soldRatio = ratio(boxLabel, `${soldLabel} dopoledne`, 1 / 5);
-  const sold = cont(`${soldLabel} odpoledne`, 20, entity3);
-  const restRatio = ratio(boxLabel, "2. den zbytek", 2 / 5);
-  return {
-    deductionTree: deduce(
-      deduce(
-        deduce(restRatio, ctorComplement("1. den prod\xE1no")),
-        soldRatio,
-        ctorDifference(`${soldLabel} odpoledne`)
-      ),
-      sold
-    )
-  };
-}
-function timeUnitSum() {
-  const entity3 = "";
-  const minutes = "min";
-  return {
-    deductionTree: deduce(
-      deduce(
-        deduce(cont("hodin", 1, entity3, "h"), ctorUnit(minutes)),
-        cont("minut", 20, entity3, minutes),
-        sum("celkem", [], { entity: entity3, unit: minutes }, { entity: entity3, unit: minutes })
-      ),
-      ctorUnit("s")
-    )
-  };
-}
-function distanceUnitCompareDiff() {
-  const entity3 = "";
-  return {
-    deductionTree: deduce(
-      deduce(
-        deduce(
-          deduce(cont("m", 1, entity3, "m"), ctorUnit("cm")),
-          cont("cm", 26, entity3, "cm"),
-          ctorDifference("prav\xE1 strana")
-        ),
-        deduce(cont("lev\xE1 strana", 1 / 2, entity3, "m"), ctorUnit("cm")),
-        ctorDifference("v\xFDsledek")
-      ),
-      ctorUnit("mm")
-    )
-  };
-}
-function dveCislaNaOse({ input }) {
-  const entityLength = "d\xE9lka";
-  const entity3 = "\xFAsek";
-  const mensi = axiomInput(cont("men\u0161\xED zadan\xE9 \u010D\xEDslo", input.mensiCislo, entityLength), 1);
-  const vetsi = axiomInput(cont("v\u011Bt\u0161\xED zadnan\xE9 \u010D\xEDslo", input.vetsiCislo, entityLength), 2);
-  const pocetUseku = axiomInput(cont("vzd\xE1lenost mezi zadan\xFDmi \u010D\xEDsly", input.pocetUsekuMeziCisly, "\xFAsek"), 3);
-  const positionX = axiomInput(cont("posun X", input.X, entity3), 1);
-  const positionY = axiomInput(cont("posun Y", input.Y, entity3), 1);
-  const usekRate = cislaNaOse({ mensi, vetsi, pocetUseku });
-  const dd1 = deduce(deduce(positionX, usekRate), mensi, sum("pozice X", [], entityLength, entityLength));
-  const dd2 = deduce(deduce(positionY, last(usekRate)), mensi, sum("pozice Y", [], entityLength, entityLength));
-  const zeroPositionPosun = deduce(mensi, usekRate);
-  return { "XandY": { deductionTree: to(dd1, dd2) }, "posun": { deductionTree: zeroPositionPosun } };
-}
-function novorocniPrani() {
-  const entity3 = "p\u0159\xE1n\xED";
-  const entityBase = "minuty";
-  const spolecne = cont("spole\u010Dn\u011B", 120, entity3);
-  return {
-    deductionTree: deduce(
-      deduce(
-        spolecne,
-        deduce(
-          deduce(cont("Tereza", 14, entity3), cont("Tereza", 5, entityBase), ctor("rate")),
-          deduce(cont("Nikola", 10, entity3), cont("Nikola", 5, entityBase), ctor("rate")),
-          sum("spole\u010Dn\u011B", [], entity3, entity3)
-        )
-      ),
-      ctorOption("B", 25)
-    )
-  };
-}
-function carTrip() {
-  const entity3 = "minuty";
-  const pocatekLabel = "\u010Das odjezdu";
-  const pocatekMinut = axiomInput(cont(pocatekLabel, 8, entity3), 1);
-  const dobaCesta = axiomInput(cont("cesta", 24, entity3), 1);
-  const pocatekPosun = deduce(
-    dobaCesta,
-    ratio("cesta", "1. t\u0159etina cesty", 1 / 3)
-  );
-  const pocatek = deduce(pocatekMinut, pocatekPosun, ctorDifference(pocatekLabel));
-  return {
-    pocatekCesty: {
-      deductionTree: deduce(
-        pocatek,
-        ctorOption("E", 0)
-      )
-    },
-    zeleznicniPrejezd: {
-      deductionTree: deduce(
-        deduce(
-          dobaCesta,
-          ratio("cesta", "polovina cesty", 1 / 2)
-        ),
-        ctorOption("C", 12)
-      )
-    },
-    konecCesty: {
-      deductionTree: deduce(
-        deduce(
-          deduce(last(pocatek), dobaCesta, sum("\u010Das odjezdu", [], entity3, entity3)),
-          cont("posun odjezdu o", 6, entity3),
-          sum("posunut\xFD \u010Das p\u0159\xEDjezdu", [], entity3, entity3)
-        ),
-        ctorOption("A", 30)
-      )
-    }
-  };
-}
-function sestiuhelnik() {
-  const entity3 = "troj\xFAhlen\xEDk";
-  const entity2d = "cm2";
-  const dark = cont("tmav\xE1 \u010D\xE1st", 2, entity3);
-  const obsah = cont("tmav\xE1 \u010D\xE1st", 112, entity2d);
-  return {
-    deductionTree: deduce(
-      deduce(
-        deduce(
-          deduce(
-            cont("pravideln\xFD \u0161esti\xFAhlen\xEDk", 6, entity3),
-            dark,
-            ctorDifference("sv\u011Btl\xE1 \u010D\xE1st")
-          ),
-          dark,
-          ctor("comp-ratio")
-        ),
-        obsah
-      ),
-      ctorOption("D", 224)
-    )
-  };
-}
-function vyvojObyvatel() {
-  const entity3 = "obyvatel";
-  const lidovLabel = "Lidov";
-  return {
-    panov: {
-      deductionTree: deduce(
-        to(
-          cont("p\u0159\xEDr\u016Fstek 2021", 10, entity3)
-        ),
-        ctorOption("E", 10)
-      )
-    },
-    lidov: {
-      deductionTree: deduce(
-        deduce(
-          deduce(
-            deduce(
-              cont(lidovLabel, 300, entity3),
-              transfer(`p\u0159\xEDr\u016Fstek 2019`, lidovLabel, 10, entity3)
-            ),
-            transfer(`p\u0159\xEDr\u016Fstek 2020`, lidovLabel, 5, entity3)
-          ),
-          transfer(lidovLabel, "\xFAbytek 2021", 5, entity3)
-        ),
-        ctorOption("D", 310)
-      )
-    },
-    damov: {
-      deductionTree: deduce(
-        deduce(
-          cont("2019", -5, entity3),
-          cont("2020", -10, entity3),
-          cont("2021", 10, entity3),
-          cont("2022", 5, entity3),
-          sum("zm\u011Bna obyvatel", ["2019", "2020", "2021", "2022"], entity3, entity3)
-        ),
-        ctorOption("B", 0)
-      )
-    }
-  };
-}
-function pyramida() {
-  const entity3 = "schody";
-  const entityFloor = "patra";
-  const pyramida7 = cont("pyramida", 7, entityFloor);
-  const pyramida90 = cont("pyramida", 90, entity3);
-  return {
-    floor8: {
-      deductionTree: deduce(
-        cont("\u010Dern\xE9 schody", 48, entity3),
-        deduce(
-          cont("pyramida", 8, entityFloor),
-          ratio("pyramida", "\u010Dern\xE9 schody", 1 / 2)
-        ),
-        ctor("rate")
-      )
-    },
-    floor7: {
-      deductionTree: deduce(
-        deduce(
-          cont("b\xEDl\xE9 schody", 84, entity3),
-          to(
-            pyramida7,
-            commonSense("patra se st\u0159\xEDdaj\xED pravideln\u011B, prvn\xED patro je \u010Dern\xE9"),
-            cont("b\xEDl\xE9 schody", 3, entityFloor)
-          ),
-          ctor("rate")
-        ),
-        pyramida7
-      )
-    },
-    stairs: {
-      deductionTree: deduce(
-        to(
-          pyramida90,
-          commonSense(`rozklad na prvo\u010D\xEDsla:${primeFactorization([pyramida90.quantity]).join(",")}`),
-          commonSense(`hled\xE1me co nejmen\u0161\xED periodu opakov\xE1n\xED schod\u016F z rozkladu`),
-          commonSense(`2 a 3 m\u016F\u017Eeme vylou\u010Dit, proto\u017Ee opakov\xE1n schod\u016F po 2,3 nespl\u0148ujem podm\xEDnku stejn\xE9 barvnosti pro 27.patro = 30.patro`),
-          commonSense(`5 je nejmen\u0161\xED mo\u017En\xFD po\u010Det schod\u016F, kter\xFD spl\u0148uje podm\xEDnku podm\xEDnku stejn\xE9 barvnosti pro 27.patro = 30.patro`),
-          rate("pyramida", 5, entity3, entityFloor)
-        ),
-        pyramida90
-      )
-    }
-  };
-}
-
-// src/math/M5A-2025/index.ts
-var M5A_2025_default = {
-  3.1: jizdniKolo().a,
-  3.2: jizdniKolo().b,
-  4.1: kulicka().pocet,
-  4.2: kulicka().hmotnost,
-  5.1: patrovyDum().druhePatroChlapci,
-  5.2: patrovyDum().prvniPatroPocetDeti,
-  5.3: patrovyDum().pocetDivek,
-  6.1: domecek().obvod,
-  6.2: domecek().kratsiStranaObdelni,
-  9: farmar(),
-  10: penize(),
-  14.1: poutnik().prvniKouzlo,
-  14.2: poutnik().druheKouzlo,
-  14.3: poutnik().maximumKouzel
-};
-function jizdniKolo() {
-  const entity3 = "oto\u010Den\xED";
-  const otaceniKola = ratios("ot\xE1\u010Den\xED kola", ["t\xE1ta", "Mirek"], [25, 30]);
-  return {
-    a: {
-      deductionTree: deduce(
-        otaceniKola,
-        cont("t\xE1ta", 30, entity3),
-        nthPart("Mirek")
-      )
-    },
-    b: {
-      deductionTree: deduce(
-        otaceniKola,
-        comp("t\xE1ta", "Mirek", -30, entity3)
-      )
-    }
-  };
-}
-function kulicka() {
-  const entity3 = "v\xE1ha";
-  const unit = "g";
-  const entityBase = "kuli\u010Dka";
-  const bigLabel = "velk\xE1 kuli\u010Dka";
-  const smallLabel = "mal\xE1 kuli\u010Dka";
-  const big = rate(bigLabel, 30, { entity: entity3, unit }, entityBase);
-  const small = rate(smallLabel, 20, { entity: entity3, unit }, entityBase);
-  const pocetSrovnani = compRatio(smallLabel, bigLabel, 2);
-  const bigPocet = deduce(
-    deduce(
-      deduce(
-        deduce(
-          big,
-          small,
-          ctorRatios("celkem")
-        ),
-        cont(smallLabel, 2, ""),
-        nthPartFactor(smallLabel)
-      ),
-      cont("celkem", 560, entity3, unit),
-      nthPart(bigLabel)
-    ),
-    big
-  );
-  const smallPocet = deduce(
-    bigPocet,
-    pocetSrovnani
-  );
-  return {
-    pocet: {
-      deductionTree: deduce(
-        smallPocet,
-        last(bigPocet),
-        sum("celkem", [], entityBase, entityBase)
-      )
-    },
-    hmotnost: {
-      deductionTree: deduce(
-        last(smallPocet),
-        small
-      )
-    }
-  };
-}
-function patrovyDum() {
-  const boyLabel = "chlapci";
-  const girlLabel = "d\xEDvky";
-  const entity3 = "d\xEDt\u011B";
-  const prvniL = "prvn\xED patro";
-  const druheL = "druh\xE9 patro";
-  const tretiL = "t\u0159et\xED patro";
-  const rozlozeniChlapcuVPatrech = to(
-    commonSense("Ve druh\xE9m pat\u0159e bydl\xED jen d\xEDvky."),
-    commonSense("V prvn\xEDm a t\u0159et\xEDm pat\u0159e bydl\xED dohromady 5 chlapc\u016F a 3 d\xEDvky."),
-    commonSense("Ze v\u0161ech chlapc\u016F z na\u0161eho domu pouze 3 chlapci nebydl\xED ve t\u0159et\xEDm pat\u0159e."),
-    ratios("rozlo\u017Een\xED chlapc\u016F v patrech", [prvniL, druheL, tretiL], [3, 0, 2])
-  );
-  const celkem = cont("celkem", 11, entity3);
-  const chlapci = to(
-    commonSense("Ve druh\xE9m pat\u0159e bydl\xED jen d\xEDvky."),
-    commonSense("V prvn\xEDm a t\u0159et\xEDm pat\u0159e bydl\xED dohromady 5 chlapc\u016F a 3 d\xEDvky."),
-    cont(boyLabel, 5, entity3)
-  );
-  const celkovyPocetDivek = deduce(
-    celkem,
-    chlapci,
-    ctorDifference(girlLabel)
-  );
-  return {
-    druhePatroChlapci: {
-      deductionTree: to(
-        commonSense("Ve druh\xE9m pat\u0159e bydl\xED jen d\xEDvky."),
-        cont(druheL, 0, boyLabel)
-      )
-    },
-    prvniPatroPocetDeti: {
-      deductionTree: deduce(
-        cont("v prvn\xEDm a t\u0159et\xEDm pat\u0159e", 8, entity3),
-        deduce(
-          celkem,
-          cont("v prvn\xEDm a druh\xE9m pat\u0159e", 8, entity3),
-          ctorDifference(tretiL)
-        ),
-        ctorDifference(prvniL)
-      )
-    },
-    pocetDivek: {
-      deductionTree: celkovyPocetDivek
-    }
-  };
-}
-function penize() {
-  const entity3 = "K\u010D";
-  const janaRatio = ratio("celkem", "Jana", 1 / 5);
-  const ivoCompare = compRatio("Ivo", "Jana", 2);
-  const eva = cont("Eva", 240, entity3);
-  return {
-    deductionTree: deduce(
-      deduce(
-        deduce(
-          to(
-            janaRatio,
-            deduce(
-              janaRatio,
-              ivoCompare
-            ),
-            ratio("celkem", "Ivo + Jana", 3 / 5)
-          ),
-          ctorComplement("Eva")
-        ),
-        eva
-      ),
-      ctorOption("B", 600)
-    )
-  };
-}
-function domecek() {
-  const entity3 = "d\xE9lka";
-  const unit = "cm";
-  const dumLabel = "dome\u010Dek";
-  const strechaLabel = "st\u0159echa";
-  const onlyStrechLabel = `${strechaLabel} bez spole\u010Den\xE9 \u010D\xE1sti`;
-  const sharedLabel = "sd\xEDlen\xE1 \u010D\xE1st mezi p\u0159izem\xED a st\u0159echa";
-  const prizemiLabel = "p\u0159\xEDzem\xED";
-  const onlyPrizemiLabel = `${prizemiLabel} bez spole\u010Den\xE9 \u010D\xE1sti`;
-  const kratsiStranaLabel = "krat\u0161\xED strana obdeln\xEDku";
-  const delsiStranLabel = "del\u0161\xED strana obdeln\xEDku";
-  const dum = cont(dumLabel, 24, entity3, unit);
-  const obvodJenStrecha = deduce(
-    dum,
-    ratios(dumLabel, [onlyPrizemiLabel, onlyStrechLabel], [1, 1])
-  );
-  const shared = deduce(
-    obvodJenStrecha,
-    ratios(strechaLabel, [onlyStrechLabel, sharedLabel], [3, 2]),
-    nthPart(sharedLabel)
-  );
-  return {
-    obvod: {
-      deductionTree: deduce(
-        obvodJenStrecha,
-        to(
-          commonSense("st\u0159echa je slo\u017Eena ze t\u0159\xED rovnostrann\xFDch troj\xFAheln\xEDk\u016F"),
-          commonSense("tyto troj\xFAheln\xEDky jsou spojeny tak, \u017Ee dv\u011B strany tvo\u0159\xED spole\u010Dnou z\xE1kladnu s p\u0159\xEDzem\xEDm"),
-          ratios(strechaLabel, [onlyStrechLabel, sharedLabel], [3, 2])
-        )
-      )
-    },
-    kratsiStranaObdelni: {
-      deductionTree: deduce(
-        deduce(
-          deduce(
-            dum,
-            ratios(dumLabel, [onlyPrizemiLabel, onlyStrechLabel], [1, 1]),
-            nthPart(onlyPrizemiLabel)
-          ),
-          last(shared),
-          ctorDifference(`2x${kratsiStranaLabel}`)
-        ),
-        ratios(`2x${kratsiStranaLabel}`, [kratsiStranaLabel, kratsiStranaLabel], [1, 1])
-      )
-    }
-  };
-}
-function farmar() {
-  const entityBase = "kr\xE1va";
-  const entity3 = "objem";
-  const unit = "l";
-  const farmaPuvodneLabel = "farma p\u016Fvodn\u011B";
-  const farmaNove = "farma nov\u011B";
-  const farmaPuvodne = cont(farmaPuvodneLabel, 7, entityBase);
-  const prodano = cont("prod\xE1no", 5, entityBase);
-  const puvodneMlekoPerKrava = rate(farmaPuvodneLabel, 15, { entity: entity3, unit }, entityBase);
-  const noveMlekoPerKrava = rate(farmaNove, 20, { entity: entity3, unit }, entityBase);
-  return {
-    deductionTree: deduce(
-      deduce(
-        deduce(
-          deduce(
-            deduce(
-              farmaPuvodne,
-              puvodneMlekoPerKrava
-            ),
-            cont(farmaPuvodneLabel, 2, "doba", "den"),
-            product(farmaNove, [], { entity: entity3, unit }, { entity: entity3, unit })
-          ),
-          deduce(
-            deduce(
-              farmaPuvodne,
-              prodano,
-              ctorDifference(farmaPuvodneLabel)
-            ),
-            puvodneMlekoPerKrava
-          ),
-          ctorDifference(farmaNove)
-        ),
-        noveMlekoPerKrava
-      ),
-      ctorOption("A", 9)
-    )
-  };
-}
-function poutnik() {
-  const entity3 = "duk\xE1ty";
-  const kouzelnik = cont("kouzeln\xEDk", 54, entity3);
-  const poutnik2 = cont("poutn\xEDk", 54, entity3);
-  const compareKvP = compRatio("poutn\xEDk", "kouzeln\xEDk", 1 / 2);
-  const ratiosKvP = deduce(
-    compareKvP,
-    ctorRatios("celkem")
-  );
-  const kouzelnik1 = deduce(
-    deduce(
-      kouzelnik,
-      poutnik2,
-      sum("celkem", [], entity3, entity3)
-    ),
-    ratiosKvP
-  );
-  const kouzelnik2 = deduce(
-    deduce(
-      last(kouzelnik1),
-      cont("poutn\xEDk", lastQuantity(kouzelnik1), entity3),
-      sum("celkem", [], entity3, entity3)
-    ),
-    ratiosKvP
-  );
-  return {
-    prvniKouzlo: {
-      deductionTree: deduce(
-        toCont(kouzelnik, { agent: "kouzeln\xEDk p\u016Fvodn\u011B" }),
-        toCont(kouzelnik1, { agent: "kouzeln\xEDk po 1.kouzle " }),
-        ctorDelta("kouzeln\xEDk")
-      )
-    },
-    druheKouzlo: {
-      deductionTree: deduce(
-        deduce(
-          deduce(
-            last(kouzelnik1),
-            cont("poutn\xEDk", lastQuantity(kouzelnik1), entity3),
-            sum("celkem", [], entity3, entity3)
-          ),
-          last(ratiosKvP),
-          nthPart("poutn\xEDk")
-        ),
-        cont("dvojn\xE1sobek", 2, ""),
-        product("poutn\xEDk", [], entity3, entity3)
-      )
-    },
-    maximumKouzel: {
-      deductionTree: to(
-        commonSense("\u010D\xE1stka mus\xED b\xFD d\u011Bliteln\xE1 3, tak aby \u0161lo rozd\u011Blit v pom\u011Bru 1:2, resp. aby \u010D\xE1sti byla cel\xE1 \u010D\xEDsla"),
-        deduce(
-          deduce(
-            deduce(
-              last(kouzelnik2),
-              cont("poutn\xEDk", lastQuantity(kouzelnik2), entity3),
-              sum("celkem", [], entity3, entity3)
-            ),
-            last(ratiosKvP),
-            nthPart("poutn\xEDk")
-          ),
-          cont("dvojn\xE1sobek", 2, ""),
-          product("poutn\xEDk", [], entity3, entity3)
-        )
-      )
-    }
-  };
-}
-
-// src/math/M5B-2025/index.ts
-var M5B_2025_default = {
-  1.1: hledaneCisla().cislo1,
-  1.2: hledaneCisla().cislo2,
-  1.3: hledaneCisla().cisla3,
-  3.1: koralky().celkem,
-  3.2: koralky().porovnani4To2,
-  3.3: koralky().cerneKoralky,
-  4.1: restaurace().celkemStolu,
-  4.2: restaurace().celkemMist,
-  10: zahon().yellow,
-  11: zahon().velvet,
-  14.1: ctverce().obvodObrazec2,
-  14.2: ctverce().obrazecWidthToLength
-};
-function hledaneCisla() {
-  const entity3 = "";
-  const unknownNumberLabel = "nezn\xE1m\xE9 \u010D\xEDslo";
-  const prvniL = "prvn\xED";
-  const druhyL = "druh\xFD";
-  const soucet = toCont(
-    deduce(
-      cont("sou\u010Det", 109, entity3),
-      cont("sou\u010Det", 2, "nezn\xE1m\xE9 \u010D\xEDslo"),
-      ctor("rate")
-    ),
-    { agent: "schodn\xE1 nezn\xE1m\xE1 \u010D\xEDsla" }
-  );
-  const rozdil = toCont(deduce(
-    cont("rozd\xEDl", 13, entity3),
-    cont("rozd\xEDl", 2, "druh\xE9 nezn\xE1m\xE9 \u010D\xEDslo"),
-    ctor("rate")
-  ), { agent: "polovina rozd\xEDlu" });
-  return {
-    cislo1: {
-      deductionTree: deduce(
-        deduce(
-          toCont(deduce(
-            cont("zn\xE1m\xFD v\xFDsledek", 20, entity3),
-            cont("zn\xE1m\xFD v\xFDsledek", 2, "n\xE1sobek"),
-            ctor("rate")
-          ), { agent: "\u010D\xEDslo bez zdojn\xE1soben\xED" }),
-          cont("opak p\u0159i\u010Dten\xE9 \u010D\xEDslo", 3, entity3),
-          ctorDifference("\u010D\xEDslo bez p\u0159i\u010Dten\xE9ho \u010D\xEDsla 3")
-        ),
-        cont("opak d\u011Blen\xED", 7, entity3),
-        product("nezn\xE1n\xE9 \u010D\xEDslo", [], entity3, entity3)
-      )
-    },
-    cislo2: {
-      deductionTree: deduce(
-        deduce(
-          compRelative("zv\u011Bt\u0161en\xED", unknownNumberLabel, -1 / 2),
-          ctorRatios("zn\xE1m\xFD v\xFDsledek")
-        ),
-        cont("zn\xE1m\xFD v\xFDsledek", 198, entity3),
-        nthPart(unknownNumberLabel)
-      )
-    },
-    cisla3: {
-      deductionTree: to(
-        soucet,
-        commonSense("abychom zachovali sou\u010Det a z\xE1rove\u0148 vzniknul po\u017Eadovan\xFD rozd\xEDl"),
-        rozdil,
-        commonSense("prvn\xED nezn\xE1m\xE9 \u010D\xEDslo zv\xFD\u0161\xEDme o polovinu rozd\xEDlu"),
-        cont("prvn\xED nezn\xE1m\xE9 \u010D\xEDslo", lastQuantity(soucet) + lastQuantity(rozdil), entity3),
-        commonSense("druh\xE9 nezn\xE1m\xE9 \u010D\xEDslo sn\xED\u017E\xEDme o polovinu rozd\xEDlu"),
-        cont("druh\xE9 nezn\xE1m\xE9 \u010D\xEDslo", lastQuantity(soucet) - lastQuantity(rozdil), entity3)
-      )
-    }
-  };
-}
-function koralky() {
-  const entity3 = "kor\xE1lky";
-  const skupina3 = cont(`3. skupina`, 32, entity3);
-  const groupRatioFactory = (num) => compRatio(`${num}. skupina`, `${num - 1}. skupina`, 4);
-  const skupina2 = deduce(
-    skupina3,
-    groupRatioFactory(3)
-  );
-  const skupina1 = deduce(
-    last(skupina2),
-    groupRatioFactory(2)
-  );
-  const skupina4 = deduce(
-    skupina3,
-    groupRatioFactory(4)
-  );
-  const celkem = deduce(
-    skupina4,
-    skupina3,
-    skupina2,
-    skupina1,
-    sum("celkem", [], entity3, entity3)
-  );
-  const name = "skupina barev (\u010Dern\xE9 a b\xEDl\xFD)";
-  const colorQuota = deduce(
-    last(skupina4),
-    cont(name, 5, ""),
-    ctor("quota")
-  );
-  return {
-    celkem: {
-      deductionTree: celkem
-    },
-    porovnani4To2: {
-      deductionTree: deduce(
-        last(skupina4),
-        last(skupina2),
-        ctor("comp-ratio")
-      )
-    },
-    cerneKoralky: {
-      deductionTree: deduce(
-        last(skupina4),
-        to(
-          colorQuota,
-          commonSense("ka\u017Ed\xE1 skupina obsahuje 1 b\xEDl\xFD"),
-          commonSense("zbytek obsahuje 1 b\xEDl\xFD"),
-          cont("b\xEDl\xE9", lastQuantity(colorQuota) + 1, entity3)
-        ),
-        ctorDifference("\u010Dern\xE9")
-      )
-    }
-  };
-}
-function restaurace() {
-  const entity3 = "host";
-  const entityBase = "st\u016Fl";
-  const bigLabel = "velk\xE9 st\u016Fl";
-  const mediumLabel = "standardn\xED st\u016Fl";
-  const smallLabel = "mal\xE9 st\u016Fl";
-  const bigRate = rate(bigLabel, 4, entity3, entityBase);
-  const mediumRate = rate(mediumLabel, 3, entity3, entityBase);
-  const smallRate = rate(smallLabel, 2, entity3, entityBase);
-  const celkemStolu = deduce(
-    ratio("restaurace", "rezervace", 1 / 4),
-    cont("rezervace", 9, entityBase)
-  );
-  const medium = deduce(
-    last(celkemStolu),
-    ratio("restaurace", mediumLabel, 1 / 3)
-  );
-  const small = deduce(
-    last(celkemStolu),
-    ratio("restaurace", smallLabel, 1 / 2)
-  );
-  const big = deduce(
-    last(celkemStolu),
-    deduce(
-      last(small),
-      last(medium),
-      sum("dohromady", [smallLabel, mediumLabel], entityBase, entityBase)
-    ),
-    ctorDifference(bigLabel)
-  );
-  return {
-    celkemStolu: {
-      deductionTree: celkemStolu
-    },
-    celkemMist: {
-      deductionTree: deduce(
-        deduce(small, smallRate),
-        deduce(medium, mediumRate),
-        deduce(big, bigRate),
-        sum("celkem", [], entity3, entity3)
-      )
-    }
-  };
-}
-function zahon() {
-  const entity3 = "rostlina";
-  const entityYellow = "\u017Elut\xE1 rostlina";
-  const entityVelvet = "fialov\xE1 rostlina";
-  const entityBase = "mal\xFD troj\xFAhlen\xEDkov\xFD z\xE1hon";
-  const strany = cont("z\xE1hon", 3, "strana");
-  const subZahon = cont("po obvodu ke ka\u017Ed\xE9 stran\u011B", 3, entityBase);
-  const rohove = cont("rohov\xE9", 3, entity3);
-  const celkem = cont("z\xE1hon celkem", 39, entity3);
-  return {
-    yellow: {
-      deductionTree: deduce(
-        to(
-          deduce(
-            to(
-              deduce(
-                deduce(
-                  celkem,
-                  rohove,
-                  ctorDifference("z\xE1hon")
-                ),
-                strany,
-                ctor("rate")
-              ),
-              commonSense("2 z t\u011Bchto rostli jsou fialov\xE9 a z\xE1rove\u0148 jsou na ka\u017Ed\xE9 stran\u011B 2 rohov\xE9"),
-              cont("po obvodu ke ka\u017Ed\xE9 stran\u011B", 12, entityYellow)
-            ),
-            subZahon,
-            ctor("rate")
-          ),
-          commonSense("vzor \u017Elut\xE9 -> 1 + 2 + 3 + 4 = 10"),
-          cont("z\xE1hon", 10, entityYellow)
-        ),
-        ctorOption("C", 10)
-      )
-    },
-    velvet: {
-      deductionTree: deduce(
-        deduce(
-          to(
-            commonSense("vzor \u017Elut\xE9 -> 1 + 2 + 3 + 4 = 10"),
-            commonSense("vzor fialov\xE9 -> 1 + 2 + 3 + 4 + 5 = 15"),
-            rate("z\xE1hon", 15, entityVelvet, entityBase)
-          ),
-          cont("z\xE1hon", 3, entityBase)
-        ),
-        ctorOption("B", 45)
-      )
-    }
-  };
-}
-function ctverce() {
-  const entity3 = "d\xE9lka";
-  const unit = "cm";
-  const entityBase = "strana";
-  const entitySquare = "\u010Dtverec";
-  const obrazec1 = "1. obrazec";
-  const obrazec2 = "2. obrazec";
-  const obrazec3 = "3. obrazec";
-  const obvod1 = cont(obrazec1, 80, entity3, unit);
-  const ctverec1PocetStran = cont(obrazec1, 4, entityBase);
-  const ctverec2PocetStran = cont(obrazec2, 4, entityBase);
-  const matchSiteLabel2 = "strana 1. obrazce = 5 sv\u011Btle \u0161ed\xE9 \u010Dtverce";
-  const tempMatchSiteLabel2 = "2. obrazec - 4 tmav\u011B \u0161ed\xE9 \u010Dtverce =  6 \u0161v\u011Btle \u0161ed\xE9 \u010Dtverce";
-  const matchSiteLabel3 = "strana 2. obrazce = 6 tmav\u011B \u0161ed\xE9 \u010Dtverce";
-  const tempMatchSiteLabel3 = "krat\u0161\xED strany 3. obrazce  = 5 sv\u011Btle \u0161ed\xE9 \u010Dtverce";
-  const strana1 = toCont(deduce(
-    obvod1,
-    ctverec1PocetStran,
-    ctor("rate")
-  ), { agent: matchSiteLabel2 });
-  const strana1Add = deduce(
-    last(strana1),
-    cont(matchSiteLabel2, 5, entitySquare),
-    ctor("rate")
-  );
-  const strana2 = deduce(
-    deduce(
-      strana1,
-      strana1Add,
-      sum(tempMatchSiteLabel2, [], { entity: entity3, unit }, { entity: entity3, unit })
-    ),
-    ratios(matchSiteLabel3, [tempMatchSiteLabel2, "b\xEDl\xFD \u010Dtverec"], [4, 1])
-  );
-  const widthAdd = deduce(
-    last(strana2),
-    cont(matchSiteLabel3, 6, entitySquare),
-    ctor("rate")
-  );
-  const width3 = deduce(
-    last(strana2),
-    widthAdd,
-    sum(tempMatchSiteLabel3, [], { entity: entity3, unit }, { entity: entity3, unit })
-  );
-  return {
-    obvodObrazec2: {
-      deductionTree: deduce(
-        strana2,
-        ctverec2PocetStran,
-        product(obrazec2, [], { entity: entity3, unit }, { entity: entity3, unit })
-      )
-    },
-    obrazecWidthToLength: {
-      deductionTree: deduce(
-        deduce(
-          last(strana2),
-          deduce(
-            last(width3),
-            cont(tempMatchSiteLabel3, 5, entitySquare),
-            ctor("rate")
-          ),
-          sum("del\u0161\xED strana 3. obrazce", [], { entity: entity3, unit }, { entity: entity3, unit })
-        ),
-        width3
-      )
-    }
-  };
-}
-
 // src/math/shapes/triangle.ts
 function triangleArea({ size, height, triangle }) {
   const agent = triangle.agent;
   const unit = triangle.unit ?? "";
   const entity3 = triangle.entity ?? "obsah";
-  const container = size.kind === "cont" ? size : last2(size);
+  const container = size.kind === "cont" ? size : last3(size);
   return deduce2(
     cont("polovina", 1 / 2, ""),
     size,
