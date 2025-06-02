@@ -43,14 +43,22 @@ function wrapToQuantity(expression: string, context?: ExpressionContext): Quanti
 }
 function wrapToRatio(expression: string, context?: ExpressionContext): Ratio {
   //return evaluate(expression, context);
-
-
   return { expression, context: convertContext(context) };
+}
+
+function formatNumbersInExpression(expr) {
+  return expr.replace(/(\d*\.\d+|\d+)/g, (match) => {
+    const num = parseFloat(match);
+    if (!isNaN(num)) {
+      return num.toFixed(2).replace(/\.?0+$/, ''); // remove trailing zeros
+    }
+    return match;
+  });
 }
 function convertContext(context: ExpressionContext) {
   return Object.fromEntries(Object.entries(context).map(([key, value]) => [key, convertRatioKeysToFractions(value)])) as ExpressionContext;
 }
-function convertRatioKeysToFractions(obj: {}) {
+function convertRatioKeysToFractions(obj: any) {
   return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, key === "ratio" ? helpers.convertToFraction(value as number) : value]))
 }
 type EntityBase = { entity: string, unit?: Unit }
@@ -139,6 +147,7 @@ export type Rate = {
   entity: EntityBase,
   entityBase: EntityBase,
   quantity: Quantity
+  baseQuantity: Quantity
 }
 
 export type Quota = {
@@ -426,8 +435,8 @@ export function nthPart(agent): NthPart {
 export function nthPartFactor(agent): NthPartFactor {
   return { kind: 'nth-factor', agent }
 }
-export function rate(agent: string, quantity: number, entity: EntityDef, entityBase: EntityDef): Rate {
-  return { kind: 'rate', agent, quantity, entity: toEntity(entity), entityBase: toEntity(entityBase) }
+export function rate(agent: string, quantity: number, entity: EntityDef, entityBase: EntityDef, baseQuantity: number = 1): Rate {
+  return { kind: 'rate', agent, quantity, baseQuantity, entity: toEntity(entity), entityBase: toEntity(entityBase) }
 }
 export function quota(agent: string, agentQuota, quantity: number, restQuantity = 0): Quota {
   return { kind: 'quota', agent, agentQuota, quantity, restQuantity }
@@ -669,8 +678,8 @@ function roundTo(a: Container, b: Round): Question {
     question: isNumber(a.quantity) ? `Zaokrouhli ${formatNumber(a.quantity)} ${formatEntity(a)} na celé číslo.` : `Zaokrouhli na celé číslo.`,
     result,
     options: isNumber(a.quantity) && isNumber(result.quantity) ? [
-      { tex: `${formatNumber(a.quantity)}`, result: formatNumber(result.quantity), ok: true },      
-    ]:[]
+      { tex: `${formatNumber(a.quantity)}`, result: formatNumber(result.quantity), ok: true },
+    ] : []
   }
 }
 
@@ -1063,11 +1072,14 @@ function partToWholeRule(a: Container, b: PartWholeRatio): Question {
   }
 }
 
-function rateRuleEx(a: Container, rate: Rate): Container {
-  if (!(a.entity === rate.entity.entity || a.entity === rate.entityBase.entity)) {
-    throw `Mismatch entity ${a.entity} any of ${rate.entity.entity}, ${rate.entityBase.entity}`
+function rateRuleEx(a: Container | Quota, rate: Rate): Container {
+
+  const aEntity = a.kind == "cont" ? a.entity : a.agentQuota
+  if (!(aEntity === rate.entity.entity || aEntity === rate.entityBase.entity)) {
+    throw `Mismatch entity ${aEntity} any of ${rate.entity.entity}, ${rate.entityBase.entity}`
   }
-  const isEntityBase = a.entity == rate.entity.entity;
+  const isEntityBase = aEntity == rate.entity.entity;
+  const isUnitRate = rate.baseQuantity === 1;
   return {
     kind: 'cont', agent: a.agent,
     entity: isEntityBase
@@ -1076,20 +1088,29 @@ function rateRuleEx(a: Container, rate: Rate): Container {
     unit: isEntityBase
       ? rate.entityBase.unit
       : rate.entity.unit,
-    quantity: a.entity == rate.entity.entity
-      ? isNumber(a.quantity) && isNumber(rate.quantity) ? a.quantity / rate.quantity : wrapToQuantity(`a.quantity / rate.quantity`, { a, rate })
-      : isNumber(a.quantity) && isNumber(rate.quantity) ? a.quantity * rate.quantity : wrapToQuantity(`a.quantity * rate.quantity`, { a, rate })
+    quantity: aEntity == rate.entity.entity
+      ? isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(rate.baseQuantity)
+        ? a.quantity / (!isUnitRate ? rate.quantity / rate.baseQuantity : rate.quantity)
+        : !isUnitRate
+          ? wrapToQuantity(`a.quantity / (rate.quantity/rate.baseQuantity)`, { a, rate })
+          : wrapToQuantity(`a.quantity / rate.quantity`, { a, rate })
+      : isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(rate.baseQuantity)
+        ? a.quantity * (!isUnitRate ? rate.quantity / rate.baseQuantity : rate.quantity)
+        : !isUnitRate
+          ? wrapToQuantity(`a.quantity * (rate.quantity/rate.baseQuantity)`, { a, rate })
+          : wrapToQuantity(`a.quantity * rate.quantity`, { a, rate })
   }
 }
 
-function rateRule(a: Container, rate: Rate): Question {
+function rateRule(a: Container | Quota, rate: Rate): Question {
   const result = rateRuleEx(a, rate)
+  const aEntity = a.kind == "cont" ? a.entity : a.agentQuota
   return {
     question: containerQuestion(result),
     result,
-    options: isNumber(a.quantity) && isNumber(rate.quantity) ? [
-      { tex: `${formatNumber(a.quantity)} * ${formatNumber(rate.quantity)}`, result: formatNumber(a.quantity * rate.quantity), ok: a.entity !== rate.entity.entity },
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(rate.quantity)}`, result: formatNumber(a.quantity / rate.quantity), ok: a.entity === rate.entity.entity }]
+    options: isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(result.quantity) && isNumber(rate.baseQuantity) ? [
+      { tex: `${formatNumber(a.quantity)} * ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: aEntity !== rate.entity.entity },
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: aEntity === rate.entity.entity }]
       : []
   }
 }
@@ -1190,7 +1211,7 @@ function sumRuleEx(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine
     const quantity = areNumbers(values) ? values.reduce((out, d) => out += d, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
     if (items.every(d => isRatePredicate(d))) {
       const { entity, entityBase } = items[0];
-      return { kind: 'rate', agent: b.wholeAgent, quantity, entity, entityBase }
+      return { kind: 'rate', agent: b.wholeAgent, quantity, entity, entityBase, baseQuantity: 1 }
     }
     else {
       return { kind: 'cont', agent: b.wholeAgent, quantity, entity: b.wholeEntity.entity, unit: b.wholeEntity.unit }
@@ -1484,7 +1505,8 @@ function compareToCompareRuleEx(a: Comparison, b: Comparison): Rate {
     agent: a.agentA,
     quantity: isNumber(a.quantity) && isNumber(b.quantity) ? abs(a.quantity) / abs(b.quantity) : wrapToQuantity(`abs(a.quantity) / abs(b.quantity)`, { a, b }),
     entity: { entity: a.entity },
-    entityBase: { entity: b.entity }
+    entityBase: { entity: b.entity },
+    baseQuantity: 1
   }
 }
 function compareToCompareRule(a: Comparison, b: Comparison): Question {
@@ -1576,7 +1598,7 @@ function toDifferenceAsRatio(a: PartWholeRatio, b: PartWholeRatio, diff: Differe
 }
 
 
-function toRateEx(a: Container, b: Container): Rate {
+function toRateEx(a: Container, b: Container | Quota): Rate {
   if (a.agent !== b.agent) {
     throw `Mismatch angent ${a.agent}, ${b.agent}`
   }
@@ -1589,17 +1611,18 @@ function toRateEx(a: Container, b: Container): Rate {
       unit: a.unit
     },
     entityBase: {
-      entity: b.entity,
+      entity: b.kind === "cont" ? b.entity : b.agentQuota,
       unit: a.unit
-    }
+    },
+    baseQuantity: 1
   }
 }
 
-function toRate(a: Container, b: Container): Question {
+function toRate(a: Container, b: Container | Quota): Question {
   const result = toRateEx(a, b)
   if (isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.quantity)) {
     return {
-      question: `Rozděl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnoměrně na ${formatNumber(b.quantity)} ${formatEntity({ entity: b.entity })}`,
+      question: `Rozděl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnoměrně na ${formatNumber(b.quantity)} ${formatEntity({ entity: b.kind === "cont" ? b.entity : b.agentQuota })}`,
       result,
       options: [
         { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: true },
@@ -1629,7 +1652,7 @@ function solveEquation(a: Container | Rate, b: Container | Rate, last: LinearEqu
   }
 }
 
-function toQuota(a: Container, quota: Container): Quota {
+function toQuotaEx(a: Container, quota: Container): Quota {
   // if (a.entity !== quota.entity) {
   //   throw `Mismatch entity ${a.entity}, ${quota.entity}`
   // }
@@ -1643,6 +1666,22 @@ function toQuota(a: Container, quota: Container): Quota {
     agent: a.agent,
     quantity: groupCount,
     restQuantity: remainder
+  }
+}
+function toQuota(a: Container, quota: Container): Question {
+  const result = toQuotaEx(a, quota);
+  if (isNumber(a.quantity) && isNumber(quota.quantity) && isNumber(result.quantity)) {
+    return {
+      question: `Rozděl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity, unit: a.unit })} postupně na skupiny velikosti ${formatNumber(quota.quantity)} ${formatEntity({ entity: quota.entity, unit: quota.unit })}`,
+      result,
+      options: [
+        { tex: `${formatNumber(a.quantity)} / ${formatNumber(quota.quantity)}`, result: formatNumber(result.quantity), ok: true },
+        { tex: `${formatNumber(quota.quantity)} / ${formatNumber(a.quantity)}`, result: formatNumber(result.quantity), ok: false },
+      ]
+    }
+  }
+  else {
+    return resultAsQuestion(result)
   }
 }
 
@@ -2052,10 +2091,10 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
     const kind = last?.kind;
     return kind === "comp-part-eq" ? partEqual(b, a) : compareRule(a, b);
   }
-  else if (a.kind === "cont" && b.kind == "rate") {
+  else if ((a.kind === "cont" || a.kind === "quota") && b.kind == "rate") {
     return rateRule(a, b)
   }
-  else if (a.kind === "rate" && b.kind == "cont") {
+  else if (a.kind === "rate" && (b.kind == "cont" || b.kind === "quota")) {
     return rateRule(b, a)
   }
   else if (a.kind === "comp" && b.kind == "comp-ratio") {
@@ -2083,10 +2122,12 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
     return proportionRule(a, b)
   }
   else if (a.kind === "cont" && b.kind == "quota") {
-    return quotaRule(a, b)
+    const kind = last?.kind;
+    return kind === "rate" ? toRate(a, b) : quotaRule(a, b)
   }
   else if (a.kind === "quota" && b.kind == "cont") {
-    return quotaRule(b, a)
+    const kind = last?.kind;
+    return kind === "rate" ? toRate(b, a) : quotaRule(b, a)
   }
   else if (a.kind === "comp-ratio" && b.kind === "cont") {
     return ratioCompareRule(b, a);

@@ -16,6 +16,7 @@ import M9A_2024 from './M9A-2024/index';
 import M9I_2025 from './M9I-2025/index';
 import M9A_2025 from './M9A-2025/index';
 import M9B_2025 from './M9B-2025/index';
+import MMA_2025 from './MMA-2025/index';
 
 //re export - due to static server rendering
 export { inferenceRuleWithQuestion } from '../math/math-configure'
@@ -47,4 +48,5 @@ export default {
   "M9I-2025": M9I_2025,
   "M9A-2025": M9A_2025,
   "M9B-2025": M9B_2025,
+  "MMA-2025": MMA_2025,
 }

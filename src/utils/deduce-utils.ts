@@ -42,7 +42,7 @@ export function last(input: TreeNode) {
 }
 export function lastQuantity(input: TreeNode) {
   const lastPredicate = last(input);
-  return isNumber(lastPredicate.quantity) ? lastPredicate.quantity : NaN;
+  return isNumber(lastPredicate.quantity) ? lastPredicate.quantity : lastPredicate.quantity as unknown as number;
 }
 export function deduce(...children: Node[]): TreeNode {
   return to(...children.concat(inferenceRule.apply(null, children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]))));
@@ -330,7 +330,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = compose`${joinArray(d.partAgents?.map(d => formatAgent(d)), " * ")}`;
       break;
     case "rate":
-      result = compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} per ${formatEntity(d.entityBase.entity, d.entityBase.unit)}`
+      result = compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} per ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? '':formatQuantity(d.baseQuantity)} ${formatEntity(d.entityBase.entity, d.entityBase.unit)}`
       break;
     case "quota":
       result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${d.restQuantity !== 0 ? ` se zbytkem ${formatQuantity(d.restQuantity)}` : ''}`

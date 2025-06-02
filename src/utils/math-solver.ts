@@ -22,7 +22,7 @@ parser.functions.lcd = function (...args: number[]) {
   return lcdCalc(args)
 }
 const eps = 0.001;
-parser.functions.closeTo = function(value: number, center: number ){
+parser.functions.closeTo = function (value: number, center: number) {
   const start = center - eps;
   const end = center + eps;
   return start <= value && value <= end;
@@ -93,10 +93,7 @@ function recurExpr(node) {
   }
 }
 export function toEquation(lastNode) {
-
-
   const final = recurExpr(lastNode);
-  console.log(final.toString())
   return parser.parse(cleanUpExpression(final))
 }
 export function toEquationExpr(lastExpr) {
@@ -104,16 +101,18 @@ export function toEquationExpr(lastExpr) {
   return parser.parse(cleanUpExpression(final))
 }
 
-function cleanUpExpression(exp) {
-  return exp.toString().replaceAll(".quantity", "").replaceAll(".ratio", "")
-}
-function formatNumbersInExpression(expression) {
-  // Regex to match all numbers (including decimals)
-  const numberPattern = /[-+]?\d*\.\d+|\d+/g;
 
-  // Replace each number in the expression, formatted to 2 decimal places
-  return expression.replace(numberPattern, (match) => {
-    return parseFloat(match).toFixed(2); // Convert and format to two decimal places
+function cleanUpExpression(exp) {
+  const replaced = exp.toString().replaceAll(".quantity", "").replaceAll(".ratio", "").replaceAll(".baseQuantity", "")
+  return formatNumbersInExpression(replaced)
+}
+function formatNumbersInExpression(expr) {
+  return expr.replace(/(\d*\.\d+|\d+)/g, (match) => {
+    const num = parseFloat(match);
+    if (!isNaN(num)) {
+      return num.toLocaleString("en", { maximumFractionDigits: 6, minimumFractionDigits: 0 }).replace(/,/g, '')
+    }
+    return match;
   });
 }
 

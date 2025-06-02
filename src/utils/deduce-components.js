@@ -1,7 +1,7 @@
 import { html } from "npm:htl";
 import * as Plot from "npm:@observablehq/plot";
 import Fraction from 'npm:fraction.js';
-import { nthQuadraticElements, primeFactorization, lcdCalc, isNumber } from "../components/math.js";
+import { nthQuadraticElements, primeFactorization, lcdCalc, isNumber, gcdCalc } from "../components/math.js";
 import { isPredicate, formatPredicate } from "../utils/deduce-utils.js";
 import { deduce } from "./deduce.js";
 import { inferenceRuleWithQuestion } from "../math/math-configure.js";
@@ -11,7 +11,7 @@ export function partion(items, options) {
   const total = items.reduce((out, d) => out += d.value, 0);
   const data = items.map(d => ({ ...d, ratio: d.value / total }))
 
-  const { width, height, unit, multiple, showLegend, showTicks, showSeparate, formatAsFraction, showAbsoluteValues, showRelativeValues, fill } = {
+  const { width, height, unit, multiple, showLegend, showTicks, showSeparate, formatAsFraction, showAbsoluteValues, showRelativeValues, fill, marginLeft } = {
     ...{
       height: 150,
       showRelativeValues: true,
@@ -39,6 +39,7 @@ export function partion(items, options) {
     ...(height && { height }),
     marginBottom: 0,
     marginTop: showRelativeValues ? 20 : 0,
+    ...(marginLeft && {marginLeft}),
     marks: [
       Plot.waffleX(data, {
         x: 'value',
@@ -83,6 +84,84 @@ export function partion(items, options) {
     ]
   })
 };
+
+function proportionPlot({ data, columns }) {
+  const stack = (options) => Plot.stackY({}, { x: "type", y: "value", z: "scaleFactor", ...options });
+  return Plot.plot({
+    x: {
+      domain: columns,
+      axis: "top",
+      label: null,
+      tickFormat: (d) => `${d}`,
+      labelSize: 16,
+      tickSize: 0,
+      padding: 0 // see margins
+    },
+    y: {
+      axis: null,
+      reverse: true
+    },
+    color: {
+      scheme: "prgn",
+      //reverse: false
+    },
+    style: {
+      fontSize: 20,
+    },
+    marginLeft: 50,
+    marginRight: 60,
+    marks: [
+      Plot.areaY(
+        data,
+        stack({
+          // curve: "bump-x",
+          fill: "scaleFactor",
+          stroke: "white"
+        })
+      ),
+      Plot.text(
+        data,
+        stack({
+          filter: (d) => d.type === columns[0],
+          text: (d) => `${d.value * d.scaleFactor}`,
+          textAnchor: "end",
+          dx: -6
+        })
+      ),
+      Plot.text(
+        data,
+        stack({
+          filter: (d) => d.type === columns[1],
+          text: (d) => `${d.value * d.scaleFactor}`,
+          textAnchor: "start",
+          dx: +6
+        })
+      ),
+      Plot.text(
+        data,
+        stack({
+          filter: (d) => d.type === columns[0],
+          text: "value",
+          textAnchor: "start",
+          fill: "white",
+          fontWeight: "bold",
+          dx: +8
+        })
+      ),
+      Plot.text(
+        data,
+        stack({
+          filter: (d) => d.type === columns[1],
+          text: "value",
+          textAnchor: "end",
+          fill: "white",
+          fontWeight: "bold",
+          dx: -8
+        })
+      )
+    ]
+  });
+}
 
 export function relativePartsData(values, { parts } = {}) {
 
@@ -344,22 +423,43 @@ export function stepsTraverse(node) {
         const res = traverseEx(newChild);
         args.push(res)
 
-        if (true) {
+        if (!isLast) {
           if (newChild?.kind === "ratio" && newChild?.ratio != null) {
             args.push(relativeTwoPartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole), asPercent: newChild.asPercent }))
           }
           else if (newChild?.kind === "ratios" && newChild?.parts != null) {
-            args.push(relativeParts(newChild.ratios, { parts: newChild.parts }))
+            if (newChild?.parts?.length == 2) {
+              const gcdValue = gcdCalc([newChild.ratios[0], newChild.ratios[1]]);
+              if (gcdValue > 1 && gcdValue <= 10) {
+                const baseRatios = [newChild.ratios[0] / gcdValue, newChild.ratios[1] / gcdValue];
+
+                args.push(proportionPlot({
+                  data: [...Array(gcdValue).keys()].flatMap(d => [
+                    { scaleFactor: d + 1, value: baseRatios[0], type: toAgent(newChild.parts[0]) },
+                    { scaleFactor: d + 1, value: baseRatios[1], type: toAgent(newChild.parts[1]) }
+                  ]),
+                  columns: [toAgent(newChild.parts[0]), toAgent(newChild.parts[1])],
+                  label: toAgent(newChild.whole)
+
+                }))
+              }
+              else {
+                args.push(relativeParts(newChild.ratios, { parts: newChild.parts }))
+              }
+            }
+            else {
+              args.push(relativeParts(newChild.ratios, { parts: newChild.parts }))
+            }
           }
           else if (newChild?.kind === "rate" && newChild?.quantity && isNumber(newChild?.quantity)) {
             args.push(partion([
-              { agent: `${newChild.entity?.entity}`, value: newChild.quantity, yValue: `1 ${newChild.entityBase?.entity}` },
-            ], { width: 300, height: 50, formatAsFraction: false, showRelativeValues: false, showSeparate: true }))
+              { agent: `${newChild.entity?.entity}`, value: newChild.quantity, yValue: `${newChild.entityBase?.entity}` },
+            ], { width: 300, height: 50, marginLeft: 70, formatAsFraction: false, showRelativeValues: false, showSeparate: true }))
           }
           else if (newChild?.kind === "quota" && newChild?.quantity && isNumber(newChild?.quantity)) {
             args.push(partion([
-              { agent: `${newChild.agentQuota}`, value: newChild.quantity, yValue: `1 ${newChild.entityBase?.entity}` },
-            ], { width: 300, height: 50, formatAsFraction: false, showRelativeValues: false, showSeparate: true }))
+              { agent: `${newChild.agentQuota}`, value: newChild.quantity, yValue: `${newChild.agent}` },
+            ], { width: 300, height: 50, marginLeft: 70, formatAsFraction: false, showRelativeValues: false, showSeparate: true }))
           }
           else if (newChild?.kind === "gcd" || newChild?.kind === "lcd") {
             const numbers = node.children.slice(0, -2).map(d => d.quantity);

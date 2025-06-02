@@ -1,5 +1,5 @@
-import { comp, cont, ctor, ctorComplement, ctorLinearEquation, ctorUnit, product, quota, rate, ratio, sum } from "../../components/math";
-import { deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
+import { comp, cont, ctor, ctorComplement, ctorLinearEquation, ctorUnit, product, rate, ratio } from "../../components/math";
+import { deduce, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 
 export default {
@@ -13,33 +13,45 @@ export default {
 
 function boruvky() {
   const entity = "hmotnost"
-  const entity50 = "hmotnost po 50 g"
+  const entity50 = "dávka po 50g"
   const unit = "g"
   const entityPrice = "korun"
   const prodejce1Label = "prodejce 1";
   const prodejce2Label = "prodejce 2";
 
-  const drazsiBoruvky = deduce(
+  const skupina = cont(entity50, 50, entity, "g");
+
+  const drazsiBoruvky = toCont(
     deduce(
-      cont(prodejce2Label, 120, entityPrice),
-      cont(prodejce2Label, 10, entity50),
-      ctor('rate')
-    ),
-    toCont(deduce(
-      cont(prodejce1Label, 650, entity, unit),
-      cont("částí", 50, entity, "g"),
-      ctor('quota')
-    ), { agent: "skupina po 650 gramech", entity: { entity: entity50 } }))
+      deduce(
+        cont(prodejce1Label, 650, entity, unit),
+        skupina,
+        ctor('quota')
+      ),
+      deduce(
+        cont(prodejce2Label, 120, entityPrice),
+        deduce(
+          deduce(
+            cont(prodejce2Label, 0.5, entity, "kg"),
+            ctorUnit("g")
+          ),
+          skupina,
+          ctor('quota')
+        ),
+        ctor('rate')
+      )
+    ), { agent: "cena borůvky za 650g" }
+  )
 
   return {
     template: () => '',
     deductionTree: deduce(
+      drazsiBoruvky,
       deduce(
         cont("zaplaceno celkem", 600, entityPrice),
-        cont("skupina po 650 gramech", 150, entityPrice),
-        ctor('quota'),
+        cont("cena borůvky za 650g", 150, entityPrice),
+        ctor("comp-ratio"),
       ),
-      drazsiBoruvky
     )
   }
 }
@@ -54,8 +66,8 @@ function spotrebaPaliva() {
   const unitLength = "km"
   const unit = "l"
 
-  const standardRate = rate(standard, 6.5, { entity, unit }, { entity: entityLength, unit: unitLength });
-  const powerRate = rate(power, 5.8, { entity, unit }, { entity: entityLength, unit: unitLength });
+  const standardRate = rate(standard, 6.5, { entity, unit }, { entity: entityLength, unit: unitLength }, 100);
+  const powerRate = rate(power, 5.8, { entity, unit }, { entity: entityLength, unit: unitLength }, 100);
 
   const standardPriceRate = rate(standard, 34.8, entityPrice, { entity, unit })
   const standardPrice = cont(standard, 34.8, entityPrice)
@@ -87,7 +99,7 @@ function spotrebaPaliva() {
           ),
           to(
             powerPrice,
-            rate(power, last(powerPrice).quantity, entityPrice, { entity, unit })
+            rate(power, lastQuantity(powerPrice), entityPrice, { entity, unit })
           )
         )
     },
@@ -101,7 +113,7 @@ function spotrebaPaliva() {
           ),
           to(
             powerPrice,
-            rate(power, last(powerPrice).quantity, entityPrice, { entity, unit })
+            rate(power, lastQuantity(powerPrice), entityPrice, { entity, unit })
           )
         ),
         deduce(
@@ -159,7 +171,7 @@ function prumernyPlat() {
         juniorCelkem,
         product("celkem vyplaceno", [], entityPrice, entityPrice)
       ),
-      ctorLinearEquation(zamLabel, {entity:entityPrice}, "x" )
+      ctorLinearEquation(zamLabel, { entity: entityPrice }, "x")
     )
   }
 }

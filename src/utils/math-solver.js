@@ -1690,7 +1690,6 @@ function recurExpr(node) {
 }
 function toEquation(lastNode) {
   const final = recurExpr(lastNode);
-  console.log(final.toString());
   return parser.parse(cleanUpExpression(final));
 }
 function toEquationExpr(lastExpr) {
@@ -1698,7 +1697,17 @@ function toEquationExpr(lastExpr) {
   return parser.parse(cleanUpExpression(final));
 }
 function cleanUpExpression(exp) {
-  return exp.toString().replaceAll(".quantity", "").replaceAll(".ratio", "");
+  const replaced = exp.toString().replaceAll(".quantity", "").replaceAll(".ratio", "").replaceAll(".baseQuantity", "");
+  return formatNumbersInExpression(replaced);
+}
+function formatNumbersInExpression(expr) {
+  return expr.replace(/(\d*\.\d+|\d+)/g, (match) => {
+    const num = parseFloat(match);
+    if (!isNaN(num)) {
+      return num.toLocaleString("en", { maximumFractionDigits: 6, minimumFractionDigits: 0 }).replace(/,/g, "");
+    }
+    return match;
+  });
 }
 function solveLinearEquation(lhs, rhs, variable = "x") {
   const expr = `(${typeof lhs === "number" ? lhs : toEquationExpr(lhs)}) - (${typeof rhs === "number" ? rhs : toEquationExpr(rhs)})`;
