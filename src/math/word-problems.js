@@ -13,8 +13,8 @@ function configure(config) {
 function isNumber(quantity) {
   return typeof quantity === "number";
 }
-function areNumbers(ratios3) {
-  return ratios3.every((d) => isNumber(d));
+function areNumbers(ratios4) {
+  return ratios4.every((d) => isNumber(d));
 }
 function wrapToQuantity(expression, context) {
   return { expression, context: convertContext(context) };
@@ -60,6 +60,9 @@ function ctorDifference(differenceAgent) {
 }
 function cont(agent, quantity, entity3, unit) {
   return { kind: "cont", agent, quantity, entity: entity3, unit };
+}
+function evalExprAsCont(expression, predicate) {
+  return { kind: "eval-expr", expression, predicate };
 }
 function ctorOption(optionValue, expectedValue, { asPercent } = { asPercent: false }) {
   return { kind: "eval-option", expression: `closeTo(x, ${asPercent ? expectedValue / 100 : expectedValue})`, expectedValue, optionValue };
@@ -114,6 +117,9 @@ function compRelative(agentA, agentB, ratio3, asPercent) {
   }
   return { kind: "comp-ratio", agentA, agentB, ratio: 1 + ratio3, asPercent };
 }
+function compRelativePercent(agentA, agentB, percent3) {
+  return compRelative(agentA, agentB, percent3 / 100, true);
+}
 function compRatio(agentA, agentB, ratio3) {
   return { kind: "comp-ratio", agentA, agentB, ratio: ratio3 };
 }
@@ -129,8 +135,8 @@ function ratio(whole, part, ratio3) {
 function percent(whole, part, percent3) {
   return { kind: "ratio", whole, part, ratio: percent3 / 100, asPercent: true };
 }
-function ratios(whole, parts, ratios3) {
-  return { kind: "ratios", parts, whole, ratios: ratios3 };
+function ratios(whole, parts, ratios4) {
+  return { kind: "ratios", parts, whole, ratios: ratios4 };
 }
 function sum(wholeAgent, partAgents, wholeEntity, partEntity) {
   return {
@@ -832,8 +838,8 @@ function sumRuleEx(items, b) {
       throw `Combine only part to whole ratio with the same whole ${wholes}`;
     }
     ;
-    const ratios3 = items.map((d) => d.ratio);
-    const ratio3 = areNumbers(ratios3) ? ratios3.reduce((out, d) => out += d, 0) : wrapToRatio(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
+    const ratios4 = items.map((d) => d.ratio);
+    const ratio3 = areNumbers(ratios4) ? ratios4.reduce((out, d) => out += d, 0) : wrapToRatio(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
     return { kind: "ratio", whole: wholes[0], ratio: ratio3, part: b.wholeAgent };
   } else if (items.every((d) => isQuantityPredicate(d))) {
     const values = items.map((d) => d.quantity);
@@ -1285,7 +1291,7 @@ function evalToQuantityEx(a, b) {
     throw `evalToQuantity does not support non quantity types`;
   }
   return {
-    ...a,
+    ...b.predicate,
     quantity: helpers.evalExpression(b.expression, a.quantity)
   };
 }
@@ -1332,7 +1338,7 @@ function partToPartRuleEx(a, partToPartRatio, nth2) {
     kind: "cont",
     agent: (matchedWhole || nth2 != null) && targetPartIndex != -1 ? partToPartRatio.parts[targetPartIndex] : partToPartRatio.whole,
     entity: a.entity,
-    quantity: matchedWhole ? areNumbers(partToPartRatio.ratios) && isNumber(a.quantity) ? a.quantity / partToPartRatio.ratios.reduce((out, d) => out += d, 0) * partToPartRatio.ratios[targetPartIndex] : wrapToQuantity(`a.quantity / (${partToPartRatio.ratios.map((d, i) => `partToPartRatio.ratios[${i}]`).join(" + ")}) * partToPartRatio.ratios[${targetPartIndex}]`, { a, partToPartRatio }) : areNumbers(partToPartRatio.ratios) && isNumber(a.quantity) ? a.quantity / partToPartRatio.ratios[sourcePartIndex] * (nth2 != null ? partToPartRatio.ratios[targetPartIndex] : partToPartRatio.ratios.reduce((out, d) => out += d, 0)) : nth2 != null ? wrapToQuantity(`a.quantity / partToPartRatio.ratios[${sourcePartIndex}] * partToPartRatio.ratios[${targetPartIndex}]`, { a, partToPartRatio }) : wrapToQuantity(`a.quantity / partToPartRatio.ratios[${sourcePartIndex}] * (${partToPartRatio.ratios.map((d, i) => `partToPartRatio.ratios[${i}]`).join(" + ")})`, { a, partToPartRatio }),
+    quantity: matchedWhole ? areNumbers(partToPartRatio.ratios) && isNumber(a.quantity) ? a.quantity / partToPartRatio.ratios.reduce((out, d) => out += d, 0) * partToPartRatio.ratios[targetPartIndex] : wrapToQuantity(`a.quantity / (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")}) * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio }) : areNumbers(partToPartRatio.ratios) && isNumber(a.quantity) ? a.quantity / partToPartRatio.ratios[sourcePartIndex] * (nth2 != null ? partToPartRatio.ratios[targetPartIndex] : partToPartRatio.ratios.reduce((out, d) => out += d, 0)) : nth2 != null ? wrapToQuantity(`a.quantity / b.ratios[${sourcePartIndex}] * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio }) : wrapToQuantity(`a.quantity / b.ratios[${sourcePartIndex}] * (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")})`, { a, b: partToPartRatio }),
     unit: a.unit
   };
 }
@@ -1371,14 +1377,14 @@ function mapRatiosByFactor(multi, factor, inverse) {
     options: []
   };
 }
-function nthPartFactorByEx(multi, factor, nthPart2) {
+function nthPartFactorByEx(multi, factor, nthPart3) {
   if (!areNumbers(multi.ratios) || !isNumber(factor)) {
     throw "ratios are not supported by non quantity types";
   }
   if (factor < 1) {
     throw `Ratios can be only extended by positive quantity ${factor}.`;
   }
-  const partIndex = multi.parts.indexOf(nthPart2.agent);
+  const partIndex = multi.parts.indexOf(nthPart3.agent);
   const multiplePartByFactor = (arr) => arr.reduce((out, d, i) => {
     if (i === partIndex) {
       out.push(...[...Array(factor)].map((_) => d));
@@ -1393,13 +1399,13 @@ function nthPartFactorByEx(multi, factor, nthPart2) {
     ratios: multiplePartByFactor(multi.ratios)
   };
 }
-function nthPartFactorBy(multi, factor, nthPart2) {
+function nthPartFactorBy(multi, factor, nthPart3) {
   if (!areNumbers(multi.ratios) || !isNumber(factor.quantity)) {
     throw "ratios are not supported by non quantity types";
   }
-  const result = nthPartFactorByEx(multi, factor.quantity, nthPart2);
+  const result = nthPartFactorByEx(multi, factor.quantity, nthPart3);
   return {
-    question: `Vyj\xE1d\u0159i pom\u011Brem ${nthPart2.agent} ${formatNumber(factor.quantity)} ${formatEntity(factor)}`,
+    question: `Vyj\xE1d\u0159i pom\u011Brem ${nthPart3.agent} ${formatNumber(factor.quantity)} ${formatEntity(factor)}`,
     result,
     options: []
   };
@@ -5221,10 +5227,11 @@ function lcdCalc2(numbers) {
 function evalExpression(expression, quantity) {
   const expr = parser.parse(expression);
   const variables = expr.variables();
-  if (variables.length !== 1) {
-    throw `Eval only expression with exactly one variable. Variables ${variables.join(",")}`;
+  if (variables.length === 1) {
+    return expr.evaluate({ [variables]: quantity });
   }
-  return expr.evaluate({ [variables]: quantity });
+  const res = expr.simplify({ [variables[0]]: quantity });
+  return res.toString();
 }
 function recurExpr(node) {
   const quantity = node.quantity ?? node.ratio ?? {};
@@ -5415,8 +5422,18 @@ function lastQuantity(input) {
   const lastPredicate = last(input);
   return isNumber(lastPredicate.quantity) ? lastPredicate.quantity : lastPredicate.quantity;
 }
+function deduceAs(context) {
+  return (...children) => {
+    return toAs(context)(...children.concat(inferenceRule.apply(null, children.map((d) => isPredicate(d) ? d : d.children.slice(-1)[0]))));
+  };
+}
 function deduce(...children) {
   return to(...children.concat(inferenceRule.apply(null, children.map((d) => isPredicate(d) ? d : d.children.slice(-1)[0]))));
+}
+function toAs(context) {
+  return (...children) => {
+    return { children, context };
+  };
 }
 function to(...children) {
   return { children };
@@ -5431,7 +5448,7 @@ function toCont(child, { agent, entity: entity3 }) {
     kind: "cont",
     agent,
     quantity: typeNode.quantity,
-    entity: entity3 != null ? entity3.entity : typeNode.kind == "rate" ? typeNode.entity.entity : typeNode.entity,
+    entity: entity3 != null ? entity3.entity : typeNode.kind == "quota" ? typeNode.agentQuota : typeNode.kind == "rate" ? typeNode.entity.entity : typeNode.entity,
     unit: entity3 != null ? entity3.unit : typeNode.kind == "rate" ? typeNode.entity.unit : typeNode.unit
   });
 }
@@ -8278,8 +8295,8 @@ function configure2(config) {
 function isNumber2(quantity) {
   return typeof quantity === "number";
 }
-function areNumbers2(ratios3) {
-  return ratios3.every((d) => isNumber2(d));
+function areNumbers2(ratios4) {
+  return ratios4.every((d) => isNumber2(d));
 }
 function wrapToQuantity2(expression, context) {
   return { expression, context: convertContext2(context) };
@@ -8957,8 +8974,8 @@ function sumRuleEx2(items, b) {
       throw `Combine only part to whole ratio with the same whole ${wholes}`;
     }
     ;
-    const ratios3 = items.map((d) => d.ratio);
-    const ratio3 = areNumbers2(ratios3) ? ratios3.reduce((out, d) => out += d, 0) : wrapToRatio2(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
+    const ratios4 = items.map((d) => d.ratio);
+    const ratio3 = areNumbers2(ratios4) ? ratios4.reduce((out, d) => out += d, 0) : wrapToRatio2(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
     return { kind: "ratio", whole: wholes[0], ratio: ratio3, part: b.wholeAgent };
   } else if (items.every((d) => isQuantityPredicate2(d))) {
     const values = items.map((d) => d.quantity);
@@ -9410,7 +9427,7 @@ function evalToQuantityEx2(a, b) {
     throw `evalToQuantity does not support non quantity types`;
   }
   return {
-    ...a,
+    ...b.predicate,
     quantity: helpers2.evalExpression(b.expression, a.quantity)
   };
 }
@@ -9457,7 +9474,7 @@ function partToPartRuleEx2(a, partToPartRatio, nth2) {
     kind: "cont",
     agent: (matchedWhole || nth2 != null) && targetPartIndex != -1 ? partToPartRatio.parts[targetPartIndex] : partToPartRatio.whole,
     entity: a.entity,
-    quantity: matchedWhole ? areNumbers2(partToPartRatio.ratios) && isNumber2(a.quantity) ? a.quantity / partToPartRatio.ratios.reduce((out, d) => out += d, 0) * partToPartRatio.ratios[targetPartIndex] : wrapToQuantity2(`a.quantity / (${partToPartRatio.ratios.map((d, i) => `partToPartRatio.ratios[${i}]`).join(" + ")}) * partToPartRatio.ratios[${targetPartIndex}]`, { a, partToPartRatio }) : areNumbers2(partToPartRatio.ratios) && isNumber2(a.quantity) ? a.quantity / partToPartRatio.ratios[sourcePartIndex] * (nth2 != null ? partToPartRatio.ratios[targetPartIndex] : partToPartRatio.ratios.reduce((out, d) => out += d, 0)) : nth2 != null ? wrapToQuantity2(`a.quantity / partToPartRatio.ratios[${sourcePartIndex}] * partToPartRatio.ratios[${targetPartIndex}]`, { a, partToPartRatio }) : wrapToQuantity2(`a.quantity / partToPartRatio.ratios[${sourcePartIndex}] * (${partToPartRatio.ratios.map((d, i) => `partToPartRatio.ratios[${i}]`).join(" + ")})`, { a, partToPartRatio }),
+    quantity: matchedWhole ? areNumbers2(partToPartRatio.ratios) && isNumber2(a.quantity) ? a.quantity / partToPartRatio.ratios.reduce((out, d) => out += d, 0) * partToPartRatio.ratios[targetPartIndex] : wrapToQuantity2(`a.quantity / (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")}) * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio }) : areNumbers2(partToPartRatio.ratios) && isNumber2(a.quantity) ? a.quantity / partToPartRatio.ratios[sourcePartIndex] * (nth2 != null ? partToPartRatio.ratios[targetPartIndex] : partToPartRatio.ratios.reduce((out, d) => out += d, 0)) : nth2 != null ? wrapToQuantity2(`a.quantity / b.ratios[${sourcePartIndex}] * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio }) : wrapToQuantity2(`a.quantity / b.ratios[${sourcePartIndex}] * (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")})`, { a, b: partToPartRatio }),
     unit: a.unit
   };
 }
@@ -9496,14 +9513,14 @@ function mapRatiosByFactor2(multi, factor, inverse) {
     options: []
   };
 }
-function nthPartFactorByEx2(multi, factor, nthPart2) {
+function nthPartFactorByEx2(multi, factor, nthPart3) {
   if (!areNumbers2(multi.ratios) || !isNumber2(factor)) {
     throw "ratios are not supported by non quantity types";
   }
   if (factor < 1) {
     throw `Ratios can be only extended by positive quantity ${factor}.`;
   }
-  const partIndex = multi.parts.indexOf(nthPart2.agent);
+  const partIndex = multi.parts.indexOf(nthPart3.agent);
   const multiplePartByFactor = (arr) => arr.reduce((out, d, i) => {
     if (i === partIndex) {
       out.push(...[...Array(factor)].map((_) => d));
@@ -9518,13 +9535,13 @@ function nthPartFactorByEx2(multi, factor, nthPart2) {
     ratios: multiplePartByFactor(multi.ratios)
   };
 }
-function nthPartFactorBy2(multi, factor, nthPart2) {
+function nthPartFactorBy2(multi, factor, nthPart3) {
   if (!areNumbers2(multi.ratios) || !isNumber2(factor.quantity)) {
     throw "ratios are not supported by non quantity types";
   }
-  const result = nthPartFactorByEx2(multi, factor.quantity, nthPart2);
+  const result = nthPartFactorByEx2(multi, factor.quantity, nthPart3);
   return {
-    question: `Vyj\xE1d\u0159i pom\u011Brem ${nthPart2.agent} ${formatNumber2(factor.quantity)} ${formatEntity2(factor)}`,
+    question: `Vyj\xE1d\u0159i pom\u011Brem ${nthPart3.agent} ${formatNumber2(factor.quantity)} ${formatEntity2(factor)}`,
     result,
     options: []
   };
@@ -13320,10 +13337,11 @@ function lcdCalc22(numbers) {
 function evalExpression2(expression, quantity) {
   const expr = parser2.parse(expression);
   const variables = expr.variables();
-  if (variables.length !== 1) {
-    throw `Eval only expression with exactly one variable. Variables ${variables.join(",")}`;
+  if (variables.length === 1) {
+    return expr.evaluate({ [variables]: quantity });
   }
-  return expr.evaluate({ [variables]: quantity });
+  const res = expr.simplify({ [variables[0]]: quantity });
+  return res.toString();
 }
 function recurExpr2(node) {
   const quantity = node.quantity ?? node.ratio ?? {};
@@ -15558,10 +15576,15 @@ function tabor() {
 // src/math/MMA-2025/index.ts
 var MMA_2025_default = {
   1: boruvky(),
+  //3: delitelnost(),
   5.1: spotrebaPaliva().beznePalivo,
   5.2: spotrebaPaliva().powerPalivo,
-  6: spotrebaPaliva().cenaPowerPalivo
-  // 8: prumernyPlat(),
+  6: spotrebaPaliva().cenaPowerPalivo,
+  8: prumernyPlat(),
+  18: rovnoramennySatek(),
+  19: kruhovaVysec(),
+  20: vzestupHladinyVody(),
+  21: vyrezKrychle()
 };
 function boruvky() {
   const entity3 = "hmotnost";
@@ -15571,35 +15594,42 @@ function boruvky() {
   const prodejce1Label = "prodejce 1";
   const prodejce2Label = "prodejce 2";
   const skupina = cont(entity50, 50, entity3, "g");
-  const drazsiBoruvky = toCont(
-    deduce(
+  const drazsiBoruvky = deduceAs(`za dra\u017E\u0161\xED cenu ${prodejce2Label}`)(
+    toCont(
       deduce(
         cont(prodejce1Label, 650, entity3, unit),
         skupina,
         ctor("quota")
       ),
-      deduce(
-        cont(prodejce2Label, 120, entityPrice),
-        deduce(
-          deduce(
-            cont(prodejce2Label, 0.5, entity3, "kg"),
-            ctorUnit("g")
-          ),
-          skupina,
-          ctor("quota")
-        ),
-        ctor("rate")
-      )
+      { agent: `13 d\xE1vek` }
     ),
-    { agent: "cena bor\u016Fvky za 650g" }
+    deduce(
+      cont(prodejce2Label, 120, entityPrice),
+      deduce(
+        deduce(
+          cont(prodejce2Label, 0.5, entity3, "kg"),
+          ctorUnit("g")
+        ),
+        skupina,
+        ctor("quota")
+      ),
+      ctor("rate")
+    )
+    //asCont({ agent: `13 dávek` })
   );
   return {
-    template: () => "",
+    template: () => `Na trhu prod\xE1vaj\xED bor\u016Fvky dva prodejci.
+Prvn\xED prodejce prod\xE1v\xE1 1 litr za 150 korun. P\u0159itom 1 litr bor\u016Fvek m\xE1 hmotnost 650 g.
+Druh\xFD prodejce bor\u016Fvky v\xE1\u017E\xED a za 0,5 kg se zaplat\xED 120 korun.
+Z\xE1kazn\xEDk koupil levn\u011Bj\u0161\xED bor\u016Fvky celkem za 600 korun.
+
+Vypo\u010Dt\u011Bte, za kolik korun by z\xE1kazn\xEDk koupil dra\u017E\u0161\xED bor\u016Fvky
+o stejn\xE9 hmotnosti.`,
     deductionTree: deduce(
       drazsiBoruvky,
-      deduce(
+      deduceAs(`za levn\u011Bj\u0161\xED cenu ${prodejce1Label}`)(
         cont("zaplaceno celkem", 600, entityPrice),
-        cont("cena bor\u016Fvky za 650g", 150, entityPrice),
+        cont("13 d\xE1vek", 150, entityPrice),
         ctor("comp-ratio")
       )
     )
@@ -15669,6 +15699,201 @@ function spotrebaPaliva() {
         ctorLinearEquation("o kolik dra\u017E\u0161\xED power ne\u017E b\u011B\u017En\xE9 palivo", { entity: entityPrice }, "x")
       )
     }
+  };
+}
+function prumernyPlat() {
+  const entity3 = "zam\u011Bstnanci";
+  const entityPrice = "korun";
+  const zamLabel = "celkem";
+  const seniorLabel = "senior";
+  const ostatniLabel = "ostatn\xED";
+  const prumerLabel = "pr\u016Fm\u011Br";
+  const platJunior = cont(ostatniLabel, "x", entityPrice);
+  const platCompare = comp(seniorLabel, ostatniLabel, 6e3, entityPrice);
+  const platSenior = deduce(
+    platJunior,
+    platCompare
+  );
+  const seniorPocet = ratio(seniorLabel, `pod\xEDl dle po\u010Dtu v pr\u016Fm\u011Bru ${seniorLabel}`, 1 / 3);
+  const juniorPocet = ratio(ostatniLabel, `pod\xEDl dle po\u010Dtu v pr\u016Fm\u011Bru ${ostatniLabel}`, 2 / 3);
+  const prumernyPlat2 = cont(prumerLabel, 46200, entityPrice);
+  const senioryCelkem = deduce(
+    platSenior,
+    seniorPocet
+  );
+  const juniorCelkem = deduce(
+    platJunior,
+    juniorPocet
+  );
+  return {
+    template: () => "",
+    deductionTree: deduce(
+      deduce(
+        prumernyPlat2,
+        deduce(
+          senioryCelkem,
+          juniorCelkem,
+          sum("celkem vyplaceno", [], entityPrice, entityPrice)
+        ),
+        ctorLinearEquation(ostatniLabel, { entity: entityPrice }, "x")
+      ),
+      platCompare
+    )
+  };
+}
+function vzestupHladinyVody() {
+  const unit = "cm";
+  const entity3 = "d\xE9lka";
+  const unit3d = "cm3";
+  const entity3d = "objem";
+  const objemKulicky = deduce(
+    cont("kuli\u010Dka polom\u011Br", 3, entity3, unit),
+    evalExprAsCont("4/3*r^3*\u03C0", { kind: "cont", agent: "kuli\u010Dka", entity: entity3d, unit: unit3d })
+  );
+  const objemValce = deduce(
+    deduce(
+      cont("v\xE1lec pr\u016Fm\u011Br", 12, entity3, unit),
+      compRatio("v\xE1lec pr\u016Fm\u011Br", "v\xE1lec polom\u011Br", 2)
+    ),
+    evalExprAsCont("r^2*\u03C0", { kind: "cont", agent: "v\xE1lec", entity: entity3d, unit: unit3d })
+  );
+  return {
+    deductionTree: deduce(
+      objemValce,
+      objemKulicky,
+      ctor("comp-ratio")
+    )
+  };
+}
+function rovnoramennySatek() {
+  const odvesnaLabel = "odv\u011Bsna";
+  const preponaLabel = "p\u0159epona";
+  const mensiSatekLabel = "men\u0161\xED \u0161\xE1tek";
+  const vetsiSatekLabel = "v\u011Bt\u0161\xED \u0161\xE1tek";
+  const entity3 = "d\xE9lka";
+  const unit = "cm";
+  const entity2d = "obsah";
+  const unit2d = "cm2";
+  const mensiSatekOdvesna = cont(mensiSatekLabel, 50, entity3, unit);
+  const mensiSatek = deduce(
+    mensiSatekOdvesna,
+    evalExprAsCont("1/2*a^2", { kind: "cont", agent: mensiSatekLabel, entity: entity2d, unit: unit2d })
+  );
+  const vetsiStatekOdvesna = deduce(
+    deduce(
+      mensiSatek,
+      compRelativePercent(vetsiSatekLabel, mensiSatekLabel, 125)
+    ),
+    evalExprAsCont("sqrt(2*a)", { kind: "cont", agent: vetsiSatekLabel, entity: entity2d, unit: unit2d })
+  );
+  return {
+    deductionTree: deduce(
+      vetsiStatekOdvesna,
+      last(vetsiStatekOdvesna),
+      pythagoras(`${vetsiSatekLabel} - ${preponaLabel}`, [mensiSatekLabel, mensiSatekLabel])
+    )
+  };
+}
+function vyrezKrychle() {
+  const entity3 = "d\xE9lka";
+  const entity2d = "obsah";
+  const telesoLabel = "nov\xE9 t\u011Bleso";
+  const krychleLabel = "krychle";
+  const stranaLabel = "strana krychle";
+  const odvesna = "odv\u011Bsna troj\xFAheln\xEDku";
+  const kratsiOdvesnaLabel = `krat\u0161\xED ${odvesna}`;
+  const delsiOdvesnaLabel = `del\u0161\xED ${odvesna}`;
+  const preponaLabel = "p\u0159epona troj\xFAheln\xEDku";
+  const stranaKrychle = to(
+    commonSense("v\xFD\u0159ez se skl\xE1d\xE1 ze dvou pravo\xFAhl\xFDch troj\xFAhleln\xEDk\u016F, nap\u0159. zvol\xEDm pom\u011Bru d\xE9lek pravo\xFAhl\xE9ho troj\u016Fheln\xEDku odv\u011Bsna:odv\u011Bsna:p\u0159epona (3:4:5)"),
+    commonSense("vede na v\xFDpo\u010Det d\xE9lky strany krychle a = 6"),
+    cont(stranaLabel, 6, entity3)
+  );
+  const lastStranaKrychle = last(stranaKrychle);
+  const kratsiOdvesna = deduce(lastStranaKrychle, ratio(stranaLabel, kratsiOdvesnaLabel, 1 / 2));
+  const delsiOdvesna = deduce(lastStranaKrychle, ratio(stranaLabel, delsiOdvesnaLabel, 2 / 3));
+  const prepona = deduce(
+    kratsiOdvesna,
+    delsiOdvesna,
+    pythagoras(preponaLabel, [kratsiOdvesnaLabel, delsiOdvesnaLabel])
+  );
+  return {
+    template: () => "",
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          deduce(
+            stranaKrychle,
+            lastStranaKrychle,
+            product(`st\u011Bna ${krychleLabel}`, [], entity2d, entity3)
+          ),
+          cont(`po\u010Det st\u011Bn ${krychleLabel}`, 6, ""),
+          product(`${krychleLabel}`, [], entity2d, entity3)
+        ),
+        deduce(
+          deduce(
+            deduce(
+              lastStranaKrychle,
+              lastStranaKrychle,
+              product("st\u011Bna krychle", [], entity2d, entity3)
+            ),
+            cont("po\u010Det \u010Dtvercov\xFDch st\u011Bn", 3, ""),
+            product(`lev\xE1, prav\xE1 a spodn\xED st\u011Bna - ${telesoLabel}`, [], entity2d, entity3)
+          ),
+          deduce(
+            deduce(
+              deduce(
+                lastStranaKrychle,
+                lastStranaKrychle,
+                product(`p\u0159edn\xED st\u011Bna - ${telesoLabel}`, [], entity2d, entity3)
+              ),
+              deduce(
+                lastStranaKrychle,
+                lastStranaKrychle,
+                product(`zadn\xED st\u011Bna - ${telesoLabel}`, [], entity2d, entity3)
+              ),
+              sum(`p\u0159edn\xED a zadn\xED st\u011Bna - ${telesoLabel}`, [], entity2d, entity3)
+            ),
+            deduce(
+              delsiOdvesna,
+              lastStranaKrychle,
+              product("p\u0159edn\xED a zadn\xED troj\xFAheln\xEDkov\xFD v\xFD\u0159ez", [], entity2d, entity3)
+            ),
+            ctorDifference(`p\u0159edn\xED a zadn\xED st\u011Bna bez v\xFD\u0159ezu - ${telesoLabel}`)
+          ),
+          deduce(
+            deduce(
+              lastStranaKrychle,
+              last(prepona),
+              product(`obdeln\xEDkov\xE1 \u0161ikm\xE1 st\u011Bna - ${telesoLabel}`, [], entity2d, entity3)
+            ),
+            cont(`po\u010Det obdeln\xEDkov\xFDch \u0161ikm\xFDch st\u011Bn - ${telesoLabel}`, 2, ""),
+            product(`ob\u011B obdeln\xEDkov\xE9 \u0161ikm\xE9 st\u011Bny - ${telesoLabel}`, [], entity2d, entity3)
+          ),
+          sum(`${telesoLabel}`, [], entity2d, entity3)
+        ),
+        ctorRatios("pom\u011Br t\u011Bles")
+      ),
+      cont("nejv\u011Bt\u0161\xED spole\u010Dn\xFD d\u011Blitel", 216, ""),
+      ctor("scale")
+    )
+  };
+}
+function kruhovaVysec() {
+  const vetsiLabel = "celkov\xFD \xFAhel kruhu";
+  const mensiLabel = "uhel \u03C6 odpov\xEDdaj\xEDc\xED v\xFDse\u010Di kruhu";
+  const entity3 = "stup\u0148\u016F";
+  return {
+    deductionTree: deduce(
+      to(
+        commonSense(`obsah cel\xE9ho kruhu (r): \u03C0*r^2`),
+        commonSense(`obsah cel\xE9ho kruhu s v\u011Bt\u0161\xEDm polom\u011Brem(3/2r): \u03C0*3/2r^2 = 9/4*\u03C0*r^2`),
+        commonSense(`v\u011Bt\u0161\xED kruh je 9/4 kr\xE1t v\u011Bt\u0161\xED ne\u017E men\u0161\xED kruh, co\u017E mus\xED odpov\xEDdat tomu, \u017Ee obsah v\xFDse\u010De  v\xFDse\u010De kruhu  jeho celkov\xE9mu obsahu`),
+        commonSense(`v\xFDse\u010D je \u010D\xE1st z cel\xE9ho kruhu s v\u011Bt\u0161\xEDm polom\u011Brem`),
+        compRatio(vetsiLabel, mensiLabel, 9 / 4)
+      ),
+      cont(vetsiLabel, 360, entity3)
+    )
   };
 }
 

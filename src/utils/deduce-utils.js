@@ -1145,7 +1145,7 @@ function evalToQuantityEx(a, b) {
     throw `evalToQuantity does not support non quantity types`;
   }
   return {
-    ...a,
+    ...b.predicate,
     quantity: helpers.evalExpression(b.expression, a.quantity)
   };
 }
@@ -1192,7 +1192,7 @@ function partToPartRuleEx(a, partToPartRatio, nth) {
     kind: "cont",
     agent: (matchedWhole || nth != null) && targetPartIndex != -1 ? partToPartRatio.parts[targetPartIndex] : partToPartRatio.whole,
     entity: a.entity,
-    quantity: matchedWhole ? areNumbers(partToPartRatio.ratios) && isNumber(a.quantity) ? a.quantity / partToPartRatio.ratios.reduce((out, d) => out += d, 0) * partToPartRatio.ratios[targetPartIndex] : wrapToQuantity(`a.quantity / (${partToPartRatio.ratios.map((d, i) => `partToPartRatio.ratios[${i}]`).join(" + ")}) * partToPartRatio.ratios[${targetPartIndex}]`, { a, partToPartRatio }) : areNumbers(partToPartRatio.ratios) && isNumber(a.quantity) ? a.quantity / partToPartRatio.ratios[sourcePartIndex] * (nth != null ? partToPartRatio.ratios[targetPartIndex] : partToPartRatio.ratios.reduce((out, d) => out += d, 0)) : nth != null ? wrapToQuantity(`a.quantity / partToPartRatio.ratios[${sourcePartIndex}] * partToPartRatio.ratios[${targetPartIndex}]`, { a, partToPartRatio }) : wrapToQuantity(`a.quantity / partToPartRatio.ratios[${sourcePartIndex}] * (${partToPartRatio.ratios.map((d, i) => `partToPartRatio.ratios[${i}]`).join(" + ")})`, { a, partToPartRatio }),
+    quantity: matchedWhole ? areNumbers(partToPartRatio.ratios) && isNumber(a.quantity) ? a.quantity / partToPartRatio.ratios.reduce((out, d) => out += d, 0) * partToPartRatio.ratios[targetPartIndex] : wrapToQuantity(`a.quantity / (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")}) * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio }) : areNumbers(partToPartRatio.ratios) && isNumber(a.quantity) ? a.quantity / partToPartRatio.ratios[sourcePartIndex] * (nth != null ? partToPartRatio.ratios[targetPartIndex] : partToPartRatio.ratios.reduce((out, d) => out += d, 0)) : nth != null ? wrapToQuantity(`a.quantity / b.ratios[${sourcePartIndex}] * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio }) : wrapToQuantity(`a.quantity / b.ratios[${sourcePartIndex}] * (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")})`, { a, b: partToPartRatio }),
     unit: a.unit
   };
 }
@@ -5074,10 +5074,11 @@ function lcdCalc2(numbers) {
 function evalExpression(expression, quantity) {
   const expr = parser.parse(expression);
   const variables = expr.variables();
-  if (variables.length !== 1) {
-    throw `Eval only expression with exactly one variable. Variables ${variables.join(",")}`;
+  if (variables.length === 1) {
+    return expr.evaluate({ [variables]: quantity });
   }
-  return expr.evaluate({ [variables]: quantity });
+  const res = expr.simplify({ [variables[0]]: quantity });
+  return res.toString();
 }
 function recurExpr(node) {
   const quantity = node.quantity ?? node.ratio ?? {};
@@ -5274,8 +5275,18 @@ function lastQuantity(input) {
   const lastPredicate = last(input);
   return isNumber(lastPredicate.quantity) ? lastPredicate.quantity : lastPredicate.quantity;
 }
+function deduceAs(context) {
+  return (...children) => {
+    return toAs(context)(...children.concat(inferenceRule.apply(null, children.map((d) => isPredicate(d) ? d : d.children.slice(-1)[0]))));
+  };
+}
 function deduce(...children) {
   return to(...children.concat(inferenceRule.apply(null, children.map((d) => isPredicate(d) ? d : d.children.slice(-1)[0]))));
+}
+function toAs(context) {
+  return (...children) => {
+    return { children, context };
+  };
 }
 function to(...children) {
   return { children };
@@ -5290,7 +5301,7 @@ function toCont(child, { agent, entity }) {
     kind: "cont",
     agent,
     quantity: typeNode.quantity,
-    entity: entity != null ? entity.entity : typeNode.kind == "rate" ? typeNode.entity.entity : typeNode.entity,
+    entity: entity != null ? entity.entity : typeNode.kind == "quota" ? typeNode.agentQuota : typeNode.kind == "rate" ? typeNode.entity.entity : typeNode.entity,
     unit: entity != null ? entity.unit : typeNode.kind == "rate" ? typeNode.entity.unit : typeNode.unit
   });
 }
@@ -5349,6 +5360,9 @@ function jsonToMarkdownTree(node, level = 0) {
     for (let i = node.children.length - 1; i >= 0; i--) {
       const child = node.children[i];
       const isConclusion = i === node.children.length - 1;
+      if (isConclusion && node.context)
+        markdown.push(`${indent}- ${node.context}
+`);
       markdown = markdown.concat(jsonToMarkdownTree(child, level + (isConclusion ? 0 : 1)));
     }
   }
@@ -5370,6 +5384,9 @@ function jsonToMarkdownChat(node, formatting) {
           const children = node2.children.map((d) => isPredicate(d) ? d : d.children.slice(-1)[0]);
           const result = children.length > 2 ? inferenceRuleWithQuestion2(...children.slice(0, -1)) : null;
           q = result;
+          if (node2.context) {
+            args.push(node2.context);
+          }
         } else {
           q = null;
         }
@@ -5590,6 +5607,7 @@ export {
   computeTreeMetrics,
   connectTo,
   deduce,
+  deduceAs,
   deduceLbl,
   formatPredicate,
   generateAIMessages,
@@ -5601,6 +5619,7 @@ export {
   last,
   lastQuantity,
   to,
+  toAs,
   toCont
 };
 /*!

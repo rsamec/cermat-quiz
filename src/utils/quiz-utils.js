@@ -71,7 +71,7 @@ export const quizes = [
   { subject: 'math', period: '8', codes: generateCode("M5", ["A"]).concat("M5A-2025", "M5B-2025") },
   { subject: 'math', period: '4', codes: generateCode("M9", ["A", "B", "C", "D"]).concat("M9I-2025", "M9A-2025", "M9B-2025") },
   { subject: 'math', period: '6', codes: generateCode("M7", ["A"]).concat("M7A-2025", "M7B-2025") },
-  { subject: 'math', period: 'diploma', codes: ["MMA-2023", "MMB-2023"] },
+  { subject: 'math', period: 'diploma', codes: ["MMA-2025", "MMA-2023", "MMB-2023"] },
   //{ subject: 'math', period: 'diploma', codes:[]},
 ]
 // export const quizes = [

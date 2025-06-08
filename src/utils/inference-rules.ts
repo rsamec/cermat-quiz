@@ -1,5 +1,5 @@
 
-import { type Predicate, cont, ratio, comp, rate, ratios, compRatio, compDiff, sum, lcd, gcd, ctor, inferenceRule, nth, quota, product, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExpr } from "../components/math.js";
+import { type Predicate, cont, ratio, comp, rate, ratios, compRatio, compDiff, sum, lcd, gcd, ctor, inferenceRule, nth, quota, product, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont } from "../components/math.js";
 
 export default function rules() {
 
@@ -81,6 +81,6 @@ export default function rules() {
     quadraticSequence: [...nthRule(quadratic, tenthTerm)],
     geometricSequence: [...nthRule(geometric, tenthTerm)],
     unit: [deduceRule(cont("Honzík", 4, "jablek", "kg"), ctorUnit("g")), deduceRule(cont("Ája", 400, "mléka", "cm3"), ctorUnit("l"))],
-    eval: [deduceRule(cont("poloměr", 4, "délka", "cm"), evalExpr("PI*r^2"))]
+    eval: [deduceRule(cont("poloměr", 4, "délka", "cm"), evalExprAsCont("PI*r^2", { kind: 'cont', agent: "kruh", entity: "obsah", unit: "cm2" }))]
   }
 }

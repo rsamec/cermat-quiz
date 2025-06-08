@@ -77,9 +77,10 @@ export type Container = EntityBase &
   quantity: Quantity
 }
 
-export type EvalExpr = {
+export type EvalExpr<T extends Omit<Predicate, 'quantity'>> = {
   kind: 'eval-expr',
   expression: Expression
+  predicate: T
 }
 
 export type Option = {
@@ -280,11 +281,11 @@ export type Question = {
 }
 
 
-
+export type ContainerEval = Omit<Container, 'quantity'>
 export type EntityDef = string | EntityBase
 export type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | SumCombine | ProductCombine | PartWholeRatio | PartToPartRatio | ComparisonDiff |
   CommonSense | GCD | LCD | CompareAndPartEqual | Sequence | NthRule | Quota | Scale | Complement | NthPart | NthPartFactor | Transfer | Proportion | ConvertUnit |
-  AngleComparison | Delta | Difference | Phytagoras | InvertScale | LinearEquation | EvalExpr | Option | Round
+  AngleComparison | Delta | Difference | Phytagoras | InvertScale | LinearEquation | EvalExpr<ContainerEval> | Option | Round
 
 export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | 'quota' | "comp-diff" | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'scale' | 'invert-scale' | 'complement' | 'delta') {
   return { kind } as Predicate
@@ -327,8 +328,8 @@ export function cont(agent: string, quantity: NumberOrVariable, entity: string, 
   return { kind: 'cont', agent, quantity: quantity as NumberOrExpression, entity, unit };
 }
 
-export function evalExpr(expression: string): EvalExpr {
-  return { kind: 'eval-expr', expression }
+export function evalExprAsCont(expression: string, predicate: ContainerEval): EvalExpr<ContainerEval> {
+  return { kind: 'eval-expr', expression, predicate }
 }
 export function ctorOption(optionValue: "A" | "B" | "C" | "D" | "E" | "F", expectedValue: number, { asPercent }: { asPercent?: boolean } = { asPercent: false }): Option {
   return { kind: 'eval-option', expression: `closeTo(x, ${asPercent ? expectedValue / 100 : expectedValue})`, expectedValue, optionValue }
@@ -1722,18 +1723,26 @@ function toRatios(parts: Container[] | Rate[], last: PartToPartRatio): Question 
   }
 }
 
-function evalToQuantityEx<T extends Predicate & { quantity: Quantity }>(a: T, b: EvalExpr): T {
+function evalToQuantityEx<
+  T extends Predicate & { quantity: Quantity },
+  K extends Omit<Predicate, 'quantity'>
+>(a: T, b: EvalExpr<K>): Predicate {
+
   if (!isNumber(a.quantity)) {
     throw `evalToQuantity does not support non quantity types`
   }
 
   return {
-    ...a,
+    ...b.predicate,
     quantity: helpers.evalExpression(b.expression, a.quantity)
-
-  }
+  } as Predicate
 }
-function evalToQuantity<T extends Predicate & { quantity: Quantity }>(a: T, b: EvalExpr): Question {
+
+
+function evalToQuantity<
+  T extends Predicate & { quantity: Quantity },
+  K extends Omit<Predicate, 'quantity'>
+>(a: T, b: EvalExpr<K>): Question {
   const result = evalToQuantityEx(a, b);
   return {
     question: `Vypočti výraz ${b.expression}?`,
@@ -1782,8 +1791,7 @@ function partToPartRuleEx(a: Container, partToPartRatio: PartToPartRatio, nth?: 
 
 
   const partsSum = areNumbers(partToPartRatio.ratios) ? partToPartRatio.ratios.reduce((out, d) => out += d, 0) : partToPartRatio.ratios.join(" + ");
-  const matchedWhole = matchAgent(partToPartRatio.whole, a);
-
+  const matchedWhole = matchAgent(partToPartRatio.whole, a);  
   return {
     kind: 'cont',
     agent: (matchedWhole || nth != null) && targetPartIndex != -1
@@ -1793,12 +1801,12 @@ function partToPartRuleEx(a: Container, partToPartRatio: PartToPartRatio, nth?: 
     quantity: matchedWhole
       ? areNumbers(partToPartRatio.ratios) && isNumber(a.quantity)
         ? (a.quantity / partToPartRatio.ratios.reduce((out, d) => out += d, 0)) * partToPartRatio.ratios[targetPartIndex]
-        : wrapToQuantity(`a.quantity / (${partToPartRatio.ratios.map((d, i) => `partToPartRatio.ratios[${i}]`).join(" + ")}) * partToPartRatio.ratios[${targetPartIndex}]`, { a, partToPartRatio })
+        : wrapToQuantity(`a.quantity / (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")}) * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio })
       : areNumbers(partToPartRatio.ratios) && isNumber(a.quantity)
         ? (a.quantity / partToPartRatio.ratios[sourcePartIndex]) * (nth != null ? partToPartRatio.ratios[targetPartIndex] : partToPartRatio.ratios.reduce((out, d) => out += d, 0))
         : nth != null
-          ? wrapToQuantity(`a.quantity / partToPartRatio.ratios[${sourcePartIndex}] * partToPartRatio.ratios[${targetPartIndex}]`, { a, partToPartRatio })
-          : wrapToQuantity(`a.quantity / partToPartRatio.ratios[${sourcePartIndex}] * (${partToPartRatio.ratios.map((d, i) => `partToPartRatio.ratios[${i}]`).join(" + ")})`, { a, partToPartRatio }),
+          ? wrapToQuantity(`a.quantity / b.ratios[${sourcePartIndex}] * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio })
+          : wrapToQuantity(`a.quantity / b.ratios[${sourcePartIndex}] * (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")})`, { a, b: partToPartRatio }),
     unit: a.unit,
   }
 }

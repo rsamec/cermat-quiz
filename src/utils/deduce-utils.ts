@@ -1,5 +1,5 @@
 import { formatAngle, inferenceRule, nthQuadraticElements, isNumber } from "../components/math.js"
-import type { Predicate, Container, Rate, ComparisonDiff, Comparison } from "../components/math.js"
+import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota } from "../components/math.js"
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
 import { toEquationExpr } from "./math-solver.js"
 
@@ -34,6 +34,7 @@ export type Node = TreeNode | Predicate
 export type TreeNode = {
   children?: Node[]
 }
+export type DeduceContext = string
 export function isPredicate(node: Node): node is Predicate {
   return (node as any).kind != null
 }
@@ -44,8 +45,18 @@ export function lastQuantity(input: TreeNode) {
   const lastPredicate = last(input);
   return isNumber(lastPredicate.quantity) ? lastPredicate.quantity : lastPredicate.quantity as unknown as number;
 }
+export function deduceAs(context: DeduceContext) {
+  return (...children: Node[]) => {
+    return toAs(context)(...children.concat(inferenceRule.apply(null, children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]))))
+  }
+}
 export function deduce(...children: Node[]): TreeNode {
   return to(...children.concat(inferenceRule.apply(null, children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]))));
+}
+export function toAs(context: DeduceContext) {
+  return (...children: Node[]) => {
+    return { children, context }
+  }
 }
 export function to(...children: Node[]): TreeNode {
   return { children: children }
@@ -55,12 +66,18 @@ export function toCont(child: Node, { agent, entity }: { agent: string, entity?:
   if (!(node.kind == "cont" || node.kind === "transfer" || node.kind == "comp" || node.kind === "comp-diff" || node.kind === "rate" || node.kind === 'quota' || node.kind === 'delta')) {
     throw `Non convertable node type: ${node.kind}`
   }
-  const typeNode = node as ComparisonDiff | Comparison | Rate;
+  const typeNode = node as ComparisonDiff | Comparison | Rate | Quota;
   return to(child, {
     kind: 'cont',
     agent,
     quantity: typeNode.quantity,
-    entity: entity != null ? entity.entity : typeNode.kind == "rate" ? typeNode.entity.entity : typeNode.entity,
+    entity: entity != null
+      ? entity.entity
+      : typeNode.kind == "quota"
+        ? typeNode.agentQuota
+        : typeNode.kind == "rate"
+        ? typeNode.entity.entity
+        : typeNode.entity,
     unit: entity != null ? entity.unit : typeNode.kind == "rate" ? typeNode.entity.unit : typeNode.unit
   })
 }
@@ -153,6 +170,7 @@ export function jsonToMarkdownTree(node, level = 0) {
     for (let i = node.children.length - 1; i >= 0; i--) {
       const child = node.children[i];
       const isConclusion = i === node.children.length - 1;
+      if (isConclusion && node.context) markdown.push(`${indent}- ${node.context}\n`)
       markdown = markdown.concat(jsonToMarkdownTree(child, level + (isConclusion ? 0 : 1)))
     }
   }
@@ -182,6 +200,9 @@ export function jsonToMarkdownChat(node, formatting?: any) {
           const children = node.children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]);
           const result = children.length > 2 ? inferenceRuleWithQuestion(...children.slice(0, -1)) : null;
           q = result;
+          if (node.context) {
+            args.push(node.context)
+          }
         }
         else {
           q = null;
@@ -330,7 +351,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = compose`${joinArray(d.partAgents?.map(d => formatAgent(d)), " * ")}`;
       break;
     case "rate":
-      result = compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} per ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? '':formatQuantity(d.baseQuantity)} ${formatEntity(d.entityBase.entity, d.entityBase.unit)}`
+      result = compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} per ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? '' : formatQuantity(d.baseQuantity)} ${formatEntity(d.entityBase.entity, d.entityBase.unit)}`
       break;
     case "quota":
       result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${d.restQuantity !== 0 ? ` se zbytkem ${formatQuantity(d.restQuantity)}` : ''}`
@@ -360,9 +381,9 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = compose`${d.expression}`
       break;
     case "eval-option":
-      result = d.value === undefined 
-      ? compose`${d.optionValue !=null ? `Volba [${d.optionValue}]: ${d.expectedValue != null ? formatRatio(d.expectedValue):d.expression}`: d.expression }`
-      : compose`${d.value === true ? "Pravda" : d.value === false ? "Nepravda" : d.value != null ? `Volba [${d.value}]` : 'N/A'}`
+      result = d.value === undefined
+        ? compose`${d.optionValue != null ? `Volba [${d.optionValue}]: ${d.expectedValue != null ? formatRatio(d.expectedValue) : d.expression}` : d.expression}`
+        : compose`${d.value === true ? "Pravda" : d.value === false ? "Nepravda" : d.value != null ? `Volba [${d.value}]` : 'N/A'}`
       break;
     default:
       break;

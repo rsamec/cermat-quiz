@@ -94,6 +94,7 @@ const okurkyInput = Generators.input(okurkyForm);
 <div>${renderExample({example:MMA_2025["5.1"]})}</div>
 <div>${renderExample({example:MMA_2025["5.2"]})}</div>
 <div>${renderExample({example:MMA_2025["6"]})}</div>
+<div>${renderExample({example:MMA_2025["21"]})}</div>
 <!-- <div>${renderExample({example:MMA_2025["8"]})}</div> -->
 <div>${renderExample({example:autobus()})}</div>
 <div>${renderExample({example:autobus2()})}</div>

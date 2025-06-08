@@ -1659,10 +1659,11 @@ function evaluate2(expression, context) {
 function evalExpression(expression, quantity) {
   const expr = parser.parse(expression);
   const variables = expr.variables();
-  if (variables.length !== 1) {
-    throw `Eval only expression with exactly one variable. Variables ${variables.join(",")}`;
+  if (variables.length === 1) {
+    return expr.evaluate({ [variables]: quantity });
   }
-  return expr.evaluate({ [variables]: quantity });
+  const res = expr.simplify({ [variables[0]]: quantity });
+  return res.toString();
 }
 function recurExpr(node) {
   const quantity = node.quantity ?? node.ratio ?? {};
