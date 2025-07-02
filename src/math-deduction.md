@@ -141,9 +141,14 @@ Predikáty umožňují formalní zápis situačního modelu úlohy.
       <td>Rozdíl mezi sešity celkem a Honzíkem je 7 sešitů./td>
     </tr>
     <tr>
-      <td><div class="badge">TRANSFER</div> transfer</td>
+      <td><div class="badge">TRANSFER</div> transfer between 2 agents</td>
       <td>(agentSender=Ája,</br>agentReceiver=Honzík,</br>quantity=7,</br>entity=sešity)</td>
       <td>Ája dala 7 sešitů Honzíkovi.</td>
+    </tr>
+    <tr>
+      <td><div class="badge">DELTA</div> delta</td>
+      <td>(agent=Ája,</br>quantity=7,</br>entity=sešity)</td>
+      <td>Ája změna v čase o 7 sešitů.</td>
     </tr>
     <tr>
       <td><div class="badge">RATIO</div> part to whole comparison</td>
@@ -151,9 +156,24 @@ Predikáty umožňují formalní zápis situačního modelu úlohy.
       <td>Ve třídě je 1/4 chlapců ze všech žáků.</td>
     </tr>
     <tr>
+      <td><div class="badge">COMPLEMENT</div> complement part of the whole</td>
+      <td></td>
+      <td>Pokud je ve třídě je 1/4 chlapců ze všech žáků, tak doplněk znamená, že ve tříde je 3/4 dívek ze všech žáků.</td>
+    </tr>
+    <tr>
       <td><div class="badge">RATIOS</div> part to part comparison</td>
       <td>(whole={agent:třída,entity:žáci},</br> parts=[chlapci,dívky],</br>ratios=[1,3])</td>
       <td>Poměr chlapců a dívek ve třídě je 1:3 (1 chlapec ku 3 dívkám).</td>
+    </tr>
+    <tr>
+      <td><div class="badge">SCALE</div> part to part scaling</td>
+      <td></td>
+      <td>Pokud je poměr chlapců a dívek ve třídě je 1:3, tak dvojnásobné rozšíření poměru je 2:6.</td>
+    </tr>
+    <tr>
+      <td><div class="badge">INVERT-SCALE</div> part to part scaling</td>
+      <td></td>
+      <td>Pokud je poměr chlapců a dívek ve třídě je 2:6, tak dvojnásobné zkrácení poměru je 1:3.</td>
     </tr>
     <tr>
       <td><div class="badge">RATE</div> rate</td>
@@ -278,6 +298,7 @@ ${partion([
 
 <div class="badge badge--large">RATIOS</div>
 <div class="badge badge--large">SCALE</div>
+<div class="badge badge--large">INVERT-SCALE</div>
 
 ${partion([
     {value: 30, agent:"chlapci", label:{ hidePercent: true, hideFraction: false} },
