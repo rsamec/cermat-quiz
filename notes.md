@@ -3,7 +3,7 @@
 ## PDF generation
 prepera PDFs
 - test run print-by-columns.spec.ts
-- npm run merge-pdf                                                                                                                                                                                                                                                                                                                                                                                                                                            
+- npm run merge-pdf
 
 add to source
 - delete src/assets/pdf/<subject>-<period>/data.json
