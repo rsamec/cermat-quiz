@@ -206,7 +206,7 @@ function convertKindToIcon(predicate) {
   }
 }
 
-export function jsonToMermaidMindMapEx(node, level = 0) {
+export function jsonToMermaidMindMapEx(node,isConclusion, level = 0) {
   const indent = "  ".repeat(level); // Two spaces for each level
   let markdown = [];
 
@@ -215,11 +215,11 @@ export function jsonToMermaidMindMapEx(node, level = 0) {
   if (isPredicate(node)) {
     const formatedPredicat = formatPredicate(node, mermaidFormatting).trim();
     if (formatedPredicat !== ""){
-      if (level === 0){
-        markdown.push(`${indent} id${++nextId}["${formatedPredicat}"]\n`);
+      if (isConclusion){
+        markdown.push(`${indent} id${++nextId}{{"${formatedPredicat}"}}\n`);
       }
       else {
-        markdown.push(`${indent} id${++nextId}["${formatedPredicat}"]\n`);
+        markdown.push(`${indent} id${++nextId}))"${formatedPredicat}"((\n`);
       }
       markdown.push(`${indent} ::icon(${convertKindToIcon(node)})\n`);
     }
@@ -234,7 +234,7 @@ export function jsonToMermaidMindMapEx(node, level = 0) {
       const child = node.children[i];
       const isConclusion = i === node.children.length - 1;
       if (isConclusion && node.context) markdown.push(`${indent} id${++nextId}["${node.context}"]\n`)
-      markdown = markdown.concat(jsonToMermaidMindMapEx(child, level + (isConclusion ? 0 : 1)))
+      markdown = markdown.concat(jsonToMermaidMindMapEx(child,isConclusion, level + (isConclusion ? 0 : 1)))
     }
   }
   return markdown

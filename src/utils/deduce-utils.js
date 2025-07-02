@@ -5395,17 +5395,17 @@ function convertKindToIcon(predicate) {
       return "fa fa-book";
   }
 }
-function jsonToMermaidMindMapEx(node, level = 0) {
+function jsonToMermaidMindMapEx(node, isConclusion, level = 0) {
   const indent = "  ".repeat(level);
   let markdown = [];
   if (isPredicate(node)) {
     const formatedPredicat = formatPredicate(node, mermaidFormatting).trim();
     if (formatedPredicat !== "") {
-      if (level === 0) {
-        markdown.push(`${indent} id${++nextId}["${formatedPredicat}"]
+      if (isConclusion) {
+        markdown.push(`${indent} id${++nextId}{{"${formatedPredicat}"}}
 `);
       } else {
-        markdown.push(`${indent} id${++nextId}["${formatedPredicat}"]
+        markdown.push(`${indent} id${++nextId}))"${formatedPredicat}"((
 `);
       }
       markdown.push(`${indent} ::icon(${convertKindToIcon(node)})
@@ -5416,11 +5416,11 @@ function jsonToMermaidMindMapEx(node, level = 0) {
   if (node.children && Array.isArray(node.children)) {
     for (let i = node.children.length - 1; i >= 0; i--) {
       const child = node.children[i];
-      const isConclusion = i === node.children.length - 1;
-      if (isConclusion && node.context)
+      const isConclusion2 = i === node.children.length - 1;
+      if (isConclusion2 && node.context)
         markdown.push(`${indent} id${++nextId}["${node.context}"]
 `);
-      markdown = markdown.concat(jsonToMermaidMindMapEx(child, level + (isConclusion ? 0 : 1)));
+      markdown = markdown.concat(jsonToMermaidMindMapEx(child, isConclusion2, level + (isConclusion2 ? 0 : 1)));
     }
   }
   return markdown;
