@@ -178,6 +178,67 @@ export function jsonToMarkdownTree(node, level = 0) {
 
   return markdown
 }
+var nextId = 0;
+export function jsonToMermaidMindMap(node) {
+  nextId = 0;
+  const result = ["mindmap\n"].concat(...jsonToMermaidMindMapEx(node,0));  
+  return result;
+}
+function convertKindToIcon(predicate) {
+  const kind = predicate?.kind?.toUpperCase()
+  switch (kind) {
+    case "CONT":
+      return "fa fa-vector-square";
+    case "RATIO":
+      return "fa fa-percentage";
+    case "COMP-RATIO":
+      return "fa fa-compress-alt";
+    case "COMP":
+      return "fa fa-terminal";
+    case "QUOTA":
+      return "fa fa-object-ungroup";
+    case "RATE":
+      return "fa fa-layer-group";
+    case "UNIT":
+      return "fa fa-exchange-alt";
+    default:
+      return "fa fa-book";
+  }
+}
+
+export function jsonToMermaidMindMapEx(node, level = 0) {
+  const indent = "  ".repeat(level); // Two spaces for each level
+  let markdown = [];
+
+
+  // Add node details if they exist
+  if (isPredicate(node)) {
+    const formatedPredicat = formatPredicate(node, mermaidFormatting).trim();
+    if (formatedPredicat !== ""){
+      if (level === 0){
+        markdown.push(`${indent} id${++nextId}["${formatedPredicat}"]\n`);
+      }
+      else {
+        markdown.push(`${indent} id${++nextId}["${formatedPredicat}"]\n`);
+      }
+      markdown.push(`${indent} ::icon(${convertKindToIcon(node)})\n`);
+    }
+    return markdown;
+  }
+
+
+  // Process children recursively
+  if (node.children && Array.isArray(node.children)) {
+
+    for (let i = node.children.length - 1; i >= 0; i--) {
+      const child = node.children[i];
+      const isConclusion = i === node.children.length - 1;
+      if (isConclusion && node.context) markdown.push(`${indent} id${++nextId}["${node.context}"]\n`)
+      markdown = markdown.concat(jsonToMermaidMindMapEx(child, level + (isConclusion ? 0 : 1)))
+    }
+  }
+  return markdown
+}
 export function jsonToMarkdownChat(node, formatting?: any) {
 
   const flatStructure = [];
@@ -259,6 +320,11 @@ const mdFormatting = {
   },
   formatAgent: d => `**${d}**`,
   formatSequence: d => `${formatSequence(d)}`
+}
+
+const mermaidFormatting = {
+  ...mdFormatting,
+  formatKind: d => ``,
 }
 
 function formatSequence(type) {
@@ -462,13 +528,40 @@ Můžeš vymyslet novou úlohu v jiné doméně, která půjde řešit stejným 
 
 Změn agenty, entity a parametry úlohy tak aby byly z jiné, pokud možno netradiční domény.
 Použij jiné vstupní parametry tak, aby výsledek byl jiná hodnota, která je možná a pravděpodobná v reálném světě.
-Pokud původní zadání obsahuje vizualizaci situace, tak vygeneruj také vizualizaci pro novou doménu.
 Vygeneruj 3 různé úlohy v češtině. Nevracej způsob řešení, kroky řešení.
+`
+
+  const generalization = `${alternateMessage}
+Můžeš vymyslet nové úlohu v jiné doméně, která půjde řešit stejným postupem řešení 
+- změnit agent - identifikovány pomocí markdown bold **
+- změna entit - identifikace pomocí markdown bold __
+- změnu parametry úlohy - identifikovány pomocí italic *
+
+Nad těmito úlohami provést systematickou generalizaci všech prvků (agenty, entity a číselné údaje),které jsou v těchto úlohách společné.
+Vytořit abstraktní pojmenování a strukturu, která může sloužit jako univerzální rámec pro tvorbu dalších úloh podobného typu.
+Nevracej konkrétní úlohy, ale jen generalizovaný rámec.
+`
+
+const generateSubQuizes = `${alternateMessage}
+Můžeš vytvořit pracovní list, který by obsahoval vhodné podúlohy, které jsou vhodné pro řešení stávající úlohy.
+`
+const generateImportantPoints = `${alternateMessage}
+Můžeš analyzovat úlohu a řešení úlohy a najít hlavní myšlenku, která vede k řešení stávající úlohy.
+Uveď 1 až maximálně 3 nejdůležitější myšlenky, triky důležité k pochopení řešení úlohy.
+`
+const vizualizeImportantPoints = `${alternateMessage}
+Můžeš analyzovat úlohu a řešení úlohy a najít hlavní myšlenku, která vede k řešení stávající úlohy.
+Dle složitosti úlohy vymysli 1 až maximálně 3 nejdůležitější myšlenky, triky důležité k pochopení řešení úlohy.
+Vizualizuj vhodně tyto myšlenky do obrázku pomocí infografiky s vhodnými grafickými prvky.
 `
 
   return {
     explainSolution,
     vizualizeSolution,
     generateMoreQuizes,
+    generateSubQuizes,
+    generalization,
+    generateImportantPoints,
+    vizualizeImportantPoints
   }
 }

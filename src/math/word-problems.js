@@ -5501,6 +5501,10 @@ var mdFormatting = {
   formatAgent: (d) => `**${d}**`,
   formatSequence: (d) => `${formatSequence2(d)}`
 };
+var mermaidFormatting = {
+  ...mdFormatting,
+  formatKind: (d) => ``
+};
 function formatSequence2(type) {
   const simplify3 = (d, op = "") => d !== 1 ? `${d}${op}` : "";
   if (type.kind === "arithmetic")
@@ -13514,6 +13518,61 @@ function deduce2(...children) {
 function to2(...children) {
   return { children };
 }
+function isEmptyOrWhiteSpace2(value) {
+  return value == null || typeof value === "string" && value.trim() === "";
+}
+var mdFormatting2 = {
+  compose: (strings, ...args) => concatString2(strings, ...args),
+  formatKind: (d) => `[${d.kind.toUpperCase()}]`,
+  formatQuantity: (d) => {
+    if (typeof d === "number") {
+      return d.toLocaleString("cs-CZ");
+    } else if (typeof d === "string") {
+      return d;
+    } else {
+      return toEquationExpr2(d);
+    }
+  },
+  formatRatio: (d, asPercent) => asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : d.toLocaleString("cs-CZ"),
+  formatEntity: (d, unit) => {
+    const res = [unit, d].filter((d2) => d2 != null).join(" ");
+    return isEmptyOrWhiteSpace2(res) ? "" : `__${res.trim()}__`;
+  },
+  formatAgent: (d) => `**${d}**`,
+  formatSequence: (d) => `${formatSequence22(d)}`
+};
+var mermaidFormatting2 = {
+  ...mdFormatting2,
+  formatKind: (d) => ``
+};
+function formatSequence22(type) {
+  const simplify22 = (d, op = "") => d !== 1 ? `${d}${op}` : "";
+  if (type.kind === "arithmetic")
+    return `${type.sequence.join()} => a^n^ = ${type.sequence[0]} + ${type.commonDifference}(n-1)`;
+  if (type.kind === "quadratic") {
+    const [first, second] = type.sequence;
+    const { A, B, C } = nthQuadraticElements2(first, second, type.secondDifference);
+    const parts = [`${simplify22(A)}n^2^`];
+    if (B !== 0) {
+      parts.concat(`${simplify22(B)}n`);
+    }
+    if (C !== 0) {
+      parts.concat(`${simplify22(C)}n`);
+    }
+    return `${type.sequence.join()} => a^n^ = ${parts.map((d, i) => `${i !== 0 ? " + " : ""}${d}`)}`;
+  }
+  if (type.kind === "geometric") {
+    return `${type.sequence.join()} => a^n^ = ${simplify22(type.sequence[0], "*")}${type.commonRatio}^(n-1)^`;
+  }
+}
+function concatString2(strings, ...substitutions) {
+  const formattedString = strings.reduce((acc, curr, i) => {
+    const substitution = substitutions[i];
+    const res = substitution ? `${curr}${Array.isArray(substitution) ? substitution.join("") : substitution}` : curr;
+    return `${acc}${res}`;
+  }, "");
+  return formattedString;
+}
 
 // src/math/shapes/triangle.ts
 function triangleArea({ size, height, triangle }) {
@@ -15575,7 +15634,78 @@ function tabor() {
 
 // src/math/MMA-2025/index.ts
 var MMA_2025_default = {
-  1: boruvky(),
+  1: boruvky({
+    input: {
+      quantityEntity: {
+        entity: "hmotnost",
+        unit: "g",
+        groupSize: 50
+      },
+      priceEntity: {
+        entity: "korun"
+      },
+      agentA: {
+        label: "prodejce 1",
+        quantity: 650,
+        price: 150
+      },
+      agentB: {
+        label: "prodejce 2",
+        quantity: 0.5,
+        price: 120,
+        unit: "kg"
+      },
+      finalPrice: 600
+    }
+  }),
+  2: boruvky({
+    input: {
+      quantityEntity: {
+        entity: "objem",
+        unit: "ml",
+        groupSize: 50
+      },
+      priceEntity: {
+        entity: "korun"
+      },
+      agentA: {
+        label: "laborantka 1",
+        quantity: 650,
+        price: 195
+      },
+      agentB: {
+        label: "laborantka 2",
+        quantity: 0.5,
+        price: 150,
+        unit: "l"
+      },
+      finalPrice: 750
+    }
+  }),
+  3: boruvky({
+    input: {
+      "quantityEntity": {
+        "groupSize": 5,
+        "entity": "g\xF3l",
+        "unit": "min"
+      },
+      "priceEntity": {
+        "entity": "body"
+      },
+      "agentA": {
+        "label": "T\xFDm A",
+        "quantity": 30,
+        "price": 100
+      },
+      "agentB": {
+        "label": "T\xFDm B",
+        "quantity": 45,
+        "price": 90,
+        "unit": "min"
+      },
+      "finalPrice": 400
+    }
+  }),
   //3: delitelnost(),
   5.1: spotrebaPaliva().beznePalivo,
   5.2: spotrebaPaliva().powerPalivo,
@@ -15586,29 +15716,27 @@ var MMA_2025_default = {
   20: vzestupHladinyVody(),
   21: vyrezKrychle()
 };
-function boruvky() {
-  const entity3 = "hmotnost";
-  const entity50 = "d\xE1vka po 50g";
-  const unit = "g";
-  const entityPrice = "korun";
-  const prodejce1Label = "prodejce 1";
-  const prodejce2Label = "prodejce 2";
-  const skupina = cont(entity50, 50, entity3, "g");
-  const drazsiBoruvky = deduceAs(`za dra\u017E\u0161\xED cenu ${prodejce2Label}`)(
+function boruvky(inputs) {
+  const { quantityEntity, priceEntity, agentA, agentB, finalPrice } = inputs.input;
+  const skupinaAgent = `skupina po ${quantityEntity.groupSize}${quantityEntity.unit}`;
+  const skupina = cont(skupinaAgent, quantityEntity.groupSize, quantityEntity.entity, quantityEntity.unit);
+  const pocetSkupin = deduce(
+    cont(agentA.label, agentA.quantity, quantityEntity.entity, quantityEntity.unit),
+    skupina,
+    ctor("quota")
+  );
+  const pocetSkupinAgent = `${last(pocetSkupin).quantity} ${skupinaAgent}`;
+  const morePriceEntity = deduceAs(`za dra\u017E\u0161\xED cenu ${agentB.label}`)(
     toCont(
-      deduce(
-        cont(prodejce1Label, 650, entity3, unit),
-        skupina,
-        ctor("quota")
-      ),
-      { agent: `13 d\xE1vek` }
+      pocetSkupin,
+      { agent: pocetSkupinAgent }
     ),
     deduce(
-      cont(prodejce2Label, 120, entityPrice),
+      cont(agentB.label, agentB.price, priceEntity.entity),
       deduce(
         deduce(
-          cont(prodejce2Label, 0.5, entity3, "kg"),
-          ctorUnit("g")
+          cont(agentB.label, agentB.quantity, quantityEntity.entity, agentB.unit),
+          ctorUnit(quantityEntity.unit)
         ),
         skupina,
         ctor("quota")
@@ -15626,10 +15754,10 @@ Z\xE1kazn\xEDk koupil levn\u011Bj\u0161\xED bor\u016Fvky celkem za 600 korun.
 Vypo\u010Dt\u011Bte, za kolik korun by z\xE1kazn\xEDk koupil dra\u017E\u0161\xED bor\u016Fvky
 o stejn\xE9 hmotnosti.`,
     deductionTree: deduce(
-      drazsiBoruvky,
-      deduceAs(`za levn\u011Bj\u0161\xED cenu ${prodejce1Label}`)(
-        cont("zaplaceno celkem", 600, entityPrice),
-        cont("13 d\xE1vek", 150, entityPrice),
+      morePriceEntity,
+      deduceAs(`za levn\u011Bj\u0161\xED cenu ${agentA.label}`)(
+        cont("celkem", finalPrice, priceEntity.entity),
+        cont(pocetSkupinAgent, agentA.price, priceEntity.entity),
         ctor("comp-ratio")
       )
     )

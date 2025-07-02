@@ -8,13 +8,13 @@ style: /assets/css/math-deduce.css
 
 ```js
 import mdPlus from './utils/md-utils.js';
+import pako from 'pako';
 import { parseQuiz } from './utils/quiz-parser.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, isEmptyOrWhiteSpace } from './utils/quiz-string-utils.js';
 import wordProblems from './math/word-problems.js';
 import {partion, relativeTowParts, relativeTwoPartsDiff, deduceTraverse, highlightLabel, renderChat } from './utils/deduce-components.js';
 import { renderChatStepper, useInput } from './utils/deduce-chat.js';
-import {isPredicate, computeTreeMetrics, jsonToMarkdownTree, jsonToMarkdownChat, highlight, generateAIMessages} from './utils/deduce-utils.js';
-
+import {isPredicate, computeTreeMetrics, jsonToMarkdownTree, jsonToMermaidMindMap, jsonToMarkdownChat, highlight, generateAIMessages} from './utils/deduce-utils.js';
 import Fraction from 'fraction.js';
 
 const code = observable.params.code;
@@ -30,6 +30,7 @@ const quiz = parseQuiz(rawContent);
 
 const wordProblem = wordProblems[code] ?? {};
 ```
+
 
 ```js
 
@@ -54,14 +55,40 @@ function renderMarkdownWithCopy(content, lang){
 function renderAsCodeBlock(value, lang) {
     return html`<div class="observablehq-pre-container" data-language="${lang}">
     <button title="Copy code" class="observablehq-pre-copy" onclick=${() => navigator.clipboard.writeText(value)}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6C2 5.44772 2.44772 5 3 5H10C10.5523 5 11 5.44772 11 6V13C11 13.5523 10.5523 14 10 14H3C2.44772 14 2 13.5523 2 13V6Z M4 2.00004L12 2.00001C13.1046 2 14 2.89544 14 4.00001V12"></path></svg></button>
-    <pre data-language="${lang}">
-      <code class="language-${lang}">
-        ${value}
-      </code>
-    </pre>
+    <pre data-language="${lang}"><code class="language-${lang}">${value}</code></pre>
     </div>`
-}
+} 
+function toBase64Url(bytes) {
+    return btoa(String.fromCharCode(...bytes))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+  }
 
+  function createMermaidEditorUrl(mermaidCode, mode = 'edit') {
+    const state = {
+      code: mermaidCode,
+      mermaid: { theme: "default" },
+      autoSync: true,
+      updateDiagram: true
+    };
+
+    const json = JSON.stringify(state);
+    const compressed = pako.deflate(json, { level: 9 });
+    const encoded = toBase64Url(compressed);
+
+    return `https://mermaid.live/${mode}#pako:${encoded}`;
+  }
+
+
+// function renderMermaid(content, lang){
+//   const promise = mermaidPlus.unsafe(`${content}`);
+//   return Generators.observe((notify) => {
+//       promise.then((value) => notify(value));
+//       notify('Diagraming...');
+//     return () => {};
+//   });  
+// }
 const values = (wordProblem[id] != null)
    ? [[id, wordProblem[id]]] 
    : [1, 2, 3]
@@ -92,8 +119,8 @@ function renderValues (values) {
       </div>
     </div>
   </div>
-
-  <details open>
+  
+  <details>
     <summary>Video</summary>
     <video src="./assets/math/${code}/${key}-0.mp4" playsinline muted controls style="width: 100%;"></video>
   </details>
@@ -132,6 +159,14 @@ function renderValues (values) {
       ${renderMarkdownWithCopy(jsonToMarkdownChat(value.deductionTree).join(''), "md")}
     </div>
   </details>
+  <details>
+    <summary>Mind map</summary>
+    <a href="${createMermaidEditorUrl(jsonToMermaidMindMap(value.deductionTree).join(''),'edit')}" target="_blank">Edit</a>
+    <div class="card">
+      ${renderAsCodeBlock(jsonToMermaidMindMap(value.deductionTree).join(''), "mermaid")}
+    </div>
+    
+  </details>
   <hr/>
 `})
 }
@@ -152,9 +187,12 @@ ${renderQuestion(id)}
 
 ${renderChatButton("Základní řešení", template)}
 ${renderChatButton("Smart řešení", aiPromts.explainSolution)}
+${renderChatButton("Hlavní myšlenky řešení", aiPromts.generateImportantPoints)}
+${renderChatButton("Obdobné úlohy", aiPromts.generateMoreQuizes)}
+${renderChatButton("Pracovní list", aiPromts.generateSubQuizes)}
+${renderChatButton("Generalizace úlohy", aiPromts.generalization)}
 ${renderChatButton("Vizualizuj řešení", aiPromts.vizualizeSolution)}
-${renderChatButton("Generuj obdobné úlohy", aiPromts.generateMoreQuizes)}
-
+${renderChatButton("Vizualizuj hlavní myšlenku", aiPromts.vizualizeImportantPoints)}
 
 ${values?.some(([key,value]) => value.audio) ? html`<div class="tip" label="Podcast">Poslechni si podcast vygenerovaný pro danou úlohu v anglickém jazyce. Generováno pomocí <a href="https://notebooklm.google/">NotebookLM</></div>${renderAudio(code,id)}`:''}
 

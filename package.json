@@ -12,7 +12,7 @@
     "build:word-problems": "esbuild ./src/math/word-problems.ts --bundle --platform=neutral --outfile=./src/math/word-problems.js",
     "build:deduce-utils": "esbuild ./src/utils/deduce-utils.ts --bundle --platform=neutral --outfile=./src/utils/deduce-utils.js",
     "build:math-solver": "esbuild ./src/utils/math-solver.ts --bundle --platform=neutral --outfile=./src/utils/math-solver.js",
-    "build:all":"npm run build:math-solver && npm run build:deduce-utils && npm run build:word-problems",
+    "build:all": "npm run build:math-solver && npm run build:deduce-utils && npm run build:word-problems",
     "generate:word-problems": "node ./src/data/word-problems-solu-[code].txt.js --code M9I-2025",
     "ai:word-problems": "node ./src/data/word-problems-ai-[code].json.js --code M9I-2025 > ./src/data/word-problems-ai-M9I-2025.json"
   },
@@ -27,6 +27,7 @@
     "d3-scale": "^4.0.2",
     "d3-scale-chromatic": "^3.1.0",
     "d3-time-format": "^4.1.0",
+    "expr-eval": "^2.0.2",
     "fraction.js": "^5.2.1",
     "htl": "^0.3.1",
     "invert-color": "^2.0.0",
@@ -35,12 +36,12 @@
     "markdown-it-katex": "^2.0.3",
     "markdown-it-sup": "^2.0.0",
     "openai": "^4.91.1",
+    "pako": "^2.1.0",
     "playwright": "^1.49.0",
     "redux": "^5.0.1",
     "rxjs": "^7.8.1",
     "sortablejs": "^1.15.3",
-    "tippy.js": "^6.3.7",
-    "expr-eval": "^2.0.2"
+    "tippy.js": "^6.3.7"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0",

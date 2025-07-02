@@ -4,7 +4,80 @@ import { solveLinearEquation } from "../../utils/math-solver";
 
 
 export default {
-  1: boruvky(),
+  1: boruvky({
+    input: {
+      quantityEntity: {
+        entity: "hmotnost",
+        unit: "g",
+        groupSize: 50,
+      },
+      priceEntity: {
+        entity: "korun",
+      },
+      agentA: {
+        label: "prodejce 1",
+        quantity: 650,
+        price: 150,
+      },
+      agentB:
+      {
+        label: "prodejce 2",
+        quantity: 0.5,
+        price: 120,
+        unit: "kg"
+      },
+      finalPrice: 600,
+    }
+  }),
+  2: boruvky({
+    input: {
+      quantityEntity: {
+        entity: "objem",
+        unit: "ml",
+        groupSize: 50,
+      },
+      priceEntity: {
+        entity: "korun",
+      },
+      agentA: {
+        label: "laborantka 1",
+        quantity: 650,
+        price: 195,
+      },
+      agentB:
+      {
+        label: "laborantka 2",
+        quantity: 0.5,
+        price: 150,
+        unit: "l"
+      },
+      finalPrice: 750,
+    }
+  }),
+  3: boruvky({
+    input: {
+        "quantityEntity": {
+          "groupSize": 5,
+          "entity": "gól",
+          "unit": "min"
+        },
+        "priceEntity": {
+          "entity": "body",
+        },
+        "agentA": {
+          "label": "Tým A",
+          "quantity": 30.0,
+          "price": 100,
+        },
+        "agentB": {
+          "label": "Tým B",
+          "quantity": 45.0,
+          "price": 90,
+          "unit": "min"
+        },
+        "finalPrice": 400,
+      }    
+  }),
   //3: delitelnost(),
   5.1: spotrebaPaliva().beznePalivo,
   5.2: spotrebaPaliva().powerPalivo,
@@ -17,29 +90,51 @@ export default {
 }
 
 
-function boruvky() {
-  const entity = "hmotnost"
-  const entity50 = "dávka po 50g"
-  const unit = "g"
-  const entityPrice = "korun"
-  const prodejce1Label = "prodejce 1";
-  const prodejce2Label = "prodejce 2";
+function boruvky(inputs: {
+  input: {
+    quantityEntity: {
+      groupSize: number,
+      entity: string,
+      unit: string
+    },
+    priceEntity: {
+      entity: string,
+    }
+    finalPrice: number,
+    agentA: {
+      label: string,
+      quantity: number,
+      price: number,
+    },
+    agentB:
+    {
+      label: string,
+      quantity: number,
+      price: number,
+      unit: string,
+    },
 
-  const skupina = cont(entity50, 50, entity, "g");
+  }
+}) {
+  const { quantityEntity, priceEntity, agentA, agentB, finalPrice } = inputs.input;
+  const skupinaAgent = `skupina po ${quantityEntity.groupSize}${quantityEntity.unit}`
+  const skupina = cont(skupinaAgent, quantityEntity.groupSize, quantityEntity.entity, quantityEntity.unit);
+  const pocetSkupin = deduce(
+    cont(agentA.label, agentA.quantity, quantityEntity.entity, quantityEntity.unit),
+    skupina,
+    ctor('quota')
+  )
 
-  const drazsiBoruvky = deduceAs(`za dražší cenu ${prodejce2Label}`)(
-    toCont(
-      deduce(
-        cont(prodejce1Label, 650, entity, unit),
-        skupina,
-        ctor('quota')
-      ), { agent: `13 dávek` }),
+  const pocetSkupinAgent = `${last(pocetSkupin).quantity} ${skupinaAgent}`
+  const morePriceEntity = deduceAs(`za dražší cenu ${agentB.label}`)(
+    toCont(pocetSkupin
+      , { agent: pocetSkupinAgent }),
     deduce(
-      cont(prodejce2Label, 120, entityPrice),
+      cont(agentB.label, agentB.price, priceEntity.entity),
       deduce(
         deduce(
-          cont(prodejce2Label, 0.5, entity, "kg"),
-          ctorUnit("g")
+          cont(agentB.label, agentB.quantity, quantityEntity.entity, agentB.unit),
+          ctorUnit(quantityEntity.unit)
         ),
         skupina,
         ctor('quota')
@@ -59,10 +154,10 @@ Zákazník koupil levnější borůvky celkem za 600 korun.
 Vypočtěte, za kolik korun by zákazník koupil dražší borůvky
 o stejné hmotnosti.`,
     deductionTree: deduce(
-      drazsiBoruvky,
-      deduceAs(`za levnější cenu ${prodejce1Label}`)(
-        cont("zaplaceno celkem", 600, entityPrice),
-        cont("13 dávek", 150, entityPrice),
+      morePriceEntity,
+      deduceAs(`za levnější cenu ${agentA.label}`)(
+        cont("celkem", finalPrice, priceEntity.entity),
+        cont(pocetSkupinAgent, agentA.price, priceEntity.entity),
         ctor("comp-ratio"),
       ),
     )
@@ -355,21 +450,21 @@ function vyrezKrychle() {
   }
 }
 
- function kruhovaVysec() {
-    const vetsiLabel = "celkový úhel kruhu";
-    const mensiLabel = "uhel φ odpovídající výseči kruhu";
-    const entity = "stupňů"
-    return {
-      deductionTree: deduce(
-        to(
-          commonSense(`obsah celého kruhu (r): π*r^2`),
-          commonSense(`obsah celého kruhu s větším poloměrem(3/2r): π*3/2r^2 = 9/4*π*r^2`),
-          commonSense(`větší kruh je 9/4 krát větší než menší kruh, což musí odpovídat tomu, že obsah výseče  výseče kruhu  jeho celkovému obsahu`),
-          commonSense(`výseč je část z celého kruhu s větším poloměrem`),
-          compRatio(vetsiLabel, mensiLabel, 9 / 4)
-        ),
-        cont(vetsiLabel, 360, entity)
-      )
+function kruhovaVysec() {
+  const vetsiLabel = "celkový úhel kruhu";
+  const mensiLabel = "uhel φ odpovídající výseči kruhu";
+  const entity = "stupňů"
+  return {
+    deductionTree: deduce(
+      to(
+        commonSense(`obsah celého kruhu (r): π*r^2`),
+        commonSense(`obsah celého kruhu s větším poloměrem(3/2r): π*3/2r^2 = 9/4*π*r^2`),
+        commonSense(`větší kruh je 9/4 krát větší než menší kruh, což musí odpovídat tomu, že obsah výseče  výseče kruhu  jeho celkovému obsahu`),
+        commonSense(`výseč je část z celého kruhu s větším poloměrem`),
+        compRatio(vetsiLabel, mensiLabel, 9 / 4)
+      ),
+      cont(vetsiLabel, 360, entity)
+    )
 
-    }
   }
+}

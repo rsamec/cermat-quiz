@@ -5368,6 +5368,63 @@ function jsonToMarkdownTree(node, level = 0) {
   }
   return markdown;
 }
+var nextId = 0;
+function jsonToMermaidMindMap(node) {
+  nextId = 0;
+  const result = ["mindmap\n"].concat(...jsonToMermaidMindMapEx(node, 0));
+  return result;
+}
+function convertKindToIcon(predicate) {
+  const kind = predicate?.kind?.toUpperCase();
+  switch (kind) {
+    case "CONT":
+      return "fa fa-vector-square";
+    case "RATIO":
+      return "fa fa-percentage";
+    case "COMP-RATIO":
+      return "fa fa-compress-alt";
+    case "COMP":
+      return "fa fa-terminal";
+    case "QUOTA":
+      return "fa fa-object-ungroup";
+    case "RATE":
+      return "fa fa-layer-group";
+    case "UNIT":
+      return "fa fa-exchange-alt";
+    default:
+      return "fa fa-book";
+  }
+}
+function jsonToMermaidMindMapEx(node, level = 0) {
+  const indent = "  ".repeat(level);
+  let markdown = [];
+  if (isPredicate(node)) {
+    const formatedPredicat = formatPredicate(node, mermaidFormatting).trim();
+    if (formatedPredicat !== "") {
+      if (level === 0) {
+        markdown.push(`${indent} id${++nextId}["${formatedPredicat}"]
+`);
+      } else {
+        markdown.push(`${indent} id${++nextId}["${formatedPredicat}"]
+`);
+      }
+      markdown.push(`${indent} ::icon(${convertKindToIcon(node)})
+`);
+    }
+    return markdown;
+  }
+  if (node.children && Array.isArray(node.children)) {
+    for (let i = node.children.length - 1; i >= 0; i--) {
+      const child = node.children[i];
+      const isConclusion = i === node.children.length - 1;
+      if (isConclusion && node.context)
+        markdown.push(`${indent} id${++nextId}["${node.context}"]
+`);
+      markdown = markdown.concat(jsonToMermaidMindMapEx(child, level + (isConclusion ? 0 : 1)));
+    }
+  }
+  return markdown;
+}
 function jsonToMarkdownChat(node, formatting) {
   const flatStructure = [];
   function traverseEx(node2) {
@@ -5435,6 +5492,10 @@ var mdFormatting = {
   },
   formatAgent: (d) => `**${d}**`,
   formatSequence: (d) => `${formatSequence2(d)}`
+};
+var mermaidFormatting = {
+  ...mdFormatting,
+  formatKind: (d) => ``
 };
 function formatSequence2(type) {
   const simplify2 = (d, op = "") => d !== 1 ? `${d}${op}` : "";
@@ -5593,13 +5654,38 @@ M\u016F\u017Ee\u0161 vymyslet novou \xFAlohu v jin\xE9 dom\xE9n\u011B, kter\xE1 
 
 Zm\u011Bn agenty, entity a parametry \xFAlohy tak aby byly z jin\xE9, pokud mo\u017Eno netradi\u010Dn\xED dom\xE9ny.
 Pou\u017Eij jin\xE9 vstupn\xED parametry tak, aby v\xFDsledek byl jin\xE1 hodnota, kter\xE1 je mo\u017En\xE1 a pravd\u011Bpodobn\xE1 v re\xE1ln\xE9m sv\u011Bt\u011B.
-Pokud p\u016Fvodn\xED zad\xE1n\xED obsahuje vizualizaci situace, tak vygeneruj tak\xE9 vizualizaci pro novou dom\xE9nu.
 Vygeneruj 3 r\u016Fzn\xE9 \xFAlohy v \u010De\u0161tin\u011B. Nevracej zp\u016Fsob \u0159e\u0161en\xED, kroky \u0159e\u0161en\xED.
+`;
+  const generalization = `${alternateMessage}
+M\u016F\u017Ee\u0161 vymyslet nov\xE9 \xFAlohu v jin\xE9 dom\xE9n\u011B, kter\xE1 p\u016Fjde \u0159e\u0161it stejn\xFDm postupem \u0159e\u0161en\xED 
+- zm\u011Bnit agent - identifikov\xE1ny pomoc\xED markdown bold **
+- zm\u011Bna entit - identifikace pomoc\xED markdown bold __
+- zm\u011Bnu parametry \xFAlohy - identifikov\xE1ny pomoc\xED italic *
+
+Nad t\u011Bmito \xFAlohami prov\xE9st systematickou generalizaci v\u0161ech prvk\u016F (agenty, entity a \u010D\xEDseln\xE9 \xFAdaje),kter\xE9 jsou v t\u011Bchto \xFAloh\xE1ch spole\u010Dn\xE9.
+Vyto\u0159it abstraktn\xED pojmenov\xE1n\xED a strukturu, kter\xE1 m\u016F\u017Ee slou\u017Eit jako univerz\xE1ln\xED r\xE1mec pro tvorbu dal\u0161\xEDch \xFAloh podobn\xE9ho typu.
+Nevracej konkr\xE9tn\xED \xFAlohy, ale jen generalizovan\xFD r\xE1mec.
+`;
+  const generateSubQuizes = `${alternateMessage}
+M\u016F\u017Ee\u0161 vytvo\u0159it pracovn\xED list, kter\xFD by obsahoval vhodn\xE9 pod\xFAlohy, kter\xE9 jsou vhodn\xE9 pro \u0159e\u0161en\xED st\xE1vaj\xEDc\xED \xFAlohy.
+`;
+  const generateImportantPoints = `${alternateMessage}
+M\u016F\u017Ee\u0161 analyzovat \xFAlohu a \u0159e\u0161en\xED \xFAlohy a naj\xEDt hlavn\xED my\u0161lenku, kter\xE1 vede k \u0159e\u0161en\xED st\xE1vaj\xEDc\xED \xFAlohy.
+Uve\u010F 1 a\u017E maxim\xE1ln\u011B 3 nejd\u016Fle\u017Eit\u011Bj\u0161\xED my\u0161lenky, triky d\u016Fle\u017Eit\xE9 k pochopen\xED \u0159e\u0161en\xED \xFAlohy.
+`;
+  const vizualizeImportantPoints = `${alternateMessage}
+M\u016F\u017Ee\u0161 analyzovat \xFAlohu a \u0159e\u0161en\xED \xFAlohy a naj\xEDt hlavn\xED my\u0161lenku, kter\xE1 vede k \u0159e\u0161en\xED st\xE1vaj\xEDc\xED \xFAlohy.
+Dle slo\u017Eitosti \xFAlohy vymysli 1 a\u017E maxim\xE1ln\u011B 3 nejd\u016Fle\u017Eit\u011Bj\u0161\xED my\u0161lenky, triky d\u016Fle\u017Eit\xE9 k pochopen\xED \u0159e\u0161en\xED \xFAlohy.
+Vizualizuj vhodn\u011B tyto my\u0161lenky do obr\xE1zku pomoc\xED infografiky s vhodn\xFDmi grafick\xFDmi prvky.
 `;
   return {
     explainSolution,
     vizualizeSolution,
-    generateMoreQuizes
+    generateMoreQuizes,
+    generateSubQuizes,
+    generalization,
+    generateImportantPoints,
+    vizualizeImportantPoints
   };
 }
 export {
@@ -5616,6 +5702,8 @@ export {
   isPredicate,
   jsonToMarkdownChat,
   jsonToMarkdownTree,
+  jsonToMermaidMindMap,
+  jsonToMermaidMindMapEx,
   last,
   lastQuantity,
   to,
