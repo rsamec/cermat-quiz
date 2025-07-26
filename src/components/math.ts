@@ -2041,7 +2041,7 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
           : last.kind === "product"
             ? productRule(arr, last)
             : ["sum", "accumulate", "slide"].includes(last.kind)
-              ? sumRule(arr, last as SumCombine | Accumulate | Slid)
+              ? sumRule(arr, last as SumCombine | Accumulate | Slide)
               : last.kind === "ratios"
                 ? toRatios(arr, last)
                 : null
