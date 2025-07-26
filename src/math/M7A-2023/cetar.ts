@@ -1,4 +1,4 @@
-import { cont, rate, sum } from "../../components/math";
+import { cont, rate, combine } from "../../components/math";
 import { axiomInput, deduce, last } from "../../utils/deduce-utils";
 import type { DeduceTemplate } from "../../utils/deduce-utils";
 
@@ -25,8 +25,8 @@ export default function build({ input }: {
   const vojinPerCetar = axiomInput(rate(agent, input.vojinPerCetar, vojinLabel, cetarLabel), 4);
 
 
-  const vydaneRozkazy = sum("vydané rozkazy", [kapitanLabel, porucikLabel, cetarLabel], entity, entity);
-  const dostaneRozkazy = sum("přijaté rozkazy", [porucikLabel, cetarLabel, vojinLabel], entity, entity);
+  const vydaneRozkazy = combine("vydané rozkazy", [kapitanLabel, porucikLabel, cetarLabel], entity, entity);
+  const dostaneRozkazy = combine("přijaté rozkazy", [porucikLabel, cetarLabel, vojinLabel], entity, entity);
 
   const pocetCetaru = deduce(
     porucik,

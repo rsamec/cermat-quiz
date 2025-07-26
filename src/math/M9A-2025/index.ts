@@ -1,4 +1,4 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, product, quota, rate, ratio, ratios, sum, ctorPercent, percent, compAngle, compPercent, ctorLinearEquation, ctorOption, ctorExpressionOption } from "../../components/math";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, product, quota, rate, ratio, ratios, combine, ctorPercent, percent, compAngle, compPercent, ctorLinearEquation, ctorOption, ctorExpressionOption } from "../../components/math";
 import { deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default {
@@ -32,7 +32,7 @@ function porovnani() {
       deduce(
         zadaneCislo1,
         zadaneCislo2,
-        sum("součet", [], entity, entity)
+        combine("součet", [], entity, entity)
       ),
       deduce(
         zadaneCislo1,
@@ -81,7 +81,7 @@ function pozemek() {
             percent("pozemek", "rybník", 18),
             last(obsahPozemek)
           ),
-          sum("dum a rybnik", [], { entity: entity2d, unit: unit2d }, { entity: entity2d, unit: unit2d })
+          combine("dum a rybnik", [], { entity: entity2d, unit: unit2d }, { entity: entity2d, unit: unit2d })
         ),
         ctorDifference("volný pozemkek")
       )
@@ -152,7 +152,7 @@ function uhly() {
           deduce(
             deduce(angle2, compAngle(angleLabel, "bod R v pravoúhlém trojúhelníku", "supplementary")),
             cont("pravý úhel", 90, entity, unit),
-            sum("součet dvou úhlů", [], { entity, unit }, { entity, unit })
+            combine("součet dvou úhlů", [], { entity, unit }, { entity, unit })
           ),
           ctorDifference("vrchol v pravoúhlém trojúhelníku")
         ),
@@ -256,7 +256,7 @@ function bazen() {
           ),
           ratio(zonaLabel, dnoLabel, 1 / 2)
         ),
-        sum("bazén celkem", [], { entity: entity3d, unit: unit3d }, { entity: entity3d, unit: unit3d })
+        combine("bazén celkem", [], { entity: entity3d, unit: unit3d }, { entity: entity3d, unit: unit3d })
       ),
       ctorOption("A", 500)
     )
@@ -277,7 +277,7 @@ function pelhrimov() {
             deduce(
               ratio("tábor nabízeno", "přihlášeno 1. termín", 6 / 5),
               percent("tábor nabízeno", "přihlášeno 2. termín", 130),
-              sum("tábor přihlášeno", [], "", "")
+              combine("tábor přihlášeno", [], "", "")
             ),
             prihlasek
           ),
@@ -328,7 +328,7 @@ function znamkyPrumer() {
     deduce(
       pocetJednicek,
       pocetDvojek,
-      sum("celkem", [], entityPocet, entityPocet)
+      combine("celkem", [], entityPocet, entityPocet)
     ),
     ctorDifference("")
   )
@@ -341,7 +341,7 @@ function znamkyPrumer() {
             pocetJednicek,
             deduce(pocetDvojek, cont("dvojka", 2, entity), product("dvojka", [], entity, entity)),
             deduce(pocetTrojekk, cont("trojka", 3, entity), product("trojka", [], entity, entity)),
-            sum("celkem", [], entity, entity)
+            combine("celkem", [], entity, entity)
           ),
           pocetCelkem,
           ctor("rate")
@@ -385,7 +385,7 @@ function soutez() {
               nthPart(viceZenLabel),
             ),
             rate(viceZenLabel, 2, entity, entityBase)),
-          sum(women, [], entity, entity)
+          combine(women, [], entity, entity)
         ),
         deduce(druzstva, rate("celkem", 3, entity, entityBase)),
         ctorPercent()
@@ -413,7 +413,7 @@ function atletika() {
           ostep,
           last(skok),
           last(beh),
-          sum("celkem", [], entity, entity)
+          combine("celkem", [], entity, entity)
         ),
         ctorPercent()
       ),
@@ -449,7 +449,7 @@ function obrazce() {
           ctor("quota")
         ),
 
-        sum("obrazec č.6", [], entityPocet, entityPocet)
+        combine("obrazec č.6", [], entityPocet, entityPocet)
       )
     }
 

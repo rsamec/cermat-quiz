@@ -166,6 +166,15 @@ export type PartWholeRatio = {
   ratio: Ratio
   asPercent?: boolean
 }
+
+export type Accumulate = {
+  kind: 'accumulate'
+  wholeAgent: string
+}
+export type Slide = {
+  kind: 'slide',
+  wholeAgent: string
+}
 export type SumCombine = Combine & {
   kind: 'sum'
 }
@@ -283,17 +292,24 @@ export type Question = {
 
 export type ContainerEval = Omit<Container, 'quantity'>
 export type EntityDef = string | EntityBase
-export type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | SumCombine | ProductCombine | PartWholeRatio | PartToPartRatio | ComparisonDiff |
+export type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | Accumulate | Slide | SumCombine | ProductCombine | PartWholeRatio | PartToPartRatio | ComparisonDiff |
   CommonSense | GCD | LCD | CompareAndPartEqual | Sequence | NthRule | Quota | Scale | Complement | NthPart | NthPartFactor | Transfer | Proportion | ConvertUnit |
   AngleComparison | Delta | Difference | Phytagoras | InvertScale | LinearEquation | EvalExpr<ContainerEval> | Option | Round
 
-export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | 'quota' | "comp-diff" | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'scale' | 'invert-scale' | 'complement' | 'delta') {
+export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | 'quota' | "comp-diff" | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'scale' | 'invert-scale' | 'complement' | 'delta' | 'accumulate' | 'slide') {
   return { kind } as Predicate
 }
 
 export function ctorUnit(unit: Unit): ConvertUnit {
   return { kind: "unit", unit }
 }
+export function ctorAccumulate(wholeAgent: string): Accumulate {
+  return { kind: "accumulate", wholeAgent }
+}
+export function ctorSlide(wholeAgent: string): Slide {
+  return { kind: "slide", wholeAgent }
+}
+
 export function ctorRound(fractionDigits: number = 0): Round {
   return { kind: "round", fractionDigits }
 }
@@ -408,7 +424,8 @@ export function percent(whole: AgentMatcher, part: AgentMatcher, percent: number
 export function ratios(whole: AgentMatcher, parts: AgentMatcher[], ratios: number[]): PartToPartRatio {
   return { kind: 'ratios', parts, whole, ratios };
 }
-export function sum(wholeAgent: string, partAgents: string[], wholeEntity: EntityDef, partEntity: EntityDef): SumCombine {
+
+export function combine(wholeAgent: string, partAgents: string[], wholeEntity: EntityDef, partEntity: EntityDef): SumCombine {
   return {
     kind: 'sum',
     wholeAgent,
@@ -1197,7 +1214,7 @@ function diffRule(a: Container, b: ComparisonDiff): Question {
   }
 }
 
-function sumRuleEx(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine): Container | PartWholeRatio | Rate {
+function sumRuleEx(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine | Accumulate | Slide): Container | PartWholeRatio | Rate {
   if (items.every(d => isRatioPredicate(d))) {
     const wholes = items.map(d => (d as any).whole);
     if (wholes.filter(unique).length == wholes.length) {
@@ -1215,12 +1232,18 @@ function sumRuleEx(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine
       return { kind: 'rate', agent: b.wholeAgent, quantity, entity, entityBase, baseQuantity: 1 }
     }
     else {
-      return { kind: 'cont', agent: b.wholeAgent, quantity, entity: b.wholeEntity.entity, unit: b.wholeEntity.unit }
+      if (b.kind !== "sum") {
+        const itemsEntities = items.map(d => d.entity);
+        if (itemsEntities.filter(unique).length !== 1) {
+          throw `All predicates should have the same entity ${itemsEntities.join("")}.`
+        }
+      }
+      return { kind: 'cont', agent: b.wholeAgent, quantity, entity: b.kind == "sum" ? b.wholeEntity.entity : items[0].entity, unit: b.kind == "sum" ? b.wholeEntity.unit : items[0].unit }
     }
   }
 
 }
-function sumRule(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine): Question {
+function sumRule(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine | Accumulate | Slide): Question {
   const result = sumRuleEx(items, b)
   const isQuantity = isQuantityPredicate(result);
   return {
@@ -1791,7 +1814,7 @@ function partToPartRuleEx(a: Container, partToPartRatio: PartToPartRatio, nth?: 
 
 
   const partsSum = areNumbers(partToPartRatio.ratios) ? partToPartRatio.ratios.reduce((out, d) => out += d, 0) : partToPartRatio.ratios.join(" + ");
-  const matchedWhole = matchAgent(partToPartRatio.whole, a);  
+  const matchedWhole = matchAgent(partToPartRatio.whole, a);
   return {
     kind: 'cont',
     agent: (matchedWhole || nth != null) && targetPartIndex != -1
@@ -2006,7 +2029,7 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   const [a, b, ...rest] = args;
   const last = rest?.length > 0 ? rest[rest.length - 1] : null;
 
-  if (last?.kind === "sum" || last?.kind === "product" || last?.kind === "lcd" || last?.kind === "gcd" || (last?.kind === "sequence" || (last?.kind === "ratios") && args.length > 3)) {
+  if (["sum", "accumulate", "slide", "product", "gcd", "lcd", "sequence"].includes(last?.kind) || ((last?.kind === "ratios") && args.length > 3)) {
     const arr = [a, b].concat(rest.slice(0, -1)) as Container[];
 
     return last.kind === "sequence"
@@ -2017,8 +2040,8 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
           ? lcdRule(arr, last)
           : last.kind === "product"
             ? productRule(arr, last)
-            : last.kind === "sum"
-              ? sumRule(arr, last)
+            : ["sum", "accumulate", "slide"].includes(last.kind)
+              ? sumRule(arr, last as SumCombine | Accumulate | Slid)
               : last.kind === "ratios"
                 ? toRatios(arr, last)
                 : null

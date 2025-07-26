@@ -1,4 +1,4 @@
-import { commonSense, cont, ctorOption, primeFactorization, quota, ratio, sum } from "../../components/math";
+import { commonSense, cont, ctorOption, primeFactorization, quota, ratio, combine } from "../../components/math";
 import { axiomInput, connectTo, deduce, deduceLbl, last, lastQuantity, to } from "../../utils/deduce-utils";
 import { volume } from "../shapes/rectangle";
 
@@ -32,7 +32,7 @@ export function domecek({ input }: { input: InputParameters }) {
     deduce(
       rectangleVolume,
       deduce({ ...last(rectangleVolume), ...deduceLbl(3) }, ratio("objem přízemí", "objem střecha", 1 / 2)),
-      sum("objem domeček", [], entity3d, entity)
+      combine("objem domeček", [], entity3d, entity)
     ),
     ctorOption("B", 48)
   )

@@ -1,4 +1,4 @@
-import { commonSense, comp, compDiff, compRatio, compRelative, cont, ctor, ctorOption, product, ratio, sum } from "../../components/math";
+import { commonSense, comp, compDiff, compRatio, compRelative, cont, ctor, ctorOption, product, ratio, combine } from "../../components/math";
 import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
 
 export default function example({ input }: {

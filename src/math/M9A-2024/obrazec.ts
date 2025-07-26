@@ -1,4 +1,4 @@
-import { commonSense, compRatio, cont, ctorOption, product, ratios, sum } from "../../components/math";
+import { commonSense, compRatio, cont, ctorOption, product, ratios, combine } from "../../components/math";
 import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
 
 export default function example({ input }: {
@@ -37,7 +37,7 @@ export default function example({ input }: {
       ),
       deduce(
         zakladna, zakladnaCount, product("obvod obrazce (zakladny)", ["délka základny", "počet stran"], entity, entity)),
-      sum("obvod obrazce", [], entity, entity)
+      combine("obvod obrazce", [], entity, entity)
     ),
     ctorOption("C", 66)
   )

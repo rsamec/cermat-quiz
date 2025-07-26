@@ -1,4 +1,4 @@
-import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, product, pythagoras, rate, ratio, ratios, sum, ctorOption, ctorBooleanOption } from "../../components/math";
+import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, product, pythagoras, rate, ratio, ratios, combine, ctorOption, ctorBooleanOption } from "../../components/math";
 import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 import trojuhelnik from "./trojuhelnik";
@@ -155,7 +155,7 @@ export function povrchValce() {
         podstava,
         last(podstava),
         deduce(last(podstava), compRatio("plášť", "podstava", 3)),
-        sum("válec", ["dolní podstava", "horní podstava", "plášť"], entity2d, entity2d)
+        combine("válec", ["dolní podstava", "horní podstava", "plášť"], entity2d, entity2d)
       ),
       ctorOption("D", 1570)
     )
@@ -202,11 +202,11 @@ function krouzkyATridy() {
         roboticky8,
         deduce(
           deduce(
-            deduce(hudebni8, sachovy8, roboticky8, sum("8.", [], entityBase, entityBase)),
+            deduce(hudebni8, sachovy8, roboticky8, combine("8.", [], entityBase, entityBase)),
             ratios("celkem", ["8.", "9."], [2, 3]),
             nthPart("9.")
           ),
-          deduce(hudebni9, sachovy9, sum("9.", [], entityBase, entityBase)),
+          deduce(hudebni9, sachovy9, combine("9.", [], entityBase, entityBase)),
           ctorDifference(`${robotickyLabel} 9.`)
         ),
         ctorRatios(robotickyLabel)
@@ -380,7 +380,7 @@ export function lomanaCaraACFHA() {
             pythagoras("CF", ["BF", "BC"])
           ),
           ac,
-          sum("úhlopříčka na podlaze (AC) + úhlopříčka na stěně (CF)", ["AC", "CF"], { entity, unit }, { entity, unit })
+          combine("úhlopříčka na podlaze (AC) + úhlopříčka na stěně (CF)", ["AC", "CF"], { entity, unit }, { entity, unit })
         ),
         cont("stejně dlouhá úhlopříčka na stropě (FH) i stejně dlouhá úhlopříčka na druhé stěně (HA)", 2, ""),
         product("lomené čáry ACFHA", [], { entity, unit }, { entity, unit })
@@ -419,7 +419,7 @@ export function triangleExample() {
             unit: unit2D
           }
         }),
-        sum("obsah ABCD", [], { entity, unit: unit2D }, { entity, unit })
+        combine("obsah ABCD", [], { entity, unit: unit2D }, { entity, unit })
       )
     }
   }

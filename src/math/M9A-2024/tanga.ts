@@ -1,5 +1,5 @@
 
-import { commonSense, compRatio, cont, ctorRound, product, sum} from "../../components/math";
+import { commonSense, compRatio, cont, ctorRound, product, combine} from "../../components/math";
 import { axiomInput, deduce, last, lastQuantity, to } from "../../utils/deduce-utils";
 import { baseCircumference, surfaceBaseArea } from "../shapes/cylinder"
 
@@ -63,7 +63,7 @@ export default function build({ input }: {
       obvodCvrtkruh,
       last(obvodCvrtkruh),
       width,
-      sum(`obvod šedého obrazce`, [circelPartLabel, circelPartLabel, 'šířka'], entity, entity)
+      combine(`obvod šedého obrazce`, [circelPartLabel, circelPartLabel, 'šířka'], entity, entity)
     ),
     ctorRound()
   )

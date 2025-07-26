@@ -1,5 +1,5 @@
 
-import { cont, type Container, product, sum } from "../../components/math.js";
+import { cont, type Container, product, combine } from "../../components/math.js";
 import { axiomInput, deduce, highlight } from "../../utils/deduce-utils.js";
 
 
@@ -93,7 +93,7 @@ export function examples({ input }: {
         ),
         protilehlaStana,
         product("přední a zadní stěna", [], entity2D, entity)),
-      sum("obsah pláště", [], entity2D, entity2D)
+      combine("obsah pláště", [], entity2D, entity2D)
     )
 
 

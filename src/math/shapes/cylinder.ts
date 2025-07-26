@@ -1,5 +1,5 @@
 
-import { cont, type Container, pi, piNumber, product, sum } from "../../components/math.js";
+import { cont, type Container, pi, piNumber, product, combine } from "../../components/math.js";
 import { axiomInput, connectTo, deduce, last, type TreeNode } from "../../utils/deduce-utils.js";
 
 
@@ -103,7 +103,7 @@ export function cylinder(
       height,
       product("obsah bočního pláště", ["obvod podstavy", heightLabel], entity2D, entity)
     ),
-    sum("obsah pláště", [], entity2D, entity2D)
+    combine("obsah pláště", [], entity2D, entity2D)
   )
 
   return {

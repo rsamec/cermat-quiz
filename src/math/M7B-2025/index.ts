@@ -1,4 +1,4 @@
-import { commonSense, compRelative, cont, ctor, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, gcd, nthPart, percent, product, proportion, rate, ratio, ratios, sum } from "../../components/math"
+import { commonSense, compRelative, cont, ctor, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, gcd, nthPart, percent, product, proportion, rate, ratio, ratios, combine } from "../../components/math"
 import { deduce, last, to, toCont, type TreeNode } from "../../utils/deduce-utils"
 
 export default {
@@ -176,7 +176,7 @@ function zaciSkupiny() {
       cont("skupina dvojic", 6, entityDvojic)
     ),
     cont("zbývající žáci", 1, entityDvojic),
-    sum("skupina dvojic", [], entityDvojic, entityDvojic)
+    combine("skupina dvojic", [], entityDvojic, entityDvojic)
   )
 
 
@@ -200,7 +200,7 @@ function zaciSkupiny() {
           ),
           rate("skupina", 3, entity, entityTrojic)
         ),
-        sum("celkem", [entityDvojic, entityTrojic], entity, entity)
+        combine("celkem", [entityDvojic, entityTrojic], entity, entity)
       )
     }
 
@@ -303,7 +303,7 @@ function zahradnictvi() {
               ratio(celkemLabel, kopretinyLabel, 1 / 4)
             ),
             hvozdiky,
-            sum("dohromady", [kopretinyLabel, hvozdikyLabel], entity, entity)
+            combine("dohromady", [kopretinyLabel, hvozdikyLabel], entity, entity)
           ),
           ctorDifference(astraLabel)
         ),
@@ -338,7 +338,7 @@ function predstaveni() {
         deduce(
           last(deti),
           dospely,
-          sum("celkem", [detiLabel, dospeliLabel], entity, entity)
+          combine("celkem", [detiLabel, dospeliLabel], entity, entity)
         ),
         ctorPercent()
       ),

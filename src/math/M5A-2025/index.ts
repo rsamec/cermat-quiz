@@ -1,4 +1,4 @@
-import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, product, rate, ratio, ratios, sum } from "../../components/math";
+import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, product, rate, ratio, ratios, combine } from "../../components/math";
 import { deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default {
@@ -78,7 +78,7 @@ function kulicka() {
       deductionTree: deduce(
         smallPocet,
         last(bigPocet),
-        sum("celkem", [], entityBase, entityBase)
+        combine("celkem", [], entityBase, entityBase)
       )
     },
     hmotnost: {
@@ -277,7 +277,7 @@ export function poutnik() {
     deduce(
       kouzelnik,
       poutnik,
-      sum("celkem", [], entity, entity)
+      combine("celkem", [], entity, entity)
     ),
     ratiosKvP
   )
@@ -286,7 +286,7 @@ export function poutnik() {
     deduce(
       last(kouzelnik1),
       cont("poutník", lastQuantity(kouzelnik1), entity),
-      sum("celkem", [], entity, entity)
+      combine("celkem", [], entity, entity)
     ),
     ratiosKvP
   )
@@ -305,7 +305,7 @@ export function poutnik() {
           deduce(
             last(kouzelnik1),
             cont("poutník", lastQuantity(kouzelnik1), entity),
-            sum("celkem", [], entity, entity)
+            combine("celkem", [], entity, entity)
           ),
           last(ratiosKvP),
           nthPart("poutník")
@@ -322,7 +322,7 @@ export function poutnik() {
             deduce(
               last(kouzelnik2),
               cont("poutník", lastQuantity(kouzelnik2), entity),
-              sum("celkem", [], entity, entity)
+              combine("celkem", [], entity, entity)
             ),
             last(ratiosKvP),
             nthPart("poutník")

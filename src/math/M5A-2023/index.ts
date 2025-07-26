@@ -1,4 +1,4 @@
-import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, lcd, primeFactorization, product, rate, sum } from "../../components/math";
+import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, lcd, primeFactorization, product, rate, combine } from "../../components/math";
 import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
@@ -100,7 +100,7 @@ function klubSEN() {
       sportovni,
       divadelni,
       roboticky,
-      sum("celkem učastníků", [], entity, entity)
+      combine("celkem učastníků", [], entity, entity)
     ),
     deduce(
       deduce(
@@ -111,7 +111,7 @@ function klubSEN() {
         twoRate,
         two
       ),
-      sum("navštěvuje více kroužků", [], entity, entity)
+      combine("navštěvuje více kroužků", [], entity, entity)
     ),
     ctor('comp-diff')
   );
@@ -124,7 +124,7 @@ function klubSEN() {
         last(one),
         two,
         three,
-        sum("počet dětí", [], entity, entity)
+        combine("počet dětí", [], entity, entity)
       )
     }
   }
@@ -196,7 +196,7 @@ function desitiuhelnik() {
             cont("počet", 2, ""),
             product("levá a pravá strana", [], entity, entity)
           ),
-          sum("obvod", [], entity, entity)
+          combine("obvod", [], entity, entity)
         ),
         ctorBooleanOption(56)
       )
@@ -211,7 +211,7 @@ function desitiuhelnik() {
             last(squareSize),
             ctor('comp-diff')
           ),
-          sum("obvod", [], entity, entity)
+          combine("obvod", [], entity, entity)
         ),
         ctorBooleanOption(50, "greater")
       )

@@ -6066,7 +6066,13 @@ function sumRuleEx(items, b) {
       const { entity, entityBase } = items[0];
       return { kind: "rate", agent: b.wholeAgent, quantity, entity, entityBase, baseQuantity: 1 };
     } else {
-      return { kind: "cont", agent: b.wholeAgent, quantity, entity: b.wholeEntity.entity, unit: b.wholeEntity.unit };
+      if (b.kind !== "sum") {
+        const itemsEntities = items.map((d) => d.entity);
+        if (itemsEntities.filter(unique).length !== 1) {
+          throw `All predicates should have the same entity ${itemsEntities.join("")}.`;
+        }
+      }
+      return { kind: "cont", agent: b.wholeAgent, quantity, entity: b.kind == "sum" ? b.wholeEntity.entity : items[0].entity, unit: b.kind == "sum" ? b.wholeEntity.unit : items[0].unit };
     }
   }
 }
@@ -6720,9 +6726,9 @@ function inferenceRuleWithQuestion(...args) {
 function inferenceRuleEx(...args) {
   const [a, b, ...rest] = args;
   const last = rest?.length > 0 ? rest[rest.length - 1] : null;
-  if (last?.kind === "sum" || last?.kind === "product" || last?.kind === "lcd" || last?.kind === "gcd" || (last?.kind === "sequence" || last?.kind === "ratios" && args.length > 3)) {
+  if (["sum", "accumulate", "slide", "product", "gcd", "lcd", "sequence"].includes(last?.kind) || last?.kind === "ratios" && args.length > 3) {
     const arr = [a, b].concat(rest.slice(0, -1));
-    return last.kind === "sequence" ? sequenceRule(arr) : last.kind === "gcd" ? gcdRule(arr, last) : last.kind === "lcd" ? lcdRule(arr, last) : last.kind === "product" ? productRule(arr, last) : last.kind === "sum" ? sumRule(arr, last) : last.kind === "ratios" ? toRatios(arr, last) : null;
+    return last.kind === "sequence" ? sequenceRule(arr) : last.kind === "gcd" ? gcdRule(arr, last) : last.kind === "lcd" ? lcdRule(arr, last) : last.kind === "product" ? productRule(arr, last) : ["sum", "accumulate", "slide"].includes(last.kind) ? sumRule(arr, last) : last.kind === "ratios" ? toRatios(arr, last) : null;
   } else if (a.kind === "eval-option" || b.kind === "eval-option") {
     return a.kind === "eval-option" ? evalToOption(b, a) : b.kind === "eval-option" ? evalToOption(a, b) : null;
   } else if (a.kind === "cont" && b.kind == "cont") {

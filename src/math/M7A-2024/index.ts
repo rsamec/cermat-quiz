@@ -1,4 +1,4 @@
-import { compAngle, compPercent, cont, ctor, ctorOption, ctorUnit, nthPart, percent, ratios, sum } from "../../components/math";
+import { compAngle, compPercent, cont, ctor, ctorOption, ctorUnit, nthPart, percent, ratios, combine } from "../../components/math";
 import { axiomInput, deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 import { porovnatAaB, najitMensiCislo } from "./1";
 import { porovnatObsahObdelnikACtverec } from "./13";
@@ -116,7 +116,7 @@ function krouzky() {
       basketabal,
       tanecni,
       lezeckaStena,
-      sum(`zadané údaje`, [], entityPercent, entityPercent)
+      combine(`zadané údaje`, [], entityPercent, entityPercent)
     ),
     ctor('comp-diff')
   );
@@ -177,7 +177,7 @@ function angle() {
             deduce(
               doubleBeta,
               cont(`${triangle} u vrcholu B`, 1, betaEntity),
-              sum("beta", [], betaEntity, betaEntity)
+              combine("beta", [], betaEntity, betaEntity)
             ),
             ctor('rate')),
           last(doubleBeta)

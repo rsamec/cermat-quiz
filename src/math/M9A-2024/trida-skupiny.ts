@@ -1,5 +1,5 @@
 
-import { cont, compDiff, sum, commonSense } from "../../components/math";
+import { cont, compDiff, combine, commonSense } from "../../components/math";
 import { axiomInput, deduce, to } from "../../utils/deduce-utils";
 
 
@@ -31,7 +31,7 @@ export default function build({ input }: {
       chlapciDiff
     ),
     de,
-    sum(skupinaDE, [], entity, entity)
+    combine(skupinaDE, [], entity, entity)
   )
 
   const dTree1 =

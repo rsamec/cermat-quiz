@@ -1,4 +1,4 @@
-import { commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, ctorComplement, ctorOption, percent, product, rate, ratios, sum } from "../../components/math";
+import { commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, ctorComplement, ctorOption, percent, product, rate, ratios, combine } from "../../components/math";
 import { axiomInput, deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
@@ -71,7 +71,7 @@ function example_4_1() {
         deduce(
           cont("volejbal", 28, entity),
           cont("fotbal", 16, entity),
-          sum("fotbal a volejbal", [], entity, entity)
+          combine("fotbal a volejbal", [], entity, entity)
         ),
         ctor('comp-diff')
       ),
@@ -111,7 +111,7 @@ function example_13() {
       deduce(pocetDvou, rate(dvou, 2, entityPrice, entity)),
       deduce(last(pocetPeti), rate(peti, 5, entityPrice, entity)),
       deduce(pocetDeseti, rate(deseti, 10, entityPrice, entity)),
-      sum("hodnota", [], entityPrice, entityPrice)
+      combine("hodnota", [], entityPrice, entityPrice)
     )
   }
 }
@@ -135,7 +135,7 @@ function example_11() {
                 axiomInput(cont(inputAngleLabel, 70, entity), 1),
                 compAngle(inputAngleLabel, `${triangle} u vrcholu A`, "supplementary")
               ),
-              sum("dvojice úhlů v trojúhelníku", [], entity, entity)),
+              combine("dvojice úhlů v trojúhelníku", [], entity, entity)),
             ctor('comp-diff'))
           , { agent: `${triangle} u vrcholu D` }),
         compAngle(`${triangle} u vrcholu D`, "φ", 'supplementary')
@@ -195,7 +195,7 @@ function example_12() {
           cont("počet šedých trojúhleníků", 3, ""),
           product("obsah tří šedých trojúhelníku", [], entity2d, entity2d)
         ),
-        sum("obsah sedmiúhelníku", [], entity2d, entity2d)
+        combine("obsah sedmiúhelníku", [], entity2d, entity2d)
       ),
       ctorOption("B", 31)
     )
@@ -258,7 +258,7 @@ function example_15_3() {
             axiomInput(percent("zbývající dospělý", "přišlo 2.den", 70), 3)
           ),
           den1,
-          sum("přišlo celkem", [], entity, entity)
+          combine("přišlo celkem", [], entity, entity)
         ),
         ctor('comp-diff')
       ),

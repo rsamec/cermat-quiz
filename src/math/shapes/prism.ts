@@ -1,5 +1,5 @@
 
-import { compRatio, cont, product, sum } from "../../components/math.js";
+import { compRatio, cont, product, combine } from "../../components/math.js";
 import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 
@@ -51,7 +51,7 @@ export function examples({ input }: {
     a,
     b,
     c,
-    sum("obvod podstavy", ["a", "b", "c"], entity, entity)
+    combine("obvod podstavy", ["a", "b", "c"], entity, entity)
   )
 
   const protilehlaStana = cont("počet stěn", 2, "");
@@ -66,7 +66,7 @@ export function examples({ input }: {
       height,
       product("obsah bočního pláště", ["obvod podstavy", heightLabel], entity2D, entity)
     ),
-    sum("obsah pláště", [], entity2D, entity2D)
+    combine("obsah pláště", [], entity2D, entity2D)
   )
 
   const templateBase = highlight => highlight

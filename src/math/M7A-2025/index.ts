@@ -1,4 +1,4 @@
-import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, percent, rate, ratio, ratios, sum, transfer } from "../../components/math"
+import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, percent, rate, ratio, ratios, combine, transfer } from "../../components/math"
 import { deduce, last, to } from "../../utils/deduce-utils"
 
 export default {
@@ -42,7 +42,7 @@ function ceremonial() {
             last(dobaCeremonial),
             ratio(ceremonial, promitani, 1 / 5)
           ),
-          sum("konec promitani", [], { entity, unit }, { entity, unit })
+          combine("konec promitani", [], { entity, unit }, { entity, unit })
         ),
         ctorDifference("rozdil")
       )
@@ -124,7 +124,7 @@ function asistencniPes() {
         last(bara),
         last(cyril),
         adam,
-        sum("dohromady", [], entity, entity)
+        combine("dohromady", [], entity, entity)
       )
     }
 

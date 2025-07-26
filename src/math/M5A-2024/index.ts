@@ -1,4 +1,4 @@
-import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, primeFactorization, rate, ratio, sum, transfer } from "../../components/math";
+import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, primeFactorization, rate, ratio, combine, transfer } from "../../components/math";
 import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
 import { cislaNaOse } from "../cislaNaOse";
 const dveCislaNaOseParams = {
@@ -84,8 +84,8 @@ function lukasAccount() {
   const newState = cont("účet nově", 470, entity);
 
 
-  const moneyIn = deduce(grandMotherIn, pocketMoneyIn, sum("přijato", [], entity, entity));
-  const moneyOut = deduce(bookCostOut, fatherGiftOut, sum("vydáno", [], entity, entity));
+  const moneyIn = deduce(grandMotherIn, pocketMoneyIn, combine("přijato", [], entity, entity));
+  const moneyOut = deduce(bookCostOut, fatherGiftOut, combine("vydáno", [], entity, entity));
   const balance = deduce(moneyIn, moneyOut, ctorDifference("změna na účtě"));
   return {
     deductionTree: deduce(
@@ -125,7 +125,7 @@ function timeUnitSum() {
       deduce(
         deduce(cont("hodin", 1, entity, "h"), ctorUnit(minutes)),
         cont("minut", 20, entity, minutes),
-        sum("celkem", [], { entity, unit: minutes }, { entity, unit: minutes })
+        combine("celkem", [], { entity, unit: minutes }, { entity, unit: minutes })
       ),
       ctorUnit("s")
     )
@@ -165,8 +165,8 @@ export function dveCislaNaOse({ input }: { input: { mensiCislo: number, vetsiCis
   const usekRate = cislaNaOse({ mensi, vetsi, pocetUseku })
 
 
-  const dd1 = deduce(deduce(positionX, usekRate), mensi, sum("pozice X", [], entityLength, entityLength));
-  const dd2 = deduce(deduce(positionY, last(usekRate)), mensi, sum("pozice Y", [], entityLength, entityLength));
+  const dd1 = deduce(deduce(positionX, usekRate), mensi, combine("pozice X", [], entityLength, entityLength));
+  const dd2 = deduce(deduce(positionY, last(usekRate)), mensi, combine("pozice Y", [], entityLength, entityLength));
 
 
 
@@ -186,7 +186,7 @@ export function novorocniPrani() {
         deduce(
           deduce(cont("Tereza", 14, entity), cont("Tereza", 5, entityBase), ctor('rate')),
           deduce(cont("Nikola", 10, entity), cont("Nikola", 5, entityBase), ctor('rate')),
-          sum("společně", [], entity, entity)
+          combine("společně", [], entity, entity)
         )
       ),
       ctorOption("B", 25)
@@ -225,9 +225,9 @@ export function carTrip() {
     konecCesty: {
       deductionTree: deduce(
         deduce(
-          deduce(last(pocatek), dobaCesta, sum("čas odjezdu", [], entity, entity)),
+          deduce(last(pocatek), dobaCesta, combine("čas odjezdu", [], entity, entity)),
           cont("posun odjezdu o", 6, entity),
-          sum("posunutý čas příjezdu", [], entity, entity),
+          combine("posunutý čas příjezdu", [], entity, entity),
         ),
         ctorOption("A", 30)
       )
@@ -293,7 +293,7 @@ export function vyvojObyvatel() {
           cont("2020", -10, entity),
           cont("2021", 10, entity),
           cont("2022", 5, entity),
-          sum("změna obyvatel", ["2019", "2020", "2021", "2022"], entity, entity)
+          combine("změna obyvatel", ["2019", "2020", "2021", "2022"], entity, entity)
         ),
         ctorOption("B", 0)
       )

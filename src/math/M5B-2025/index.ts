@@ -1,4 +1,4 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorOption, ctorRatios, nthPart, product, rate, ratio, ratios, sum } from "../../components/math";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorOption, ctorRatios, nthPart, product, rate, ratio, ratios, combine } from "../../components/math";
 import { deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default {
@@ -100,7 +100,7 @@ function koralky() {
     skupina3,
     skupina2,
     skupina1,
-    sum("celkem", [], entity, entity)
+    combine("celkem", [], entity, entity)
   )
   const name = 'skupina barev (černé a bílý)';
 
@@ -166,7 +166,7 @@ function restaurace() {
     deduce(
       last(small),
       last(medium),
-      sum("dohromady", [smallLabel, mediumLabel], entityBase, entityBase)
+      combine("dohromady", [smallLabel, mediumLabel], entityBase, entityBase)
     ),
     ctorDifference(bigLabel)
   )
@@ -181,7 +181,7 @@ function restaurace() {
         deduce(small, smallRate),
         deduce(medium, mediumRate),
         deduce(big, bigRate),
-        sum("celkem", [], entity, entity)
+        combine("celkem", [], entity, entity)
       )
     }
   }
@@ -279,7 +279,7 @@ function ctverce() {
     deduce(
       strana1,
       strana1Add,
-      sum(tempMatchSiteLabel2, [], { entity, unit }, { entity, unit })
+      combine(tempMatchSiteLabel2, [], { entity, unit }, { entity, unit })
     ),
     ratios(matchSiteLabel3, [tempMatchSiteLabel2, "bílý čtverec"], [4, 1])
   )
@@ -292,7 +292,7 @@ function ctverce() {
   const width3 = deduce(
     last(strana2),
     widthAdd,
-    sum(tempMatchSiteLabel3, [], { entity, unit }, { entity, unit })
+    combine(tempMatchSiteLabel3, [], { entity, unit }, { entity, unit })
   )
 
 
@@ -313,7 +313,7 @@ function ctverce() {
             cont(tempMatchSiteLabel3, 5, entitySquare),
             ctor('rate')
           ),
-          sum("delší strana 3. obrazce", [], { entity, unit }, { entity, unit })
+          combine("delší strana 3. obrazce", [], { entity, unit }, { entity, unit })
         ),
         width3
       )

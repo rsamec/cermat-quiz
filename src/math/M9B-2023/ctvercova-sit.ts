@@ -1,5 +1,5 @@
 
-import { comp, cont, ctor, inferenceRule, nth, rate, sum } from "../../components/math";
+import { comp, cont, ctor, inferenceRule, nth, rate, combine } from "../../components/math";
 import { deduce, deduceLbl } from "../../utils/deduce-utils";
 
 
@@ -19,8 +19,8 @@ export default function build({ input }: {
   const inputContainers = [1, 5, 13].map((d, i) => cont(`${agent} č.${i + 1}`, d, entity));
 
   const dSequence = inferenceRule(...inputContainers, ctor('sequence'));
-  const soucetLiche = sum("liche cisla", [], entity, entity)
-  const soucetSude = sum("suda cisla", [], entity, entity)
+  const soucetLiche = combine("liche cisla", [], entity, entity)
+  const soucetSude = combine("suda cisla", [], entity, entity)
   const sude = [2, 4, 6, 8, 10].map(d => cont("sude", d, entity))
   const liche = [1, 3, 5, 7, 9].map(d => cont("liche", d, entity))
 

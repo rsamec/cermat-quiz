@@ -1,4 +1,4 @@
-import { commonSense, comp, compPercent, compRatio, compRelativePercent, cont, ctor, ctorCompareRatio, ctorComplement, ctorDifference, ctorLinearEquation, ctorRatios, ctorUnit, evalExprAsCont, nthPart, primeFactorization, product, pythagoras, rate, ratio, ratios, sum } from "../../components/math";
+import { commonSense, comp, compPercent, compRatio, compRelativePercent, cont, ctor, ctorCompareRatio, ctorComplement, ctorDifference, ctorLinearEquation, ctorRatios, ctorUnit, evalExprAsCont, nthPart, primeFactorization, product, pythagoras, rate, ratio, ratios, combine } from "../../components/math";
 import { deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 import { solveLinearEquation } from "../../utils/math-solver";
 
@@ -278,7 +278,7 @@ function prumernyPlat() {
         deduce(
           senioryCelkem,
           juniorCelkem,
-          sum("celkem vyplaceno", [], entityPrice, entityPrice)
+          combine("celkem vyplaceno", [], entityPrice, entityPrice)
         ),
         ctorLinearEquation(ostatniLabel, { entity: entityPrice }, "x")
       ),
@@ -422,7 +422,7 @@ function vyrezKrychle() {
                 lastStranaKrychle,
                 product(`zadní stěna - ${telesoLabel}`, [], entity2d, entity)
               ),
-              sum(`přední a zadní stěna - ${telesoLabel}`, [], entity2d, entity)
+              combine(`přední a zadní stěna - ${telesoLabel}`, [], entity2d, entity)
             ),
             deduce(
               delsiOdvesna,
@@ -440,7 +440,7 @@ function vyrezKrychle() {
             cont(`počet obdelníkových šikmých stěn - ${telesoLabel}`, 2, ""),
             product(`obě obdelníkové šikmé stěny - ${telesoLabel}`, [], entity2d, entity)
           ),
-          sum(`${telesoLabel}`, [], entity2d, entity)
+          combine(`${telesoLabel}`, [], entity2d, entity)
         ),
         ctorRatios("poměr těles")
       ),
