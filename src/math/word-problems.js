@@ -15285,7 +15285,8 @@ function atletika() {
 var M9B_2025_default = {
   1: porovnani(),
   7.1: salaty().druhyDenTrzba,
-  7.2: salaty().pocetSalatu,
+  7.2: salaty().druhyDenVyrazSPromenou,
+  7.3: salaty().pocetSalatu,
   8.1: pravouhlyLichobeznik().obsah,
   8.2: pravouhlyLichobeznik().obvod,
   8.3: pravouhlyLichobeznik().obvodRovnobeznik,
@@ -15336,6 +15337,12 @@ function salaty() {
   return {
     druhyDenTrzba: {
       deductionTree: den2Trzba
+    },
+    druhyDenVyrazSPromenou: {
+      deductionTree: deduce(
+        last(den2),
+        cont("celkem", "x", entity3)
+      )
     },
     pocetSalatu: {
       deductionTree: deduce(

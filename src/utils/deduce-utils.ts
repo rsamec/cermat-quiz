@@ -76,8 +76,8 @@ export function toCont(child: Node, { agent, entity }: { agent: string, entity?:
       : typeNode.kind == "quota"
         ? typeNode.agentQuota
         : typeNode.kind == "rate"
-        ? typeNode.entity.entity
-        : typeNode.entity,
+          ? typeNode.entity.entity
+          : typeNode.entity,
     unit: entity != null ? entity.unit : typeNode.kind == "rate" ? typeNode.entity.unit : typeNode.unit
   })
 }
@@ -181,7 +181,7 @@ export function jsonToMarkdownTree(node, level = 0) {
 var nextId = 0;
 export function jsonToMermaidMindMap(node) {
   nextId = 0;
-  const result = ["mindmap\n"].concat(...jsonToMermaidMindMapEx(node,0));  
+  const result = ["mindmap\n"].concat(...jsonToMermaidMindMapEx(node, 0));
   return result;
 }
 function convertKindToIcon(predicate) {
@@ -206,7 +206,7 @@ function convertKindToIcon(predicate) {
   }
 }
 
-export function jsonToMermaidMindMapEx(node,isConclusion, level = 0) {
+export function jsonToMermaidMindMapEx(node, isConclusion, level = 0) {
   const indent = "  ".repeat(level); // Two spaces for each level
   let markdown = [];
 
@@ -214,8 +214,8 @@ export function jsonToMermaidMindMapEx(node,isConclusion, level = 0) {
   // Add node details if they exist
   if (isPredicate(node)) {
     const formatedPredicat = formatPredicate(node, mermaidFormatting).trim();
-    if (formatedPredicat !== ""){
-      if (isConclusion){
+    if (formatedPredicat !== "") {
+      if (isConclusion) {
         markdown.push(`${indent} id${++nextId}{{"${formatedPredicat}"}}\n`);
       }
       else {
@@ -234,7 +234,62 @@ export function jsonToMermaidMindMapEx(node,isConclusion, level = 0) {
       const child = node.children[i];
       const isConclusion = i === node.children.length - 1;
       if (isConclusion && node.context) markdown.push(`${indent} id${++nextId}["${node.context}"]\n`)
-      markdown = markdown.concat(jsonToMermaidMindMapEx(child,isConclusion, level + (isConclusion ? 0 : 1)))
+      markdown = markdown.concat(jsonToMermaidMindMapEx(child, isConclusion, level + (isConclusion ? 0 : 1)))
+    }
+  }
+  return markdown
+}
+export function deductionTreeToHierarchy(node: { children: any[] }, convertFn?: (node) => object) {
+
+  if (isPredicate(node)) {
+    return convertFn != null ? convertFn(node) : node;
+  }
+  const childrenShapes = []
+  if (node.children && Array.isArray(node.children)) {
+
+    for (let i = 0; i != node.children.length; i++) {
+      const child = node.children[i];
+      const childShape = deductionTreeToHierarchy(child, convertFn);
+      childrenShapes.push(childShape);
+    }
+  }
+  const predicates = childrenShapes.slice(0, -1);//map(d => convertFn != null ? convertFn(d) : d);
+  const conclusion = childrenShapes.slice(-1)[0];
+  return {
+    ...conclusion,
+    children: predicates
+  }
+}
+
+export function jsonToTLDrawEx(node, isConclusion, level = 0) {
+  const indent = "  ".repeat(level); // Two spaces for each level
+  let markdown = [];
+
+
+  // Add node details if they exist
+  if (isPredicate(node)) {
+    const formatedPredicat = formatPredicate(node, mermaidFormatting).trim();
+    if (formatedPredicat !== "") {
+      if (isConclusion) {
+        markdown.push(`${indent} id${++nextId}{{"${formatedPredicat}"}}\n`);
+      }
+      else {
+        markdown.push(`${indent} id${++nextId}))"${formatedPredicat}"((\n`);
+      }
+      markdown.push(`${indent} ::icon(${convertKindToIcon(node)})\n`);
+    }
+    return markdown;
+  }
+
+
+  // Process children recursively
+  if (node.children && Array.isArray(node.children)) {
+
+    for (let i = node.children.length - 1; i >= 0; i--) {
+      const child = node.children[i];
+      const isConclusion = i === node.children.length - 1;
+      if (isConclusion && node.context) markdown.push(`${indent} id${++nextId}["${node.context}"]\n`)
+      markdown = markdown.concat(jsonToMermaidMindMapEx(child, isConclusion, level + (isConclusion ? 0 : 1)))
     }
   }
   return markdown
@@ -479,7 +534,7 @@ export function highlight(strings, ...substitutions) {
   return formattedString;
 }
 
-function concatString(strings, ...substitutions) {
+export function concatString(strings, ...substitutions) {
   const formattedString = strings.reduce((acc, curr, i) => {
     const substitution = substitutions[i];
 
@@ -499,6 +554,19 @@ function normalizeToArray(d: any | any[]) {
   return Array.isArray(d) ? d : [d]
 }
 
+export function wordProblemGroupById(wordProblem: Record<string, { deductionTree: any }>) {
+
+  const deductionTrees = Object.entries(wordProblem).reduce((out, [key, value], index) => {
+    out.push({
+      key,
+      deductionTrees: [`Řešení ${key}`, value.deductionTree]
+    })
+    return out;
+  }, []);
+
+  return Object.groupBy(deductionTrees, ({ key }) => parseInt(key.split(".")[0]));
+
+}
 
 export function generateAIMessages({ template, deductionTrees }: { template, deductionTrees: [string, TreeNode][] }) {
 
@@ -542,14 +610,14 @@ Vytořit abstraktní pojmenování a strukturu, která může sloužit jako univ
 Nevracej konkrétní úlohy, ale jen generalizovaný rámec.
 `
 
-const generateSubQuizes = `${alternateMessage}
+  const generateSubQuizes = `${alternateMessage}
 Můžeš vytvořit pracovní list, který by obsahoval vhodné podúlohy, které jsou vhodné pro řešení stávající úlohy.
 `
-const generateImportantPoints = `${alternateMessage}
+  const generateImportantPoints = `${alternateMessage}
 Můžeš analyzovat úlohu a řešení úlohy a najít hlavní myšlenku, která vede k řešení stávající úlohy.
 Uveď 1 až maximálně 3 nejdůležitější myšlenky, triky důležité k pochopení řešení úlohy.
 `
-const vizualizeImportantPoints = `${alternateMessage}
+  const vizualizeImportantPoints = `${alternateMessage}
 Můžeš analyzovat úlohu a řešení úlohy a najít hlavní myšlenku, která vede k řešení stávající úlohy.
 Dle složitosti úlohy vymysli 1 až maximálně 3 nejdůležitější myšlenky, triky důležité k pochopení řešení úlohy.
 Vizualizuj vhodně tyto myšlenky do obrázku pomocí infografiky s vhodnými grafickými prvky.
@@ -562,6 +630,10 @@ Vizualizuj vhodně tyto myšlenky do obrázku pomocí infografiky s vhodnými gr
     generateSubQuizes,
     generalization,
     generateImportantPoints,
-    vizualizeImportantPoints
+    vizualizeImportantPoints,
+    "key-points": generateImportantPoints,
+    "working-sheet": generateSubQuizes,
+    "more-quizes": generateMoreQuizes,
+    steps: explainSolution,
   }
 }

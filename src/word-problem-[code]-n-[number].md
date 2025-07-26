@@ -14,7 +14,7 @@ import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCo
 import wordProblems from './math/word-problems.js';
 import {partion, relativeTowParts, relativeTwoPartsDiff, deduceTraverse, highlightLabel, renderChat } from './utils/deduce-components.js';
 import { renderChatStepper, useInput } from './utils/deduce-chat.js';
-import {isPredicate, computeTreeMetrics, jsonToMarkdownTree, jsonToMermaidMindMap, jsonToMarkdownChat, highlight, generateAIMessages} from './utils/deduce-utils.js';
+import {isPredicate, computeTreeMetrics, jsonToMarkdownTree, jsonToMermaidMindMap, jsonToMarkdownChat, highlight, generateAIMessages, deductionTreeToHierarchy, formatPredicate} from './utils/deduce-utils.js';
 import Fraction from 'fraction.js';
 
 const code = observable.params.code;
@@ -26,7 +26,6 @@ const content = await text(`${baseUrl}/index.md`);
 
 const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [baseUrl])
 const quiz = parseQuiz(rawContent);
-
 
 const wordProblem = wordProblems[code] ?? {};
 ```
@@ -159,14 +158,25 @@ function renderValues (values) {
       ${renderMarkdownWithCopy(jsonToMarkdownChat(value.deductionTree).join(''), "md")}
     </div>
   </details>
+  ${false ? html`
   <details>
-    <summary>Mind map</summary>
-    <a href="${createMermaidEditorUrl(jsonToMermaidMindMap(value.deductionTree).join(''),'edit')}" target="_blank">Edit</a>
+    <summary>Mermaid mind map</summary>
+    <a href="${createMermaidEditorUrl(jsonToMermaidMindMap(value.deductionTree).join(''),'edit')}" target="_blank">Open</a>
     <div class="card">
       ${renderAsCodeBlock(jsonToMermaidMindMap(value.deductionTree).join(''), "mermaid")}
-    </div>
-    
+    </div>    
   </details>
+  <details>
+    <summary>Tree json</summary>
+    <div class="card">
+      ${renderAsCodeBlock(JSON.stringify(deductionTreeToHierarchy(value.deductionTree, node => {
+        return { 
+          name:formatPredicate(node, {formatKind:(d) => d.kind ?? ''}),
+          size: [200,100]
+        }
+  }), null, 2), "json")}
+    </div>    
+  </details>`: ''}
   <hr/>
 `})
 }
@@ -191,8 +201,6 @@ ${renderChatButton("Hlavní myšlenky řešení", aiPromts.generateImportantPoin
 ${renderChatButton("Obdobné úlohy", aiPromts.generateMoreQuizes)}
 ${renderChatButton("Pracovní list", aiPromts.generateSubQuizes)}
 ${renderChatButton("Generalizace úlohy", aiPromts.generalization)}
-${renderChatButton("Vizualizuj řešení", aiPromts.vizualizeSolution)}
-${renderChatButton("Vizualizuj hlavní myšlenku", aiPromts.vizualizeImportantPoints)}
 
 ${values?.some(([key,value]) => value.audio) ? html`<div class="tip" label="Podcast">Poslechni si podcast vygenerovaný pro danou úlohu v anglickém jazyce. Generováno pomocí <a href="https://notebooklm.google/">NotebookLM</></div>${renderAudio(code,id)}`:''}
 

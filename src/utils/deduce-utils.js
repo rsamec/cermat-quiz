@@ -5425,6 +5425,55 @@ function jsonToMermaidMindMapEx(node, isConclusion, level = 0) {
   }
   return markdown;
 }
+function deductionTreeToHierarchy(node, convertFn) {
+  if (isPredicate(node)) {
+    return convertFn != null ? convertFn(node) : node;
+  }
+  const childrenShapes = [];
+  if (node.children && Array.isArray(node.children)) {
+    for (let i = 0; i != node.children.length; i++) {
+      const child = node.children[i];
+      const childShape = deductionTreeToHierarchy(child, convertFn);
+      childrenShapes.push(childShape);
+    }
+  }
+  const predicates = childrenShapes.slice(0, -1);
+  const conclusion = childrenShapes.slice(-1)[0];
+  return {
+    ...conclusion,
+    children: predicates
+  };
+}
+function jsonToTLDrawEx(node, isConclusion, level = 0) {
+  const indent = "  ".repeat(level);
+  let markdown = [];
+  if (isPredicate(node)) {
+    const formatedPredicat = formatPredicate(node, mermaidFormatting).trim();
+    if (formatedPredicat !== "") {
+      if (isConclusion) {
+        markdown.push(`${indent} id${++nextId}{{"${formatedPredicat}"}}
+`);
+      } else {
+        markdown.push(`${indent} id${++nextId}))"${formatedPredicat}"((
+`);
+      }
+      markdown.push(`${indent} ::icon(${convertKindToIcon(node)})
+`);
+    }
+    return markdown;
+  }
+  if (node.children && Array.isArray(node.children)) {
+    for (let i = node.children.length - 1; i >= 0; i--) {
+      const child = node.children[i];
+      const isConclusion2 = i === node.children.length - 1;
+      if (isConclusion2 && node.context)
+        markdown.push(`${indent} id${++nextId}["${node.context}"]
+`);
+      markdown = markdown.concat(jsonToMermaidMindMapEx(child, isConclusion2, level + (isConclusion2 ? 0 : 1)));
+    }
+  }
+  return markdown;
+}
 function jsonToMarkdownChat(node, formatting) {
   const flatStructure = [];
   function traverseEx(node2) {
@@ -5629,6 +5678,16 @@ function concatString(strings, ...substitutions) {
 function normalizeToArray(d) {
   return Array.isArray(d) ? d : [d];
 }
+function wordProblemGroupById(wordProblem) {
+  const deductionTrees = Object.entries(wordProblem).reduce((out, [key, value], index) => {
+    out.push({
+      key,
+      deductionTrees: [`\u0158e\u0161en\xED ${key}`, value.deductionTree]
+    });
+    return out;
+  }, []);
+  return Object.groupBy(deductionTrees, ({ key }) => parseInt(key.split(".")[0]));
+}
 function generateAIMessages({ template, deductionTrees }) {
   const alternateMessage = `
 Zad\xE1n\xED \xFAlohy je 
@@ -5685,16 +5744,22 @@ Vizualizuj vhodn\u011B tyto my\u0161lenky do obr\xE1zku pomoc\xED infografiky s 
     generateSubQuizes,
     generalization,
     generateImportantPoints,
-    vizualizeImportantPoints
+    vizualizeImportantPoints,
+    "key-points": generateImportantPoints,
+    "working-sheet": generateSubQuizes,
+    "more-quizes": generateMoreQuizes,
+    steps: explainSolution
   };
 }
 export {
   axiomInput,
   computeTreeMetrics,
+  concatString,
   connectTo,
   deduce,
   deduceAs,
   deduceLbl,
+  deductionTreeToHierarchy,
   formatPredicate,
   generateAIMessages,
   highlight,
@@ -5704,11 +5769,13 @@ export {
   jsonToMarkdownTree,
   jsonToMermaidMindMap,
   jsonToMermaidMindMapEx,
+  jsonToTLDrawEx,
   last,
   lastQuantity,
   to,
   toAs,
-  toCont
+  toCont,
+  wordProblemGroupById
 };
 /*!
  Based on ndef.parser, by Raphael Graf(r@undefined.ch)

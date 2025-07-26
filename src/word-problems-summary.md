@@ -3,11 +3,21 @@ footer: false
 pager: true
 toc: true
 ---
-
+<style>
+  .description {
+    font-size: 12px;
+    font-style: italic;
+  }
+ 
+</style>
 ```js
 import { formatCode, parseCode} from './utils/quiz-string-utils.js';
-import { unique } from "./utils/common-utils.js";
+import { unique, download } from "./utils/common-utils.js";
 import wordProblems from './math/word-problems.js';
+
+const quizGeneratedCategories = await FileAttachment("./data/quiz-categories-gemini-2.5-flash.json").json();
+
+
 
 const wordProblemsKeyValuePairs = Object.entries(wordProblems).sort(([fKey],[sKey]) => {
   const f = parseCode(sKey);
@@ -15,8 +25,13 @@ const wordProblemsKeyValuePairs = Object.entries(wordProblems).sort(([fKey],[sKe
   if (f.period === s.period){
     return f.year - s.year
   }
-  return f.period - s.period;
-}).map(([key,value]) => [key,Object.keys(value).map(d => d.split('.')[0]).filter(unique).sort((f,s) => f - s)]);
+  return f.period - s.period;  
+}).map(([key,value]) => {
+  const ids = Object.keys(value).map(d => d.split('.')[0]).filter(unique).sort((f,s) => f - s)
+  const categoryMap =  new Map(quizGeneratedCategories[key].questions.map(d => [d.id,d]));
+  return [key,ids, categoryMap]
+}
+);
 ```
 
 # Řešení slovních úloh
@@ -28,8 +43,8 @@ Slovní úlohy jsou řešeny rozložením na podproblémy, které jsou řešitel
 </div>
 
 
-${wordProblemsKeyValuePairs.map(([code, problems]) => html`<h3><a href="solu-${code}">${formatCode(code)}</a> - <a href="word-problems-${code}"><i class="fa-brands fa-markdown"></i></a></h3></div><ul>${
-  problems.map(key => html`<li><a href="./word-problem-${code}-n-${key}">Řešení úloha ${key}</a></li>`
+${wordProblemsKeyValuePairs.map(([code, problems, categoryMap]) => html`<h3><a href="solu-${code}">${formatCode(code)}</a> - <a href="word-problems-${code}"><i class="fa-brands fa-markdown"></i></a> <a  href="word-problems-tldr-${code}"><i class="fa fa-draw-polygon"></i></a></h3></div><ul>${
+  problems.map(key => html`<li><a href="./word-problem-${code}-n-${key}">${categoryMap.has(key) ? `${key}. ${categoryMap.get(key).name}` : `Řešení úloha ${key}`}</a><div class="description">${categoryMap.get(key).summary}</div></li>`
 )}</ul>`)}
 
 
