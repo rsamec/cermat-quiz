@@ -1,32 +1,32 @@
-import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, product, pythagoras, rate, ratio, ratios, combine, ctorOption, ctorBooleanOption } from "../../components/math";
-import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
+import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, product, pythagoras, rate, ratio, ratios, ctorOption, ctorBooleanOption, ctorSlide } from "../../components/math";
+import { axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 import trojuhelnik from "./trojuhelnik";
 
-export default {
-  1: dobaFilmu({ input: { celkovaDobaFilmuVHodina: 1 } }),
-  2.1: sud(),
-  2.2: rezaniKvadru(),
-  6.1: triangleExample().obsahABD,
-  6.2: triangleExample().obsahABCD,
-  7.1: krouzkyATridy().procent,
-  7.2: krouzkyATridy().pocet,
-  7.3: krouzkyATridy().pomer,
-  8.2: pozemekObdelnik().delkaStrany,
-  8.3: pozemekObdelnik().obsah,
-  11.1: rovinataOblast().skutecnost,
-  11.2: rovinataOblast().vychazkovaTrasa,
-  11.3: rovinataOblast().meritko,
-  12: lomanaCaraACFHA(),
-  13: povrchValce(),
-  14: angleBeta(),
-  15.1: vyrobenoVyrobku(),
-  15.2: dovolenaNaKole(),
-  15.3: propousteniVeFirme(),
-  16.1: trojuhelnik({ input: {} })[0],
-  16.2: trojuhelnik({ input: {} })[1],
-  16.3: trojuhelnik({ input: {} })[2],
-}
+export default createLazyMap({
+  1: () => dobaFilmu({ input: { celkovaDobaFilmuVHodina: 1 } }),
+  2.1: () => sud(),
+  2.2: () => rezaniKvadru(),
+  6.1: () => triangleExample().obsahABD,
+  6.2: () => triangleExample().obsahABCD,
+  7.1: () => krouzkyATridy().procent,
+  7.2: () => krouzkyATridy().pocet,
+  7.3: () => krouzkyATridy().pomer,
+  8.2: () => pozemekObdelnik().delkaStrany,
+  8.3: () => pozemekObdelnik().obsah,
+  11.1: () => rovinataOblast().skutecnost,
+  11.2: () => rovinataOblast().vychazkovaTrasa,
+  11.3: () => rovinataOblast().meritko,
+  12: () => lomanaCaraACFHA(),
+  13: () => povrchValce(),
+  14: () => angleBeta(),
+  15.1: () => vyrobenoVyrobku(),
+  15.2: () => dovolenaNaKole(),
+  15.3: () => propousteniVeFirme(),
+  16.1: () => trojuhelnik({ input: {} })[0],
+  16.2: () => trojuhelnik({ input: {} })[1],
+  16.3: () => trojuhelnik({ input: {} })[2],
+})
 
 function dobaFilmu({ input }: { input: { celkovaDobaFilmuVHodina: number } }) {
   const entity = "hodin";
@@ -155,7 +155,7 @@ export function povrchValce() {
         podstava,
         last(podstava),
         deduce(last(podstava), compRatio("plášť", "podstava", 3)),
-        combine("válec", ["dolní podstava", "horní podstava", "plášť"], entity2d, entity2d)
+        ctorSlide("válec")
       ),
       ctorOption("D", 1570)
     )
@@ -202,11 +202,11 @@ function krouzkyATridy() {
         roboticky8,
         deduce(
           deduce(
-            deduce(hudebni8, sachovy8, roboticky8, combine("8.", [], entityBase, entityBase)),
+            deduce(hudebni8, sachovy8, roboticky8, ctorSlide("8.")),
             ratios("celkem", ["8.", "9."], [2, 3]),
             nthPart("9.")
           ),
-          deduce(hudebni9, sachovy9, combine("9.", [], entityBase, entityBase)),
+          deduce(hudebni9, sachovy9, ctorSlide("9.")),
           ctorDifference(`${robotickyLabel} 9.`)
         ),
         ctorRatios(robotickyLabel)
@@ -326,7 +326,7 @@ export function rovinataOblast() {
           ),
           ctorUnit("km"),
         ),
-        ctorBooleanOption(1,"greater")
+        ctorBooleanOption(1, "greater")
       )
     },
     vychazkovaTrasa: {
@@ -380,7 +380,7 @@ export function lomanaCaraACFHA() {
             pythagoras("CF", ["BF", "BC"])
           ),
           ac,
-          combine("úhlopříčka na podlaze (AC) + úhlopříčka na stěně (CF)", ["AC", "CF"], { entity, unit }, { entity, unit })
+          ctorSlide("úhlopříčka na podlaze (AC) + úhlopříčka na stěně (CF)")
         ),
         cont("stejně dlouhá úhlopříčka na stropě (FH) i stejně dlouhá úhlopříčka na druhé stěně (HA)", 2, ""),
         product("lomené čáry ACFHA", [], { entity, unit }, { entity, unit })
@@ -419,7 +419,7 @@ export function triangleExample() {
             unit: unit2D
           }
         }),
-        combine("obsah ABCD", [], { entity, unit: unit2D }, { entity, unit })
+        ctorSlide("obsah ABCD")
       )
     }
   }

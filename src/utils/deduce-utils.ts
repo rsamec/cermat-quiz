@@ -637,3 +637,29 @@ Vizualizuj vhodně tyto myšlenky do obrázku pomocí infografiky s vhodnými gr
     steps: explainSolution,
   }
 }
+type ThunkMap<T> = {
+  [K in keyof T]: () => T[K];
+};
+
+export function createLazyMap<T>(thunks: ThunkMap<T>): T {
+  const lazyMap = {} as T;
+  
+
+  for (const key in thunks) {
+    //console.log("Creating....", key)
+    Object.defineProperty(lazyMap, key, {
+      get() {
+        try {
+          return thunks[key]();
+        } catch (error) {
+          console.error(`Error in "${key}":`, error);
+          throw error;
+        }
+      },
+      configurable: true,
+      enumerable: true,
+    });
+  }
+
+  return lazyMap;
+}

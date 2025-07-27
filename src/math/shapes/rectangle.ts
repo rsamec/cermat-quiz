@@ -1,5 +1,5 @@
 
-import { cont, type Container, product, combine } from "../../components/math.js";
+import { cont, type Container, product, combine, ctorSlide } from "../../components/math.js";
 import { axiomInput, deduce, highlight } from "../../utils/deduce-utils.js";
 
 
@@ -93,7 +93,7 @@ export function examples({ input }: {
         ),
         protilehlaStana,
         product("přední a zadní stěna", [], entity2D, entity)),
-      combine("obsah pláště", [], entity2D, entity2D)
+      ctorSlide("obsah pláště")
     )
 
 

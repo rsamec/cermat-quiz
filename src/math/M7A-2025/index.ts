@@ -1,17 +1,18 @@
-import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, percent, rate, ratio, ratios, combine, transfer } from "../../components/math"
-import { deduce, last, to } from "../../utils/deduce-utils"
+import { commonSense, comp, cont, ctor, ctorAccumulate, ctorComplement, ctorDifference, ctorOption, ctorSlide, ctorUnit, percent, rate, ratio, ratios, transfer } from "../../components/math"
+import { createLazyMap, deduce, last, to } from "../../utils/deduce-utils"
 
-export default {
-  1.1: ceremonial().polovina,
-  1.2: ceremonial().pocetMinut,
-  4.1: asistencniPes().bara,
-  4.2: asistencniPes().rozdilBaraACyril,
-  4.3: asistencniPes().sum,
-  6.1: karticky().petr,
-  11: tornado(),
-  12: cestaKeStudance().meritko,
-  13: cestaKeStudance().delkaTrasa,
-}
+export default createLazyMap({
+  1.1: () => ceremonial().polovina,
+  1.2: () => ceremonial().pocetMinut,
+  4.1: () => asistencniPes().bara,
+  4.2: () => asistencniPes().rozdilBaraACyril,
+  4.3: () => asistencniPes().sum,
+  6.1: () => karticky().petr,
+  11: () => tornado(),
+  12: () => cestaKeStudance().meritko,
+  13: () => cestaKeStudance().delkaTrasa,
+})
+
 function ceremonial() {
   const entity = "doba"
   const unit = "minut"
@@ -42,7 +43,7 @@ function ceremonial() {
             last(dobaCeremonial),
             ratio(ceremonial, promitani, 1 / 5)
           ),
-          combine("konec promitani", [], { entity, unit }, { entity, unit })
+          ctorSlide("konec promitani")
         ),
         ctorDifference("rozdil")
       )
@@ -124,7 +125,7 @@ function asistencniPes() {
         last(bara),
         last(cyril),
         adam,
-        combine("dohromady", [], entity, entity)
+        ctorAccumulate("dohromady")
       )
     }
 

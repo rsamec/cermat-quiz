@@ -1,4 +1,4 @@
-import { cont, ctor, compAngle, combine, ctorOption } from "../../components/math";
+import { cont, ctor, compAngle, ctorOption, ctorSlide } from "../../components/math";
 import { axiomInput, deduce, last, toCont } from "../../utils/deduce-utils";
 
 
@@ -24,7 +24,7 @@ export function rozdilUhlu({ input }: {
         deduce(
           beta,
           alfa,
-          combine("dvojice úhlů v trojúhelníku", ["alfa", "beta"], entity, entity)
+          ctorSlide("dvojice úhlů v trojúhelníku")
         ),
         ctor('comp-diff')
       ), { agent: 'gama' }),

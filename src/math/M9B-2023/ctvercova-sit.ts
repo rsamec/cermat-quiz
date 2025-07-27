@@ -1,5 +1,5 @@
 
-import { comp, cont, ctor, inferenceRule, nth, rate, combine } from "../../components/math";
+import { cont, ctor, inferenceRule, nth } from "../../components/math";
 import { deduce, deduceLbl } from "../../utils/deduce-utils";
 
 
@@ -11,18 +11,18 @@ export default function build({ input }: {
 
   const agent = "obrazec"
   const entity = "pole";
-  const whiteEntity = `světlá ${entity}`
-  const grayEntity = `tmavá ${entity}`
+  // const whiteEntity = `světlá ${entity}`
+  // const grayEntity = `tmavá ${entity}`
   const nthLabel = "pozice"
   const nthEntity = nth(nthLabel);
 
   const inputContainers = [1, 5, 13].map((d, i) => cont(`${agent} č.${i + 1}`, d, entity));
 
   const dSequence = inferenceRule(...inputContainers, ctor('sequence'));
-  const soucetLiche = combine("liche cisla", [], entity, entity)
-  const soucetSude = combine("suda cisla", [], entity, entity)
-  const sude = [2, 4, 6, 8, 10].map(d => cont("sude", d, entity))
-  const liche = [1, 3, 5, 7, 9].map(d => cont("liche", d, entity))
+  // const soucetLiche = combine("liche cisla", [], entity, entity)
+  // const soucetSude = combine("suda cisla", [], entity, entity)
+  // const sude = [2, 4, 6, 8, 10].map(d => cont("sude", d, entity))
+  // const liche = [1, 3, 5, 7, 9].map(d => cont("liche", d, entity))
 
   const diffEntity = 'rozdil tmavých a světlych'
   const diffSequence = [3, 7, 11].map((d, i) => cont(`${i + 1}.sudý ${agent} č.${(i + 1) * 2}`, d, diffEntity));

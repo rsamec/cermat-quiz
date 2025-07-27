@@ -1,26 +1,26 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, product, quota, rate, ratio, ratios, combine, ctorPercent, percent, compAngle, compPercent, ctorLinearEquation, ctorOption, ctorExpressionOption } from "../../components/math";
-import { deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, product, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, ctorSlide, ctorAccumulate, combine } from "../../components/math";
+import { createLazyMap, deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
-export default {
-  //1: porovnani(),
-  5.1: pozemek().sirkaDum,
-  5.2: pozemek().rozlohaVolnyPozemek,
-  6.1: sud().vzestupObjem,
-  6.2: sud().vzestupVyska,
-  7.1: uhly().alfa,
-  7.2: uhly().beta,
-  7.3: uhly().gamma,
-  8.1: zahon().obvod,
-  8.2: zahon().rozdilPocetRostlin,
-  8.3: zahon().nejmensiPocetCerveneKvetoucich,
-  12: bazen(),
-  13: pelhrimov(),
-  14: znamkyPrumer(),
-  15.1: organizatoriPercent(),
-  15.2: soutez(),
-  15.3: atletika(),
-  //16.1: obrazce().pocetTmavyObrazec,
-}
+export default createLazyMap({
+  //1:() => porovnani(),
+  5.1: () => pozemek().sirkaDum,
+  5.2: () => pozemek().rozlohaVolnyPozemek,
+  6.1: () => sud().vzestupObjem,
+  6.2: () => sud().vzestupVyska,
+  7.1: () => uhly().alfa,
+  7.2: () => uhly().beta,
+  7.3: () => uhly().gamma,
+  8.1: () => zahon().obvod,
+  8.2: () => zahon().rozdilPocetRostlin,
+  8.3: () => zahon().nejmensiPocetCerveneKvetoucich,
+  12: () => bazen(),
+  13: () => pelhrimov(),
+  14: () => znamkyPrumer(),
+  15.1: () => organizatoriPercent(),
+  15.2: () => soutez(),
+  15.3: () => atletika(),
+  //16.1:() =>  obrazce().pocetTmavyObrazec,
+})
 
 function porovnani() {
   const entity = "";
@@ -32,7 +32,7 @@ function porovnani() {
       deduce(
         zadaneCislo1,
         zadaneCislo2,
-        combine("součet", [], entity, entity)
+        ctorSlide("součet")
       ),
       deduce(
         zadaneCislo1,
@@ -81,7 +81,7 @@ function pozemek() {
             percent("pozemek", "rybník", 18),
             last(obsahPozemek)
           ),
-          combine("dum a rybnik", [], { entity: entity2d, unit: unit2d }, { entity: entity2d, unit: unit2d })
+          ctorSlide("dum a rybnik")
         ),
         ctorDifference("volný pozemkek")
       )
@@ -152,7 +152,7 @@ function uhly() {
           deduce(
             deduce(angle2, compAngle(angleLabel, "bod R v pravoúhlém trojúhelníku", "supplementary")),
             cont("pravý úhel", 90, entity, unit),
-            combine("součet dvou úhlů", [], { entity, unit }, { entity, unit })
+            ctorSlide("součet dvou úhlů")
           ),
           ctorDifference("vrchol v pravoúhlém trojúhelníku")
         ),
@@ -256,7 +256,7 @@ function bazen() {
           ),
           ratio(zonaLabel, dnoLabel, 1 / 2)
         ),
-        combine("bazén celkem", [], { entity: entity3d, unit: unit3d }, { entity: entity3d, unit: unit3d })
+        ctorSlide("bazén celkem")
       ),
       ctorOption("A", 500)
     )
@@ -312,7 +312,7 @@ function organizatoriPercent() {
         celkem,
         ctorPercent(),
       ),
-      ctorOption("B", 45, {asPercent:true})
+      ctorOption("B", 45, { asPercent: true })
     )
   }
 }
@@ -323,12 +323,12 @@ function znamkyPrumer() {
   const pocetDvojek = cont("dvojky", "x", entityPocet);
 
   const pocetCelkem = cont("celkem", 20, entityPocet);
-  const pocetTrojekk = deduce(
+  const pocetTrojek = deduce(
     pocetCelkem,
     deduce(
       pocetJednicek,
       pocetDvojek,
-      combine("celkem", [], entityPocet, entityPocet)
+      ctorAccumulate("celkem")
     ),
     ctorDifference("")
   )
@@ -340,8 +340,8 @@ function znamkyPrumer() {
           deduce(
             pocetJednicek,
             deduce(pocetDvojek, cont("dvojka", 2, entity), product("dvojka", [], entity, entity)),
-            deduce(pocetTrojekk, cont("trojka", 3, entity), product("trojka", [], entity, entity)),
-            combine("celkem", [], entity, entity)
+            deduce(pocetTrojek, cont("trojka", 3, entity), product("trojka", [], entity, entity)),
+            combine("celkem", [], entity, entityPocet)
           ),
           pocetCelkem,
           ctor("rate")
@@ -385,12 +385,12 @@ function soutez() {
               nthPart(viceZenLabel),
             ),
             rate(viceZenLabel, 2, entity, entityBase)),
-          combine(women, [], entity, entity)
+          combine(women, [], entity, entityBase)
         ),
         deduce(druzstva, rate("celkem", 3, entity, entityBase)),
         ctorPercent()
       ),
-      ctorOption("E", 60, {asPercent:true})
+      ctorOption("E", 60, { asPercent: true })
     )
   }
 }
@@ -413,11 +413,11 @@ function atletika() {
           ostep,
           last(skok),
           last(beh),
-          combine("celkem", [], entity, entity)
+          ctorAccumulate("celkem")
         ),
         ctorPercent()
       ),
-      ctorOption("C", 50, {asPercent:true})
+      ctorOption("C", 50, { asPercent: true })
     )
   }
 }
@@ -449,7 +449,7 @@ function obrazce() {
           ctor("quota")
         ),
 
-        combine("obrazec č.6", [], entityPocet, entityPocet)
+        ctorAccumulate("obrazec č.6")
       )
     }
 

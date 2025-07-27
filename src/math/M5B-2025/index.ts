@@ -1,20 +1,20 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorOption, ctorRatios, nthPart, product, rate, ratio, ratios, combine } from "../../components/math";
-import { deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorOption, ctorRatios, nthPart, product, rate, ratio, ratios, combine, ctorAccumulate, ctorSlide } from "../../components/math";
+import { createLazyMap, deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
-export default {
-  1.1: hledaneCisla().cislo1,
-  1.2: hledaneCisla().cislo2,
-  1.3: hledaneCisla().cisla3,
-  3.1: koralky().celkem,
-  3.2: koralky().porovnani4To2,
-  3.3: koralky().cerneKoralky,
-  4.1: restaurace().celkemStolu,
-  4.2: restaurace().celkemMist,
-  10: zahon().yellow,
-  11: zahon().velvet,
-  14.1: ctverce().obvodObrazec2,
-  14.2: ctverce().obrazecWidthToLength
-}
+export default createLazyMap({
+  1.1:() => hledaneCisla().cislo1,
+  1.2:() => hledaneCisla().cislo2,
+  1.3:() => hledaneCisla().cisla3,
+  3.1:() => koralky().celkem,
+  3.2:() => koralky().porovnani4To2,
+  3.3:() => koralky().cerneKoralky,
+  4.1:() => restaurace().celkemStolu,
+  4.2:() => restaurace().celkemMist,
+  10:() => zahon().yellow,
+  11:() => zahon().velvet,
+  14.1:() => ctverce().obvodObrazec2,
+  14.2:() => ctverce().obrazecWidthToLength
+})
 
 function hledaneCisla() {
   const entity = ""
@@ -100,7 +100,7 @@ function koralky() {
     skupina3,
     skupina2,
     skupina1,
-    combine("celkem", [], entity, entity)
+    ctorAccumulate("celkem")
   )
   const name = 'skupina barev (černé a bílý)';
 
@@ -166,7 +166,7 @@ function restaurace() {
     deduce(
       last(small),
       last(medium),
-      combine("dohromady", [smallLabel, mediumLabel], entityBase, entityBase)
+      ctorAccumulate("dohromady")
     ),
     ctorDifference(bigLabel)
   )
@@ -181,7 +181,7 @@ function restaurace() {
         deduce(small, smallRate),
         deduce(medium, mediumRate),
         deduce(big, bigRate),
-        combine("celkem", [], entity, entity)
+        ctorAccumulate("celkem")
       )
     }
   }

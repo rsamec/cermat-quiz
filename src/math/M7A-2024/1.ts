@@ -1,4 +1,4 @@
-import { comp, cont, ctor, combine } from "../../components/math";
+import { comp, cont, ctor, ctorSlide } from "../../components/math";
 import { axiomInput, deduce, lastQuantity, to } from "../../utils/deduce-utils";
 
 export function porovnatAaB({ input }: { input: { a: number, b: number } }) {
@@ -14,7 +14,7 @@ export function porovnatAaB({ input }: { input: { a: number, b: number } }) {
     deductionTree: deduce(
       deduce(
         a, b,
-        combine("součet", ["a", "b"], entity, entity)
+        ctorSlide("součet")
       ),
       to(
         rozdil,

@@ -1,10 +1,9 @@
-import { commonSense, comp, compPercent, compRatio, compRelativePercent, cont, ctor, ctorCompareRatio, ctorComplement, ctorDifference, ctorLinearEquation, ctorRatios, ctorUnit, evalExprAsCont, nthPart, primeFactorization, product, pythagoras, rate, ratio, ratios, combine } from "../../components/math";
-import { deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
-import { solveLinearEquation } from "../../utils/math-solver";
+import { commonSense, comp, compRatio, compRelativePercent, cont, ctor, ctorAccumulate, ctorDifference, ctorLinearEquation, ctorRatios, ctorSlide, ctorUnit, evalExprAsCont, primeFactorization, product, pythagoras, rate, ratio } from "../../components/math";
+import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 
-export default {
-  1: boruvky({
+export default createLazyMap({
+  1: () => boruvky({
     input: {
       quantityEntity: {
         entity: "hmotnost",
@@ -29,65 +28,16 @@ export default {
       finalPrice: 600,
     }
   }),
-  2: boruvky({
-    input: {
-      quantityEntity: {
-        entity: "objem",
-        unit: "ml",
-        groupSize: 50,
-      },
-      priceEntity: {
-        entity: "korun",
-      },
-      agentA: {
-        label: "laborantka 1",
-        quantity: 650,
-        price: 195,
-      },
-      agentB:
-      {
-        label: "laborantka 2",
-        quantity: 0.5,
-        price: 150,
-        unit: "l"
-      },
-      finalPrice: 750,
-    }
-  }),
-  3: boruvky({
-    input: {
-        "quantityEntity": {
-          "groupSize": 5,
-          "entity": "gól",
-          "unit": "min"
-        },
-        "priceEntity": {
-          "entity": "body",
-        },
-        "agentA": {
-          "label": "Tým A",
-          "quantity": 30.0,
-          "price": 100,
-        },
-        "agentB": {
-          "label": "Tým B",
-          "quantity": 45.0,
-          "price": 90,
-          "unit": "min"
-        },
-        "finalPrice": 400,
-      }    
-  }),
-  //3: delitelnost(),
-  5.1: spotrebaPaliva().beznePalivo,
-  5.2: spotrebaPaliva().powerPalivo,
-  6: spotrebaPaliva().cenaPowerPalivo,
-  8: prumernyPlat(),
-  18: rovnoramennySatek(),
-  19: kruhovaVysec(),
-  20: vzestupHladinyVody(),
-  21: vyrezKrychle(),
-}
+  //3:()=> delitelnost(),
+  5.1: () => spotrebaPaliva().beznePalivo,
+  5.2: () => spotrebaPaliva().powerPalivo,
+  6: () => spotrebaPaliva().cenaPowerPalivo,
+  8: () => prumernyPlat(),
+  18: () => rovnoramennySatek(),
+  19: () => kruhovaVysec(),
+  20: () => vzestupHladinyVody(),
+  21: () => vyrezKrychle(),
+})
 
 
 function boruvky(inputs: {
@@ -278,7 +228,7 @@ function prumernyPlat() {
         deduce(
           senioryCelkem,
           juniorCelkem,
-          combine("celkem vyplaceno", [], entityPrice, entityPrice)
+          ctorAccumulate("celkem vyplaceno")
         ),
         ctorLinearEquation(ostatniLabel, { entity: entityPrice }, "x")
       ),
@@ -422,7 +372,7 @@ function vyrezKrychle() {
                 lastStranaKrychle,
                 product(`zadní stěna - ${telesoLabel}`, [], entity2d, entity)
               ),
-              combine(`přední a zadní stěna - ${telesoLabel}`, [], entity2d, entity)
+              ctorSlide(`přední a zadní stěna - ${telesoLabel}`)
             ),
             deduce(
               delsiOdvesna,
@@ -440,7 +390,7 @@ function vyrezKrychle() {
             cont(`počet obdelníkových šikmých stěn - ${telesoLabel}`, 2, ""),
             product(`obě obdelníkové šikmé stěny - ${telesoLabel}`, [], entity2d, entity)
           ),
-          combine(`${telesoLabel}`, [], entity2d, entity)
+          ctorSlide(`${telesoLabel}`)
         ),
         ctorRatios("poměr těles")
       ),

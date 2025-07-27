@@ -1,5 +1,5 @@
-import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, primeFactorization, rate, ratio, combine, transfer } from "../../components/math";
-import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
+import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, primeFactorization, rate, ratio, transfer, ctorAccumulate, ctorSlide } from "../../components/math";
+import { axiomInput, deduce, last, to, createLazyMap } from "../../utils/deduce-utils";
 import { cislaNaOse } from "../cislaNaOse";
 const dveCislaNaOseParams = {
   input: {
@@ -11,27 +11,28 @@ const dveCislaNaOseParams = {
   }
 }
 
-export default {
-  3: souctovyTrojuhelnik(),
-  4.1: giftAndBox(),
-  4.2: lukasAccount(),
-  4.3: appleBox(),
-  5.1: timeUnitSum(),
-  5.2: distanceUnitCompareDiff(),
-  6.1: dveCislaNaOse(dveCislaNaOseParams).XandY,
-  6.2: dveCislaNaOse(dveCislaNaOseParams).posun,
-  9: novorocniPrani(),
-  11: sestiuhelnik(),
-  12.1: vyvojObyvatel().panov,
-  12.2: vyvojObyvatel().lidov,
-  12.3: vyvojObyvatel().damov,
-  13.1: carTrip().pocatekCesty,
-  13.2: carTrip().zeleznicniPrejezd,
-  13.3: carTrip().konecCesty,
-  14.1: pyramida().floor8,
-  14.2: pyramida().floor7,
-  14.3: pyramida().stairs,
-}
+
+export default createLazyMap({
+  3: () => souctovyTrojuhelnik(),
+  4.1: () => giftAndBox(),
+  4.2: () => lukasAccount(),
+  4.3: () => appleBox(),
+  5.1: () => timeUnitSum(),
+  5.2: () => distanceUnitCompareDiff(),
+  6.1: () => dveCislaNaOse(dveCislaNaOseParams).XandY,
+  6.2: () => dveCislaNaOse(dveCislaNaOseParams).posun,
+  9: () => novorocniPrani(),
+  11: () => sestiuhelnik(),
+  12.1: () => vyvojObyvatel().panov,
+  12.2: () => vyvojObyvatel().lidov,
+  12.3: () => vyvojObyvatel().damov,
+  13.1: () => carTrip().pocatekCesty,
+  13.2: () => carTrip().zeleznicniPrejezd,
+  13.3: () => carTrip().konecCesty,
+  14.1: () => pyramida().floor8,
+  14.2: () => pyramida().floor7,
+  14.3: () => pyramida().stairs,
+})
 function souctovyTrojuhelnik() {
   const entity = 'velikost'
   const zbytekKRozdeleni = "zbytek k rozdělení"
@@ -84,8 +85,8 @@ function lukasAccount() {
   const newState = cont("účet nově", 470, entity);
 
 
-  const moneyIn = deduce(grandMotherIn, pocketMoneyIn, combine("přijato", [], entity, entity));
-  const moneyOut = deduce(bookCostOut, fatherGiftOut, combine("vydáno", [], entity, entity));
+  const moneyIn = deduce(grandMotherIn, pocketMoneyIn, ctorAccumulate("přijato"));
+  const moneyOut = deduce(bookCostOut, fatherGiftOut, ctorAccumulate("vydáno"));
   const balance = deduce(moneyIn, moneyOut, ctorDifference("změna na účtě"));
   return {
     deductionTree: deduce(
@@ -125,7 +126,7 @@ function timeUnitSum() {
       deduce(
         deduce(cont("hodin", 1, entity, "h"), ctorUnit(minutes)),
         cont("minut", 20, entity, minutes),
-        combine("celkem", [], { entity, unit: minutes }, { entity, unit: minutes })
+        ctorSlide("celkem")
       ),
       ctorUnit("s")
     )
@@ -151,8 +152,7 @@ function distanceUnitCompareDiff() {
 }
 
 export function dveCislaNaOse({ input }: { input: { mensiCislo: number, vetsiCislo: number, pocetUsekuMeziCisly: number, X: number, Y: number } }) {
-  const entityLength = "délka";
-
+  const entityLength = "délka";  
   const entity = "úsek"
 
   const mensi = axiomInput(cont('menší zadané číslo', input.mensiCislo, entityLength,), 1)
@@ -165,8 +165,8 @@ export function dveCislaNaOse({ input }: { input: { mensiCislo: number, vetsiCis
   const usekRate = cislaNaOse({ mensi, vetsi, pocetUseku })
 
 
-  const dd1 = deduce(deduce(positionX, usekRate), mensi, combine("pozice X", [], entityLength, entityLength));
-  const dd2 = deduce(deduce(positionY, last(usekRate)), mensi, combine("pozice Y", [], entityLength, entityLength));
+  const dd1 = deduce(deduce(positionX, usekRate), mensi, ctorSlide("pozice X"));
+  const dd2 = deduce(deduce(positionY, last(usekRate)), mensi, ctorSlide("pozice Y"));
 
 
 
@@ -186,7 +186,7 @@ export function novorocniPrani() {
         deduce(
           deduce(cont("Tereza", 14, entity), cont("Tereza", 5, entityBase), ctor('rate')),
           deduce(cont("Nikola", 10, entity), cont("Nikola", 5, entityBase), ctor('rate')),
-          combine("společně", [], entity, entity)
+          ctorAccumulate("společně")
         )
       ),
       ctorOption("B", 25)
@@ -225,9 +225,9 @@ export function carTrip() {
     konecCesty: {
       deductionTree: deduce(
         deduce(
-          deduce(last(pocatek), dobaCesta, combine("čas odjezdu", [], entity, entity)),
+          deduce(last(pocatek), dobaCesta, ctorSlide("čas odjezdu")),
           cont("posun odjezdu o", 6, entity),
-          combine("posunutý čas příjezdu", [], entity, entity),
+          ctorSlide("posunutý čas příjezdu"),
         ),
         ctorOption("A", 30)
       )
@@ -293,7 +293,7 @@ export function vyvojObyvatel() {
           cont("2020", -10, entity),
           cont("2021", 10, entity),
           cont("2022", 5, entity),
-          combine("změna obyvatel", ["2019", "2020", "2021", "2022"], entity, entity)
+          ctorAccumulate("změna obyvatel")
         ),
         ctorOption("B", 0)
       )

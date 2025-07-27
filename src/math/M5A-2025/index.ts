@@ -1,22 +1,22 @@
-import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, product, rate, ratio, ratios, combine } from "../../components/math";
-import { deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
+import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, product, rate, ratio, ratios, ctorAccumulate } from "../../components/math";
+import { createLazyMap, deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
-export default {
-  3.1: jizdniKolo().a,
-  3.2: jizdniKolo().b,
-  4.1: kulicka().pocet,
-  4.2: kulicka().hmotnost,
-  5.1: patrovyDum().druhePatroChlapci,
-  5.2: patrovyDum().prvniPatroPocetDeti,
-  5.3: patrovyDum().pocetDivek,
-  6.1: domecek().obvod,
-  6.2: domecek().kratsiStranaObdelni,
-  9: farmar(),
-  10: penize(),
-  14.1: poutnik().prvniKouzlo,
-  14.2: poutnik().druheKouzlo,
-  14.3: poutnik().maximumKouzel,
-}
+export default createLazyMap({
+  3.1: () => jizdniKolo().a,
+  3.2: () => jizdniKolo().b,
+  4.1: () => kulicka().pocet,
+  4.2: () => kulicka().hmotnost,
+  5.1: () => patrovyDum().druhePatroChlapci,
+  5.2: () => patrovyDum().prvniPatroPocetDeti,
+  5.3: () => patrovyDum().pocetDivek,
+  6.1: () => domecek().obvod,
+  6.2: () => domecek().kratsiStranaObdelni,
+  9: () => farmar(),
+  10: () => penize(),
+  14.1: () => poutnik().prvniKouzlo,
+  14.2: () => poutnik().druheKouzlo,
+  14.3: () => poutnik().maximumKouzel,
+})
 
 function jizdniKolo() {
   const entity = "otočení"
@@ -78,7 +78,7 @@ function kulicka() {
       deductionTree: deduce(
         smallPocet,
         last(bigPocet),
-        combine("celkem", [], entityBase, entityBase)
+        ctorAccumulate("celkem")
       )
     },
     hmotnost: {
@@ -277,7 +277,7 @@ export function poutnik() {
     deduce(
       kouzelnik,
       poutnik,
-      combine("celkem", [], entity, entity)
+      ctorAccumulate("celkem")
     ),
     ratiosKvP
   )
@@ -286,7 +286,7 @@ export function poutnik() {
     deduce(
       last(kouzelnik1),
       cont("poutník", lastQuantity(kouzelnik1), entity),
-      combine("celkem", [], entity, entity)
+      ctorAccumulate("celkem")
     ),
     ratiosKvP
   )
@@ -305,7 +305,7 @@ export function poutnik() {
           deduce(
             last(kouzelnik1),
             cont("poutník", lastQuantity(kouzelnik1), entity),
-            combine("celkem", [], entity, entity)
+            ctorAccumulate("celkem")
           ),
           last(ratiosKvP),
           nthPart("poutník")
@@ -322,7 +322,7 @@ export function poutnik() {
             deduce(
               last(kouzelnik2),
               cont("poutník", lastQuantity(kouzelnik2), entity),
-              combine("celkem", [], entity, entity)
+              ctorAccumulate("celkem")
             ),
             last(ratiosKvP),
             nthPart("poutník")

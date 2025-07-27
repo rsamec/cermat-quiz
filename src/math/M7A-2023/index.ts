@@ -1,5 +1,5 @@
-import { commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, ctorComplement, ctorOption, percent, product, rate, ratios, combine } from "../../components/math";
-import { axiomInput, deduce, last, to, toCont } from "../../utils/deduce-utils";
+import { commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, ctorAccumulate, ctorComplement, ctorOption, ctorSlide, percent, product, rate, ratios } from "../../components/math";
+import { axiomInput, createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
 import { obrazce } from "../obrazce";
@@ -18,8 +18,8 @@ var cetarParams = {
   }
 };
 
-export default {
-  1: comparingValues({
+export default createLazyMap({
+  1: () => comparingValues({
     input: {
       first: {
         ratio: 3 / 4,
@@ -31,33 +31,33 @@ export default {
       }
     }
   }),
-  3.1: cetar(cetarParams)[0],
-  3.2: cetar(cetarParams)[1],
-  3.3: cetar(cetarParams)[2],
-  4.1: example_4_1(),
-  4.2: example_4_2(),
-  5.1: sesity()[1],
-  5.2: compass(),
-  6.1: odmenySoutezici()[0],
-  6.2: odmenySoutezici()[1],
-  10.1: trideni_odpadu().papirStoR,
-  10.2: trideni_odpadu().plast2,
-  10.3: trideni_odpadu().kovyToPapir,
-  11: example_11(),
-  12: example_12(),
-  // 13: example_13(),
-  14: zakusek({
+  3.1: () => cetar(cetarParams)[0],
+  3.2: () => cetar(cetarParams)[1],
+  3.3: () => cetar(cetarParams)[2],
+  4.1: () => example_4_1(),
+  4.2: () => example_4_2(),
+  5.1: () => sesity()[1],
+  5.2: () => compass(),
+  6.1: () => odmenySoutezici()[0],
+  6.2: () => odmenySoutezici()[1],
+  10.1: () => trideni_odpadu().papirStoR,
+  10.2: () => trideni_odpadu().plast2,
+  10.3: () => trideni_odpadu().kovyToPapir,
+  11: () => example_11(),
+  12: () => example_12(),
+  // 13:() => example_13(),
+  14: () => zakusek({
     input: {
       cena: 72
     }
   }),
-  15.1: example_15_1(),
-  15.2: example_15_2(),
-  15.3: example_15_3(),
-  16.1: obrazce()[0],
-  16.2: obrazce()[1],
-  16.3: obrazce()[2]
-}
+  15.1: () => example_15_1(),
+  15.2: () => example_15_2(),
+  15.3: () => example_15_3(),
+  16.1: () => obrazce()[0],
+  16.2: () => obrazce()[1],
+  16.3: () => obrazce()[2]
+})
 function example_4_1() {
   const entity = "žáci";
   return {
@@ -71,7 +71,7 @@ function example_4_1() {
         deduce(
           cont("volejbal", 28, entity),
           cont("fotbal", 16, entity),
-          combine("fotbal a volejbal", [], entity, entity)
+          ctorAccumulate("fotbal a volejbal")
         ),
         ctor('comp-diff')
       ),
@@ -111,7 +111,7 @@ function example_13() {
       deduce(pocetDvou, rate(dvou, 2, entityPrice, entity)),
       deduce(last(pocetPeti), rate(peti, 5, entityPrice, entity)),
       deduce(pocetDeseti, rate(deseti, 10, entityPrice, entity)),
-      combine("hodnota", [], entityPrice, entityPrice)
+      ctorAccumulate("hodnota")
     )
   }
 }
@@ -135,7 +135,7 @@ function example_11() {
                 axiomInput(cont(inputAngleLabel, 70, entity), 1),
                 compAngle(inputAngleLabel, `${triangle} u vrcholu A`, "supplementary")
               ),
-              combine("dvojice úhlů v trojúhelníku", [], entity, entity)),
+              ctorSlide("dvojice úhlů v trojúhelníku")),
             ctor('comp-diff'))
           , { agent: `${triangle} u vrcholu D` }),
         compAngle(`${triangle} u vrcholu D`, "φ", 'supplementary')
@@ -195,7 +195,7 @@ function example_12() {
           cont("počet šedých trojúhleníků", 3, ""),
           product("obsah tří šedých trojúhelníku", [], entity2d, entity2d)
         ),
-        combine("obsah sedmiúhelníku", [], entity2d, entity2d)
+        ctorSlide("obsah sedmiúhelníku")
       ),
       ctorOption("B", 31)
     )
@@ -258,7 +258,7 @@ function example_15_3() {
             axiomInput(percent("zbývající dospělý", "přišlo 2.den", 70), 3)
           ),
           den1,
-          combine("přišlo celkem", [], entity, entity)
+          ctorAccumulate("přišlo celkem")
         ),
         ctor('comp-diff')
       ),

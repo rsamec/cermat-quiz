@@ -1,4 +1,4 @@
-import { commonSense, compDiff, cont, ctorOption, primeFactorization, combine } from "../../components/math";
+import { commonSense, compDiff, cont, ctorOption, primeFactorization, combine, ctorAccumulate } from "../../components/math";
 import { axiomInput, deduce, deduceLbl, to } from "../../utils/deduce-utils";
 
 
@@ -29,7 +29,7 @@ export function caryNaPapire({ input }: { input: InputParameters }) {
     deduce(
       deduce(dvojice, diff),
       deduce({ ...cont(usekLabel, 5, emptyEntity), ...deduceLbl(1) }, diff),
-      combine(`součet čar`, [], emptyEntity, emptyEntity)
+      ctorAccumulate(`součet čar`)
     ),
     ctorOption("A", 11)
   )

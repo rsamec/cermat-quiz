@@ -1,4 +1,4 @@
-import { cont, combine, ctor } from "../components/math";
+import { cont, combine, ctor, ctorAccumulate } from "../components/math";
 import { deduce, axiomInput } from "../utils/deduce-utils";
 
 export const compass = () => {
@@ -11,7 +11,7 @@ export const compass = () => {
         deduce(
           axiomInput(cont("chybělo", 160, entityPrice), 2),
           axiomInput(cont("zbylo", 100, entityPrice), 3),
-          combine(agent, [], entityPrice, entityPrice)
+          ctorAccumulate(agent)
         ),
         axiomInput(cont(agent, 2, "kus"), 1),
         ctor('rate')),

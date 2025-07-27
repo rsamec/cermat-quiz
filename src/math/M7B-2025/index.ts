@@ -1,20 +1,20 @@
-import { commonSense, compRelative, cont, ctor, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, gcd, nthPart, percent, product, proportion, rate, ratio, ratios, combine } from "../../components/math"
-import { deduce, last, to, toCont, type TreeNode } from "../../utils/deduce-utils"
+import { commonSense, compRelative, cont, ctor, ctorAccumulate, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, gcd, nthPart, percent, product, proportion, rate, ratio } from "../../components/math"
+import { createLazyMap, deduce, last, to, toCont, type TreeNode } from "../../utils/deduce-utils"
 
-export default {
-  1: hledaneCislo(),
-  2: pomer(),
-  4.1: vodniNadrz().pomer,
-  4.2: vodniNadrz().pocetCerpadel,
-  4.3: vodniNadrz().pocetHodin,
-  5.1: zaciSkupiny().dvojic,
-  5.2: zaciSkupiny().zaku,
-  13: kapesne().utratila,
-  14: kapesne().usetrila,
-  15.1: cislo(),
-  15.2: zahradnictvi(),
-  15.3: predstaveni(),
-}
+export default createLazyMap({
+  1: () => hledaneCislo(),
+  2: () => pomer(),
+  4.1: () => vodniNadrz().pomer,
+  4.2: () => vodniNadrz().pocetCerpadel,
+  4.3: () => vodniNadrz().pocetHodin,
+  5.1: () => zaciSkupiny().dvojic,
+  5.2: () => zaciSkupiny().zaku,
+  13: () => kapesne().utratila,
+  14: () => kapesne().usetrila,
+  15.1: () => cislo(),
+  15.2: () => zahradnictvi(),
+  15.3: () => predstaveni(),
+})
 
 
 function hledaneCislo() {
@@ -176,7 +176,7 @@ function zaciSkupiny() {
       cont("skupina dvojic", 6, entityDvojic)
     ),
     cont("zbývající žáci", 1, entityDvojic),
-    combine("skupina dvojic", [], entityDvojic, entityDvojic)
+    ctorAccumulate("skupina dvojic")
   )
 
 
@@ -200,7 +200,7 @@ function zaciSkupiny() {
           ),
           rate("skupina", 3, entity, entityTrojic)
         ),
-        combine("celkem", [entityDvojic, entityTrojic], entity, entity)
+        ctorAccumulate("celkem")
       )
     }
 
@@ -303,7 +303,7 @@ function zahradnictvi() {
               ratio(celkemLabel, kopretinyLabel, 1 / 4)
             ),
             hvozdiky,
-            combine("dohromady", [kopretinyLabel, hvozdikyLabel], entity, entity)
+            ctorAccumulate("dohromady")
           ),
           ctorDifference(astraLabel)
         ),
@@ -338,7 +338,7 @@ function predstaveni() {
         deduce(
           last(deti),
           dospely,
-          combine("celkem", [detiLabel, dospeliLabel], entity, entity)
+          ctorAccumulate("celkem")
         ),
         ctorPercent()
       ),

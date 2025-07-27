@@ -1,5 +1,5 @@
-import { cont, combine, ctor, commonSense, ratios, rate } from "../components/math"
-import { deduce, to, last, lastQuantity } from "../utils/deduce-utils"
+import { cont, ctor, commonSense, ratios, rate, ctorAccumulate } from "../components/math"
+import { deduce, to, lastQuantity } from "../utils/deduce-utils"
 
 export const obrazce = () => {
   const entityRow = "řádků"
@@ -15,7 +15,7 @@ export const obrazce = () => {
     deduce(
       cont(`levý sloupec ${extended}`, 6, entityTmave),
       cont(`pravý sloupec ${extended}`, 6, entityTmave),
-      combine("oba krajní sloupce", [], entityTmave, entityTmave)
+      ctorAccumulate("oba krajní sloupce")
     ),
     ctor('comp-diff')
   );
@@ -33,7 +33,7 @@ export const obrazce = () => {
           deduce(
             cont(`levý sloupec`, 3, entity),
             cont(`pravý sloupec`, 3, entity),
-            combine("oba krajní sloupce", [], entity, entity)
+            ctorAccumulate("oba krajní sloupce")
           ),
           ratios(extended, [entitySvetle, "horní řada", "oba krajní sloupce"], [2, 1, 1])
         ),

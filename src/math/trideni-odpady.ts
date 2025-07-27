@@ -1,4 +1,4 @@
-import { cont, ctor, ctorBooleanOption, ctorOption, combine } from "../components/math";
+import { cont, ctor, ctorBooleanOption, ctorOption, combine, ctorSlide } from "../components/math";
 import { deduce } from "../utils/deduce-utils";
 
 export const trideni_odpadu = () => {
@@ -8,28 +8,28 @@ export const trideni_odpadu = () => {
   const entityPapir = "papír";
   const entityPlast = "plast";
   const entityKovy = "kovy";
-  const entityVaha = "kg"
+  const unit = "kg"
 
   const kovyCelkem = deduce(
-    cont(oddilR, 3, entityKovy),
-    cont(oddilS, 3, entityKovy),
-    cont(oddilT, 4, entityKovy),
-    combine(`kovy všechny oddíly`, [], entityVaha, entityPlast)
+    cont(oddilR, 3, entityKovy, unit),
+    cont(oddilS, 3, entityKovy, unit),
+    cont(oddilT, 4, entityKovy, unit),
+    ctorSlide(`kovy všechny oddíly`)
   )
 
   const papirCelkem = deduce(
-    cont(oddilR, 6, entityPapir),
-    cont(oddilS, 8, entityPapir),
-    cont(oddilT, 1, entityPapir),
-    combine(`papír všechny oddíly`, [], entityVaha, entityPlast)
+    cont(oddilR, 6, entityPapir, unit),
+    cont(oddilS, 8, entityPapir, unit),
+    cont(oddilT, 1, entityPapir, unit),
+    ctorSlide(`papír všechny oddíly`)
   )
   const plast = deduce(
     deduce(
-      cont(oddilT, 9, entityPlast),
-      cont(oddilS, 11, entityPlast),
-      combine(`oddíl S a T`, [], entityPlast, entityPlast)
+      cont(oddilT, 9, entityPlast, unit),
+      cont(oddilS, 11, entityPlast, unit),
+      ctorSlide(`oddíl S a T`)
     ),
-    cont(oddilR, 15, entityPlast),
+    cont(oddilR, 15, entityPlast, unit),
     ctor('comp-ratio')
   );
 
@@ -37,8 +37,8 @@ export const trideni_odpadu = () => {
     papirStoR: {
       deductionTree: deduce(
         deduce(
-          cont(oddilS, 8, entityPapir),
-          cont(oddilR, 6, entityPapir),
+          cont(oddilS, 8, entityPapir, unit),
+          cont(oddilR, 6, entityPapir, unit),
           ctor('comp-ratio')
         ),
         ctorBooleanOption(1 / 4)
@@ -47,8 +47,8 @@ export const trideni_odpadu = () => {
     papirRtoS: {
       deductionTree: deduce(
         deduce(
-          cont(oddilR, 6, entityPapir),
-          cont(oddilS, 8, entityPapir),
+          cont(oddilR, 6, entityPapir, unit),
+          cont(oddilS, 8, entityPapir, unit),
           ctor('comp-ratio')
         ),
         ctorOption('C', 1 / 4)

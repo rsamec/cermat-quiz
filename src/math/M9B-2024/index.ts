@@ -1,4 +1,4 @@
-import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, product, pythagoras, rate, ratio, ratios, combine } from "../../components/math";
+import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, product, pythagoras, rate, ratio, ratios, ctorSlide, ctorAccumulate } from "../../components/math";
 import { deduce, last, to } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 export default {
@@ -38,7 +38,7 @@ function AdamAOta() {
       deduce(
         adam1,
         adam2,
-        combine("Adam", [], { entity, unit }, { entity, unit })
+        ctorSlide("Adam")
       ),
       deduce(
         adam1,
@@ -80,7 +80,7 @@ function ctyruhelnik() {
         cont("DC", 8, entity2d, unit2d),
         ctor("quota")
       ),
-      combine("celkem", [], { entity: entity2d, unit: unit2d }, { entity: entity2d, unit: unit2d })
+      ctorSlide("celkem")
     )
   }
 }
@@ -182,7 +182,7 @@ function povrchValce() {
       podstava,
       last(podstava),
       deduce(last(podstava), compRatio("plášť", "podstava", 3)),
-      combine("válec", ["dolní podstava", "horní podstava", "plášť"], entity2d, entity2d)
+      ctorSlide("válec")
     )
   }
 }
@@ -224,11 +224,11 @@ export const krouzkyATridy = () => {
         roboticky8,
         deduce(
           deduce(
-            deduce(hudebni8, sachovy8, roboticky8, combine("8.", [], entityBase, entityBase)),
+            deduce(hudebni8, sachovy8, roboticky8, ctorAccumulate("8.")),
             ratios("celkem", ["8.", "9."], [2, 3]),
             nthPart("9.")
           ),
-          deduce(hudebni9, sachovy9, combine("9.", [], entityBase, entityBase)),
+          deduce(hudebni9, sachovy9, ctorAccumulate("9."),
           ctorDifference(`${robotickyLabel} 9.`)
         ),
         ctorRatios(robotickyLabel)

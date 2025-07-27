@@ -1,24 +1,24 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, product, quota, rate, ratio, ratios, combine, ctorPercent, percent, compAngle, ctorComplement, ctorComparePercent, compPercent, compRelativePercent, compDiff, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, comp, ctorLinearEquation } from "../../components/math";
-import { deduce, last, to, toCont } from "../../utils/deduce-utils";
+import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, product, rate, ratio, ratios, ctorPercent, compAngle, ctorComplement, ctorComparePercent, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, ctorLinearEquation, ctorSlide, ctorAccumulate, combine } from "../../components/math";
+import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 
-export default {
-  1: porovnani(),
-  7.1: salaty().druhyDenTrzba,
-  7.2: salaty().druhyDenVyrazSPromenou,
-  7.3: salaty().pocetSalatu,
-  8.1: pravouhlyLichobeznik().obsah,
-  8.2: pravouhlyLichobeznik().obvod,
-  8.3: pravouhlyLichobeznik().obvodRovnobeznik,
-  11.1: zahrada().jabloneVsMagnolie,
-  11.2: zahrada().levanduleABazalkaVsHortenzie,
-  11.3: zahrada().ruzePlocha,
-  12: uhelAlfa(),
-  14: dort(),
-  15.1: tabor().percentPerVedouci,
-  15.2: tabor().mladsiPercent,
-  15.3: tabor().pocetDivek,
-}
+export default createLazyMap({
+  1: () => porovnani(),
+  7.1: () => salaty().druhyDenTrzba,
+  7.2: () => salaty().druhyDenVyrazSPromenou,
+  7.3: () => salaty().pocetSalatu,
+  8.1: () => pravouhlyLichobeznik().obsah,
+  8.2: () => pravouhlyLichobeznik().obvod,
+  8.3: () => pravouhlyLichobeznik().obvodRovnobeznik,
+  11.1: () => zahrada().jabloneVsMagnolie,
+  11.2: () => zahrada().levanduleABazalkaVsHortenzie,
+  11.3: () => zahrada().ruzePlocha,
+  12: () => uhelAlfa(),
+  14: () => dort(),
+  15.1: () => tabor().percentPerVedouci,
+  15.2: () => tabor().mladsiPercent,
+  15.3: () => tabor().pocetDivek,
+})
 
 function porovnani() {
   const entity = "kusy";
@@ -63,10 +63,10 @@ function salaty() {
     {
       deductionTree: den2Trzba
     },
-    druhyDenVyrazSPromenou:{
+    druhyDenVyrazSPromenou: {
       deductionTree: deduce(
         last(den2),
-        cont("celkem","x", entity)
+        cont("celkem", "x", entity)
       )
     },
     pocetSalatu:
@@ -123,7 +123,7 @@ function dort() {
           height,
           product("menší korpus", [], { entity: entity2d, unit: unit2d }, { entity, unit })
         ),
-        combine("celkem", [], { entity: entity2d, unit: unit2d }, { entity: entity2d, unit: unit2d })
+        ctorSlide("celkem")
       ),
       ctorOption("D", 500)
     )
@@ -156,7 +156,7 @@ function uhelAlfa() {
               compAngle("úhel přímka p", "trojúhelník bod A", "alternate-exterior")
             ),
             last(praveRameho),
-            combine("dvojice součet", ["trojúhelník bod A", "trohúhelník bod B"], { entity, unit }, { entity, unit }),
+            ctorSlide("dvojice součet")
           ),
           ctorDifference("trojúhelník bod C")
         ),
@@ -191,7 +191,7 @@ function pravouhlyLichobeznik() {
     horniZakladna,
     spodniZakladna,
     height,
-    combine(`${agentLabel} obvod`, [], { entity, unit }, { entity, unit })
+    ctorSlide(`${agentLabel} obvod`)
   )
 
   return {
@@ -207,7 +207,7 @@ function pravouhlyLichobeznik() {
             agent: agentLabel
           }
         }),
-        combine(agentLabel, [], { entity: entity2d, unit: unit2d }, { entity: entity2d, unit: unit2d })
+        ctorSlide(agentLabel)
       )
     },
     obvod: {
@@ -220,7 +220,7 @@ function pravouhlyLichobeznik() {
           ratios(`${agentLabel} obvod`, ["menší lichoběžník", "rovnoběžník"], [1, 1])
         ),
         prepona,
-        combine("rovnoběžník obvod", [], { entity, unit }, { entity, unit })
+        ctorSlide("rovnoběžník obvod")
       )
     }
 
@@ -256,7 +256,7 @@ function zahrada() {
       hortenzie,
       levandule,
       bazalka,
-      combine("celkem", [], entity, entity)
+      ctorAccumulate("celkem")
     ),
     ctorDifference(ruzeL)
   )
@@ -294,7 +294,7 @@ function zahrada() {
           deduce(
             levandule,
             bazalka,
-            combine("dohromady", [], entity, entity)
+            ctorAccumulate("dohromady")
           ),
           hortenzie,
           ctor('comp-ratio')
@@ -416,8 +416,7 @@ function obrazce() {
           ), rate("přechody", 3, { entity, unit }, "obrazec")),
           ctor("quota")
         ),
-
-        combine("obrazec č.6", [], entityPocet, entityPocet)
+        ctorSlide("obrazec č.6")
       )
     }
 

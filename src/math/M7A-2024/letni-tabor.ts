@@ -1,5 +1,5 @@
 
-import { cont, rate, combine, ctor, type RatioComparison, ctorBooleanOption } from "../../components/math";
+import { cont, rate, ctor, type RatioComparison, ctorBooleanOption, ctorAccumulate } from "../../components/math";
 import { axiomInput, deduce, last } from "../../utils/deduce-utils";
 
 
@@ -47,7 +47,7 @@ export default function build({ input }: {
   const dTree1 = deduce(
     instruktori,
     last(vedouci),
-    combine("vedoucích a instruktorů", [vedouciLabel, instruktorLabel], entity, entity)
+    ctorAccumulate("vedoucích a instruktorů")
   )
   const dTree1Result = last(dTree1);
 

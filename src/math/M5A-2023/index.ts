@@ -1,4 +1,4 @@
-import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, lcd, primeFactorization, product, rate, combine } from "../../components/math";
+import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, lcd, primeFactorization, product, rate, ctorAccumulate, ctorSlide } from "../../components/math";
 import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
@@ -18,7 +18,7 @@ const cetarParams = {
   }
 };
 export default {
-  2.1: comparingValues({
+  2.1: () => comparingValues({
     input: {
       first: {
         ratio: 1 / 4,
@@ -30,37 +30,37 @@ export default {
       }
     }
   }),
-  2.2: hledani_cisel({
+  2.2: () => hledani_cisel({
     input: {
       value: 180
     }
   }),
-  3.1: cetar(cetarParams)[0],
-  3.2: cetar(cetarParams)[1],
-  3.3: cetar(cetarParams)[2],
-  4.1: sesity()[0],
-  4.2: sesity()[1],
-  4.3: compass(),
-  5.1: klubSEN().jedenKrouzek,
-  5.2: klubSEN().klub,
-  6.1: odmenySoutezici()[0],
-  6.2: odmenySoutezici()[1],
-  8.1: desitiuhelnik().whiteTriangle,
-  8.2: desitiuhelnik().grayRectangle,
-  8.3: desitiuhelnik().grayTriangle,
+  3.1: () => cetar(cetarParams)[0],
+  3.2: () => cetar(cetarParams)[1],
+  3.3: () => cetar(cetarParams)[2],
+  4.1: () => sesity()[0],
+  4.2: () => sesity()[1],
+  4.3: () => compass(),
+  5.1: () => klubSEN().jedenKrouzek,
+  5.2: () => klubSEN().klub,
+  6.1: () => odmenySoutezici()[0],
+  6.2: () => odmenySoutezici()[1],
+  8.1: () => desitiuhelnik().whiteTriangle,
+  8.2: () => desitiuhelnik().grayRectangle,
+  8.3: () => desitiuhelnik().grayTriangle,
   9: zakusek({
     input: {
       cena: 72
     }
   }),
-  11: stavebnice().cube,
-  12: stavebnice().minimalCube,
-  13.1: trideni_odpadu().papirRtoS,
-  13.2: trideni_odpadu().plast1,
-  13.3: trideni_odpadu().papirToKovy,
-  14.1: obrazce()[0],
-  14.2: obrazce()[1],
-  14.3: obrazce()[2]
+  11: () => stavebnice().cube,
+  12: () => stavebnice().minimalCube,
+  13.1: () => trideni_odpadu().papirRtoS,
+  13.2: () => trideni_odpadu().plast1,
+  13.3: () => trideni_odpadu().papirToKovy,
+  14.1: () => obrazce()[0],
+  14.2: () => obrazce()[1],
+  14.3: () => obrazce()[2]
 }
 
 
@@ -100,7 +100,7 @@ function klubSEN() {
       sportovni,
       divadelni,
       roboticky,
-      combine("celkem učastníků", [], entity, entity)
+      ctorAccumulate("celkem učastníků")
     ),
     deduce(
       deduce(
@@ -111,7 +111,7 @@ function klubSEN() {
         twoRate,
         two
       ),
-      combine("navštěvuje více kroužků", [], entity, entity)
+      ctorAccumulate("navštěvuje více kroužků")
     ),
     ctor('comp-diff')
   );
@@ -124,7 +124,7 @@ function klubSEN() {
         last(one),
         two,
         three,
-        combine("počet dětí", [], entity, entity)
+        ctorAccumulate("počet dětí")
       )
     }
   }
@@ -196,7 +196,7 @@ function desitiuhelnik() {
             cont("počet", 2, ""),
             product("levá a pravá strana", [], entity, entity)
           ),
-          combine("obvod", [], entity, entity)
+          ctorSlide("obvod")
         ),
         ctorBooleanOption(56)
       )
@@ -211,7 +211,7 @@ function desitiuhelnik() {
             last(squareSize),
             ctor('comp-diff')
           ),
-          combine("obvod", [], entity, entity)
+          ctorSlide("obvod")
         ),
         ctorBooleanOption(50, "greater")
       )

@@ -1,4 +1,4 @@
-import { cont, combine, percent, ctorDifference, ctorOption } from "../../components/math";
+import { cont, percent, ctorDifference, ctorOption, ctorAccumulate } from "../../components/math";
 import { deduce, axiomInput, last } from "../../utils/deduce-utils";
 
 const entity = "Kč";
@@ -31,7 +31,7 @@ export function example3({ input }: {
         last(cenaPoSleve),
         zdrazeniPercent
       ),
-      combine("konečná cena", ["cena po slevě", "zdraženo"], entity, entity),
+      ctorAccumulate("konečná cena"),
     ),
     ctorOption("E", 19_800)
   )
@@ -66,7 +66,7 @@ export function example1({ input }: {
         vypujceno
       ),
       vypujceno,
-      combine("vráceno", ["úrok", "vypůjčeno"], entity, entity)
+      ctorAccumulate("vráceno")
     ),
     ctorOption("A", 22_700)
   )

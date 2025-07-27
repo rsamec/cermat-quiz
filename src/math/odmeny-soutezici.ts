@@ -1,4 +1,4 @@
-import { cont, ratio, compRatio, combine, ctorComplement, ctor } from "../components/math";
+import { cont, ratio, compRatio, ctorComplement, ctor, ctorAccumulate } from "../components/math";
 import { axiomInput, deduce, last, deduceLbl } from "../utils/deduce-utils";
 
 export const odmenySoutezici = () => {
@@ -17,7 +17,7 @@ export const odmenySoutezici = () => {
     deduce(
       prvni,
       treti,
-      combine(`1. a 3. ${souteziciLabel}`, [], "", "")
+      ctorAccumulate(`1. a 3. ${souteziciLabel}`)
     ),
     ctorComplement(`2.${souteziciLabel}`)
   )

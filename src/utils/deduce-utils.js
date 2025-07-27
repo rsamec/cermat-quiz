@@ -705,7 +705,7 @@ function sumRuleEx(items, b) {
       if (b.kind !== "sum") {
         const itemsEntities = items.map((d) => d.entity);
         if (itemsEntities.filter(unique).length !== 1) {
-          throw `All predicates should have the same entity ${itemsEntities.join("")}.`;
+          throw `All predicates should have the same entity ${itemsEntities.map((d) => JSON.stringify(d)).join("")}.`;
         }
       }
       return { kind: "cont", agent: b.wholeAgent, quantity, entity: b.kind == "sum" ? b.wholeEntity.entity : items[0].entity, unit: b.kind == "sum" ? b.wholeEntity.unit : items[0].unit };
@@ -5757,11 +5757,30 @@ Vizualizuj vhodn\u011B tyto my\u0161lenky do obr\xE1zku pomoc\xED infografiky s 
     steps: explainSolution
   };
 }
+function createLazyMap(thunks) {
+  const lazyMap = {};
+  for (const key in thunks) {
+    Object.defineProperty(lazyMap, key, {
+      get() {
+        try {
+          return thunks[key]();
+        } catch (error) {
+          console.error(`Error in "${key}":`, error);
+          throw error;
+        }
+      },
+      configurable: true,
+      enumerable: true
+    });
+  }
+  return lazyMap;
+}
 export {
   axiomInput,
   computeTreeMetrics,
   concatString,
   connectTo,
+  createLazyMap,
   deduce,
   deduceAs,
   deduceLbl,
