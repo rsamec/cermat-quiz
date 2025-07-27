@@ -704,11 +704,17 @@ function sumRuleEx(items, b) {
     } else {
       if (b.kind !== "sum") {
         const itemsEntities = items.map((d) => d.entity);
-        if (itemsEntities.filter(unique).length !== 1) {
+        if (b.wholeEntity === null && itemsEntities.filter(unique).length !== 1) {
           throw `All predicates should have the same entity ${itemsEntities.map((d) => JSON.stringify(d)).join("")}.`;
         }
       }
-      return { kind: "cont", agent: b.wholeAgent, quantity, entity: b.kind == "sum" ? b.wholeEntity.entity : items[0].entity, unit: b.kind == "sum" ? b.wholeEntity.unit : items[0].unit };
+      return {
+        kind: "cont",
+        agent: b.wholeAgent,
+        quantity,
+        entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entity,
+        unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].unit
+      };
     }
   }
 }

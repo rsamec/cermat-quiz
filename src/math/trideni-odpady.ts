@@ -1,4 +1,4 @@
-import { cont, ctor, ctorBooleanOption, ctorOption, combine, ctorSlide } from "../components/math";
+import { cont, ctor, ctorBooleanOption, ctorOption, ctorSlide } from "../components/math";
 import { deduce } from "../utils/deduce-utils";
 
 export const trideni_odpadu = () => {
@@ -8,20 +8,21 @@ export const trideni_odpadu = () => {
   const entityPapir = "papír";
   const entityPlast = "plast";
   const entityKovy = "kovy";
+  const entity = "hmotnost";
   const unit = "kg"
 
   const kovyCelkem = deduce(
     cont(oddilR, 3, entityKovy, unit),
     cont(oddilS, 3, entityKovy, unit),
     cont(oddilT, 4, entityKovy, unit),
-    ctorSlide(`kovy všechny oddíly`)
+    ctorSlide(`kovy všechny oddíly`, { entity, unit })
   )
 
   const papirCelkem = deduce(
     cont(oddilR, 6, entityPapir, unit),
     cont(oddilS, 8, entityPapir, unit),
     cont(oddilT, 1, entityPapir, unit),
-    ctorSlide(`papír všechny oddíly`)
+    ctorSlide(`papír všechny oddíly`, { entity, unit })
   )
   const plast = deduce(
     deduce(

@@ -34,11 +34,11 @@ function ctor(kind) {
 function ctorUnit(unit) {
   return { kind: "unit", unit };
 }
-function ctorAccumulate(wholeAgent) {
-  return { kind: "accumulate", wholeAgent };
+function ctorAccumulate(wholeAgent, wholeEntity) {
+  return { kind: "accumulate", wholeAgent, wholeEntity };
 }
-function ctorSlide(wholeAgent) {
-  return { kind: "slide", wholeAgent };
+function ctorSlide(wholeAgent, wholeEntity) {
+  return { kind: "slide", wholeAgent, wholeEntity };
 }
 function ctorRound(fractionDigits = 0) {
   return { kind: "round", fractionDigits };
@@ -856,11 +856,17 @@ function sumRuleEx(items, b) {
     } else {
       if (b.kind !== "sum") {
         const itemsEntities = items.map((d) => d.entity);
-        if (itemsEntities.filter(unique).length !== 1) {
+        if (b.wholeEntity === null && itemsEntities.filter(unique).length !== 1) {
           throw `All predicates should have the same entity ${itemsEntities.map((d) => JSON.stringify(d)).join("")}.`;
         }
       }
-      return { kind: "cont", agent: b.wholeAgent, quantity, entity: b.kind == "sum" ? b.wholeEntity.entity : items[0].entity, unit: b.kind == "sum" ? b.wholeEntity.unit : items[0].unit };
+      return {
+        kind: "cont",
+        agent: b.wholeAgent,
+        quantity,
+        entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entity,
+        unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].unit
+      };
     }
   }
 }
@@ -5828,18 +5834,19 @@ var trideni_odpadu = () => {
   const entityPapir = "pap\xEDr";
   const entityPlast = "plast";
   const entityKovy = "kovy";
+  const entity3 = "hmotnost";
   const unit = "kg";
   const kovyCelkem = deduce(
     cont(oddilR, 3, entityKovy, unit),
     cont(oddilS, 3, entityKovy, unit),
     cont(oddilT, 4, entityKovy, unit),
-    ctorSlide(`kovy v\u0161echny odd\xEDly`)
+    ctorSlide(`kovy v\u0161echny odd\xEDly`, { entity: entity3, unit })
   );
   const papirCelkem = deduce(
     cont(oddilR, 6, entityPapir, unit),
     cont(oddilS, 8, entityPapir, unit),
     cont(oddilT, 1, entityPapir, unit),
-    ctorSlide(`pap\xEDr v\u0161echny odd\xEDly`)
+    ctorSlide(`pap\xEDr v\u0161echny odd\xEDly`, { entity: entity3, unit })
   );
   const plast = deduce(
     deduce(
@@ -5913,13 +5920,11 @@ function build({ input }) {
   const porucikLabel = "poru\u010D\xEDk";
   const cetarLabel = "\u010Deta\u0159";
   const vojinLabel = "voj\xEDn";
-  const entity3 = "osob";
+  const entity3 = "rozkaz";
   const kapitan = axiomInput(cont(agent, input.kapitan, kapitanLabel), 1);
   const porucik = axiomInput(cont(agent, input.porucik, porucikLabel), 2);
   const cetarPerPorucik = axiomInput(rate(agent, input.cetarPerPorucik, cetarLabel, porucikLabel), 3);
   const vojinPerCetar = axiomInput(rate(agent, input.vojinPerCetar, vojinLabel, cetarLabel), 4);
-  const vydaneRozkazy = ctorAccumulate("vydan\xE9 rozkazy");
-  const dostaneRozkazy = ctorAccumulate("p\u0159ijat\xE9 rozkazy");
   const pocetCetaru = deduce(
     porucik,
     cetarPerPorucik
@@ -5932,13 +5937,13 @@ function build({ input }) {
     kapitan,
     porucik,
     last(pocetCetaru),
-    vydaneRozkazy
+    ctorAccumulate("vydan\xE9 rozkazy", { entity: entity3 })
   );
   const dTree3 = deduce(
     porucik,
     last(pocetCetaru),
     last(pocetVojinu),
-    dostaneRozkazy
+    ctorAccumulate("p\u0159ijat\xE9 rozkazy", { entity: entity3 })
   );
   const template1 = (html) => html`<br/><strong>Kolik osob v rotě dostalo rozkaz k nástupu?</strong>`;
   const template = (highlight2) => highlight2`V rotě je ${input.kapitan} kapitán a má pod sebou ${input.porucik} poručíky.Každý poručík má pod sebou ${input.cetarPerPorucik} své četaře
@@ -7185,7 +7190,7 @@ var M5A_2023_default = createLazyMap({
   8.1: () => desitiuhelnik().whiteTriangle,
   8.2: () => desitiuhelnik().grayRectangle,
   8.3: () => desitiuhelnik().grayTriangle,
-  9: build2({
+  9: () => build2({
     input: {
       cena: 72
     }
@@ -9020,11 +9025,17 @@ function sumRuleEx2(items, b) {
     } else {
       if (b.kind !== "sum") {
         const itemsEntities = items.map((d) => d.entity);
-        if (itemsEntities.filter(unique2).length !== 1) {
+        if (b.wholeEntity === null && itemsEntities.filter(unique2).length !== 1) {
           throw `All predicates should have the same entity ${itemsEntities.map((d) => JSON.stringify(d)).join("")}.`;
         }
       }
-      return { kind: "cont", agent: b.wholeAgent, quantity, entity: b.kind == "sum" ? b.wholeEntity.entity : items[0].entity, unit: b.kind == "sum" ? b.wholeEntity.unit : items[0].unit };
+      return {
+        kind: "cont",
+        agent: b.wholeAgent,
+        quantity,
+        entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entity,
+        unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].unit
+      };
     }
   }
 }

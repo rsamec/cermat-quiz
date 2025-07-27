@@ -17,7 +17,7 @@ export default function build({ input }: {
   const porucikLabel = "poručík";
   const cetarLabel = "četař";
   const vojinLabel = "vojín";
-  const entity = "osob";
+  const entity = "rozkaz";
 
   const kapitan = axiomInput(cont(agent, input.kapitan, kapitanLabel), 1);
   const porucik = axiomInput(cont(agent, input.porucik, porucikLabel), 2);
@@ -25,8 +25,6 @@ export default function build({ input }: {
   const vojinPerCetar = axiomInput(rate(agent, input.vojinPerCetar, vojinLabel, cetarLabel), 4);
 
 
-  const vydaneRozkazy = ctorAccumulate("vydané rozkazy");
-  const dostaneRozkazy = ctorAccumulate("přijaté rozkazy");
 
   const pocetCetaru = deduce(
     porucik,
@@ -40,13 +38,13 @@ export default function build({ input }: {
     kapitan,
     porucik,
     last(pocetCetaru),
-    vydaneRozkazy,
+    ctorAccumulate("vydané rozkazy", {entity}),
   )
   const dTree3 = deduce(
     porucik,
     last(pocetCetaru),
     last(pocetVojinu),
-    dostaneRozkazy
+    ctorAccumulate("přijaté rozkazy",{entity})
   )
 
 

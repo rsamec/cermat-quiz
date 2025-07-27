@@ -170,10 +170,12 @@ export type PartWholeRatio = {
 export type Accumulate = {
   kind: 'accumulate'
   wholeAgent: string
+  wholeEntity?: EntityBase
 }
 export type Slide = {
   kind: 'slide',
   wholeAgent: string
+  wholeEntity?: EntityBase
 }
 export type SumCombine = Combine & {
   kind: 'sum'
@@ -303,11 +305,11 @@ export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | 'quota' | "comp-dif
 export function ctorUnit(unit: Unit): ConvertUnit {
   return { kind: "unit", unit }
 }
-export function ctorAccumulate(wholeAgent: string): Accumulate {
-  return { kind: "accumulate", wholeAgent }
+export function ctorAccumulate(wholeAgent: string, wholeEntity?: EntityBase): Accumulate {
+  return { kind: "accumulate", wholeAgent, wholeEntity }
 }
-export function ctorSlide(wholeAgent: string): Slide {
-  return { kind: "slide", wholeAgent }
+export function ctorSlide(wholeAgent: string, wholeEntity?: EntityBase): Slide {
+  return { kind: "slide", wholeAgent, wholeEntity }
 }
 
 export function ctorRound(fractionDigits: number = 0): Round {
@@ -1234,11 +1236,17 @@ function sumRuleEx(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine
     else {
       if (b.kind !== "sum") {
         const itemsEntities = items.map(d => d.entity);
-        if (itemsEntities.filter(unique).length !== 1) {
+        if (b.wholeEntity === null && itemsEntities.filter(unique).length !== 1) {
           throw `All predicates should have the same entity ${itemsEntities.map(d => JSON.stringify(d)).join("")}.`
         }
       }
-      return { kind: 'cont', agent: b.wholeAgent, quantity, entity: b.kind == "sum" ? b.wholeEntity.entity : items[0].entity, unit: b.kind == "sum" ? b.wholeEntity.unit : items[0].unit }
+      return {
+        kind: 'cont',
+        agent: b.wholeAgent,
+        quantity,
+        entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entity,
+        unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].unit
+      }
     }
   }
 

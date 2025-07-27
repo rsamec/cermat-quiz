@@ -48,7 +48,7 @@ export default createLazyMap({
   8.1: () => desitiuhelnik().whiteTriangle,
   8.2: () => desitiuhelnik().grayRectangle,
   8.3: () => desitiuhelnik().grayTriangle,
-  9: zakusek({
+  9: () => zakusek({
     input: {
       cena: 72
     }
