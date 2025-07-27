@@ -341,7 +341,7 @@ function znamkyPrumer() {
             pocetJednicek,
             deduce(pocetDvojek, cont("dvojka", 2, entity), product("dvojka", [], entity, entity)),
             deduce(pocetTrojek, cont("trojka", 3, entity), product("trojka", [], entity, entity)),
-            combine("celkem", [], entity, entityPocet)
+            ctorAccumulate("celkem", { entity })
           ),
           pocetCelkem,
           ctor("rate")
@@ -385,7 +385,7 @@ function soutez() {
               nthPart(viceZenLabel),
             ),
             rate(viceZenLabel, 2, entity, entityBase)),
-          combine(women, [], entity, entityBase)
+          ctorAccumulate(women, { entity })
         ),
         deduce(druzstva, rate("celkem", 3, entity, entityBase)),
         ctorPercent()

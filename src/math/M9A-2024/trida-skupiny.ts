@@ -1,5 +1,5 @@
 
-import { cont, compDiff, combine, commonSense } from "../../components/math";
+import { cont, compDiff, commonSense, ctorAccumulate } from "../../components/math";
 import { axiomInput, deduce, to } from "../../utils/deduce-utils";
 
 
@@ -21,7 +21,7 @@ export default function build({ input }: {
 
 
   const chlapci = axiomInput(cont(celkemAgent, input.chlapci, entityChlapci), 1);
-  const chlapciDiff  = axiomInput(compDiff(celkemAgent, skupinaDE, input.anglictinaChlapci, entityChlapci),2)
+  const chlapciDiff = axiomInput(compDiff(celkemAgent, skupinaDE, input.anglictinaChlapci, entityChlapci), 2)
   const de = axiomInput(cont(skupinaDE, input.nemcinaDivky, entityDivky), 3);
 
 
@@ -31,7 +31,7 @@ export default function build({ input }: {
       chlapciDiff
     ),
     de,
-    combine(skupinaDE, [], entity, entity)
+    ctorAccumulate(skupinaDE, { entity })
   )
 
   const dTree1 =
@@ -46,11 +46,11 @@ export default function build({ input }: {
 
 
   const dTree2 =
-  to(
-    dBase,
-    commonSense("angličtina a němčina - stejný počet žáků"),
-    cont("třída", ((input.chlapci - input.anglictinaChlapci) + input.nemcinaDivky) * 2, entity)
-  )
+    to(
+      dBase,
+      commonSense("angličtina a němčina - stejný počet žáků"),
+      cont("třída", ((input.chlapci - input.anglictinaChlapci) + input.nemcinaDivky) * 2, entity)
+    )
 
 
   const templateBase = highlight => highlight

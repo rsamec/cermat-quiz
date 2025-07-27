@@ -1,3 +1,4 @@
+import { createLazyMap } from "../../utils/deduce-utils";
 import { desetiuhelnik } from "./angle";
 import { domecek } from "./domecek";
 import { plnaKrabice } from "./krabice";
@@ -10,7 +11,7 @@ import { porovnani2Ploch } from "./plocha";
 
 const krabiceParams = { pocetKusuVKrabice: 12, missingVyrobku: 5 }
 
-export default {
+export default createLazyMap({
   1: () => porovnani2Ploch({ input: {} }),
   6.1: () => okurkyASalaty({ input: { salatyNavic: 4 } })[0],
   6.2: () => okurkyASalaty({ input: { salatyNavic: 4 } })[1],
@@ -28,4 +29,4 @@ export default {
   15.3: () => objemNadoby3({ input: { nadoba1Procent: 30, nadoba2Procent: 40, nadoba3: 19, prumerNadobaRatio: 2 / 5 } }),
   16.1: () => letajiciCtverecky({ input: { pocetRad: 21, pocetSloupcu: 110 } })[0],
   16.2: () => letajiciCtverecky({ input: { pocetRad: 21, pocetSloupcu: 110 } })[1]
-}
+})
