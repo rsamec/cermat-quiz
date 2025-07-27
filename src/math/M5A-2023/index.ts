@@ -1,5 +1,5 @@
 import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, lcd, primeFactorization, product, rate, ctorAccumulate, ctorSlide } from "../../components/math";
-import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
+import { axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
 import cetar from "../M7A-2023/cetar";
@@ -17,7 +17,7 @@ const cetarParams = {
     vojinPerCetar: 10
   }
 };
-export default {
+export default createLazyMap({
   2.1: () => comparingValues({
     input: {
       first: {
@@ -61,7 +61,7 @@ export default {
   14.1: () => obrazce()[0],
   14.2: () => obrazce()[1],
   14.3: () => obrazce()[2]
-}
+})
 
 
 function hledani_cisel({ input }: { input: { value: number } }) {
