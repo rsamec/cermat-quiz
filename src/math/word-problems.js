@@ -7154,7 +7154,7 @@ var cetarParams2 = {
     vojinPerCetar: 10
   }
 };
-var M5A_2023_default = {
+var M5A_2023_default = createLazyMap({
   2.1: () => comparingValues({
     input: {
       first: {
@@ -7198,7 +7198,7 @@ var M5A_2023_default = {
   14.1: () => obrazce()[0],
   14.2: () => obrazce()[1],
   14.3: () => obrazce()[2]
-};
+});
 function hledani_cisel({ input }) {
   const entity3 = "";
   return {
