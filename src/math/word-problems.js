@@ -7247,7 +7247,7 @@ function klubSEN() {
         twoRate,
         two
       ),
-      ctorAccumulate("nav\u0161t\u011Bvuje v\xEDce krou\u017Ek\u016F")
+      ctorAccumulate("nav\u0161t\u011Bvuje v\xEDce krou\u017Ek\u016F", { entity: entity3 })
     ),
     ctor("comp-diff")
   );

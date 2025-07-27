@@ -111,7 +111,7 @@ function klubSEN() {
         twoRate,
         two
       ),
-      ctorAccumulate("navštěvuje více kroužků")
+      ctorAccumulate("navštěvuje více kroužků", {entity})
     ),
     ctor('comp-diff')
   );
