@@ -466,9 +466,12 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = compose`${formatAgent(d.whole)} ${joinArray(d.parts?.map(d => formatAgent(d)), ":")} v poměru ${joinArray(d.ratios?.map(d => formatQuantity(d)), ":")}`;
       break;
     case "sum":
+    case "accumulate":
+    case "sumCombine":  
       result = compose`${joinArray(d.partAgents?.map(d => formatAgent(d)), " + ")}`;
       break;
     case "product":
+    case "productCombine":
       result = compose`${joinArray(d.partAgents?.map(d => formatAgent(d)), " * ")}`;
       break;
     case "rate":

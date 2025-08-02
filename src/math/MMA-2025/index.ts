@@ -1,4 +1,4 @@
-import { commonSense, comp, compRatio, compRelativePercent, cont, ctor, ctorAccumulate, ctorDifference, ctorLinearEquation, ctorRatios, ctorSlide, ctorUnit, evalExprAsCont, primeFactorization, product, pythagoras, rate, ratio } from "../../components/math";
+import { productCombine, commonSense, comp, compRatio, compRelativePercent, cont, ctor, accumulate, ctorDifference, ctorLinearEquation, product, ctorRatios, sum, ctorUnit, evalExprAsCont, primeFactorization, pythagoras, rate, ratio, repeat } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 
@@ -228,7 +228,7 @@ function prumernyPlat() {
         deduce(
           senioryCelkem,
           juniorCelkem,
-          ctorAccumulate("celkem vyplaceno")
+          accumulate("celkem vyplaceno")
         ),
         ctorLinearEquation(ostatniLabel, { entity: entityPrice }, "x")
       ),
@@ -345,39 +345,39 @@ function vyrezKrychle() {
           deduce(
             stranaKrychle,
             lastStranaKrychle,
-            product(`stěna ${krychleLabel}`, [], entity2d, entity)
+            productCombine(`stěna ${krychleLabel}`, entity2d)
           ),
-          cont(`počet stěn ${krychleLabel}`, 6, ""),
-          product(`${krychleLabel}`, [], entity2d, entity)
+          repeat(`počet stěn ${krychleLabel}`, 6),
+          product(`${krychleLabel}`)
         ),
         deduce(
           deduce(
             deduce(
               lastStranaKrychle,
               lastStranaKrychle,
-              product("stěna krychle", [], entity2d, entity)
+              productCombine("stěna krychle", entity2d)
             ),
-            cont("počet čtvercových stěn", 3, ""),
-            product(`levá, pravá a spodní stěna - ${telesoLabel}`, [], entity2d, entity)
+            repeat("počet čtvercových stěn", 3),
+            product(`levá, pravá a spodní stěna - ${telesoLabel}`)
           ),
           deduce(
             deduce(
               deduce(
                 lastStranaKrychle,
                 lastStranaKrychle,
-                product(`přední stěna - ${telesoLabel}`, [], entity2d, entity)
+                productCombine(`přední stěna - ${telesoLabel}`, entity2d)
               ),
               deduce(
                 lastStranaKrychle,
                 lastStranaKrychle,
-                product(`zadní stěna - ${telesoLabel}`, [], entity2d, entity)
+                productCombine(`zadní stěna - ${telesoLabel}`, entity2d)
               ),
-              ctorSlide(`přední a zadní stěna - ${telesoLabel}`)
+              sum(`přední a zadní stěna - ${telesoLabel}`)
             ),
             deduce(
               delsiOdvesna,
               lastStranaKrychle,
-              product("přední a zadní trojúhelníkový výřez", [], entity2d, entity)
+              productCombine("přední a zadní trojúhelníkový výřez", entity2d)
             ),
             ctorDifference(`přední a zadní stěna bez výřezu - ${telesoLabel}`)
           ),
@@ -385,12 +385,12 @@ function vyrezKrychle() {
             deduce(
               lastStranaKrychle,
               last(prepona),
-              product(`obdelníková šikmá stěna - ${telesoLabel}`, [], entity2d, entity)
+              productCombine(`obdelníková šikmá stěna - ${telesoLabel}`, entity2d)
             ),
-            cont(`počet obdelníkových šikmých stěn - ${telesoLabel}`, 2, ""),
-            product(`obě obdelníkové šikmé stěny - ${telesoLabel}`, [], entity2d, entity)
+            repeat(`počet obdelníkových šikmých stěn - ${telesoLabel}`, 2),
+            product(`obě obdelníkové šikmé stěny - ${telesoLabel}`)
           ),
-          ctorSlide(`${telesoLabel}`)
+          sum(`${telesoLabel}`)
         ),
         ctorRatios("poměr těles")
       ),

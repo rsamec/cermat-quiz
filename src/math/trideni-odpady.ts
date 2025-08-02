@@ -1,4 +1,4 @@
-import { cont, ctor, ctorBooleanOption, ctorOption, ctorSlide } from "../components/math";
+import { cont, ctor, ctorBooleanOption, ctorOption, sum } from "../components/math";
 import { deduce } from "../utils/deduce-utils";
 
 export const trideni_odpadu = () => {
@@ -15,20 +15,20 @@ export const trideni_odpadu = () => {
     cont(oddilR, 3, entityKovy, unit),
     cont(oddilS, 3, entityKovy, unit),
     cont(oddilT, 4, entityKovy, unit),
-    ctorSlide(`kovy všechny oddíly`, { entity, unit })
+    sum(`kovy všechny oddíly`, { entity, unit })
   )
 
   const papirCelkem = deduce(
     cont(oddilR, 6, entityPapir, unit),
     cont(oddilS, 8, entityPapir, unit),
     cont(oddilT, 1, entityPapir, unit),
-    ctorSlide(`papír všechny oddíly`, { entity, unit })
+    sum(`papír všechny oddíly`, { entity, unit })
   )
   const plast = deduce(
     deduce(
       cont(oddilT, 9, entityPlast, unit),
       cont(oddilS, 11, entityPlast, unit),
-      ctorSlide(`oddíl S a T`)
+      sum(`oddíl S a T`)
     ),
     cont(oddilR, 15, entityPlast, unit),
     ctor('comp-ratio')

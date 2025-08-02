@@ -63,6 +63,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@kitschpatrol/tldraw-cli": "^4.6.41",
     "@playwright/test": "^1.49.0",
     "@types/node": "^22.7.6",
     "pdf-lib": "^1.17.1",

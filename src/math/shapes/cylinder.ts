@@ -1,5 +1,5 @@
 
-import { cont, type Container, pi, piNumber, product, ctorSlide } from "../../components/math.js";
+import { cont, type Container, pi, piNumber, sum, productCombine } from "../../components/math.js";
 import { axiomInput, connectTo, deduce, last, type TreeNode } from "../../utils/deduce-utils.js";
 
 
@@ -15,7 +15,7 @@ export interface CylinderLabels {
   surfaceBaseAreaLabel?: string,
   entity2D?: string,
   baseCircumferenceLabel?: string,
-  volumeLabel?:string
+  volumeLabel?: string
 
 }
 
@@ -39,7 +39,7 @@ export function surfaceBaseArea(
     radius,
     radius,
     pi(),
-    product(surfaceBaseAreaLabel, [radiusLabel, radiusLabel, "PI"], entity2D, radius.entity)
+    productCombine(surfaceBaseAreaLabel, entity2D, [radiusLabel, radiusLabel, "PI"])
   )
 }
 export function baseCircumference(
@@ -59,7 +59,7 @@ export function baseCircumference(
   return deduce(
     cont("2 * PI", 2 * piNumber(), ""),
     radius,
-    product(baseCircumferenceLabel, ["2 * PI", radiusLabel], radius.entity, radius.entity)
+    productCombine(baseCircumferenceLabel, radius.entity, ["2 * PI", radiusLabel])
   )
 }
 
@@ -86,7 +86,7 @@ export function cylinder(
   const volume = deduce(
     surfaceBaseAreaTree,
     height,
-    product(volumeLabel, [surfaceBaseAreaLabel, heightLabel], entity3D, entity)
+    productCombine(volumeLabel, entity3D, [surfaceBaseAreaLabel, heightLabel])
   )
 
   const baseCircumferenceTree = baseCircumference({ radius }, { radiusLabel, baseCircumferenceLabel })
@@ -96,14 +96,14 @@ export function cylinder(
     deduce(
       surfaceBaseAreaTree,
       protilehlaStana,
-      product("spodní a horní stěna", [], entity2D, entity)
+      productCombine("spodní a horní stěna", entity2D)
     ),
     deduce(
       baseCircumferenceTree,
       height,
-      product("obsah bočního pláště", ["obvod podstavy", heightLabel], entity2D, entity)
+      productCombine("obsah bočního pláště", entity2D, ["obvod podstavy", heightLabel])
     ),
-    ctorSlide("obsah pláště")
+    sum("obsah pláště")
   )
 
   return {
@@ -114,7 +114,7 @@ export function cylinder(
   }
 }
 
-export function surfaceBaseAreaIn({ input }: { input: TreeNode}, labels: CylinderLabels = {}) {
+export function surfaceBaseAreaIn({ input }: { input: TreeNode }, labels: CylinderLabels = {}) {
   return connectTo(surfaceBaseArea({ radius: last(input) }, labels), input);
 }
 
@@ -143,7 +143,7 @@ export function examples({ input }: {
 
   const dTree1 = surfaceBaseArea({ radius })
 
-  const dTree2 = cylinder({radius, height }).volume;
+  const dTree2 = cylinder({ radius, height }).volume;
 
   const dTree3 = cylinder({ radius, height }).surface;
 

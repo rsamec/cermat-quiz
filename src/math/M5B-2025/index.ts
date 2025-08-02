@@ -1,4 +1,4 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorOption, ctorRatios, nthPart, product, rate, ratio, ratios, combine, ctorAccumulate, ctorSlide } from "../../components/math";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorOption, ctorRatios, nthPart,  rate, ratio, ratios, accumulate, product, sum } from "../../components/math";
 import { createLazyMap, deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -49,7 +49,7 @@ function hledaneCisla() {
           ctorDifference("číslo bez přičteného čísla 3")
         ),
         cont("opak dělení", 7, entity),
-        product("neznáné číslo", [], entity, entity)
+        product("neznáné číslo")
       )
     },
     cislo2: {
@@ -100,7 +100,7 @@ function koralky() {
     skupina3,
     skupina2,
     skupina1,
-    ctorAccumulate("celkem")
+    accumulate("celkem")
   )
   const name = 'skupina barev (černé a bílý)';
 
@@ -166,7 +166,7 @@ function restaurace() {
     deduce(
       last(small),
       last(medium),
-      ctorAccumulate("dohromady")
+      accumulate("dohromady")
     ),
     ctorDifference(bigLabel)
   )
@@ -181,7 +181,7 @@ function restaurace() {
         deduce(small, smallRate),
         deduce(medium, mediumRate),
         deduce(big, bigRate),
-        ctorAccumulate("celkem")
+        accumulate("celkem")
       )
     }
   }
@@ -279,7 +279,7 @@ function ctverce() {
     deduce(
       strana1,
       strana1Add,
-      combine(tempMatchSiteLabel2, [], { entity, unit }, { entity, unit })
+      sum(tempMatchSiteLabel2)
     ),
     ratios(matchSiteLabel3, [tempMatchSiteLabel2, "bílý čtverec"], [4, 1])
   )
@@ -292,7 +292,7 @@ function ctverce() {
   const width3 = deduce(
     last(strana2),
     widthAdd,
-    combine(tempMatchSiteLabel3, [], { entity, unit }, { entity, unit })
+    sum(tempMatchSiteLabel3)
   )
 
 
@@ -301,7 +301,7 @@ function ctverce() {
       deductionTree: deduce(
         strana2,
         ctverec2PocetStran,
-        product(obrazec2, [], { entity, unit }, { entity, unit })
+        product(obrazec2)
       )
     },
     obrazecWidthToLength: {
@@ -313,7 +313,7 @@ function ctverce() {
             cont(tempMatchSiteLabel3, 5, entitySquare),
             ctor('rate')
           ),
-          combine("delší strana 3. obrazce", [], { entity, unit }, { entity, unit })
+          product("delší strana 3. obrazce")
         ),
         width3
       )

@@ -1,4 +1,4 @@
-import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, product, pythagoras, rate, ratio, ratios, ctorSlide, ctorAccumulate } from "../../components/math";
+import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, pythagoras, rate, ratio, ratios, sum, accumulate, product, repeat, productCombine } from "../../components/math";
 import { deduce, last, to } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 export default {
@@ -38,7 +38,7 @@ function AdamAOta() {
       deduce(
         adam1,
         adam2,
-        ctorSlide("Adam")
+        sum("Adam")
       ),
       deduce(
         adam1,
@@ -74,13 +74,13 @@ function ctyruhelnik() {
       deduce(
         deduce(
           cont("trojúhelník BCD", 24, entity2d, unit2d),
-          cont("2", 2, ""),
-          product("obdelník", [], { entity: entity2d, unit: unit2d }, { entity: entity2d, unit: unit2d })
+          repeat("2", 2),
+          product("obdelník")
         ),
         cont("DC", 8, entity2d, unit2d),
         ctor("quota")
       ),
-      ctorSlide("celkem")
+      sum("celkem")
     )
   }
 }
@@ -174,7 +174,7 @@ function povrchValce() {
     polomer,
     polomer,
     pi(),
-    product("podstava", [], entity2d, entity)
+    productCombine("podstava",entity2d)
   )
 
   return {
@@ -182,7 +182,7 @@ function povrchValce() {
       podstava,
       last(podstava),
       deduce(last(podstava), compRatio("plášť", "podstava", 3)),
-      ctorSlide("válec")
+      sum("válec")
     )
   }
 }
@@ -224,11 +224,11 @@ export const krouzkyATridy = () => {
         roboticky8,
         deduce(
           deduce(
-            deduce(hudebni8, sachovy8, roboticky8, ctorAccumulate("8.")),
+            deduce(hudebni8, sachovy8, roboticky8, accumulate("8.")),
             ratios("celkem", ["8.", "9."], [2, 3]),
             nthPart("9.")
           ),
-          deduce(hudebni9, sachovy9, ctorAccumulate("9."),
+          deduce(hudebni9, sachovy9, accumulate("9."),
           ctorDifference(`${robotickyLabel} 9.`)
         ),
         ctorRatios(robotickyLabel)
@@ -264,12 +264,12 @@ function pozemekObdelnik() {
         deduce(
           last(stranaCtverce),
           last(stranaCtverce),
-          product("čtverec", [], { entity: entity2d, unit: unit2d }, { entity, unit })
+          productCombine("čtverec", { entity: entity2d, unit: unit2d })
         ),
         deduce(
           deduce(last(stranaCtverce), kratsiStranaComp),
           deduce(last(stranaCtverce), delsiStranaComp),
-          product("obdelník", [], { entity: entity2d, unit: unit2d }, { entity, unit })
+          productCombine("obdelník", { entity: entity2d, unit: unit2d })
         )
       )
     }

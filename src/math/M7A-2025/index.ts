@@ -1,4 +1,4 @@
-import { commonSense, comp, cont, ctor, ctorAccumulate, ctorComplement, ctorDifference, ctorOption, ctorSlide, ctorUnit, percent, rate, ratio, ratios, transfer } from "../../components/math"
+import { commonSense, comp, cont, ctor, accumulate, ctorComplement, ctorDifference, ctorOption, sum, ctorUnit, percent, rate, ratio, ratios, transfer } from "../../components/math"
 import { createLazyMap, deduce, last, to } from "../../utils/deduce-utils"
 
 export default createLazyMap({
@@ -43,7 +43,7 @@ function ceremonial() {
             last(dobaCeremonial),
             ratio(ceremonial, promitani, 1 / 5)
           ),
-          ctorSlide("konec promitani")
+          sum("konec promitani")
         ),
         ctorDifference("rozdil")
       )
@@ -125,7 +125,7 @@ function asistencniPes() {
         last(bara),
         last(cyril),
         adam,
-        ctorAccumulate("dohromady")
+        accumulate("dohromady")
       )
     }
 

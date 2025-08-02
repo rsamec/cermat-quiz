@@ -1,6 +1,6 @@
 
-import { cont, type Container, product, combine, ctorSlide } from "../../components/math.js";
-import { axiomInput, deduce, highlight } from "../../utils/deduce-utils.js";
+import { productCombine, cont, type Container, product, sum, repeat } from "../../components/math.js";
+import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 
 interface Params {
@@ -15,18 +15,17 @@ export function volume(
     widthLabel?: string
     lenghtLabbel?: string
     heightLabel?: string
-    entity?:string,
+    entity?: string,
     entity3D?: string,
     volumeLabel?: string,
   }) {
-  const { heightLabel, widthLabel, lengthLabel, entity3D, entity, volumeLabel } = {
+  const { heightLabel, widthLabel, lengthLabel, entity3D, volumeLabel } = {
     ...{
       widthLabel: "šířka",
       lengthLabel: "délka",
       heightLabel: "výška",
       entity3D: "krychliček",
-      entity: "cm",
-      volumeLabel:"objem"
+      volumeLabel: "objem"
 
     },
     ...options ?? {}
@@ -35,16 +34,15 @@ export function volume(
     length,
     width,
     height,
-    product(volumeLabel, [lengthLabel, widthLabel, heightLabel], entity3D, entity)
+    productCombine(volumeLabel, entity3D, [lengthLabel, widthLabel, heightLabel])
   )
-  
+
 }
 
 
 export function examples({ input }: {
   input: Params,
 }) {
-  const area = "obsah"
   const widthLabel = "šířka"
   const lengthLabel = "délka"
   const heightLabel = "výška"
@@ -62,38 +60,38 @@ export function examples({ input }: {
     deduce(
       length,
       width,
-      product("obsah podstavy", [lengthLabel, widthLabel], entity2D, entity)
+      productCombine("obsah podstavy", entity2D, [lengthLabel, widthLabel])
     )
 
   const dTree1 = dBase;
 
-  const dTree2 = volume({length,width,height});
+  const dTree2 = volume({ length, width, height });
 
-  const protilehlaStana = cont("počet stěn", 2, "");
+  const protilehlaStana = repeat("počet stěn", 2);
 
   const dTree3 =
     deduce(
       deduce(
         dBase,
         protilehlaStana,
-        product("spodní a horní stěna", [], entity2D, entity)),
+        product("spodní a horní stěna")),
       deduce(
         deduce(
           width,
           height,
-          product("boční stěna", [widthLabel, heightLabel], entity2D, entity)
+          productCombine("boční stěna", entity2D, [widthLabel, heightLabel])
         ),
         protilehlaStana,
-        product("obě boční stěny", [], entity2D, entity)),
+        product("obě boční stěny")),
       deduce(
         deduce(
           length,
           height,
-          product("přední stěna", [lengthLabel, heightLabel], entity2D, entity)
+          productCombine("přední stěna", entity2D, [lengthLabel, heightLabel])
         ),
         protilehlaStana,
-        product("přední a zadní stěna", [], entity2D, entity)),
-      ctorSlide("obsah pláště")
+        product("přední a zadní stěna")),
+      sum("obsah pláště")
     )
 
 

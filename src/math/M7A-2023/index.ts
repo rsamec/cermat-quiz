@@ -1,4 +1,4 @@
-import { commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, ctorAccumulate, ctorComplement, ctorOption, ctorSlide, percent, product, rate, ratios } from "../../components/math";
+import { productCombine, commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, accumulate, ctorComplement, ctorOption, repeat, sum, percent, rate, ratios, product } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
@@ -65,13 +65,13 @@ function example_4_1() {
       deduce(
         deduce(
           axiomInput(cont("průměř", 21, entity), 2),
-          cont("počet míčových sportů", 3, ""),
-          product("počet všech žáků míčové sporty", [], entity, entity)
+          repeat("počet míčových sportů", 3),
+          product("počet všech žáků míčové sporty")
         ),
         deduce(
           cont("volejbal", 28, entity),
           cont("fotbal", 16, entity),
-          ctorAccumulate("fotbal a volejbal")
+          accumulate("fotbal a volejbal")
         ),
         ctor('comp-diff')
       ),
@@ -111,7 +111,7 @@ function example_13() {
       deduce(pocetDvou, rate(dvou, 2, entityPrice, entity)),
       deduce(last(pocetPeti), rate(peti, 5, entityPrice, entity)),
       deduce(pocetDeseti, rate(deseti, 10, entityPrice, entity)),
-      ctorAccumulate("hodnota")
+      accumulate("hodnota")
     )
   }
 }
@@ -135,7 +135,7 @@ function example_11() {
                 axiomInput(cont(inputAngleLabel, 70, entity), 1),
                 compAngle(inputAngleLabel, `${triangle} u vrcholu A`, "supplementary")
               ),
-              ctorSlide("dvojice úhlů v trojúhelníku")),
+              sum("dvojice úhlů v trojúhelníku")),
             ctor('comp-diff'))
           , { agent: `${triangle} u vrcholu D` }),
         compAngle(`${triangle} u vrcholu D`, "φ", 'supplementary')
@@ -172,7 +172,7 @@ function example_12() {
         deduce(
           axiomInput(cont(ctverecDelkaLabel, 1, entity), 1),
           cont("počet čtverců", 3, ""),
-          product("obsah tři shodné čtverce", [], entity2d, entity)
+          productCombine("obsah tři shodné čtverce", entity2d)
         ),
         deduce(
           rectangleWidth,
@@ -180,7 +180,7 @@ function example_12() {
             last(rectangleWidth),
             compDiff(rectangleWidthLabel, "výška obdelníku", 3, entity)
           ),
-          product("obsah obdelníku", [], entity2d, entity)
+          productCombine("obsah obdelníku", entity2d)
         ),
         deduce(
           deduce(
@@ -190,12 +190,12 @@ function example_12() {
               compDiff(rectangleWidthLabel, "základna šedého trojúhelníku", 1, entity)
             ),
             cont("polovina", 1 / 2, ""),
-            product("obsah šedého trojúhelníku", [], entity2d, entity)
+            productCombine("obsah šedého trojúhelníku", entity2d)
           ),
           cont("počet šedých trojúhleníků", 3, ""),
-          product("obsah tří šedých trojúhelníku", [], entity2d, entity2d)
+          productCombine("obsah tří šedých trojúhelníku", entity2d)
         ),
-        ctorSlide("obsah sedmiúhelníku")
+        sum("obsah sedmiúhelníku")
       ),
       ctorOption("B", 31)
     )
@@ -258,7 +258,7 @@ function example_15_3() {
             axiomInput(percent("zbývající dospělý", "přišlo 2.den", 70), 3)
           ),
           den1,
-          ctorAccumulate("přišlo celkem")
+          accumulate("přišlo celkem")
         ),
         ctor('comp-diff')
       ),

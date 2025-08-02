@@ -1,4 +1,4 @@
-import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, product, rate, ratio, ratios, ctorPercent, compAngle, ctorComplement, ctorComparePercent, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, ctorLinearEquation, ctorSlide, ctorAccumulate, combine } from "../../components/math";
+import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, rate, ratio, ratios, ctorPercent, compAngle, ctorComplement, ctorComparePercent, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, ctorLinearEquation, sum, accumulate, productCombine } from "../../components/math";
 import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 
@@ -78,7 +78,7 @@ function salaty() {
               deduce(
                 den1Ratio,
                 last(den2),
-                combine("prodano za dva dny", [], "", "")
+                sum("prodano za dva dny")
               ),
               ctorComplement("prodáno 3.den")
             ),
@@ -115,15 +115,15 @@ function dort() {
           vetsiKorpus,
           vetsiKorpus,
           height,
-          product("větší korpus", [], { entity: entity2d, unit: unit2d }, { entity, unit })
+          productCombine("větší korpus", { entity: entity2d, unit: unit2d })
         ),
         deduce(
           mensiKorpus,
           last(mensiKorpus),
           height,
-          product("menší korpus", [], { entity: entity2d, unit: unit2d }, { entity, unit })
+          productCombine("menší korpus", { entity: entity2d, unit: unit2d })
         ),
-        ctorSlide("celkem")
+        sum("celkem")
       ),
       ctorOption("D", 500)
     )
@@ -156,7 +156,7 @@ function uhelAlfa() {
               compAngle("úhel přímka p", "trojúhelník bod A", "alternate-exterior")
             ),
             last(praveRameho),
-            ctorSlide("dvojice součet")
+            sum("dvojice součet")
           ),
           ctorDifference("trojúhelník bod C")
         ),
@@ -191,7 +191,7 @@ function pravouhlyLichobeznik() {
     horniZakladna,
     spodniZakladna,
     height,
-    ctorSlide(`${agentLabel} obvod`)
+    sum(`${agentLabel} obvod`)
   )
 
   return {
@@ -207,7 +207,7 @@ function pravouhlyLichobeznik() {
             agent: agentLabel
           }
         }),
-        ctorSlide(agentLabel)
+        sum(agentLabel)
       )
     },
     obvod: {
@@ -220,7 +220,7 @@ function pravouhlyLichobeznik() {
           ratios(`${agentLabel} obvod`, ["menší lichoběžník", "rovnoběžník"], [1, 1])
         ),
         prepona,
-        ctorSlide("rovnoběžník obvod")
+        sum("rovnoběžník obvod")
       )
     }
 
@@ -256,7 +256,7 @@ function zahrada() {
       hortenzie,
       levandule,
       bazalka,
-      ctorAccumulate("celkem")
+      accumulate("celkem")
     ),
     ctorDifference(ruzeL)
   )
@@ -294,7 +294,7 @@ function zahrada() {
           deduce(
             levandule,
             bazalka,
-            ctorAccumulate("dohromady")
+            accumulate("dohromady")
           ),
           hortenzie,
           ctor('comp-ratio')
@@ -416,7 +416,7 @@ function obrazce() {
           ), rate("přechody", 3, { entity, unit }, "obrazec")),
           ctor("quota")
         ),
-        ctorSlide("obrazec č.6")
+        sum("obrazec č.6")
       )
     }
 

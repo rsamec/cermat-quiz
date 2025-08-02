@@ -1,4 +1,4 @@
-import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, product, rate, ratio, ratios, ctorAccumulate } from "../../components/math";
+import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, rate, ratio, ratios, accumulate, repeat, double, product } from "../../components/math";
 import { createLazyMap, deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -78,7 +78,7 @@ function kulicka() {
       deductionTree: deduce(
         smallPocet,
         last(bigPocet),
-        ctorAccumulate("celkem")
+        accumulate("celkem")
       )
     },
     hmotnost: {
@@ -241,8 +241,8 @@ function farmar() {
               farmaPuvodne,
               puvodneMlekoPerKrava
             ),
-            cont(farmaPuvodneLabel, 2, "doba", "den"),
-            product(farmaNove, [], { entity, unit }, { entity, unit })
+            repeat(farmaPuvodneLabel, 2),
+            product("2 dny")
           ),
           deduce(
             deduce(
@@ -277,7 +277,7 @@ export function poutnik() {
     deduce(
       kouzelnik,
       poutnik,
-      ctorAccumulate("celkem")
+      accumulate("celkem")
     ),
     ratiosKvP
   )
@@ -286,7 +286,7 @@ export function poutnik() {
     deduce(
       last(kouzelnik1),
       cont("poutník", lastQuantity(kouzelnik1), entity),
-      ctorAccumulate("celkem")
+      accumulate("celkem")
     ),
     ratiosKvP
   )
@@ -305,13 +305,13 @@ export function poutnik() {
           deduce(
             last(kouzelnik1),
             cont("poutník", lastQuantity(kouzelnik1), entity),
-            ctorAccumulate("celkem")
+            accumulate("celkem")
           ),
           last(ratiosKvP),
           nthPart("poutník")
         ),
-        cont("dvojnásobek", 2, ""),
-        product("poutník", [], entity, entity)
+        double(),
+        product("poutník")
       )
     },
     maximumKouzel: {
@@ -322,13 +322,13 @@ export function poutnik() {
             deduce(
               last(kouzelnik2),
               cont("poutník", lastQuantity(kouzelnik2), entity),
-              ctorAccumulate("celkem")
+              accumulate("celkem")
             ),
             last(ratiosKvP),
             nthPart("poutník")
           ),
-          cont("dvojnásobek", 2, ""),
-          product("poutník", [], entity, entity)
+          double(),
+          product("poutník")
         ),
 
       )

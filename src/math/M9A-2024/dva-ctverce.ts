@@ -1,5 +1,5 @@
-import { commonSense, comp, compDiff, compRatio, compRelative, cont, ctor, ctorOption, product, ratio, combine } from "../../components/math";
-import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
+import { commonSense, comp, compRatio, compRelative, cont, ctorOption, repeat, product } from "../../components/math";
+import { axiomInput, deduce, to } from "../../utils/deduce-utils";
 
 export default function example({ input }: {
   input: {
@@ -34,8 +34,8 @@ export default function example({ input }: {
   const deductionTree = deduce(
     deduce(
       delsiStrana,
-      cont("čtverec", 4, "strany"),
-      product("obvod čtverce", ["délka strany", "počet stran"], entity, entity)
+      repeat("počet stran čtverce", 4),
+      product("obvod čtverce")
     ),
     ctorOption("A", 40)
   )

@@ -1,5 +1,5 @@
 
-import { cont, ctor, ctorBooleanOption, ctorUnit, product } from "../../components/math";
+import { productCombine, cont, ctor, ctorBooleanOption, ctorUnit } from "../../components/math";
 import { axiomInput, deduce, last } from "../../utils/deduce-utils";
 
 interface Params {
@@ -41,12 +41,12 @@ export default function build({ input }: {
   const ddSkutecnost = deduce(
     dTree2,
     dWidth,
-    product(`obsah`, [lengthLabel, widthLabel], { entity: skutecnost, unit: unit2D }, { entity: skutecnost, unit })
+    productCombine(`obsah`, { entity: skutecnost, unit: unit2D }, [lengthLabel, widthLabel])
   )
   const ddPlan = deduce(
     deduce(lengthOnPlan, ctorUnit(unit)),
     widthOnPlan,
-    product(`obsah`, [lengthLabel, widthLabel], { entity: plan, unit: unit2D }, { entity: plan, unit })
+    productCombine(`obsah`, { entity: plan, unit: unit2D }, [lengthLabel, widthLabel])
   )
 
 

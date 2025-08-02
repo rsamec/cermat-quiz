@@ -1,4 +1,4 @@
-import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, lcd, primeFactorization, product, rate, ctorAccumulate, ctorSlide } from "../../components/math";
+import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, lcd, primeFactorization, rate, accumulate, sum, repeat, product, productCombine } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
@@ -77,7 +77,7 @@ function hledani_cisel({ input }: { input: { value: number } }) {
         cont("prvni změněné číslo", 12, entity)
       ),
       cont("druhe změněné čislo", 5, entity),
-      product("součin", [], entity, entity)
+      product("součin")
     )
   }
 }
@@ -100,7 +100,7 @@ function klubSEN() {
       sportovni,
       divadelni,
       roboticky,
-      ctorAccumulate("celkem učastníků")
+      accumulate("celkem učastníků")
     ),
     deduce(
       deduce(
@@ -111,7 +111,7 @@ function klubSEN() {
         twoRate,
         two
       ),
-      ctorAccumulate("navštěvuje více kroužků", {entity})
+      accumulate("navštěvuje více kroužků", { entity })
     ),
     ctor('comp-diff')
   );
@@ -124,7 +124,7 @@ function klubSEN() {
         last(one),
         two,
         three,
-        ctorAccumulate("počet dětí")
+        accumulate("počet dětí")
       )
     }
   }
@@ -173,8 +173,8 @@ function desitiuhelnik() {
       deductionTree: deduce(
         deduce(
           whiteTriangleSize,
-          cont("počet stran trojúhelníku", 3, ""),
-          product("obvod", [], entity, entity)
+          repeat("počet stran trojúhelníku", 3),
+          product("obvod")
         ),
         ctorBooleanOption(12)
       )
@@ -188,15 +188,15 @@ function desitiuhelnik() {
               commonSense("strana bíleho trojúhelníku odpovídá výška šedého obdelníku"),
               cont("výška šedého obdelníku", 8, entity)
             ),
-            cont("počet", 2, ""),
-            product("horní a dolní strana", [], entity, entity)
+            repeat("počet stran", 2),
+            product("horní a dolní strana")
           ),
           deduce(
             rectangleWidth,
-            cont("počet", 2, ""),
-            product("levá a pravá strana", [], entity, entity)
+            repeat("počet stran", 2),
+            product("levá a pravá strana")
           ),
-          ctorSlide("obvod")
+          sum("obvod")
         ),
         ctorBooleanOption(56)
       )
@@ -211,7 +211,7 @@ function desitiuhelnik() {
             last(squareSize),
             ctor('comp-diff')
           ),
-          ctorSlide("obvod")
+          sum("obvod")
         ),
         ctorBooleanOption(50, "greater")
       )
@@ -246,13 +246,13 @@ function stavebnice() {
             inputCube.length,
             inputCube.width,
             inputCube.height,
-            product("objem", [], "cm3", entity)
+            productCombine("objem", "cm3")
           ),
           deduce(
             base.length,
             base.width,
             base.height,
-            product("objem", [], "cm3", entity)
+            productCombine("objem", "cm3")
           ),
           ctor("rate")
         ),
@@ -266,13 +266,13 @@ function stavebnice() {
             minimalSize,
             last(minimalSize),
             last(minimalSize),
-            product("objem", [], "cm3", entity)
+            productCombine("objem", "cm3")
           ),
           deduce(
             base.length,
             base.width,
             base.height,
-            product("objem", [], "cm3", entity)
+            productCombine("objem", "cm3")
           ),
           ctor("rate")
         ),

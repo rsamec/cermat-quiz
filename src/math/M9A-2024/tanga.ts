@@ -1,5 +1,5 @@
 
-import { commonSense, compRatio, cont, ctorRound, product, ctorSlide} from "../../components/math";
+import { commonSense, compRatio, cont, ctorRound, sum, productCombine, product, repeat } from "../../components/math";
 import { axiomInput, deduce, last, lastQuantity, to } from "../../utils/deduce-utils";
 import { baseCircumference, surfaceBaseArea } from "../shapes/cylinder"
 
@@ -41,15 +41,14 @@ export default function build({ input }: {
         dRadius,
         commonSense(`${radiusLabel} = ${reactangleHeight}`),
         cont(reactangleHeight, lastQuantity(dRadius), entity)),
-      product(`${rectangleLabel} obsah`, [], entity2d, entity)
+      productCombine(`${rectangleLabel} obsah`, entity2d)
     ),
     deduce(
-      cont(`2 krát ${circelPartLabel}`, 2, ""),
+      repeat(circelPartLabel, 2),
       deduce(
         obsah,
         compRatio(areaCircleLabel, circelPartLabel, 4)),
-
-      product(`dvojice ${circelPartLabel}`, [], entity2d, entity2d)
+      product(`dvojice ${circelPartLabel}`)
     )
   )
 
@@ -63,7 +62,7 @@ export default function build({ input }: {
       obvodCvrtkruh,
       last(obvodCvrtkruh),
       width,
-      ctorSlide(`obvod šedého obrazce`)
+      sum(`obvod šedého obrazce`)
     ),
     ctorRound()
   )

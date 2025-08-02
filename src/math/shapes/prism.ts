@@ -1,5 +1,5 @@
 
-import { compRatio, cont, product, combine, ctorSlide } from "../../components/math.js";
+import { compRatio, cont, sum, productCombine } from "../../components/math.js";
 import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 
@@ -34,7 +34,7 @@ export function examples({ input }: {
       deduce(
         a,
         aHeight,
-        product("obsah obdelník", [sizeLabel, heightLabel], entity2D, entity)
+        productCombine("obsah obdelník", entity2D, [sizeLabel, heightLabel])
       ),
       compRatio("obsah obdelník", "obsah trojúhelník", 2),
     )
@@ -44,14 +44,14 @@ export function examples({ input }: {
   const dTree2 = deduce(
     dBaseArea,
     height,
-    product("objem hranolu", ["obsah podstavy", heightLabel], entity3D, entity)
+    productCombine("objem hranolu", entity3D, ["obsah podstavy", heightLabel])
   )
 
   const dPerimetr = deduce(
     a,
     b,
     c,
-    ctorSlide("obvod podstavy")
+    sum("obvod podstavy")
   )
 
   const protilehlaStana = cont("počet stěn", 2, "");
@@ -59,14 +59,14 @@ export function examples({ input }: {
     deduce(
       dBaseArea,
       protilehlaStana,
-      product("spodní a horní stěna", [], entity2D, entity)
+      productCombine("spodní a horní stěna", entity2D)
     ),
     deduce(
       dPerimetr,
       height,
-      product("obsah bočního pláště", ["obvod podstavy", heightLabel], entity2D, entity)
+      productCombine("obsah bočního pláště", entity2D, ["obvod podstavy", heightLabel])
     ),
-    ctorSlide("obsah pláště")
+    sum("obsah pláště")
   )
 
   const templateBase = highlight => highlight

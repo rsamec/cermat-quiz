@@ -1,5 +1,5 @@
 
-import { type Predicate, cont, ratio, comp, rate, ratios, compRatio, compDiff, lcd, gcd, ctor, inferenceRule, nth, quota, product, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont, ctorSlide } from "../components/math.js";
+import { type Predicate, cont, ratio, comp, rate, ratios, compRatio, compDiff, lcd, gcd, ctor, inferenceRule, nth, quota, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont, sum, productCombine } from "../components/math.js";
 
 export default function rules() {
 
@@ -72,8 +72,8 @@ export default function rules() {
       deduceRule(b, compDiff("Ája a Honzík", "Honzík", 2, "sešity"))
     ],
     sum: [
-      deduceRule(a, b, cont("Pepa", 4, "sešity"), ctorSlide("dohromady")),
-      deduceRule(cont("šířka", 2, "metr"), cont("délka", 3, "metr"), cont("výška", 4, "metr"), product("objem", ["délka", "šířka", "výška"], "metr krychlový", "metr"))
+      deduceRule(a, b, cont("Pepa", 4, "sešity"), sum("dohromady")),
+      deduceRule(cont("šířka", 2, "metr"), cont("délka", 3, "metr"), cont("výška", 4, "metr"), productCombine("objem", "metr krychlový", ["délka", "šířka", "výška"]))
     ],
     gcd: [deduceRule(cont("tyč", 24, "m"), cont("tyč", 16, "m"), gcd("největší možná délka tyče", "m"))],
     lcd: [deduceRule(cont("dvojice", 2, "osob"), cont("trojice", 3, "osob"), lcd("nejmenší možná skupina", "osob"))],

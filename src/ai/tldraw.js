@@ -3621,9 +3621,12 @@ function formatPredicate(d, formatting) {
       result = compose`${formatAgent(d.whole)} ${joinArray(d.parts?.map((d2) => formatAgent(d2)), ":")} v poměru ${joinArray(d.ratios?.map((d2) => formatQuantity(d2)), ":")}`;
       break;
     case "sum":
+    case "accumulate":
+    case "sumCombine":
       result = compose`${joinArray(d.partAgents?.map((d2) => formatAgent(d2)), " + ")}`;
       break;
     case "product":
+    case "productCombine":
       result = compose`${joinArray(d.partAgents?.map((d2) => formatAgent(d2)), " * ")}`;
       break;
     case "rate":
@@ -5395,6 +5398,9 @@ function convertRatioKeysToFractions(obj) {
 function compDiff(agentMinuend, agentSubtrahend, quantity, entity) {
   return { kind: "comp-diff", agentMinuend, agentSubtrahend, quantity, entity };
 }
+function toEntity(entity) {
+  return isEntityBase(entity) ? entity : { entity };
+}
 function compareRuleEx(a, b) {
   if (a.entity != b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity} `;
@@ -5958,13 +5964,13 @@ function rateRuleEx(a, rate) {
   if (!(aEntity === rate.entity.entity || aEntity === rate.entityBase.entity)) {
     throw `Mismatch entity ${aEntity} any of ${rate.entity.entity}, ${rate.entityBase.entity}`;
   }
-  const isEntityBase = aEntity == rate.entity.entity;
+  const isEntityBase2 = aEntity == rate.entity.entity;
   const isUnitRate = rate.baseQuantity === 1;
   return {
     kind: "cont",
     agent: a.agent,
-    entity: isEntityBase ? rate.entityBase.entity : rate.entity.entity,
-    unit: isEntityBase ? rate.entityBase.unit : rate.entity.unit,
+    entity: isEntityBase2 ? rate.entityBase.entity : rate.entity.entity,
+    unit: isEntityBase2 ? rate.entityBase.unit : rate.entity.unit,
     quantity: aEntity == rate.entity.entity ? isNumber2(a.quantity) && isNumber2(rate.quantity) && isNumber2(rate.baseQuantity) ? a.quantity / (!isUnitRate ? rate.quantity / rate.baseQuantity : rate.quantity) : !isUnitRate ? wrapToQuantity(`a.quantity / (rate.quantity/rate.baseQuantity)`, { a, rate }) : wrapToQuantity(`a.quantity / rate.quantity`, { a, rate }) : isNumber2(a.quantity) && isNumber2(rate.quantity) && isNumber2(rate.baseQuantity) ? a.quantity * (!isUnitRate ? rate.quantity / rate.baseQuantity : rate.quantity) : !isUnitRate ? wrapToQuantity(`a.quantity * (rate.quantity/rate.baseQuantity)`, { a, rate }) : wrapToQuantity(`a.quantity * rate.quantity`, { a, rate })
   };
 }
@@ -6053,7 +6059,7 @@ function sumRuleEx(items, b) {
   if (items.every((d) => isRatioPredicate(d))) {
     const wholes = items.map((d) => d.whole);
     if (wholes.filter(unique).length == wholes.length) {
-      throw `Combine only part to whole ratio with the same whole ${wholes}`;
+      throw `Sum only part to whole ratio with the same whole ${wholes}`;
     }
     ;
     const ratios = items.map((d) => d.ratio);
@@ -6066,7 +6072,7 @@ function sumRuleEx(items, b) {
       const { entity, entityBase } = items[0];
       return { kind: "rate", agent: b.wholeAgent, quantity, entity, entityBase, baseQuantity: 1 };
     } else {
-      if (b.kind !== "sum") {
+      if (b.kind !== "sumCombine") {
         const itemsEntities = items.map((d) => d.entity);
         if (b.wholeEntity === null && itemsEntities.filter(unique).length !== 1) {
           throw `All predicates should have the same entity ${itemsEntities.map((d) => JSON.stringify(d)).join("")}.`;
@@ -6104,12 +6110,14 @@ function sumRule(items, b) {
 }
 function productRuleEx(items, b) {
   const values = items.map((d) => d.quantity);
+  const entity = b.wholeEntity != null ? b.wholeEntity : items.find((d) => d.entity != null && d.entity != "");
+  const convertedEntity = entity != null ? toEntity(entity) : { entity: void 0, unit: void 0 };
   return {
     kind: "cont",
     agent: b.wholeAgent,
     quantity: areNumbers(values) ? values.reduce((out, d) => out *= d, 1) : wrapToQuantity(items.map((d, i) => `y${i + 1}.quantity`).join(" * "), Object.fromEntries(items.map((d, i) => [`y${i + 1}`, d]))),
-    entity: b.wholeEntity.entity,
-    unit: b.wholeEntity.unit
+    entity: convertedEntity.entity,
+    unit: convertedEntity.unit
   };
 }
 function productRule(items, b) {
@@ -6726,15 +6734,18 @@ function isRatioPredicate(value) {
 function isRatePredicate(value) {
   return value.kind === "rate";
 }
+function isEntityBase(value) {
+  return value.entity != null;
+}
 function inferenceRuleWithQuestion(...args) {
   return inferenceRuleEx(...args);
 }
 function inferenceRuleEx(...args) {
   const [a, b, ...rest] = args;
   const last = rest?.length > 0 ? rest[rest.length - 1] : null;
-  if (["sum", "accumulate", "slide", "product", "gcd", "lcd", "sequence"].includes(last?.kind) || last?.kind === "ratios" && args.length > 3) {
+  if (["sumCombine", "accumulate", "sum", "productCombine", "product", "gcd", "lcd", "sequence"].includes(last?.kind) || last?.kind === "ratios" && args.length > 3) {
     const arr = [a, b].concat(rest.slice(0, -1));
-    return last.kind === "sequence" ? sequenceRule(arr) : last.kind === "gcd" ? gcdRule(arr, last) : last.kind === "lcd" ? lcdRule(arr, last) : last.kind === "product" ? productRule(arr, last) : ["sum", "accumulate", "slide"].includes(last.kind) ? sumRule(arr, last) : last.kind === "ratios" ? toRatios(arr, last) : null;
+    return last.kind === "sequence" ? sequenceRule(arr) : last.kind === "gcd" ? gcdRule(arr, last) : last.kind === "lcd" ? lcdRule(arr, last) : ["productCombine", "product"].includes(last.kind) ? productRule(arr, last) : ["sumCombine", "sum", "accumulate"].includes(last.kind) ? sumRule(arr, last) : last.kind === "ratios" ? toRatios(arr, last) : null;
   } else if (a.kind === "eval-option" || b.kind === "eval-option") {
     return a.kind === "eval-option" ? evalToOption(b, a) : b.kind === "eval-option" ? evalToOption(a, b) : null;
   } else if (a.kind === "cont" && b.kind == "cont") {

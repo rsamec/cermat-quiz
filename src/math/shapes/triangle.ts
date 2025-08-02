@@ -1,4 +1,4 @@
-import { type Container, product, cont } from "../../components/math.js"
+import { type Container, productCombine, cont } from "../../components/math.js"
 import { deduce, last, type TreeNode } from "../../utils/deduce-utils.js"
 
 export function triangleArea({ size, height, triangle }: { size: Container | TreeNode, height: Container, triangle: { agent: string, entity?: string, unit?: string } }) {
@@ -11,6 +11,6 @@ export function triangleArea({ size, height, triangle }: { size: Container | Tre
     cont("polovina", 1 / 2, ""),
     size,
     height,
-    product(agent, ["1/2", container.agent, height.agent], { entity, unit }, { entity: container.entity, unit: container.unit })
+    productCombine(agent, { entity, unit }, ["1/2", container.agent, height.agent])
   )
 }

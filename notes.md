@@ -10,10 +10,11 @@ add to source
 - node src/data/pdf-[subject]-[period].json.js --subject <subject> --period <period>
 
 ## Pocast prompt customization
-                                                                            - follow all the quiz questions from the beginning to the end
-                                                                            - do not solve using any equations with unknowns, do not introduce any variables x or y, follow the presented solutions
-                                                                            - add some jokes
-                                                                            - do not use czech language in the podcast
+- follow all the quiz questions from the beginning to the end
+- follow the presented step by step solution
+- do not solve using any equations with unknowns, do not introduce any variables x or y if not in the presented solutions
+- add some jokes
+- do not use czech language in the podcast
 
 
 Na stránce https://www.cermatdata.cz je dostupná nová neoficiální data banka úloh a jejich řešení.

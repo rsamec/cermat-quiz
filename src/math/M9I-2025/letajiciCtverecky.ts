@@ -1,4 +1,4 @@
-import { commonSense, cont, primeFactorization, product } from "../../components/math";
+import { productCombine, commonSense, cont, primeFactorization } from "../../components/math";
 import { axiomInput, deduce, to } from "../../utils/deduce-utils";
 
 
@@ -27,7 +27,7 @@ export function letajiciCtverecky({ input }: { input: InputParameters }) {
       cont(lowerRectLabel, input.pocetRad - 1, columnLabel),
     ),
     rows,
-    product(hiherRectLabel, [rowLabel, columnLabel], columnLabel, entity)
+    productCombine(hiherRectLabel, columnLabel, [rowLabel, columnLabel])
   )
 
   const dd2 = to(

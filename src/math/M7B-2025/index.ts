@@ -1,4 +1,4 @@
-import { commonSense, compRelative, cont, ctor, ctorAccumulate, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, gcd, nthPart, percent, product, proportion, rate, ratio } from "../../components/math"
+import { commonSense, compRelative, cont, ctor, accumulate, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, repeat, gcd, nthPart, percent, proportion, rate, ratio, product } from "../../components/math"
 import { createLazyMap, deduce, last, to, toCont, type TreeNode } from "../../utils/deduce-utils"
 
 export default createLazyMap({
@@ -164,8 +164,8 @@ function zaciSkupiny() {
         cont("trojice", 2, entityGroup),
         ctorDifference("jednotkový rozdíl při rovnosti")
       ),
-      cont("rozdíl při rovnosti", 2, entityGroup),
-      product("rozdíl při rovnosti", [], entityGroup, entityGroup)
+      repeat("rozdíl při rovnosti", 2),
+      product( "rozdíl při rovnosti")
     ),
     ctor("scale")
   )
@@ -176,7 +176,7 @@ function zaciSkupiny() {
       cont("skupina dvojic", 6, entityDvojic)
     ),
     cont("zbývající žáci", 1, entityDvojic),
-    ctorAccumulate("skupina dvojic")
+    accumulate("skupina dvojic")
   )
 
 
@@ -200,7 +200,7 @@ function zaciSkupiny() {
           ),
           rate("skupina", 3, entity, entityTrojic)
         ),
-        ctorAccumulate("celkem")
+        accumulate("celkem")
       )
     }
 
@@ -303,7 +303,7 @@ function zahradnictvi() {
               ratio(celkemLabel, kopretinyLabel, 1 / 4)
             ),
             hvozdiky,
-            ctorAccumulate("dohromady")
+            accumulate("dohromady")
           ),
           ctorDifference(astraLabel)
         ),
@@ -338,7 +338,7 @@ function predstaveni() {
         deduce(
           last(deti),
           dospely,
-          ctorAccumulate("celkem")
+          accumulate("celkem")
         ),
         ctorPercent()
       ),

@@ -1,4 +1,4 @@
-import { commonSense, compRatio, cont, ctorOption, product, ratios, ctorSlide } from "../../components/math";
+import { commonSense, compRatio, cont, ctorOption, ratios, sum, product, repeat } from "../../components/math";
 import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
 
 export default function example({ input }: {
@@ -13,8 +13,8 @@ export default function example({ input }: {
   const entity = "cm"
   const obvod = axiomInput(cont(obvodLabel, 30, entity), 1)
 
-  const ramenoCount = axiomInput(cont("počet ramen", 4, ""), 2)
-  const zakladnaCount = axiomInput(cont("počet základen", 3, ""), 3)
+  const ramenoCount = axiomInput(repeat("počet ramen", 4,), 2)
+  const zakladnaCount = axiomInput(repeat("počet základen", 3), 3)
 
   const rameno = deduce(
     to(
@@ -33,11 +33,12 @@ export default function example({ input }: {
       deduce(
         rameno,
         ramenoCount,
-        product("obvod obrazce (ramena)", ["délka ramena", "počet stran"], entity, entity)
+        product("obvod obrazce (ramena)", ["délka ramena", "počet stran"])
       ),
       deduce(
-        zakladna, zakladnaCount, product("obvod obrazce (zakladny)", ["délka základny", "počet stran"], entity, entity)),
-      ctorSlide("obvod obrazce")
+        zakladna, zakladnaCount, 
+        product("obvod obrazce (zakladny)", ["délka základny", "počet stran"])),
+      sum("obvod obrazce")
     ),
     ctorOption("C", 66)
   )

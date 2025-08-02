@@ -1,4 +1,4 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, product, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, ctorSlide, ctorAccumulate, combine } from "../../components/math";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, sum, accumulate, product, productCombine, repeat } from "../../components/math";
 import { createLazyMap, deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -32,12 +32,12 @@ function porovnani() {
       deduce(
         zadaneCislo1,
         zadaneCislo2,
-        ctorSlide("součet")
+        sum("součet")
       ),
       deduce(
         zadaneCislo1,
         zadaneCislo2,
-        product("součin", [], entity, entity)
+        product("součin")
       ),
       ctor('comp-ratio')
     )
@@ -55,7 +55,7 @@ function pozemek() {
   const obsahPozemek = deduce(
     pozemek,
     pozemek,
-    product("pozemek", [], { entity: entity2d, unit: unit2d }, { entity, unit })
+    productCombine("pozemek", { entity: entity2d, unit: unit2d })
   )
   const obsahDum = deduce(
     obsahPozemek,
@@ -81,7 +81,7 @@ function pozemek() {
             percent("pozemek", "rybník", 18),
             last(obsahPozemek)
           ),
-          ctorSlide("dum a rybnik")
+          sum("dum a rybnik")
         ),
         ctorDifference("volný pozemkek")
       )
@@ -110,7 +110,7 @@ function sud() {
         deduce(
           dnoSudu,
           deduce(cont("vzestup hladiny", 10, entity, "mm"), ctorUnit("cm")),
-          product("přibylo vody", [], { entity: entity3d, unit: unit3d }, { entity: entity2d, unit: unit2d })
+          productCombine("přibylo vody", { entity: entity3d, unit: unit3d })
         ),
         ctorUnit("l")
       )
@@ -152,7 +152,7 @@ function uhly() {
           deduce(
             deduce(angle2, compAngle(angleLabel, "bod R v pravoúhlém trojúhelníku", "supplementary")),
             cont("pravý úhel", 90, entity, unit),
-            ctorSlide("součet dvou úhlů")
+            sum("součet dvou úhlů")
           ),
           ctorDifference("vrchol v pravoúhlém trojúhelníku")
         ),
@@ -219,8 +219,8 @@ function zahon() {
           cont("bílých rostlin", 2, entity),
           ctorDifference("červených rostlin")
         ),
-        cont("počet opakování", 13, ""),
-        product("červených rostlin", [], entity, entity)
+        repeat("počet opakování", 13),
+        product("červených rostlin")
       )
     }
   }
@@ -245,18 +245,18 @@ function bazen() {
           delka,
           sirka,
           vyska,
-          product(agentLabel, [], { entity: entity3d, unit: unit3d }, { entity, unit })
+          productCombine(agentLabel, { entity: entity3d, unit: unit3d })
         ),
         deduce(
           deduce(
             cont(zonaLabel, 20, "délka", unit),
             cont(zonaLabel, 1, "výška", unit),
             sirka,
-            product(zonaLabel, [], { entity: entity3d, unit: unit3d }, { entity, unit })
+            productCombine(zonaLabel, { entity: entity3d, unit: unit3d })
           ),
           ratio(zonaLabel, dnoLabel, 1 / 2)
         ),
-        ctorSlide("bazén celkem")
+        sum("bazén celkem")
       ),
       ctorOption("A", 500)
     )
@@ -277,7 +277,7 @@ function pelhrimov() {
             deduce(
               ratio("tábor nabízeno", "přihlášeno 1. termín", 6 / 5),
               percent("tábor nabízeno", "přihlášeno 2. termín", 130),
-              combine("tábor přihlášeno", [], "", "")
+              sum("tábor přihlášeno")
             ),
             prihlasek
           ),
@@ -328,7 +328,7 @@ function znamkyPrumer() {
     deduce(
       pocetJednicek,
       pocetDvojek,
-      ctorAccumulate("celkem")
+      accumulate("celkem")
     ),
     ctorDifference("")
   )
@@ -339,9 +339,9 @@ function znamkyPrumer() {
         deduce(
           deduce(
             pocetJednicek,
-            deduce(pocetDvojek, cont("dvojka", 2, entity), product("dvojka", [], entity, entity)),
-            deduce(pocetTrojek, cont("trojka", 3, entity), product("trojka", [], entity, entity)),
-            ctorAccumulate("celkem", { entity })
+            deduce(pocetDvojek, cont("dvojka", 2, entity), product("dvojka")),
+            deduce(pocetTrojek, cont("trojka", 3, entity), product("trojka")),
+            accumulate("celkem", { entity })
           ),
           pocetCelkem,
           ctor("rate")
@@ -385,7 +385,7 @@ function soutez() {
               nthPart(viceZenLabel),
             ),
             rate(viceZenLabel, 2, entity, entityBase)),
-          ctorAccumulate(women, { entity })
+          accumulate(women, { entity })
         ),
         deduce(druzstva, rate("celkem", 3, entity, entityBase)),
         ctorPercent()
@@ -413,7 +413,7 @@ function atletika() {
           ostep,
           last(skok),
           last(beh),
-          ctorAccumulate("celkem")
+          accumulate("celkem")
         ),
         ctorPercent()
       ),
@@ -449,7 +449,7 @@ function obrazce() {
           ctor("quota")
         ),
 
-        ctorAccumulate("obrazec č.6")
+        accumulate("obrazec č.6")
       )
     }
 
