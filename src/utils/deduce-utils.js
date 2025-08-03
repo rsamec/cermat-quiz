@@ -5686,11 +5686,11 @@ function formatPredicate(d, formatting) {
       result = compose`${formatAgent(d.whole)} ${joinArray(d.parts?.map((d2) => formatAgent(d2)), ":")} v poměru ${joinArray(d.ratios?.map((d2) => formatQuantity(d2)), ":")}`;
       break;
     case "sum":
-    case "sumCombine":
+    case "sum-combine":
       result = compose`${joinArray(d.partAgents?.map((d2) => formatAgent(d2)), " + ")}`;
       break;
     case "product":
-    case "productCombine":
+    case "product-combine":
       result = compose`${joinArray(d.partAgents?.map((d2) => formatAgent(d2)), " * ")}`;
       break;
     case "rate":

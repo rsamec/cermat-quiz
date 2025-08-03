@@ -12,8 +12,8 @@ export default createLazyMap({
   4.2: () => restaurace().celkemMist,
   10: () => zahon().yellow,
   11: () => zahon().velvet,
-  14.1: () => ctverce().obvodObrazec2,
-  14.2: () => ctverce().obrazecWidthToLength
+  // 14.1: () => ctverce().obvodObrazec2,
+  // 14.2: () => ctverce().obrazecWidthToLength
 })
 
 function hledaneCisla() {

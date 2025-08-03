@@ -5661,11 +5661,11 @@ function formatPredicate(d, formatting) {
       result = compose`${formatAgent(d.whole)} ${joinArray(d.parts?.map((d2) => formatAgent(d2)), ":")} v poměru ${joinArray(d.ratios?.map((d2) => formatQuantity(d2)), ":")}`;
       break;
     case "sum":
-    case "sumCombine":
+    case "sum-combine":
       result = compose`${joinArray(d.partAgents?.map((d2) => formatAgent(d2)), " + ")}`;
       break;
     case "product":
-    case "productCombine":
+    case "product-combine":
       result = compose`${joinArray(d.partAgents?.map((d2) => formatAgent(d2)), " * ")}`;
       break;
     case "rate":
@@ -8116,9 +8116,9 @@ var M5B_2025_default = createLazyMap({
   4.1: () => restaurace().celkemStolu,
   4.2: () => restaurace().celkemMist,
   10: () => zahon().yellow,
-  11: () => zahon().velvet,
-  14.1: () => ctverce().obvodObrazec2,
-  14.2: () => ctverce().obrazecWidthToLength
+  11: () => zahon().velvet
+  // 14.1: () => ctverce().obvodObrazec2,
+  // 14.2: () => ctverce().obrazecWidthToLength
 });
 function hledaneCisla() {
   const entity3 = "";
@@ -8322,73 +8322,6 @@ function zahon() {
           cont("z\xE1hon", 3, entityBase)
         ),
         ctorOption("B", 45)
-      )
-    }
-  };
-}
-function ctverce() {
-  const entity3 = "d\xE9lka";
-  const unit = "cm";
-  const entityBase = "strana";
-  const entitySquare = "\u010Dtverec";
-  const obrazec1 = "1. obrazec";
-  const obrazec2 = "2. obrazec";
-  const obrazec3 = "3. obrazec";
-  const obvod1 = cont(obrazec1, 80, entity3, unit);
-  const ctverec1PocetStran = cont(obrazec1, 4, entityBase);
-  const ctverec2PocetStran = cont(obrazec2, 4, entityBase);
-  const matchSiteLabel2 = "strana 1. obrazce = 5 sv\u011Btle \u0161ed\xE9 \u010Dtverce";
-  const tempMatchSiteLabel2 = "2. obrazec - 4 tmav\u011B \u0161ed\xE9 \u010Dtverce =  6 \u0161v\u011Btle \u0161ed\xE9 \u010Dtverce";
-  const matchSiteLabel3 = "strana 2. obrazce = 6 tmav\u011B \u0161ed\xE9 \u010Dtverce";
-  const tempMatchSiteLabel3 = "krat\u0161\xED strany 3. obrazce  = 5 sv\u011Btle \u0161ed\xE9 \u010Dtverce";
-  const strana1 = toCont(deduce(
-    obvod1,
-    ctverec1PocetStran,
-    ctor("rate")
-  ), { agent: matchSiteLabel2 });
-  const strana1Add = deduce(
-    last(strana1),
-    cont(matchSiteLabel2, 5, entitySquare),
-    ctor("rate")
-  );
-  const strana2 = deduce(
-    deduce(
-      strana1,
-      strana1Add,
-      ctorSlide(tempMatchSiteLabel2)
-    ),
-    ratios(matchSiteLabel3, [tempMatchSiteLabel2, "b\xEDl\xFD \u010Dtverec"], [4, 1])
-  );
-  const widthAdd = deduce(
-    last(strana2),
-    cont(matchSiteLabel3, 6, entitySquare),
-    ctor("rate")
-  );
-  const width3 = deduce(
-    last(strana2),
-    widthAdd,
-    ctorSlide(tempMatchSiteLabel3)
-  );
-  return {
-    obvodObrazec2: {
-      deductionTree: deduce(
-        strana2,
-        ctverec2PocetStran,
-        product(obrazec2)
-      )
-    },
-    obrazecWidthToLength: {
-      deductionTree: deduce(
-        deduce(
-          last(strana2),
-          deduce(
-            last(width3),
-            cont(tempMatchSiteLabel3, 5, entitySquare),
-            ctor("rate")
-          ),
-          product("del\u0161\xED strana 3. obrazce")
-        ),
-        width3
       )
     }
   };
