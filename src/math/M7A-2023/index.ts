@@ -1,4 +1,4 @@
-import { productCombine, commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, accumulate, ctorComplement, ctorOption, repeat, sum, percent, rate, ratios, product } from "../../components/math";
+import { productCombine, commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, sum, ctorComplement, ctorOption, counter, percent, rate, ratios, product } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
@@ -65,13 +65,13 @@ function example_4_1() {
       deduce(
         deduce(
           axiomInput(cont("průměř", 21, entity), 2),
-          repeat("počet míčových sportů", 3),
+          counter("počet míčových sportů", 3),
           product("počet všech žáků míčové sporty")
         ),
         deduce(
           cont("volejbal", 28, entity),
           cont("fotbal", 16, entity),
-          accumulate("fotbal a volejbal")
+          sum("fotbal a volejbal")
         ),
         ctor('comp-diff')
       ),
@@ -111,7 +111,7 @@ function example_13() {
       deduce(pocetDvou, rate(dvou, 2, entityPrice, entity)),
       deduce(last(pocetPeti), rate(peti, 5, entityPrice, entity)),
       deduce(pocetDeseti, rate(deseti, 10, entityPrice, entity)),
-      accumulate("hodnota")
+      sum("hodnota")
     )
   }
 }
@@ -258,7 +258,7 @@ function example_15_3() {
             axiomInput(percent("zbývající dospělý", "přišlo 2.den", 70), 3)
           ),
           den1,
-          accumulate("přišlo celkem")
+          sum("přišlo celkem")
         ),
         ctor('comp-diff')
       ),

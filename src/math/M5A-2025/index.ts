@@ -1,4 +1,4 @@
-import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, rate, ratio, ratios, accumulate, repeat, double, product } from "../../components/math";
+import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, rate, ratio, ratios, sum, counter, double, product } from "../../components/math";
 import { createLazyMap, deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -78,7 +78,7 @@ function kulicka() {
       deductionTree: deduce(
         smallPocet,
         last(bigPocet),
-        accumulate("celkem")
+        sum("celkem")
       )
     },
     hmotnost: {
@@ -241,7 +241,7 @@ function farmar() {
               farmaPuvodne,
               puvodneMlekoPerKrava
             ),
-            repeat(farmaPuvodneLabel, 2),
+            counter(farmaPuvodneLabel, 2),
             product("2 dny")
           ),
           deduce(
@@ -277,7 +277,7 @@ export function poutnik() {
     deduce(
       kouzelnik,
       poutnik,
-      accumulate("celkem")
+      sum("celkem")
     ),
     ratiosKvP
   )
@@ -286,7 +286,7 @@ export function poutnik() {
     deduce(
       last(kouzelnik1),
       cont("poutník", lastQuantity(kouzelnik1), entity),
-      accumulate("celkem")
+      sum("celkem")
     ),
     ratiosKvP
   )
@@ -305,7 +305,7 @@ export function poutnik() {
           deduce(
             last(kouzelnik1),
             cont("poutník", lastQuantity(kouzelnik1), entity),
-            accumulate("celkem")
+            sum("celkem")
           ),
           last(ratiosKvP),
           nthPart("poutník")
@@ -322,7 +322,7 @@ export function poutnik() {
             deduce(
               last(kouzelnik2),
               cont("poutník", lastQuantity(kouzelnik2), entity),
-              accumulate("celkem")
+              sum("celkem")
             ),
             last(ratiosKvP),
             nthPart("poutník")

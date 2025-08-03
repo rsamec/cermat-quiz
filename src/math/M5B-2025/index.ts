@@ -1,19 +1,19 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorOption, ctorRatios, nthPart,  rate, ratio, ratios, accumulate, product, sum } from "../../components/math";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorOption, ctorRatios, nthPart, rate, ratio, ratios, sum, product, counter, ctorScaleInvert, ctorScale, ctorSlide } from "../../components/math";
 import { createLazyMap, deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
-  1.1:() => hledaneCisla().cislo1,
-  1.2:() => hledaneCisla().cislo2,
-  1.3:() => hledaneCisla().cisla3,
-  3.1:() => koralky().celkem,
-  3.2:() => koralky().porovnani4To2,
-  3.3:() => koralky().cerneKoralky,
-  4.1:() => restaurace().celkemStolu,
-  4.2:() => restaurace().celkemMist,
-  10:() => zahon().yellow,
-  11:() => zahon().velvet,
-  14.1:() => ctverce().obvodObrazec2,
-  14.2:() => ctverce().obrazecWidthToLength
+  1.1: () => hledaneCisla().cislo1,
+  1.2: () => hledaneCisla().cislo2,
+  1.3: () => hledaneCisla().cisla3,
+  3.1: () => koralky().celkem,
+  3.2: () => koralky().porovnani4To2,
+  3.3: () => koralky().cerneKoralky,
+  4.1: () => restaurace().celkemStolu,
+  4.2: () => restaurace().celkemMist,
+  10: () => zahon().yellow,
+  11: () => zahon().velvet,
+  14.1: () => ctverce().obvodObrazec2,
+  14.2: () => ctverce().obrazecWidthToLength
 })
 
 function hledaneCisla() {
@@ -40,16 +40,16 @@ function hledaneCisla() {
     cislo1: {
       deductionTree: deduce(
         deduce(
-          toCont(deduce(
+          deduce(
             cont("známý výsledek", 20, entity),
-            cont("známý výsledek", 2, "násobek"),
-            ctor("rate")
-          ), { agent: "číslo bez zdojnásobení" }),
+            counter("zdojnásobení", 2),
+            ctorScaleInvert("číslo bez násobení")
+          ),
           cont("opak přičtené číslo", 3, entity),
-          ctorDifference("číslo bez přičteného čísla 3")
+          ctorDifference("číslo bez přičteného čísla")
         ),
-        cont("opak dělení", 7, entity),
-        product("neznáné číslo")
+        counter("dělení 7", 7),
+        ctorScale("neznáné číslo bez dělení")
       )
     },
     cislo2: {
@@ -100,7 +100,7 @@ function koralky() {
     skupina3,
     skupina2,
     skupina1,
-    accumulate("celkem")
+    sum("celkem")
   )
   const name = 'skupina barev (černé a bílý)';
 
@@ -166,7 +166,7 @@ function restaurace() {
     deduce(
       last(small),
       last(medium),
-      accumulate("dohromady")
+      sum("dohromady")
     ),
     ctorDifference(bigLabel)
   )
@@ -181,7 +181,7 @@ function restaurace() {
         deduce(small, smallRate),
         deduce(medium, mediumRate),
         deduce(big, bigRate),
-        accumulate("celkem")
+        sum("celkem")
       )
     }
   }
@@ -279,7 +279,7 @@ function ctverce() {
     deduce(
       strana1,
       strana1Add,
-      sum(tempMatchSiteLabel2)
+      ctorSlide(tempMatchSiteLabel2)
     ),
     ratios(matchSiteLabel3, [tempMatchSiteLabel2, "bílý čtverec"], [4, 1])
   )
@@ -292,7 +292,7 @@ function ctverce() {
   const width3 = deduce(
     last(strana2),
     widthAdd,
-    sum(tempMatchSiteLabel3)
+    ctorSlide(tempMatchSiteLabel3)
   )
 
 

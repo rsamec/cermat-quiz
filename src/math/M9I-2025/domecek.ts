@@ -1,4 +1,4 @@
-import { commonSense, cont, ctorOption, primeFactorization, quota, ratio, sum } from "../../components/math";
+import { sum, commonSense, cont, ctorOption, primeFactorization, quota, ratio } from "../../components/math";
 import { axiomInput, connectTo, deduce, deduceLbl, last, lastQuantity, to } from "../../utils/deduce-utils";
 import { volume } from "../shapes/rectangle";
 

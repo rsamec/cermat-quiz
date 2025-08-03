@@ -1,5 +1,5 @@
 
-import { cont, inferenceRule, ratio, compRelative, ctorComplement, ctorExpressionOption, accumulate } from "../../components/math";
+import { cont, inferenceRule, ratio, compRelative, ctorComplement, ctorExpressionOption, sum } from "../../components/math";
 import { axiomInput, deduce, deduceLbl } from "../../utils/deduce-utils";
 
 interface ZakuseParams {
@@ -27,7 +27,7 @@ export default function build({ input }: {
   const p3Ratio = ratio(totalPrice, partTotalPrice, 2 / 3);
   const oneThird = axiomInput(ratio(totalPrice, piece3, 1 / 3), 3);
 
-  const soucet = accumulate(partTotalPrice);
+  const soucet = sum(partTotalPrice);
 
 
 

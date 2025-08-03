@@ -1,5 +1,5 @@
 
-import { type Predicate, cont, ratio, comp, rate, ratios, compRatio, compDiff, lcd, gcd, ctor, inferenceRule, nth, quota, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont, sum, productCombine } from "../components/math.js";
+import { type Predicate, cont, ratio, comp, rate, ratios, compRatio, compDiff, lcd, gcd, ctor, inferenceRule, nth, quota, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont, productCombine, counter, sum, product } from "../components/math.js";
 
 export default function rules() {
 
@@ -32,6 +32,7 @@ export default function rules() {
 
   const partToWholeRatio = ratio("třída", "chlapci", 1 / 4);
   const partToPartRatios = ratios("třída", ["chlapci", "dívky"], [1, 3]);
+  const extendedPartToPartRatios = ratios("třída", ["chlapci", "dívky"], [3, 9]);
 
   const arithmetic = [2, 4, 6, 8, 10].map((d, i) => cont(`č. ${i + 1}`, d, "čtverec"));
   const geometric = [2, 4, 8, 16, 32].map((d, i) => cont(`č. ${i + 1}`, d, "čtverec"));
@@ -54,7 +55,16 @@ export default function rules() {
     partToPartRatio: [
       deduceRule(cont("třída", 120, ""), partToPartRatios), deduceRule(cont("dívky", 90, ""), partToPartRatios),
       deduceRule(cont("chlapci", 30, ""), cont("dívky", 90, ""), ctorRatios("třída")),
+    ],
+    sliding: [
+      deduceRule(counter("číslo", 6), counter("posun o", 3), ctor("slide")),
+      deduceRule(counter("číslo", 6), counter("posun zpět o", 3), ctor("slide-invert")),
+    ],
+    scaling: [
+      deduceRule(counter("číslo", 6), counter("zvětšení", 3), ctor("scale")),
+      deduceRule(counter("číslo", 6), counter("zmenšení", 3), ctor("scale-invert")),
       deduceRule(partToPartRatios, cont("rozšíření", 3, ""), ctor("scale")),
+      deduceRule(extendedPartToPartRatios, cont("zkrácení", 3, ""), ctor("scale-invert")),
     ],
     rate: [
       deduceRule(cont("Petr", 20, "Kč"), cont("Petr", 5, "rohlík"), ctor('rate')),
@@ -73,6 +83,7 @@ export default function rules() {
     ],
     sum: [
       deduceRule(a, b, cont("Pepa", 4, "sešity"), sum("dohromady")),
+      deduceRule(cont("čtverec strana", 2, "metr"), counter("počet stran", 4), product("obvod čtverce")),
       deduceRule(cont("šířka", 2, "metr"), cont("délka", 3, "metr"), cont("výška", 4, "metr"), productCombine("objem", "metr krychlový", ["délka", "šířka", "výška"]))
     ],
     gcd: [deduceRule(cont("tyč", 24, "m"), cont("tyč", 16, "m"), gcd("největší možná délka tyče", "m"))],

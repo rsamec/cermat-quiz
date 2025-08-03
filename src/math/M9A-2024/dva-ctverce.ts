@@ -1,4 +1,4 @@
-import { commonSense, comp, compRatio, compRelative, cont, ctorOption, repeat, product } from "../../components/math";
+import { commonSense, comp, compRatio, compRelative, cont, ctorOption, counter, product } from "../../components/math";
 import { axiomInput, deduce, to } from "../../utils/deduce-utils";
 
 export default function example({ input }: {
@@ -34,7 +34,7 @@ export default function example({ input }: {
   const deductionTree = deduce(
     deduce(
       delsiStrana,
-      repeat("počet stran čtverce", 4),
+      counter("počet stran čtverce", 4),
       product("obvod čtverce")
     ),
     ctorOption("A", 40)

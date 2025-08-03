@@ -1,4 +1,4 @@
-import { productCombine, commonSense, comp, compRatio, compRelativePercent, cont, ctor, accumulate, ctorDifference, ctorLinearEquation, product, ctorRatios, sum, ctorUnit, evalExprAsCont, primeFactorization, pythagoras, rate, ratio, repeat } from "../../components/math";
+import { productCombine, commonSense, comp, compRatio, compRelativePercent, cont, ctor, ctorDifference, ctorLinearEquation, product, ctorRatios, sum, ctorUnit, evalExprAsCont, primeFactorization, pythagoras, rate, ratio, counter } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 
@@ -228,7 +228,7 @@ function prumernyPlat() {
         deduce(
           senioryCelkem,
           juniorCelkem,
-          accumulate("celkem vyplaceno")
+          sum("celkem vyplaceno")
         ),
         ctorLinearEquation(ostatniLabel, { entity: entityPrice }, "x")
       ),
@@ -347,7 +347,7 @@ function vyrezKrychle() {
             lastStranaKrychle,
             productCombine(`stěna ${krychleLabel}`, entity2d)
           ),
-          repeat(`počet stěn ${krychleLabel}`, 6),
+          counter(`počet stěn ${krychleLabel}`, 6),
           product(`${krychleLabel}`)
         ),
         deduce(
@@ -357,7 +357,7 @@ function vyrezKrychle() {
               lastStranaKrychle,
               productCombine("stěna krychle", entity2d)
             ),
-            repeat("počet čtvercových stěn", 3),
+            counter("počet čtvercových stěn", 3),
             product(`levá, pravá a spodní stěna - ${telesoLabel}`)
           ),
           deduce(
@@ -387,7 +387,7 @@ function vyrezKrychle() {
               last(prepona),
               productCombine(`obdelníková šikmá stěna - ${telesoLabel}`, entity2d)
             ),
-            repeat(`počet obdelníkových šikmých stěn - ${telesoLabel}`, 2),
+            counter(`počet obdelníkových šikmých stěn - ${telesoLabel}`, 2),
             product(`obě obdelníkové šikmé stěny - ${telesoLabel}`)
           ),
           sum(`${telesoLabel}`)

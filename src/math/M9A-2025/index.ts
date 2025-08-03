@@ -1,4 +1,4 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, sum, accumulate, product, productCombine, repeat } from "../../components/math";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, sum, product, productCombine, counter } from "../../components/math";
 import { createLazyMap, deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -219,7 +219,7 @@ function zahon() {
           cont("bílých rostlin", 2, entity),
           ctorDifference("červených rostlin")
         ),
-        repeat("počet opakování", 13),
+        counter("počet opakování", 13),
         product("červených rostlin")
       )
     }
@@ -328,7 +328,7 @@ function znamkyPrumer() {
     deduce(
       pocetJednicek,
       pocetDvojek,
-      accumulate("celkem")
+      sum("celkem")
     ),
     ctorDifference("")
   )
@@ -341,7 +341,7 @@ function znamkyPrumer() {
             pocetJednicek,
             deduce(pocetDvojek, cont("dvojka", 2, entity), product("dvojka")),
             deduce(pocetTrojek, cont("trojka", 3, entity), product("trojka")),
-            accumulate("celkem", { entity })
+            sum("celkem", { entity })
           ),
           pocetCelkem,
           ctor("rate")
@@ -385,7 +385,7 @@ function soutez() {
               nthPart(viceZenLabel),
             ),
             rate(viceZenLabel, 2, entity, entityBase)),
-          accumulate(women, { entity })
+          sum(women, { entity })
         ),
         deduce(druzstva, rate("celkem", 3, entity, entityBase)),
         ctorPercent()
@@ -413,7 +413,7 @@ function atletika() {
           ostep,
           last(skok),
           last(beh),
-          accumulate("celkem")
+          sum("celkem")
         ),
         ctorPercent()
       ),
@@ -449,7 +449,7 @@ function obrazce() {
           ctor("quota")
         ),
 
-        accumulate("obrazec č.6")
+        sum("obrazec č.6")
       )
     }
 

@@ -1,4 +1,4 @@
-import { cont, rate, accumulate } from "../../components/math";
+import { cont, rate, sum } from "../../components/math";
 import { axiomInput, deduce, last } from "../../utils/deduce-utils";
 import type { DeduceTemplate } from "../../utils/deduce-utils";
 
@@ -38,13 +38,13 @@ export default function build({ input }: {
     kapitan,
     porucik,
     last(pocetCetaru),
-    accumulate("vydané rozkazy", {entity}),
+    sum("vydané rozkazy", {entity}),
   )
   const dTree3 = deduce(
     porucik,
     last(pocetCetaru),
     last(pocetVojinu),
-    accumulate("přijaté rozkazy",{entity})
+    sum("přijaté rozkazy",{entity})
   )
 
 

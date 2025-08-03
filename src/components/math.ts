@@ -167,11 +167,6 @@ export type PartWholeRatio = {
   asPercent?: boolean
 }
 
-export type Accumulate = {
-  kind: 'accumulate'
-  wholeAgent: string
-} & AsImplicitOneToOneRateEntity & SumExtraInfo
-
 export type Sum = {
   kind: 'sum',
   wholeAgent: string
@@ -193,11 +188,11 @@ export type AsImplicitOneToOneRateEntity = {
 
 
 export type SumCombine = Combine & {
-  kind: 'sumCombine'
+  kind: 'sum-combine'
 }
 
 export type ProductCombine = Combine & {
-  kind: 'productCombine'
+  kind: 'product-combine'
 }
 type Combine = {
   wholeAgent: string
@@ -257,12 +252,12 @@ export type CompareAndPartEqual = {
 
 export type Scale = {
   kind: 'scale'
-  quantity: number
+  agent?: string
 }
 
 export type InvertScale = {
-  kind: "invert-scale"
-  quantity: number
+  kind: "scale-invert"
+  agent?: string
 }
 
 export type NthRule = {
@@ -287,6 +282,14 @@ export type Difference = {
   kind: 'diff',
   differenceAgent: AgentMatcher
 }
+export type Slide = {
+  kind: 'slide',
+  agent: AgentMatcher
+}
+export type InvertSlide = {
+  kind: 'slide-invert',
+  agent: AgentMatcher
+}
 
 export type LinearEquation = {
   kind: 'linear-equation',
@@ -308,29 +311,26 @@ export type Question = {
 
 export type ContainerEval = Omit<Container, 'quantity'>
 export type EntityDef = string | EntityBase
-export type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | Sum | Accumulate | SumCombine | Product | ProductCombine | PartWholeRatio | PartToPartRatio | ComparisonDiff |
+export type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | Sum | SumCombine | Product | ProductCombine | PartWholeRatio | PartToPartRatio | ComparisonDiff |
   CommonSense | GCD | LCD | CompareAndPartEqual | Sequence | NthRule | Quota | Scale | Complement | NthPart | NthPartFactor | Transfer | Proportion | ConvertUnit |
-  AngleComparison | Delta | Difference | Phytagoras | InvertScale | LinearEquation | EvalExpr<ContainerEval> | Option | Round
+  AngleComparison | Delta | Difference | Phytagoras | InvertScale | Slide | InvertSlide | LinearEquation | EvalExpr<ContainerEval> | Option | Round
 
-export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | 'quota' | "comp-diff" | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'scale' | 'invert-scale' | 'complement' | 'delta') {
+export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | 'quota' | "comp-diff" | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'scale' | 'scale-invert' | 'slide' | 'slide-invert' | 'complement' | 'delta') {
   return { kind } as Predicate
 }
 
 export function ctorUnit(unit: Unit): ConvertUnit {
   return { kind: "unit", unit }
 }
-export function accumulate(wholeAgent: string, wholeEntity?: EntityBase): Accumulate {
-  return { kind: "accumulate", wholeAgent, wholeEntity: wholeEntity }
-}
 export function sum(wholeAgent: string, wholeEntity?: EntityBase): Sum {
   return { kind: "sum", wholeAgent, wholeEntity: wholeEntity }
 }
 
-export function repeat(agent, quantity: number): Container {
+export function counter(agent, quantity: number): Container {
   return { kind: "cont", agent, quantity, entity: '' }
 }
 export function double() {
-  return repeat("dvojnásobek", 2)
+  return counter("dvojnásobek", 2)
 }
 
 export function product(wholeAgent: string, partAgents?: string[], asEntity?: EntityDef): Product {
@@ -341,7 +341,12 @@ export function product(wholeAgent: string, partAgents?: string[], asEntity?: En
     partAgents: partAgents ?? []
   }
 }
-
+export function ctorScale(agent: AgentMatcher): Scale {
+  return { kind: 'scale', agent }
+}
+export function ctorScaleInvert(agent: AgentMatcher): InvertScale {
+  return { kind: 'scale-invert', agent }
+}
 export function ctorRound(fractionDigits: number = 0): Round {
   return { kind: "round", fractionDigits }
 }
@@ -370,6 +375,12 @@ export function ctorComplement(part: AgentMatcher): Complement {
 }
 export function ctorDifference(differenceAgent: AgentMatcher): Difference {
   return { kind: "diff", differenceAgent }
+}
+export function ctorSlide(agent: AgentMatcher): Slide {
+  return { kind: "slide", agent }
+}
+export function ctorSlideInvert(agent: AgentMatcher): InvertSlide {
+  return { kind: "slide-invert", agent }
 }
 
 export function cont(agent: string, quantity: NumberOrVariable, entity: string, unit?: string): Container {
@@ -459,7 +470,7 @@ export function ratios(whole: AgentMatcher, parts: AgentMatcher[], ratios: numbe
 
 export function productCombine(wholeAgent: string, wholeEntity: EntityDef, partAgents?: string[]): ProductCombine {
   return {
-    kind: 'productCombine',
+    kind: 'product-combine',
     wholeAgent,
     partAgents: partAgents ?? [],
     wholeEntity: toEntity(wholeEntity)
@@ -1242,7 +1253,7 @@ function diffRule(a: Container, b: ComparisonDiff): Question {
   }
 }
 
-function sumRuleEx(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine | Accumulate | Sum): Container | PartWholeRatio | Rate {
+function sumRuleEx(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine | Sum): Container | PartWholeRatio | Rate {
   if (items.every(d => isRatioPredicate(d))) {
     const wholes = items.map(d => (d as any).whole);
     if (wholes.filter(unique).length == wholes.length) {
@@ -1260,7 +1271,7 @@ function sumRuleEx(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine
       return { kind: 'rate', agent: b.wholeAgent, quantity, entity, entityBase, baseQuantity: 1 }
     }
     else {
-      if (b.kind !== "sumCombine") {
+      if (b.kind !== 'sum-combine') {
         const itemsEntities = items.map(d => d.entity);
         if (b.wholeEntity === null && itemsEntities.filter(unique).length !== 1) {
           throw `All predicates should have the same entity ${itemsEntities.map(d => JSON.stringify(d)).join("")}.`
@@ -1277,7 +1288,7 @@ function sumRuleEx(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine
   }
 
 }
-function sumRule(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine | Accumulate | Sum): Question {
+function sumRule(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine | Sum): Question {
   const result = sumRuleEx(items, b)
   const isQuantity = isQuantityPredicate(result);
   return {
@@ -1311,7 +1322,7 @@ function productRuleEx(items: Container[], b: ProductCombine | Product): Contain
 
   //first non empty entity
   const entity = b.wholeEntity != null ? b.wholeEntity : items.find(d => d.entity != null && d.entity != "")
-  const convertedEntity = entity != null ? toEntity(entity) : { entity: undefined, unit: undefined }
+  const convertedEntity = entity != null ? toEntity(entity) : { entity: "", unit: undefined }
 
   return {
     kind: 'cont', agent: b.wholeAgent,
@@ -1609,6 +1620,42 @@ function toComparisonDiff(a: Container, b: Container): Question {
     ] : []
   }
 }
+
+
+function toSlideEx(a: Container, b: Container, last: Slide | InvertSlide): Container {
+  if (a.entity !== b.entity) {
+    throw `Mismatch entity ${a.entity}, ${b.entity}`
+  }
+  if (a.unit !== b.unit) {
+    throw `Mismatch unit ${a.unit}, ${b.unit}`
+  }
+
+  return {
+    kind: "cont",
+    agent: last.agent ?? a.agent,
+    quantity: last.kind === "slide-invert"
+      ? isNumber(a.quantity) && isNumber(b.quantity)
+        ? a.quantity - b.quantity
+        : wrapToQuantity(`a.quantity - b.quantity`, { a, b })
+      : isNumber(a.quantity) && isNumber(b.quantity)
+        ? a.quantity + b.quantity
+        : wrapToQuantity(`a.quantity + b.quantity`, { a, b }),
+    entity: a.entity,
+    unit: a.unit
+  }
+}
+function toSlide(a: Container, b: Container, last: Slide | InvertSlide): Question {
+  const result = toSlideEx(a, b, last)
+  return {
+    question: `${containerQuestion(result)}`,
+    result,
+    options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.quantity) ? [
+      { tex: `${formatNumber(a.quantity)} ${last.kind === "slide-invert" ? '-' : '+'} ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: true },
+      { tex: `${formatNumber(b.quantity)} - ${formatNumber(a.quantity)}`, result: formatNumber(b.quantity - a.quantity), ok: false },
+    ] : []
+  }
+}
+
 function toDifferenceEx(a: Container, b: Container, diff: Difference): Container {
   if (a.entity !== b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`
@@ -1891,6 +1938,37 @@ function partToPartRule(a: Container, partToPartRatio: PartToPartRatio, nth?: Nt
   }
 }
 
+function mapContByScaleEx(target: Container, quantity: number, agent: string) {
+  if (!isNumber(target.quantity)) {
+    throw "mapContByScale is not supported by non quantity types"
+  }
+  return {
+    ...target,
+    agent: agent ?? target.agent,
+    quantity: target.quantity * quantity,
+  }
+}
+function mapContByScale(target: Container, factor: Container, last: Scale | InvertScale): Question {
+  if (!isNumber(target.quantity) || !isNumber(factor.quantity)) {
+    throw "mapContByScale is not supported by non quantity types"
+  }
+  const inverse = last.kind === "scale-invert";
+  const quantity = inverse ? 1 / factor.quantity : factor.quantity;
+  const result = mapContByScaleEx(target, quantity, last.agent)
+
+  return {
+    question: `${quantity > 1 ? "Zvětši" : "Zmenši"} ${factor.quantity} krát ${target.agent}.`,
+    result,
+    options: [
+      {
+        tex: inverse
+          ? `${formatNumber(target.quantity)} / ${formatNumber(factor.quantity)}`
+          : `${formatNumber(target.quantity)} * ${formatNumber(factor.quantity)}`, result: formatNumber(result.quantity), ok: true
+      }
+    ]
+
+  }
+}
 function mapRatiosByFactorEx(multi: PartToPartRatio, quantity: number) {
   if (!areNumbers(multi.ratios)) {
     throw "ratios are not supported by non quantity types"
@@ -1902,7 +1980,7 @@ function mapRatiosByFactor(multi: PartToPartRatio, factor: Container, inverse?: 
   if (!areNumbers(multi.ratios) || !isNumber(factor.quantity)) {
     throw "ratios are not supported by non quantity types"
   }
-  const quantity = inverse ? factor.quantity : 1 / factor.quantity;
+  const quantity = inverse ? 1 / factor.quantity : factor.quantity;
   const result = mapRatiosByFactorEx(multi, quantity)
 
   return {
@@ -2068,7 +2146,7 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   const [a, b, ...rest] = args;
   const last = rest?.length > 0 ? rest[rest.length - 1] : null;
 
-  if (["sumCombine", "accumulate", "sum", "productCombine", "product", "gcd", "lcd", "sequence"].includes(last?.kind) || ((last?.kind === "ratios") && args.length > 3)) {
+  if (['sum-combine', "sum", 'product-combine', "product", "gcd", "lcd", "sequence"].includes(last?.kind) || ((last?.kind === "ratios") && args.length > 3)) {
     const arr = [a, b].concat(rest.slice(0, -1)) as Container[];
 
     return last.kind === "sequence"
@@ -2077,10 +2155,10 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
         ? gcdRule(arr, last)
         : last.kind === "lcd"
           ? lcdRule(arr, last)
-          : ["productCombine", "product"].includes(last.kind)
+          : ['product-combine', "product"].includes(last.kind)
             ? productRule(arr, last as ProductCombine | Product)
-            : ["sumCombine", "sum", "accumulate"].includes(last.kind)
-              ? sumRule(arr, last as SumCombine | Accumulate | Sum)
+            : ['sum-combine', "sum",].includes(last.kind)
+              ? sumRule(arr, last as SumCombine | Sum)
               : last.kind === "ratios"
                 ? toRatios(arr, last)
                 : null
@@ -2092,25 +2170,29 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
     const kind = last?.kind;
     return kind === "comp-diff"
       ? toComparisonDiff(a, b)
-      : kind === "diff"
-        ? toDifference(a, b, last)
-        : kind === "quota"
-          ? toQuota(a, b)
-          : kind === "delta"
-            ? toDelta(a, b, last)
-            : kind === "pythagoras"
-              ? pythagorasRule(a, b, last)
-              : kind === "rate"
-                ? toRate(a, b)
-                : kind === "ratios"
-                  ? toRatios([a, b], last)
-                  : kind === "comp-ratio"
-                    ? toRatioComparison(a, b, last)
-                    : kind === "ratio"
-                      ? toPartWholeRatio(a, b, last)
-                      : kind === "linear-equation"
-                        ? solveEquation(a, b, last)
-                        : toComparison(a, b)
+      : (kind === "scale" || kind === "scale-invert")
+        ? mapContByScale(a, b, last)
+        : (kind === "slide" || kind === "slide-invert")
+          ? toSlide(a, b, last)
+          : kind === "diff"
+            ? toDifference(a, b, last)
+            : kind === "quota"
+              ? toQuota(a, b)
+              : kind === "delta"
+                ? toDelta(a, b, last)
+                : kind === "pythagoras"
+                  ? pythagorasRule(a, b, last)
+                  : kind === "rate"
+                    ? toRate(a, b)
+                    : kind === "ratios"
+                      ? toRatios([a, b], last)
+                      : kind === "comp-ratio"
+                        ? toRatioComparison(a, b, last)
+                        : kind === "ratio"
+                          ? toPartWholeRatio(a, b, last)
+                          : kind === "linear-equation"
+                            ? solveEquation(a, b, last)
+                            : toComparison(a, b)
   }
   else if (a.kind === "cont" && b.kind === "eval-expr") {
     return evalToQuantity(a, b)
@@ -2257,7 +2339,7 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
 
     return kind === "scale"
       ? mapRatiosByFactor(b, a)
-      : kind === "invert-scale"
+      : kind === "scale-invert"
         ? mapRatiosByFactor(b, a, true)
         : kind === "nth-factor"
           ? nthPartFactorBy(b, a, last)
@@ -2268,7 +2350,7 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
     const kind = last?.kind;
     return kind === "scale"
       ? mapRatiosByFactor(a, b)
-      : kind === "invert-scale"
+      : kind === "scale-invert"
         ? mapRatiosByFactor(a, b, true)
         : kind === "nth-factor"
           ? nthPartFactorBy(a, b, last)

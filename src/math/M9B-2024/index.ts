@@ -1,11 +1,13 @@
-import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, pythagoras, rate, ratio, ratios, sum, accumulate, product, repeat, productCombine } from "../../components/math";
-import { deduce, last, to } from "../../utils/deduce-utils";
+import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, pythagoras, rate, ratio, ratios, sum, product, counter, productCombine, ctorSlide } from "../../components/math";
+import { createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
-export default {
-  1: delkaKroku(),
-  2: AdamAOta(),
-  6.1: ctyruhelnik(),
-}
+
+export default createLazyMap({
+  1: () => delkaKroku(),
+  2: () => AdamAOta(),
+  6.1: () => ctyruhelnik(),
+})
+
 function delkaKroku() {
   const entityBase = "krok";
   const entity = "délka";
@@ -38,7 +40,7 @@ function AdamAOta() {
       deduce(
         adam1,
         adam2,
-        sum("Adam")
+        ctorSlide("Adam")
       ),
       deduce(
         adam1,
@@ -74,7 +76,7 @@ function ctyruhelnik() {
       deduce(
         deduce(
           cont("trojúhelník BCD", 24, entity2d, unit2d),
-          repeat("2", 2),
+          counter("2", 2),
           product("obdelník")
         ),
         cont("DC", 8, entity2d, unit2d),
@@ -174,7 +176,7 @@ function povrchValce() {
     polomer,
     polomer,
     pi(),
-    productCombine("podstava",entity2d)
+    productCombine("podstava", entity2d)
   )
 
   return {
@@ -224,15 +226,15 @@ export const krouzkyATridy = () => {
         roboticky8,
         deduce(
           deduce(
-            deduce(hudebni8, sachovy8, roboticky8, accumulate("8.")),
+            deduce(hudebni8, sachovy8, roboticky8, sum("8.")),
             ratios("celkem", ["8.", "9."], [2, 3]),
             nthPart("9.")
           ),
-          deduce(hudebni9, sachovy9, accumulate("9."),
-          ctorDifference(`${robotickyLabel} 9.`)
-        ),
-        ctorRatios(robotickyLabel)
-      )
+          deduce(hudebni9, sachovy9, sum("9."),
+            ctorDifference(`${robotickyLabel} 9.`)
+          ),
+          ctorRatios(robotickyLabel)
+        ))
     }
   }
 }

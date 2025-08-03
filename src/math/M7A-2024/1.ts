@@ -1,4 +1,4 @@
-import { comp, cont, ctor, sum } from "../../components/math";
+import { sum, comp, cont, ctor } from "../../components/math";
 import { axiomInput, deduce, lastQuantity, to } from "../../utils/deduce-utils";
 
 export function porovnatAaB({ input }: { input: { a: number, b: number } }) {

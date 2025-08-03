@@ -166,14 +166,14 @@ Predikáty umožňují formalní zápis situačního modelu úlohy.
       <td>Poměr chlapců a dívek ve třídě je 1:3 (1 chlapec ku 3 dívkám).</td>
     </tr>
     <tr>
-      <td><div class="badge">SCALE</div> part to part scaling</td>
+      <td><div class="badge">SCALE</div>scaling number or part to part scaling</td>
       <td></td>
-      <td>Pokud je poměr chlapců a dívek ve třídě je 1:3, tak dvojnásobné rozšíření poměru je 2:6.</td>
+      <td>Zvětšení. Zvětši 2 krát číslo 6 = 12. Dvojnásobné rozšíření poměru 1:3 je 2:6.</td>
     </tr>
     <tr>
-      <td><div class="badge">INVERT-SCALE</div> part to part scaling</td>
+      <td><div class="badge">SCALE-INVERT</div>inverse scaling number or part to part scaling</td>
       <td></td>
-      <td>Pokud je poměr chlapců a dívek ve třídě je 2:6, tak dvojnásobné zkrácení poměru je 1:3.</td>
+      <td>Zmenšení. Zmenši 2 krát  číslo 6  = 3. Dvojnásobné zkrácení poměru 2:6 je 1:3.</td>
     </tr>
     <tr>
       <td><div class="badge">RATE</div> rate</td>
@@ -293,12 +293,9 @@ ${partion([
 <div>${renderRules(rules.partToWholeRatio)}</div>
 
 
-
 ### Porovnávání - poměry část ku časti
 
 <div class="badge badge--large">RATIOS</div>
-<div class="badge badge--large">SCALE</div>
-<div class="badge badge--large">INVERT-SCALE</div>
 
 ${partion([
     {value: 30, agent:"chlapci", label:{ hidePercent: true, hideFraction: false} },
@@ -320,6 +317,19 @@ ${partion([
 ### Porovnávání - úhly
 <div class="badge badge--large">COMP-ANGLE</div>
 <div>${renderRules(rules.angleCompare)}</div>
+
+
+## Škálování 
+<div class="badge badge--large">SCALE</div>
+<div class="badge badge--large">SCALE-INVERT</div>
+
+<div>${renderRules(rules.scaling)}</div>
+
+## Posuny
+<div class="badge badge--large">SLIDE</div>
+<div class="badge badge--large">SLIDE-INVERT</div>
+
+<div>${renderRules(rules.sliding)}</div>
 
 ## Stav a změna stavu
 
@@ -354,6 +364,7 @@ ${partion([
 ## Spojování
 <div class="badge badge--large">SUM</div>
 <div class="badge badge--large">PRODUCT</div>
+<div class="badge badge--large">PRODUCT-COMBINE</div>
 
 <div>${renderRules(rules.sum)}</div>
 

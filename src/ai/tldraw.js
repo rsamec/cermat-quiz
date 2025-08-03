@@ -3621,7 +3621,6 @@ function formatPredicate(d, formatting) {
       result = compose`${formatAgent(d.whole)} ${joinArray(d.parts?.map((d2) => formatAgent(d2)), ":")} v poměru ${joinArray(d.ratios?.map((d2) => formatQuantity(d2)), ":")}`;
       break;
     case "sum":
-    case "accumulate":
     case "sumCombine":
       result = compose`${joinArray(d.partAgents?.map((d2) => formatAgent(d2)), " + ")}`;
       break;
@@ -6072,7 +6071,7 @@ function sumRuleEx(items, b) {
       const { entity, entityBase } = items[0];
       return { kind: "rate", agent: b.wholeAgent, quantity, entity, entityBase, baseQuantity: 1 };
     } else {
-      if (b.kind !== "sumCombine") {
+      if (b.kind !== "sum-combine") {
         const itemsEntities = items.map((d) => d.entity);
         if (b.wholeEntity === null && itemsEntities.filter(unique).length !== 1) {
           throw `All predicates should have the same entity ${itemsEntities.map((d) => JSON.stringify(d)).join("")}.`;
@@ -6111,7 +6110,7 @@ function sumRule(items, b) {
 function productRuleEx(items, b) {
   const values = items.map((d) => d.quantity);
   const entity = b.wholeEntity != null ? b.wholeEntity : items.find((d) => d.entity != null && d.entity != "");
-  const convertedEntity = entity != null ? toEntity(entity) : { entity: void 0, unit: void 0 };
+  const convertedEntity = entity != null ? toEntity(entity) : { entity: "", unit: void 0 };
   return {
     kind: "cont",
     agent: b.wholeAgent,
@@ -6366,6 +6365,32 @@ function toComparisonDiff(a, b) {
     ] : []
   };
 }
+function toSlideEx(a, b, last) {
+  if (a.entity !== b.entity) {
+    throw `Mismatch entity ${a.entity}, ${b.entity}`;
+  }
+  if (a.unit !== b.unit) {
+    throw `Mismatch unit ${a.unit}, ${b.unit}`;
+  }
+  return {
+    kind: "cont",
+    agent: last.agent ?? a.agent,
+    quantity: last.kind === "slide-invert" ? isNumber2(a.quantity) && isNumber2(b.quantity) ? a.quantity - b.quantity : wrapToQuantity(`a.quantity - b.quantity`, { a, b }) : isNumber2(a.quantity) && isNumber2(b.quantity) ? a.quantity + b.quantity : wrapToQuantity(`a.quantity + b.quantity`, { a, b }),
+    entity: a.entity,
+    unit: a.unit
+  };
+}
+function toSlide(a, b, last) {
+  const result = toSlideEx(a, b, last);
+  return {
+    question: `${containerQuestion(result)}`,
+    result,
+    options: isNumber2(a.quantity) && isNumber2(b.quantity) && isNumber2(result.quantity) ? [
+      { tex: `${formatNumber(a.quantity)} ${last.kind === "slide-invert" ? "-" : "+"} ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: true },
+      { tex: `${formatNumber(b.quantity)} - ${formatNumber(a.quantity)}`, result: formatNumber(b.quantity - a.quantity), ok: false }
+    ] : []
+  };
+}
 function toDifferenceEx(a, b, diff) {
   if (a.entity !== b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`;
@@ -6597,6 +6622,35 @@ function partToPartRule(a, partToPartRatio, nth) {
     ] : []
   };
 }
+function mapContByScaleEx(target, quantity, agent) {
+  if (!isNumber2(target.quantity)) {
+    throw "mapContByScale is not supported by non quantity types";
+  }
+  return {
+    ...target,
+    agent: agent ?? target.agent,
+    quantity: target.quantity * quantity
+  };
+}
+function mapContByScale(target, factor, last) {
+  if (!isNumber2(target.quantity) || !isNumber2(factor.quantity)) {
+    throw "mapContByScale is not supported by non quantity types";
+  }
+  const inverse = last.kind === "scale-invert";
+  const quantity = inverse ? 1 / factor.quantity : factor.quantity;
+  const result = mapContByScaleEx(target, quantity, last.agent);
+  return {
+    question: `${quantity > 1 ? "Zv\u011Bt\u0161i" : "Zmen\u0161i"} ${factor.quantity} kr\xE1t ${target.agent}.`,
+    result,
+    options: [
+      {
+        tex: inverse ? `${formatNumber(target.quantity)} / ${formatNumber(factor.quantity)}` : `${formatNumber(target.quantity)} * ${formatNumber(factor.quantity)}`,
+        result: formatNumber(result.quantity),
+        ok: true
+      }
+    ]
+  };
+}
 function mapRatiosByFactorEx(multi, quantity) {
   if (!areNumbers(multi.ratios)) {
     throw "ratios are not supported by non quantity types";
@@ -6607,7 +6661,7 @@ function mapRatiosByFactor(multi, factor, inverse) {
   if (!areNumbers(multi.ratios) || !isNumber2(factor.quantity)) {
     throw "ratios are not supported by non quantity types";
   }
-  const quantity = inverse ? factor.quantity : 1 / factor.quantity;
+  const quantity = inverse ? 1 / factor.quantity : factor.quantity;
   const result = mapRatiosByFactorEx(multi, quantity);
   return {
     question: `${quantity > 1 ? "Rozn\xE1sob " : "Zkra\u0165 "} pom\u011Br \u010D\xEDslem ${quantity > 1 ? formatNumber(quantity) : formatNumber(1 / quantity)}`,
@@ -6743,14 +6797,14 @@ function inferenceRuleWithQuestion(...args) {
 function inferenceRuleEx(...args) {
   const [a, b, ...rest] = args;
   const last = rest?.length > 0 ? rest[rest.length - 1] : null;
-  if (["sumCombine", "accumulate", "sum", "productCombine", "product", "gcd", "lcd", "sequence"].includes(last?.kind) || last?.kind === "ratios" && args.length > 3) {
+  if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence"].includes(last?.kind) || last?.kind === "ratios" && args.length > 3) {
     const arr = [a, b].concat(rest.slice(0, -1));
-    return last.kind === "sequence" ? sequenceRule(arr) : last.kind === "gcd" ? gcdRule(arr, last) : last.kind === "lcd" ? lcdRule(arr, last) : ["productCombine", "product"].includes(last.kind) ? productRule(arr, last) : ["sumCombine", "sum", "accumulate"].includes(last.kind) ? sumRule(arr, last) : last.kind === "ratios" ? toRatios(arr, last) : null;
+    return last.kind === "sequence" ? sequenceRule(arr) : last.kind === "gcd" ? gcdRule(arr, last) : last.kind === "lcd" ? lcdRule(arr, last) : ["product-combine", "product"].includes(last.kind) ? productRule(arr, last) : ["sum-combine", "sum"].includes(last.kind) ? sumRule(arr, last) : last.kind === "ratios" ? toRatios(arr, last) : null;
   } else if (a.kind === "eval-option" || b.kind === "eval-option") {
     return a.kind === "eval-option" ? evalToOption(b, a) : b.kind === "eval-option" ? evalToOption(a, b) : null;
   } else if (a.kind === "cont" && b.kind == "cont") {
     const kind = last?.kind;
-    return kind === "comp-diff" ? toComparisonDiff(a, b) : kind === "diff" ? toDifference(a, b, last) : kind === "quota" ? toQuota(a, b) : kind === "delta" ? toDelta(a, b, last) : kind === "pythagoras" ? pythagorasRule(a, b, last) : kind === "rate" ? toRate(a, b) : kind === "ratios" ? toRatios([a, b], last) : kind === "comp-ratio" ? toRatioComparison(a, b, last) : kind === "ratio" ? toPartWholeRatio(a, b, last) : kind === "linear-equation" ? solveEquation(a, b, last) : toComparison(a, b);
+    return kind === "comp-diff" ? toComparisonDiff(a, b) : kind === "scale" || kind === "scale-invert" ? mapContByScale(a, b, last) : kind === "slide" || kind === "slide-invert" ? toSlide(a, b, last) : kind === "diff" ? toDifference(a, b, last) : kind === "quota" ? toQuota(a, b) : kind === "delta" ? toDelta(a, b, last) : kind === "pythagoras" ? pythagorasRule(a, b, last) : kind === "rate" ? toRate(a, b) : kind === "ratios" ? toRatios([a, b], last) : kind === "comp-ratio" ? toRatioComparison(a, b, last) : kind === "ratio" ? toPartWholeRatio(a, b, last) : kind === "linear-equation" ? solveEquation(a, b, last) : toComparison(a, b);
   } else if (a.kind === "cont" && b.kind === "eval-expr") {
     return evalToQuantity(a, b);
   } else if (a.kind === "eval-expr" && b.kind === "cont") {
@@ -6844,10 +6898,10 @@ function inferenceRuleEx(...args) {
     return kind === "ratio" ? ratiosConvertRule(b, a, last) : null;
   } else if (a.kind === "cont" && b.kind == "ratios") {
     const kind = last?.kind;
-    return kind === "scale" ? mapRatiosByFactor(b, a) : kind === "invert-scale" ? mapRatiosByFactor(b, a, true) : kind === "nth-factor" ? nthPartFactorBy(b, a, last) : kind === "nth-part" ? partToPartRule(a, b, last) : partToPartRule(a, b);
+    return kind === "scale" ? mapRatiosByFactor(b, a) : kind === "scale-invert" ? mapRatiosByFactor(b, a, true) : kind === "nth-factor" ? nthPartFactorBy(b, a, last) : kind === "nth-part" ? partToPartRule(a, b, last) : partToPartRule(a, b);
   } else if (a.kind === "ratios" && b.kind == "cont") {
     const kind = last?.kind;
-    return kind === "scale" ? mapRatiosByFactor(a, b) : kind === "invert-scale" ? mapRatiosByFactor(a, b, true) : kind === "nth-factor" ? nthPartFactorBy(a, b, last) : kind === "nth-part" ? partToPartRule(b, a, last) : partToPartRule(b, a);
+    return kind === "scale" ? mapRatiosByFactor(a, b) : kind === "scale-invert" ? mapRatiosByFactor(a, b, true) : kind === "nth-factor" ? nthPartFactorBy(a, b, last) : kind === "nth-part" ? partToPartRule(b, a, last) : partToPartRule(b, a);
   } else if (a.kind === "cont" && b.kind === "comp-diff") {
     return diffRule(a, b);
   } else if (a.kind === "comp-diff" && b.kind === "cont") {

@@ -1,4 +1,4 @@
-import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, lcd, primeFactorization, rate, accumulate, sum, repeat, product, productCombine } from "../../components/math";
+import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, lcd, primeFactorization, rate, sum, counter, product, productCombine } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
@@ -100,7 +100,7 @@ function klubSEN() {
       sportovni,
       divadelni,
       roboticky,
-      accumulate("celkem učastníků")
+      sum("celkem učastníků")
     ),
     deduce(
       deduce(
@@ -111,7 +111,7 @@ function klubSEN() {
         twoRate,
         two
       ),
-      accumulate("navštěvuje více kroužků", { entity })
+      sum("navštěvuje více kroužků", { entity })
     ),
     ctor('comp-diff')
   );
@@ -124,7 +124,7 @@ function klubSEN() {
         last(one),
         two,
         three,
-        accumulate("počet dětí")
+        sum("počet dětí")
       )
     }
   }
@@ -173,7 +173,7 @@ function desitiuhelnik() {
       deductionTree: deduce(
         deduce(
           whiteTriangleSize,
-          repeat("počet stran trojúhelníku", 3),
+          counter("počet stran trojúhelníku", 3),
           product("obvod")
         ),
         ctorBooleanOption(12)
@@ -188,12 +188,12 @@ function desitiuhelnik() {
               commonSense("strana bíleho trojúhelníku odpovídá výška šedého obdelníku"),
               cont("výška šedého obdelníku", 8, entity)
             ),
-            repeat("počet stran", 2),
+            counter("počet stran", 2),
             product("horní a dolní strana")
           ),
           deduce(
             rectangleWidth,
-            repeat("počet stran", 2),
+            counter("počet stran", 2),
             product("levá a pravá strana")
           ),
           sum("obvod")

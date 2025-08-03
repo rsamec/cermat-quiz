@@ -1,4 +1,4 @@
-import { cont, ctor, ctorBooleanOption, ctorOption, sum } from "../components/math";
+import { sum, cont, ctor, ctorBooleanOption, ctorOption } from "../components/math";
 import { deduce } from "../utils/deduce-utils";
 
 export const trideni_odpadu = () => {

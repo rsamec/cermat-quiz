@@ -1,5 +1,5 @@
 
-import { productCombine, cont, type Container, product, sum, repeat } from "../../components/math.js";
+import { productCombine, cont, type Container, product, sum, counter } from "../../components/math.js";
 import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 
@@ -67,7 +67,7 @@ export function examples({ input }: {
 
   const dTree2 = volume({ length, width, height });
 
-  const protilehlaStana = repeat("počet stěn", 2);
+  const protilehlaStana = counter("počet stěn", 2);
 
   const dTree3 =
     deduce(

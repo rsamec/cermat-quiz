@@ -1,4 +1,4 @@
-import { cont, ctor, ctorComplement, accumulate, sum } from "../../components/math";
+import { cont, ctor, ctorComplement, sum } from "../../components/math";
 import { axiomInput, deduce } from "../../utils/deduce-utils";
 
 interface SourozenciParams {
@@ -19,7 +19,7 @@ export default function build({ input }: {
   const entity = "Kč";
   const zbyva = axiomInput(cont("zbývá", input.zbyvaNasporit, entity), 4);
   const michalPlus = axiomInput(cont("Michal+", input.michalPlus, entity), 3);
-  const penize = accumulate("Michal+zbývá");
+  const penize = sum("Michal+zbývá");
 
   const eva = axiomInput(cont("Eva", input.evaPodil, "%"), 2)
   const michal = cont("Michal", input.evaPodil, "%");

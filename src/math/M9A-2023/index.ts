@@ -1,4 +1,4 @@
-import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, pythagoras, rate, ratio, ratios, ctorOption, ctorBooleanOption, sum, productCombine, repeat, product } from "../../components/math";
+import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, pythagoras, rate, ratio, ratios, ctorOption, ctorBooleanOption, productCombine, counter, product, sum } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 import trojuhelnik from "./trojuhelnik";
@@ -382,7 +382,7 @@ export function lomanaCaraACFHA() {
           ac,
           sum("úhlopříčka na podlaze (AC) + úhlopříčka na stěně (CF)")
         ),
-        repeat("stejně dlouhá úhlopříčka na stropě (FH) i stejně dlouhá úhlopříčka na druhé stěně (HA)", 2),
+        counter("stejně dlouhá úhlopříčka na stropě (FH) i stejně dlouhá úhlopříčka na druhé stěně (HA)", 2),
         product("lomené čáry ACFHA")
       ),
       ctorOption("C", 54)

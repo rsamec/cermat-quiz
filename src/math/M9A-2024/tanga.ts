@@ -1,5 +1,5 @@
 
-import { commonSense, compRatio, cont, ctorRound, sum, productCombine, product, repeat } from "../../components/math";
+import { commonSense, compRatio, cont, ctorRound, sum, productCombine, product, counter } from "../../components/math";
 import { axiomInput, deduce, last, lastQuantity, to } from "../../utils/deduce-utils";
 import { baseCircumference, surfaceBaseArea } from "../shapes/cylinder"
 
@@ -44,7 +44,7 @@ export default function build({ input }: {
       productCombine(`${rectangleLabel} obsah`, entity2d)
     ),
     deduce(
-      repeat(circelPartLabel, 2),
+      counter(circelPartLabel, 2),
       deduce(
         obsah,
         compRatio(areaCircleLabel, circelPartLabel, 4)),

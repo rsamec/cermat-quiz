@@ -1,4 +1,4 @@
-import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, rate, ratio, ratios, ctorPercent, compAngle, ctorComplement, ctorComparePercent, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, ctorLinearEquation, sum, accumulate, productCombine } from "../../components/math";
+import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, rate, ratio, ratios, ctorPercent, compAngle, ctorComplement, ctorComparePercent, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, ctorLinearEquation, sum, productCombine } from "../../components/math";
 import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 
@@ -256,7 +256,7 @@ function zahrada() {
       hortenzie,
       levandule,
       bazalka,
-      accumulate("celkem")
+      sum("celkem")
     ),
     ctorDifference(ruzeL)
   )
@@ -294,7 +294,7 @@ function zahrada() {
           deduce(
             levandule,
             bazalka,
-            accumulate("dohromady")
+            sum("dohromady")
           ),
           hortenzie,
           ctor('comp-ratio')

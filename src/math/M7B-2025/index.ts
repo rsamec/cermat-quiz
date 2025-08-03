@@ -1,4 +1,4 @@
-import { commonSense, compRelative, cont, ctor, accumulate, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, repeat, gcd, nthPart, percent, proportion, rate, ratio, product } from "../../components/math"
+import { commonSense, compRelative, cont, ctor, sum, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, counter, gcd, nthPart, percent, proportion, rate, ratio, product } from "../../components/math"
 import { createLazyMap, deduce, last, to, toCont, type TreeNode } from "../../utils/deduce-utils"
 
 export default createLazyMap({
@@ -55,7 +55,7 @@ function pomer() {
       ctorRatios(sousedniCislaPomerLabel)
     ),
     deduce(a3, a4, gcd("největší společný násobek", entity)),
-    ctor('invert-scale')
+    ctor('scale-invert')
   );
 
   const createRatios = (treeNode: TreeNode, n1: number, n2: number) => {
@@ -164,7 +164,7 @@ function zaciSkupiny() {
         cont("trojice", 2, entityGroup),
         ctorDifference("jednotkový rozdíl při rovnosti")
       ),
-      repeat("rozdíl při rovnosti", 2),
+      counter("rozdíl při rovnosti", 2),
       product( "rozdíl při rovnosti")
     ),
     ctor("scale")
@@ -176,7 +176,7 @@ function zaciSkupiny() {
       cont("skupina dvojic", 6, entityDvojic)
     ),
     cont("zbývající žáci", 1, entityDvojic),
-    accumulate("skupina dvojic")
+    sum("skupina dvojic")
   )
 
 
@@ -200,7 +200,7 @@ function zaciSkupiny() {
           ),
           rate("skupina", 3, entity, entityTrojic)
         ),
-        accumulate("celkem")
+        sum("celkem")
       )
     }
 
@@ -303,7 +303,7 @@ function zahradnictvi() {
               ratio(celkemLabel, kopretinyLabel, 1 / 4)
             ),
             hvozdiky,
-            accumulate("dohromady")
+            sum("dohromady")
           ),
           ctorDifference(astraLabel)
         ),
@@ -338,7 +338,7 @@ function predstaveni() {
         deduce(
           last(deti),
           dospely,
-          accumulate("celkem")
+          sum("celkem")
         ),
         ctorPercent()
       ),
