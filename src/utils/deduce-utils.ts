@@ -324,9 +324,8 @@ export function jsonToMarkdownChat(node, formatting?: any) {
         const child = node.children[i];
         const isConclusion = i === node.children.length - 1;
 
-        if (isConclusion) {
-          const children = node.children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]);
-          const result = inferenceRuleWithQuestion(children);
+        if (isConclusion) {          
+          const result = inferenceRuleWithQuestion(mapNodeChildrenToPredicates(node));
           q = result;
           if (node.context) {
             args.push(node.context)
@@ -365,6 +364,11 @@ export function jsonToMarkdownChat(node, formatting?: any) {
 function isEmptyOrWhiteSpace(value: string | undefined) {
   return value == null || (typeof value === 'string' && value.trim() === '');
 };
+
+export function mapNodeChildrenToPredicates(node: TreeNode): Predicate[] {
+  return node.children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0] as Predicate);
+}
+
 
 const mdFormatting = {
   compose: (strings: TemplateStringsArray, ...args) => concatString(strings, ...args),

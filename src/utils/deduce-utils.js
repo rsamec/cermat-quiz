@@ -5578,8 +5578,7 @@ function jsonToMarkdownChat(node, formatting) {
         const child = node2.children[i];
         const isConclusion = i === node2.children.length - 1;
         if (isConclusion) {
-          const children = node2.children.map((d) => isPredicate(d) ? d : d.children.slice(-1)[0]);
-          const result = inferenceRuleWithQuestion2(children);
+          const result = inferenceRuleWithQuestion2(mapNodeChildrenToPredicates(node2));
           q = result;
           if (node2.context) {
             args.push(node2.context);
@@ -5612,6 +5611,9 @@ Z\xE1v\u011Br:${conclusion}
 }
 function isEmptyOrWhiteSpace(value) {
   return value == null || typeof value === "string" && value.trim() === "";
+}
+function mapNodeChildrenToPredicates(node) {
+  return node.children.map((d) => isPredicate(d) ? d : d.children.slice(-1)[0]);
 }
 var mdFormatting = {
   compose: (strings, ...args) => concatString(strings, ...args),
@@ -5884,6 +5886,7 @@ export {
   jsonToTLDrawEx,
   last,
   lastQuantity,
+  mapNodeChildrenToPredicates,
   mapToCont,
   to,
   toAs,

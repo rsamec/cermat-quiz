@@ -2,7 +2,7 @@ import { html } from "npm:htl";
 import * as Plot from "npm:@observablehq/plot";
 import Fraction from 'npm:fraction.js';
 import { nthQuadraticElements, primeFactorization, lcdCalc, isNumber, gcdCalc } from "../components/math.js";
-import { isPredicate, formatPredicate } from "../utils/deduce-utils.js";
+import { isPredicate, formatPredicate, mapNodeChildrenToPredicates } from "../utils/deduce-utils.js";
 import { deduce } from "./deduce.js";
 import { inferenceRuleWithQuestion } from "../math/math-configure.js";
 import { toEquationExpr } from "./math-solver.js";
@@ -412,8 +412,7 @@ export function stepsTraverse(node) {
         }
 
         if (isLast) {
-          const children = node.children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]);
-          const result = inferenceRuleWithQuestion(children);
+          const result = inferenceRuleWithQuestion(mapNodeChildrenToPredicates(node));
           question = result;
         }
         else {

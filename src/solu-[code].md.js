@@ -203,9 +203,8 @@ export function stepsTraverse(node) {
           newChild = deduceMap.has(child) ? deduceMap.get(child) : child;
         }
 
-        if (isLast) {
-          const children = node.children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]);
-          const result = children.length > 2 ? inferenceRuleWithQuestion(...children.slice(0, -1)) : null;
+        if (isLast) {          
+          const result = inferenceRuleWithQuestion(mapNodeChildrenToPredicates(node));
           question = result;
         }
         else {
@@ -274,6 +273,10 @@ function normalizeToArray(d) {
 function isPredicate(node) {
   return node.kind != null;
 }
+function mapNodeChildrenToPredicates(node) {
+  return node.children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]);
+}
+
 
 function uniqueQuestion(obj) {
   if (obj == null) {

@@ -1,5 +1,5 @@
 import type { ISimpleCloudShape, ISimpleColor, ISimpleEllipseShape, ISimpleNoteShape, ISimpleRectangleShape } from "./schema";
-import { concatString, type DeduceContext, formatPredicate, isPredicate } from "../utils/deduce-utils.js";
+import { concatString, type DeduceContext, formatPredicate, isPredicate, mapNodeChildrenToPredicates } from "../utils/deduce-utils.js";
 import { isEmptyOrWhiteSpace } from "../utils/string-utils.js";
 import type { Predicate, Question } from "../components/math.js";
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
@@ -249,8 +249,8 @@ export function deductionTreeToHierarchy(node: { children: any[], context: Deduc
 
     }
 
-    const children = node.children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]);
-    const questionRule = inferenceRuleWithQuestion(children) as Question;
+    
+    const questionRule = inferenceRuleWithQuestion(mapChildrenToPredicates(node)) as Question;
 
     const option = questionRule?.options?.find(d => d.ok);
     const questionShapes = []

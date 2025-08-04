@@ -2140,7 +2140,7 @@ export function inferenceRule(...args: Predicate[]): Predicate {
   const value = inferenceRuleEx(...args);
   return isQuestion(value) ? value.result : value;
 }
-export function inferenceRuleWithQuestion(children: Predicate[]) {
+export function inferenceRuleWithQuestion(children: Predicate[]) {  
   if (children.length < 1) {
     throw "inferenceRuleWithQuestion requires at least one child";
   }

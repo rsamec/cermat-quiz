@@ -10123,8 +10123,7 @@ function deductionTreeToHierarchy(node, links, isLast, extra) {
       note: ""
     });
   }
-  const children = node.children.map((d) => isPredicate(d) ? d : d.children.slice(-1)[0]);
-  const questionRule = inferenceRuleWithQuestion2(children);
+  const questionRule = inferenceRuleWithQuestion2(mapChildrenToPredicates(node));
   const option = questionRule?.options?.find((d) => d.ok);
   const questionShapes = [];
   const questionShape = {
