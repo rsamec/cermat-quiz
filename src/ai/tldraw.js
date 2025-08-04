@@ -3532,6 +3532,9 @@ function isPredicate(node) {
 function isEmptyOrWhiteSpace(value) {
   return value == null || typeof value === "string" && value.trim() === "";
 }
+function mapNodeChildrenToPredicates(node) {
+  return node.children.map((d) => isPredicate(d) ? d : d.children.slice(-1)[0]);
+}
 var mdFormatting = {
   compose: (strings, ...args) => concatString(strings, ...args),
   formatKind: (d) => `[${d.kind.toUpperCase()}]`,
@@ -10123,7 +10126,7 @@ function deductionTreeToHierarchy(node, links, isLast, extra) {
       note: ""
     });
   }
-  const questionRule = inferenceRuleWithQuestion2(mapChildrenToPredicates(node));
+  const questionRule = inferenceRuleWithQuestion2(mapNodeChildrenToPredicates(node));
   const option = questionRule?.options?.find((d) => d.ok);
   const questionShapes = [];
   const questionShape = {
