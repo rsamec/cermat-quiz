@@ -6791,8 +6791,18 @@ function isRatePredicate(value) {
 function isEntityBase(value) {
   return value.entity != null;
 }
-function inferenceRuleWithQuestion(...args) {
-  return inferenceRuleEx(...args);
+function inferenceRuleWithQuestion(children) {
+  if (children.length < 1) {
+    throw "inferenceRuleWithQuestion requires at least one child";
+  }
+  const last = children[children.length - 1];
+  const predicates = children.slice(0, -1);
+  const result = predicates.length > 1 ? inferenceRuleEx(...predicates) : null;
+  return result == null ? {
+    question: last.kind === "cont" ? containerQuestion(last) : last.kind === "comp" ? `${computeQuestion(last.quantity)} porovn\xE1n\xED ${last.agentA} a ${last.agentB}` : last.kind === "ratio" ? `Vyj\xE1d\u0159i jako pom\u011Br ${last.part} k ${last.whole}` : "Co lze vyvodit na z\xE1klad\u011B zadan\xFDch p\u0159edpoklad\u016F?",
+    result: last,
+    options: []
+  } : result;
 }
 function inferenceRuleEx(...args) {
   const [a, b, ...rest] = args;
@@ -10114,7 +10124,7 @@ function deductionTreeToHierarchy(node, links, isLast, extra) {
     });
   }
   const children = node.children.map((d) => isPredicate(d) ? d : d.children.slice(-1)[0]);
-  const questionRule = children.length > 2 ? inferenceRuleWithQuestion2(...children.slice(0, -1)) : null;
+  const questionRule = inferenceRuleWithQuestion2(children);
   const option = questionRule?.options?.find((d) => d.ok);
   const questionShapes = [];
   const questionShape = {

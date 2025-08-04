@@ -1,13 +1,12 @@
 import { compDiff, cont, ctor } from "../../components/math";
-import { axiomInput, deduce, deduceLbl, last, lastQuantity, to } from "../../utils/deduce-utils";
+import { axiomInput, deduce, last, toCont } from "../../utils/deduce-utils";
 
 
 interface InputParameters {
   pocetKusuVKrabice: number,
   missingVyrobku: number,
 }
-export function plnaKrabice({ input }: { input: InputParameters }) {
-  const krabiceLabel = "krabice";
+export function plnaKrabice({ input }: { input: InputParameters }) {  
   const triKrabiceABezPetiLabel = "3 krabice bez chybějící výrobků";
   const missingVyrobkyLabel = "chybějící výrobky";
   const plnaKrabiceLabel = "plná krabice";
@@ -15,7 +14,7 @@ export function plnaKrabice({ input }: { input: InputParameters }) {
   const vyrobekEntity = "kus";
   const entity = "gram";
 
-  const plnaKrabicePocet = axiomInput(cont(plnaKrabiceLabel, input.pocetKusuVKrabice, vyrobekEntity), 1);
+  
   const plnaKrabiceVyrobkuPocet = axiomInput(cont(plnaKrabiceVyrobkyLabel, input.pocetKusuVKrabice, vyrobekEntity), 1);
   const missingVyrobkyPocet = axiomInput(cont(missingVyrobkyLabel, input.missingVyrobku, vyrobekEntity), 2);
 
@@ -30,26 +29,26 @@ export function plnaKrabice({ input }: { input: InputParameters }) {
 
   const rozdilGram = deduce(
     deduce(
-      { ...last(deductionTree1), ...deduceLbl(2) },
+      last(deductionTree1),
       cont(`3 ${plnaKrabiceLabel}`, 3, vyrobekEntity),
     ),
     triKrabice);
 
   const deductionTree2 = deduce(
-    to(
+    toCont(
       rozdilGram,
-      cont(missingVyrobkyLabel, lastQuantity(rozdilGram), entity)
+      { agent: missingVyrobkyLabel }
     ),
     missingVyrobkyPocet,
     ctor("rate")
   );
 
   const deductionTree3 = deduce(
-    to(
-      { ...last(deductionTree1), ...deduceLbl(2) },
-      cont(plnaKrabiceLabel, lastQuantity(deductionTree1), entity)),
+    toCont(
+      deductionTree1,
+      { agent: plnaKrabiceLabel }),
     deduce(
-      { ...last(deductionTree2), ...deduceLbl(4) },
+      last(deductionTree2),
       plnaKrabiceVyrobkuPocet),
 
   )

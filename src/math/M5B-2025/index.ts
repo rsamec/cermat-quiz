@@ -1,4 +1,4 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorOption, ctorRatios, nthPart, rate, ratio, ratios, sum, product, counter, ctorScaleInvert, ctorScale, ctorSlide } from "../../components/math";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorOption, ctorRatios, nthPart, rate, ratio, ratios, sum, product, counter, ctorScaleInvert, ctorScale, ctorSlide, ctorSlideInvert, evalExprAsCont } from "../../components/math";
 import { createLazyMap, deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -23,18 +23,16 @@ function hledaneCisla() {
   const prvniL = "první"
   const druhyL = "druhý"
 
-  const soucet = toCont(
-    deduce(
-      cont("součet", 109, entity),
-      cont("součet", 2, "neznámé číslo"),
-      ctor('rate')
-    ), { agent: "schodná neznámá čísla" })
+  const soucet = deduce(
+    cont("součet", 109, entity),
+    evalExprAsCont("soucet / 2", { kind: 'cont', agent: "polovina součtu", entity }),
+  )
 
-  const rozdil = toCont(deduce(
+
+  const rozdil = deduce(
     cont("rozdíl", 13, entity),
-    cont("rozdíl", 2, "druhé neznámé číslo"),
-    ctor('rate')
-  ), { agent: "polovina rozdílu" })
+    evalExprAsCont("rozdil / 2", { kind: 'cont', agent: "polovina součtu", entity }),
+  )
 
   return {
     cislo1: {
@@ -64,13 +62,11 @@ function hledaneCisla() {
     },
     cisla3: {
       deductionTree: to(
-        soucet,
         commonSense("abychom zachovali součet a zároveň vzniknul požadovaný rozdíl"),
-        rozdil,
-        commonSense("první neznámé číslo zvýšíme o polovinu rozdílu"),
-        cont("první neznámé číslo", lastQuantity(soucet) + lastQuantity(rozdil), entity),
-        commonSense("druhé neznámé číslo snížíme o polovinu rozdílu"),
-        cont("druhé neznámé číslo", lastQuantity(soucet) - lastQuantity(rozdil), entity),
+        commonSense("přičteme polovinu rozdílu"),
+        deduce(soucet, rozdil, ctorSlide("první neznámé číslo")),
+        commonSense("odečteme polovinu rozdílu"),
+        deduce(last(soucet), last(rozdil), ctorSlideInvert("druhé neznámé číslo")),
       )
     }
   }

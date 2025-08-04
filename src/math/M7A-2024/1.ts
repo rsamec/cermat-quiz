@@ -1,5 +1,5 @@
 import { sum, comp, cont, ctor } from "../../components/math";
-import { axiomInput, deduce, lastQuantity, to } from "../../utils/deduce-utils";
+import { axiomInput, deduce, toCont } from "../../utils/deduce-utils";
 
 export function porovnatAaB({ input }: { input: { a: number, b: number } }) {
   const entity = ""
@@ -16,9 +16,9 @@ export function porovnatAaB({ input }: { input: { a: number, b: number } }) {
         a, b,
         sum("součet")
       ),
-      to(
+      toCont(
         rozdil,
-        cont("rozdíl", lastQuantity(rozdil), entity)
+        { agent: "rozdíl" }
       ),
       ctor('comp-ratio')
     )

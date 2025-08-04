@@ -1,5 +1,5 @@
-import { cont, ctor, ctorSlide, sum } from "../../components/math";
-import { axiomInput, deduce, last, lastQuantity, to } from "../../utils/deduce-utils";
+import { cont, ctor, ctorSlide } from "../../components/math";
+import { axiomInput, deduce, last, toCont } from "../../utils/deduce-utils";
 import { cislaNaOse } from "../cislaNaOse";
 
 export function triCislaNaOse({ input }: { input: { mensiCislo: number, vetsiCislo: number, pocetUsekuMeziCisly: number, A: number, B: number, C: number } }) {
@@ -20,7 +20,7 @@ export function triCislaNaOse({ input }: { input: { mensiCislo: number, vetsiCis
   const rozdilPostion = deduce(positionB, positionA, ctor('comp-diff'));
   const dd1 = deduce(deduce(positionC, usekRate), mensi, ctorSlide("pozice C"));
   const dd2 = deduce(deduce(deduce(positionB, last(usekRate)), mensi, ctorSlide("pozice B")), mensi, ctor('comp-ratio'));
-  const dd3 = deduce(to(rozdilPostion, cont('rozdíl', lastQuantity(rozdilPostion), entity)), last(usekRate))
+  const dd3 = deduce(toCont(rozdilPostion, { agent: 'rozdíl' }), last(usekRate))
 
   return { "C": { deductionTree: dd1 }, "B": { deductionTree: dd2 }, "rozdil": { deductionTree: dd3 } }
 }

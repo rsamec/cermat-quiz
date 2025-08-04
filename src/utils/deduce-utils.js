@@ -1432,8 +1432,18 @@ function inferenceRule(...args) {
   const value = inferenceRuleEx(...args);
   return isQuestion(value) ? value.result : value;
 }
-function inferenceRuleWithQuestion(...args) {
-  return inferenceRuleEx(...args);
+function inferenceRuleWithQuestion(children) {
+  if (children.length < 1) {
+    throw "inferenceRuleWithQuestion requires at least one child";
+  }
+  const last2 = children[children.length - 1];
+  const predicates = children.slice(0, -1);
+  const result = predicates.length > 1 ? inferenceRuleEx(...predicates) : null;
+  return result == null ? {
+    question: last2.kind === "cont" ? containerQuestion(last2) : last2.kind === "comp" ? `${computeQuestion(last2.quantity)} porovn\xE1n\xED ${last2.agentA} a ${last2.agentB}` : last2.kind === "ratio" ? `Vyj\xE1d\u0159i jako pom\u011Br ${last2.part} k ${last2.whole}` : "Co lze vyvodit na z\xE1klad\u011B zadan\xFDch p\u0159edpoklad\u016F?",
+    result: last2,
+    options: []
+  } : result;
 }
 function inferenceRuleEx(...args) {
   const [a, b, ...rest] = args;
@@ -5367,18 +5377,24 @@ function to(...children) {
   return { children };
 }
 function toCont(child, { agent, entity }) {
-  const node = isPredicate(child) ? child : last(child);
-  if (!(node.kind == "cont" || node.kind === "transfer" || node.kind == "comp" || node.kind === "comp-diff" || node.kind === "rate" || node.kind === "quota" || node.kind === "delta")) {
-    throw `Non convertable node type: ${node.kind}`;
-  }
-  const typeNode = node;
-  return to(child, {
-    kind: "cont",
-    agent,
-    quantity: typeNode.quantity,
-    entity: entity != null ? entity.entity : typeNode.kind == "quota" ? typeNode.agentQuota : typeNode.kind == "rate" ? typeNode.entity.entity : typeNode.entity,
-    unit: entity != null ? entity.unit : typeNode.kind == "rate" ? typeNode.entity.unit : typeNode.unit
-  });
+  return toPredicate(child, mapToCont({ agent, entity }));
+}
+function mapToCont({ agent, entity }) {
+  return (node) => {
+    const typeNode = node;
+    return {
+      kind: "cont",
+      agent,
+      quantity: typeNode.quantity,
+      entity: entity != null ? entity.entity : typeNode.kind == "quota" ? typeNode.agentQuota : typeNode.kind == "rate" ? typeNode.entity.entity : typeNode.entity,
+      unit: entity != null ? entity.unit : typeNode.kind == "rate" ? typeNode.entity.unit : typeNode.kind == "quota" ? void 0 : typeNode.unit
+    };
+  };
+}
+function toPredicate(node, mapFn) {
+  const nodeToMap = last(node);
+  const newNode = mapFn(nodeToMap);
+  return { children: [...node.children.slice(0, -1), newNode] };
 }
 function connectTo(node, input) {
   let inputState = {
@@ -5563,7 +5579,7 @@ function jsonToMarkdownChat(node, formatting) {
         const isConclusion = i === node2.children.length - 1;
         if (isConclusion) {
           const children = node2.children.map((d) => isPredicate(d) ? d : d.children.slice(-1)[0]);
-          const result = children.length > 2 ? inferenceRuleWithQuestion2(...children.slice(0, -1)) : null;
+          const result = inferenceRuleWithQuestion2(children);
           q = result;
           if (node2.context) {
             args.push(node2.context);
@@ -5868,9 +5884,11 @@ export {
   jsonToTLDrawEx,
   last,
   lastQuantity,
+  mapToCont,
   to,
   toAs,
   toCont,
+  toPredicate,
   wordProblemGroupById
 };
 /*!

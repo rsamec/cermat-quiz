@@ -1,5 +1,5 @@
 import { cont, ctor, commonSense, ratios, rate, sum } from "../components/math"
-import { deduce, to, lastQuantity } from "../utils/deduce-utils"
+import { deduce, to, toCont } from "../utils/deduce-utils"
 
 export const obrazce = () => {
   const entityRow = "řádků"
@@ -21,10 +21,10 @@ export const obrazce = () => {
   );
   return [
     {
-      deductionTree: to(
+      deductionTree: toCont(
         dd1,
-        commonSense("horní řada tmavých čtverčků bez krajních sloupců rozšířeného obrazce odpovídá počtu sloupců základního obrazce"),
-        cont(base, lastQuantity(dd1), entityColumn)
+        //commonSense("horní řada tmavých čtverčků bez krajních sloupců rozšířeného obrazce odpovídá počtu sloupců základního obrazce"),
+        { agent: base, entity: { entity: entityColumn } }
       )
     },
     {

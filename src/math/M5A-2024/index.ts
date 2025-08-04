@@ -265,9 +265,7 @@ export function vyvojObyvatel() {
   return {
     panov: {
       deductionTree: deduce(
-        to(
-          cont("přírůstek 2021", 10, entity)
-        ),
+        cont("přírůstek 2021", 10, entity),        
         ctorOption("E", 10)
       )
     },

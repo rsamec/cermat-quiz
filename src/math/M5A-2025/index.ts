@@ -1,5 +1,5 @@
 import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, rate, ratio, ratios, sum, counter, double, product } from "../../components/math";
-import { createLazyMap, deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
+import { createLazyMap, deduce, last, mapToCont, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   3.1: () => jizdniKolo().a,
@@ -119,6 +119,7 @@ function patrovyDum() {
   return {
     druhePatroChlapci: {
       deductionTree: to(
+        commonSense("Ve druhém patře bydlí jen dívky."),
         commonSense("Ve druhém patře bydlí jen dívky."),
         cont(druheL, 0, boyLabel)
       )
@@ -265,6 +266,7 @@ export function poutnik() {
   const entity = "dukáty"
 
   const kouzelnik = cont("kouzelník", 54, entity);
+  const kouzelnikPuvodne = cont("kouzelník původně", 54, entity);
   const poutnik = cont("poutník", 54, entity);
   const compareKvP = compRatio("poutník", "kouzelník", 1 / 2);
 
@@ -285,7 +287,7 @@ export function poutnik() {
   const kouzelnik2 = deduce(
     deduce(
       last(kouzelnik1),
-      cont("poutník", lastQuantity(kouzelnik1), entity),
+      mapToCont({ agent: "poutník" })(last(kouzelnik1)),
       sum("celkem")
     ),
     ratiosKvP
@@ -294,7 +296,7 @@ export function poutnik() {
   return {
     prvniKouzlo: {
       deductionTree: deduce(
-        toCont(kouzelnik, { agent: "kouzelník původně" }),
+        mapToCont({ agent: "kouzelník původně" })(kouzelnik),
         toCont(kouzelnik1, { agent: "kouzelník po 1.kouzle " }),
         ctorDelta("kouzelník")
       )
@@ -304,7 +306,7 @@ export function poutnik() {
         deduce(
           deduce(
             last(kouzelnik1),
-            cont("poutník", lastQuantity(kouzelnik1), entity),
+            mapToCont({ agent: "poutník" })(last(kouzelnik1)),
             sum("celkem")
           ),
           last(ratiosKvP),
@@ -321,7 +323,7 @@ export function poutnik() {
           deduce(
             deduce(
               last(kouzelnik2),
-              cont("poutník", lastQuantity(kouzelnik2), entity),
+              mapToCont({ agent: "poutník" })(last(kouzelnik2)),
               sum("celkem")
             ),
             last(ratiosKvP),

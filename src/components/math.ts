@@ -2129,6 +2129,7 @@ function isQuantityPredicate(value: { ratio: Ratio } | { quantity: Quantity }): 
 function isRatioPredicate(value: { ratio: Ratio } | { quantity: Quantity }): value is { ratio: Ratio } {
   return (value as any).ratio != null;
 }
+
 function isRatePredicate(value: Predicate): value is Rate {
   return value.kind === "rate";
 }
@@ -2139,13 +2140,32 @@ export function inferenceRule(...args: Predicate[]): Predicate {
   const value = inferenceRuleEx(...args);
   return isQuestion(value) ? value.result : value;
 }
-export function inferenceRuleWithQuestion(...args: Predicate[]) {
-  return inferenceRuleEx(...args)
+export function inferenceRuleWithQuestion(children: Predicate[]) {
+  if (children.length < 1) {
+    throw "inferenceRuleWithQuestion requires at least one child";
+  }
+  const last = children[children.length - 1];
+  const predicates = children.slice(0, -1);
+
+  const result = predicates.length > 1 ? inferenceRuleEx(...predicates) : null;
+  //if result == null not possible to evaluate -> it has no derived computation
+  return result == null
+    ? {
+      question: (last.kind === "cont")
+        ? containerQuestion(last)
+        : (last.kind === "comp")
+          ? `${computeQuestion(last.quantity)} porovnání ${last.agentA} a ${last.agentB}`
+          : (last.kind === "ratio")
+            ? `Vyjádři jako poměr ${last.part} k ${last.whole}`
+            : 'Co lze vyvodit na základě zadaných předpokladů?',
+      result: last,
+      options: []
+    }
+    : result;
 }
 function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   const [a, b, ...rest] = args;
   const last = rest?.length > 0 ? rest[rest.length - 1] : null;
-
   if (['sum-combine', "sum", 'product-combine', "product", "gcd", "lcd", "sequence"].includes(last?.kind) || ((last?.kind === "ratios") && args.length > 3)) {
     const arr = [a, b].concat(rest.slice(0, -1)) as Container[];
 

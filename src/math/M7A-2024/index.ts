@@ -1,5 +1,5 @@
-import { compAngle, compPercent, cont, ctor, ctorOption, sum, ctorUnit, nthPart, percent, ratios } from "../../components/math";
-import { axiomInput, createLazyMap, deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
+import { compAngle, compPercent, cont, ctor, ctorOption, sum, ctorUnit, nthPart, percent, ratios, type Container, isNumber } from "../../components/math";
+import { axiomInput, createLazyMap, deduce, last,  toPredicate, toCont } from "../../utils/deduce-utils";
 import { porovnatAaB, najitMensiCislo } from "./1";
 import { porovnatObsahObdelnikACtverec } from "./13";
 import { triCislaNaOse } from "./3";
@@ -123,7 +123,14 @@ function krouzky() {
   );
 
   const celekPocet = deduce(
-    to(florbalDiff, percent("celek", "florbal", lastQuantity(florbalDiff))),
+    toPredicate<Container>(florbalDiff, (node) => {
+      if (!isNumber(node.quantity)) {
+        throw new Error("Expected a number for quantity in the node");
+      }
+      else {
+        return percent("celek", "florbal", node.quantity);
+      }
+    }),
     florbalPocet
   );
 

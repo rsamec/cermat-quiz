@@ -1,5 +1,5 @@
 import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, sum, product, productCombine, counter } from "../../components/math";
-import { createLazyMap, deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
+import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   //1:() => porovnani(),
@@ -117,10 +117,9 @@ function sud() {
     },
     vzestupVyska: {
       deductionTree: deduce(
-        to(
+        toCont(
           vzestupHladiny,
-          cont("vzestup hladiny", lastQuantity(vzestupHladiny), entity, unit),
-        ),
+          { agent: "vzestup hladiny", entity: { entity, unit } }),
         ctorUnit("mm"))
     }
   }

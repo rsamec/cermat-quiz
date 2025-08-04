@@ -1,6 +1,6 @@
 
-import { commonSense, compRatio, cont, ctorRound, sum, productCombine, product, counter } from "../../components/math";
-import { axiomInput, deduce, last, lastQuantity, to } from "../../utils/deduce-utils";
+import { compRatio, cont, ctorRound, sum, productCombine, product, counter } from "../../components/math";
+import { axiomInput, deduce, last, toCont } from "../../utils/deduce-utils";
 import { baseCircumference, surfaceBaseArea } from "../shapes/cylinder"
 
 
@@ -37,10 +37,8 @@ export default function build({ input }: {
   const dd1 = deduce(
     deduce(
       widthRectangle,
-      to(
-        dRadius,
-        commonSense(`${radiusLabel} = ${reactangleHeight}`),
-        cont(reactangleHeight, lastQuantity(dRadius), entity)),
+      //commonSense(`${radiusLabel} = ${reactangleHeight}`),
+      toCont(dRadius, { agent: reactangleHeight }),                    
       productCombine(`${rectangleLabel} obsah`, entity2d)
     ),
     deduce(

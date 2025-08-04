@@ -1,5 +1,5 @@
 import { comp, compRatio, cont, ctor, ctorDelta } from "../components/math.js";
-import { deduce, lastQuantity, to, type TreeNode } from "../utils/deduce-utils.js";
+import { deduce } from "../utils/deduce-utils.js";
 
 export function autobus() {
   const entity = "lidí"
@@ -26,8 +26,7 @@ export function autobus() {
   const end = cont(endLabel, 0, entity)
   const AB = cont(`${autobusL} AB`, 7, entity);
 
-  const toComp = (predicate: TreeNode, agent: string) => to(predicate, comp(`nastoupili ${agent}`, `vystoupili ${agent}`, lastQuantity(predicate), entity))
-
+ 
   const deltaB = deduce(deduce(deduce(compB, outB), outB), ctorDelta(`${autobusL} BC`))
   const deltaD = deduce(deduce(inD, deduce(compD, inD)), ctorDelta(`${autobusL} CD`))
 
@@ -41,7 +40,8 @@ export function autobus() {
 
 
 
-  return { deductionTree: inC, template: () => `
+  return {
+    deductionTree: inC, template: () => `
 Na zastávce B nastoupilo do autobusu 2x více lidí, než z něj vystoupilo. Totéž na zastávce D.
 |          | A | B | C | D | E |
 |:--------:|:-:|:-:|:-:|:-:|:-:|    
@@ -60,16 +60,16 @@ export function autobus2() {
   const startLabel = "nástupní";
   const endLabel = "konečná";
   const autobusL = "autobus";
-  
+
   const outFemaleB = cont("vystoupili B", 1, entityFemale)
   const outFemaleD = cont("vystoupili D", 3, entityFemale)
   const outFemaleE = cont("vystoupili E", 2, entityFemale)
-  
+
   const femaleAB = cont(`${autobusL} AB`, 2, entityFemale);
   const femaleBC = cont(`${autobusL} BC`, 4, entityFemale);
 
   const outMaleC = cont("vystoupili C", 3, entityMale)
-  const outMaleD = cont("vystoupili D", 2, entityMale)  
+  const outMaleD = cont("vystoupili D", 2, entityMale)
   const outMaleE = cont("vystoupili E", 2, entityMale)
   const inMaleD = cont("nastoupili D", 1, entityMale)
   const inMaleE = cont("nastoupili E", 2, entityMale)
@@ -78,13 +78,13 @@ export function autobus2() {
   const maleBC = cont(`${autobusL} BC`, 5, entityMale);
 
 
-  const deltaMaleD = deduce(deduce(inMaleD, outMaleD),ctorDelta(`${autobusL} CD`))
-  const deltaMaleE = deduce(deduce(inMaleE, outMaleE),ctorDelta(`${autobusL} DE`))
+  const deltaMaleD = deduce(deduce(inMaleD, outMaleD), ctorDelta(`${autobusL} CD`))
+  const deltaMaleE = deduce(deduce(inMaleE, outMaleE), ctorDelta(`${autobusL} DE`))
 
   const end = cont(endLabel, 0, entity)
-  
 
-  
+
+
   const maleDE = cont(`${autobusL} DE`, outMaleE.quantity, entityMale);
   const maleCD = deduce(deltaMaleD, maleDE);
 
@@ -93,7 +93,8 @@ export function autobus2() {
 
 
 
-  return { deductionTree: inMaleC, template: () => `
+  return {
+    deductionTree: inMaleC, template: () => `
 |          |     A         |       B       |       C       |         D     |      E        |
 |:--------:|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|    
 |vystoupili|               |0 (muž) 1 (žen)|3 (muž) 0 (žen)|2 (muž) 3 (žen)|2 (muž) 2 (žen)|

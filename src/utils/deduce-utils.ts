@@ -1,5 +1,5 @@
 import { formatAngle, inferenceRule, nthQuadraticElements, isNumber } from "../components/math.js"
-import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota } from "../components/math.js"
+import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta } from "../components/math.js"
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
 import { toEquationExpr } from "./math-solver.js"
 
@@ -61,25 +61,37 @@ export function toAs(context: DeduceContext) {
 export function to(...children: Node[]): TreeNode {
   return { children: children }
 }
-export function toCont(child: Node, { agent, entity }: { agent: string, entity?: { entity: string, unit?: string } }): TreeNode {
-  const node = isPredicate(child) ? child : last(child);
-  if (!(node.kind == "cont" || node.kind === "transfer" || node.kind == "comp" || node.kind === "comp-diff" || node.kind === "rate" || node.kind === 'quota' || node.kind === 'delta')) {
-    throw `Non convertable node type: ${node.kind}`
-  }
-  const typeNode = node as ComparisonDiff | Comparison | Rate | Quota;
-  return to(child, {
-    kind: 'cont',
-    agent,
-    quantity: typeNode.quantity,
-    entity: entity != null
-      ? entity.entity
-      : typeNode.kind == "quota"
-        ? typeNode.agentQuota
+export function toCont(child: TreeNode, { agent, entity }: { agent: string, entity?: { entity: string, unit?: string } }): TreeNode {
+  return toPredicate(child, mapToCont({ agent, entity }));
+}
+export function mapToCont({ agent, entity }: { agent: string, entity?: { entity: string, unit?: string } }) {
+  return (node: Container | Transfer | ComparisonDiff | Comparison | Rate | Quota | Delta): Container => {
+    const typeNode = node as unknown as ComparisonDiff | Comparison | Rate | Quota;
+    return {
+      kind: 'cont',
+      agent,
+      quantity: typeNode.quantity,
+      entity: entity != null
+        ? entity.entity
+        : typeNode.kind == "quota"
+          ? typeNode.agentQuota
+          : typeNode.kind == "rate"
+            ? typeNode.entity.entity
+            : typeNode.entity,
+      unit: entity != null
+        ? entity.unit
         : typeNode.kind == "rate"
-          ? typeNode.entity.entity
-          : typeNode.entity,
-    unit: entity != null ? entity.unit : typeNode.kind == "rate" ? typeNode.entity.unit : typeNode.unit
-  })
+          ? typeNode.entity.unit
+          : typeNode.kind == "quota"
+            ? undefined
+            : typeNode.unit
+    }
+  }
+}
+export function toPredicate<T extends Predicate>(node: TreeNode, mapFn: (node: T) => Predicate): TreeNode {
+  const nodeToMap = last(node) as T;
+  const newNode = mapFn(nodeToMap);
+  return { children: [...node.children.slice(0, -1), newNode] };
 }
 
 export function connectTo(node: any, input: TreeNode) {
@@ -314,7 +326,7 @@ export function jsonToMarkdownChat(node, formatting?: any) {
 
         if (isConclusion) {
           const children = node.children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]);
-          const result = children.length > 2 ? inferenceRuleWithQuestion(...children.slice(0, -1)) : null;
+          const result = inferenceRuleWithQuestion(children);
           q = result;
           if (node.context) {
             args.push(node.context)
@@ -466,7 +478,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = compose`${formatAgent(d.whole)} ${joinArray(d.parts?.map(d => formatAgent(d)), ":")} v poměru ${joinArray(d.ratios?.map(d => formatQuantity(d)), ":")}`;
       break;
     case "sum":
-    case "sum-combine":  
+    case "sum-combine":
       result = compose`${joinArray(d.partAgents?.map(d => formatAgent(d)), " + ")}`;
       break;
     case "product":
@@ -645,7 +657,7 @@ type ThunkMap<T> = {
 
 export function createLazyMap<T>(thunks: ThunkMap<T>): T {
   const lazyMap = {} as T;
-  
+
 
   for (const key in thunks) {
     //console.log("Creating....", key)

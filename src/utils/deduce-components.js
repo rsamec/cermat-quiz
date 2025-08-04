@@ -413,7 +413,7 @@ export function stepsTraverse(node) {
 
         if (isLast) {
           const children = node.children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]);
-          const result = children.length > 2 ? inferenceRuleWithQuestion(...children.slice(0, -1)) : null;
+          const result = inferenceRuleWithQuestion(children);
           question = result;
         }
         else {

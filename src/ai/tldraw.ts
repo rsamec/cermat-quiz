@@ -250,7 +250,7 @@ export function deductionTreeToHierarchy(node: { children: any[], context: Deduc
     }
 
     const children = node.children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]);
-    const questionRule = children.length > 2 ? inferenceRuleWithQuestion(...children.slice(0, -1)) as Question : null;
+    const questionRule = inferenceRuleWithQuestion(children) as Question;
 
     const option = questionRule?.options?.find(d => d.ok);
     const questionShapes = []

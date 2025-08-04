@@ -1,5 +1,5 @@
-import { productCombine, commonSense, comp, compRatio, compRelativePercent, cont, ctor, ctorDifference, ctorLinearEquation, product, ctorRatios, sum, ctorUnit, evalExprAsCont, primeFactorization, pythagoras, rate, ratio, counter } from "../../components/math";
-import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
+import { productCombine, commonSense, comp, compRatio, compRelativePercent, cont, ctor, ctorDifference, ctorLinearEquation, product, ctorRatios, sum, ctorUnit, evalExprAsCont, primeFactorization, pythagoras, rate, ratio, counter, type Container, isNumber } from "../../components/math";
+import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "../../utils/deduce-utils";
 
 
 export default createLazyMap({
@@ -155,10 +155,14 @@ function spotrebaPaliva() {
             cont(power, "d", entityLength, unitLength),
             powerRate
           ),
-          to(
-            powerPrice,
-            rate(power, lastQuantity(powerPrice), entityPrice, { entity, unit })
-          )
+          toPredicate<Container>(powerPrice, d => ({
+            kind: 'rate',
+            agent: power,
+            entity: { entity: entityPrice },
+            entityBase: { entity, unit },
+            quantity: d.quantity,
+            baseQuantity: 1
+          }))
         )
     },
     cenaPowerPalivo: {
@@ -169,10 +173,14 @@ function spotrebaPaliva() {
             cont(power, 1, entityLength, unitLength),
             powerRate
           ),
-          to(
-            powerPrice,
-            rate(power, lastQuantity(powerPrice), entityPrice, { entity, unit })
-          )
+          toPredicate<Container>(powerPrice, d => ({
+            kind: 'rate',
+            agent: power,
+            entity: { entity: entityPrice },
+            entityBase: { entity, unit },
+            quantity: d.quantity,
+            baseQuantity: 1
+          }))
         ),
         deduce(
           deduce(
