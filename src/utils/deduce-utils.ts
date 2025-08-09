@@ -519,6 +519,13 @@ export function formatPredicate(d: Predicate, formatting: any) {
     case "eval-expr":
       result = compose`${d.expression}`
       break;
+    case "simplify-expr":
+      result = compose`substituce za ${JSON.stringify(d.context)}`
+      break;
+
+    case "tuple":
+      result = d.items != null ? compose`${joinArray(d.items.map(d => formatPredicate(d, formatting)), ", ")}`: formatKind(d)
+      break;      
     case "eval-option":
       result = d.value === undefined
         ? compose`${d.optionValue != null ? `Volba [${d.optionValue}]: ${d.expectedValue != null ? formatRatio(d.expectedValue) : d.expression}` : d.expression}`

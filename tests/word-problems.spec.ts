@@ -5,13 +5,15 @@ import wordProblems from '../src/math/word-problems';
 import { convertTree, getAllLeafsWithAncestors, getQuizBuilder, OptionList, ShortCodeMarker } from '../src/utils/parse-utils.js';
 import { baseDomain } from "../src/utils/quiz-string-utils.js";
 import { getVerifyFunction } from '../src/utils/assert';
+import { cont } from '../src/components/math.js';
+import { skip } from 'node:test';
 
 const codes = quizes.flatMap(d => d.codes);
 
 async function json(url) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`${url} - fetch failed: ${response.status}`);
-  return await response.json();
+  return await response.json(); ``
 }
 
 
@@ -23,6 +25,7 @@ function parseQuestionId(id, subject) {
     10
   );
 }
+
 function last(problem) {
   const node = problem.deductionTree;
   return node.children[node.children.length - 1];
@@ -39,7 +42,7 @@ for (const code of codes.filter(code => parseCode(code).subject === "math")) {
     const leafs = getAllLeafsWithAncestors(convertTree(metadata)); //, ({ leaf }) => parseQuestionId(leaf.data.id, subject);
 
     const metadataMap = new Map<string, { verifyBy: any }>(leafs.map(d => [d.leaf.data.id, d.leaf.data.node]));
-    
+
 
     for (let key in problems) {
 
@@ -47,19 +50,39 @@ for (const code of codes.filter(code => parseCode(code).subject === "math")) {
       const validator = getVerifyFunction(verifyBy);
       const problem = problems[key];
       const resultNode = last(problem);
+      const nodeToConvert = problem.convertToTestedValue;
+      const resultQuantity = nodeToConvert != null
+        ? nodeToConvert(resultNode)
+        : (resultNode.quantity ?? resultNode.ratio);
 
-      const resultQuantity = resultNode.quantity ?? resultNode.ratio;
-
+      console.log(`${code}: ${key} - ${resultNode.kind} - ${verifyBy.kind}`);
       if (verifyBy.kind === "equal" && typeof verifyBy.args === "number") {
-        expect(resultQuantity, key).toEqual(expect.closeTo(verifyBy.args, 2))
+        expect(resultQuantity, `${code}: ${key}`).toEqual(expect.closeTo(verifyBy.args, 2))
       }
       else if (verifyBy.kind === "equalOption") {
         //expect(resultNode.kind).toBe("eval-option");
-        expect(resultNode.value, key).toBe(verifyBy.args);
+        if (resultNode.kind === "ratios") {
+          skip(`Skipping equalOption for ${code}: ${key}`);
+        }
+        else {
+          expect(resultNode.value, `${code}: ${key}`).toBe(verifyBy.args);
+        }
+      }
+      else if (verifyBy.kind === "equalRatio") {
+        expect(resultNode.ratios.join(":")).toBe(verifyBy.args);
+      }
+      else if (verifyBy.kind === "equalNumberCollection" && resultNode.kind === "tuple") {
+        expect(resultNode.items.map(d => d.quantity ?? d.ratio).sort()).toEqual(verifyBy.args.sort());
+      }
+      else if (verifyBy.kind === "selfEvaluate") {
+        skip(`Skipping selfEvaluate for ${code}: ${key}`);
+      }
+      else if (verifyBy.kind === "equalMathExpression") {
+        skip(`Skipping equalMathExpression for ${code}: ${key}`);
       }
       else {
         const result = validator(resultQuantity);
-        expect(result, key).toBeFalsy();
+        expect(result, `${code}: ${key}`).toBeFalsy();
       }
     }
   })

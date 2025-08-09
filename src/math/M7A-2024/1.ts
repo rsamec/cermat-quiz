@@ -21,7 +21,8 @@ export function porovnatAaB({ input }: { input: { a: number, b: number } }) {
         { agent: "rozdíl" }
       ),
       ctor('comp-ratio')
-    )
+    ),
+    convertToTestedValue: (value) => 1 / value.ratio
   }
 }
 

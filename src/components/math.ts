@@ -4,7 +4,7 @@ export type Helpers = {
   convertToUnit?: (quantity: number, from: UnitType, to: UnitType) => number
   unitAnchor?: (unit: UnitType) => number;
   solveLinearEquation?: (first: Quantity, second: Quantity, variable: string) => number
-  evalExpression?: (expression: Expression, quantity: number) => number
+  evalExpression?: (expression: Expression | ExpressionNode, quantityOrContext: number | object) => number
 }
 const defaultHelpers: Helpers = {
   convertToFraction: d => d,
@@ -82,7 +82,10 @@ export type EvalExpr<T extends Omit<Predicate, 'quantity'>> = {
   expression: Expression
   predicate: T
 }
-
+export type SimplifyExpr = {
+  kind: 'simplify-expr',
+  context: object
+}
 export type Option = {
   kind: 'eval-option'
   expression: Expression,
@@ -307,15 +310,19 @@ export type Question = {
     ok: boolean
   }[]
 }
-
+export type Tuple<T> = {
+  kind: 'tuple',
+  items: T
+}
 
 export type ContainerEval = Omit<Container, 'quantity'>
+export type RateEval = Omit<Rate, 'quantity'>
 export type EntityDef = string | EntityBase
 export type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | Sum | SumCombine | Product | ProductCombine | PartWholeRatio | PartToPartRatio | ComparisonDiff |
-  CommonSense | GCD | LCD | CompareAndPartEqual | Sequence | NthRule | Quota | Scale | Complement | NthPart | NthPartFactor | Transfer | Proportion | ConvertUnit |
-  AngleComparison | Delta | Difference | Phytagoras | InvertScale | Slide | InvertSlide | LinearEquation | EvalExpr<ContainerEval> | Option | Round
+  CommonSense | GCD | LCD | CompareAndPartEqual | Sequence | NthRule | Quota | Scale | Complement | NthPart | NthPartFactor | Transfer | Proportion | ConvertUnit | Tuple<any> |
+  AngleComparison | Delta | Difference | Phytagoras | InvertScale | Slide | InvertSlide | LinearEquation | EvalExpr<ContainerEval | RateEval> | Option | Round | SimplifyExpr
 
-export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | 'quota' | "comp-diff" | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'scale' | 'scale-invert' | 'slide' | 'slide-invert' | 'complement' | 'delta') {
+export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | 'quota' | "comp-diff" | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'scale' | 'scale-invert' | 'slide' | 'slide-invert' | 'complement' | 'delta' | 'tuple' | 'simplify-expr') {
   return { kind } as Predicate
 }
 
@@ -390,6 +397,14 @@ export function cont(agent: string, quantity: NumberOrVariable, entity: string, 
 export function evalExprAsCont(expression: string, predicate: ContainerEval): EvalExpr<ContainerEval> {
   return { kind: 'eval-expr', expression, predicate }
 }
+export function evalExprAsRate(expression: string, predicate: RateEval): EvalExpr<RateEval> {
+  return { kind: 'eval-expr', expression, predicate }
+}
+
+export function simplifyExpr(context: Record<string, number>): SimplifyExpr {
+  return { kind: 'simplify-expr', context }
+}
+
 export function ctorOption(optionValue: "A" | "B" | "C" | "D" | "E" | "F", expectedValue: number, { asPercent }: { asPercent?: boolean } = { asPercent: false }): Option {
   return { kind: 'eval-option', expression: `closeTo(x, ${asPercent ? expectedValue / 100 : expectedValue})`, expectedValue, optionValue }
 }
@@ -1386,6 +1401,15 @@ function lcdRule(items: Container[], b: LCD): Question {
     ] : []
   }
 }
+function tupleRule(items: Predicate[]): Question {
+  const result: Tuple<any> = { kind: 'tuple', items }
+  return {
+    question: `Seskup více objektů do jednoho složeného objektu.`,
+    result,
+    options: []
+  }
+}
+
 function sequenceRuleEx(items: Container[]): Sequence {
   const values = items.map(d => d.quantity);
   if (!areNumbers(values)) {
@@ -1859,6 +1883,38 @@ function evalToQuantity<
     options: []
   }
 }
+function simplifyExprRuleAsRatioEx(a: RatioComparison, b: SimplifyExpr):Predicate {
+
+  if (isNumber(a.ratio)) {
+    throw `simplifyExpr does not support quantity types`
+  }
+
+  return {
+    ...a,
+    ratio: helpers.evalExpression(a.ratio, b.context)
+  } as Predicate
+}
+
+function simplifyExprRuleAsQuantiyEx(a: Container, b: SimplifyExpr):Predicate {
+
+  if (isNumber(a.quantity)) {
+    throw `simplifyExpr does not support quantity types`
+  }
+
+  return {
+    ...a,
+    quantity: helpers.evalExpression(a.quantity, b.context)
+  } as Predicate
+}
+
+function simplifyExprAsRule(a: RatioComparison | Container, b: SimplifyExpr): Question {
+  const result = isQuantityPredicate(a)? simplifyExprRuleAsQuantiyEx(a,b): simplifyExprRuleAsRatioEx(a, b);
+  return {
+    question: `Zjednoduš výraz dosazením ${JSON.stringify(b.context)} ?`,
+    result,
+    options: []
+  }
+}
 
 function evalToOptionEx<T extends Predicate & { quantity?: Quantity, ratio?: Quantity }>(a: T, b: Option): Option {
   let valueToEval = a.quantity ?? a.ratio;
@@ -2140,7 +2196,7 @@ export function inferenceRule(...args: Predicate[]): Predicate {
   const value = inferenceRuleEx(...args);
   return isQuestion(value) ? value.result : value;
 }
-export function inferenceRuleWithQuestion(children: Predicate[]) {  
+export function inferenceRuleWithQuestion(children: Predicate[]) {
   if (children.length < 1) {
     throw "inferenceRuleWithQuestion requires at least one child";
   }
@@ -2166,7 +2222,7 @@ export function inferenceRuleWithQuestion(children: Predicate[]) {
 function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   const [a, b, ...rest] = args;
   const last = rest?.length > 0 ? rest[rest.length - 1] : null;
-  if (['sum-combine', "sum", 'product-combine', "product", "gcd", "lcd", "sequence"].includes(last?.kind) || ((last?.kind === "ratios") && args.length > 3)) {
+  if (['sum-combine', "sum", 'product-combine', "product", "gcd", "lcd", "sequence", "tuple"].includes(last?.kind) || ((last?.kind === "ratios") && args.length > 3)) {
     const arr = [a, b].concat(rest.slice(0, -1)) as Container[];
 
     return last.kind === "sequence"
@@ -2175,13 +2231,15 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
         ? gcdRule(arr, last)
         : last.kind === "lcd"
           ? lcdRule(arr, last)
-          : ['product-combine', "product"].includes(last.kind)
-            ? productRule(arr, last as ProductCombine | Product)
-            : ['sum-combine', "sum",].includes(last.kind)
-              ? sumRule(arr, last as SumCombine | Sum)
-              : last.kind === "ratios"
-                ? toRatios(arr, last)
-                : null
+          : last.kind === "tuple"
+            ? tupleRule(arr)
+            : ['product-combine', "product"].includes(last.kind)
+              ? productRule(arr, last as ProductCombine | Product)
+              : ['sum-combine', "sum",].includes(last.kind)
+                ? sumRule(arr, last as SumCombine | Sum)
+                : last.kind === "ratios"
+                  ? toRatios(arr, last)
+                  : null
   }
   else if (a.kind === "eval-option" || b.kind === "eval-option") {
     return a.kind === "eval-option" ? evalToOption(b, a) : b.kind === "eval-option" ? evalToOption(a, b) : null
@@ -2213,6 +2271,12 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
                           : kind === "linear-equation"
                             ? solveEquation(a, b, last)
                             : toComparison(a, b)
+  }
+  else if ((a.kind === "comp-ratio" || a.kind === "cont") && b.kind === "simplify-expr") {
+    return simplifyExprAsRule(a, b)
+  }
+  else if (a.kind === "simplify-expr" && (b.kind === "comp-ratio" || b.kind === "cont")) {
+    return simplifyExprAsRule(b, a)
   }
   else if (a.kind === "cont" && b.kind === "eval-expr") {
     return evalToQuantity(a, b)

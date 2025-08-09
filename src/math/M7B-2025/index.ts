@@ -1,5 +1,5 @@
-import { commonSense, compRelative, cont, ctor, sum, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, counter, gcd, nthPart, percent, proportion, rate, ratio, product } from "../../components/math"
-import { createLazyMap, deduce, last, to, toCont, type TreeNode } from "../../utils/deduce-utils"
+import { commonSense, compRelative, cont, ctor, sum, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, counter, gcd, nthPart, percent, proportion, rate, ratio, product, double, ctorScale } from "../../components/math"
+import { createLazyMap, deduce, deduceAs, last, to, toCont, type TreeNode } from "../../utils/deduce-utils"
 
 export default createLazyMap({
   1: () => hledaneCislo(),
@@ -19,8 +19,8 @@ export default createLazyMap({
 
 function hledaneCislo() {
   const entity = ""
-  const prvniL = "první"
-  const druhyL = "druhý"
+  const prvniL = "osmina"
+  const druhyL = "polovina"
   const prvniRelative = cont(prvniL, 1 / 8, entity)
   const druhyRelative = cont(druhyL, 1 / 2, entity)
 
@@ -29,15 +29,19 @@ function hledaneCislo() {
 
   return {
     deductionTree: deduce(
-      deduce(
-        prvniRelative,
-        druhyRelative,
-        ctor("comp-ratio")
-      ),
-      deduce(
-        prvni,
-        druhy,
-      ),
+      deduceAs("Osmina čísla + 16 = Polovina čísla + 1")
+        (deduce(
+          prvniRelative,
+          druhyRelative,
+          ctor("comp-ratio")
+        ),
+          deduce(
+            prvni,
+            druhy,
+          )
+        ),
+      double(),
+      ctorScale("hledané číslo")
     )
   }
 }
@@ -67,7 +71,7 @@ function pomer() {
   }
 
   return {
-    deductionTree: to(
+    deductionTree: deduce(
       deduce(
         deduce(
           to(
@@ -80,7 +84,6 @@ function pomer() {
         createRatios(sousedniCislaPomer, 1, 2),
         nthPart("1. číslo")
       ),
-      commonSense(""),
       deduce(
         deduce(
           createRatios(sousedniCislaPomer, 4, 5),
@@ -90,10 +93,8 @@ function pomer() {
         createRatios(sousedniCislaPomer, 5, 6),
         nthPart("6. číslo")
       ),
-
-      commonSense("hledaná čísla jsou 1. číslo a 6. číslo")
-    )
-
+      ctor("tuple")
+    ),
   }
 }
 
@@ -165,7 +166,7 @@ function zaciSkupiny() {
         ctorDifference("jednotkový rozdíl při rovnosti")
       ),
       counter("rozdíl při rovnosti", 2),
-      product( "rozdíl při rovnosti")
+      product("rozdíl při rovnosti")
     ),
     ctor("scale")
   )

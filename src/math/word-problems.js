@@ -93,6 +93,12 @@ function cont(agent, quantity, entity3, unit) {
 function evalExprAsCont(expression, predicate) {
   return { kind: "eval-expr", expression, predicate };
 }
+function evalExprAsRate(expression, predicate) {
+  return { kind: "eval-expr", expression, predicate };
+}
+function simplifyExpr(context) {
+  return { kind: "simplify-expr", context };
+}
 function ctorOption(optionValue, expectedValue, { asPercent } = { asPercent: false }) {
   return { kind: "eval-option", expression: `closeTo(x, ${asPercent ? expectedValue / 100 : expectedValue})`, expectedValue, optionValue };
 }
@@ -973,6 +979,14 @@ function lcdRule(items, b) {
     ] : []
   };
 }
+function tupleRule(items) {
+  const result = { kind: "tuple", items };
+  return {
+    question: `Seskup v\xEDce objekt\u016F do jednoho slo\u017Een\xE9ho objektu.`,
+    result,
+    options: []
+  };
+}
 function sequenceRuleEx(items) {
   const values = items.map((d) => d.quantity);
   if (!areNumbers(values)) {
@@ -1368,6 +1382,32 @@ function evalToQuantity(a, b) {
     options: []
   };
 }
+function simplifyExprRuleAsRatioEx(a, b) {
+  if (isNumber(a.ratio)) {
+    throw `simplifyExpr does not support quantity types`;
+  }
+  return {
+    ...a,
+    ratio: helpers.evalExpression(a.ratio, b.context)
+  };
+}
+function simplifyExprRuleAsQuantiyEx(a, b) {
+  if (isNumber(a.quantity)) {
+    throw `simplifyExpr does not support quantity types`;
+  }
+  return {
+    ...a,
+    quantity: helpers.evalExpression(a.quantity, b.context)
+  };
+}
+function simplifyExprAsRule(a, b) {
+  const result = isQuantityPredicate(a) ? simplifyExprRuleAsQuantiyEx(a, b) : simplifyExprRuleAsRatioEx(a, b);
+  return {
+    question: `Zjednodu\u0161 v\xFDraz dosazen\xEDm ${JSON.stringify(b.context)} ?`,
+    result,
+    options: []
+  };
+}
 function evalToOptionEx(a, b) {
   let valueToEval = a.quantity ?? a.ratio;
   if (!isNumber(valueToEval)) {
@@ -1616,14 +1656,18 @@ function inferenceRuleWithQuestion(children) {
 function inferenceRuleEx(...args) {
   const [a, b, ...rest] = args;
   const last3 = rest?.length > 0 ? rest[rest.length - 1] : null;
-  if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence"].includes(last3?.kind) || last3?.kind === "ratios" && args.length > 3) {
+  if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence", "tuple"].includes(last3?.kind) || last3?.kind === "ratios" && args.length > 3) {
     const arr = [a, b].concat(rest.slice(0, -1));
-    return last3.kind === "sequence" ? sequenceRule(arr) : last3.kind === "gcd" ? gcdRule(arr, last3) : last3.kind === "lcd" ? lcdRule(arr, last3) : ["product-combine", "product"].includes(last3.kind) ? productRule(arr, last3) : ["sum-combine", "sum"].includes(last3.kind) ? sumRule(arr, last3) : last3.kind === "ratios" ? toRatios(arr, last3) : null;
+    return last3.kind === "sequence" ? sequenceRule(arr) : last3.kind === "gcd" ? gcdRule(arr, last3) : last3.kind === "lcd" ? lcdRule(arr, last3) : last3.kind === "tuple" ? tupleRule(arr) : ["product-combine", "product"].includes(last3.kind) ? productRule(arr, last3) : ["sum-combine", "sum"].includes(last3.kind) ? sumRule(arr, last3) : last3.kind === "ratios" ? toRatios(arr, last3) : null;
   } else if (a.kind === "eval-option" || b.kind === "eval-option") {
     return a.kind === "eval-option" ? evalToOption(b, a) : b.kind === "eval-option" ? evalToOption(a, b) : null;
   } else if (a.kind === "cont" && b.kind == "cont") {
     const kind = last3?.kind;
     return kind === "comp-diff" ? toComparisonDiff(a, b) : kind === "scale" || kind === "scale-invert" ? mapContByScale(a, b, last3) : kind === "slide" || kind === "slide-invert" ? toSlide(a, b, last3) : kind === "diff" ? toDifference(a, b, last3) : kind === "quota" ? toQuota(a, b) : kind === "delta" ? toDelta(a, b, last3) : kind === "pythagoras" ? pythagorasRule(a, b, last3) : kind === "rate" ? toRate(a, b) : kind === "ratios" ? toRatios([a, b], last3) : kind === "comp-ratio" ? toRatioComparison(a, b, last3) : kind === "ratio" ? toPartWholeRatio(a, b, last3) : kind === "linear-equation" ? solveEquation(a, b, last3) : toComparison(a, b);
+  } else if ((a.kind === "comp-ratio" || a.kind === "cont") && b.kind === "simplify-expr") {
+    return simplifyExprAsRule(a, b);
+  } else if (a.kind === "simplify-expr" && (b.kind === "comp-ratio" || b.kind === "cont")) {
+    return simplifyExprAsRule(b, a);
   } else if (a.kind === "cont" && b.kind === "eval-expr") {
     return evalToQuantity(a, b);
   } else if (a.kind === "eval-expr" && b.kind === "cont") {
@@ -5328,13 +5372,14 @@ function lcdCalcEx2(a, b) {
 function lcdCalc2(numbers) {
   return numbers.reduce((acc, num) => lcdCalcEx2(acc, num), 1);
 }
-function evalExpression(expression, quantity) {
-  const expr = parser.parse(expression);
+function evalExpression(expression, quantityOrContext) {
+  const expr = typeof expression === "string" ? parser.parse(expression) : toEquationExpr(expression);
   const variables = expr.variables();
+  const context = typeof quantityOrContext === "number" ? { [variables.length === 1 ? variables : variables[0]]: quantityOrContext } : quantityOrContext;
   if (variables.length === 1) {
-    return expr.evaluate({ [variables]: quantity });
+    return expr.evaluate(context);
   }
-  const res = expr.simplify({ [variables[0]]: quantity });
+  const res = expr.simplify(context);
   return res.toString();
 }
 function recurExpr(node) {
@@ -5716,6 +5761,12 @@ function formatPredicate(d, formatting) {
       break;
     case "eval-expr":
       result = compose`${d.expression}`;
+      break;
+    case "simplify-expr":
+      result = compose`substituce za ${JSON.stringify(d.context)}`;
+      break;
+    case "tuple":
+      result = d.items != null ? compose`${joinArray(d.items.map((d2) => formatPredicate(d2, formatting)), ", ")}` : formatKind(d);
       break;
     case "eval-option":
       result = d.value === void 0 ? compose`${d.optionValue != null ? `Volba [${d.optionValue}]: ${d.expectedValue != null ? formatRatio3(d.expectedValue) : d.expression}` : d.expression}` : compose`${d.value === true ? "Pravda" : d.value === false ? "Nepravda" : d.value != null ? `Volba [${d.value}]` : "N/A"}`;
@@ -6354,7 +6405,8 @@ function porovnatAaB({ input }) {
         { agent: "rozd\xEDl" }
       ),
       ctor("comp-ratio")
-    )
+    ),
+    convertToTestedValue: (value) => 1 / value.ratio
   };
 }
 function najitMensiCislo({ input }) {
@@ -6761,7 +6813,13 @@ function ceremonial() {
   );
   return {
     polovina: {
-      deductionTree: dobaPrvniPulka
+      deductionTree: dobaPrvniPulka,
+      convertToTestedValue: (value) => {
+        const totalMinutes = 45 + value.quantity;
+        var hours = 17 + Math.floor(totalMinutes / 60);
+        var minutes = totalMinutes % 60;
+        return { hodin: hours, minut: minutes };
+      }
     },
     pocetMinut: {
       deductionTree: deduce(
@@ -6953,23 +7011,27 @@ var M7B_2025_default = createLazyMap({
 });
 function hledaneCislo() {
   const entity3 = "";
-  const prvniL = "prvn\xED";
-  const druhyL = "druh\xFD";
+  const prvniL = "osmina";
+  const druhyL = "polovina";
   const prvniRelative = cont(prvniL, 1 / 8, entity3);
   const druhyRelative = cont(druhyL, 1 / 2, entity3);
   const prvni = cont(prvniL, 1, entity3);
   const druhy = cont(druhyL, 16, entity3);
   return {
     deductionTree: deduce(
-      deduce(
-        prvniRelative,
-        druhyRelative,
-        ctor("comp-ratio")
+      deduceAs("Osmina \u010D\xEDsla + 16 = Polovina \u010D\xEDsla + 1")(
+        deduce(
+          prvniRelative,
+          druhyRelative,
+          ctor("comp-ratio")
+        ),
+        deduce(
+          prvni,
+          druhy
+        )
       ),
-      deduce(
-        prvni,
-        druhy
-      )
+      double(),
+      ctorScale("hledan\xE9 \u010D\xEDslo")
     )
   };
 }
@@ -6995,7 +7057,7 @@ function pomer() {
     };
   };
   return {
-    deductionTree: to(
+    deductionTree: deduce(
       deduce(
         deduce(
           to(
@@ -7008,7 +7070,6 @@ function pomer() {
         createRatios(sousedniCislaPomer, 1, 2),
         nthPart("1. \u010D\xEDslo")
       ),
-      commonSense(""),
       deduce(
         deduce(
           createRatios(sousedniCislaPomer, 4, 5),
@@ -7018,7 +7079,7 @@ function pomer() {
         createRatios(sousedniCislaPomer, 5, 6),
         nthPart("6. \u010D\xEDslo")
       ),
-      commonSense("hledan\xE1 \u010D\xEDsla jsou 1. \u010D\xEDslo a 6. \u010D\xEDslo")
+      ctor("tuple")
     )
   };
 }
@@ -7654,7 +7715,13 @@ function dveCislaNaOse({ input }) {
   const dd1 = deduce(deduce(positionX, usekRate), mensi, ctorSlide("pozice X"));
   const dd2 = deduce(deduce(positionY, last(usekRate)), mensi, ctorSlide("pozice Y"));
   const zeroPositionPosun = deduce(mensi, usekRate);
-  return { "XandY": { deductionTree: to(dd1, dd2) }, "posun": { deductionTree: zeroPositionPosun } };
+  return {
+    "XandY": {
+      deductionTree: deduce(dd1, dd2, ctor("tuple")),
+      convertToTestedValue: (value) => ({ X: value.items[0].quantity, Y: value.items[1].quantity })
+    },
+    "posun": { deductionTree: zeroPositionPosun }
+  };
 }
 function novorocniPrani() {
   const entity3 = "p\u0159\xE1n\xED";
@@ -8110,21 +8177,18 @@ function poutnik() {
       )
     },
     maximumKouzel: {
-      deductionTree: to(
-        commonSense("\u010D\xE1stka mus\xED b\xFD d\u011Bliteln\xE1 3, tak aby \u0161lo rozd\u011Blit v pom\u011Bru 1:2, resp. aby \u010D\xE1sti byla cel\xE1 \u010D\xEDsla"),
+      deductionTree: deduceAs("\u010D\xE1stka mus\xED b\xFD d\u011Bliteln\xE1 3, tak aby \u0161lo rozd\u011Blit v pom\u011Bru 1:2, resp. aby \u010D\xE1sti byla cel\xE1 \u010D\xEDsla")(
         deduce(
           deduce(
-            deduce(
-              last(kouzelnik2),
-              mapToCont({ agent: "poutn\xEDk" })(last(kouzelnik2)),
-              sum("celkem")
-            ),
-            last(ratiosKvP),
-            nthPart("poutn\xEDk")
+            last(kouzelnik2),
+            mapToCont({ agent: "poutn\xEDk" })(last(kouzelnik2)),
+            sum("celkem")
           ),
-          double(),
-          product("poutn\xEDk")
-        )
+          last(ratiosKvP),
+          nthPart("poutn\xEDk")
+        ),
+        double(),
+        product("poutn\xEDk")
       )
     }
   };
@@ -8185,12 +8249,18 @@ function hledaneCisla() {
       )
     },
     cisla3: {
-      deductionTree: to(
-        commonSense("abychom zachovali sou\u010Det a z\xE1rove\u0148 vzniknul po\u017Eadovan\xFD rozd\xEDl"),
-        commonSense("p\u0159i\u010Dteme polovinu rozd\xEDlu"),
-        deduce(soucet, rozdil, ctorSlide("prvn\xED nezn\xE1m\xE9 \u010D\xEDslo")),
-        commonSense("ode\u010Dteme polovinu rozd\xEDlu"),
-        deduce(last(soucet), last(rozdil), ctorSlideInvert("druh\xE9 nezn\xE1m\xE9 \u010D\xEDslo"))
+      deductionTree: deduceAs("abychom zachovali sou\u010Det a z\xE1rove\u0148 vzniknul po\u017Eadovan\xFD rozd\xEDl")(
+        deduceAs("p\u0159i\u010Dteme polovinu rozd\xEDlu")(
+          soucet,
+          rozdil,
+          ctorSlide("prvn\xED nezn\xE1m\xE9 \u010D\xEDslo")
+        ),
+        deduceAs("ode\u010Dteme polovinu rozd\xEDlu")(
+          last(soucet),
+          last(rozdil),
+          ctorSlideInvert("druh\xE9 nezn\xE1m\xE9 \u010D\xEDslo")
+        ),
+        ctor("tuple")
       )
     }
   };
@@ -9152,6 +9222,14 @@ function lcdRule2(items, b) {
     ] : []
   };
 }
+function tupleRule2(items) {
+  const result = { kind: "tuple", items };
+  return {
+    question: `Seskup v\xEDce objekt\u016F do jednoho slo\u017Een\xE9ho objektu.`,
+    result,
+    options: []
+  };
+}
 function sequenceRuleEx2(items) {
   const values = items.map((d) => d.quantity);
   if (!areNumbers2(values)) {
@@ -9547,6 +9625,32 @@ function evalToQuantity2(a, b) {
     options: []
   };
 }
+function simplifyExprRuleAsRatioEx2(a, b) {
+  if (isNumber2(a.ratio)) {
+    throw `simplifyExpr does not support quantity types`;
+  }
+  return {
+    ...a,
+    ratio: helpers2.evalExpression(a.ratio, b.context)
+  };
+}
+function simplifyExprRuleAsQuantiyEx2(a, b) {
+  if (isNumber2(a.quantity)) {
+    throw `simplifyExpr does not support quantity types`;
+  }
+  return {
+    ...a,
+    quantity: helpers2.evalExpression(a.quantity, b.context)
+  };
+}
+function simplifyExprAsRule2(a, b) {
+  const result = isQuantityPredicate2(a) ? simplifyExprRuleAsQuantiyEx2(a, b) : simplifyExprRuleAsRatioEx2(a, b);
+  return {
+    question: `Zjednodu\u0161 v\xFDraz dosazen\xEDm ${JSON.stringify(b.context)} ?`,
+    result,
+    options: []
+  };
+}
 function evalToOptionEx2(a, b) {
   let valueToEval = a.quantity ?? a.ratio;
   if (!isNumber2(valueToEval)) {
@@ -9782,14 +9886,18 @@ function inferenceRule2(...args) {
 function inferenceRuleEx2(...args) {
   const [a, b, ...rest] = args;
   const last22 = rest?.length > 0 ? rest[rest.length - 1] : null;
-  if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence"].includes(last22?.kind) || last22?.kind === "ratios" && args.length > 3) {
+  if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence", "tuple"].includes(last22?.kind) || last22?.kind === "ratios" && args.length > 3) {
     const arr = [a, b].concat(rest.slice(0, -1));
-    return last22.kind === "sequence" ? sequenceRule2(arr) : last22.kind === "gcd" ? gcdRule2(arr, last22) : last22.kind === "lcd" ? lcdRule2(arr, last22) : ["product-combine", "product"].includes(last22.kind) ? productRule2(arr, last22) : ["sum-combine", "sum"].includes(last22.kind) ? sumRule2(arr, last22) : last22.kind === "ratios" ? toRatios2(arr, last22) : null;
+    return last22.kind === "sequence" ? sequenceRule2(arr) : last22.kind === "gcd" ? gcdRule2(arr, last22) : last22.kind === "lcd" ? lcdRule2(arr, last22) : last22.kind === "tuple" ? tupleRule2(arr) : ["product-combine", "product"].includes(last22.kind) ? productRule2(arr, last22) : ["sum-combine", "sum"].includes(last22.kind) ? sumRule2(arr, last22) : last22.kind === "ratios" ? toRatios2(arr, last22) : null;
   } else if (a.kind === "eval-option" || b.kind === "eval-option") {
     return a.kind === "eval-option" ? evalToOption2(b, a) : b.kind === "eval-option" ? evalToOption2(a, b) : null;
   } else if (a.kind === "cont" && b.kind == "cont") {
     const kind = last22?.kind;
     return kind === "comp-diff" ? toComparisonDiff2(a, b) : kind === "scale" || kind === "scale-invert" ? mapContByScale2(a, b, last22) : kind === "slide" || kind === "slide-invert" ? toSlide2(a, b, last22) : kind === "diff" ? toDifference2(a, b, last22) : kind === "quota" ? toQuota2(a, b) : kind === "delta" ? toDelta2(a, b, last22) : kind === "pythagoras" ? pythagorasRule2(a, b, last22) : kind === "rate" ? toRate2(a, b) : kind === "ratios" ? toRatios2([a, b], last22) : kind === "comp-ratio" ? toRatioComparison2(a, b, last22) : kind === "ratio" ? toPartWholeRatio2(a, b, last22) : kind === "linear-equation" ? solveEquation2(a, b, last22) : toComparison2(a, b);
+  } else if ((a.kind === "comp-ratio" || a.kind === "cont") && b.kind === "simplify-expr") {
+    return simplifyExprAsRule2(a, b);
+  } else if (a.kind === "simplify-expr" && (b.kind === "comp-ratio" || b.kind === "cont")) {
+    return simplifyExprAsRule2(b, a);
   } else if (a.kind === "cont" && b.kind === "eval-expr") {
     return evalToQuantity2(a, b);
   } else if (a.kind === "eval-expr" && b.kind === "cont") {
@@ -13474,13 +13582,14 @@ function lcdCalcEx22(a, b) {
 function lcdCalc22(numbers) {
   return numbers.reduce((acc, num) => lcdCalcEx22(acc, num), 1);
 }
-function evalExpression2(expression, quantity) {
-  const expr = parser2.parse(expression);
+function evalExpression2(expression, quantityOrContext) {
+  const expr = typeof expression === "string" ? parser2.parse(expression) : toEquationExpr2(expression);
   const variables = expr.variables();
+  const context = typeof quantityOrContext === "number" ? { [variables.length === 1 ? variables : variables[0]]: quantityOrContext } : quantityOrContext;
   if (variables.length === 1) {
-    return expr.evaluate({ [variables]: quantity });
+    return expr.evaluate(context);
   }
-  const res = expr.simplify({ [variables[0]]: quantity });
+  const res = expr.simplify(context);
   return res.toString();
 }
 function recurExpr2(node) {
@@ -13823,7 +13932,8 @@ function dobaFilmu({ input }) {
       deduce(
         compRatio("zbytek do konce filmu", "uplynulo od za\u010D\xE1tku filmu", 1 / 2),
         ctorRatios("film")
-      )
+      ),
+      nthPart("zbytek do konce filmu")
     )
   };
 }
@@ -13942,7 +14052,8 @@ function krouzkyATridy() {
         hudebni8,
         hudebni9,
         ctorComparePercent()
-      )
+      ),
+      convertToTestedValue: (value) => (value.ratio - 1) * 100
     },
     pocet: {
       title: "Po\u010Det \u017E\xE1k\u016F 9. t\u0159\xEDd v \u0161achov\xE9m krou\u017Eku",
@@ -14665,7 +14776,8 @@ var M9A_2024_default = createLazyMap({
 var M9B_2024_default = createLazyMap({
   1: () => delkaKroku(),
   2: () => AdamAOta(),
-  6.1: () => ctyruhelnik()
+  6.1: () => ctyruhelnik().obsah,
+  6.2: () => ctyruhelnik().obvod
 });
 function delkaKroku() {
   const entityBase = "krok";
@@ -14705,40 +14817,59 @@ function AdamAOta() {
         pythagoras("Ota", ["Adam 1.\u010D\xE1st", "Adam 2.\u010D\xE1st"])
       ),
       ctorComparePercent()
-    )
+    ),
+    convertToTestedValue: (value) => (value.ratio - 1) * 100
   };
 }
 function ctyruhelnik() {
   const entity3 = "d\xE9lka";
   const unit = "cm";
-  const entity2d = "krychli\u010Dek";
+  const entity2d = "obsah";
   const unit2d = "cm2";
   const AD = cont("AD", 17, entity3, unit);
   const BD = cont("BD", 8, entity3, unit);
-  return {
-    deductionTree: deduce(
-      triangleArea({
-        size: deduce(
-          AD,
-          BD,
-          pythagoras("AD", ["BD", "AB"])
-        ),
-        height: BD,
-        triangle: {
-          agent: "ABD"
-        }
-      }),
+  const AB = deduce(
+    AD,
+    BD,
+    pythagoras("AD", ["BD", "AB"])
+  );
+  const CD = toCont(
+    deduce(
       deduce(
-        deduce(
-          cont("troj\xFAheln\xEDk BCD", 24, entity2d, unit2d),
-          counter("2", 2),
-          product("obdeln\xEDk")
-        ),
-        cont("DC", 8, entity2d, unit2d),
-        ctor("quota")
+        cont("troj\xFAheln\xEDk BCD", 24, entity2d, unit2d),
+        double(),
+        product("obdeln\xEDk")
       ),
-      sum("celkem")
-    )
+      BD,
+      ctor("quota")
+    ),
+    { agent: "CD", entity: { entity: entity3, unit } }
+  );
+  return {
+    obsah: {
+      deductionTree: deduce(
+        triangleArea({
+          size: AB,
+          height: BD,
+          triangle: {
+            agent: "ABD",
+            entity: entity2d,
+            unit: unit2d
+          }
+        }),
+        cont("troj\xFAheln\xEDk BCD", 24, entity2d, unit2d),
+        sum("lichob\u011B\u017En\xEDku ABCD")
+      )
+    },
+    obvod: {
+      deductionTree: deduce(
+        AB,
+        CD,
+        deduce(last(CD), BD, pythagoras("BC", ["BD", "CD"])),
+        AD,
+        sum("obvod lichob\u011B\u017En\xEDku ABCD")
+      )
+    }
   };
 }
 
@@ -16052,27 +16183,33 @@ function vzestupHladinyVody() {
   const entity3 = "d\xE9lka";
   const unit3d = "cm3";
   const entity3d = "objem";
-  const objemKulicky = deduce(
+  const objemKulicky = deduceAs("kuli\u010Dka")(
     cont("kuli\u010Dka polom\u011Br", 3, entity3, unit),
-    evalExprAsCont("4/3*r^3*\u03C0", { kind: "cont", agent: "kuli\u010Dka", entity: entity3d, unit: unit3d })
+    evalExprAsCont("4/3*r^3*\u03C0", { kind: "cont", agent: "voda", entity: entity3d, unit: unit3d })
   );
-  const objemValce = deduce(
+  const objemValce = deduceAs("v\xE1lec")(
     deduce(
       cont("v\xE1lec pr\u016Fm\u011Br", 12, entity3, unit),
-      compRatio("v\xE1lec pr\u016Fm\u011Br", "v\xE1lec polom\u011Br", 2)
+      double(),
+      ctorScaleInvert("v\xE1lec polom\u011Br")
     ),
-    evalExprAsCont("r^2*\u03C0", { kind: "cont", agent: "v\xE1lec", entity: entity3d, unit: unit3d })
+    evalExprAsRate("r^2*\u03C0", { kind: "rate", agent: "voda", entity: { entity: entity3d, unit: unit3d }, entityBase: { entity: entity3, unit }, baseQuantity: 1 })
   );
   return {
     deductionTree: deduce(
-      objemValce,
-      objemKulicky,
-      ctor("comp-ratio")
+      deduce(
+        deduce(
+          objemValce,
+          objemKulicky
+        ),
+        simplifyExpr({ "\u03C0": 3.14 })
+      ),
+      ctorOption("D", 1)
     )
   };
 }
 function rovnoramennySatek() {
-  const odvesnaLabel = "odv\u011Bsna";
+  const delsiStranaSatku = "del\u0161\xED strana \u0161\xE1tku";
   const preponaLabel = "p\u0159epona";
   const mensiSatekLabel = "men\u0161\xED \u0161\xE1tek";
   const vetsiSatekLabel = "v\u011Bt\u0161\xED \u0161\xE1tek";
@@ -16094,9 +16231,15 @@ function rovnoramennySatek() {
   );
   return {
     deductionTree: deduce(
-      vetsiStatekOdvesna,
-      last(vetsiStatekOdvesna),
-      pythagoras(`${vetsiSatekLabel} - ${preponaLabel}`, [mensiSatekLabel, mensiSatekLabel])
+      deduce(
+        deduce(
+          vetsiStatekOdvesna,
+          last(vetsiStatekOdvesna),
+          pythagoras(delsiStranaSatku, [mensiSatekLabel, mensiSatekLabel])
+        ),
+        ctorRound()
+      ),
+      ctorOption("D", 106)
     )
   };
 }
@@ -16181,7 +16324,7 @@ function vyrezKrychle() {
         ctorRatios("pom\u011Br t\u011Bles")
       ),
       cont("nejv\u011Bt\u0161\xED spole\u010Dn\xFD d\u011Blitel", 216, ""),
-      ctor("scale")
+      ctor("scale-invert")
     )
   };
 }
@@ -16191,14 +16334,17 @@ function kruhovaVysec() {
   const entity3 = "stup\u0148\u016F";
   return {
     deductionTree: deduce(
-      to(
-        commonSense(`obsah cel\xE9ho kruhu (r): \u03C0*r^2`),
-        commonSense(`obsah cel\xE9ho kruhu s v\u011Bt\u0161\xEDm polom\u011Brem(3/2r): \u03C0*3/2r^2 = 9/4*\u03C0*r^2`),
-        commonSense(`v\u011Bt\u0161\xED kruh je 9/4 kr\xE1t v\u011Bt\u0161\xED ne\u017E men\u0161\xED kruh, co\u017E mus\xED odpov\xEDdat tomu, \u017Ee obsah v\xFDse\u010De  v\xFDse\u010De kruhu  jeho celkov\xE9mu obsahu`),
-        commonSense(`v\xFDse\u010D je \u010D\xE1st z cel\xE9ho kruhu s v\u011Bt\u0161\xEDm polom\u011Brem`),
-        compRatio(vetsiLabel, mensiLabel, 9 / 4)
+      deduce(
+        to(
+          commonSense(`obsah cel\xE9ho kruhu (r): \u03C0*r^2`),
+          commonSense(`obsah cel\xE9ho kruhu s v\u011Bt\u0161\xEDm polom\u011Brem(3/2r): \u03C0*3/2r^2 = 9/4*\u03C0*r^2`),
+          commonSense(`v\u011Bt\u0161\xED kruh je 9/4 kr\xE1t v\u011Bt\u0161\xED ne\u017E men\u0161\xED kruh, co\u017E mus\xED odpov\xEDdat tomu, \u017Ee obsah v\xFDse\u010De  v\xFDse\u010De kruhu  jeho celkov\xE9mu obsahu`),
+          commonSense(`v\xFDse\u010D je \u010D\xE1st z cel\xE9ho kruhu s v\u011Bt\u0161\xEDm polom\u011Brem`),
+          compRatio(vetsiLabel, mensiLabel, 9 / 4)
+        ),
+        cont(vetsiLabel, 360, entity3)
       ),
-      cont(vetsiLabel, 360, entity3)
+      ctorOption("B", 160)
     )
   };
 }

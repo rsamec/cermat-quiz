@@ -1,11 +1,12 @@
-import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, pythagoras, rate, ratio, ratios, sum, product, counter, productCombine, ctorSlide } from "../../components/math";
-import { createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
+import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, pythagoras, rate, ratio, ratios, sum, product, counter, productCombine, ctorSlide, double } from "../../components/math";
+import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 
 export default createLazyMap({
   1: () => delkaKroku(),
   2: () => AdamAOta(),
-  6.1: () => ctyruhelnik(),
+  6.1: () => ctyruhelnik().obsah,
+  6.2: () => ctyruhelnik().obvod,
 })
 
 function delkaKroku() {
@@ -48,42 +49,61 @@ function AdamAOta() {
         pythagoras("Ota", ["Adam 1.část", "Adam 2.část"])
       ),
       ctorComparePercent()
-    )
+    ),
+    convertToTestedValue: (value) => (value.ratio - 1) * 100
   }
 }
 
 function ctyruhelnik() {
   const entity = "délka";
   const unit = "cm";
-  const entity2d = "krychliček";
+  const entity2d = "obsah";
   const unit2d = "cm2";
   const AD = cont("AD", 17, entity, unit);
   const BD = cont("BD", 8, entity, unit);
 
-  return {
-    deductionTree: deduce(
-      triangleArea({
-        size: deduce(
-          AD,
-          BD,
-          pythagoras("AD", ["BD", "AB"])
-        ),
-        height: BD,
-        triangle: {
-          agent: 'ABD'
-        }
-      }),
+  const AB = deduce(
+    AD,
+    BD,
+    pythagoras("AD", ["BD", "AB"])
+  );
+  const CD = toCont(
+    deduce(
       deduce(
-        deduce(
-          cont("trojúhelník BCD", 24, entity2d, unit2d),
-          counter("2", 2),
-          product("obdelník")
-        ),
-        cont("DC", 8, entity2d, unit2d),
-        ctor("quota")
+        cont("trojúhelník BCD", 24, entity2d, unit2d),
+        double(),
+        product("obdelník")
       ),
-      sum("celkem")
-    )
+      BD,
+      ctor('quota')
+    ),
+    { agent: "CD", entity: { entity, unit } }
+  );
+  return {
+    obsah: {
+      deductionTree: deduce(
+        triangleArea({
+          size: AB,
+          height: BD,
+          triangle: {
+            agent: 'ABD',
+            entity: entity2d,
+            unit: unit2d
+          }
+        }),
+        cont("trojúhelník BCD", 24, entity2d, unit2d),
+        sum("lichoběžníku ABCD")
+      )
+    },
+    obvod: {
+      deductionTree: deduce(
+        AB,
+        CD,
+        deduce(last(CD), BD, pythagoras("BC", ["BD", "CD"])),
+        AD,
+        sum("obvod lichoběžníku ABCD")
+      )
+    }
   }
 }
 

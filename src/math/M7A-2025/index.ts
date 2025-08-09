@@ -32,7 +32,13 @@ function ceremonial() {
 
   return {
     polovina: {
-      deductionTree: dobaPrvniPulka
+      deductionTree: dobaPrvniPulka,
+      convertToTestedValue: (value) => {
+        const totalMinutes = 45 + value.quantity;
+        var hours = 17 + Math.floor(totalMinutes / 60);
+        var minutes = totalMinutes % 60;
+        return { hodin: hours, minut: minutes };
+      }
     },
     pocetMinut: {
       deductionTree: deduce(

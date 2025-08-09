@@ -1656,13 +1656,14 @@ function lcdCalc(numbers) {
 function evaluate2(expression, context) {
   return parser.parse(expression).evaluate(context);
 }
-function evalExpression(expression, quantity) {
-  const expr = parser.parse(expression);
+function evalExpression(expression, quantityOrContext) {
+  const expr = typeof expression === "string" ? parser.parse(expression) : toEquationExpr(expression);
   const variables = expr.variables();
+  const context = typeof quantityOrContext === "number" ? { [variables.length === 1 ? variables : variables[0]]: quantityOrContext } : quantityOrContext;
   if (variables.length === 1) {
-    return expr.evaluate({ [variables]: quantity });
+    return expr.evaluate(context);
   }
-  const res = expr.simplify({ [variables[0]]: quantity });
+  const res = expr.simplify(context);
   return res.toString();
 }
 function recurExpr(node) {

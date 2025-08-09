@@ -1,4 +1,4 @@
-import { productCombine, commonSense, comp, compRatio, compRelativePercent, cont, ctor, ctorDifference, ctorLinearEquation, product, ctorRatios, sum, ctorUnit, evalExprAsCont, primeFactorization, pythagoras, rate, ratio, counter, type Container, isNumber } from "../../components/math";
+import { productCombine, commonSense, comp, compRatio, compRelativePercent, cont, ctor, ctorDifference, ctorLinearEquation, product, ctorRatios, sum, ctorUnit, evalExprAsCont, primeFactorization, pythagoras, rate, ratio, counter, type Container, ctorOption, double, ctorScaleInvert, simplifyExpr, evalExprAsRate, ctorRound } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "../../utils/deduce-utils";
 
 
@@ -254,28 +254,33 @@ function vzestupHladinyVody() {
 
 
   const objemKulicky =
-    deduce(
+    deduceAs("kulička")(
       cont("kulička poloměr", 3, entity, unit),
-      evalExprAsCont("4/3*r^3*π", { kind: 'cont', agent: 'kulička', entity: entity3d, unit: unit3d })
+      evalExprAsCont("4/3*r^3*π", { kind: 'cont', agent: 'voda', entity: entity3d, unit: unit3d })
     )
 
   const objemValce =
-    deduce(
+    deduceAs("válec")(
       deduce(
         cont("válec průměr", 12, entity, unit),
-        compRatio("válec průměr", "válec poloměr", 2)
+        double(),
+        ctorScaleInvert("válec poloměr")
       ),
-      evalExprAsCont("r^2*π", { kind: 'cont', agent: 'válec', entity: entity3d, unit: unit3d })
+      evalExprAsRate("r^2*π", { kind: 'rate', agent: 'voda', entity: { entity: entity3d, unit: unit3d }, entityBase: { entity, unit }, baseQuantity: 1 })
     )
 
 
 
   return {
     deductionTree: deduce(
-      objemValce,
-      objemKulicky,
-      ctor("comp-ratio")
-    )
+      deduce(
+        deduce(
+          objemValce,
+          objemKulicky,
+        ),
+        simplifyExpr({ "π": 3.14 }),
+      ),
+      ctorOption("D", 1))
   }
 }
 
@@ -288,7 +293,7 @@ function delitelnost() {
 }
 
 function rovnoramennySatek() {
-  const odvesnaLabel = "odvěsna";
+  const delsiStranaSatku = "delší strana šátku";
   const preponaLabel = "přepona";
   const mensiSatekLabel = "menší šátek";
   const vetsiSatekLabel = "větší šátek";
@@ -312,9 +317,15 @@ function rovnoramennySatek() {
   )
   return {
     deductionTree: deduce(
-      vetsiStatekOdvesna,
-      last(vetsiStatekOdvesna),
-      pythagoras(`${vetsiSatekLabel} - ${preponaLabel}`, [mensiSatekLabel, mensiSatekLabel])
+      deduce(
+        deduce(
+          vetsiStatekOdvesna,
+          last(vetsiStatekOdvesna),
+          pythagoras(delsiStranaSatku, [mensiSatekLabel, mensiSatekLabel])
+        ),
+        ctorRound()
+      ),
+      ctorOption("D", 106)
     )
   }
 }
@@ -403,7 +414,7 @@ function vyrezKrychle() {
         ctorRatios("poměr těles")
       ),
       cont("největší společný dělitel", 216, ""),
-      ctor('scale')
+      ctor('scale-invert')
     )
   }
 }
@@ -414,15 +425,17 @@ function kruhovaVysec() {
   const entity = "stupňů"
   return {
     deductionTree: deduce(
-      to(
-        commonSense(`obsah celého kruhu (r): π*r^2`),
-        commonSense(`obsah celého kruhu s větším poloměrem(3/2r): π*3/2r^2 = 9/4*π*r^2`),
-        commonSense(`větší kruh je 9/4 krát větší než menší kruh, což musí odpovídat tomu, že obsah výseče  výseče kruhu  jeho celkovému obsahu`),
-        commonSense(`výseč je část z celého kruhu s větším poloměrem`),
-        compRatio(vetsiLabel, mensiLabel, 9 / 4)
+      deduce(
+        to(
+          commonSense(`obsah celého kruhu (r): π*r^2`),
+          commonSense(`obsah celého kruhu s větším poloměrem(3/2r): π*3/2r^2 = 9/4*π*r^2`),
+          commonSense(`větší kruh je 9/4 krát větší než menší kruh, což musí odpovídat tomu, že obsah výseče  výseče kruhu  jeho celkovému obsahu`),
+          commonSense(`výseč je část z celého kruhu s větším poloměrem`),
+          compRatio(vetsiLabel, mensiLabel, 9 / 4)
+        ),
+        cont(vetsiLabel, 360, entity)
       ),
-      cont(vetsiLabel, 360, entity)
+      ctorOption("B", 160)
     )
-
   }
 }

@@ -1,4 +1,4 @@
-import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, pythagoras, rate, ratio, ratios, ctorOption, ctorBooleanOption, productCombine, counter, product, sum } from "../../components/math";
+import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, pythagoras, rate, ratio, ratios, ctorOption, ctorBooleanOption, productCombine, counter, product, sum, ctorScale, double } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 import trojuhelnik from "./trojuhelnik";
@@ -40,7 +40,8 @@ function dobaFilmu({ input }: { input: { celkovaDobaFilmuVHodina: number } }) {
       deduce(
         compRatio("zbytek do konce filmu", "uplynulo od začátku filmu", 1 / 2),
         ctorRatios("film"),
-      )
+      ),
+      nthPart("zbytek do konce filmu")
     )
   }
 }
@@ -185,7 +186,8 @@ function krouzkyATridy() {
         hudebni8,
         hudebni9,
         ctorComparePercent()
-      )
+      ),
+      convertToTestedValue: (value) => (value.ratio - 1) * 100
     },
     pocet: {
       title: 'Počet žáků 9. tříd v šachovém kroužku',

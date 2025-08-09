@@ -1,5 +1,5 @@
 import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorOption, ctorRatios, nthPart, rate, ratio, ratios, sum, product, counter, ctorScaleInvert, ctorScale, ctorSlide, ctorSlideInvert, evalExprAsCont } from "../../components/math";
-import { createLazyMap, deduce, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
+import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   1.1: () => hledaneCisla().cislo1,
@@ -61,13 +61,13 @@ function hledaneCisla() {
       )
     },
     cisla3: {
-      deductionTree: to(
-        commonSense("abychom zachovali součet a zároveň vzniknul požadovaný rozdíl"),
-        commonSense("přičteme polovinu rozdílu"),
-        deduce(soucet, rozdil, ctorSlide("první neznámé číslo")),
-        commonSense("odečteme polovinu rozdílu"),
-        deduce(last(soucet), last(rozdil), ctorSlideInvert("druhé neznámé číslo")),
-      )
+      deductionTree: deduceAs("abychom zachovali součet a zároveň vzniknul požadovaný rozdíl")(
+        deduceAs("přičteme polovinu rozdílu")(
+          soucet, rozdil, ctorSlide("první neznámé číslo")),
+        deduceAs("odečteme polovinu rozdílu")(
+          last(soucet), last(rozdil), ctorSlideInvert("druhé neznámé číslo")),
+        ctor("tuple")
+      ),
     }
   }
 }

@@ -1,4 +1,4 @@
-import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, primeFactorization, rate, ratio, transfer, sum, ctorSlide } from "../../components/math";
+import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, primeFactorization, rate, ratio, transfer, sum, ctorSlide, type Tuple, type Container } from "../../components/math";
 import { axiomInput, deduce, last, to, createLazyMap } from "../../utils/deduce-utils";
 import { cislaNaOse } from "../cislaNaOse";
 const dveCislaNaOseParams = {
@@ -152,7 +152,7 @@ function distanceUnitCompareDiff() {
 }
 
 export function dveCislaNaOse({ input }: { input: { mensiCislo: number, vetsiCislo: number, pocetUsekuMeziCisly: number, X: number, Y: number } }) {
-  const entityLength = "délka";  
+  const entityLength = "délka";
   const entity = "úsek"
 
   const mensi = axiomInput(cont('menší zadané číslo', input.mensiCislo, entityLength,), 1)
@@ -172,7 +172,12 @@ export function dveCislaNaOse({ input }: { input: { mensiCislo: number, vetsiCis
 
   const zeroPositionPosun = deduce(mensi, usekRate);
 
-  return { "XandY": { deductionTree: to(dd1, dd2) }, "posun": { deductionTree: zeroPositionPosun } }
+  return {
+    "XandY": {
+      deductionTree: deduce(dd1, dd2, ctor("tuple")),
+      convertToTestedValue: (value: Tuple<[Container, Container]>) => ({ X: value.items[0].quantity, Y: value.items[1].quantity })
+    }, "posun": { deductionTree: zeroPositionPosun }
+  }
 }
 
 export function novorocniPrani() {
@@ -265,7 +270,7 @@ export function vyvojObyvatel() {
   return {
     panov: {
       deductionTree: deduce(
-        cont("přírůstek 2021", 10, entity),        
+        cont("přírůstek 2021", 10, entity),
         ctorOption("E", 10)
       )
     },

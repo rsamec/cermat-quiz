@@ -1,5 +1,5 @@
 import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, rate, ratio, ratios, sum, counter, double, product } from "../../components/math";
-import { createLazyMap, deduce, last, mapToCont, to, toCont } from "../../utils/deduce-utils";
+import { createLazyMap, deduce, deduceAs, last, mapToCont, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   3.1: () => jizdniKolo().a,
@@ -317,9 +317,8 @@ export function poutnik() {
       )
     },
     maximumKouzel: {
-      deductionTree: to(
-        commonSense("částka musí bý dělitelná 3, tak aby šlo rozdělit v poměru 1:2, resp. aby části byla celá čísla"),
-        deduce(
+      deductionTree: deduceAs("částka musí bý dělitelná 3, tak aby šlo rozdělit v poměru 1:2, resp. aby části byla celá čísla")
+        (
           deduce(
             deduce(
               last(kouzelnik2),
@@ -331,9 +330,7 @@ export function poutnik() {
           ),
           double(),
           product("poutník")
-        ),
-
-      )
+        )
     }
   }
 }

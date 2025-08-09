@@ -3358,13 +3358,14 @@ function lcdCalcEx2(a, b) {
 function lcdCalc2(numbers) {
   return numbers.reduce((acc, num) => lcdCalcEx2(acc, num), 1);
 }
-function evalExpression(expression, quantity) {
-  const expr = parser.parse(expression);
+function evalExpression(expression, quantityOrContext) {
+  const expr = typeof expression === "string" ? parser.parse(expression) : toEquationExpr(expression);
   const variables = expr.variables();
+  const context = typeof quantityOrContext === "number" ? { [variables.length === 1 ? variables : variables[0]]: quantityOrContext } : quantityOrContext;
   if (variables.length === 1) {
-    return expr.evaluate({ [variables]: quantity });
+    return expr.evaluate(context);
   }
-  const res = expr.simplify({ [variables[0]]: quantity });
+  const res = expr.simplify(context);
   return res.toString();
 }
 function recurExpr(node) {
@@ -3660,6 +3661,12 @@ function formatPredicate(d, formatting) {
       break;
     case "eval-expr":
       result = compose`${d.expression}`;
+      break;
+    case "simplify-expr":
+      result = compose`substituce za ${JSON.stringify(d.context)}`;
+      break;
+    case "tuple":
+      result = d.items != null ? compose`${joinArray(d.items.map((d2) => formatPredicate(d2, formatting)), ", ")}` : formatKind(d);
       break;
     case "eval-option":
       result = d.value === void 0 ? compose`${d.optionValue != null ? `Volba [${d.optionValue}]: ${d.expectedValue != null ? formatRatio2(d.expectedValue) : d.expression}` : d.expression}` : compose`${d.value === true ? "Pravda" : d.value === false ? "Nepravda" : d.value != null ? `Volba [${d.value}]` : "N/A"}`;
@@ -6174,6 +6181,14 @@ function lcdRule(items, b) {
     ] : []
   };
 }
+function tupleRule(items) {
+  const result = { kind: "tuple", items };
+  return {
+    question: `Seskup v\xEDce objekt\u016F do jednoho slo\u017Een\xE9ho objektu.`,
+    result,
+    options: []
+  };
+}
 function sequenceRuleEx(items) {
   const values = items.map((d) => d.quantity);
   if (!areNumbers(values)) {
@@ -6569,6 +6584,32 @@ function evalToQuantity(a, b) {
     options: []
   };
 }
+function simplifyExprRuleAsRatioEx(a, b) {
+  if (isNumber2(a.ratio)) {
+    throw `simplifyExpr does not support quantity types`;
+  }
+  return {
+    ...a,
+    ratio: helpers2.evalExpression(a.ratio, b.context)
+  };
+}
+function simplifyExprRuleAsQuantiyEx(a, b) {
+  if (isNumber2(a.quantity)) {
+    throw `simplifyExpr does not support quantity types`;
+  }
+  return {
+    ...a,
+    quantity: helpers2.evalExpression(a.quantity, b.context)
+  };
+}
+function simplifyExprAsRule(a, b) {
+  const result = isQuantityPredicate(a) ? simplifyExprRuleAsQuantiyEx(a, b) : simplifyExprRuleAsRatioEx(a, b);
+  return {
+    question: `Zjednodu\u0161 v\xFDraz dosazen\xEDm ${JSON.stringify(b.context)} ?`,
+    result,
+    options: []
+  };
+}
 function evalToOptionEx(a, b) {
   let valueToEval = a.quantity ?? a.ratio;
   if (!isNumber2(valueToEval)) {
@@ -6810,14 +6851,18 @@ function inferenceRuleWithQuestion(children) {
 function inferenceRuleEx(...args) {
   const [a, b, ...rest] = args;
   const last = rest?.length > 0 ? rest[rest.length - 1] : null;
-  if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence"].includes(last?.kind) || last?.kind === "ratios" && args.length > 3) {
+  if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence", "tuple"].includes(last?.kind) || last?.kind === "ratios" && args.length > 3) {
     const arr = [a, b].concat(rest.slice(0, -1));
-    return last.kind === "sequence" ? sequenceRule(arr) : last.kind === "gcd" ? gcdRule(arr, last) : last.kind === "lcd" ? lcdRule(arr, last) : ["product-combine", "product"].includes(last.kind) ? productRule(arr, last) : ["sum-combine", "sum"].includes(last.kind) ? sumRule(arr, last) : last.kind === "ratios" ? toRatios(arr, last) : null;
+    return last.kind === "sequence" ? sequenceRule(arr) : last.kind === "gcd" ? gcdRule(arr, last) : last.kind === "lcd" ? lcdRule(arr, last) : last.kind === "tuple" ? tupleRule(arr) : ["product-combine", "product"].includes(last.kind) ? productRule(arr, last) : ["sum-combine", "sum"].includes(last.kind) ? sumRule(arr, last) : last.kind === "ratios" ? toRatios(arr, last) : null;
   } else if (a.kind === "eval-option" || b.kind === "eval-option") {
     return a.kind === "eval-option" ? evalToOption(b, a) : b.kind === "eval-option" ? evalToOption(a, b) : null;
   } else if (a.kind === "cont" && b.kind == "cont") {
     const kind = last?.kind;
     return kind === "comp-diff" ? toComparisonDiff(a, b) : kind === "scale" || kind === "scale-invert" ? mapContByScale(a, b, last) : kind === "slide" || kind === "slide-invert" ? toSlide(a, b, last) : kind === "diff" ? toDifference(a, b, last) : kind === "quota" ? toQuota(a, b) : kind === "delta" ? toDelta(a, b, last) : kind === "pythagoras" ? pythagorasRule(a, b, last) : kind === "rate" ? toRate(a, b) : kind === "ratios" ? toRatios([a, b], last) : kind === "comp-ratio" ? toRatioComparison(a, b, last) : kind === "ratio" ? toPartWholeRatio(a, b, last) : kind === "linear-equation" ? solveEquation(a, b, last) : toComparison(a, b);
+  } else if ((a.kind === "comp-ratio" || a.kind === "cont") && b.kind === "simplify-expr") {
+    return simplifyExprAsRule(a, b);
+  } else if (a.kind === "simplify-expr" && (b.kind === "comp-ratio" || b.kind === "cont")) {
+    return simplifyExprAsRule(b, a);
   } else if (a.kind === "cont" && b.kind === "eval-expr") {
     return evalToQuantity(a, b);
   } else if (a.kind === "eval-expr" && b.kind === "cont") {
@@ -8839,13 +8884,14 @@ function lcdCalcEx3(a, b) {
 function lcdCalc3(numbers) {
   return numbers.reduce((acc, num) => lcdCalcEx3(acc, num), 1);
 }
-function evalExpression2(expression, quantity) {
-  const expr = parser2.parse(expression);
+function evalExpression2(expression, quantityOrContext) {
+  const expr = typeof expression === "string" ? parser2.parse(expression) : toEquationExpr2(expression);
   const variables = expr.variables();
+  const context = typeof quantityOrContext === "number" ? { [variables.length === 1 ? variables : variables[0]]: quantityOrContext } : quantityOrContext;
   if (variables.length === 1) {
-    return expr.evaluate({ [variables]: quantity });
+    return expr.evaluate(context);
   }
-  const res = expr.simplify({ [variables[0]]: quantity });
+  const res = expr.simplify(context);
   return res.toString();
 }
 function recurExpr2(node) {

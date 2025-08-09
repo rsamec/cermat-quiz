@@ -49,14 +49,16 @@ export function evaluate(expression: string, context?: Record<string, any>) {
   return parser.parse(expression).evaluate(context)
 }
 
-export function evalExpression(expression: string, quantity: number) {
-  const expr = parser.parse(expression);
+export function evalExpression(expression: any, quantityOrContext: number | Record<string, any>): string {
+  const expr = typeof expression === "string" ? parser.parse(expression) : toEquationExpr(expression);
   const variables = expr.variables();
+  const context = typeof quantityOrContext === "number" ? { [variables.length === 1 ? variables : variables[0]]: quantityOrContext } : quantityOrContext;
+  
   if (variables.length === 1) {
-     //throw `Eval only expression with exactly one variable. Variables ${variables.join(",")}`
-     return expr.evaluate({ [variables]: quantity });
+    //throw `Eval only expression with exactly one variable. Variables ${variables.join(",")}`  
+    return expr.evaluate(context);
   }
-  const res = expr.simplify({ [variables[0]]: quantity });
+  const res = expr.simplify(context);
   return res.toString();
 }
 
@@ -118,7 +120,7 @@ function formatNumbersInExpression(expr) {
   });
 }
 
-export function solveLinearEquation(lhs, rhs, variable = 'x'): number {
+export function solveLinearEquation(lhs, rhs, variable = 'x'): number {  
   const expr = `(${typeof lhs === "number" ? lhs : toEquationExpr(lhs)}) - (${typeof rhs === "number" ? rhs : toEquationExpr(rhs)})`;
   const terms = evaluateLinearExpression(expr, variable);
 
