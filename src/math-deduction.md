@@ -296,6 +296,7 @@ ${partion([
 ### Porovnávání - poměry část ku časti
 
 <div class="badge badge--large">RATIOS</div>
+<div class="badge badge--large">NTH-PART</div>
 
 ${partion([
     {value: 30, agent:"chlapci", label:{ hidePercent: true, hideFraction: false} },
@@ -372,6 +373,10 @@ ${partion([
 ## Převod jednotek
 <div class="badge badge--large">UNIT</div>
 <div>${renderRules(rules.unit)}</div>
+
+## Zaokrouhlování
+<div class="badge badge--large">ROUND</div>
+
 
 ## Nejmenší společný násobek
 <div class="badge badge--large">LCD</div>

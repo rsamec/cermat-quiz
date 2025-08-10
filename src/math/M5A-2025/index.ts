@@ -120,7 +120,6 @@ function patrovyDum() {
     druhePatroChlapci: {
       deductionTree: to(
         commonSense("Ve druhém patře bydlí jen dívky."),
-        commonSense("Ve druhém patře bydlí jen dívky."),
         cont(druheL, 0, boyLabel)
       )
     },

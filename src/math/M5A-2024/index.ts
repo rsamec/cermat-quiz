@@ -1,4 +1,4 @@
-import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, primeFactorization, rate, ratio, transfer, sum, ctorSlide, type Tuple, type Container } from "../../components/math";
+import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, primeFactorization, rate, ratio, transfer, sum, ctorSlide} from "../../components/math";
 import { axiomInput, deduce, last, to, createLazyMap } from "../../utils/deduce-utils";
 import { cislaNaOse } from "../cislaNaOse";
 const dveCislaNaOseParams = {
@@ -175,7 +175,7 @@ export function dveCislaNaOse({ input }: { input: { mensiCislo: number, vetsiCis
   return {
     "XandY": {
       deductionTree: deduce(dd1, dd2, ctor("tuple")),
-      convertToTestedValue: (value: Tuple<[Container, Container]>) => ({ X: value.items[0].quantity, Y: value.items[1].quantity })
+      convertToTestedValue: (value) => ({ X: value.items[0].quantity, Y: value.items[1].quantity })
     }, "posun": { deductionTree: zeroPositionPosun }
   }
 }

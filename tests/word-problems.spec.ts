@@ -57,7 +57,12 @@ for (const code of codes.filter(code => parseCode(code).subject === "math")) {
 
       console.log(`${code}: ${key} - ${resultNode.kind} - ${verifyBy.kind}`);
       if (verifyBy.kind === "equal" && typeof verifyBy.args === "number") {
-        expect(resultQuantity, `${code}: ${key}`).toEqual(expect.closeTo(verifyBy.args, 2))
+        if (resultNode.kind === "comp-ratio" && resultNode.asPercent) {
+          expect((resultQuantity - 1) * 100, `${code}: ${key}`).toEqual(expect.closeTo(verifyBy.args, 2))
+        }
+        else {
+          expect(resultQuantity, `${code}: ${key}`).toEqual(expect.closeTo(verifyBy.args, 2))
+        }
       }
       else if (verifyBy.kind === "equalOption") {
         //expect(resultNode.kind).toBe("eval-option");

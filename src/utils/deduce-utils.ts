@@ -1,4 +1,4 @@
-import { formatAngle, inferenceRule, nthQuadraticElements, isNumber } from "../components/math.js"
+import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate } from "../components/math.js"
 import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta } from "../components/math.js"
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
 import { toEquationExpr } from "./math-solver.js"
@@ -324,7 +324,7 @@ export function jsonToMarkdownChat(node, formatting?: any) {
         const child = node.children[i];
         const isConclusion = i === node.children.length - 1;
 
-        if (isConclusion) {          
+        if (isConclusion) {
           const result = inferenceRuleWithQuestion(mapNodeChildrenToPredicates(node));
           q = result;
           if (node.context) {
@@ -422,8 +422,8 @@ function formatSequence(type) {
 
 export function formatPredicate(d: Predicate, formatting: any) {
   const { formatKind, formatAgent, formatEntity, formatQuantity, formatRatio, formatSequence, compose } = { ...mdFormatting, ...formatting }
-  if (((d.kind == "transfer" || d.kind === "rate" || d.kind === "quota" || d.kind === "comp-diff" || d.kind === 'delta') && d.quantity == null)
-    || ((d.kind == "ratio" || d.kind === "comp-ratio") && d.ratio == null) || d.kind === "comp-part-eq") {
+  if ((isQuantityPredicate(d) && d.quantity == null)
+    || (isRatioPredicate(d) && d.ratio == null) || (isRatiosPredicate(d) && d.ratios == null)) {
     return formatKind(d);
   }
 
@@ -464,7 +464,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
     case "comp-ratio":
       if (isNumber(d.ratio)) {
         const between = (d.ratio > 1 / 2 && d.ratio < 2);
-        result = between
+        result = between || d.asPercent
           ? compose`${formatAgent(d.agentA)} ${d.ratio < 1 ? 'méně' : 'více'} o ${formatRatio(d.ratio > 1 ? d.ratio - 1 : 1 - d.ratio, d.asPercent)} než ${formatAgent(d.agentB)} `
           : compose`${formatAgent(d.agentA)} ${formatRatio(d.ratio > 1 ? Math.abs(d.ratio) : 1 / Math.abs(d.ratio), false)} krát ${d.ratio > 1 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} `
       }
@@ -483,11 +483,11 @@ export function formatPredicate(d: Predicate, formatting: any) {
       break;
     case "sum":
     case "sum-combine":
-      result = compose`${joinArray(d.partAgents?.map(d => formatAgent(d)), " + ")}`;
+      result = compose`${formatKind(d)} ${joinArray(d.partAgents?.map(d => formatAgent(d)), " + ")}`;
       break;
     case "product":
     case "product-combine":
-      result = compose`${joinArray(d.partAgents?.map(d => formatAgent(d)), " * ")}`;
+      result = compose`${formatKind(d)} ${joinArray(d.partAgents?.map(d => formatAgent(d)), " * ")}`;
       break;
     case "rate":
       result = compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} per ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? '' : formatQuantity(d.baseQuantity)} ${formatEntity(d.entityBase.entity, d.entityBase.unit)}`
@@ -517,24 +517,29 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = compose`${formatAngle(d.relationship)}`
       break;
     case "eval-expr":
-      result = compose`${d.expression}`
+      const { predicate, expression } = d;
+      result = predicate.kind === "cont"
+        ? compose`${formatAgent(predicate.agent)} = [${expression}] ${formatEntity(predicate.entity, predicate.unit)}`
+        : predicate.kind === "rate"
+          ? compose`${formatAgent(predicate.agent)} [${expression}] ${formatEntity(predicate.entity.entity, predicate.entity.unit)} per ${isNumber(predicate.baseQuantity) && predicate.baseQuantity == 1 ? '' : formatQuantity(predicate.baseQuantity)} ${formatEntity(predicate.entityBase.entity, predicate.entityBase.unit)}`
+          : compose`${expression}`
       break;
     case "simplify-expr":
       result = compose`substituce za ${JSON.stringify(d.context)}`
       break;
-
     case "tuple":
-      result = d.items != null ? compose`${joinArray(d.items.map(d => formatPredicate(d, formatting)), ", ")}`: formatKind(d)
-      break;      
+      result = d.items != null ? compose`${joinArray(d.items.map(d => formatPredicate(d, formatting)), ", ")}` : formatKind(d)
+      break;
     case "eval-option":
       result = d.value === undefined
         ? compose`${d.optionValue != null ? `Volba [${d.optionValue}]: ${d.expectedValue != null ? formatRatio(d.expectedValue) : d.expression}` : d.expression}`
         : compose`${d.value === true ? "Pravda" : d.value === false ? "Nepravda" : d.value != null ? `Volba [${d.value}]` : 'N/A'}`
       break;
     default:
+      result = formatKind(d);
       break;
   }
-  return compose`${formatKind(d)} ${result}`;
+  return compose`${result}`;
 }
 
 function joinArray(arr: string[], sep: string) {

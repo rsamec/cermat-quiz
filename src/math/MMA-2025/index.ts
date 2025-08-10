@@ -305,7 +305,7 @@ function rovnoramennySatek() {
 
   const mensiSatek = deduce(
     mensiSatekOdvesna,
-    evalExprAsCont("1/2*a^2", { kind: 'cont', agent: mensiSatekLabel, entity: entity2d, unit: unit2d })
+    evalExprAsCont("1/2*delka_strany^2", { kind: 'cont', agent: mensiSatekLabel, entity: entity2d, unit: unit2d })
   );
 
   const vetsiStatekOdvesna = deduce(
@@ -313,7 +313,7 @@ function rovnoramennySatek() {
       mensiSatek,
       compRelativePercent(vetsiSatekLabel, mensiSatekLabel, 125)
     ),
-    evalExprAsCont("sqrt(2*a)", { kind: 'cont', agent: vetsiSatekLabel, entity: entity2d, unit: unit2d })
+    evalExprAsCont("sqrt(2*obsah)", { kind: 'cont', agent: vetsiSatekLabel, entity: entity, unit: unit })
   )
   return {
     deductionTree: deduce(

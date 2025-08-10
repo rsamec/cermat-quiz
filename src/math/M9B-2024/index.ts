@@ -50,7 +50,6 @@ function AdamAOta() {
       ),
       ctorComparePercent()
     ),
-    convertToTestedValue: (value) => (value.ratio - 1) * 100
   }
 }
 

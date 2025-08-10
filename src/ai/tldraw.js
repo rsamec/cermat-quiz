@@ -13,6 +13,15 @@ function configure(config) {
 function isNumber(quantity) {
   return typeof quantity === "number";
 }
+function isQuantityPredicate(value) {
+  return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "quota", "delta"].includes(value.kind);
+}
+function isRatioPredicate(value) {
+  return ["ratio", "comp-ratio"].includes(value.kind);
+}
+function isRatiosPredicate(value) {
+  return ["ratios"].includes(value.kind);
+}
 function nthQuadraticElements(firstElement, secondElement, secondDifference) {
   const A = secondDifference / 2;
   const B = secondElement - firstElement - 3 * A;
@@ -3582,7 +3591,7 @@ function formatSequence2(type) {
 }
 function formatPredicate(d, formatting) {
   const { formatKind, formatAgent, formatEntity: formatEntity2, formatQuantity, formatRatio: formatRatio2, formatSequence: formatSequence3, compose } = { ...mdFormatting, ...formatting };
-  if ((d.kind == "transfer" || d.kind === "rate" || d.kind === "quota" || d.kind === "comp-diff" || d.kind === "delta") && d.quantity == null || (d.kind == "ratio" || d.kind === "comp-ratio") && d.ratio == null || d.kind === "comp-part-eq") {
+  if (isQuantityPredicate(d) && d.quantity == null || isRatioPredicate(d) && d.ratio == null || isRatiosPredicate(d) && d.ratios == null) {
     return formatKind(d);
   }
   let result = "";
@@ -3610,7 +3619,7 @@ function formatPredicate(d, formatting) {
     case "comp-ratio":
       if (isNumber(d.ratio)) {
         const between = d.ratio > 1 / 2 && d.ratio < 2;
-        result = between ? compose`${formatAgent(d.agentA)} ${d.ratio < 1 ? "m\xE9n\u011B" : "v\xEDce"} o ${formatRatio2(d.ratio > 1 ? d.ratio - 1 : 1 - d.ratio, d.asPercent)} než ${formatAgent(d.agentB)} ` : compose`${formatAgent(d.agentA)} ${formatRatio2(d.ratio > 1 ? Math.abs(d.ratio) : 1 / Math.abs(d.ratio), false)} krát ${d.ratio > 1 ? "v\xEDce" : "m\xE9n\u011B"} než ${formatAgent(d.agentB)} `;
+        result = between || d.asPercent ? compose`${formatAgent(d.agentA)} ${d.ratio < 1 ? "m\xE9n\u011B" : "v\xEDce"} o ${formatRatio2(d.ratio > 1 ? d.ratio - 1 : 1 - d.ratio, d.asPercent)} než ${formatAgent(d.agentB)} ` : compose`${formatAgent(d.agentA)} ${formatRatio2(d.ratio > 1 ? Math.abs(d.ratio) : 1 / Math.abs(d.ratio), false)} krát ${d.ratio > 1 ? "v\xEDce" : "m\xE9n\u011B"} než ${formatAgent(d.agentB)} `;
       } else {
         result = compose`poměr ${formatQuantity(d.ratio)} mezi ${formatAgent(d.agentA)} a ${formatAgent(d.agentB)}`;
       }
@@ -3626,11 +3635,11 @@ function formatPredicate(d, formatting) {
       break;
     case "sum":
     case "sum-combine":
-      result = compose`${joinArray(d.partAgents?.map((d2) => formatAgent(d2)), " + ")}`;
+      result = compose`${formatKind(d)} ${joinArray(d.partAgents?.map((d2) => formatAgent(d2)), " + ")}`;
       break;
     case "product":
     case "product-combine":
-      result = compose`${joinArray(d.partAgents?.map((d2) => formatAgent(d2)), " * ")}`;
+      result = compose`${formatKind(d)} ${joinArray(d.partAgents?.map((d2) => formatAgent(d2)), " * ")}`;
       break;
     case "rate":
       result = compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} per ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? "" : formatQuantity(d.baseQuantity)} ${formatEntity2(d.entityBase.entity, d.entityBase.unit)}`;
@@ -3660,7 +3669,8 @@ function formatPredicate(d, formatting) {
       result = compose`${formatAngle(d.relationship)}`;
       break;
     case "eval-expr":
-      result = compose`${d.expression}`;
+      const { predicate, expression } = d;
+      result = predicate.kind === "cont" ? compose`${formatAgent(predicate.agent)} = [${expression}] ${formatEntity2(predicate.entity, predicate.unit)}` : predicate.kind === "rate" ? compose`${formatAgent(predicate.agent)} [${expression}] ${formatEntity2(predicate.entity.entity, predicate.entity.unit)} per ${isNumber(predicate.baseQuantity) && predicate.baseQuantity == 1 ? "" : formatQuantity(predicate.baseQuantity)} ${formatEntity2(predicate.entityBase.entity, predicate.entityBase.unit)}` : compose`${expression}`;
       break;
     case "simplify-expr":
       result = compose`substituce za ${JSON.stringify(d.context)}`;
@@ -3672,9 +3682,10 @@ function formatPredicate(d, formatting) {
       result = d.value === void 0 ? compose`${d.optionValue != null ? `Volba [${d.optionValue}]: ${d.expectedValue != null ? formatRatio2(d.expectedValue) : d.expression}` : d.expression}` : compose`${d.value === true ? "Pravda" : d.value === false ? "Nepravda" : d.value != null ? `Volba [${d.value}]` : "N/A"}`;
       break;
     default:
+      result = formatKind(d);
       break;
   }
-  return compose`${formatKind(d)} ${result}`;
+  return compose`${result}`;
 }
 function joinArray(arr, sep) {
   return arr?.flatMap(
@@ -5404,6 +5415,15 @@ function convertContext(context) {
 function convertRatioKeysToFractions(obj) {
   return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, key === "ratio" ? helpers2.convertToFraction(value) : value]));
 }
+function isQuantityPredicate2(value) {
+  return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "quota", "delta"].includes(value.kind);
+}
+function isRatioPredicate2(value) {
+  return ["ratio", "comp-ratio"].includes(value.kind);
+}
+function isRatePredicate(value) {
+  return value.kind === "rate";
+}
 function compDiff(agentMinuend, agentSubtrahend, quantity, entity) {
   return { kind: "comp-diff", agentMinuend, agentSubtrahend, quantity, entity };
 }
@@ -6065,7 +6085,7 @@ function diffRule(a, b) {
   };
 }
 function sumRuleEx(items, b) {
-  if (items.every((d) => isRatioPredicate(d))) {
+  if (items.every((d) => isRatioPredicate2(d))) {
     const wholes = items.map((d) => d.whole);
     if (wholes.filter(unique).length == wholes.length) {
       throw `Sum only part to whole ratio with the same whole ${wholes}`;
@@ -6074,7 +6094,7 @@ function sumRuleEx(items, b) {
     const ratios = items.map((d) => d.ratio);
     const ratio = areNumbers(ratios) ? ratios.reduce((out, d) => out += d, 0) : wrapToRatio(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
     return { kind: "ratio", whole: wholes[0], ratio, part: b.wholeAgent };
-  } else if (items.every((d) => isQuantityPredicate(d))) {
+  } else if (items.every((d) => isQuantityPredicate2(d))) {
     const values = items.map((d) => d.quantity);
     const quantity = areNumbers(values) ? values.reduce((out, d) => out += d, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
     if (items.every((d) => isRatePredicate(d))) {
@@ -6099,11 +6119,11 @@ function sumRuleEx(items, b) {
 }
 function sumRule(items, b) {
   const result = sumRuleEx(items, b);
-  const isQuantity = isQuantityPredicate(result);
+  const isQuantity = isQuantityPredicate2(result);
   return {
     question: result.kind === "cont" ? containerQuestion(result) : result.kind === "rate" ? `${computeQuestion(result.quantity)} ${result.agent}` : `${computeQuestion(result.ratio)} ${result.part}`,
     result,
-    options: isQuantity && isNumber2(result.quantity) || isRatioPredicate(result) && isNumber2(result.ratio) ? [
+    options: isQuantity && isNumber2(result.quantity) || isRatioPredicate2(result) && isNumber2(result.ratio) ? [
       {
         tex: items.map((d) => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio)).join(" + "),
         result: isQuantity ? isNumber2(result.quantity) ? formatNumber(result.quantity) : "N/A" : isNumber2(result.ratio) ? formatRatio(result.ratio) : "N/A",
@@ -6603,7 +6623,7 @@ function simplifyExprRuleAsQuantiyEx(a, b) {
   };
 }
 function simplifyExprAsRule(a, b) {
-  const result = isQuantityPredicate(a) ? simplifyExprRuleAsQuantiyEx(a, b) : simplifyExprRuleAsRatioEx(a, b);
+  const result = isQuantityPredicate2(a) ? simplifyExprRuleAsQuantiyEx(a, b) : simplifyExprRuleAsRatioEx(a, b);
   return {
     question: `Zjednodu\u0161 v\xFDraz dosazen\xEDm ${JSON.stringify(b.context)} ?`,
     result,
@@ -6822,15 +6842,6 @@ function nthPositionRule(a, b, newEntity = "nth") {
       { tex: "Dle vzorce", result: formatNumber(result.quantity), ok: true }
     ] : []
   };
-}
-function isQuantityPredicate(value) {
-  return value.quantity != null;
-}
-function isRatioPredicate(value) {
-  return value.ratio != null;
-}
-function isRatePredicate(value) {
-  return value.kind === "rate";
 }
 function isEntityBase(value) {
   return value.entity != null;
@@ -9981,21 +9992,50 @@ function convertToFillColor(predicate) {
   const kind = predicate?.kind?.toUpperCase();
   switch (kind) {
     case "CONT":
-      return "blue";
+      return "black";
     case "RATIO":
+    case "COMPLEMENT":
       return "light-green";
     case "RATIOS":
+    case "NTH-PART":
       return "light-green";
-    case "COMP-RATIO":
-      return "light-blue";
     case "COMP":
-      return "light-blue";
-    case "QUOTA":
-      return "light-violet";
-    case "RATE":
-      return "light-violet";
-    case "UNIT":
+    case "COMP-DIFF":
+    case "COMP-ANGLE":
+      return "green";
+    case "COMP-RATIO":
       return "light-green";
+    case "RATE":
+    case "QUOTA":
+      return "orange";
+    case "DELTA":
+    case "TRANSFER":
+      return "light-red";
+    case "SUM":
+    case "PRODUCT":
+    case "PRODUCT-COMBINE":
+      return "blue";
+    case "SCALE":
+    case "SCALE-INVERT":
+      return "light-blue";
+    case "SLIDE":
+    case "SLIDE-INVERT":
+      return "light-blue";
+    case "UNIT":
+    case "ROUND":
+      return "light-violet";
+    case "LINEAR-EQUATION":
+    case "PYTHAGORAS":
+    case "EVAL-EXPR":
+    case "SIMPLIFY-EXPR":
+      return "violet";
+    case "COMMON-SENSE":
+    case "PROPORTION":
+    case "SEQUENCE":
+      return "light-red";
+    case "LCD":
+    case "GCD":
+      return "light-red";
     default:
       return "grey";
   }

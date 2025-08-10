@@ -310,17 +310,43 @@ export type Question = {
     ok: boolean
   }[]
 }
-export type Tuple<T> = {
+export type Tuple = {
   kind: 'tuple',
-  items: T
+  items: any[]
 }
 
 export type ContainerEval = Omit<Container, 'quantity'>
 export type RateEval = Omit<Rate, 'quantity'>
+
 export type EntityDef = string | EntityBase
-export type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | Sum | SumCombine | Product | ProductCombine | PartWholeRatio | PartToPartRatio | ComparisonDiff |
-  CommonSense | GCD | LCD | CompareAndPartEqual | Sequence | NthRule | Quota | Scale | Complement | NthPart | NthPartFactor | Transfer | Proportion | ConvertUnit | Tuple<any> |
-  AngleComparison | Delta | Difference | Phytagoras | InvertScale | Slide | InvertSlide | LinearEquation | EvalExpr<ContainerEval | RateEval> | Option | Round | SimplifyExpr
+
+export type QuantityPredicate = Container | Comparison | Transfer | Rate | ComparisonDiff | Transfer | Quota | Delta
+export type RatioPredicate = RatioComparison | PartWholeRatio
+export type RatiosPredicate = PartToPartRatio | TwoPartRatio | ThreePartRatio;
+export type ExpressionPredicate = EvalExpr<ContainerEval | RateEval> | SimplifyExpr | LinearEquation | Phytagoras;
+export type CommonSensePredicate = CommonSense | Proportion
+export type CombinePredicate = Sum | SumCombine | Product | ProductCombine | GCD | LCD
+export type OperationPredicate = Scale | InvertScale | Slide | InvertSlide | Difference | Complement | ConvertUnit | Round
+
+export type Predicate = QuantityPredicate | RatioPredicate | RatiosPredicate | ExpressionPredicate | CombinePredicate | CommonSensePredicate | OperationPredicate
+  | Sequence | NthRule | NthPart | NthPartFactor | AngleComparison | Tuple | Option | CompareAndPartEqual
+
+export function isQuantityPredicate(value: Predicate): value is QuantityPredicate {
+  return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "quota", "delta"].includes(value.kind);
+}
+export function isRatioPredicate(value: Predicate): value is RatioPredicate {
+  return ["ratio", "comp-ratio"].includes(value.kind);
+}
+export function isRatiosPredicate(value: Predicate): value is RatiosPredicate {
+  return ["ratios"].includes(value.kind);
+}
+
+function isRatePredicate(value: Predicate): value is Rate {
+  return value.kind === "rate";
+}
+
+
+
 
 export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | 'quota' | "comp-diff" | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'scale' | 'scale-invert' | 'slide' | 'slide-invert' | 'complement' | 'delta' | 'tuple' | 'simplify-expr') {
   return { kind } as Predicate
@@ -1402,7 +1428,7 @@ function lcdRule(items: Container[], b: LCD): Question {
   }
 }
 function tupleRule(items: Predicate[]): Question {
-  const result: Tuple<any> = { kind: 'tuple', items }
+  const result: Tuple = { kind: 'tuple', items }
   return {
     question: `Seskup více objektů do jednoho složeného objektu.`,
     result,
@@ -1883,7 +1909,7 @@ function evalToQuantity<
     options: []
   }
 }
-function simplifyExprRuleAsRatioEx(a: RatioComparison, b: SimplifyExpr):Predicate {
+function simplifyExprRuleAsRatioEx(a: RatioComparison, b: SimplifyExpr): Predicate {
 
   if (isNumber(a.ratio)) {
     throw `simplifyExpr does not support quantity types`
@@ -1895,7 +1921,7 @@ function simplifyExprRuleAsRatioEx(a: RatioComparison, b: SimplifyExpr):Predicat
   } as Predicate
 }
 
-function simplifyExprRuleAsQuantiyEx(a: Container, b: SimplifyExpr):Predicate {
+function simplifyExprRuleAsQuantiyEx(a: Container, b: SimplifyExpr): Predicate {
 
   if (isNumber(a.quantity)) {
     throw `simplifyExpr does not support quantity types`
@@ -1908,7 +1934,7 @@ function simplifyExprRuleAsQuantiyEx(a: Container, b: SimplifyExpr):Predicate {
 }
 
 function simplifyExprAsRule(a: RatioComparison | Container, b: SimplifyExpr): Question {
-  const result = isQuantityPredicate(a)? simplifyExprRuleAsQuantiyEx(a,b): simplifyExprRuleAsRatioEx(a, b);
+  const result = isQuantityPredicate(a) ? simplifyExprRuleAsQuantiyEx(a, b) : simplifyExprRuleAsRatioEx(a, b);
   return {
     question: `Zjednoduš výraz dosazením ${JSON.stringify(b.context)} ?`,
     result,
@@ -2179,16 +2205,7 @@ function nthPositionRule(a: Container, b: Sequence, newEntity: string = 'nth'): 
 function isQuestion(value: Question | Predicate): value is Question {
   return (value as any)?.result != null
 }
-function isQuantityPredicate(value: { ratio: Ratio } | { quantity: Quantity }): value is { quantity: Quantity } {
-  return (value as any).quantity != null;
-}
-function isRatioPredicate(value: { ratio: Ratio } | { quantity: Quantity }): value is { ratio: Ratio } {
-  return (value as any).ratio != null;
-}
 
-function isRatePredicate(value: Predicate): value is Rate {
-  return value.kind === "rate";
-}
 function isEntityBase(value: EntityDef): value is EntityBase {
   return (value as any).entity != null;
 }

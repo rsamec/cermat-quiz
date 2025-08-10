@@ -31,21 +31,51 @@ function convertToFillColor(predicate): ISimpleColor {
     const kind = predicate?.kind?.toUpperCase()
     switch (kind) {
         case "CONT":
-            return "blue";
+            return "black";
         case "RATIO":
+        case "COMPLEMENT":
             return "light-green";
         case "RATIOS":
-            return "light-green";
-        case "COMP-RATIO":
-            return "light-blue";
+        case "NTH-PART":
+            return "light-green";        
         case "COMP":
-            return "light-blue";
-        case "QUOTA":
-            return "light-violet"
-        case "RATE":
-            return "light-violet";
-        case "UNIT":
+        case "COMP-DIFF":
+        case "COMP-ANGLE":
+            return "green";
+        case "COMP-RATIO":
             return "light-green";
+        case "RATE":
+        case "QUOTA":
+            return "orange";
+        case "DELTA":
+        case "TRANSFER":
+            return "light-red" 
+        case "SUM":
+        case "PRODUCT":
+        case "PRODUCT-COMBINE":
+            return "blue";       
+        case "SCALE":
+        case "SCALE-INVERT":
+            return 'light-blue';
+        case "SLIDE":
+        case "SLIDE-INVERT":
+            return 'light-blue';
+        case "UNIT":
+        case "ROUND":
+            return "light-violet";
+        case "LINEAR-EQUATION":
+        case "PYTHAGORAS":
+        case "EVAL-EXPR":
+        case "SIMPLIFY-EXPR":
+            return "violet";        
+        case "COMMON-SENSE":
+        case "PROPORTION":
+        case "SEQUENCE":
+            return "light-red"
+        case "LCD":
+        case "GCD":
+            return "light-red";
+
         default:
             return "grey"
     }

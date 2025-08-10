@@ -187,7 +187,6 @@ function krouzkyATridy() {
         hudebni9,
         ctorComparePercent()
       ),
-      convertToTestedValue: (value) => (value.ratio - 1) * 100
     },
     pocet: {
       title: 'Počet žáků 9. tříd v šachovém kroužku',
