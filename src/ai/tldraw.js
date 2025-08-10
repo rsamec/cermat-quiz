@@ -3706,1685 +3706,6 @@ function isEmptyOrWhiteSpace2(value) {
   return value == null || typeof value === "string" && value.trim() === "";
 }
 
-// node_modules/fraction.js/dist/fraction.mjs
-if (typeof BigInt === "undefined")
-  BigInt = function(n) {
-    if (isNaN(n))
-      throw new Error("");
-    return n;
-  };
-var C_ZERO2 = BigInt(0);
-var C_ONE2 = BigInt(1);
-var C_TWO2 = BigInt(2);
-var C_FIVE2 = BigInt(5);
-var C_TEN2 = BigInt(10);
-var MAX_CYCLE_LEN2 = 2e3;
-var P2 = {
-  "s": C_ONE2,
-  "n": C_ZERO2,
-  "d": C_ONE2
-};
-function assign2(n, s) {
-  try {
-    n = BigInt(n);
-  } catch (e) {
-    throw InvalidParameter2();
-  }
-  return n * s;
-}
-function trunc3(x) {
-  return typeof x === "bigint" ? x : Math.floor(x);
-}
-function newFraction2(n, d) {
-  if (d === C_ZERO2) {
-    throw DivisionByZero2();
-  }
-  const f = Object.create(Fraction2.prototype);
-  f["s"] = n < C_ZERO2 ? -C_ONE2 : C_ONE2;
-  n = n < C_ZERO2 ? -n : n;
-  const a = gcd2(n, d);
-  f["n"] = n / a;
-  f["d"] = d / a;
-  return f;
-}
-function factorize2(num) {
-  const factors = {};
-  let n = num;
-  let i = C_TWO2;
-  let s = C_FIVE2 - C_ONE2;
-  while (s <= n) {
-    while (n % i === C_ZERO2) {
-      n /= i;
-      factors[i] = (factors[i] || C_ZERO2) + C_ONE2;
-    }
-    s += C_ONE2 + C_TWO2 * i++;
-  }
-  if (n !== num) {
-    if (n > 1)
-      factors[n] = (factors[n] || C_ZERO2) + C_ONE2;
-  } else {
-    factors[num] = (factors[num] || C_ZERO2) + C_ONE2;
-  }
-  return factors;
-}
-var parse2 = function(p1, p2) {
-  let n = C_ZERO2, d = C_ONE2, s = C_ONE2;
-  if (p1 === void 0 || p1 === null) {
-  } else if (p2 !== void 0) {
-    if (typeof p1 === "bigint") {
-      n = p1;
-    } else if (isNaN(p1)) {
-      throw InvalidParameter2();
-    } else if (p1 % 1 !== 0) {
-      throw NonIntegerParameter2();
-    } else {
-      n = BigInt(p1);
-    }
-    if (typeof p2 === "bigint") {
-      d = p2;
-    } else if (isNaN(p2)) {
-      throw InvalidParameter2();
-    } else if (p2 % 1 !== 0) {
-      throw NonIntegerParameter2();
-    } else {
-      d = BigInt(p2);
-    }
-    s = n * d;
-  } else if (typeof p1 === "object") {
-    if ("d" in p1 && "n" in p1) {
-      n = BigInt(p1["n"]);
-      d = BigInt(p1["d"]);
-      if ("s" in p1)
-        n *= BigInt(p1["s"]);
-    } else if (0 in p1) {
-      n = BigInt(p1[0]);
-      if (1 in p1)
-        d = BigInt(p1[1]);
-    } else if (typeof p1 === "bigint") {
-      n = p1;
-    } else {
-      throw InvalidParameter2();
-    }
-    s = n * d;
-  } else if (typeof p1 === "number") {
-    if (isNaN(p1)) {
-      throw InvalidParameter2();
-    }
-    if (p1 < 0) {
-      s = -C_ONE2;
-      p1 = -p1;
-    }
-    if (p1 % 1 === 0) {
-      n = BigInt(p1);
-    } else if (p1 > 0) {
-      let z = 1;
-      let A = 0, B = 1;
-      let C = 1, D = 1;
-      let N = 1e7;
-      if (p1 >= 1) {
-        z = 10 ** Math.floor(1 + Math.log10(p1));
-        p1 /= z;
-      }
-      while (B <= N && D <= N) {
-        let M = (A + C) / (B + D);
-        if (p1 === M) {
-          if (B + D <= N) {
-            n = A + C;
-            d = B + D;
-          } else if (D > B) {
-            n = C;
-            d = D;
-          } else {
-            n = A;
-            d = B;
-          }
-          break;
-        } else {
-          if (p1 > M) {
-            A += C;
-            B += D;
-          } else {
-            C += A;
-            D += B;
-          }
-          if (B > N) {
-            n = C;
-            d = D;
-          } else {
-            n = A;
-            d = B;
-          }
-        }
-      }
-      n = BigInt(n) * BigInt(z);
-      d = BigInt(d);
-    }
-  } else if (typeof p1 === "string") {
-    let ndx = 0;
-    let v = C_ZERO2, w = C_ZERO2, x = C_ZERO2, y = C_ONE2, z = C_ONE2;
-    let match = p1.replace(/_/g, "").match(/\d+|./g);
-    if (match === null)
-      throw InvalidParameter2();
-    if (match[ndx] === "-") {
-      s = -C_ONE2;
-      ndx++;
-    } else if (match[ndx] === "+") {
-      ndx++;
-    }
-    if (match.length === ndx + 1) {
-      w = assign2(match[ndx++], s);
-    } else if (match[ndx + 1] === "." || match[ndx] === ".") {
-      if (match[ndx] !== ".") {
-        v = assign2(match[ndx++], s);
-      }
-      ndx++;
-      if (ndx + 1 === match.length || match[ndx + 1] === "(" && match[ndx + 3] === ")" || match[ndx + 1] === "'" && match[ndx + 3] === "'") {
-        w = assign2(match[ndx], s);
-        y = C_TEN2 ** BigInt(match[ndx].length);
-        ndx++;
-      }
-      if (match[ndx] === "(" && match[ndx + 2] === ")" || match[ndx] === "'" && match[ndx + 2] === "'") {
-        x = assign2(match[ndx + 1], s);
-        z = C_TEN2 ** BigInt(match[ndx + 1].length) - C_ONE2;
-        ndx += 3;
-      }
-    } else if (match[ndx + 1] === "/" || match[ndx + 1] === ":") {
-      w = assign2(match[ndx], s);
-      y = assign2(match[ndx + 2], C_ONE2);
-      ndx += 3;
-    } else if (match[ndx + 3] === "/" && match[ndx + 1] === " ") {
-      v = assign2(match[ndx], s);
-      w = assign2(match[ndx + 2], s);
-      y = assign2(match[ndx + 4], C_ONE2);
-      ndx += 5;
-    }
-    if (match.length <= ndx) {
-      d = y * z;
-      s = /* void */
-      n = x + d * v + z * w;
-    } else {
-      throw InvalidParameter2();
-    }
-  } else if (typeof p1 === "bigint") {
-    n = p1;
-    s = p1;
-    d = C_ONE2;
-  } else {
-    throw InvalidParameter2();
-  }
-  if (d === C_ZERO2) {
-    throw DivisionByZero2();
-  }
-  P2["s"] = s < C_ZERO2 ? -C_ONE2 : C_ONE2;
-  P2["n"] = n < C_ZERO2 ? -n : n;
-  P2["d"] = d < C_ZERO2 ? -d : d;
-};
-function modpow2(b, e, m) {
-  let r = C_ONE2;
-  for (; e > C_ZERO2; b = b * b % m, e >>= C_ONE2) {
-    if (e & C_ONE2) {
-      r = r * b % m;
-    }
-  }
-  return r;
-}
-function cycleLen2(n, d) {
-  for (; d % C_TWO2 === C_ZERO2; d /= C_TWO2) {
-  }
-  for (; d % C_FIVE2 === C_ZERO2; d /= C_FIVE2) {
-  }
-  if (d === C_ONE2)
-    return C_ZERO2;
-  let rem = C_TEN2 % d;
-  let t = 1;
-  for (; rem !== C_ONE2; t++) {
-    rem = rem * C_TEN2 % d;
-    if (t > MAX_CYCLE_LEN2)
-      return C_ZERO2;
-  }
-  return BigInt(t);
-}
-function cycleStart2(n, d, len) {
-  let rem1 = C_ONE2;
-  let rem2 = modpow2(C_TEN2, len, d);
-  for (let t = 0; t < 300; t++) {
-    if (rem1 === rem2)
-      return BigInt(t);
-    rem1 = rem1 * C_TEN2 % d;
-    rem2 = rem2 * C_TEN2 % d;
-  }
-  return 0;
-}
-function gcd2(a, b) {
-  if (!a)
-    return b;
-  if (!b)
-    return a;
-  while (1) {
-    a %= b;
-    if (!a)
-      return b;
-    b %= a;
-    if (!b)
-      return a;
-  }
-}
-function Fraction2(a, b) {
-  parse2(a, b);
-  if (this instanceof Fraction2) {
-    a = gcd2(P2["d"], P2["n"]);
-    this["s"] = P2["s"];
-    this["n"] = P2["n"] / a;
-    this["d"] = P2["d"] / a;
-  } else {
-    return newFraction2(P2["s"] * P2["n"], P2["d"]);
-  }
-}
-var DivisionByZero2 = function() {
-  return new Error("Division by Zero");
-};
-var InvalidParameter2 = function() {
-  return new Error("Invalid argument");
-};
-var NonIntegerParameter2 = function() {
-  return new Error("Parameters must be integer");
-};
-Fraction2.prototype = {
-  "s": C_ONE2,
-  "n": C_ZERO2,
-  "d": C_ONE2,
-  /**
-   * Calculates the absolute value
-   *
-   * Ex: new Fraction(-4).abs() => 4
-   **/
-  "abs": function() {
-    return newFraction2(this["n"], this["d"]);
-  },
-  /**
-   * Inverts the sign of the current fraction
-   *
-   * Ex: new Fraction(-4).neg() => 4
-   **/
-  "neg": function() {
-    return newFraction2(-this["s"] * this["n"], this["d"]);
-  },
-  /**
-   * Adds two rational numbers
-   *
-   * Ex: new Fraction({n: 2, d: 3}).add("14.9") => 467 / 30
-   **/
-  "add": function(a, b) {
-    parse2(a, b);
-    return newFraction2(
-      this["s"] * this["n"] * P2["d"] + P2["s"] * this["d"] * P2["n"],
-      this["d"] * P2["d"]
-    );
-  },
-  /**
-   * Subtracts two rational numbers
-   *
-   * Ex: new Fraction({n: 2, d: 3}).add("14.9") => -427 / 30
-   **/
-  "sub": function(a, b) {
-    parse2(a, b);
-    return newFraction2(
-      this["s"] * this["n"] * P2["d"] - P2["s"] * this["d"] * P2["n"],
-      this["d"] * P2["d"]
-    );
-  },
-  /**
-   * Multiplies two rational numbers
-   *
-   * Ex: new Fraction("-17.(345)").mul(3) => 5776 / 111
-   **/
-  "mul": function(a, b) {
-    parse2(a, b);
-    return newFraction2(
-      this["s"] * P2["s"] * this["n"] * P2["n"],
-      this["d"] * P2["d"]
-    );
-  },
-  /**
-   * Divides two rational numbers
-   *
-   * Ex: new Fraction("-17.(345)").inverse().div(3)
-   **/
-  "div": function(a, b) {
-    parse2(a, b);
-    return newFraction2(
-      this["s"] * P2["s"] * this["n"] * P2["d"],
-      this["d"] * P2["n"]
-    );
-  },
-  /**
-   * Clones the actual object
-   *
-   * Ex: new Fraction("-17.(345)").clone()
-   **/
-  "clone": function() {
-    return newFraction2(this["s"] * this["n"], this["d"]);
-  },
-  /**
-   * Calculates the modulo of two rational numbers - a more precise fmod
-   *
-   * Ex: new Fraction('4.(3)').mod([7, 8]) => (13/3) % (7/8) = (5/6)
-   * Ex: new Fraction(20, 10).mod().equals(0) ? "is Integer"
-   **/
-  "mod": function(a, b) {
-    if (a === void 0) {
-      return newFraction2(this["s"] * this["n"] % this["d"], C_ONE2);
-    }
-    parse2(a, b);
-    if (C_ZERO2 === P2["n"] * this["d"]) {
-      throw DivisionByZero2();
-    }
-    return newFraction2(
-      this["s"] * (P2["d"] * this["n"]) % (P2["n"] * this["d"]),
-      P2["d"] * this["d"]
-    );
-  },
-  /**
-   * Calculates the fractional gcd of two rational numbers
-   *
-   * Ex: new Fraction(5,8).gcd(3,7) => 1/56
-   */
-  "gcd": function(a, b) {
-    parse2(a, b);
-    return newFraction2(gcd2(P2["n"], this["n"]) * gcd2(P2["d"], this["d"]), P2["d"] * this["d"]);
-  },
-  /**
-   * Calculates the fractional lcm of two rational numbers
-   *
-   * Ex: new Fraction(5,8).lcm(3,7) => 15
-   */
-  "lcm": function(a, b) {
-    parse2(a, b);
-    if (P2["n"] === C_ZERO2 && this["n"] === C_ZERO2) {
-      return newFraction2(C_ZERO2, C_ONE2);
-    }
-    return newFraction2(P2["n"] * this["n"], gcd2(P2["n"], this["n"]) * gcd2(P2["d"], this["d"]));
-  },
-  /**
-   * Gets the inverse of the fraction, means numerator and denominator are exchanged
-   *
-   * Ex: new Fraction([-3, 4]).inverse() => -4 / 3
-   **/
-  "inverse": function() {
-    return newFraction2(this["s"] * this["d"], this["n"]);
-  },
-  /**
-   * Calculates the fraction to some integer exponent
-   *
-   * Ex: new Fraction(-1,2).pow(-3) => -8
-   */
-  "pow": function(a, b) {
-    parse2(a, b);
-    if (P2["d"] === C_ONE2) {
-      if (P2["s"] < C_ZERO2) {
-        return newFraction2((this["s"] * this["d"]) ** P2["n"], this["n"] ** P2["n"]);
-      } else {
-        return newFraction2((this["s"] * this["n"]) ** P2["n"], this["d"] ** P2["n"]);
-      }
-    }
-    if (this["s"] < C_ZERO2)
-      return null;
-    let N = factorize2(this["n"]);
-    let D = factorize2(this["d"]);
-    let n = C_ONE2;
-    let d = C_ONE2;
-    for (let k in N) {
-      if (k === "1")
-        continue;
-      if (k === "0") {
-        n = C_ZERO2;
-        break;
-      }
-      N[k] *= P2["n"];
-      if (N[k] % P2["d"] === C_ZERO2) {
-        N[k] /= P2["d"];
-      } else
-        return null;
-      n *= BigInt(k) ** N[k];
-    }
-    for (let k in D) {
-      if (k === "1")
-        continue;
-      D[k] *= P2["n"];
-      if (D[k] % P2["d"] === C_ZERO2) {
-        D[k] /= P2["d"];
-      } else
-        return null;
-      d *= BigInt(k) ** D[k];
-    }
-    if (P2["s"] < C_ZERO2) {
-      return newFraction2(d, n);
-    }
-    return newFraction2(n, d);
-  },
-  /**
-   * Calculates the logarithm of a fraction to a given rational base
-   *
-   * Ex: new Fraction(27, 8).log(9, 4) => 3/2
-   */
-  "log": function(a, b) {
-    parse2(a, b);
-    if (this["s"] <= C_ZERO2 || P2["s"] <= C_ZERO2)
-      return null;
-    const allPrimes = {};
-    const baseFactors = factorize2(P2["n"]);
-    const T1 = factorize2(P2["d"]);
-    const numberFactors = factorize2(this["n"]);
-    const T2 = factorize2(this["d"]);
-    for (const prime in T1) {
-      baseFactors[prime] = (baseFactors[prime] || C_ZERO2) - T1[prime];
-    }
-    for (const prime in T2) {
-      numberFactors[prime] = (numberFactors[prime] || C_ZERO2) - T2[prime];
-    }
-    for (const prime in baseFactors) {
-      if (prime === "1")
-        continue;
-      allPrimes[prime] = true;
-    }
-    for (const prime in numberFactors) {
-      if (prime === "1")
-        continue;
-      allPrimes[prime] = true;
-    }
-    let retN = null;
-    let retD = null;
-    for (const prime in allPrimes) {
-      const baseExponent = baseFactors[prime] || C_ZERO2;
-      const numberExponent = numberFactors[prime] || C_ZERO2;
-      if (baseExponent === C_ZERO2) {
-        if (numberExponent !== C_ZERO2) {
-          return null;
-        }
-        continue;
-      }
-      let curN = numberExponent;
-      let curD = baseExponent;
-      const gcdValue = gcd2(curN, curD);
-      curN /= gcdValue;
-      curD /= gcdValue;
-      if (retN === null && retD === null) {
-        retN = curN;
-        retD = curD;
-      } else if (curN * retD !== retN * curD) {
-        return null;
-      }
-    }
-    return retN !== null && retD !== null ? newFraction2(retN, retD) : null;
-  },
-  /**
-   * Check if two rational numbers are the same
-   *
-   * Ex: new Fraction(19.6).equals([98, 5]);
-   **/
-  "equals": function(a, b) {
-    parse2(a, b);
-    return this["s"] * this["n"] * P2["d"] === P2["s"] * P2["n"] * this["d"];
-  },
-  /**
-   * Check if this rational number is less than another
-   *
-   * Ex: new Fraction(19.6).lt([98, 5]);
-   **/
-  "lt": function(a, b) {
-    parse2(a, b);
-    return this["s"] * this["n"] * P2["d"] < P2["s"] * P2["n"] * this["d"];
-  },
-  /**
-   * Check if this rational number is less than or equal another
-   *
-   * Ex: new Fraction(19.6).lt([98, 5]);
-   **/
-  "lte": function(a, b) {
-    parse2(a, b);
-    return this["s"] * this["n"] * P2["d"] <= P2["s"] * P2["n"] * this["d"];
-  },
-  /**
-   * Check if this rational number is greater than another
-   *
-   * Ex: new Fraction(19.6).lt([98, 5]);
-   **/
-  "gt": function(a, b) {
-    parse2(a, b);
-    return this["s"] * this["n"] * P2["d"] > P2["s"] * P2["n"] * this["d"];
-  },
-  /**
-   * Check if this rational number is greater than or equal another
-   *
-   * Ex: new Fraction(19.6).lt([98, 5]);
-   **/
-  "gte": function(a, b) {
-    parse2(a, b);
-    return this["s"] * this["n"] * P2["d"] >= P2["s"] * P2["n"] * this["d"];
-  },
-  /**
-   * Compare two rational numbers
-   * < 0 iff this < that
-   * > 0 iff this > that
-   * = 0 iff this = that
-   *
-   * Ex: new Fraction(19.6).compare([98, 5]);
-   **/
-  "compare": function(a, b) {
-    parse2(a, b);
-    let t = this["s"] * this["n"] * P2["d"] - P2["s"] * P2["n"] * this["d"];
-    return (C_ZERO2 < t) - (t < C_ZERO2);
-  },
-  /**
-   * Calculates the ceil of a rational number
-   *
-   * Ex: new Fraction('4.(3)').ceil() => (5 / 1)
-   **/
-  "ceil": function(places) {
-    places = C_TEN2 ** BigInt(places || 0);
-    return newFraction2(
-      trunc3(this["s"] * places * this["n"] / this["d"]) + (places * this["n"] % this["d"] > C_ZERO2 && this["s"] >= C_ZERO2 ? C_ONE2 : C_ZERO2),
-      places
-    );
-  },
-  /**
-   * Calculates the floor of a rational number
-   *
-   * Ex: new Fraction('4.(3)').floor() => (4 / 1)
-   **/
-  "floor": function(places) {
-    places = C_TEN2 ** BigInt(places || 0);
-    return newFraction2(
-      trunc3(this["s"] * places * this["n"] / this["d"]) - (places * this["n"] % this["d"] > C_ZERO2 && this["s"] < C_ZERO2 ? C_ONE2 : C_ZERO2),
-      places
-    );
-  },
-  /**
-   * Rounds a rational numbers
-   *
-   * Ex: new Fraction('4.(3)').round() => (4 / 1)
-   **/
-  "round": function(places) {
-    places = C_TEN2 ** BigInt(places || 0);
-    return newFraction2(
-      trunc3(this["s"] * places * this["n"] / this["d"]) + this["s"] * ((this["s"] >= C_ZERO2 ? C_ONE2 : C_ZERO2) + C_TWO2 * (places * this["n"] % this["d"]) > this["d"] ? C_ONE2 : C_ZERO2),
-      places
-    );
-  },
-  /**
-    * Rounds a rational number to a multiple of another rational number
-    *
-    * Ex: new Fraction('0.9').roundTo("1/8") => 7 / 8
-    **/
-  "roundTo": function(a, b) {
-    parse2(a, b);
-    const n = this["n"] * P2["d"];
-    const d = this["d"] * P2["n"];
-    const r = n % d;
-    let k = trunc3(n / d);
-    if (r + r >= d) {
-      k++;
-    }
-    return newFraction2(this["s"] * k * P2["n"], P2["d"]);
-  },
-  /**
-   * Check if two rational numbers are divisible
-   *
-   * Ex: new Fraction(19.6).divisible(1.5);
-   */
-  "divisible": function(a, b) {
-    parse2(a, b);
-    return !(!(P2["n"] * this["d"]) || this["n"] * P2["d"] % (P2["n"] * this["d"]));
-  },
-  /**
-   * Returns a decimal representation of the fraction
-   *
-   * Ex: new Fraction("100.'91823'").valueOf() => 100.91823918239183
-   **/
-  "valueOf": function() {
-    return Number(this["s"] * this["n"]) / Number(this["d"]);
-  },
-  /**
-   * Creates a string representation of a fraction with all digits
-   *
-   * Ex: new Fraction("100.'91823'").toString() => "100.(91823)"
-   **/
-  "toString": function(dec) {
-    let N = this["n"];
-    let D = this["d"];
-    dec = dec || 15;
-    let cycLen = cycleLen2(N, D);
-    let cycOff = cycleStart2(N, D, cycLen);
-    let str = this["s"] < C_ZERO2 ? "-" : "";
-    str += trunc3(N / D);
-    N %= D;
-    N *= C_TEN2;
-    if (N)
-      str += ".";
-    if (cycLen) {
-      for (let i = cycOff; i--; ) {
-        str += trunc3(N / D);
-        N %= D;
-        N *= C_TEN2;
-      }
-      str += "(";
-      for (let i = cycLen; i--; ) {
-        str += trunc3(N / D);
-        N %= D;
-        N *= C_TEN2;
-      }
-      str += ")";
-    } else {
-      for (let i = dec; N && i--; ) {
-        str += trunc3(N / D);
-        N %= D;
-        N *= C_TEN2;
-      }
-    }
-    return str;
-  },
-  /**
-   * Returns a string-fraction representation of a Fraction object
-   *
-   * Ex: new Fraction("1.'3'").toFraction() => "4 1/3"
-   **/
-  "toFraction": function(showMixed) {
-    let n = this["n"];
-    let d = this["d"];
-    let str = this["s"] < C_ZERO2 ? "-" : "";
-    if (d === C_ONE2) {
-      str += n;
-    } else {
-      let whole = trunc3(n / d);
-      if (showMixed && whole > C_ZERO2) {
-        str += whole;
-        str += " ";
-        n %= d;
-      }
-      str += n;
-      str += "/";
-      str += d;
-    }
-    return str;
-  },
-  /**
-   * Returns a latex representation of a Fraction object
-   *
-   * Ex: new Fraction("1.'3'").toLatex() => "\frac{4}{3}"
-   **/
-  "toLatex": function(showMixed) {
-    let n = this["n"];
-    let d = this["d"];
-    let str = this["s"] < C_ZERO2 ? "-" : "";
-    if (d === C_ONE2) {
-      str += n;
-    } else {
-      let whole = trunc3(n / d);
-      if (showMixed && whole > C_ZERO2) {
-        str += whole;
-        n %= d;
-      }
-      str += "\\frac{";
-      str += n;
-      str += "}{";
-      str += d;
-      str += "}";
-    }
-    return str;
-  },
-  /**
-   * Returns an array of continued fraction elements
-   *
-   * Ex: new Fraction("7/8").toContinued() => [0,1,7]
-   */
-  "toContinued": function() {
-    let a = this["n"];
-    let b = this["d"];
-    let res = [];
-    do {
-      res.push(trunc3(a / b));
-      let t = a % b;
-      a = b;
-      b = t;
-    } while (a !== C_ONE2);
-    return res;
-  },
-  "simplify": function(eps3) {
-    const ieps = BigInt(1 / (eps3 || 1e-3) | 0);
-    const thisABS = this["abs"]();
-    const cont = thisABS["toContinued"]();
-    for (let i = 1; i < cont.length; i++) {
-      let s = newFraction2(cont[i - 1], C_ONE2);
-      for (let k = i - 2; k >= 0; k--) {
-        s = s["inverse"]()["add"](cont[k]);
-      }
-      let t = s["sub"](thisABS);
-      if (t["n"] * ieps < t["d"]) {
-        return s["mul"](this["s"]);
-      }
-    }
-    return this;
-  }
-};
-
-// node_modules/convert-units/lib/esm/convert.js
-var UnknownUnitError2 = class extends Error {
-};
-var OperationOrderError2 = class extends Error {
-};
-var IncompatibleUnitError2 = class extends Error {
-};
-var MeasureStructureError2 = class extends Error {
-};
-var UnknownMeasureError2 = class extends Error {
-};
-var Converter2 = class {
-  constructor(measures, unitCache, value) {
-    this.val = 0;
-    this.destination = null;
-    this.origin = null;
-    if (typeof value === "number") {
-      this.val = value;
-    }
-    this.measureData = measures;
-    this.unitCache = unitCache;
-  }
-  /**
-   * Lets the converter know the source unit abbreviation
-   *
-   * @throws OperationOrderError, UnknownUnitError
-   */
-  from(from) {
-    if (this.destination != null)
-      throw new OperationOrderError2(".from must be called before .to");
-    this.origin = this.getUnit(from);
-    if (this.origin == null) {
-      this.throwUnsupportedUnitError(from);
-    }
-    return this;
-  }
-  /**
-   * Converts the unit and returns the value
-   *
-   * @throws OperationOrderError, UnknownUnitError, IncompatibleUnitError, MeasureStructureError
-   */
-  to(to) {
-    var _a, _b;
-    if (this.origin == null)
-      throw new Error(".to must be called after .from");
-    this.destination = this.getUnit(to);
-    if (this.destination == null) {
-      this.throwUnsupportedUnitError(to);
-    }
-    const destination = this.destination;
-    const origin = this.origin;
-    if (origin.abbr === destination.abbr) {
-      return this.val;
-    }
-    if (destination.measure != origin.measure) {
-      throw new IncompatibleUnitError2(`Cannot convert incompatible measures of ${destination.measure} and ${origin.measure}`);
-    }
-    let result = this.val * origin.unit.to_anchor;
-    if (origin.unit.anchor_shift) {
-      result -= origin.unit.anchor_shift;
-    }
-    if (origin.system != destination.system) {
-      const measure11 = this.measureData[origin.measure];
-      const anchors = measure11.anchors;
-      if (anchors == null) {
-        throw new MeasureStructureError2(`Unable to convert units. Anchors are missing for "${origin.measure}" and "${destination.measure}" measures.`);
-      }
-      const anchor = anchors[origin.system];
-      if (anchor == null) {
-        throw new MeasureStructureError2(`Unable to find anchor for "${origin.measure}" to "${destination.measure}". Please make sure it is defined.`);
-      }
-      const transform = (_a = anchor[destination.system]) === null || _a === void 0 ? void 0 : _a.transform;
-      const ratio = (_b = anchor[destination.system]) === null || _b === void 0 ? void 0 : _b.ratio;
-      if (typeof transform === "function") {
-        result = transform(result);
-      } else if (typeof ratio === "number") {
-        result *= ratio;
-      } else {
-        throw new MeasureStructureError2("A system anchor needs to either have a defined ratio number or a transform function.");
-      }
-    }
-    if (destination.unit.anchor_shift) {
-      result += destination.unit.anchor_shift;
-    }
-    return result / destination.unit.to_anchor;
-  }
-  /**
-   * Converts the unit to the best available unit.
-   *
-   * @throws OperationOrderError
-   */
-  toBest(options) {
-    var _a, _b, _c;
-    if (this.origin == null)
-      throw new OperationOrderError2(".toBest must be called after .from");
-    const isNegative = this.val < 0;
-    let exclude = [];
-    let cutOffNumber = isNegative ? -1 : 1;
-    let system = this.origin.system;
-    if (typeof options === "object") {
-      exclude = (_a = options.exclude) !== null && _a !== void 0 ? _a : [];
-      cutOffNumber = (_b = options.cutOffNumber) !== null && _b !== void 0 ? _b : cutOffNumber;
-      system = (_c = options.system) !== null && _c !== void 0 ? _c : this.origin.system;
-    }
-    let best = null;
-    for (const possibility of this.possibilities()) {
-      const unit = this.describe(possibility);
-      const isIncluded = exclude.indexOf(possibility) === -1;
-      if (isIncluded && unit.system === system) {
-        const result = this.to(possibility);
-        if (isNegative ? result > cutOffNumber : result < cutOffNumber) {
-          continue;
-        }
-        if (best === null || (isNegative ? result <= cutOffNumber && result > best.val : result >= cutOffNumber && result < best.val)) {
-          best = {
-            val: result,
-            unit: possibility,
-            singular: unit.singular,
-            plural: unit.plural
-          };
-        }
-      }
-    }
-    if (best == null) {
-      return {
-        val: this.val,
-        unit: this.origin.abbr,
-        singular: this.origin.unit.name.singular,
-        plural: this.origin.unit.name.plural
-      };
-    }
-    return best;
-  }
-  /**
-   * Finds the unit
-   */
-  getUnit(abbr) {
-    var _a;
-    return (_a = this.unitCache.get(abbr)) !== null && _a !== void 0 ? _a : null;
-  }
-  /**
-   * Provides additional information about the unit
-   *
-   * @throws UnknownUnitError
-   */
-  describe(abbr) {
-    const result = this.getUnit(abbr);
-    if (result != null) {
-      return this.describeUnit(result);
-    }
-    this.throwUnsupportedUnitError(abbr);
-  }
-  describeUnit(unit) {
-    return {
-      abbr: unit.abbr,
-      measure: unit.measure,
-      system: unit.system,
-      singular: unit.unit.name.singular,
-      plural: unit.unit.name.plural
-    };
-  }
-  /**
-   * Detailed list of all supported units
-   *
-   * If a measure is supplied the list will only contain
-   * details about that measure. Otherwise the list will contain
-   * details abaout all measures.
-   *
-   * However, if the measure doesn't exist, an empty array will be
-   * returned
-   *
-   *
-   */
-  list(measureName) {
-    const list = [];
-    if (measureName == null) {
-      for (const [name, measure11] of Object.entries(this.measureData)) {
-        for (const [systemName, units] of Object.entries(measure11.systems)) {
-          for (const [abbr, unit] of Object.entries(units)) {
-            list.push(this.describeUnit({
-              abbr,
-              measure: name,
-              system: systemName,
-              unit
-            }));
-          }
-        }
-      }
-    } else {
-      if (!this.isMeasure(measureName))
-        throw new UnknownMeasureError2(`Meausure "${measureName}" not found.`);
-      const measure11 = this.measureData[measureName];
-      for (const [systemName, units] of Object.entries(measure11.systems)) {
-        for (const [abbr, unit] of Object.entries(units)) {
-          list.push(this.describeUnit({
-            abbr,
-            measure: measureName,
-            system: systemName,
-            unit
-          }));
-        }
-      }
-    }
-    return list;
-  }
-  isMeasure(measureName) {
-    return measureName in this.measureData;
-  }
-  throwUnsupportedUnitError(what) {
-    let validUnits = [];
-    for (const measure11 of Object.values(this.measureData)) {
-      for (const systems of Object.values(measure11.systems)) {
-        validUnits = validUnits.concat(Object.keys(systems));
-      }
-    }
-    throw new UnknownUnitError2(`Unsupported unit ${what}, use one of: ${validUnits.join(", ")}`);
-  }
-  /**
-   * Returns the abbreviated measures that the value can be
-   * converted to.
-   */
-  possibilities(forMeasure) {
-    let possibilities = [];
-    let list_measures = [];
-    if (typeof forMeasure == "string" && this.isMeasure(forMeasure)) {
-      list_measures.push(forMeasure);
-    } else if (this.origin != null) {
-      list_measures.push(this.origin.measure);
-    } else {
-      list_measures = Object.keys(this.measureData);
-    }
-    for (const measure11 of list_measures) {
-      const systems = this.measureData[measure11].systems;
-      for (const system of Object.values(systems)) {
-        possibilities = [
-          ...possibilities,
-          ...Object.keys(system)
-        ];
-      }
-    }
-    return possibilities;
-  }
-  /**
-   * Returns the abbreviated measures that the value can be
-   * converted to.
-   */
-  measures() {
-    return Object.keys(this.measureData);
-  }
-};
-function buildUnitCache2(measures) {
-  const unitCache = /* @__PURE__ */ new Map();
-  for (const [measureName, measure11] of Object.entries(measures)) {
-    for (const [systemName, system] of Object.entries(measure11.systems)) {
-      for (const [testAbbr, unit] of Object.entries(system)) {
-        unitCache.set(testAbbr, {
-          measure: measureName,
-          system: systemName,
-          abbr: testAbbr,
-          unit
-        });
-      }
-    }
-  }
-  return unitCache;
-}
-function configureMeasurements2(measures) {
-  if (typeof measures !== "object") {
-    throw new TypeError("The measures argument needs to be an object");
-  }
-  const unitCache = buildUnitCache2(measures);
-  return (value) => new Converter2(measures, unitCache, value);
-}
-
-// node_modules/convert-units/lib/esm/definitions/length.js
-var metric5 = {
-  nm: {
-    name: {
-      singular: "Nanometer",
-      plural: "Nanometers"
-    },
-    to_anchor: 1e-9
-  },
-  \u03BCm: {
-    name: {
-      singular: "Micrometer",
-      plural: "Micrometers"
-    },
-    to_anchor: 1e-6
-  },
-  mm: {
-    name: {
-      singular: "Millimeter",
-      plural: "Millimeters"
-    },
-    to_anchor: 1e-3
-  },
-  cm: {
-    name: {
-      singular: "Centimeter",
-      plural: "Centimeters"
-    },
-    to_anchor: 0.01
-  },
-  dm: {
-    name: {
-      singular: "Decimeter",
-      plural: "Decimeters"
-    },
-    to_anchor: 0.1
-  },
-  m: {
-    name: {
-      singular: "Meter",
-      plural: "Meters"
-    },
-    to_anchor: 1
-  },
-  km: {
-    name: {
-      singular: "Kilometer",
-      plural: "Kilometers"
-    },
-    to_anchor: 1e3
-  }
-};
-var imperial5 = {
-  mil: {
-    name: {
-      singular: "Mil",
-      plural: "Mils"
-    },
-    to_anchor: 1 / 12e3
-  },
-  in: {
-    name: {
-      singular: "Inch",
-      plural: "Inches"
-    },
-    to_anchor: 1 / 12
-  },
-  yd: {
-    name: {
-      singular: "Yard",
-      plural: "Yards"
-    },
-    to_anchor: 3
-  },
-  "ft-us": {
-    name: {
-      singular: "US Survey Foot",
-      plural: "US Survey Feet"
-    },
-    to_anchor: 1.000002
-  },
-  ft: {
-    name: {
-      singular: "Foot",
-      plural: "Feet"
-    },
-    to_anchor: 1
-  },
-  fathom: {
-    name: {
-      singular: "Fathom",
-      plural: "Fathoms"
-    },
-    to_anchor: 6
-  },
-  mi: {
-    name: {
-      singular: "Mile",
-      plural: "Miles"
-    },
-    to_anchor: 5280
-  },
-  nMi: {
-    name: {
-      singular: "Nautical Mile",
-      plural: "Nautical Miles"
-    },
-    to_anchor: 6076.12
-  }
-};
-var measure6 = {
-  systems: {
-    metric: metric5,
-    imperial: imperial5
-  },
-  anchors: {
-    metric: {
-      imperial: {
-        ratio: 3.28084
-      }
-    },
-    imperial: {
-      metric: {
-        ratio: 1 / 3.28084
-      }
-    }
-  }
-};
-var length_default2 = measure6;
-
-// node_modules/convert-units/lib/esm/definitions/area.js
-var metric6 = {
-  nm2: {
-    name: {
-      singular: "Square Nanometer",
-      plural: "Square Nanometers"
-    },
-    to_anchor: 1e-18
-  },
-  \u03BCm2: {
-    name: {
-      singular: "Square Micrometer",
-      plural: "Square Micrometers"
-    },
-    to_anchor: 1e-12
-  },
-  mm2: {
-    name: {
-      singular: "Square Millimeter",
-      plural: "Square Millimeters"
-    },
-    to_anchor: 1 / 1e6
-  },
-  cm2: {
-    name: {
-      singular: "Square Centimeter",
-      plural: "Square Centimeters"
-    },
-    to_anchor: 1 / 1e4
-  },
-  dm2: {
-    name: {
-      singular: "Square Decimeter",
-      plural: "Square Decimeters"
-    },
-    to_anchor: 1 / 100
-  },
-  m2: {
-    name: {
-      singular: "Square Meter",
-      plural: "Square Meters"
-    },
-    to_anchor: 1
-  },
-  a: {
-    name: {
-      singular: "Are",
-      plural: "Ares"
-    },
-    to_anchor: 100
-  },
-  ha: {
-    name: {
-      singular: "Hectare",
-      plural: "Hectares"
-    },
-    to_anchor: 1e4
-  },
-  km2: {
-    name: {
-      singular: "Square Kilometer",
-      plural: "Square Kilometers"
-    },
-    to_anchor: 1e6
-  }
-};
-var imperial6 = {
-  in2: {
-    name: {
-      singular: "Square Inch",
-      plural: "Square Inches"
-    },
-    to_anchor: 1 / 144
-  },
-  yd2: {
-    name: {
-      singular: "Square Yard",
-      plural: "Square Yards"
-    },
-    to_anchor: 9
-  },
-  ft2: {
-    name: {
-      singular: "Square Foot",
-      plural: "Square Feet"
-    },
-    to_anchor: 1
-  },
-  ac: {
-    name: {
-      singular: "Acre",
-      plural: "Acres"
-    },
-    to_anchor: 43560
-  },
-  mi2: {
-    name: {
-      singular: "Square Mile",
-      plural: "Square Miles"
-    },
-    to_anchor: 27878400
-  }
-};
-var measure7 = {
-  systems: {
-    metric: metric6,
-    imperial: imperial6
-  },
-  anchors: {
-    metric: {
-      imperial: {
-        ratio: 10.7639
-      }
-    },
-    imperial: {
-      metric: {
-        ratio: 1 / 10.7639
-      }
-    }
-  }
-};
-var area_default2 = measure7;
-
-// node_modules/convert-units/lib/esm/definitions/mass.js
-var metric7 = {
-  mcg: {
-    name: {
-      singular: "Microgram",
-      plural: "Micrograms"
-    },
-    to_anchor: 1 / 1e6
-  },
-  mg: {
-    name: {
-      singular: "Milligram",
-      plural: "Milligrams"
-    },
-    to_anchor: 1 / 1e3
-  },
-  g: {
-    name: {
-      singular: "Gram",
-      plural: "Grams"
-    },
-    to_anchor: 1
-  },
-  kg: {
-    name: {
-      singular: "Kilogram",
-      plural: "Kilograms"
-    },
-    to_anchor: 1e3
-  },
-  mt: {
-    name: {
-      singular: "Metric Tonne",
-      plural: "Metric Tonnes"
-    },
-    to_anchor: 1e6
-  }
-};
-var imperial7 = {
-  oz: {
-    name: {
-      singular: "Ounce",
-      plural: "Ounces"
-    },
-    to_anchor: 1 / 16
-  },
-  lb: {
-    name: {
-      singular: "Pound",
-      plural: "Pounds"
-    },
-    to_anchor: 1
-  },
-  st: {
-    name: {
-      singular: "Stone",
-      plural: "Stones"
-    },
-    to_anchor: 14
-  },
-  t: {
-    name: {
-      singular: "Ton",
-      plural: "Tons"
-    },
-    to_anchor: 2e3
-  }
-};
-var measure8 = {
-  systems: {
-    metric: metric7,
-    imperial: imperial7
-  },
-  anchors: {
-    metric: {
-      imperial: {
-        ratio: 1 / 453.59237
-      }
-    },
-    imperial: {
-      metric: {
-        ratio: 453.59237
-      }
-    }
-  }
-};
-var mass_default2 = measure8;
-
-// node_modules/convert-units/lib/esm/definitions/volume.js
-var metric8 = {
-  mm3: {
-    name: {
-      singular: "Cubic Millimeter",
-      plural: "Cubic Millimeters"
-    },
-    to_anchor: 1 / 1e6
-  },
-  cm3: {
-    name: {
-      singular: "Cubic Centimeter",
-      plural: "Cubic Centimeters"
-    },
-    to_anchor: 1 / 1e3
-  },
-  dm3: {
-    name: {
-      singular: "Cubic Decimeter",
-      plural: "Cubic Decimeters"
-    },
-    to_anchor: 1
-  },
-  ml: {
-    name: {
-      singular: "Millilitre",
-      plural: "Millilitres"
-    },
-    to_anchor: 1 / 1e3
-  },
-  cl: {
-    name: {
-      singular: "Centilitre",
-      plural: "Centilitres"
-    },
-    to_anchor: 1 / 100
-  },
-  dl: {
-    name: {
-      singular: "Decilitre",
-      plural: "Decilitres"
-    },
-    to_anchor: 1 / 10
-  },
-  l: {
-    name: {
-      singular: "Litre",
-      plural: "Litres"
-    },
-    to_anchor: 1
-  },
-  kl: {
-    name: {
-      singular: "Kilolitre",
-      plural: "Kilolitres"
-    },
-    to_anchor: 1e3
-  },
-  Ml: {
-    name: {
-      singular: "Megalitre",
-      plural: "Megalitres"
-    },
-    to_anchor: 1e6
-  },
-  Gl: {
-    name: {
-      singular: "Gigalitre",
-      plural: "Gigalitres"
-    },
-    to_anchor: 1e9
-  },
-  m3: {
-    name: {
-      singular: "Cubic meter",
-      plural: "Cubic meters"
-    },
-    to_anchor: 1e3
-  },
-  km3: {
-    name: {
-      singular: "Cubic kilometer",
-      plural: "Cubic kilometers"
-    },
-    to_anchor: 1e12
-  },
-  // Swedish units
-  krm: {
-    name: {
-      singular: "Kryddm\xE5tt",
-      plural: "Kryddm\xE5tt"
-    },
-    to_anchor: 1 / 1e3
-  },
-  tsk: {
-    name: {
-      singular: "Tesked",
-      plural: "Teskedar"
-    },
-    to_anchor: 5 / 1e3
-  },
-  msk: {
-    name: {
-      singular: "Matsked",
-      plural: "Matskedar"
-    },
-    to_anchor: 15 / 1e3
-  },
-  kkp: {
-    name: {
-      singular: "Kaffekopp",
-      plural: "Kaffekoppar"
-    },
-    to_anchor: 150 / 1e3
-  },
-  glas: {
-    name: {
-      singular: "Glas",
-      plural: "Glas"
-    },
-    to_anchor: 200 / 1e3
-  },
-  kanna: {
-    name: {
-      singular: "Kanna",
-      plural: "Kannor"
-    },
-    to_anchor: 2.617
-  }
-};
-var imperial8 = {
-  tsp: {
-    name: {
-      singular: "Teaspoon",
-      plural: "Teaspoons"
-    },
-    to_anchor: 1 / 6
-  },
-  Tbs: {
-    name: {
-      singular: "Tablespoon",
-      plural: "Tablespoons"
-    },
-    to_anchor: 1 / 2
-  },
-  in3: {
-    name: {
-      singular: "Cubic inch",
-      plural: "Cubic inches"
-    },
-    to_anchor: 0.55411
-  },
-  "fl-oz": {
-    name: {
-      singular: "Fluid Ounce",
-      plural: "Fluid Ounces"
-    },
-    to_anchor: 1
-  },
-  cup: {
-    name: {
-      singular: "Cup",
-      plural: "Cups"
-    },
-    to_anchor: 8
-  },
-  pnt: {
-    name: {
-      singular: "Pint",
-      plural: "Pints"
-    },
-    to_anchor: 16
-  },
-  qt: {
-    name: {
-      singular: "Quart",
-      plural: "Quarts"
-    },
-    to_anchor: 32
-  },
-  gal: {
-    name: {
-      singular: "Gallon",
-      plural: "Gallons"
-    },
-    to_anchor: 128
-  },
-  ft3: {
-    name: {
-      singular: "Cubic foot",
-      plural: "Cubic feet"
-    },
-    to_anchor: 957.506
-  },
-  yd3: {
-    name: {
-      singular: "Cubic yard",
-      plural: "Cubic yards"
-    },
-    to_anchor: 25852.7
-  }
-};
-var measure9 = {
-  systems: {
-    metric: metric8,
-    imperial: imperial8
-  },
-  anchors: {
-    metric: {
-      imperial: {
-        ratio: 33.8140226
-      }
-    },
-    imperial: {
-      metric: {
-        ratio: 1 / 33.8140226
-      }
-    }
-  }
-};
-var volume_default2 = measure9;
-
-// node_modules/convert-units/lib/esm/definitions/time.js
-var daysInYear2 = 365.25;
-var SI2 = {
-  ns: {
-    name: {
-      singular: "Nanosecond",
-      plural: "Nanoseconds"
-    },
-    to_anchor: 1 / 1e9
-  },
-  mu: {
-    name: {
-      singular: "Microsecond",
-      plural: "Microseconds"
-    },
-    to_anchor: 1 / 1e6
-  },
-  ms: {
-    name: {
-      singular: "Millisecond",
-      plural: "Milliseconds"
-    },
-    to_anchor: 1 / 1e3
-  },
-  s: {
-    name: {
-      singular: "Second",
-      plural: "Seconds"
-    },
-    to_anchor: 1
-  },
-  min: {
-    name: {
-      singular: "Minute",
-      plural: "Minutes"
-    },
-    to_anchor: 60
-  },
-  h: {
-    name: {
-      singular: "Hour",
-      plural: "Hours"
-    },
-    to_anchor: 60 * 60
-  },
-  d: {
-    name: {
-      singular: "Day",
-      plural: "Days"
-    },
-    to_anchor: 60 * 60 * 24
-  },
-  week: {
-    name: {
-      singular: "Week",
-      plural: "Weeks"
-    },
-    to_anchor: 60 * 60 * 24 * 7
-  },
-  month: {
-    name: {
-      singular: "Month",
-      plural: "Months"
-    },
-    to_anchor: 60 * 60 * 24 * daysInYear2 / 12
-  },
-  year: {
-    name: {
-      singular: "Year",
-      plural: "Years"
-    },
-    to_anchor: 60 * 60 * 24 * daysInYear2
-  }
-};
-var measure10 = {
-  systems: {
-    SI: SI2
-  }
-};
-var time_default2 = measure10;
-
 // src/components/math.ts
 var defaultHelpers2 = {
   convertToFraction: (d) => d,
@@ -5420,6 +3741,12 @@ function isQuantityPredicate2(value) {
 }
 function isRatioPredicate2(value) {
   return ["ratio", "comp-ratio"].includes(value.kind);
+}
+function isRatiosPredicate2(value) {
+  return ["ratios"].includes(value.kind);
+}
+function isOperationPredicate(value) {
+  return ["sum", "sum-combine", "product", "product-combine", "gcd", "lcd"].includes(value.kind) || ["scale", "scale-invert", "slide", "slide-invert", "diff", "complement", "unit", "round"].includes(value.kind);
 }
 function isRatePredicate(value) {
   return value.kind === "rate";
@@ -7241,6 +5568,1685 @@ function resultAsQuestion(result) {
     options: []
   };
 }
+
+// node_modules/fraction.js/dist/fraction.mjs
+if (typeof BigInt === "undefined")
+  BigInt = function(n) {
+    if (isNaN(n))
+      throw new Error("");
+    return n;
+  };
+var C_ZERO2 = BigInt(0);
+var C_ONE2 = BigInt(1);
+var C_TWO2 = BigInt(2);
+var C_FIVE2 = BigInt(5);
+var C_TEN2 = BigInt(10);
+var MAX_CYCLE_LEN2 = 2e3;
+var P2 = {
+  "s": C_ONE2,
+  "n": C_ZERO2,
+  "d": C_ONE2
+};
+function assign2(n, s) {
+  try {
+    n = BigInt(n);
+  } catch (e) {
+    throw InvalidParameter2();
+  }
+  return n * s;
+}
+function trunc3(x) {
+  return typeof x === "bigint" ? x : Math.floor(x);
+}
+function newFraction2(n, d) {
+  if (d === C_ZERO2) {
+    throw DivisionByZero2();
+  }
+  const f = Object.create(Fraction2.prototype);
+  f["s"] = n < C_ZERO2 ? -C_ONE2 : C_ONE2;
+  n = n < C_ZERO2 ? -n : n;
+  const a = gcd2(n, d);
+  f["n"] = n / a;
+  f["d"] = d / a;
+  return f;
+}
+function factorize2(num) {
+  const factors = {};
+  let n = num;
+  let i = C_TWO2;
+  let s = C_FIVE2 - C_ONE2;
+  while (s <= n) {
+    while (n % i === C_ZERO2) {
+      n /= i;
+      factors[i] = (factors[i] || C_ZERO2) + C_ONE2;
+    }
+    s += C_ONE2 + C_TWO2 * i++;
+  }
+  if (n !== num) {
+    if (n > 1)
+      factors[n] = (factors[n] || C_ZERO2) + C_ONE2;
+  } else {
+    factors[num] = (factors[num] || C_ZERO2) + C_ONE2;
+  }
+  return factors;
+}
+var parse2 = function(p1, p2) {
+  let n = C_ZERO2, d = C_ONE2, s = C_ONE2;
+  if (p1 === void 0 || p1 === null) {
+  } else if (p2 !== void 0) {
+    if (typeof p1 === "bigint") {
+      n = p1;
+    } else if (isNaN(p1)) {
+      throw InvalidParameter2();
+    } else if (p1 % 1 !== 0) {
+      throw NonIntegerParameter2();
+    } else {
+      n = BigInt(p1);
+    }
+    if (typeof p2 === "bigint") {
+      d = p2;
+    } else if (isNaN(p2)) {
+      throw InvalidParameter2();
+    } else if (p2 % 1 !== 0) {
+      throw NonIntegerParameter2();
+    } else {
+      d = BigInt(p2);
+    }
+    s = n * d;
+  } else if (typeof p1 === "object") {
+    if ("d" in p1 && "n" in p1) {
+      n = BigInt(p1["n"]);
+      d = BigInt(p1["d"]);
+      if ("s" in p1)
+        n *= BigInt(p1["s"]);
+    } else if (0 in p1) {
+      n = BigInt(p1[0]);
+      if (1 in p1)
+        d = BigInt(p1[1]);
+    } else if (typeof p1 === "bigint") {
+      n = p1;
+    } else {
+      throw InvalidParameter2();
+    }
+    s = n * d;
+  } else if (typeof p1 === "number") {
+    if (isNaN(p1)) {
+      throw InvalidParameter2();
+    }
+    if (p1 < 0) {
+      s = -C_ONE2;
+      p1 = -p1;
+    }
+    if (p1 % 1 === 0) {
+      n = BigInt(p1);
+    } else if (p1 > 0) {
+      let z = 1;
+      let A = 0, B = 1;
+      let C = 1, D = 1;
+      let N = 1e7;
+      if (p1 >= 1) {
+        z = 10 ** Math.floor(1 + Math.log10(p1));
+        p1 /= z;
+      }
+      while (B <= N && D <= N) {
+        let M = (A + C) / (B + D);
+        if (p1 === M) {
+          if (B + D <= N) {
+            n = A + C;
+            d = B + D;
+          } else if (D > B) {
+            n = C;
+            d = D;
+          } else {
+            n = A;
+            d = B;
+          }
+          break;
+        } else {
+          if (p1 > M) {
+            A += C;
+            B += D;
+          } else {
+            C += A;
+            D += B;
+          }
+          if (B > N) {
+            n = C;
+            d = D;
+          } else {
+            n = A;
+            d = B;
+          }
+        }
+      }
+      n = BigInt(n) * BigInt(z);
+      d = BigInt(d);
+    }
+  } else if (typeof p1 === "string") {
+    let ndx = 0;
+    let v = C_ZERO2, w = C_ZERO2, x = C_ZERO2, y = C_ONE2, z = C_ONE2;
+    let match = p1.replace(/_/g, "").match(/\d+|./g);
+    if (match === null)
+      throw InvalidParameter2();
+    if (match[ndx] === "-") {
+      s = -C_ONE2;
+      ndx++;
+    } else if (match[ndx] === "+") {
+      ndx++;
+    }
+    if (match.length === ndx + 1) {
+      w = assign2(match[ndx++], s);
+    } else if (match[ndx + 1] === "." || match[ndx] === ".") {
+      if (match[ndx] !== ".") {
+        v = assign2(match[ndx++], s);
+      }
+      ndx++;
+      if (ndx + 1 === match.length || match[ndx + 1] === "(" && match[ndx + 3] === ")" || match[ndx + 1] === "'" && match[ndx + 3] === "'") {
+        w = assign2(match[ndx], s);
+        y = C_TEN2 ** BigInt(match[ndx].length);
+        ndx++;
+      }
+      if (match[ndx] === "(" && match[ndx + 2] === ")" || match[ndx] === "'" && match[ndx + 2] === "'") {
+        x = assign2(match[ndx + 1], s);
+        z = C_TEN2 ** BigInt(match[ndx + 1].length) - C_ONE2;
+        ndx += 3;
+      }
+    } else if (match[ndx + 1] === "/" || match[ndx + 1] === ":") {
+      w = assign2(match[ndx], s);
+      y = assign2(match[ndx + 2], C_ONE2);
+      ndx += 3;
+    } else if (match[ndx + 3] === "/" && match[ndx + 1] === " ") {
+      v = assign2(match[ndx], s);
+      w = assign2(match[ndx + 2], s);
+      y = assign2(match[ndx + 4], C_ONE2);
+      ndx += 5;
+    }
+    if (match.length <= ndx) {
+      d = y * z;
+      s = /* void */
+      n = x + d * v + z * w;
+    } else {
+      throw InvalidParameter2();
+    }
+  } else if (typeof p1 === "bigint") {
+    n = p1;
+    s = p1;
+    d = C_ONE2;
+  } else {
+    throw InvalidParameter2();
+  }
+  if (d === C_ZERO2) {
+    throw DivisionByZero2();
+  }
+  P2["s"] = s < C_ZERO2 ? -C_ONE2 : C_ONE2;
+  P2["n"] = n < C_ZERO2 ? -n : n;
+  P2["d"] = d < C_ZERO2 ? -d : d;
+};
+function modpow2(b, e, m) {
+  let r = C_ONE2;
+  for (; e > C_ZERO2; b = b * b % m, e >>= C_ONE2) {
+    if (e & C_ONE2) {
+      r = r * b % m;
+    }
+  }
+  return r;
+}
+function cycleLen2(n, d) {
+  for (; d % C_TWO2 === C_ZERO2; d /= C_TWO2) {
+  }
+  for (; d % C_FIVE2 === C_ZERO2; d /= C_FIVE2) {
+  }
+  if (d === C_ONE2)
+    return C_ZERO2;
+  let rem = C_TEN2 % d;
+  let t = 1;
+  for (; rem !== C_ONE2; t++) {
+    rem = rem * C_TEN2 % d;
+    if (t > MAX_CYCLE_LEN2)
+      return C_ZERO2;
+  }
+  return BigInt(t);
+}
+function cycleStart2(n, d, len) {
+  let rem1 = C_ONE2;
+  let rem2 = modpow2(C_TEN2, len, d);
+  for (let t = 0; t < 300; t++) {
+    if (rem1 === rem2)
+      return BigInt(t);
+    rem1 = rem1 * C_TEN2 % d;
+    rem2 = rem2 * C_TEN2 % d;
+  }
+  return 0;
+}
+function gcd2(a, b) {
+  if (!a)
+    return b;
+  if (!b)
+    return a;
+  while (1) {
+    a %= b;
+    if (!a)
+      return b;
+    b %= a;
+    if (!b)
+      return a;
+  }
+}
+function Fraction2(a, b) {
+  parse2(a, b);
+  if (this instanceof Fraction2) {
+    a = gcd2(P2["d"], P2["n"]);
+    this["s"] = P2["s"];
+    this["n"] = P2["n"] / a;
+    this["d"] = P2["d"] / a;
+  } else {
+    return newFraction2(P2["s"] * P2["n"], P2["d"]);
+  }
+}
+var DivisionByZero2 = function() {
+  return new Error("Division by Zero");
+};
+var InvalidParameter2 = function() {
+  return new Error("Invalid argument");
+};
+var NonIntegerParameter2 = function() {
+  return new Error("Parameters must be integer");
+};
+Fraction2.prototype = {
+  "s": C_ONE2,
+  "n": C_ZERO2,
+  "d": C_ONE2,
+  /**
+   * Calculates the absolute value
+   *
+   * Ex: new Fraction(-4).abs() => 4
+   **/
+  "abs": function() {
+    return newFraction2(this["n"], this["d"]);
+  },
+  /**
+   * Inverts the sign of the current fraction
+   *
+   * Ex: new Fraction(-4).neg() => 4
+   **/
+  "neg": function() {
+    return newFraction2(-this["s"] * this["n"], this["d"]);
+  },
+  /**
+   * Adds two rational numbers
+   *
+   * Ex: new Fraction({n: 2, d: 3}).add("14.9") => 467 / 30
+   **/
+  "add": function(a, b) {
+    parse2(a, b);
+    return newFraction2(
+      this["s"] * this["n"] * P2["d"] + P2["s"] * this["d"] * P2["n"],
+      this["d"] * P2["d"]
+    );
+  },
+  /**
+   * Subtracts two rational numbers
+   *
+   * Ex: new Fraction({n: 2, d: 3}).add("14.9") => -427 / 30
+   **/
+  "sub": function(a, b) {
+    parse2(a, b);
+    return newFraction2(
+      this["s"] * this["n"] * P2["d"] - P2["s"] * this["d"] * P2["n"],
+      this["d"] * P2["d"]
+    );
+  },
+  /**
+   * Multiplies two rational numbers
+   *
+   * Ex: new Fraction("-17.(345)").mul(3) => 5776 / 111
+   **/
+  "mul": function(a, b) {
+    parse2(a, b);
+    return newFraction2(
+      this["s"] * P2["s"] * this["n"] * P2["n"],
+      this["d"] * P2["d"]
+    );
+  },
+  /**
+   * Divides two rational numbers
+   *
+   * Ex: new Fraction("-17.(345)").inverse().div(3)
+   **/
+  "div": function(a, b) {
+    parse2(a, b);
+    return newFraction2(
+      this["s"] * P2["s"] * this["n"] * P2["d"],
+      this["d"] * P2["n"]
+    );
+  },
+  /**
+   * Clones the actual object
+   *
+   * Ex: new Fraction("-17.(345)").clone()
+   **/
+  "clone": function() {
+    return newFraction2(this["s"] * this["n"], this["d"]);
+  },
+  /**
+   * Calculates the modulo of two rational numbers - a more precise fmod
+   *
+   * Ex: new Fraction('4.(3)').mod([7, 8]) => (13/3) % (7/8) = (5/6)
+   * Ex: new Fraction(20, 10).mod().equals(0) ? "is Integer"
+   **/
+  "mod": function(a, b) {
+    if (a === void 0) {
+      return newFraction2(this["s"] * this["n"] % this["d"], C_ONE2);
+    }
+    parse2(a, b);
+    if (C_ZERO2 === P2["n"] * this["d"]) {
+      throw DivisionByZero2();
+    }
+    return newFraction2(
+      this["s"] * (P2["d"] * this["n"]) % (P2["n"] * this["d"]),
+      P2["d"] * this["d"]
+    );
+  },
+  /**
+   * Calculates the fractional gcd of two rational numbers
+   *
+   * Ex: new Fraction(5,8).gcd(3,7) => 1/56
+   */
+  "gcd": function(a, b) {
+    parse2(a, b);
+    return newFraction2(gcd2(P2["n"], this["n"]) * gcd2(P2["d"], this["d"]), P2["d"] * this["d"]);
+  },
+  /**
+   * Calculates the fractional lcm of two rational numbers
+   *
+   * Ex: new Fraction(5,8).lcm(3,7) => 15
+   */
+  "lcm": function(a, b) {
+    parse2(a, b);
+    if (P2["n"] === C_ZERO2 && this["n"] === C_ZERO2) {
+      return newFraction2(C_ZERO2, C_ONE2);
+    }
+    return newFraction2(P2["n"] * this["n"], gcd2(P2["n"], this["n"]) * gcd2(P2["d"], this["d"]));
+  },
+  /**
+   * Gets the inverse of the fraction, means numerator and denominator are exchanged
+   *
+   * Ex: new Fraction([-3, 4]).inverse() => -4 / 3
+   **/
+  "inverse": function() {
+    return newFraction2(this["s"] * this["d"], this["n"]);
+  },
+  /**
+   * Calculates the fraction to some integer exponent
+   *
+   * Ex: new Fraction(-1,2).pow(-3) => -8
+   */
+  "pow": function(a, b) {
+    parse2(a, b);
+    if (P2["d"] === C_ONE2) {
+      if (P2["s"] < C_ZERO2) {
+        return newFraction2((this["s"] * this["d"]) ** P2["n"], this["n"] ** P2["n"]);
+      } else {
+        return newFraction2((this["s"] * this["n"]) ** P2["n"], this["d"] ** P2["n"]);
+      }
+    }
+    if (this["s"] < C_ZERO2)
+      return null;
+    let N = factorize2(this["n"]);
+    let D = factorize2(this["d"]);
+    let n = C_ONE2;
+    let d = C_ONE2;
+    for (let k in N) {
+      if (k === "1")
+        continue;
+      if (k === "0") {
+        n = C_ZERO2;
+        break;
+      }
+      N[k] *= P2["n"];
+      if (N[k] % P2["d"] === C_ZERO2) {
+        N[k] /= P2["d"];
+      } else
+        return null;
+      n *= BigInt(k) ** N[k];
+    }
+    for (let k in D) {
+      if (k === "1")
+        continue;
+      D[k] *= P2["n"];
+      if (D[k] % P2["d"] === C_ZERO2) {
+        D[k] /= P2["d"];
+      } else
+        return null;
+      d *= BigInt(k) ** D[k];
+    }
+    if (P2["s"] < C_ZERO2) {
+      return newFraction2(d, n);
+    }
+    return newFraction2(n, d);
+  },
+  /**
+   * Calculates the logarithm of a fraction to a given rational base
+   *
+   * Ex: new Fraction(27, 8).log(9, 4) => 3/2
+   */
+  "log": function(a, b) {
+    parse2(a, b);
+    if (this["s"] <= C_ZERO2 || P2["s"] <= C_ZERO2)
+      return null;
+    const allPrimes = {};
+    const baseFactors = factorize2(P2["n"]);
+    const T1 = factorize2(P2["d"]);
+    const numberFactors = factorize2(this["n"]);
+    const T2 = factorize2(this["d"]);
+    for (const prime in T1) {
+      baseFactors[prime] = (baseFactors[prime] || C_ZERO2) - T1[prime];
+    }
+    for (const prime in T2) {
+      numberFactors[prime] = (numberFactors[prime] || C_ZERO2) - T2[prime];
+    }
+    for (const prime in baseFactors) {
+      if (prime === "1")
+        continue;
+      allPrimes[prime] = true;
+    }
+    for (const prime in numberFactors) {
+      if (prime === "1")
+        continue;
+      allPrimes[prime] = true;
+    }
+    let retN = null;
+    let retD = null;
+    for (const prime in allPrimes) {
+      const baseExponent = baseFactors[prime] || C_ZERO2;
+      const numberExponent = numberFactors[prime] || C_ZERO2;
+      if (baseExponent === C_ZERO2) {
+        if (numberExponent !== C_ZERO2) {
+          return null;
+        }
+        continue;
+      }
+      let curN = numberExponent;
+      let curD = baseExponent;
+      const gcdValue = gcd2(curN, curD);
+      curN /= gcdValue;
+      curD /= gcdValue;
+      if (retN === null && retD === null) {
+        retN = curN;
+        retD = curD;
+      } else if (curN * retD !== retN * curD) {
+        return null;
+      }
+    }
+    return retN !== null && retD !== null ? newFraction2(retN, retD) : null;
+  },
+  /**
+   * Check if two rational numbers are the same
+   *
+   * Ex: new Fraction(19.6).equals([98, 5]);
+   **/
+  "equals": function(a, b) {
+    parse2(a, b);
+    return this["s"] * this["n"] * P2["d"] === P2["s"] * P2["n"] * this["d"];
+  },
+  /**
+   * Check if this rational number is less than another
+   *
+   * Ex: new Fraction(19.6).lt([98, 5]);
+   **/
+  "lt": function(a, b) {
+    parse2(a, b);
+    return this["s"] * this["n"] * P2["d"] < P2["s"] * P2["n"] * this["d"];
+  },
+  /**
+   * Check if this rational number is less than or equal another
+   *
+   * Ex: new Fraction(19.6).lt([98, 5]);
+   **/
+  "lte": function(a, b) {
+    parse2(a, b);
+    return this["s"] * this["n"] * P2["d"] <= P2["s"] * P2["n"] * this["d"];
+  },
+  /**
+   * Check if this rational number is greater than another
+   *
+   * Ex: new Fraction(19.6).lt([98, 5]);
+   **/
+  "gt": function(a, b) {
+    parse2(a, b);
+    return this["s"] * this["n"] * P2["d"] > P2["s"] * P2["n"] * this["d"];
+  },
+  /**
+   * Check if this rational number is greater than or equal another
+   *
+   * Ex: new Fraction(19.6).lt([98, 5]);
+   **/
+  "gte": function(a, b) {
+    parse2(a, b);
+    return this["s"] * this["n"] * P2["d"] >= P2["s"] * P2["n"] * this["d"];
+  },
+  /**
+   * Compare two rational numbers
+   * < 0 iff this < that
+   * > 0 iff this > that
+   * = 0 iff this = that
+   *
+   * Ex: new Fraction(19.6).compare([98, 5]);
+   **/
+  "compare": function(a, b) {
+    parse2(a, b);
+    let t = this["s"] * this["n"] * P2["d"] - P2["s"] * P2["n"] * this["d"];
+    return (C_ZERO2 < t) - (t < C_ZERO2);
+  },
+  /**
+   * Calculates the ceil of a rational number
+   *
+   * Ex: new Fraction('4.(3)').ceil() => (5 / 1)
+   **/
+  "ceil": function(places) {
+    places = C_TEN2 ** BigInt(places || 0);
+    return newFraction2(
+      trunc3(this["s"] * places * this["n"] / this["d"]) + (places * this["n"] % this["d"] > C_ZERO2 && this["s"] >= C_ZERO2 ? C_ONE2 : C_ZERO2),
+      places
+    );
+  },
+  /**
+   * Calculates the floor of a rational number
+   *
+   * Ex: new Fraction('4.(3)').floor() => (4 / 1)
+   **/
+  "floor": function(places) {
+    places = C_TEN2 ** BigInt(places || 0);
+    return newFraction2(
+      trunc3(this["s"] * places * this["n"] / this["d"]) - (places * this["n"] % this["d"] > C_ZERO2 && this["s"] < C_ZERO2 ? C_ONE2 : C_ZERO2),
+      places
+    );
+  },
+  /**
+   * Rounds a rational numbers
+   *
+   * Ex: new Fraction('4.(3)').round() => (4 / 1)
+   **/
+  "round": function(places) {
+    places = C_TEN2 ** BigInt(places || 0);
+    return newFraction2(
+      trunc3(this["s"] * places * this["n"] / this["d"]) + this["s"] * ((this["s"] >= C_ZERO2 ? C_ONE2 : C_ZERO2) + C_TWO2 * (places * this["n"] % this["d"]) > this["d"] ? C_ONE2 : C_ZERO2),
+      places
+    );
+  },
+  /**
+    * Rounds a rational number to a multiple of another rational number
+    *
+    * Ex: new Fraction('0.9').roundTo("1/8") => 7 / 8
+    **/
+  "roundTo": function(a, b) {
+    parse2(a, b);
+    const n = this["n"] * P2["d"];
+    const d = this["d"] * P2["n"];
+    const r = n % d;
+    let k = trunc3(n / d);
+    if (r + r >= d) {
+      k++;
+    }
+    return newFraction2(this["s"] * k * P2["n"], P2["d"]);
+  },
+  /**
+   * Check if two rational numbers are divisible
+   *
+   * Ex: new Fraction(19.6).divisible(1.5);
+   */
+  "divisible": function(a, b) {
+    parse2(a, b);
+    return !(!(P2["n"] * this["d"]) || this["n"] * P2["d"] % (P2["n"] * this["d"]));
+  },
+  /**
+   * Returns a decimal representation of the fraction
+   *
+   * Ex: new Fraction("100.'91823'").valueOf() => 100.91823918239183
+   **/
+  "valueOf": function() {
+    return Number(this["s"] * this["n"]) / Number(this["d"]);
+  },
+  /**
+   * Creates a string representation of a fraction with all digits
+   *
+   * Ex: new Fraction("100.'91823'").toString() => "100.(91823)"
+   **/
+  "toString": function(dec) {
+    let N = this["n"];
+    let D = this["d"];
+    dec = dec || 15;
+    let cycLen = cycleLen2(N, D);
+    let cycOff = cycleStart2(N, D, cycLen);
+    let str = this["s"] < C_ZERO2 ? "-" : "";
+    str += trunc3(N / D);
+    N %= D;
+    N *= C_TEN2;
+    if (N)
+      str += ".";
+    if (cycLen) {
+      for (let i = cycOff; i--; ) {
+        str += trunc3(N / D);
+        N %= D;
+        N *= C_TEN2;
+      }
+      str += "(";
+      for (let i = cycLen; i--; ) {
+        str += trunc3(N / D);
+        N %= D;
+        N *= C_TEN2;
+      }
+      str += ")";
+    } else {
+      for (let i = dec; N && i--; ) {
+        str += trunc3(N / D);
+        N %= D;
+        N *= C_TEN2;
+      }
+    }
+    return str;
+  },
+  /**
+   * Returns a string-fraction representation of a Fraction object
+   *
+   * Ex: new Fraction("1.'3'").toFraction() => "4 1/3"
+   **/
+  "toFraction": function(showMixed) {
+    let n = this["n"];
+    let d = this["d"];
+    let str = this["s"] < C_ZERO2 ? "-" : "";
+    if (d === C_ONE2) {
+      str += n;
+    } else {
+      let whole = trunc3(n / d);
+      if (showMixed && whole > C_ZERO2) {
+        str += whole;
+        str += " ";
+        n %= d;
+      }
+      str += n;
+      str += "/";
+      str += d;
+    }
+    return str;
+  },
+  /**
+   * Returns a latex representation of a Fraction object
+   *
+   * Ex: new Fraction("1.'3'").toLatex() => "\frac{4}{3}"
+   **/
+  "toLatex": function(showMixed) {
+    let n = this["n"];
+    let d = this["d"];
+    let str = this["s"] < C_ZERO2 ? "-" : "";
+    if (d === C_ONE2) {
+      str += n;
+    } else {
+      let whole = trunc3(n / d);
+      if (showMixed && whole > C_ZERO2) {
+        str += whole;
+        n %= d;
+      }
+      str += "\\frac{";
+      str += n;
+      str += "}{";
+      str += d;
+      str += "}";
+    }
+    return str;
+  },
+  /**
+   * Returns an array of continued fraction elements
+   *
+   * Ex: new Fraction("7/8").toContinued() => [0,1,7]
+   */
+  "toContinued": function() {
+    let a = this["n"];
+    let b = this["d"];
+    let res = [];
+    do {
+      res.push(trunc3(a / b));
+      let t = a % b;
+      a = b;
+      b = t;
+    } while (a !== C_ONE2);
+    return res;
+  },
+  "simplify": function(eps3) {
+    const ieps = BigInt(1 / (eps3 || 1e-3) | 0);
+    const thisABS = this["abs"]();
+    const cont = thisABS["toContinued"]();
+    for (let i = 1; i < cont.length; i++) {
+      let s = newFraction2(cont[i - 1], C_ONE2);
+      for (let k = i - 2; k >= 0; k--) {
+        s = s["inverse"]()["add"](cont[k]);
+      }
+      let t = s["sub"](thisABS);
+      if (t["n"] * ieps < t["d"]) {
+        return s["mul"](this["s"]);
+      }
+    }
+    return this;
+  }
+};
+
+// node_modules/convert-units/lib/esm/convert.js
+var UnknownUnitError2 = class extends Error {
+};
+var OperationOrderError2 = class extends Error {
+};
+var IncompatibleUnitError2 = class extends Error {
+};
+var MeasureStructureError2 = class extends Error {
+};
+var UnknownMeasureError2 = class extends Error {
+};
+var Converter2 = class {
+  constructor(measures, unitCache, value) {
+    this.val = 0;
+    this.destination = null;
+    this.origin = null;
+    if (typeof value === "number") {
+      this.val = value;
+    }
+    this.measureData = measures;
+    this.unitCache = unitCache;
+  }
+  /**
+   * Lets the converter know the source unit abbreviation
+   *
+   * @throws OperationOrderError, UnknownUnitError
+   */
+  from(from) {
+    if (this.destination != null)
+      throw new OperationOrderError2(".from must be called before .to");
+    this.origin = this.getUnit(from);
+    if (this.origin == null) {
+      this.throwUnsupportedUnitError(from);
+    }
+    return this;
+  }
+  /**
+   * Converts the unit and returns the value
+   *
+   * @throws OperationOrderError, UnknownUnitError, IncompatibleUnitError, MeasureStructureError
+   */
+  to(to) {
+    var _a, _b;
+    if (this.origin == null)
+      throw new Error(".to must be called after .from");
+    this.destination = this.getUnit(to);
+    if (this.destination == null) {
+      this.throwUnsupportedUnitError(to);
+    }
+    const destination = this.destination;
+    const origin = this.origin;
+    if (origin.abbr === destination.abbr) {
+      return this.val;
+    }
+    if (destination.measure != origin.measure) {
+      throw new IncompatibleUnitError2(`Cannot convert incompatible measures of ${destination.measure} and ${origin.measure}`);
+    }
+    let result = this.val * origin.unit.to_anchor;
+    if (origin.unit.anchor_shift) {
+      result -= origin.unit.anchor_shift;
+    }
+    if (origin.system != destination.system) {
+      const measure11 = this.measureData[origin.measure];
+      const anchors = measure11.anchors;
+      if (anchors == null) {
+        throw new MeasureStructureError2(`Unable to convert units. Anchors are missing for "${origin.measure}" and "${destination.measure}" measures.`);
+      }
+      const anchor = anchors[origin.system];
+      if (anchor == null) {
+        throw new MeasureStructureError2(`Unable to find anchor for "${origin.measure}" to "${destination.measure}". Please make sure it is defined.`);
+      }
+      const transform = (_a = anchor[destination.system]) === null || _a === void 0 ? void 0 : _a.transform;
+      const ratio = (_b = anchor[destination.system]) === null || _b === void 0 ? void 0 : _b.ratio;
+      if (typeof transform === "function") {
+        result = transform(result);
+      } else if (typeof ratio === "number") {
+        result *= ratio;
+      } else {
+        throw new MeasureStructureError2("A system anchor needs to either have a defined ratio number or a transform function.");
+      }
+    }
+    if (destination.unit.anchor_shift) {
+      result += destination.unit.anchor_shift;
+    }
+    return result / destination.unit.to_anchor;
+  }
+  /**
+   * Converts the unit to the best available unit.
+   *
+   * @throws OperationOrderError
+   */
+  toBest(options) {
+    var _a, _b, _c;
+    if (this.origin == null)
+      throw new OperationOrderError2(".toBest must be called after .from");
+    const isNegative = this.val < 0;
+    let exclude = [];
+    let cutOffNumber = isNegative ? -1 : 1;
+    let system = this.origin.system;
+    if (typeof options === "object") {
+      exclude = (_a = options.exclude) !== null && _a !== void 0 ? _a : [];
+      cutOffNumber = (_b = options.cutOffNumber) !== null && _b !== void 0 ? _b : cutOffNumber;
+      system = (_c = options.system) !== null && _c !== void 0 ? _c : this.origin.system;
+    }
+    let best = null;
+    for (const possibility of this.possibilities()) {
+      const unit = this.describe(possibility);
+      const isIncluded = exclude.indexOf(possibility) === -1;
+      if (isIncluded && unit.system === system) {
+        const result = this.to(possibility);
+        if (isNegative ? result > cutOffNumber : result < cutOffNumber) {
+          continue;
+        }
+        if (best === null || (isNegative ? result <= cutOffNumber && result > best.val : result >= cutOffNumber && result < best.val)) {
+          best = {
+            val: result,
+            unit: possibility,
+            singular: unit.singular,
+            plural: unit.plural
+          };
+        }
+      }
+    }
+    if (best == null) {
+      return {
+        val: this.val,
+        unit: this.origin.abbr,
+        singular: this.origin.unit.name.singular,
+        plural: this.origin.unit.name.plural
+      };
+    }
+    return best;
+  }
+  /**
+   * Finds the unit
+   */
+  getUnit(abbr) {
+    var _a;
+    return (_a = this.unitCache.get(abbr)) !== null && _a !== void 0 ? _a : null;
+  }
+  /**
+   * Provides additional information about the unit
+   *
+   * @throws UnknownUnitError
+   */
+  describe(abbr) {
+    const result = this.getUnit(abbr);
+    if (result != null) {
+      return this.describeUnit(result);
+    }
+    this.throwUnsupportedUnitError(abbr);
+  }
+  describeUnit(unit) {
+    return {
+      abbr: unit.abbr,
+      measure: unit.measure,
+      system: unit.system,
+      singular: unit.unit.name.singular,
+      plural: unit.unit.name.plural
+    };
+  }
+  /**
+   * Detailed list of all supported units
+   *
+   * If a measure is supplied the list will only contain
+   * details about that measure. Otherwise the list will contain
+   * details abaout all measures.
+   *
+   * However, if the measure doesn't exist, an empty array will be
+   * returned
+   *
+   *
+   */
+  list(measureName) {
+    const list = [];
+    if (measureName == null) {
+      for (const [name, measure11] of Object.entries(this.measureData)) {
+        for (const [systemName, units] of Object.entries(measure11.systems)) {
+          for (const [abbr, unit] of Object.entries(units)) {
+            list.push(this.describeUnit({
+              abbr,
+              measure: name,
+              system: systemName,
+              unit
+            }));
+          }
+        }
+      }
+    } else {
+      if (!this.isMeasure(measureName))
+        throw new UnknownMeasureError2(`Meausure "${measureName}" not found.`);
+      const measure11 = this.measureData[measureName];
+      for (const [systemName, units] of Object.entries(measure11.systems)) {
+        for (const [abbr, unit] of Object.entries(units)) {
+          list.push(this.describeUnit({
+            abbr,
+            measure: measureName,
+            system: systemName,
+            unit
+          }));
+        }
+      }
+    }
+    return list;
+  }
+  isMeasure(measureName) {
+    return measureName in this.measureData;
+  }
+  throwUnsupportedUnitError(what) {
+    let validUnits = [];
+    for (const measure11 of Object.values(this.measureData)) {
+      for (const systems of Object.values(measure11.systems)) {
+        validUnits = validUnits.concat(Object.keys(systems));
+      }
+    }
+    throw new UnknownUnitError2(`Unsupported unit ${what}, use one of: ${validUnits.join(", ")}`);
+  }
+  /**
+   * Returns the abbreviated measures that the value can be
+   * converted to.
+   */
+  possibilities(forMeasure) {
+    let possibilities = [];
+    let list_measures = [];
+    if (typeof forMeasure == "string" && this.isMeasure(forMeasure)) {
+      list_measures.push(forMeasure);
+    } else if (this.origin != null) {
+      list_measures.push(this.origin.measure);
+    } else {
+      list_measures = Object.keys(this.measureData);
+    }
+    for (const measure11 of list_measures) {
+      const systems = this.measureData[measure11].systems;
+      for (const system of Object.values(systems)) {
+        possibilities = [
+          ...possibilities,
+          ...Object.keys(system)
+        ];
+      }
+    }
+    return possibilities;
+  }
+  /**
+   * Returns the abbreviated measures that the value can be
+   * converted to.
+   */
+  measures() {
+    return Object.keys(this.measureData);
+  }
+};
+function buildUnitCache2(measures) {
+  const unitCache = /* @__PURE__ */ new Map();
+  for (const [measureName, measure11] of Object.entries(measures)) {
+    for (const [systemName, system] of Object.entries(measure11.systems)) {
+      for (const [testAbbr, unit] of Object.entries(system)) {
+        unitCache.set(testAbbr, {
+          measure: measureName,
+          system: systemName,
+          abbr: testAbbr,
+          unit
+        });
+      }
+    }
+  }
+  return unitCache;
+}
+function configureMeasurements2(measures) {
+  if (typeof measures !== "object") {
+    throw new TypeError("The measures argument needs to be an object");
+  }
+  const unitCache = buildUnitCache2(measures);
+  return (value) => new Converter2(measures, unitCache, value);
+}
+
+// node_modules/convert-units/lib/esm/definitions/length.js
+var metric5 = {
+  nm: {
+    name: {
+      singular: "Nanometer",
+      plural: "Nanometers"
+    },
+    to_anchor: 1e-9
+  },
+  \u03BCm: {
+    name: {
+      singular: "Micrometer",
+      plural: "Micrometers"
+    },
+    to_anchor: 1e-6
+  },
+  mm: {
+    name: {
+      singular: "Millimeter",
+      plural: "Millimeters"
+    },
+    to_anchor: 1e-3
+  },
+  cm: {
+    name: {
+      singular: "Centimeter",
+      plural: "Centimeters"
+    },
+    to_anchor: 0.01
+  },
+  dm: {
+    name: {
+      singular: "Decimeter",
+      plural: "Decimeters"
+    },
+    to_anchor: 0.1
+  },
+  m: {
+    name: {
+      singular: "Meter",
+      plural: "Meters"
+    },
+    to_anchor: 1
+  },
+  km: {
+    name: {
+      singular: "Kilometer",
+      plural: "Kilometers"
+    },
+    to_anchor: 1e3
+  }
+};
+var imperial5 = {
+  mil: {
+    name: {
+      singular: "Mil",
+      plural: "Mils"
+    },
+    to_anchor: 1 / 12e3
+  },
+  in: {
+    name: {
+      singular: "Inch",
+      plural: "Inches"
+    },
+    to_anchor: 1 / 12
+  },
+  yd: {
+    name: {
+      singular: "Yard",
+      plural: "Yards"
+    },
+    to_anchor: 3
+  },
+  "ft-us": {
+    name: {
+      singular: "US Survey Foot",
+      plural: "US Survey Feet"
+    },
+    to_anchor: 1.000002
+  },
+  ft: {
+    name: {
+      singular: "Foot",
+      plural: "Feet"
+    },
+    to_anchor: 1
+  },
+  fathom: {
+    name: {
+      singular: "Fathom",
+      plural: "Fathoms"
+    },
+    to_anchor: 6
+  },
+  mi: {
+    name: {
+      singular: "Mile",
+      plural: "Miles"
+    },
+    to_anchor: 5280
+  },
+  nMi: {
+    name: {
+      singular: "Nautical Mile",
+      plural: "Nautical Miles"
+    },
+    to_anchor: 6076.12
+  }
+};
+var measure6 = {
+  systems: {
+    metric: metric5,
+    imperial: imperial5
+  },
+  anchors: {
+    metric: {
+      imperial: {
+        ratio: 3.28084
+      }
+    },
+    imperial: {
+      metric: {
+        ratio: 1 / 3.28084
+      }
+    }
+  }
+};
+var length_default2 = measure6;
+
+// node_modules/convert-units/lib/esm/definitions/area.js
+var metric6 = {
+  nm2: {
+    name: {
+      singular: "Square Nanometer",
+      plural: "Square Nanometers"
+    },
+    to_anchor: 1e-18
+  },
+  \u03BCm2: {
+    name: {
+      singular: "Square Micrometer",
+      plural: "Square Micrometers"
+    },
+    to_anchor: 1e-12
+  },
+  mm2: {
+    name: {
+      singular: "Square Millimeter",
+      plural: "Square Millimeters"
+    },
+    to_anchor: 1 / 1e6
+  },
+  cm2: {
+    name: {
+      singular: "Square Centimeter",
+      plural: "Square Centimeters"
+    },
+    to_anchor: 1 / 1e4
+  },
+  dm2: {
+    name: {
+      singular: "Square Decimeter",
+      plural: "Square Decimeters"
+    },
+    to_anchor: 1 / 100
+  },
+  m2: {
+    name: {
+      singular: "Square Meter",
+      plural: "Square Meters"
+    },
+    to_anchor: 1
+  },
+  a: {
+    name: {
+      singular: "Are",
+      plural: "Ares"
+    },
+    to_anchor: 100
+  },
+  ha: {
+    name: {
+      singular: "Hectare",
+      plural: "Hectares"
+    },
+    to_anchor: 1e4
+  },
+  km2: {
+    name: {
+      singular: "Square Kilometer",
+      plural: "Square Kilometers"
+    },
+    to_anchor: 1e6
+  }
+};
+var imperial6 = {
+  in2: {
+    name: {
+      singular: "Square Inch",
+      plural: "Square Inches"
+    },
+    to_anchor: 1 / 144
+  },
+  yd2: {
+    name: {
+      singular: "Square Yard",
+      plural: "Square Yards"
+    },
+    to_anchor: 9
+  },
+  ft2: {
+    name: {
+      singular: "Square Foot",
+      plural: "Square Feet"
+    },
+    to_anchor: 1
+  },
+  ac: {
+    name: {
+      singular: "Acre",
+      plural: "Acres"
+    },
+    to_anchor: 43560
+  },
+  mi2: {
+    name: {
+      singular: "Square Mile",
+      plural: "Square Miles"
+    },
+    to_anchor: 27878400
+  }
+};
+var measure7 = {
+  systems: {
+    metric: metric6,
+    imperial: imperial6
+  },
+  anchors: {
+    metric: {
+      imperial: {
+        ratio: 10.7639
+      }
+    },
+    imperial: {
+      metric: {
+        ratio: 1 / 10.7639
+      }
+    }
+  }
+};
+var area_default2 = measure7;
+
+// node_modules/convert-units/lib/esm/definitions/mass.js
+var metric7 = {
+  mcg: {
+    name: {
+      singular: "Microgram",
+      plural: "Micrograms"
+    },
+    to_anchor: 1 / 1e6
+  },
+  mg: {
+    name: {
+      singular: "Milligram",
+      plural: "Milligrams"
+    },
+    to_anchor: 1 / 1e3
+  },
+  g: {
+    name: {
+      singular: "Gram",
+      plural: "Grams"
+    },
+    to_anchor: 1
+  },
+  kg: {
+    name: {
+      singular: "Kilogram",
+      plural: "Kilograms"
+    },
+    to_anchor: 1e3
+  },
+  mt: {
+    name: {
+      singular: "Metric Tonne",
+      plural: "Metric Tonnes"
+    },
+    to_anchor: 1e6
+  }
+};
+var imperial7 = {
+  oz: {
+    name: {
+      singular: "Ounce",
+      plural: "Ounces"
+    },
+    to_anchor: 1 / 16
+  },
+  lb: {
+    name: {
+      singular: "Pound",
+      plural: "Pounds"
+    },
+    to_anchor: 1
+  },
+  st: {
+    name: {
+      singular: "Stone",
+      plural: "Stones"
+    },
+    to_anchor: 14
+  },
+  t: {
+    name: {
+      singular: "Ton",
+      plural: "Tons"
+    },
+    to_anchor: 2e3
+  }
+};
+var measure8 = {
+  systems: {
+    metric: metric7,
+    imperial: imperial7
+  },
+  anchors: {
+    metric: {
+      imperial: {
+        ratio: 1 / 453.59237
+      }
+    },
+    imperial: {
+      metric: {
+        ratio: 453.59237
+      }
+    }
+  }
+};
+var mass_default2 = measure8;
+
+// node_modules/convert-units/lib/esm/definitions/volume.js
+var metric8 = {
+  mm3: {
+    name: {
+      singular: "Cubic Millimeter",
+      plural: "Cubic Millimeters"
+    },
+    to_anchor: 1 / 1e6
+  },
+  cm3: {
+    name: {
+      singular: "Cubic Centimeter",
+      plural: "Cubic Centimeters"
+    },
+    to_anchor: 1 / 1e3
+  },
+  dm3: {
+    name: {
+      singular: "Cubic Decimeter",
+      plural: "Cubic Decimeters"
+    },
+    to_anchor: 1
+  },
+  ml: {
+    name: {
+      singular: "Millilitre",
+      plural: "Millilitres"
+    },
+    to_anchor: 1 / 1e3
+  },
+  cl: {
+    name: {
+      singular: "Centilitre",
+      plural: "Centilitres"
+    },
+    to_anchor: 1 / 100
+  },
+  dl: {
+    name: {
+      singular: "Decilitre",
+      plural: "Decilitres"
+    },
+    to_anchor: 1 / 10
+  },
+  l: {
+    name: {
+      singular: "Litre",
+      plural: "Litres"
+    },
+    to_anchor: 1
+  },
+  kl: {
+    name: {
+      singular: "Kilolitre",
+      plural: "Kilolitres"
+    },
+    to_anchor: 1e3
+  },
+  Ml: {
+    name: {
+      singular: "Megalitre",
+      plural: "Megalitres"
+    },
+    to_anchor: 1e6
+  },
+  Gl: {
+    name: {
+      singular: "Gigalitre",
+      plural: "Gigalitres"
+    },
+    to_anchor: 1e9
+  },
+  m3: {
+    name: {
+      singular: "Cubic meter",
+      plural: "Cubic meters"
+    },
+    to_anchor: 1e3
+  },
+  km3: {
+    name: {
+      singular: "Cubic kilometer",
+      plural: "Cubic kilometers"
+    },
+    to_anchor: 1e12
+  },
+  // Swedish units
+  krm: {
+    name: {
+      singular: "Kryddm\xE5tt",
+      plural: "Kryddm\xE5tt"
+    },
+    to_anchor: 1 / 1e3
+  },
+  tsk: {
+    name: {
+      singular: "Tesked",
+      plural: "Teskedar"
+    },
+    to_anchor: 5 / 1e3
+  },
+  msk: {
+    name: {
+      singular: "Matsked",
+      plural: "Matskedar"
+    },
+    to_anchor: 15 / 1e3
+  },
+  kkp: {
+    name: {
+      singular: "Kaffekopp",
+      plural: "Kaffekoppar"
+    },
+    to_anchor: 150 / 1e3
+  },
+  glas: {
+    name: {
+      singular: "Glas",
+      plural: "Glas"
+    },
+    to_anchor: 200 / 1e3
+  },
+  kanna: {
+    name: {
+      singular: "Kanna",
+      plural: "Kannor"
+    },
+    to_anchor: 2.617
+  }
+};
+var imperial8 = {
+  tsp: {
+    name: {
+      singular: "Teaspoon",
+      plural: "Teaspoons"
+    },
+    to_anchor: 1 / 6
+  },
+  Tbs: {
+    name: {
+      singular: "Tablespoon",
+      plural: "Tablespoons"
+    },
+    to_anchor: 1 / 2
+  },
+  in3: {
+    name: {
+      singular: "Cubic inch",
+      plural: "Cubic inches"
+    },
+    to_anchor: 0.55411
+  },
+  "fl-oz": {
+    name: {
+      singular: "Fluid Ounce",
+      plural: "Fluid Ounces"
+    },
+    to_anchor: 1
+  },
+  cup: {
+    name: {
+      singular: "Cup",
+      plural: "Cups"
+    },
+    to_anchor: 8
+  },
+  pnt: {
+    name: {
+      singular: "Pint",
+      plural: "Pints"
+    },
+    to_anchor: 16
+  },
+  qt: {
+    name: {
+      singular: "Quart",
+      plural: "Quarts"
+    },
+    to_anchor: 32
+  },
+  gal: {
+    name: {
+      singular: "Gallon",
+      plural: "Gallons"
+    },
+    to_anchor: 128
+  },
+  ft3: {
+    name: {
+      singular: "Cubic foot",
+      plural: "Cubic feet"
+    },
+    to_anchor: 957.506
+  },
+  yd3: {
+    name: {
+      singular: "Cubic yard",
+      plural: "Cubic yards"
+    },
+    to_anchor: 25852.7
+  }
+};
+var measure9 = {
+  systems: {
+    metric: metric8,
+    imperial: imperial8
+  },
+  anchors: {
+    metric: {
+      imperial: {
+        ratio: 33.8140226
+      }
+    },
+    imperial: {
+      metric: {
+        ratio: 1 / 33.8140226
+      }
+    }
+  }
+};
+var volume_default2 = measure9;
+
+// node_modules/convert-units/lib/esm/definitions/time.js
+var daysInYear2 = 365.25;
+var SI2 = {
+  ns: {
+    name: {
+      singular: "Nanosecond",
+      plural: "Nanoseconds"
+    },
+    to_anchor: 1 / 1e9
+  },
+  mu: {
+    name: {
+      singular: "Microsecond",
+      plural: "Microseconds"
+    },
+    to_anchor: 1 / 1e6
+  },
+  ms: {
+    name: {
+      singular: "Millisecond",
+      plural: "Milliseconds"
+    },
+    to_anchor: 1 / 1e3
+  },
+  s: {
+    name: {
+      singular: "Second",
+      plural: "Seconds"
+    },
+    to_anchor: 1
+  },
+  min: {
+    name: {
+      singular: "Minute",
+      plural: "Minutes"
+    },
+    to_anchor: 60
+  },
+  h: {
+    name: {
+      singular: "Hour",
+      plural: "Hours"
+    },
+    to_anchor: 60 * 60
+  },
+  d: {
+    name: {
+      singular: "Day",
+      plural: "Days"
+    },
+    to_anchor: 60 * 60 * 24
+  },
+  week: {
+    name: {
+      singular: "Week",
+      plural: "Weeks"
+    },
+    to_anchor: 60 * 60 * 24 * 7
+  },
+  month: {
+    name: {
+      singular: "Month",
+      plural: "Months"
+    },
+    to_anchor: 60 * 60 * 24 * daysInYear2 / 12
+  },
+  year: {
+    name: {
+      singular: "Year",
+      plural: "Years"
+    },
+    to_anchor: 60 * 60 * 24 * daysInYear2
+  }
+};
+var measure10 = {
+  systems: {
+    SI: SI2
+  }
+};
+var time_default2 = measure10;
 
 // src/utils/math-solver.js
 var INUMBER2 = "INUMBER";
@@ -9905,6 +9911,7 @@ function convertToShapes(shapes) {
         }
         break;
       }
+      case "arrow-geo":
       case "cloud":
       case "rectangle":
       case "oval":
@@ -9915,7 +9922,7 @@ function convertToShapes(shapes) {
           x: shape.x,
           y: shape.y,
           props: {
-            geo: shape.type,
+            geo: shape.type === "arrow-geo" ? `arrow-${shape.direction}` : shape.type,
             w: shape.width,
             h: shape.height,
             color: shape.color ?? "black",
@@ -10014,27 +10021,26 @@ function convertToFillColor(predicate) {
     case "SUM":
     case "PRODUCT":
     case "PRODUCT-COMBINE":
+    case "LCD":
+    case "GCD":
       return "blue";
+    case "DIFF":
     case "SCALE":
     case "SCALE-INVERT":
-      return "light-blue";
     case "SLIDE":
     case "SLIDE-INVERT":
       return "light-blue";
     case "UNIT":
     case "ROUND":
-      return "light-violet";
+      return "light-blue";
     case "LINEAR-EQUATION":
     case "PYTHAGORAS":
     case "EVAL-EXPR":
     case "SIMPLIFY-EXPR":
-      return "violet";
+      return "light-violet";
     case "COMMON-SENSE":
     case "PROPORTION":
     case "SEQUENCE":
-      return "light-red";
-    case "LCD":
-    case "GCD":
       return "light-red";
     default:
       return "grey";
@@ -10057,6 +10063,12 @@ function convertKindToShape(predicate, isConclusion) {
     return {
       ...common,
       type: "rectangle"
+    };
+  } else if (isOperationPredicate(predicate) || isQuantityPredicate2(predicate) && predicate.quantity == null || isRatioPredicate2(predicate) && predicate.ratio == null || isRatiosPredicate2(predicate) && predicate.ratios == null || kind === "SEQUENCE" || kind === "NTH-RULE" || kind === "NTH-PART" || kind === "NTH-PART-FACTOR" || kind === "EVAL-OPTION" || kind === "LINEAR-EQUATION" || kind === "PYTHAGORAS") {
+    return {
+      ...common,
+      type: "arrow-geo",
+      direction: "left"
     };
   } else {
     return {
@@ -10150,7 +10162,7 @@ var toItalictMark = (text) => {
 };
 var richTextFormatting = {
   compose: (strings, ...args) => concatString(strings, ...args),
-  formatKind: (d) => d.quantity == null && d.ratio == null && d.kind != null ? toText(d.kind.toUpperCase()) : "",
+  formatKind: (d) => d.kind != null ? d.kind == "product-combine" ? toText("PRODUCT") : toText(d.kind.toUpperCase()) : "",
   formatQuantity: (d) => {
     if (typeof d === "number") {
       return toText(d.toLocaleString("cs-CZ"));

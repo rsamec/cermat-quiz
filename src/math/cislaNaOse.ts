@@ -6,8 +6,6 @@ import { deduce, toCont } from "../utils/deduce-utils";
 export function cislaNaOse({ mensi, vetsi, pocetUseku }: { mensi: Container, vetsi: Container, pocetUseku: Container }) {
   const entityLength = "délka";
 
-  const entity = "úsek"
-
   const rozdil = deduce(
     vetsi, mensi
   );

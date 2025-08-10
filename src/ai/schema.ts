@@ -65,6 +65,15 @@ const SimpleEllipseShape = z.object({
 
 export type ISimpleEllipseShape = z.infer<typeof SimpleEllipseShape>
 
+const SimpleArrowGeoShape = z.object({
+	type: z.literal('arrow'),
+	...GeoShapeBaseProps,
+	...LabelGeoShapeProps,
+	direction: z.enum(['left', 'right', 'up', 'down']).optional(),
+})
+
+export type ISimpleArrowGeoShape = z.infer<typeof SimpleArrowGeoShape>
+
 const SimpleOvalShape = z.object({
 	type: z.literal('oval'),
 	...GeoShapeBaseProps,
@@ -178,6 +187,7 @@ const SimpleShape = z.union([
 	SimpleRectangleShape,
 	SimpleEllipseShape,
 	SimpleOvalShape,
+	SimpleArrowGeoShape,
 	SimpleCloudShape,
 	SimpleLineShape,
 	SimpleTextShape,

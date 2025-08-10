@@ -325,20 +325,28 @@ export type RatioPredicate = RatioComparison | PartWholeRatio
 export type RatiosPredicate = PartToPartRatio | TwoPartRatio | ThreePartRatio;
 export type ExpressionPredicate = EvalExpr<ContainerEval | RateEval> | SimplifyExpr | LinearEquation | Phytagoras;
 export type CommonSensePredicate = CommonSense | Proportion
-export type CombinePredicate = Sum | SumCombine | Product | ProductCombine | GCD | LCD
-export type OperationPredicate = Scale | InvertScale | Slide | InvertSlide | Difference | Complement | ConvertUnit | Round
+export type MultipleOperationPredicate = Sum | SumCombine | Product | ProductCombine | GCD | LCD
+export type SingleOperationPredicate = Scale | InvertScale | Slide | InvertSlide | Difference | Complement | ConvertUnit | Round
+export type OperationPredicate = SingleOperationPredicate | MultipleOperationPredicate
 
-export type Predicate = QuantityPredicate | RatioPredicate | RatiosPredicate | ExpressionPredicate | CombinePredicate | CommonSensePredicate | OperationPredicate
+export type Predicate = QuantityPredicate | RatioPredicate | RatiosPredicate | ExpressionPredicate | MultipleOperationPredicate | CommonSensePredicate | OperationPredicate
   | Sequence | NthRule | NthPart | NthPartFactor | AngleComparison | Tuple | Option | CompareAndPartEqual
 
 export function isQuantityPredicate(value: Predicate): value is QuantityPredicate {
   return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "quota", "delta"].includes(value.kind);
 }
+
 export function isRatioPredicate(value: Predicate): value is RatioPredicate {
   return ["ratio", "comp-ratio"].includes(value.kind);
 }
+
 export function isRatiosPredicate(value: Predicate): value is RatiosPredicate {
   return ["ratios"].includes(value.kind);
+}
+
+export function isOperationPredicate(value: Predicate): value is OperationPredicate {
+  return ["sum", "sum-combine", "product", "product-combine", "gcd", "lcd"].includes(value.kind)
+    || ["scale", "scale-invert", "slide", "slide-invert", "diff", "complement", "unit", "round"].includes(value.kind);
 }
 
 function isRatePredicate(value: Predicate): value is Rate {

@@ -1,12 +1,13 @@
 import type { ISimpleCloudShape, ISimpleColor, ISimpleEllipseShape, ISimpleNoteShape, ISimpleRectangleShape } from "./schema";
 import { concatString, type DeduceContext, formatPredicate, isPredicate, mapNodeChildrenToPredicates } from "../utils/deduce-utils.js";
 import { isEmptyOrWhiteSpace } from "../utils/string-utils.js";
-import type { Predicate, Question } from "../components/math.js";
+import { isOperationPredicate, isQuantityPredicate, isRatioPredicate, isRatiosPredicate, type Predicate, type Question } from "../components/math.js";
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
 import { toEquationExpr } from "../utils/math-solver.js";
 import { flextree } from 'd3-flextree';
 import Fraction from 'fraction.js';
 import { convertToShapes, createFrame, createShapeId } from "./tldraw-utils.js";
+import { dir } from "console";
 export { createBookmarks, createFrame, createShapeId, convertToShapes } from "./tldraw-utils.js";
 
 const defaultWidth = 250;
@@ -37,7 +38,7 @@ function convertToFillColor(predicate): ISimpleColor {
             return "light-green";
         case "RATIOS":
         case "NTH-PART":
-            return "light-green";        
+            return "light-green";
         case "COMP":
         case "COMP-DIFF":
         case "COMP-ANGLE":
@@ -49,33 +50,31 @@ function convertToFillColor(predicate): ISimpleColor {
             return "orange";
         case "DELTA":
         case "TRANSFER":
-            return "light-red" 
+            return "light-red"
         case "SUM":
         case "PRODUCT":
         case "PRODUCT-COMBINE":
-            return "blue";       
+        case "LCD":
+        case "GCD":
+            return "blue";
+        case "DIFF":
         case "SCALE":
         case "SCALE-INVERT":
-            return 'light-blue';
         case "SLIDE":
         case "SLIDE-INVERT":
             return 'light-blue';
         case "UNIT":
         case "ROUND":
-            return "light-violet";
+            return 'light-blue';
         case "LINEAR-EQUATION":
         case "PYTHAGORAS":
         case "EVAL-EXPR":
         case "SIMPLIFY-EXPR":
-            return "violet";        
+            return "light-violet";
         case "COMMON-SENSE":
         case "PROPORTION":
         case "SEQUENCE":
             return "light-red"
-        case "LCD":
-        case "GCD":
-            return "light-red";
-
         default:
             return "grey"
     }
@@ -83,6 +82,7 @@ function convertToFillColor(predicate): ISimpleColor {
 
 function convertKindToShape(predicate: Predicate, isConclusion: boolean): PredicateShapes {
     const kind = predicate?.kind?.toUpperCase();
+
     const common = {
         shapeId: createShapeId(),
         x: 0,
@@ -99,6 +99,20 @@ function convertKindToShape(predicate: Predicate, isConclusion: boolean): Predic
         return {
             ...common,
             type: "rectangle",
+        }
+    }
+    else if (isOperationPredicate(predicate) ||
+        (isQuantityPredicate(predicate) && predicate.quantity == null) ||
+        isRatioPredicate(predicate) && predicate.ratio == null ||
+        isRatiosPredicate(predicate) && predicate.ratios == null ||
+        kind === "SEQUENCE" || kind === "NTH-RULE" ||
+        kind === "NTH-PART" || kind === "NTH-PART-FACTOR" ||
+        kind === "EVAL-OPTION" || kind === "LINEAR-EQUATION" ||
+        kind === "PYTHAGORAS") {
+        return {
+            ...common,
+            type: "arrow-geo",
+            direction: 'left',
         }
     }
     else {
@@ -207,7 +221,11 @@ const toItalictMark = (text: string) => {
 
 const richTextFormatting = {
     compose: (strings: TemplateStringsArray, ...args) => concatString(strings, ...args),
-    formatKind: d => d.quantity == null && d.ratio == null && d.kind != null ? toText(d.kind.toUpperCase()) : '',
+    formatKind: d => d.kind != null
+        ? d.kind == "product-combine"
+            ? toText("PRODUCT")
+            : toText(d.kind.toUpperCase())
+        : '',
     formatQuantity: d => {
         if (typeof d === "number") {
             return toText(d.toLocaleString("cs-CZ"));
@@ -279,7 +297,7 @@ export function deductionTreeToHierarchy(node: { children: any[], context: Deduc
 
     }
 
-    
+
     const questionRule = inferenceRuleWithQuestion(mapNodeChildrenToPredicates(node)) as Question;
 
     const option = questionRule?.options?.find(d => d.ok);
@@ -310,7 +328,7 @@ export function deductionTreeToHierarchy(node: { children: any[], context: Deduc
         note: ''
     })
 
-    
+
     return {
         ...conclusion,
         children: predicates.concat(...questionShapes).concat(contextNodes)

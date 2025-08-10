@@ -422,8 +422,9 @@ function formatSequence(type) {
 
 export function formatPredicate(d: Predicate, formatting: any) {
   const { formatKind, formatAgent, formatEntity, formatQuantity, formatRatio, formatSequence, compose } = { ...mdFormatting, ...formatting }
-  if ((isQuantityPredicate(d) && d.quantity == null)
-    || (isRatioPredicate(d) && d.ratio == null) || (isRatiosPredicate(d) && d.ratios == null)) {
+  if ((isQuantityPredicate(d) && d.quantity == null) ||
+    (isRatioPredicate(d) && d.ratio == null) ||
+    (isRatiosPredicate(d) && d.ratios == null)) {
     return formatKind(d);
   }
 

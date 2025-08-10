@@ -4089,6 +4089,12 @@ var SimpleEllipseShape = external_exports.object({
   ...GeoShapeBaseProps,
   ...LabelGeoShapeProps
 });
+var SimpleArrowGeoShape = external_exports.object({
+  type: external_exports.literal("arrow"),
+  ...GeoShapeBaseProps,
+  ...LabelGeoShapeProps,
+  direction: external_exports.enum(["left", "right", "up", "down"]).optional()
+});
 var SimpleOvalShape = external_exports.object({
   type: external_exports.literal("oval"),
   ...GeoShapeBaseProps,
@@ -4175,6 +4181,7 @@ var SimpleShape = external_exports.union([
   SimpleRectangleShape,
   SimpleEllipseShape,
   SimpleOvalShape,
+  SimpleArrowGeoShape,
   SimpleCloudShape,
   SimpleLineShape,
   SimpleTextShape,

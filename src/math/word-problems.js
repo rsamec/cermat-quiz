@@ -6455,7 +6455,6 @@ function porovnatObsahObdelnikACtverec({ input }) {
 // src/math/cislaNaOse.ts
 function cislaNaOse({ mensi, vetsi, pocetUseku }) {
   const entityLength = "d\xE9lka";
-  const entity3 = "\xFAsek";
   const rozdil = deduce(
     vetsi,
     mensi

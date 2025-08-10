@@ -203,6 +203,7 @@ export function convertToShapes(shapes: ISimpleShape[]
                 }
                 break
             }
+            case "arrow-geo":
             case 'cloud':
             case 'rectangle':
             case 'oval':
@@ -214,7 +215,7 @@ export function convertToShapes(shapes: ISimpleShape[]
                     x: shape.x,
                     y: shape.y,
                     props: {
-                        geo: shape.type,
+                        geo: shape.type === "arrow-geo" ? `arrow-${shape.direction}` : shape.type,
                         w: shape.width,
                         h: shape.height,
                         color: shape.color ?? 'black',
