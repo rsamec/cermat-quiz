@@ -30,7 +30,7 @@ import {example as percentPercentage} from './math/percent/percentage.js';
 
 import {autobus} from './math/autobus.js';
 
-import  {examplePartToWhole, exampleComparePartToWhole,exampleCompareMultiple, exampleDiffPartToWhole, examplePartEq}  from './math/comp/comp.js'
+import  {examplePartToWhole, exampleComparePartToWhole,exampleCompareMultiple, exampleCompareTotalMultiple, exampleDiffPartToWhole, examplePartEq}  from './math/comp/comp.js'
 
 function renderEx({example, unit, showRelativeValues}={}){
   const tree = deduceTraverse(example.deductionTree);
@@ -633,6 +633,39 @@ const compInputMultiple = Generators.input(compFormMultiple);
 #### Porovnání B/A a porovnání C/B
 
 <div>${renderEx({example:exampleCompareMultiple({input:compInputMultiple})[3]})}</div>
+
+<!-- ```js
+const compFormTotalMultiple = Inputs.form({  
+  second: Inputs.radio(new Map([["A", false],["B", true]]), {label:"Výrobek", value:false }),
+  total: Inputs.range([1,100], {step: 1, value:10, label: "Celkem všechny výrobky (Kč)"}),
+  partRatio: Inputs.range([-0.5, 1], {step: 0.05, value:0.25, label: "O kolik je výrobek A relativně dražší/levnější než výrobek B"}),  
+  partRatio2: Inputs.range([-0.5, 1], {step: 0.05, value:0.25, label: "O kolik je výrobek B relativně dražší/levnější než výrobek C"}),
+});
+const compInputTotalMultiple = Generators.input(compFormTotalMultiple);
+```
+
+<details>
+  <summary>Parametrizace</summary>
+  ${compFormTotalMultiple}
+</details>
+
+
+
+#### Porovnání A/B a porovnání B/C
+
+<div>${renderEx({example:exampleCompareTotalMultiple({input:compInputTotalMultiple})[0]})}</div>
+
+#### Porovnání A/B a porovnání C/B
+
+<div>${renderEx({example:exampleCompareTotalMultiple({input:compInputTotalMultiple})[1]})}</div>
+
+#### Porovnání B/A a porovnání B/C
+
+<div>${renderEx({example:exampleCompareTotalMultiple({input:compInputTotalMultiple})[2]})}</div>
+
+#### Porovnání B/A a porovnání C/B
+
+<div>${renderEx({example:exampleCompareTotalMultiple({input:compInputTotalMultiple})[3]})}</div> -->
 
 ## Měřítko
 
