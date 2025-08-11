@@ -1,4 +1,4 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, sum, product, productCombine, counter } from "../../components/math";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, sum, product, productCombine, counter, triangleAngle } from "../../components/math";
 import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -147,13 +147,9 @@ function uhly() {
     gamma: {
       deductionTree: deduce(
         deduce(
-          cont('součet úhlů v trojúhelníku', 180, entity, unit),
-          deduce(
-            deduce(angle2, compAngle(angleLabel, "bod R v pravoúhlém trojúhelníku", "supplementary")),
-            cont("pravý úhel", 90, entity, unit),
-            sum("součet dvou úhlů")
-          ),
-          ctorDifference("vrchol v pravoúhlém trojúhelníku")
+          deduce(angle2, compAngle(angleLabel, "bod R v pravoúhlém trojúhelníku", "supplementary")),
+          cont("pravý úhel", 90, entity, unit),
+          triangleAngle("vrchol v pravoúhlém trojúhelníku")
         ),
         compAngle("vrchol v pravoúhlém trojúhelníku", "gamma", "supplementary")
       )

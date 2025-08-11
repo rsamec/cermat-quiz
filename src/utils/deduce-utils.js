@@ -40,6 +40,24 @@ function isRatiosPredicate(value) {
 function isRatePredicate(value) {
   return value.kind === "rate";
 }
+function convertToExpression(expectedValue, compareTo, expectedValueOptions) {
+  const convertedValue = expectedValueOptions.asFraction ? helpers.convertToFraction(expectedValue) : expectedValueOptions.asPercent ? expectedValue / 100 : expectedValue;
+  const toCompare = (comp) => `x ${comp} ${convertedValue}`;
+  switch (compareTo) {
+    case "equal":
+      return toCompare("==");
+    case "greater":
+      return toCompare(">");
+    case "greaterOrEqual":
+      return toCompare("=>");
+    case "smaller":
+      return toCompare("<");
+    case "smallerOrEqual":
+      return toCompare("=<");
+    default:
+      return `closeTo(x, ${convertedValue})`;
+  }
+}
 function compDiff(agentMinuend, agentSubtrahend, quantity, entity) {
   return { kind: "comp-diff", agentMinuend, agentSubtrahend, quantity, entity };
 }
@@ -85,7 +103,7 @@ function compareAngleRuleEx(a, b) {
 function compareAngleRule(a, b) {
   const result = compareAngleRuleEx(a, b);
   return {
-    question: `Vypo\u010Dti ${a.agent == b.agentB ? b.agentA : b.agentB}? \xDAhel ${b.agentA} je ${formatAngle(b.relationship)} \xFAhel k ${b.agentB}.`,
+    question: `Vypo\u010Dti ${a.agent == b.agentB ? b.agentA : b.agentB}? ${b.agentA} je ${formatAngle(b.relationship)} k ${b.agentB}.`,
     result,
     options: isNumber(result.quantity) ? [
       { tex: `90 - ${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship == "complementary" },
@@ -273,9 +291,6 @@ function roundTo(a, b) {
   };
 }
 function ratioCompareRuleEx(a, b) {
-  if (!(a.agent == b.agentA || a.agent == b.agentB)) {
-    throw `Mismatch agent ${a.agent} any of ${b.agentA}, ${b.agentB}`;
-  }
   if (a.agent == b.agentB) {
     return {
       kind: "cont",
@@ -292,6 +307,14 @@ function ratioCompareRuleEx(a, b) {
       entity: a.entity,
       unit: a.unit
     };
+  } else {
+    return {
+      kind: "cont",
+      agent: b.agentB,
+      quantity: isNumber(a.quantity) && isNumber(b.ratio) ? a.quantity / (Math.abs(b.ratio) + 1) : wrapToQuantity(`a.quantity * (abs(b.ratio) + 1)`, { a, b }),
+      entity: a.entity,
+      unit: a.unit
+    };
   }
 }
 function ratioCompareRule(a, b) {
@@ -299,9 +322,10 @@ function ratioCompareRule(a, b) {
   return {
     question: `${computeQuestion(result.quantity)} ${a.agent == b.agentB ? b.agentA : b.agentB}${formatEntity(result)}?`,
     result,
-    options: isNumber(a.quantity) && isNumber(b.ratio) ? [
+    options: isNumber(a.quantity) && isNumber(b.ratio) && isNumber(result.quantity) ? [
       { tex: `${formatNumber(a.quantity)} * ${formatRatio(abs(b.ratio))}`, result: formatNumber(a.quantity * b.ratio), ok: a.agent == b.agentB && b.ratio >= 0 || a.agent == b.agentA && b.ratio < 0 },
-      { tex: `${formatNumber(a.quantity)} / ${formatRatio(abs(b.ratio))}`, result: formatNumber(a.quantity / b.ratio), ok: a.agent == b.agentA && b.ratio >= 0 || a.agent == b.agentB && b.ratio < 0 }
+      { tex: `${formatNumber(a.quantity)} / ${formatRatio(abs(b.ratio))}`, result: formatNumber(a.quantity / b.ratio), ok: a.agent == b.agentA && b.ratio >= 0 || a.agent == b.agentB && b.ratio < 0 },
+      { tex: `${formatNumber(a.quantity)} / (${formatRatio(abs(b.ratio))} + 1)`, result: formatNumber(result.quantity), ok: a.agent !== b.agentA && a.agent !== b.agentB }
     ] : []
   };
 }
@@ -940,6 +964,31 @@ function pythagorasRule(a, b, last2) {
     ] : []
   };
 }
+function triangleAngleRuleEx(a, b, last2) {
+  if (a.entity != b.entity) {
+    throw `Mismatch entity ${a.entity}, ${b.entity}`;
+  }
+  if (a.unit != b.unit) {
+    throw `Mismatch unit ${a.unit}, ${b.unit}`;
+  }
+  return {
+    kind: "cont",
+    entity: a.entity,
+    unit: a.unit,
+    quantity: isNumber(a.quantity) && isNumber(b.quantity) ? 180 - (a.quantity + b.quantity) : wrapToQuantity(`180 - (a.quantity + b.quantity)`, { a, b }),
+    agent: last2.agent
+  };
+}
+function triangleAngleRule(a, b, last2) {
+  const result = triangleAngleRuleEx(a, b, last2);
+  return {
+    question: `Vypo\u010D\xEDtej ${result.agent} dle pravidla sou\u010Dtu vnit\u0159n\xEDch \xFAhl\u016F v troj\xFAheln\xEDku?`,
+    result,
+    options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.quantity) ? [
+      { tex: `180 - (${formatNumber(a.quantity)} + ${formatNumber(b.quantity)})`, result: formatNumber(result.quantity), ok: true }
+    ] : []
+  };
+}
 function toRatioComparisonEx(a, b, ctor) {
   if (b.agent === a.agent && b.entity != a.entity) {
     b = toGenerAgent(b);
@@ -1258,13 +1307,14 @@ function evalToOptionEx(a, b) {
   return {
     kind: "eval-option",
     expression: b.expression,
+    expressionNice: convertToExpression(b.expectedValue, b.compareTo === "closeTo" ? "equal" : b.compareTo, { ...b.expectedValueOptions, asPercent: false }),
     value: b.optionValue != null ? matched ? b.optionValue : null : matched
   };
 }
 function evalToOption(a, b) {
   const result = evalToOptionEx(a, b);
   return {
-    question: b.optionValue != null ? `Vyhodno\u0165 volbu [${b.optionValue}]?` : `Vyhodno\u0165 v\xFDraz ${b.expression}?`,
+    question: b.optionValue != null ? `Vyhodno\u0165 volbu [${b.optionValue}]?` : `Vyhodno\u0165 v\xFDraz ${b.expressionNice}?`,
     result,
     options: []
   };
@@ -1492,7 +1542,7 @@ function inferenceRuleEx(...args) {
     return a.kind === "eval-option" ? evalToOption(b, a) : b.kind === "eval-option" ? evalToOption(a, b) : null;
   } else if (a.kind === "cont" && b.kind == "cont") {
     const kind = last2?.kind;
-    return kind === "comp-diff" ? toComparisonDiff(a, b) : kind === "scale" || kind === "scale-invert" ? mapContByScale(a, b, last2) : kind === "slide" || kind === "slide-invert" ? toSlide(a, b, last2) : kind === "diff" ? toDifference(a, b, last2) : kind === "quota" ? toQuota(a, b) : kind === "delta" ? toDelta(a, b, last2) : kind === "pythagoras" ? pythagorasRule(a, b, last2) : kind === "rate" ? toRate(a, b) : kind === "ratios" ? toRatios([a, b], last2) : kind === "comp-ratio" ? toRatioComparison(a, b, last2) : kind === "ratio" ? toPartWholeRatio(a, b, last2) : kind === "linear-equation" ? solveEquation(a, b, last2) : toComparison(a, b);
+    return kind === "comp-diff" ? toComparisonDiff(a, b) : kind === "scale" || kind === "scale-invert" ? mapContByScale(a, b, last2) : kind === "slide" || kind === "slide-invert" ? toSlide(a, b, last2) : kind === "diff" ? toDifference(a, b, last2) : kind === "quota" ? toQuota(a, b) : kind === "delta" ? toDelta(a, b, last2) : kind === "pythagoras" ? pythagorasRule(a, b, last2) : kind === "triangle-angle" ? triangleAngleRule(a, b, last2) : kind === "rate" ? toRate(a, b) : kind === "ratios" ? toRatios([a, b], last2) : kind === "comp-ratio" ? toRatioComparison(a, b, last2) : kind === "ratio" ? toPartWholeRatio(a, b, last2) : kind === "linear-equation" ? solveEquation(a, b, last2) : toComparison(a, b);
   } else if ((a.kind === "comp-ratio" || a.kind === "cont") && b.kind === "simplify-expr") {
     return simplifyExprAsRule(a, b);
   } else if (a.kind === "simplify-expr" && (b.kind === "comp-ratio" || b.kind === "cont")) {
@@ -5791,7 +5841,7 @@ function formatPredicate(d, formatting) {
       result = d.items != null ? compose`${joinArray(d.items.map((d2) => formatPredicate(d2, formatting)), ", ")}` : formatKind(d);
       break;
     case "eval-option":
-      result = d.value === void 0 ? compose`${d.optionValue != null ? `Volba [${d.optionValue}]: ${d.expectedValue != null ? formatRatio2(d.expectedValue) : d.expression}` : d.expression}` : compose`${d.value === true ? "Pravda" : d.value === false ? "Nepravda" : d.value != null ? `Volba [${d.value}]` : "N/A"}`;
+      result = d.value === void 0 ? compose`${d.optionValue != null ? `Volba [${d.optionValue}]: ${d.expectedValue != null ? d.expectedValueOptions?.asFraction ? formatRatio2(d.expectedValue) : formatQuantity(d.expectedValue) : d.expressionNice}` : d.expressionNice}` : compose`${d.value === true ? "Pravda" : d.value === false ? "Nepravda" : d.value != null ? `Volba [${d.value}]` : "N/A"}`;
       break;
     default:
       result = formatKind(d);

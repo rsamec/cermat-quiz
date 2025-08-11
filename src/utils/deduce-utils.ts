@@ -533,7 +533,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
       break;
     case "eval-option":
       result = d.value === undefined
-        ? compose`${d.optionValue != null ? `Volba [${d.optionValue}]: ${d.expectedValue != null ? formatRatio(d.expectedValue) : d.expression}` : d.expression}`
+        ? compose`${d.optionValue != null ? `Volba [${d.optionValue}]: ${d.expectedValue != null ? (d.expectedValueOptions?.asFraction ? formatRatio(d.expectedValue) : formatQuantity(d.expectedValue)) : d.expressionNice}` : d.expressionNice}`
         : compose`${d.value === true ? "Pravda" : d.value === false ? "Nepravda" : d.value != null ? `Volba [${d.value}]` : 'N/A'}`
       break;
     default:

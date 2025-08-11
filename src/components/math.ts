@@ -69,7 +69,6 @@ type AgentNames = {
   nameAfter?: string
   nameBefore?: string
 }
-
 export type Container = EntityBase &
 {
   kind: 'cont',
@@ -89,8 +88,13 @@ export type SimplifyExpr = {
 export type Option = {
   kind: 'eval-option'
   expression: Expression,
+  expressionNice: string
+
   value?: true | false | "A" | "B" | "C" | "D" | "E" | "F"
-  expectedValue?: number | true | false
+
+  expectedValue?: number
+  compareTo?: ComparisonType
+  expectedValueOptions?: FormattingOptions
   optionValue?: "A" | "B" | "C" | "D" | "E" | "F"
 }
 
@@ -238,6 +242,11 @@ export type Phytagoras = {
   longest: AgentMatcher
   sites: [AgentMatcher, AgentMatcher]
 }
+export type TriangleAngle = {
+  kind: 'triangle-angle'
+  agent: AgentMatcher
+}
+
 export type Proportion = {
   kind: 'proportion',
   inverse: boolean,
@@ -318,6 +327,11 @@ export type Tuple = {
 export type ContainerEval = Omit<Container, 'quantity'>
 export type RateEval = Omit<Rate, 'quantity'>
 
+export type FormattingOptions = {
+  asPercent?: boolean
+  asFraction?: boolean
+}
+
 export type EntityDef = string | EntityBase
 
 export type QuantityPredicate = Container | Comparison | Transfer | Rate | ComparisonDiff | Transfer | Quota | Delta
@@ -330,7 +344,7 @@ export type SingleOperationPredicate = Scale | InvertScale | Slide | InvertSlide
 export type OperationPredicate = SingleOperationPredicate | MultipleOperationPredicate
 
 export type Predicate = QuantityPredicate | RatioPredicate | RatiosPredicate | ExpressionPredicate | MultipleOperationPredicate | CommonSensePredicate | OperationPredicate
-  | Sequence | NthRule | NthPart | NthPartFactor | AngleComparison | Tuple | Option | CompareAndPartEqual
+  | Sequence | NthRule | NthPart | NthPartFactor | AngleComparison | TriangleAngle | Tuple | Option | CompareAndPartEqual
 
 export function isQuantityPredicate(value: Predicate): value is QuantityPredicate {
   return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "quota", "delta"].includes(value.kind);
@@ -439,20 +453,35 @@ export function simplifyExpr(context: Record<string, number>): SimplifyExpr {
   return { kind: 'simplify-expr', context }
 }
 
-export function ctorOption(optionValue: "A" | "B" | "C" | "D" | "E" | "F", expectedValue: number, { asPercent }: { asPercent?: boolean } = { asPercent: false }): Option {
-  return { kind: 'eval-option', expression: `closeTo(x, ${asPercent ? expectedValue / 100 : expectedValue})`, expectedValue, optionValue }
+export function ctorOption(optionValue: "A" | "B" | "C" | "D" | "E" | "F", expectedValue: number, expectedValueOptions: FormattingOptions = { asPercent: false, asFraction: false }): Option {
+  return {
+    kind: 'eval-option',
+    expression: convertToExpression(expectedValue, "closeTo", expectedValueOptions),
+    expressionNice: convertToExpression(expectedValue, "equal", { ...expectedValueOptions, asPercent: false }),
+    expectedValue, expectedValueOptions, optionValue, compareTo: "closeTo"
+  }
 }
 export function ctorExpressionOption(optionValue: "A" | "B" | "C" | "D" | "E" | "F", expression: string): Option {
-  return { kind: 'eval-option', expression, optionValue }
+  return { kind: 'eval-option', expression, expressionNice: expression, optionValue }
 }
 
 export type ComparisonType = "equal" | "greater" | "greaterOrEqual" | "smaller" | "smallerOrEqual" | "closeTo";
-export function ctorBooleanOption(expectedValue: number, compareTo: ComparisonType = 'closeTo'): Option {
-  return { kind: 'eval-option', expression: convertToExpression(expectedValue, compareTo), expectedValue }
+export function ctorBooleanOption(expectedValue: number, compareTo: ComparisonType = 'closeTo', expectedValueOptions: FormattingOptions = { asPercent: false, asFraction: false }): Option {
+  return {
+    kind: 'eval-option',
+    expression: convertToExpression(expectedValue, compareTo, expectedValueOptions),
+    expressionNice: convertToExpression(expectedValue, compareTo == "closeTo" ? "equal" : compareTo, { ...expectedValueOptions, asPercent: false }),
+    expectedValue, expectedValueOptions, compareTo
+  }
 }
 
-function convertToExpression(expectedValue: number, compareTo: ComparisonType) {
-  const toCompare = (comp) => `x ${comp} ${helpers.convertToFraction(expectedValue)}`
+function convertToExpression(expectedValue: number, compareTo: ComparisonType, expectedValueOptions: FormattingOptions) {
+  const convertedValue = expectedValueOptions.asFraction
+    ? helpers.convertToFraction(expectedValue)
+    : expectedValueOptions.asPercent
+      ? expectedValue / 100
+      : expectedValue;
+  const toCompare = (comp) => `x ${comp} ${convertedValue}`
   switch (compareTo) {
     case "equal": return toCompare("==")
     case "greater": return toCompare(">");
@@ -460,7 +489,7 @@ function convertToExpression(expectedValue: number, compareTo: ComparisonType) {
     case "smaller": return toCompare("<");
     case "smallerOrEqual": return toCompare("=<");
     default:
-      return `closeTo(x, ${helpers.convertToFraction(expectedValue)})`;
+      return `closeTo(x, ${convertedValue})`;
   }
 }
 export function delta(agent: AgentNames, quantity: number, entity: string, unit?: string): Delta {
@@ -482,6 +511,10 @@ export function compAngle(agentA: string, agentB: string, relationship: AngleRel
 export function pythagoras(longestSite: AgentMatcher, sites: [AgentMatcher, AgentMatcher]): Phytagoras {
   return { kind: 'pythagoras', longest: longestSite, sites }
 }
+export function triangleAngle(agent: AgentMatcher): TriangleAngle {
+  return { kind: 'triangle-angle', agent }
+}
+
 export function transfer(agentSender: string | AgentNames, agentReceiver: string | AgentNames, quantity: number, entity: string): Transfer {
   return { kind: 'transfer', agentReceiver: toAgentNames(agentReceiver), agentSender: toAgentNames(agentSender), quantity, entity }
 }
@@ -515,6 +548,14 @@ export function percent(whole: AgentMatcher, part: AgentMatcher, percent: number
 }
 export function ratios(whole: AgentMatcher, parts: AgentMatcher[], ratios: number[]): PartToPartRatio {
   return { kind: 'ratios', parts, whole, ratios };
+}
+export function sumCombine(wholeAgent: string, wholeEntity: EntityDef, partAgents?: string[]): SumCombine {
+  return {
+    kind: 'sum-combine',
+    wholeAgent,
+    partAgents: partAgents ?? [],
+    wholeEntity: toEntity(wholeEntity)
+  }
 }
 
 export function productCombine(wholeAgent: string, wholeEntity: EntityDef, partAgents?: string[]): ProductCombine {
@@ -600,7 +641,7 @@ function compareAngleRuleEx(a: Container, b: AngleComparison): Container {
 function compareAngleRule(a: Container, b: AngleComparison): Question {
   const result = compareAngleRuleEx(a, b)
   return {
-    question: `Vypočti ${a.agent == b.agentB ? b.agentA : b.agentB}? Úhel ${b.agentA} je ${formatAngle(b.relationship)} úhel k ${b.agentB}.`,
+    question: `Vypočti ${a.agent == b.agentB ? b.agentA : b.agentB}? ${b.agentA} je ${formatAngle(b.relationship)} k ${b.agentB}.`,
     result,
     options: isNumber(result.quantity)
       ? [
@@ -790,9 +831,7 @@ function roundTo(a: Container, b: Round): Question {
 }
 
 function ratioCompareRuleEx(a: Container, b: RatioComparison): Container {
-  if (!(a.agent == b.agentA || a.agent == b.agentB)) {
-    throw `Mismatch agent ${a.agent} any of ${b.agentA}, ${b.agentB}`
-  }
+
   if (a.agent == b.agentB) {
     return {
       kind: 'cont', agent: b.agentA,
@@ -815,6 +854,18 @@ function ratioCompareRuleEx(a: Container, b: RatioComparison): Container {
       entity: a.entity, unit: a.unit
     }
   }
+  else {
+
+    //throw `Mismatch agent ${a.agent} any of ${b.agentA}, ${b.agentB}`
+    return {
+      kind: 'cont', agent: b.agentB,
+      quantity: isNumber(a.quantity) && isNumber(b.ratio)
+        ? a.quantity / (Math.abs(b.ratio) + 1)
+        : wrapToQuantity(`a.quantity * (abs(b.ratio) + 1)`, { a, b }),
+      entity: a.entity, unit: a.unit
+    }
+
+  }
 }
 
 function ratioCompareRule(a: Container, b: RatioComparison): Question {
@@ -822,9 +873,10 @@ function ratioCompareRule(a: Container, b: RatioComparison): Question {
   return {
     question: `${computeQuestion(result.quantity)} ${a.agent == b.agentB ? b.agentA : b.agentB}${formatEntity(result)}?`,
     result,
-    options: isNumber(a.quantity) && isNumber(b.ratio) ? [
+    options: isNumber(a.quantity) && isNumber(b.ratio) && isNumber(result.quantity) ? [
       { tex: `${formatNumber(a.quantity)} * ${formatRatio(abs(b.ratio))}`, result: formatNumber(a.quantity * b.ratio), ok: (a.agent == b.agentB && b.ratio >= 0) || (a.agent == b.agentA && b.ratio < 0) },
       { tex: `${formatNumber(a.quantity)} / ${formatRatio(abs(b.ratio))}`, result: formatNumber(a.quantity / b.ratio), ok: (a.agent == b.agentA && b.ratio >= 0) || (a.agent == b.agentB && b.ratio < 0) },
+      { tex: `${formatNumber(a.quantity)} / (${formatRatio(abs(b.ratio))} + 1)`, result: formatNumber(result.quantity), ok: a.agent !== b.agentA && a.agent !== b.agentB },
     ] : []
   }
 }
@@ -1587,6 +1639,33 @@ function pythagorasRule(a: Container, b: Container, last: Phytagoras): Question 
     ] : []
   }
 }
+function triangleAngleRuleEx(a: Container, b: Container, last: TriangleAngle): Container {
+  if (a.entity != b.entity) {
+    throw `Mismatch entity ${a.entity}, ${b.entity}`
+  }
+  if (a.unit != b.unit) {
+    throw `Mismatch unit ${a.unit}, ${b.unit}`
+  }
+  return {
+    kind: 'cont',
+    entity: a.entity,
+    unit: a.unit,
+    quantity: isNumber(a.quantity) && isNumber(b.quantity)
+      ? 180 - (a.quantity + b.quantity)
+      : wrapToQuantity(`180 - (a.quantity + b.quantity)`, { a, b }),
+    agent: last.agent
+  }
+}
+function triangleAngleRule(a: Container, b: Container, last: TriangleAngle): Question {
+  const result = triangleAngleRuleEx(a, b, last)
+  return {
+    question: `Vypočítej ${result.agent} dle pravidla součtu vnitřních úhlů v trojúhelníku?`,
+    result,
+    options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.quantity) ? [
+      { tex: `180 - (${formatNumber(a.quantity)} + ${formatNumber(b.quantity)})`, result: formatNumber(result.quantity), ok: true },
+    ] : []
+  }
+}
 
 function toRatioComparisonEx(a: Container, b: Container, ctor: RatioComparison): RatioComparison {
   if (b.agent === a.agent && b.entity != a.entity) {
@@ -1965,13 +2044,14 @@ function evalToOptionEx<T extends Predicate & { quantity?: Quantity, ratio?: Qua
   return {
     kind: 'eval-option',
     expression: b.expression,
+    expressionNice: convertToExpression(b.expectedValue, b.compareTo === "closeTo" ? "equal" : b.compareTo, { ...b.expectedValueOptions, asPercent: false }),
     value: b.optionValue != null ? matched ? b.optionValue : null : matched
   }
 }
 function evalToOption<T extends Predicate>(a: T, b: Option): Question {
   const result = evalToOptionEx(a, b);
   return {
-    question: b.optionValue != null ? `Vyhodnoť volbu [${b.optionValue}]?` : `Vyhodnoť výraz ${b.expression}?`,
+    question: b.optionValue != null ? `Vyhodnoť volbu [${b.optionValue}]?` : `Vyhodnoť výraz ${b.expressionNice}?`,
     result,
     options: []
   }
@@ -2285,17 +2365,19 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
                 ? toDelta(a, b, last)
                 : kind === "pythagoras"
                   ? pythagorasRule(a, b, last)
-                  : kind === "rate"
-                    ? toRate(a, b)
-                    : kind === "ratios"
-                      ? toRatios([a, b], last)
-                      : kind === "comp-ratio"
-                        ? toRatioComparison(a, b, last)
-                        : kind === "ratio"
-                          ? toPartWholeRatio(a, b, last)
-                          : kind === "linear-equation"
-                            ? solveEquation(a, b, last)
-                            : toComparison(a, b)
+                  : kind === "triangle-angle"
+                    ? triangleAngleRule(a, b, last)
+                    : kind === "rate"
+                      ? toRate(a, b)
+                      : kind === "ratios"
+                        ? toRatios([a, b], last)
+                        : kind === "comp-ratio"
+                          ? toRatioComparison(a, b, last)
+                          : kind === "ratio"
+                            ? toPartWholeRatio(a, b, last)
+                            : kind === "linear-equation"
+                              ? solveEquation(a, b, last)
+                              : toComparison(a, b)
   }
   else if ((a.kind === "comp-ratio" || a.kind === "cont") && b.kind === "simplify-expr") {
     return simplifyExprAsRule(a, b)

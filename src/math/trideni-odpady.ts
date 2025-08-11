@@ -52,19 +52,19 @@ export const trideni_odpadu = () => {
           cont(oddilS, 8, entityPapir, unit),
           ctor('comp-ratio')
         ),
-        ctorOption('C', 1 / 4)
+        ctorOption('C', 1 / 4, { asFraction: true })
       )
     },
     plast1: {
       deductionTree: deduce(
         plast,
-        ctorOption("D", 1 / 3)
+        ctorOption("D", 1 / 3, { asFraction: true })
       )
     },
     plast2: {
       deductionTree: deduce(
         plast,
-        ctorBooleanOption(1 / 3)
+        ctorBooleanOption(1 / 3, "closeTo", { asFraction: true })
       )
     },
     kovyToPapir: {
@@ -74,7 +74,7 @@ export const trideni_odpadu = () => {
           papirCelkem,
           ctor('comp-ratio')
         ),
-        ctorBooleanOption(1 / 2)
+        ctorBooleanOption(1 / 2, "closeTo", { asFraction: true })
       )
     },
     papirToKovy: {
@@ -84,7 +84,7 @@ export const trideni_odpadu = () => {
           kovyCelkem,
           ctor('comp-ratio')
         ),
-        ctorOption("E", 1 / 2)
+        ctorOption("E", 1 / 2, { asFraction: true })
       )
     }
   }

@@ -1,4 +1,4 @@
-import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, rate, ratio, ratios, ctorPercent, compAngle, ctorComplement, ctorComparePercent, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, ctorLinearEquation, sum, productCombine } from "../../components/math";
+import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, rate, ratio, ratios, ctorPercent, compAngle, ctorComplement, ctorComparePercent, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, ctorLinearEquation, sum, productCombine, triangleAngle } from "../../components/math";
 import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 
@@ -145,8 +145,6 @@ function uhelAlfa() {
   return {
     deductionTree: deduce(
       deduce(
-        deduce(
-          soucetUhluVTrojuhelniku,
           deduce(
             deduce(
               deduce(
@@ -156,9 +154,7 @@ function uhelAlfa() {
               compAngle("úhel přímka p", "trojúhelník bod A", "alternate-exterior")
             ),
             last(praveRameho),
-            sum("dvojice součet")
-          ),
-          ctorDifference("trojúhelník bod C")
+            triangleAngle("trojúhelník bod C")
         ),
         compAngle("trojúhelník bod C", "alfa", "supplementary")
       ),

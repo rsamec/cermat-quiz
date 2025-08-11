@@ -257,7 +257,7 @@ function kapesne() {
           ),
           ctor('ratio')
         ),
-        ctorOption("B", 2 / 3)
+        ctorOption("B", 2 / 3, {asFraction: true})
       )
     }
   }

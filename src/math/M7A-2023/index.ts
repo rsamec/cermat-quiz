@@ -1,4 +1,4 @@
-import { productCombine, commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, sum, ctorComplement, ctorOption, counter, percent, rate, ratios, product } from "../../components/math";
+import { productCombine, commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, sum, ctorComplement, ctorOption, counter, percent, rate, ratios, product, triangleAngle } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
@@ -120,26 +120,21 @@ function example_11() {
   const entity = "stupňů";
 
   const inputAngleLabel = `zadaný úhel`;
-  const triangleSum = cont('součet úhlů v trojúhelníku', 180, entity)
+
   const triangle = "úhel trojúhelníku ABD";
 
   return {
     deductionTree: deduce(
       deduce(
-        toCont(
+        deduce(
+          deduce(axiomInput(cont(inputAngleLabel, 40, entity), 2), compAngle(inputAngleLabel, `${triangle} u vrcholu B`, 'alternate')),
           deduce(
-            triangleSum,
-            deduce(
-              deduce(axiomInput(cont(inputAngleLabel, 40, entity), 2), compAngle(inputAngleLabel, `${triangle} u vrcholu B`, 'alternate')),
-              deduce(
-                axiomInput(cont(inputAngleLabel, 70, entity), 1),
-                compAngle(inputAngleLabel, `${triangle} u vrcholu A`, "supplementary")
-              ),
-              sum("dvojice úhlů v trojúhelníku")),
-            ctor('comp-diff'))
-          , { agent: `${triangle} u vrcholu D` }),
+            axiomInput(cont(inputAngleLabel, 70, entity), 1),
+            compAngle(inputAngleLabel, `${triangle} u vrcholu A`, "supplementary")
+          ),
+          triangleAngle(`${triangle} u vrcholu D`)
+        ),
         compAngle(`${triangle} u vrcholu D`, "φ", 'supplementary')
-
       ),
       ctorOption("D", 150)
     )
