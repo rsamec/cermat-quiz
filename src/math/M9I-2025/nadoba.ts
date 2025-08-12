@@ -1,4 +1,4 @@
-import { cont, ratio, ctorComplement, comp, transfer, percent, ctorPercent, commonSense, ctorOption } from "../../components/math";
+import { cont, ratio, ctorComplement, comp, transfer, percent, ctorPercent, commonSense, ctorOption, ctor } from "../../components/math";
 import { deduce, axiomInput, to } from "../../utils/deduce-utils";
 
 
@@ -76,7 +76,7 @@ export function objemNadoby3({ input }: {
           nadoba1,
           commonSense(""),
           nadoba2,
-          deduce(prumer, ctorPercent()),
+          deduce(prumer, ctor("convert-percent")),
           transfer("nádoba 3", "nádoba 1", 10, entityPercent),
           percent("nádoba celkem", "nádoba 3", 50)
         ),

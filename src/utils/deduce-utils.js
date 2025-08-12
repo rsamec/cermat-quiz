@@ -148,7 +148,7 @@ function toComparisonRatioEx(a, b) {
 function toComparisonRatio(a, b) {
   const result = toComparisonRatioEx(a, b);
   return {
-    question: `Porovnej ${result.agentA} a ${result.agentB}.Kolikr\xE1t ? `,
+    question: `Porovnej ${result.agentA} a ${result.agentB}. Kolikr\xE1t ? `,
     result,
     options: isNumber(a.ratio) && isNumber(b.ratio) ? [
       {
@@ -447,19 +447,20 @@ function convertRatioToCompRatio(a, b) {
     ] : []
   };
 }
-function toRatioEx(b, asPercent) {
+function toRatioEx(b) {
   return {
     ...b,
-    asPercent
+    asPercent: !!!b.asPercent
   };
 }
-function toRatio(b, asPercent) {
-  const result = toRatioEx(b, asPercent);
+function toRatio(b) {
+  const result = toRatioEx(b);
   return {
-    question: `Vyj\xE1d\u0159i ${asPercent ? "procentem" : "pom\u011Brem"}?`,
+    question: `Vyj\xE1d\u0159i ${!b.asPercent ? "procentem" : "pom\u011Brem"}?`,
     result,
     options: isNumber(b.ratio) && isNumber(result.ratio) ? [
-      { tex: `1 / ${formatRatio(b.ratio, b.asPercent)}${asPercent ? " * 100" : ""}`, result: formatRatio(result.ratio, result.asPercent), ok: asPercent }
+      { tex: `${formatRatio(b.ratio, b.asPercent)} * 100`, result: formatRatio(result.ratio, result.asPercent), ok: true },
+      { tex: `${formatRatio(b.ratio, b.asPercent)} / 100`, result: formatRatio(result.ratio, result.asPercent), ok: false }
     ] : []
   };
 }
@@ -1179,6 +1180,29 @@ function toDifferenceAsRatio(a, b, diff) {
     ] : []
   };
 }
+function transitiveRatioRuleEx(a, b) {
+  if (!(a.whole === b.part || b.whole === a.part)) {
+    throw `Mismatch agents ${a.whole} -> ${b.part} or  ${b.whole} -> ${a.part}`;
+  }
+  const firstWhole = a.whole === b.part;
+  return {
+    kind: "ratio",
+    whole: firstWhole ? b.whole : a.whole,
+    part: firstWhole ? a.part : b.part,
+    ratio: isNumber(a.ratio) && isNumber(b.ratio) ? a.ratio * b.ratio : wrapToRatio(`a.ratio * b.ratio`, { a, b })
+  };
+}
+function transitiveRatioRule(a, b) {
+  const result = transitiveRatioRuleEx(a, b);
+  return {
+    question: `${computeQuestion(result.ratio)} ${result.part} z ${result.whole}`,
+    result,
+    options: isNumber(a.ratio) && isNumber(b.ratio) && isNumber(result.ratio) ? [
+      { tex: `${formatRatio(a.ratio)} * ${formatRatio(b.ratio)}`, result: formatRatio(result.ratio), ok: true },
+      { tex: `${formatRatio(b.ratio)} / ${formatRatio(a.ratio)}`, result: formatRatio(b.ratio / a.ratio), ok: false }
+    ] : []
+  };
+}
 function toRateEx(a, b) {
   if (a.agent !== b.agent) {
     throw `Mismatch angent ${a.agent}, ${b.agent}`;
@@ -1290,13 +1314,24 @@ function toRatios(parts, last2) {
   };
 }
 function evalToQuantityEx(a, b) {
-  if (!isNumber(a.quantity)) {
+  const quantities = a.map((d) => d.quantity);
+  const variables = extractDistinctWords(b.expression);
+  if (!areNumbers(quantities)) {
     throw `evalToQuantity does not support non quantity types`;
   }
+  const context = quantities.reduce((out, d, i) => {
+    out[variables[i]] = d;
+    return out;
+  }, {});
   return {
     ...b.predicate,
-    quantity: helpers.evalExpression(b.expression, a.quantity)
+    quantity: helpers.evalExpression(b.expression, context)
   };
+}
+var preservedWords = ["sqrt", "closeTo"];
+function extractDistinctWords(str) {
+  const matches = str.match(/[a-zA-Z]+/g) || [];
+  return [...new Set(matches)].filter((d) => !preservedWords.includes(d));
 }
 function evalToQuantity(a, b) {
   const result = evalToQuantityEx(a, b);
@@ -1335,6 +1370,7 @@ function simplifyExprAsRule(a, b) {
 function evalToOptionEx(a, b) {
   let valueToEval = a.quantity ?? a.ratio;
   if (!isNumber(valueToEval)) {
+    console.log(valueToEval);
     throw `evalToQuantity does not support non quantity types`;
   }
   if (a.kind == "comp-ratio" && valueToEval > 1 / 2 && valueToEval < 2) {
@@ -1572,9 +1608,9 @@ function inferenceRuleWithQuestion(children) {
 function inferenceRuleEx(...args) {
   const [a, b, ...rest] = args;
   const last2 = rest?.length > 0 ? rest[rest.length - 1] : null;
-  if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence", "tuple"].includes(last2?.kind) || last2?.kind === "ratios" && args.length > 3) {
+  if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence", "tuple", "eval-expr"].includes(last2?.kind) || last2?.kind === "ratios" && args.length > 3) {
     const arr = [a, b].concat(rest.slice(0, -1));
-    return last2.kind === "sequence" ? sequenceRule(arr) : last2.kind === "gcd" ? gcdRule(arr, last2) : last2.kind === "lcd" ? lcdRule(arr, last2) : last2.kind === "tuple" ? tupleRule(arr) : ["product-combine", "product"].includes(last2.kind) ? productRule(arr, last2) : ["sum-combine", "sum"].includes(last2.kind) ? sumRule(arr, last2) : last2.kind === "ratios" ? toRatios(arr, last2) : null;
+    return last2.kind === "sequence" ? sequenceRule(arr) : last2.kind === "gcd" ? gcdRule(arr, last2) : last2.kind === "lcd" ? lcdRule(arr, last2) : last2.kind === "eval-expr" ? evalToQuantity(arr, last2) : last2.kind === "tuple" ? tupleRule(arr) : ["product-combine", "product"].includes(last2.kind) ? productRule(arr, last2) : ["sum-combine", "sum"].includes(last2.kind) ? sumRule(arr, last2) : last2.kind === "ratios" ? toRatios(arr, last2) : null;
   } else if (a.kind === "eval-option" || b.kind === "eval-option") {
     return a.kind === "eval-option" ? evalToOption(b, a) : b.kind === "eval-option" ? evalToOption(a, b) : null;
   } else if (a.kind === "cont" && b.kind == "cont") {
@@ -1585,9 +1621,9 @@ function inferenceRuleEx(...args) {
   } else if (a.kind === "simplify-expr" && (b.kind === "comp-ratio" || b.kind === "cont")) {
     return simplifyExprAsRule(b, a);
   } else if (a.kind === "cont" && b.kind === "eval-expr") {
-    return evalToQuantity(a, b);
+    return evalToQuantity([a], b);
   } else if (a.kind === "eval-expr" && b.kind === "cont") {
-    return evalToQuantity(b, a);
+    return evalToQuantity([b], a);
   } else if (a.kind === "rate" && b.kind === "rate" && last2.kind === "ratios") {
     return toRatios([a, b], last2);
   } else if (a.kind === "rate" && b.kind === "rate" && last2.kind === "linear-equation") {
@@ -1604,13 +1640,13 @@ function inferenceRuleEx(...args) {
     return compareAngleRule(a, b);
   } else if (a.kind === "comp-angle" && b.kind === "cont") {
     return compareAngleRule(b, a);
-  } else if (a.kind === "ratio" && b.kind === "ratio" && a.ratio == null) {
-    return toRatio(b, a.asPercent);
-  } else if (a.kind === "ratio" && b.kind === "ratio" && b.ratio == null) {
-    return toRatio(a, b.asPercent);
+  } else if (a.kind === "convert-percent" && b.kind === "ratio") {
+    return toRatio(b);
+  } else if (a.kind === "ratio" && b.kind === "convert-percent") {
+    return toRatio(a);
   } else if (a.kind === "ratio" && b.kind === "ratio") {
     const kind = last2?.kind;
-    return kind === "diff" ? toDifferenceAsRatio(a, b, last2) : kind === "comp-ratio" ? toComparisonRatio(a, b) : toComparisonAsRatio(a, b);
+    return kind === "diff" ? toDifferenceAsRatio(a, b, last2) : kind === "comp-ratio" ? toComparisonRatio(a, b) : kind === "convert-relative" ? toComparisonAsRatio(a, b) : transitiveRatioRule(a, b);
   } else if (a.kind === "comp" && b.kind === "cont") {
     const kind = last2?.kind;
     return kind === "comp-part-eq" ? partEqual(a, b) : compareRule(b, a);
@@ -5295,7 +5331,7 @@ function evalExpression(expression, quantityOrContext) {
   const expr = typeof expression === "string" ? parser.parse(expression) : toEquationExpr(expression);
   const variables = expr.variables();
   const context = typeof quantityOrContext === "number" ? { [variables.length === 1 ? variables : variables[0]]: quantityOrContext } : quantityOrContext;
-  if (variables.length === 1) {
+  if (variables.length <= Object.keys(context).length) {
     return expr.evaluate(context);
   }
   const res = expr.simplify(context);

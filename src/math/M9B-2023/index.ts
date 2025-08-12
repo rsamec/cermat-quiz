@@ -1,5 +1,5 @@
-import { commonSense, compAngle, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorUnit, pythagoras, rate, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorScaleInvert, ctorBooleanOption, triangleAngle, counter, proportion, productCombine, ctorLinearEquation, comp, ctorScale, ctorComplementCompRatio } from "../../components/math";
-import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont, toPredicate } from "../../utils/deduce-utils";
+import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, evalExprAsCont, counter, proportion, productCombine, ctorLinearEquation, comp, ctorScale, ctorComplementCompRatio, ctorSlideInvert, ctorScaleInvert, ctorBooleanOption, pythagoras, simplifyExpr } from "../../components/math";
+import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
     2.1: () => lyzarskaPermice().porovnani,
@@ -12,10 +12,17 @@ export default createLazyMap({
     7.3: () => cestaDoPrace().autobus,
     8.1: () => dort().prumerTacu,
     8.2: () => dort().objemDortu,
+    11.1: () => kosoctverec().obsah,
+    11.2: () => kosoctverec().strana,
+    11.3: () => kosoctverec().vyska,
+    13: () => hranol(),
     14: () => kosikar(),
     15.1: () => procenta().skauti,
-    //15.2: () => procenta().kapesne,
+    15.2: () => procenta().kapesne,
     15.3: () => procenta().vstupenky,
+    16.1: () => vzorCtverce().pridano,
+    16.2: () => vzorCtverce().rozdil,
+    16.3: () => vzorCtverce().pocet,
 
 
 })
@@ -195,12 +202,15 @@ function kosikar() {
         deductionTree: deduce(
             deduce(
                 deduce(
-                    ratio("prodáno celkem za dva dny", "prodáno 1.den", 1 / 5),
-                    ctorComplement("prodáno 2.den")
+                    deduce(
+                        ratio("prodáno celkem za dva dny", "prodáno 1.den", 1 / 5),
+                        ctorComplement("prodáno 2.den")
+                    ),
+                    ctorComplementCompRatio("prodáno 1.den")
                 ),
-                ctorComplementCompRatio("prodáno 1.den")
+                comp("prodáno 2.den", "prodáno 1.den", 180, entity)
             ),
-            comp("prodáno 2.den", "prodáno 1.den", 180, entity)
+            ctorOption("A", 60)
         )
     }
 }
@@ -230,12 +240,18 @@ function procenta() {
                 ctorOption("D", 50, { asPercent: true })
             )
         },
-        // kapesne: {
-        //     deductionTree: deduce(
-        //         ratio("kapesné", "utraceno celkem", 3 / 5),
-        //         ratio("utraceno celkem", "nákup turistické známky", 3 / 4),
-        //     )
-        // },
+        kapesne: {
+            deductionTree: deduce(
+                deduce(
+                    deduce(
+                        ratio("kapesné", "utraceno celkem", 3 / 5),
+                        ratio("utraceno celkem", "nákup turistické známky", 3 / 4),
+                    ),
+                    ctor("convert-percent"),
+                ),
+                ctorOption("C", 45, { asPercent: true })
+            )
+        },
         vstupenky: {
             deductionTree: deduce(
                 deduceAs("zvolíme vhodné číslo pro počet členů 1.den, např. 1.den = 3 členi")(
@@ -253,5 +269,138 @@ function procenta() {
         }
     }
 
+}
+
+function kosoctverec() {
+    const entity = "délka"
+    const unit = "cm"
+    const entity2d = "obsah"
+    const unit2d = "cm2"
+
+    const stranaKosoctverec = deduce(
+        cont("trojúhelník kratší strana", 3, entity, unit),
+        cont("trojúhelník delší strana", 4, entity, unit),
+        pythagoras("přepona", ["kratší strana", "delší strana"])
+    );
+    return {
+        obsah: {
+            deductionTree: deduce(
+                deduceAs("samotné přemístěním 4 trojúhelníků sekládaných jako obdelník, resp. kosočtverec nemá vliv na obsah, pouze se změnil tvar obrazce nikoliv však jeho celková plocha")(
+                    cont("obdelník kratší strana", 3, entity, unit),
+                    cont("obdelník delší strana", 8, entity, unit),
+                    productCombine("obdelník = kosočtverec", { entity: entity2d, unit: unit2d })
+                ),
+                ctorBooleanOption(24, "greater")
+            )
+        },
+        strana: {
+            deductionTree: deduceAs("strana kosočtverce je rovna přeponě v trojúhlníku")(
+                stranaKosoctverec,
+                ctorBooleanOption(5)
+            )
+        },
+        vyska: {
+            deductionTree: deduce(
+                deduce(
+                    deduceAs("vztah pro obsah kosočtverce (obsah = strana x výška => výška = obsah / strana)")(
+                        cont("obdelník kratší strana", 3, entity, unit),
+                        cont("obdelník delší strana", 8, entity, unit),
+                        productCombine("obdelník = kosočtverec", { entity: entity2d, unit: unit2d })
+                    ),
+                    last(stranaKosoctverec),
+                    evalExprAsCont("obsah / strana", { kind: 'cont', agent: 'výška', entity, unit })
+                ),
+                ctorBooleanOption(4.8)
+            )
+        }
+    }
+}
+
+function hranol() {
+    const entity = "délka"
+    const unit = "cm"
+    const entity2d = "obsah"
+    const unit2d = "cm2"
+    const stranaZakladna = cont("základna", 24, entity, unit)
+    const vyska = toCont(deduce(
+        deduceAs("doplnění trojúhleník na obdelník, tak že ho složím ze dvou stejných trojúhleníku")(
+            cont("základna", 60, entity2d, unit2d),
+            double(),
+            ctorScale("obdelník")
+        ),
+        stranaZakladna,
+        ctor("quota")),
+        { agent: "výška", entity: { entity, unit } }
+    )
+
+    return {
+        deductionTree: deduce(
+            deduce(
+                deduce(
+                    vyska,
+                    stranaZakladna,
+                    last(vyska),
+                    productCombine("kvádr", { entity: "objem", unit: "cm3" }, ["výška", "delší hrana", "kratší hrana"],)
+                ),
+                counter("zmenšení", 2),
+                ctorScaleInvert("hranol")
+            ),
+            ctorOption("C", 300)
+        )
+    }
+}
+
+function vzorCtverce() {
+    const entity = "pole"
+
+    const position = "pozice"
+    const currentPosition = deduceAs("vzor opakování, resp. počet polí je závislý na pozici = n * n, kde n je pozice")(
+        cont("obrazec", 400, entity),
+        evalExprAsCont("sqrt(x)", { kind: 'cont', agent: "pozice obrazec", entity: position })
+    )
+
+
+    return {
+        pridano: {
+            deductionTree: deduceAs("vzor opakování, resp. počet přídaných polí je závislý na pozici = (4 * n) - 4, kde n je pozice")(
+                cont("9. obrazec", 9, position),
+                evalExprAsCont("(4 * n) - 4", { kind: 'cont', agent: "přidaná pole na 9. obrazec", entity })
+            )
+        },
+        rozdil: {
+            deductionTree: deduceAs("vzor opakování, resp. počet polí je závislý na pozici = n * n, kde n je pozice")(
+                deduceAs("u sudých obrazců tmavá")(
+                    cont("10. obrazec - celkem tmavá", 10, position),
+                    evalExprAsCont("n * n", { kind: 'cont', agent: "10. obrazec", entity })
+                ),
+                deduceAs("u sudých obrazců světlá")(
+                    cont("9. obrazec - celkem světlá", 9, position),
+                    evalExprAsCont("n * n", { kind: 'cont', agent: "9. obrazec", entity })
+                ),
+                ctorDifference("rozdíl",)
+            )
+        },
+        pocet: {
+            deductionTree: deduce(
+                deduce(
+                    deduce(
+                        currentPosition,
+                        cont("posun na další obrazec", 1, position),
+                        ctorSlide("následující obrazec")
+                    ), evalExprAsCont("n * n", { kind: 'cont', agent: "obrazec", entity })
+                ),
+                deduce(
+                    deduce(
+                        last(currentPosition),
+                        cont("posun na předchozí obrazec", 1, position),
+                        ctorSlideInvert("předchozí obrazec")
+                    ), evalExprAsCont("n * n", { kind: 'cont', agent: "obrazec", entity })
+                ),
+                ctor("tuple")
+            )
+        }
+
+
+    }
 }
 

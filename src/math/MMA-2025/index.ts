@@ -305,7 +305,7 @@ function rovnoramennySatek() {
 
   const mensiSatek = deduce(
     mensiSatekOdvesna,
-    evalExprAsCont("1/2*delka_strany^2", { kind: 'cont', agent: mensiSatekLabel, entity: entity2d, unit: unit2d })
+    evalExprAsCont("1/2*delkaStrany^2", { kind: 'cont', agent: mensiSatekLabel, entity: entity2d, unit: unit2d })
   );
 
   const vetsiStatekOdvesna = deduce(

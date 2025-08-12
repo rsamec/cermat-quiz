@@ -1661,7 +1661,7 @@ function evalExpression(expression, quantityOrContext) {
   const expr = typeof expression === "string" ? parser.parse(expression) : toEquationExpr(expression);
   const variables = expr.variables();
   const context = typeof quantityOrContext === "number" ? { [variables.length === 1 ? variables : variables[0]]: quantityOrContext } : quantityOrContext;
-  if (variables.length === 1) {
+  if (variables.length <= Object.keys(context).length) {
     return expr.evaluate(context);
   }
   const res = expr.simplify(context);

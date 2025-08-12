@@ -56,7 +56,7 @@ export function evalExpression(expression: any, quantityOrContext: number | Reco
   const variables = expr.variables();
   const context = typeof quantityOrContext === "number" ? { [variables.length === 1 ? variables : variables[0]]: quantityOrContext } : quantityOrContext;
   
-  if (variables.length === 1) {
+  if (variables.length <= Object.keys(context).length) {
     //throw `Eval only expression with exactly one variable. Variables ${variables.join(",")}`  
     return expr.evaluate(context);
   }
