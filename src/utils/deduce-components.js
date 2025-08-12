@@ -10,7 +10,6 @@ import { toEquationExpr } from "./math-solver.js";
 export function partion(items, options) {
   const total = items.reduce((out, d) => out += d.value, 0);
   const data = items.map(d => ({ ...d, ratio: d.value / total }))
-
   const { width, height, unit, multiple, showLegend, showTicks, showSeparate, formatAsFraction, showAbsoluteValues, showRelativeValues, fill, marginLeft } = {
     ...{
       height: 150,
@@ -424,7 +423,7 @@ export function stepsTraverse(node) {
 
         if (!isLast) {
           if (newChild?.kind === "ratio" && newChild?.ratio != null) {
-            args.push(relativeTwoPartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole), asPercent: newChild.asPercent }))
+            args.push(relativeTwoPartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: `základ - ${toAgent(newChild.whole)}`, asPercent: newChild.asPercent }))
           }
           else if (newChild?.kind === "ratios" && newChild?.parts != null) {
             if (newChild?.parts?.length == 2) {
@@ -465,7 +464,7 @@ export function stepsTraverse(node) {
             args.push(html`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d, i) => html`<div>${formatNumber(numbers[i])} = ${d.join()}</div>`)}</div>`)
           }
           else if (newChild?.kind === "comp-ratio" && newChild?.ratio != null) {
-            args.push(relativeTwoPartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: newChild.agentB, asPercent: newChild.asPercent }))
+            args.push(relativeTwoPartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: `základ - ${newChild.agentB}`, asPercent: newChild.asPercent }))
           }
         }
 
