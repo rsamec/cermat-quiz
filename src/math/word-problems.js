@@ -8154,13 +8154,13 @@ function penize() {
     deductionTree: deduce(
       deduce(
         deduce(
-          to(
+          deduce(
             janaRatio,
             deduce(
               janaRatio,
               ivoCompare
             ),
-            ratio("celkem", "Ivo + Jana", 3 / 5)
+            sum("Ivo + Jana")
           ),
           ctorComplement("Eva")
         ),
