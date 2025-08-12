@@ -1,4 +1,4 @@
-import { commonSense, compAngle, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorUnit, pythagoras, rate, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorScaleInvert, ctorBooleanOption, triangleAngle, counter, proportion, productCombine, ctorLinearEquation, comp, ctorScale } from "../../components/math";
+import { commonSense, compAngle, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorUnit, pythagoras, rate, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorScaleInvert, ctorBooleanOption, triangleAngle, counter, proportion, productCombine, ctorLinearEquation, comp, ctorScale, ctorComplementCompRatio } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont, toPredicate } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -11,7 +11,12 @@ export default createLazyMap({
     7.2: () => cestaDoPrace().vlak,
     7.3: () => cestaDoPrace().autobus,
     8.1: () => dort().prumerTacu,
-    8.2: () => dort().objemDortu
+    8.2: () => dort().objemDortu,
+    14: () => kosikar(),
+    15.1: () => procenta().skauti,
+    //15.2: () => procenta().kapesne,
+    15.3: () => procenta().vstupenky,
+
 
 })
 
@@ -182,5 +187,71 @@ function dort() {
             )
         }
     }
+}
+
+function kosikar() {
+    const entity = "pomlázka"
+    return {
+        deductionTree: deduce(
+            deduce(
+                deduce(
+                    ratio("prodáno celkem za dva dny", "prodáno 1.den", 1 / 5),
+                    ctorComplement("prodáno 2.den")
+                ),
+                ctorComplementCompRatio("prodáno 1.den")
+            ),
+            comp("prodáno 2.den", "prodáno 1.den", 180, entity)
+        )
+    }
+}
+
+function procenta() {
+    const entity = "členi"
+    const letos = cont("letos", 60, entity);
+    const vstupenkyEntity = "vstupenky"
+
+    const den2 = cont("2.den", 3, entity);
+    const den3 = deduce(
+        den2,
+        compRelative("3.den", "2.den", 1 / 3)
+    )
+
+    return {
+        skauti: {
+            deductionTree: deduce(
+                deduce(
+                    letos,
+                    deduce(
+                        letos,
+                        comp("letos", "loni", 20, entity)
+                    ),
+                    ctorComparePercent()
+                ),
+                ctorOption("D", 50, { asPercent: true })
+            )
+        },
+        // kapesne: {
+        //     deductionTree: deduce(
+        //         ratio("kapesné", "utraceno celkem", 3 / 5),
+        //         ratio("utraceno celkem", "nákup turistické známky", 3 / 4),
+        //     )
+        // },
+        vstupenky: {
+            deductionTree: deduce(
+                deduceAs("zvolíme vhodné číslo pro počet členů 1.den, např. 1.den = 3 členi")(
+                    den3,
+                    deduce(
+                        cont("1.den", 3, entity),
+                        den2,
+                        last(den3),
+                        sum("celkem")
+                    ),
+                    ctorPercent()
+                ),
+                ctorOption("B", 40, { asPercent: true })
+            )
+        }
+    }
+
 }
 
