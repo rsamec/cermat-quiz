@@ -38,7 +38,7 @@ export function areNumbers(ratios: NumberOrExpression[]): ratios is number[] {
 }
 
 function wrapToQuantity(expression: string, context?: ExpressionContext): Quantity {
-  //return evaluate(expression, context);  
+  //return evaluate(expression, context);    
   return { expression, context: convertContext(context) };
 }
 function wrapToRatio(expression: string, context?: ExpressionContext): Ratio {
@@ -56,6 +56,7 @@ function formatNumbersInExpression(expr) {
   });
 }
 function convertContext(context: ExpressionContext) {
+  //return context;
   return Object.fromEntries(Object.entries(context).map(([key, value]) => [key, convertRatioKeysToFractions(value)])) as ExpressionContext;
 }
 function convertRatioKeysToFractions(obj: any) {
@@ -102,6 +103,13 @@ export type ConvertUnit = {
   kind: 'unit',
   unit: Unit
 }
+export type ConvertPercent = {
+  kind: 'convert-percent'
+}
+export type ReverseCompRatio = {
+  kind: 'reverse-comp-ratio'
+}
+
 export type Round = {
   kind: 'round',
   fractionDigits: number
@@ -340,7 +348,7 @@ export type RatiosPredicate = PartToPartRatio | TwoPartRatio | ThreePartRatio;
 export type ExpressionPredicate = EvalExpr<ContainerEval | RateEval> | SimplifyExpr | LinearEquation | Phytagoras;
 export type CommonSensePredicate = CommonSense | Proportion
 export type MultipleOperationPredicate = Sum | SumCombine | Product | ProductCombine | GCD | LCD
-export type SingleOperationPredicate = Scale | InvertScale | Slide | InvertSlide | Difference | Complement | ConvertUnit | Round
+export type SingleOperationPredicate = Scale | InvertScale | Slide | InvertSlide | Difference | Complement | ConvertUnit | Round | ConvertPercent | ReverseCompRatio
 export type OperationPredicate = SingleOperationPredicate | MultipleOperationPredicate
 
 export type Predicate = QuantityPredicate | RatioPredicate | RatiosPredicate | ExpressionPredicate | MultipleOperationPredicate | CommonSensePredicate | OperationPredicate
@@ -370,7 +378,9 @@ function isRatePredicate(value: Predicate): value is Rate {
 
 
 
-export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | 'quota' | "comp-diff" | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'scale' | 'scale-invert' | 'slide' | 'slide-invert' | 'complement' | 'delta' | 'tuple' | 'simplify-expr') {
+export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | 'quota' | "comp-diff"
+  | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'scale' | 'scale-invert' | 'slide' | 'slide-invert'
+  | 'complement' | 'delta' | 'tuple' | 'simplify-expr' | 'convert-percent' | 'reverse-comp-ratio') {
   return { kind } as Predicate
 }
 
@@ -415,11 +425,8 @@ export function ctorPercent(): RatioComparison {
   return { kind: "ratio", asPercent: true } as any
 }
 
-export function ctorCompareRatio(agentB?: string): RatioComparison {
-  return { kind: "comp-ratio", agentB: agentB, asPercent: false } as any
-}
-export function ctorComparePercent(agentB?: string): RatioComparison {
-  return { kind: "comp-ratio", agentB: agentB, asPercent: true } as any
+export function ctorComparePercent(): RatioComparison {
+  return { kind: "comp-ratio", asPercent: true } as any
 }
 
 export function ctorRatios(agent: AgentMatcher): PartToPartRatio {
@@ -1023,25 +1030,25 @@ function toRatio(b: PartWholeRatio, asPercent?: boolean): Question {
   }
 }
 
-function reverseCompRatioEx(b: RatioComparison, asPercent?: boolean): RatioComparison {
+function reverseCompRatioEx(b: RatioComparison): RatioComparison {
   return {
     kind: 'comp-ratio',
     agentA: b.agentB,
     agentB: b.agentA,
     ratio: isNumber(b.ratio) ? 1 / b.ratio : wrapToRatio(`1 / b.ratio`, { b }),
-    asPercent: asPercent ?? b.asPercent
+    asPercent: b.asPercent
   }
 }
 
-function reverseCompRatio(b: RatioComparison, asPercent?: boolean): Question {
-  const result = reverseCompRatioEx(b, asPercent)
+function reverseCompRatio(b: RatioComparison): Question {
+  const result = reverseCompRatioEx(b)
 
   return {
-    question: `Obrať porovnání ${(asPercent ?? b.asPercent) ? "procentem" : "poměrem"} ${result.agentA} a ${result.agentB}?`,
+    question: `Obrať porovnání ${result.agentA} a ${result.agentB}?`,
     result,
     options: isNumber(b.ratio) && isNumber(result.ratio) ? [
-      { tex: `1 / ${formatRatio(b.ratio, b.asPercent)}${result.asPercent ? " * 100" : ''}`, result: formatRatio(result.ratio, result.asPercent), ok: true },
-      // { tex: `${formatRatio(b.ratio, b.asPercent)} - ${formatRatio(1, b.asPercent)}`, result: formatRatio(b.ratio - 1, b.asPercent), ok: false },
+      { tex: `1 / ${formatRatio(b.ratio, b.asPercent)}`, result: formatRatio(result.ratio, result.asPercent), ok: true },
+      { tex: `${formatRatio(b.ratio, b.asPercent)} / 100`, result: formatRatio(b.ratio - 1, b.asPercent), ok: false },
     ] : []
   }
 }
@@ -1682,6 +1689,24 @@ function toRatioComparisonEx(a: Container, b: Container, ctor: RatioComparison):
     ...(ctor.asPercent && { asPercent: true })
   }
 }
+function convertPercentRuleEx(a: RatioComparison): RatioComparison {
+  return {
+    ...a,
+    asPercent: !!!a.asPercent
+  }
+}
+function convertPercentRule(a: RatioComparison): Question {
+  const result = convertPercentRuleEx(a);
+  return {
+    question: a.asPercent ? `Převeď procenta na násobek` : `Převeď násobek na procenta`,
+    result,
+    options: isNumber(a.ratio) && isNumber(result.ratio) ? [
+      { tex: `${formatRatio(a.ratio, a.asPercent)} / 100`, result: formatRatio(result.ratio, result.asPercent), ok: a.asPercent },
+      { tex: `${formatRatio(a.ratio, a.asPercent)} * 100`, result: formatRatio(result.ratio, result.asPercent), ok: !a.asPercent }
+    ] : []
+  }
+}
+
 function toRatioComparison(a: Container, b: Container, ctor: RatioComparison): Question {
   const result = toRatioComparisonEx(a, b, ctor);
   if (isNumber(result.ratio) && isNumber(a.quantity) && isNumber(b.quantity)) {
@@ -2478,6 +2503,12 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   else if (a.kind === "cont" && b.kind === "comp-ratio") {
     return ratioCompareRule(a, b);
   }
+  else if (a.kind === "comp-ratio" && b.kind === "convert-percent") {
+    return convertPercentRule(a);
+  }
+  else if (a.kind === "convert-percent" && b.kind === "comp-ratio") {
+    return convertPercentRule(b);
+  }
   else if (a.kind === "comp-ratio" && b.kind === "ratio") {
     return comparisonRatioRule(a, b);
   }
@@ -2490,11 +2521,11 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   else if (a.kind === "ratios" && b.kind === "comp-ratio") {
     return b.ratio == null ? convertToCompRatio(a, b) : convertToPartToPartRatios(b, a);
   }
-  else if (a.kind === "comp-ratio" && b.kind === "comp-ratio" && b.ratio == null) {
-    return reverseCompRatio(a, b.asPercent);
+  else if (a.kind === "comp-ratio" && b.kind === "reverse-comp-ratio") {
+    return reverseCompRatio(a);
   }
-  else if (a.kind === "comp-ratio" && b.kind === "comp-ratio" && a.ratio == null) {
-    return reverseCompRatio(b, a.asPercent);
+  else if (a.kind === "reverse-comp-ratio" && b.kind === "comp-ratio") {
+    return reverseCompRatio(b);
   }
   else if (a.kind === "comp-ratio" && b.kind === "comp-ratio") {
     return comparisonRatioTransitiveRule(a, b)

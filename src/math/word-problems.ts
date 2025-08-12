@@ -11,6 +11,7 @@ import M5A_2024 from './M5A-2024/index';
 import M5A_2025 from './M5A-2025/index';
 import M5B_2025 from './M5B-2025/index';
 import M9A_2023 from './M9A-2023/index';
+import M9B_2023 from './M9B-2023/index';
 import M9A_2024 from './M9A-2024/index';
 import M9B_2024 from './M9B-2024/index';
 import M9I_2025 from './M9I-2025/index';
@@ -35,11 +36,7 @@ export default createLazyMap({
   "M7B-2025": () => M7B_2025,
 
   "M9A-2023": () => M9A_2023,
-  // "M9B-2023": {
-  //   16.1: ctvercovaSit({ input: {} })[0],
-  //   16.2: ctvercovaSit({ input: {} })[1],
-  //   16.3: ctvercovaSit({ input: {} })[2],
-  // },
+  "M9B-2023": () => M9B_2023,
   "M9A-2024": () => M9A_2024,
   // "M9C-2024": {
   //   1: pocetObyvatel({ input: { celkem: 86_200, jihlavaPlus: 16_000 } }),

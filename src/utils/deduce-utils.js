@@ -443,23 +443,23 @@ function toRatio(b, asPercent) {
     ] : []
   };
 }
-function reverseCompRatioEx(b, asPercent) {
+function reverseCompRatioEx(b) {
   return {
     kind: "comp-ratio",
     agentA: b.agentB,
     agentB: b.agentA,
     ratio: isNumber(b.ratio) ? 1 / b.ratio : wrapToRatio(`1 / b.ratio`, { b }),
-    asPercent: asPercent ?? b.asPercent
+    asPercent: b.asPercent
   };
 }
-function reverseCompRatio(b, asPercent) {
-  const result = reverseCompRatioEx(b, asPercent);
+function reverseCompRatio(b) {
+  const result = reverseCompRatioEx(b);
   return {
-    question: `Obra\u0165 porovn\xE1n\xED ${asPercent ?? b.asPercent ? "procentem" : "pom\u011Brem"} ${result.agentA} a ${result.agentB}?`,
+    question: `Obra\u0165 porovn\xE1n\xED ${result.agentA} a ${result.agentB}?`,
     result,
     options: isNumber(b.ratio) && isNumber(result.ratio) ? [
-      { tex: `1 / ${formatRatio(b.ratio, b.asPercent)}${result.asPercent ? " * 100" : ""}`, result: formatRatio(result.ratio, result.asPercent), ok: true }
-      // { tex: `${formatRatio(b.ratio, b.asPercent)} - ${formatRatio(1, b.asPercent)}`, result: formatRatio(b.ratio - 1, b.asPercent), ok: false },
+      { tex: `1 / ${formatRatio(b.ratio, b.asPercent)}`, result: formatRatio(result.ratio, result.asPercent), ok: true },
+      { tex: `${formatRatio(b.ratio, b.asPercent)} / 100`, result: formatRatio(b.ratio - 1, b.asPercent), ok: false }
     ] : []
   };
 }
@@ -1003,6 +1003,23 @@ function toRatioComparisonEx(a, b, ctor) {
     agentA: a.agent,
     ratio: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity / b.quantity : wrapToRatio(`a.quantity / b.quantity`, { a, b }),
     ...ctor.asPercent && { asPercent: true }
+  };
+}
+function convertPercentRuleEx(a) {
+  return {
+    ...a,
+    asPercent: !!!a.asPercent
+  };
+}
+function convertPercentRule(a) {
+  const result = convertPercentRuleEx(a);
+  return {
+    question: a.asPercent ? `P\u0159eve\u010F procenta na n\xE1sobek` : `P\u0159eve\u010F n\xE1sobek na procenta`,
+    result,
+    options: isNumber(a.ratio) && isNumber(result.ratio) ? [
+      { tex: `${formatRatio(a.ratio, a.asPercent)} / 100`, result: formatRatio(result.ratio, result.asPercent), ok: a.asPercent },
+      { tex: `${formatRatio(a.ratio, a.asPercent)} * 100`, result: formatRatio(result.ratio, result.asPercent), ok: !a.asPercent }
+    ] : []
   };
 }
 function toRatioComparison(a, b, ctor) {
@@ -1610,6 +1627,10 @@ function inferenceRuleEx(...args) {
     return ratioCompareRule(b, a);
   } else if (a.kind === "cont" && b.kind === "comp-ratio") {
     return ratioCompareRule(a, b);
+  } else if (a.kind === "comp-ratio" && b.kind === "convert-percent") {
+    return convertPercentRule(a);
+  } else if (a.kind === "convert-percent" && b.kind === "comp-ratio") {
+    return convertPercentRule(b);
   } else if (a.kind === "comp-ratio" && b.kind === "ratio") {
     return comparisonRatioRule(a, b);
   } else if (a.kind === "ratio" && b.kind === "comp-ratio") {
@@ -1618,10 +1639,10 @@ function inferenceRuleEx(...args) {
     return a.ratio == null ? convertToCompRatio(b, a) : convertToPartToPartRatios(a, b);
   } else if (a.kind === "ratios" && b.kind === "comp-ratio") {
     return b.ratio == null ? convertToCompRatio(a, b) : convertToPartToPartRatios(b, a);
-  } else if (a.kind === "comp-ratio" && b.kind === "comp-ratio" && b.ratio == null) {
-    return reverseCompRatio(a, b.asPercent);
-  } else if (a.kind === "comp-ratio" && b.kind === "comp-ratio" && a.ratio == null) {
-    return reverseCompRatio(b, a.asPercent);
+  } else if (a.kind === "comp-ratio" && b.kind === "reverse-comp-ratio") {
+    return reverseCompRatio(a);
+  } else if (a.kind === "reverse-comp-ratio" && b.kind === "comp-ratio") {
+    return reverseCompRatio(b);
   } else if (a.kind === "comp-ratio" && b.kind === "comp-ratio") {
     return comparisonRatioTransitiveRule(a, b);
   } else if (a.kind === "cont" && b.kind === "ratio") {
@@ -5219,6 +5240,7 @@ var parser = new Parser({
     comparison: true
   }
 });
+parser.consts.\u03C0 = 3.14;
 parser.functions.gcd = function(...args) {
   return gcdCalc2(args);
 };
@@ -5269,7 +5291,7 @@ function recurExpr(node) {
         expr = expr.substitute(variable, res);
       } else {
         const q = res.quantity ?? res.ratio;
-        if (typeof q == "number") {
+        if (typeof q == "number" || !isNaN(parseFloat(q))) {
           expr = expr.simplify({ [variable]: res });
         } else {
           expr = expr.substitute(variable, q);

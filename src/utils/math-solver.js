@@ -1625,6 +1625,7 @@ var parser = new Parser({
     comparison: true
   }
 });
+parser.consts.\u03C0 = 3.14;
 parser.functions.gcd = function(...args) {
   return gcdCalc(args);
 };
@@ -1678,7 +1679,7 @@ function recurExpr(node) {
         expr = expr.substitute(variable, res);
       } else {
         const q = res.quantity ?? res.ratio;
-        if (typeof q == "number") {
+        if (typeof q == "number" || !isNaN(parseFloat(q))) {
           expr = expr.simplify({ [variable]: res });
         } else {
           expr = expr.substitute(variable, q);

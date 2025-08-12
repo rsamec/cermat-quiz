@@ -145,16 +145,16 @@ function uhelAlfa() {
   return {
     deductionTree: deduce(
       deduce(
+        deduce(
           deduce(
             deduce(
-              deduce(
-                praveRameho,
-                compAngle("pravé rameno", "úhel přímka p", "corresponding")
-              ),
-              compAngle("úhel přímka p", "trojúhelník bod A", "alternate-exterior")
+              praveRameho,
+              compAngle("pravé rameno", "úhel přímka p", "corresponding")
             ),
-            last(praveRameho),
-            triangleAngle("trojúhelník bod C")
+            compAngle("úhel přímka p", "trojúhelník bod A", "alternate-exterior")
+          ),
+          last(praveRameho),
+          triangleAngle("trojúhelník bod C")
         ),
         compAngle("trojúhelník bod C", "alfa", "supplementary")
       ),
@@ -353,8 +353,11 @@ function tabor() {
     mladsiPercent: {
       deductionTree: deduce(
         deduce(
-          compRelative(mladsiLabel, starsiLabel, -1 / 3),
-          ctorComparePercent()
+          deduce(
+            compRelative(mladsiLabel, starsiLabel, -1 / 3),
+            ctor("reverse-comp-ratio")
+          ),
+          ctor("convert-percent")
         ),
         ctorOption("F", 50, { asPercent: true })
       )

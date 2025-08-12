@@ -15,6 +15,8 @@ const parser = new Parser({
   }
 });
 
+parser.consts.π = 3.14
+
 parser.functions.gcd = function (...args: number[]) {
   return gcdCalc(args)
 }
@@ -81,7 +83,7 @@ function recurExpr(node) {
         const q = res.quantity ?? res.ratio;
 
 
-        if (typeof q == 'number') {
+        if (typeof q == 'number' || !isNaN(parseFloat(q))) {
           expr = expr.simplify({ [variable]: res })
         }
         else {
@@ -107,8 +109,11 @@ export function toEquationExpr(lastExpr) {
 
 
 function cleanUpExpression(exp) {
-  const replaced = exp.toString().replaceAll(".quantity", "").replaceAll(".ratio", "").replaceAll(".baseQuantity", "")
-  return formatNumbersInExpression(replaced)
+  const replaced = exp.toString()
+  .replaceAll(".quantity", "")
+  .replaceAll(".ratio", "")
+  .replaceAll(".baseQuantity", "")
+  return formatNumbersInExpression(replaced)  
 }
 function formatNumbersInExpression(expr) {
   return expr.replace(/(\d*\.\d+|\d+)/g, (match) => {

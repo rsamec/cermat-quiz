@@ -256,7 +256,7 @@ function vzestupHladinyVody() {
   const objemKulicky =
     deduceAs("kulička")(
       cont("kulička poloměr", 3, entity, unit),
-      evalExprAsCont("4/3*r^3*π", { kind: 'cont', agent: 'voda', entity: entity3d, unit: unit3d })
+      evalExprAsCont("4/3*r^3*Pi", { kind: 'cont', agent: 'voda', entity: entity3d, unit: unit3d })
     )
 
   const objemValce =
@@ -266,7 +266,7 @@ function vzestupHladinyVody() {
         double(),
         ctorScaleInvert("válec poloměr")
       ),
-      evalExprAsRate("r^2*π", { kind: 'rate', agent: 'voda', entity: { entity: entity3d, unit: unit3d }, entityBase: { entity, unit }, baseQuantity: 1 })
+      evalExprAsRate("r^2*Pi", { kind: 'rate', agent: 'voda', entity: { entity: entity3d, unit: unit3d }, entityBase: { entity, unit }, baseQuantity: 1 })
     )
 
 
@@ -278,7 +278,7 @@ function vzestupHladinyVody() {
           objemValce,
           objemKulicky,
         ),
-        simplifyExpr({ "π": 3.14 }),
+        simplifyExpr({ "Pi": 3.14 }),
       ),
       ctorOption("D", 1))
   }
