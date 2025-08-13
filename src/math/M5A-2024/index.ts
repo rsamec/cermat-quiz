@@ -1,5 +1,5 @@
-import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, primeFactorization, rate, ratio, transfer, sum, ctorSlide} from "../../components/math";
-import { axiomInput, deduce, last, to, createLazyMap } from "../../utils/deduce-utils";
+import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, primeFactorization, rate, ratio, transfer, sum, ctorSlide, counter, ctorScaleInvert, ctorBooleanOption, pythagoras, product, productCombine, ctorRate } from "../../components/math";
+import { axiomInput, deduce, last, to, createLazyMap, deduceAs, toPredicate } from "../../utils/deduce-utils";
 import { cislaNaOse } from "../cislaNaOse";
 const dveCislaNaOseParams = {
   input: {
@@ -21,6 +21,9 @@ export default createLazyMap({
   5.2: () => distanceUnitCompareDiff(),
   6.1: () => dveCislaNaOse(dveCislaNaOseParams).XandY,
   6.2: () => dveCislaNaOse(dveCislaNaOseParams).posun,
+  8.1: () => ctvercovaSit().porovnani,
+  8.2: () => ctvercovaSit().obsah,
+  8.3: () => ctvercovaSit().obvod,
   9: () => novorocniPrani(),
   11: () => sestiuhelnik(),
   12.1: () => vyvojObyvatel().panov,
@@ -34,24 +37,92 @@ export default createLazyMap({
   14.3: () => pyramida().stairs,
 })
 function souctovyTrojuhelnik() {
-  const entity = 'velikost'
   const zbytekKRozdeleni = "zbytek k rozdělení"
   return {
-    deductionTree: deduce(
+    deductionTree: deduceAs("výsledek je složen z čísla 7 a trojnásobku hodnoty v šedém poli")(
       deduce(
-        cont("zadaná hodnota v poli v třetí řadě trojúhelníku", 25, entity),
-        cont("zadaná hodnota v poli v první řadě", 7, entity),
+        counter("výsledek", 25),
+        counter("zadaná hodnota", 7),
         ctorDifference(zbytekKRozdeleni)
       ),
-      to(
-        cont("hledaných čísla v šedých polích v první řadě", 2, "čísel"),
-        commonSense("součtový trojúhelník obsahuje 3 řady, kde jsou 3 pole, poté 2 pole a 1 pole ve spodní řadě"),
-        commonSense("Každé číslo je součtem dvou čísel nad ním."),
-        commonSense("hledaných číslo napravo je započítáno 2 krát, protože je použito v levém i pravém součtu v prostřední řadě"),
-        cont(zbytekKRozdeleni, 3, "čísel"),
-      ),
-      ctor('rate')
+      counter("trojnásobek", 3),
+      ctorScaleInvert("hodnota v šedém poli")
     )
+  }
+}
+
+function ctvercovaSit() {
+  const entity = "délka"
+  const unit = "cm"
+
+  const entity2d = "obsah"
+  const unit2d = "cm2"
+  const obdelnikVLabel = "větší obdelník 2x3"
+  const obdelnikMLabel = "menší obdelník 2x2"
+  const trojV = "větší trojúhleník";
+  const trojM = "menší trojúhleník"
+
+  const trojuhlenikV = to(
+    commonSense(`${trojV} je polovinou ${obdelnikVLabel}`),
+    cont(trojV, 3, entity2d, unit2d)
+  )
+
+  const trojuhlenikM = to(
+    commonSense(`${trojM} je polovinou ${obdelnikMLabel}`),
+    cont(trojV, 2, entity2d, unit2d)
+  )
+
+  const obdelnikV = cont(obdelnikVLabel, 6, entity2d, unit2d)
+  const obdelnikM = cont(obdelnikMLabel, 4, entity2d, unit2d)
+
+  const obsahA = deduce(
+    obdelnikV,
+    trojuhlenikM,
+    trojuhlenikV,
+    sum("obrazec A")
+  )
+
+  return {
+    porovnani: {
+      deductionTree: deduce(
+        deduce(
+          obsahA,
+          deduce(
+            obdelnikM,
+            last(trojuhlenikM),
+            last(trojuhlenikM),
+            last(trojuhlenikM),
+            sum("obrazec B")
+          ),
+        ),
+        ctorBooleanOption(0)
+      )
+    },
+    obsah: {
+      deductionTree: deduce(
+        obsahA,
+        ctorBooleanOption(11)
+      )
+    },
+    obvod: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            cont("strana 2", 2, entity, unit),
+            counter("čtyřikrát", 4),
+            product("část obvodu za přepony")
+          ),
+          cont("strana 1", 2, entity, unit),
+          deduceAs("zde bereme délku přepony pouze 2 cm, víme však, že musí být delší než 2 cm")(
+            cont("min. virtuální délka přepony", 2, entity, unit),
+            counter("tři přepony", 3),
+            product("část obvodu za přepony")
+          ),
+          sum("obvod")
+        ),
+        ctorBooleanOption(16, "smaller")
+      )
+    }
   }
 }
 function giftAndBox() {
@@ -188,11 +259,12 @@ export function novorocniPrani() {
     deductionTree: deduce(
       deduce(
         spolecne,
-        deduce(
-          deduce(cont("Tereza", 14, entity), cont("Tereza", 5, entityBase), ctor('rate')),
-          deduce(cont("Nikola", 10, entity), cont("Nikola", 5, entityBase), ctor('rate')),
-          sum("společně")
-        )
+        toPredicate<any>(
+          deduce(
+            cont("Tereza", 14, entity),
+            cont("Nikola", 10, entity),
+            sum("společně")
+          ), node => ({ kind: 'rate', quantity: node.quantity, agent: "společně", entity: { entity }, entityBase: { entity: entityBase }, baseQuantity: 5 }))
       ),
       ctorOption("B", 25)
     )

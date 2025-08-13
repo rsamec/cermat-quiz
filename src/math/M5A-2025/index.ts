@@ -1,4 +1,4 @@
-import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, rate, ratio, ratios, sum, counter, double, product } from "../../components/math";
+import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, rate, ratio, ratios, sum, counter, double, product, ctorScale, lcd, lcdCalc, type Container, ctorComparePercent, compRelative, ctor, ctorBooleanOption } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, mapToCont, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -11,13 +11,69 @@ export default createLazyMap({
   5.3: () => patrovyDum().pocetDivek,
   6.1: () => domecek().obvod,
   6.2: () => domecek().kratsiStranaObdelni,
+  8.1: () => turistickyOdil().pocetMuzu,
+  8.2: () => turistickyOdil().pocetClenu,
+  8.3: () => turistickyOdil().pocetZen,
   9: () => farmar(),
   10: () => penize(),
   14.1: () => poutnik().prvniKouzlo,
   14.2: () => poutnik().druheKouzlo,
   14.3: () => poutnik().maximumKouzel,
 })
+function turistickyOdil() {
 
+  const muzLabel = "muži"
+  const zenyLabel = "ženy"
+  const clenLabel = "členové"
+
+  const muzi = Object.fromEntries(Object.entries({
+    2015: 30,
+    2016: 45,
+  }).map(([key, value]) => [key, counter(`${muzLabel} - ${key}`, value)]))
+
+  const clenove = Object.fromEntries(Object.entries({
+    2016: 90,
+    2017: 100,
+  }).map(([key, value]) => [key, counter(`${clenLabel} - ${key}`, value)]))
+
+  const zeny = Object.fromEntries(Object.entries({
+    2017: 50,
+    2018: 50,
+  }).map(([key, value]) => [key, counter(`${zenyLabel} - ${key}`, value)]))
+
+
+  return {
+    pocetMuzu: {
+      deductionTree: deduce(
+        deduce(
+          muzi["2015"],
+          muzi["2016"],
+          ctor("comp-ratio")
+        ),
+        ctorBooleanOption(1 / 3, "closeTo", { asFraction: true })
+      )
+    },
+    pocetClenu: {
+      deductionTree: deduce(
+        deduce(
+          clenove["2017"],
+          clenove["2016"],
+          ctor("comp-ratio")
+        ),
+        ctorBooleanOption(1 / 9, "closeTo", { asFraction: true })
+      )
+    },
+    pocetZen: {
+      deductionTree: deduce(
+        deduce(
+          zeny["2017"],
+          zeny["2018"],
+        ),
+        ctorBooleanOption(0, "greater")
+      )
+    }
+  }
+}
 function jizdniKolo() {
   const entity = "otočení"
   const otaceniKola = ratios("otáčení kola", ["táta", "Mirek"], [25, 30])

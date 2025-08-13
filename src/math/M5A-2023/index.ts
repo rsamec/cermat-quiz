@@ -1,4 +1,4 @@
-import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, lcd, primeFactorization, rate, sum, counter, product, productCombine } from "../../components/math";
+import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, lcd, primeFactorization, rate, sum, counter, product, productCombine, ctorScale, ctorScaleInvert, ratios, ctorDifference } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
@@ -53,6 +53,7 @@ export default createLazyMap({
       cena: 72
     }
   }),
+  10: () => minceVKasicce(),
   11: () => stavebnice().cube,
   12: () => stavebnice().minimalCube,
   13.1: () => trideni_odpadu().papirRtoS,
@@ -65,19 +66,16 @@ export default createLazyMap({
 
 
 function hledani_cisel({ input }: { input: { value: number } }) {
-  const entity = "";
+
   return {
     deductionTree: deduce(
-      to(
-        axiomInput(cont("zadaná hodnota", input.value, entity), 1),
-        commonSense(`rozklad na prvočísla:${primeFactorization([input.value]).join(",")}`),
-        commonSense(`rozdělím na 2 skupiny, tak aby bylo lehce dělitelné 6`),
-        commonSense('prvni skupina 2 x 3 = 6, resp. číslo zvětšené = 6 x 2'),
-        commonSense('druhe skupina 2 x 3 x 5 = 30, resp. číslo zmenšené = 30 / 6 = 5'),
-        cont("prvni změněné číslo", 12, entity)
+      deduce(
+        axiomInput(counter("zadaná hodnota", input.value), 1),
+        counter("zvětšení", 2),
+        ctorScale("zvětšená hodnota")
       ),
-      cont("druhe změněné čislo", 5, entity),
-      product("součin")
+      counter("zmenšení", 6),
+      ctorScaleInvert("výsledná hodnota")
     )
   }
 }
@@ -280,5 +278,36 @@ function stavebnice() {
       )
     }
 
+  }
+}
+
+
+function minceVKasicce() {
+  const entity = "Kč";
+  const deseti = "desetikoruny";
+  const peti = "pětikoruny";
+
+  const minceEntity = "mince"
+  const celkem = cont("kasička s mincemi", 78, minceEntity)
+  const petiPocet = deduce(
+    ratios("kasička s mincemi", [deseti, peti], [5, 10]),
+    celkem,
+  )
+  return {
+    deductionTree: deduce(      
+      deduce(
+        deduce(petiPocet, rate(peti, 5, { entity }, { entity: minceEntity })),
+        deduce(
+          deduce(
+            celkem,
+            last(petiPocet),
+            ctorDifference(deseti)
+          ),
+          rate(deseti, 10, { entity }, { entity: minceEntity })
+        ),
+        sum("celkem v kasičce")
+      ),
+      ctorOption("B", 520)
+    )
   }
 }

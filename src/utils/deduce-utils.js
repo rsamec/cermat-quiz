@@ -112,28 +112,6 @@ function compareAngleRule(a, b) {
     ] : []
   };
 }
-function toComparisonAsRatioEx(a, b) {
-  if (a.whole != b.whole) {
-    throw `Mismatch entity ${a.whole}, ${b.whole} `;
-  }
-  return {
-    kind: "comp-ratio",
-    agentB: b.part,
-    agentA: a.part,
-    ratio: isNumber(a.ratio) && isNumber(b.ratio) ? 1 + (a.ratio - b.ratio) : wrapToRatio(`1 + (a.ratio - b.ratio)`, { a, b })
-  };
-}
-function toComparisonAsRatio(a, b) {
-  const result = toComparisonAsRatioEx(a, b);
-  return {
-    question: `Porovnej ${result.agentA} a ${result.agentB}. O kolik ? `,
-    result,
-    options: isNumber(a.ratio) && isNumber(b.ratio) && isNumber(result.ratio) ? [
-      { tex: `1 + (${formatRatio(a.ratio)} - ${formatRatio(b.ratio)})`, result: formatRatio(result.ratio), ok: true },
-      { tex: `${formatRatio(b.ratio)} - ${formatRatio(a.ratio)} `, result: formatRatio(result.ratio), ok: false }
-    ] : []
-  };
-}
 function toComparisonRatioEx(a, b) {
   if (a.whole != b.whole) {
     throw `Mismatch entity ${a.whole}, ${b.whole} `;
@@ -239,10 +217,14 @@ function convertToPartToPartRatiosEx(b, a) {
   return { kind: "ratios", whole: a.whole, parts: [b.agentA, b.agentB], ratios: [abs(b.ratio), 1] };
 }
 function convertToPartToPartRatios(b, a) {
-  const result = convertToPartToPartRatiosEx(b, a);
-  if (!isNumber(b.ratio)) {
+  const tempResult = convertToPartToPartRatiosEx(b, a);
+  if (!isNumber(b.ratio) || !areNumbers(tempResult.ratios)) {
     throw "convertToPartToPartRatios does not support expressions";
   }
+  const result = {
+    ...tempResult,
+    ratios: ratiosToBaseForm(tempResult.ratios)
+  };
   return {
     question: `Vyj\xE1d\u0159i pom\u011Brem \u010D\xE1st\xED ${[b.agentA, b.agentB].join(":")}?`,
     result,
@@ -290,7 +272,7 @@ function roundTo(a, b) {
     ] : []
   };
 }
-function ratioCompareRuleEx(a, b) {
+function ratioCompareRuleEx(a, b, nthPart) {
   if (a.agent == b.agentB) {
     return {
       kind: "cont",
@@ -307,25 +289,34 @@ function ratioCompareRuleEx(a, b) {
       entity: a.entity,
       unit: a.unit
     };
+  } else if (b.agentA == nthPart?.agent) {
+    return {
+      kind: "cont",
+      agent: b.agentA,
+      quantity: isNumber(a.quantity) && isNumber(b.ratio) ? a.quantity / (abs(b.ratio) + 1) * abs(b.ratio) : wrapToQuantity(`a.quantity / (abs(b.ratio) + 1) * abs(b.ratio)`, { a, b }),
+      entity: a.entity,
+      unit: a.unit
+    };
   } else {
     return {
       kind: "cont",
       agent: b.agentB,
-      quantity: isNumber(a.quantity) && isNumber(b.ratio) ? a.quantity / (Math.abs(b.ratio) + 1) : wrapToQuantity(`a.quantity * (abs(b.ratio) + 1)`, { a, b }),
+      quantity: isNumber(a.quantity) && isNumber(b.ratio) ? a.quantity / (Math.abs(b.ratio) + 1) : wrapToQuantity(`a.quantity / (abs(b.ratio) + 1)`, { a, b }),
       entity: a.entity,
       unit: a.unit
     };
   }
 }
-function ratioCompareRule(a, b) {
-  const result = ratioCompareRuleEx(a, b);
+function ratioCompareRule(a, b, nthPart) {
+  const result = ratioCompareRuleEx(a, b, nthPart);
   return {
-    question: `${computeQuestion(result.quantity)} ${a.agent == b.agentB ? b.agentA : b.agentB}${formatEntity(result)}?`,
+    question: `${computeQuestion(result.quantity)} ${a.agent == b.agentB || b.agentA === nthPart?.agent ? b.agentA : b.agentB}${formatEntity(result)}?`,
     result,
     options: isNumber(a.quantity) && isNumber(b.ratio) && isNumber(result.quantity) ? [
       { tex: `${formatNumber(a.quantity)} * ${formatRatio(abs(b.ratio))}`, result: formatNumber(a.quantity * b.ratio), ok: a.agent == b.agentB && b.ratio >= 0 || a.agent == b.agentA && b.ratio < 0 },
       { tex: `${formatNumber(a.quantity)} / ${formatRatio(abs(b.ratio))}`, result: formatNumber(a.quantity / b.ratio), ok: a.agent == b.agentA && b.ratio >= 0 || a.agent == b.agentB && b.ratio < 0 },
-      { tex: `${formatNumber(a.quantity)} / (${formatRatio(abs(b.ratio))} + 1)`, result: formatNumber(result.quantity), ok: a.agent !== b.agentA && a.agent !== b.agentB }
+      { tex: `${formatNumber(a.quantity)} / (${formatRatio(abs(b.ratio))} + 1)`, result: formatNumber(result.quantity), ok: a.agent !== b.agentA && a.agent !== b.agentB && b.agentA !== nthPart?.agent },
+      { tex: `${formatNumber(a.quantity)} / (${formatRatio(abs(b.ratio))} + 1) * ${formatRatio(abs(b.ratio))}`, result: formatNumber(result.quantity), ok: b.agentA == nthPart?.agent }
     ] : []
   };
 }
@@ -620,6 +611,30 @@ function proportionRatiosRule(a, b) {
     ]
   };
 }
+function invertRatiosRuleEx(a, b) {
+  if (!areNumbers(a.ratios)) {
+    throw `invertRatisRule is not support by non quantity type`;
+  }
+  return {
+    kind: "ratios",
+    whole: b.agent,
+    parts: a.parts,
+    ratios: a.ratios.map((d) => 1 / d)
+  };
+}
+function invertRatiosRule(a, b) {
+  if (!areNumbers(a.ratios)) {
+    throw `invertRatisRule is not support by non quantity type`;
+  }
+  const result = mapRatiosByFactorEx(invertRatiosRuleEx(a, b), lcdCalc(a.ratios));
+  return {
+    question: `P\u0159evo\u010F pom\u011Bry na obracen\xE9 hodnoty.`,
+    result,
+    options: areNumbers(a.ratios) ? [
+      { tex: `obr\xE1tit pom\u011Br`, result: result.ratios.join(":"), ok: true }
+    ] : []
+  };
+}
 function partToWholeRuleEx(a, b) {
   if (!(matchAgent(b.whole, a) || matchAgent(b.part, a))) {
     throw `Mismatch entity ${[a.agent, a.entity].join()} any of ${[b.whole, b.part].join()}`;
@@ -643,8 +658,8 @@ function partToWholeRule(a, b) {
   return {
     question: containerQuestion(result),
     result,
-    options: isNumber(a.quantity) && isNumber(b.ratio) ? [
-      { tex: `${formatNumber(a.quantity)} * ${formatRatio(b.ratio)}`, result: formatNumber(a.quantity * b.ratio), ok: matchAgent(b.whole, a) },
+    options: isNumber(a.quantity) && isNumber(b.ratio) && isNumber(result.quantity) ? [
+      { tex: `${formatRatio(b.ratio)} * ${formatNumber(a.quantity)}`, result: formatNumber(result.quantity), ok: matchAgent(b.whole, a) },
       { tex: `${formatNumber(a.quantity)} / ${formatRatio(b.ratio)}`, result: formatNumber(a.quantity / b.ratio), ok: !matchAgent(b.whole, a) }
     ] : []
   };
@@ -1203,14 +1218,15 @@ function transitiveRatioRule(a, b) {
     ] : []
   };
 }
-function toRateEx(a, b) {
+function toRateEx(a, b, rate) {
   if (a.agent !== b.agent) {
     throw `Mismatch angent ${a.agent}, ${b.agent}`;
   }
+  const baseQuantity = rate?.baseQuantity ?? 1;
   return {
     kind: "rate",
     agent: a.agent,
-    quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity / b.quantity : wrapToQuantity(`a.quantity / b.quantity`, { a, b }),
+    quantity: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(baseQuantity) ? baseQuantity === 1 ? a.quantity / b.quantity * baseQuantity : a.quantity / b.quantity * baseQuantity : isNumber(baseQuantity) && baseQuantity === 1 ? wrapToQuantity(`a.quantity / b.quantity`, { a, b }) : wrapToQuantity(`a.quantity / b.quantity * rate.baseQuantity`, { a, b, rate }),
     entity: {
       entity: a.entity,
       unit: a.unit
@@ -1219,17 +1235,18 @@ function toRateEx(a, b) {
       entity: b.kind === "cont" ? b.entity : b.agentQuota,
       unit: a.unit
     },
-    baseQuantity: 1
+    baseQuantity: rate?.baseQuantity ?? 1
   };
 }
-function toRate(a, b) {
-  const result = toRateEx(a, b);
-  if (isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.quantity)) {
+function toRate(a, b, rate) {
+  const result = toRateEx(a, b, rate);
+  if (isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.baseQuantity) && isNumber(result.quantity)) {
     return {
-      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnom\u011Brn\u011B na ${formatNumber(b.quantity)} ${formatEntity({ entity: b.kind === "cont" ? b.entity : b.agentQuota })}`,
+      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnom\u011Brn\u011B ${formatNumber(b.quantity)} kr\xE1t${result.baseQuantity !== 1 ? ` po ${formatNumber(result.baseQuantity)} ${formatEntity({ entity: b.kind === "cont" ? b.entity : b.agentQuota })}` : ""}`,
       result,
       options: [
-        { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: true },
+        { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: rate.baseQuantity === 1 },
+        { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)} * ${formatNumber(result.baseQuantity)}`, result: formatNumber(result.quantity), ok: rate.baseQuantity !== 1 },
         { tex: `${formatNumber(b.quantity)} / ${formatNumber(a.quantity)}`, result: formatNumber(b.quantity / a.quantity), ok: false }
       ]
     };
@@ -1398,14 +1415,11 @@ function partToPartRuleEx(a, partToPartRatio, nth) {
   }
   const sourcePartIndex = partToPartRatio.parts.findIndex((d) => matchAgent(d, a));
   const targetPartIndex = nth != null ? partToPartRatio.parts.findIndex((d) => d === nth.agent) : matchAgent(partToPartRatio[0], a) ? 0 : partToPartRatio.parts.length - 1;
-  const partsSum = areNumbers(partToPartRatio.ratios) ? partToPartRatio.ratios.reduce((out, d) => out += d, 0) : partToPartRatio.ratios.join(" + ");
   const matchedWhole = matchAgent(partToPartRatio.whole, a);
   return {
-    kind: "cont",
+    ...a,
     agent: (matchedWhole || nth != null) && targetPartIndex != -1 ? partToPartRatio.parts[targetPartIndex] : partToPartRatio.whole,
-    entity: a.entity,
-    quantity: matchedWhole ? areNumbers(partToPartRatio.ratios) && isNumber(a.quantity) ? a.quantity / partToPartRatio.ratios.reduce((out, d) => out += d, 0) * partToPartRatio.ratios[targetPartIndex] : wrapToQuantity(`a.quantity / (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")}) * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio }) : areNumbers(partToPartRatio.ratios) && isNumber(a.quantity) ? a.quantity / partToPartRatio.ratios[sourcePartIndex] * (nth != null ? partToPartRatio.ratios[targetPartIndex] : partToPartRatio.ratios.reduce((out, d) => out += d, 0)) : nth != null ? wrapToQuantity(`a.quantity / b.ratios[${sourcePartIndex}] * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio }) : wrapToQuantity(`a.quantity / b.ratios[${sourcePartIndex}] * (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")})`, { a, b: partToPartRatio }),
-    unit: a.unit
+    quantity: matchedWhole ? areNumbers(partToPartRatio.ratios) && isNumber(a.quantity) ? a.quantity / partToPartRatio.ratios.reduce((out, d) => out += d, 0) * partToPartRatio.ratios[targetPartIndex] : wrapToQuantity(`a.quantity / (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")}) * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio }) : areNumbers(partToPartRatio.ratios) && isNumber(a.quantity) ? a.quantity / partToPartRatio.ratios[sourcePartIndex] * (nth != null ? partToPartRatio.ratios[targetPartIndex] : partToPartRatio.ratios.reduce((out, d) => out += d, 0)) : nth != null ? wrapToQuantity(`a.quantity / b.ratios[${sourcePartIndex}] * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio }) : wrapToQuantity(`a.quantity / b.ratios[${sourcePartIndex}] * (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")})`, { a, b: partToPartRatio })
   };
 }
 function partToPartRule(a, partToPartRatio, nth) {
@@ -1417,7 +1431,7 @@ function partToPartRule(a, partToPartRatio, nth) {
     sourcePartIndex = 0;
   const partsSum = `(${partToPartRatio.ratios.join(" + ")})`;
   return {
-    question: containerQuestion(result),
+    question: result.kind === "rate" ? `${computeQuestion(result.quantity)} ${result.agent}` : containerQuestion(result),
     result,
     options: areNumbers(partToPartRatio.ratios) && isNumber(a.quantity) && isNumber(result.quantity) ? [
       { tex: `${formatNumber(a.quantity)} / ${partsSum} * ${formatNumber(partToPartRatio.ratios[targetPartIndex])}`, result: formatNumber(result.quantity), ok: matchedWhole },
@@ -1615,7 +1629,7 @@ function inferenceRuleEx(...args) {
     return a.kind === "eval-option" ? evalToOption(b, a) : b.kind === "eval-option" ? evalToOption(a, b) : null;
   } else if (a.kind === "cont" && b.kind == "cont") {
     const kind = last2?.kind;
-    return kind === "comp-diff" ? toComparisonDiff(a, b) : kind === "scale" || kind === "scale-invert" ? mapContByScale(a, b, last2) : kind === "slide" || kind === "slide-invert" ? toSlide(a, b, last2) : kind === "diff" ? toDifference(a, b, last2) : kind === "quota" ? toQuota(a, b) : kind === "delta" ? toDelta(a, b, last2) : kind === "pythagoras" ? pythagorasRule(a, b, last2) : kind === "triangle-angle" ? triangleAngleRule(a, b, last2) : kind === "rate" ? toRate(a, b) : kind === "ratios" ? toRatios([a, b], last2) : kind === "comp-ratio" ? toRatioComparison(a, b, last2) : kind === "ratio" ? toPartWholeRatio(a, b, last2) : kind === "linear-equation" ? solveEquation(a, b, last2) : toComparison(a, b);
+    return kind === "comp-diff" ? toComparisonDiff(a, b) : kind === "scale" || kind === "scale-invert" ? mapContByScale(a, b, last2) : kind === "slide" || kind === "slide-invert" ? toSlide(a, b, last2) : kind === "diff" ? toDifference(a, b, last2) : kind === "quota" ? toQuota(a, b) : kind === "delta" ? toDelta(a, b, last2) : kind === "pythagoras" ? pythagorasRule(a, b, last2) : kind === "triangle-angle" ? triangleAngleRule(a, b, last2) : kind === "rate" ? toRate(a, b, last2) : kind === "ratios" ? toRatios([a, b], last2) : kind === "comp-ratio" ? toRatioComparison(a, b, last2) : kind === "ratio" ? toPartWholeRatio(a, b, last2) : kind === "linear-equation" ? solveEquation(a, b, last2) : toComparison(a, b);
   } else if ((a.kind === "comp-ratio" || a.kind === "cont") && b.kind === "simplify-expr") {
     return simplifyExprAsRule(a, b);
   } else if (a.kind === "simplify-expr" && (b.kind === "comp-ratio" || b.kind === "cont")) {
@@ -1646,7 +1660,7 @@ function inferenceRuleEx(...args) {
     return toRatio(a);
   } else if (a.kind === "ratio" && b.kind === "ratio") {
     const kind = last2?.kind;
-    return kind === "diff" ? toDifferenceAsRatio(a, b, last2) : kind === "comp-ratio" ? toComparisonRatio(a, b) : kind === "convert-relative" ? toComparisonAsRatio(a, b) : transitiveRatioRule(a, b);
+    return kind === "diff" ? toDifferenceAsRatio(a, b, last2) : kind === "comp-ratio" ? toComparisonRatio(a, b) : transitiveRatioRule(a, b);
   } else if (a.kind === "comp" && b.kind === "cont") {
     const kind = last2?.kind;
     return kind === "comp-part-eq" ? partEqual(a, b) : compareRule(b, a);
@@ -1665,6 +1679,10 @@ function inferenceRuleEx(...args) {
     return compRatiosToCompRule(b, a);
   } else if (a.kind === "ratios" && b.kind == "comp") {
     return compRatiosToCompRule(a, b);
+  } else if (a.kind === "ratios-invert" && b.kind == "ratios") {
+    return invertRatiosRule(b, a);
+  } else if (a.kind === "ratios" && b.kind == "ratios-invert") {
+    return invertRatiosRule(a, b);
   } else if (a.kind === "proportion" && b.kind == "ratios") {
     return proportionRatiosRule(b, a);
   } else if (a.kind === "ratios" && b.kind == "proportion") {
@@ -1675,14 +1693,16 @@ function inferenceRuleEx(...args) {
     return proportionRule(a, b);
   } else if (a.kind === "cont" && b.kind == "quota") {
     const kind = last2?.kind;
-    return kind === "rate" ? toRate(a, b) : quotaRule(a, b);
+    return kind === "rate" ? toRate(a, b, last2) : quotaRule(a, b);
   } else if (a.kind === "quota" && b.kind == "cont") {
     const kind = last2?.kind;
-    return kind === "rate" ? toRate(b, a) : quotaRule(b, a);
+    return kind === "rate" ? toRate(b, a, last2) : quotaRule(b, a);
   } else if (a.kind === "comp-ratio" && b.kind === "cont") {
-    return ratioCompareRule(b, a);
+    const kind = last2?.kind;
+    return ratioCompareRule(b, a, kind === "nth-part" ? last2 : void 0);
   } else if (a.kind === "cont" && b.kind === "comp-ratio") {
-    return ratioCompareRule(a, b);
+    const kind = last2?.kind;
+    return ratioCompareRule(a, b, kind === "nth-part" ? last2 : void 0);
   } else if (a.kind === "comp-ratio" && b.kind === "convert-percent") {
     return convertPercentRule(a);
   } else if (a.kind === "convert-percent" && b.kind === "comp-ratio") {
@@ -1719,6 +1739,12 @@ function inferenceRuleEx(...args) {
   } else if (a.kind === "ratios" && b.kind === "nth-part") {
     const kind = last2?.kind;
     return kind === "ratio" ? ratiosConvertRule(b, a, last2) : null;
+  } else if (a.kind === "rate" && b.kind == "ratios") {
+    const kind = last2?.kind;
+    return partToPartRule(a, b, kind === "nth-part" ? last2 : void 0);
+  } else if (a.kind === "ratios" && b.kind == "rate") {
+    const kind = last2?.kind;
+    return partToPartRule(b, a, kind === "nth-part" ? last2 : void 0);
   } else if (a.kind === "cont" && b.kind == "ratios") {
     const kind = last2?.kind;
     return kind === "scale" ? mapRatiosByFactor(b, a) : kind === "scale-invert" ? mapRatiosByFactor(b, a, true) : kind === "nth-factor" ? nthPartFactorBy(b, a, last2) : kind === "nth-part" ? partToPartRule(a, b, last2) : partToPartRule(a, b);
@@ -1992,6 +2018,15 @@ function resultAsQuestion(result) {
     result,
     options: []
   };
+}
+function ratiosToBaseForm(ratios) {
+  let precision = 1e6;
+  let nums = ratios.map((r) => Math.round(r * precision));
+  function gcd2(a, b) {
+    return b === 0 ? a : gcd2(b, a % b);
+  }
+  let overallGCD = nums.reduce((a, b) => gcd2(a, b));
+  return nums.map((v) => v / overallGCD);
 }
 
 // node_modules/fraction.js/dist/fraction.mjs
