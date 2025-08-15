@@ -25,7 +25,9 @@
     "ai:word-problems:more-quizes": "node ./src/data/word-problems-ai-[prompt]-[code]-[model].json.js --code M9B-2025 --prompt more-quizes --model o4-mini > ./src/data/word-problems-ai-more-quizes-M9B-2025-o4-mini.json",
     "ai:word-problems:more-quizes:shapes": "node ./src/data/word-problems-ai-[prompt]-[code]-[model]-shapes.json.js --code M9B-2025 --prompt more-quizes --model o4-mini > ./src/data/word-problems-ai-more-quizes-M9B-2025-o4-mini-shapes.json",
     "generate:tldr": "node ./src/data/word-problems-[code].tldr.js --code M9I-2025 > ./src/data/word-problems-M9I-2025.tldr",
-    "generate:period:tldr": "node ./src/data/word-problems-math-[period].tldr.js --period 4  > ./src/data/word-problems-math-4.tldr",
+    "generate:period-4:tldr": "node ./src/data/word-problems-math-[period].tldr.js --period 4  > ./src/data/word-problems-math-4.tldr",
+    "generate:period-6:tldr": "node ./src/data/word-problems-math-[period].tldr.js --period 6  > ./src/data/word-problems-math-6.tldr",
+    "generate:period-8:tldr": "node ./src/data/word-problems-math-[period].tldr.js --period 8  > ./src/data/word-problems-math-8.tldr",
     "generate:page:tldr": "node ./src/data/word-problems-page-[code].tldr.js --code MMA-2025 > ./src/data/word-problems-page-MMA-2025.tldr",
     "generate:json": "node ./src/data/word-problems-[code].tldr.js --code M9I-2025 > ./src/data/word-problems-M9I-2025.json"
   },

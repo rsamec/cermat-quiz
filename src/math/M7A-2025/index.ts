@@ -1,12 +1,18 @@
-import { commonSense, comp, cont, ctor, sum, ctorComplement, ctorDifference, ctorOption, ctorUnit, percent, rate, ratio, ratios, transfer, ctorSlide } from "../../components/math"
-import { createLazyMap, deduce, last, to } from "../../utils/deduce-utils"
+import { countReset } from "node:console"
+import { commonSense, comp, cont, ctor, sum, ctorComplement, ctorDifference, ctorOption, ctorUnit, percent, rate, ratio, ratios, transfer, ctorSlide, compRatio, nthPart, counter, double, product } from "../../components/math"
+import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils"
 
 export default createLazyMap({
   1.1: () => ceremonial().polovina,
   1.2: () => ceremonial().pocetMinut,
+
+  3.1: () => doplneniCisel().cislo1,
+  3.2: () => doplneniCisel().cislo2,
   4.1: () => asistencniPes().bara,
   4.2: () => asistencniPes().rozdilBaraACyril,
   4.3: () => asistencniPes().sum,
+  5.1: () => nakupFigurek().zbytek,
+  5.2: () => nakupFigurek().cenaFigurky,
   6.1: () => karticky().petr,
   11: () => tornado(),
   12: () => cestaKeStudance().meritko,
@@ -57,6 +63,70 @@ function ceremonial() {
   }
 }
 
+function doplneniCisel() {
+  const entity = ""
+  const rozdilCisel = comp("číslo v silně ohraničeném kroužku", "číslo v kroužku", 80, entity)
+
+  const rozdilCisel2 = to(
+    deduce(
+      counter("rozdil ", 34),
+      counter("rozdil", -10),
+      sum("rozdíl")
+    ),
+    comp("číslo v silně ohraničeném kroužku", "1. číslo v kroužku", 24, entity)
+  )
+  return {
+    cislo1: {
+      deductionTree: deduce(
+        deduce(
+          compRatio("číslo v silně ohraničeném kroužku", "číslo v kroužku", 3),
+          rozdilCisel
+        ),
+        rozdilCisel
+      )
+    },
+    cislo2: {
+      deductionTree: deduce(
+        deduce(
+          compRatio("číslo v silně ohraničeném kroužku", "1.číslo v kroužku", 2),
+          rozdilCisel2
+        ),
+        last(rozdilCisel2)
+      )
+    }
+
+  }
+}
+function nakupFigurek() {
+  const entity = "cena"
+  const unit = "korun"
+  const entityBase = "figurka"
+  const puvodniCena = rate("původní nákup", 39, { entity, unit }, { entity: entityBase })
+  const obnos = toCont(deduce(
+    puvodniCena,
+    cont("původní nákup", 7, entityBase)
+  ), { agent: "Lída obnos" })
+
+  const zbytek = deduce(
+    obnos,
+    ratios("Lída obnos", ["koupeno", "zbylo"], [6, 1 / 2]),
+    nthPart("zbylo")
+  )
+
+
+  return {
+    zbytek: {
+      deductionTree: zbytek
+    },
+    cenaFigurky: {
+      deductionTree: deduce(
+        last(zbytek),
+        double(),
+        product("figurka po zdražení")
+      )
+    },
+  }
+}
 
 function asistencniPes() {
   const adamL = "Adam";

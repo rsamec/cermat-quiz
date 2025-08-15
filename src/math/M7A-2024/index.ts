@@ -1,5 +1,5 @@
-import { compAngle, compPercent, cont, ctor, ctorOption, sum, ctorUnit, nthPart, percent, ratios, type Container, isNumber } from "../../components/math";
-import { axiomInput, createLazyMap, deduce, last,  toPredicate, toCont } from "../../utils/deduce-utils";
+import { compAngle, compPercent, cont, ctor, ctorOption, sum, ctorUnit, nthPart, percent, ratios, type Container, isNumber, rate, ctorSlide, proportion, counter, compRatio, ctorDifference, product, productCombine, double } from "../../components/math";
+import { axiomInput, createLazyMap, deduce, last, toPredicate, toCont, deduceAs } from "../../utils/deduce-utils";
 import { porovnatAaB, najitMensiCislo } from "./1";
 import { porovnatObsahObdelnikACtverec } from "./13";
 import { triCislaNaOse } from "./3";
@@ -27,6 +27,7 @@ export default createLazyMap({
   5.1: () => krouzky().divkyAnglictina,
   5.2: () => krouzky().pocetZaku,
   6: () => pocetSportovcu({ input: {} }),
+  7: () => utulek(),
   10.1: () => letniTabor(letniTaborInput).pocetVedoucichAInstruktoru,
   10.2: () => letniTabor(letniTaborInput).porovnaniInstrukturuAKucharek,
   10.3: () => letniTabor(letniTaborInput).pocetDeti,
@@ -36,6 +37,7 @@ export default createLazyMap({
       pocetHlav: 37
     }
   }),
+  12: () => charitativniZavod(),
   13: () => porovnatObsahObdelnikACtverec({
     input: {
       obdelnik: { a: 36, b: 12 },
@@ -46,6 +48,9 @@ export default createLazyMap({
   15.1: () => koupaliste(),
   15.2: () => cestovni_kancelar(),
   15.3: () => pozemek(),
+  16.1: () => hranol().povrh,
+  16.2: () => hranol().objem,
+
 })
 
 function koupaliste() {
@@ -154,6 +159,94 @@ function krouzky() {
   }
 }
 
+function utulek() {
+  const steneLabel = "štěně"
+  const dospelyLabel = "dospělý pes"
+  const entity = "krmeni"
+  const entityBase = "zvíře"
+  const entityTime = "dny"
+
+  const puvodne = cont("původně", 5, entity)
+  return {
+    deductionTree: deduce(
+      deduce(
+        cont("od 2.4 do 8.4", 6, entityTime),
+        deduceAs("od 8.4 do 18.4")(
+          cont("původně", 10, entityTime),
+          deduce(
+            deduce(
+              deduce(
+                puvodne,
+                deduce(
+                  cont(steneLabel, 1, entity),
+                  deduce(
+                    rate(dospelyLabel, 2, entity, entityBase),
+                    cont(dospelyLabel, 2, entityBase)
+                  ),
+                  sum("přibylo")
+                ),
+                sum("nově")
+              ),
+              puvodne,
+              ctor('comp-ratio')
+            ),
+            proportion(true, ["zásoby krmení", "doba krmení"])
+          )
+        ),
+        sum("celková doba nově")
+      ),
+      cont("posun o 1 den (začátek krmení 2.4.)", 1, entityTime),
+      ctorSlide("začátek krmení")
+    ),
+    convertToTestedValue: value => value.quantity + 0.4
+  }
+}
+function charitativniZavod() {
+  const entity = "delka"
+  const unit = "km"
+  const entityBase = "doba"
+  const unitBase = "h"
+
+  const janaRate = rate("Jana", 4, { entity, unit }, { entity: entityBase, unit: unitBase })
+
+  const adamDoba = cont("Adam", 40, entityBase, "min");
+  return {
+    deductionTree: deduce(
+      deduce(
+        adamDoba,
+        deduce(
+          deduceAs("zbytek závodu chůzí, stejná rychlost jako Jana")(
+            deduce(
+              deduce(
+                deduce(
+                  janaRate,
+                  compRatio("Roman", "Jana", 5)
+                ),
+                cont("Roman", 1 / 2, entityBase, unitBase)
+              ),
+              deduce(
+                deduce(
+                  janaRate,
+                  compRatio("Adam", "Jana", 3)
+                ),
+                deduce(
+                  adamDoba,
+                  ctorUnit('h')
+                )
+              ),
+              ctorDifference("Adam zbytek závodu chůzí")
+            ),
+            { ...janaRate, agent: "Adam zbytek závodu chůzí" }
+          ),
+          ctorUnit("min")
+        ),
+        sum("Adam závod celkem")
+      ),
+      ctorOption("D", 70)
+    )
+  }
+}
+
 function angle() {
   const entity = "stupňů";
   const betaEntity = "beta úhel"
@@ -194,5 +287,90 @@ function angle() {
       ),
       ctorOption("B", 110)
     )
+  }
+}
+
+
+function hranol() {
+  const entity2d = "obsah"
+  const entity3d = "objem"
+  const entity = "výška"
+  const unit = "cm";
+  const unit2d = "cm2"
+  const unit3d = "cm3"
+  const obdelnikStrana1 = cont("větší hranol kratší strana", 3, entity, unit)
+  const obdelnikStrana2 = cont("větší hranol delší strana", 6, entity, unit)
+
+  const ctverecStrana = cont("menší hranol kratší strana", 3, entity, unit)
+  const vyska = cont("výška", 15, entity, unit)
+  return {
+    povrh: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            deduce(
+              ctverecStrana,
+              ctverecStrana,
+              productCombine("menší hranol", { entity: entity2d, unit: unit2d })
+            ),
+            deduce(
+              deduce(
+                obdelnikStrana1,
+                obdelnikStrana2,
+                productCombine("větší hranol", { entity: entity2d, unit: unit2d })
+              ),
+              double(),
+              product("2 x větší hranol")
+            ),
+            sum("podstava")
+          ),
+          double(),
+          product("2 x podstava = horní a spodní podstava")
+        ),
+        deduce(
+          deduce(
+            deduce(
+              obdelnikStrana1,
+              vyska,
+              productCombine("část boční plášť odpovídající kratší straně", { entity: entity2d, unit: unit2d })
+            ),
+            counter("osmkrát", 8),
+            product("8 částí boční plášť odpovídající kratší straně")
+          ),
+          deduce(
+            deduce(
+              obdelnikStrana2,
+              vyska,
+              productCombine("část boční plášť odpovídající delší straně", { entity: entity2d, unit: unit2d })
+            ),
+            double(),
+            product("2 části boční plášť odpovídající delší straně")
+          ),
+          sum("boční plášť celkem")
+        ),
+        sum("hranol celkem (složený ze 3 hranolů)")
+      )
+    },
+    objem: {
+      deductionTree: deduce(
+        deduce(
+          ctverecStrana,
+          ctverecStrana,
+          vyska,
+          productCombine("menší hranol", { entity: entity3d, unit: unit3d })
+        ),
+        deduce(
+          deduce(
+            obdelnikStrana1,
+            obdelnikStrana2,
+            vyska,
+            productCombine("objem větší hranol", { entity: entity3d, unit: unit3d })
+          ),
+          double(),
+          product("2 x větší hranol")
+        ),
+        sum("hranol celkem (složený ze 3 hranolů)")
+      )
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { productCombine, commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, sum, ctorComplement, ctorOption, counter, percent, rate, ratios, product, triangleAngle } from "../../components/math";
+import { productCombine, commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, sum, ctorComplement, ctorOption, counter, percent, rate, ratios, product, triangleAngle, ctorDifference, nthPart } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
@@ -45,7 +45,7 @@ export default createLazyMap({
   10.3: () => trideni_odpadu().kovyToPapir,
   11: () => example_11(),
   12: () => example_12(),
-  // 13:() => example_13(),
+  13:() => minceVKasicce(),
   14: () => zakusek({
     input: {
       cena: 72
@@ -88,30 +88,40 @@ function example_4_2() {
   }
 }
 
-function example_13() {
-  const dvou = "dvoukorunové"
-  const peti = "pětikorunové"
-  const deseti = "desitikorunové"
-  const entity = "kus"
-  const entityPrice = "korun";
-  const pocetDeseti = cont(deseti, 6, entity);
-  const pocetPeti = deduce(
-    pocetDeseti,
-    compRatio(peti, deseti, 2)
-  );
-  const pocetDvou = deduce(
-    pocetPeti,
-    compRatio(dvou, peti, 5)
-  )
+function minceVKasicce() {
+  const entity = "Kč";
+  const dvou = "dvoukoruny"
+  const deseti = "desetikoruny";
+  const peti = "pětikoruny";
 
+  const minceEntity = "mince"
+  const celkem = cont("kasička s mincemi", 78, minceEntity)
+  const rozlozeni = ratios("kasička s mincemi", [deseti, peti, dvou], [1, 2, 10])
+  const dvouPocet = deduce(
+    rozlozeni,
+    celkem,
+  )
+  const petiPocet = deduce(
+    rozlozeni,
+    celkem,
+    nthPart(peti)
+  )
+  const desetiPocet = deduce(
+    rozlozeni,
+    celkem,
+    nthPart(deseti)
+  )
 
 
   return {
     deductionTree: deduce(
-      deduce(pocetDvou, rate(dvou, 2, entityPrice, entity)),
-      deduce(last(pocetPeti), rate(peti, 5, entityPrice, entity)),
-      deduce(pocetDeseti, rate(deseti, 10, entityPrice, entity)),
-      sum("hodnota")
+      deduce(
+        deduce(dvouPocet, rate(dvou, 2, { entity }, { entity: minceEntity })),
+        deduce(petiPocet, rate(peti, 5, { entity }, { entity: minceEntity })),
+        deduce(desetiPocet, rate(deseti, 10, { entity }, { entity: minceEntity })),      
+        sum("celkem v kasičce")
+      ),
+      ctorOption("E", 240)
     )
   }
 }

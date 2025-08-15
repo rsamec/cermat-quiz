@@ -10,6 +10,7 @@ add to source
 - node src/data/pdf-[subject]-[period].json.js --subject <subject> --period <period>
 
 ## Pocast prompt customization
+- the most important is to go through all the quiz questions - make it longer if needed
 - follow all the quiz questions from the beginning to the end
 - follow the presented step by step solution
 - do not solve using any equations with unknowns, do not introduce any variables x or y if not in the presented solutions

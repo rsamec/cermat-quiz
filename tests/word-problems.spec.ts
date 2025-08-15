@@ -2,10 +2,9 @@ import { test, expect } from '@playwright/test';
 import { parseCode } from '../src/utils/quiz-string-utils.js'
 import { quizes } from "../src/utils/quiz-utils.js";
 import wordProblems from '../src/math/word-problems';
-import { convertTree, getAllLeafsWithAncestors, getQuizBuilder, OptionList, ShortCodeMarker } from '../src/utils/parse-utils.js';
+import { convertTree, getAllLeafsWithAncestors } from '../src/utils/parse-utils.js';
 import { baseDomain } from "../src/utils/quiz-string-utils.js";
 import { getVerifyFunction } from '../src/utils/assert';
-import { cont } from '../src/components/math.js';
 import { skip } from 'node:test';
 
 const codes = quizes.flatMap(d => d.codes);

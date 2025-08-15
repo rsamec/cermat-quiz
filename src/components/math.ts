@@ -787,7 +787,7 @@ function convertToPartToPartRatios(b: RatioComparison, a: PartToPartRatio): Ques
     ...tempResult,
     ratios: ratiosToBaseForm(tempResult.ratios)
   }
-  
+
   return {
     question: `Vyjádři poměrem částí ${[b.agentA, b.agentB].join(":")}?`,
     result,
@@ -839,57 +839,59 @@ function roundTo(a: Container, b: Round): Question {
   }
 }
 
-function ratioCompareRuleEx(a: Container, b: RatioComparison, nthPart: NthPart): Container {
+function ratioCompareRuleEx(a: Container | Rate, b: RatioComparison, nthPart: NthPart): Container | Rate {
 
+  let result;
   if (a.agent == b.agentB) {
-    return {
-      kind: 'cont', agent: b.agentA,
+    result = {
+      agent: b.agentA,
       quantity: isNumber(a.quantity) && isNumber(b.ratio)
         ? b.ratio >= 0 ? a.quantity * b.ratio : a.quantity / abs(b.ratio)
         : isNumber(b.ratio)
           ? b.ratio >= 0 ? wrapToQuantity(`a.quantity * b.ratio`, { a, b }) : wrapToQuantity(`a.quantity / abs(b.ratio)`, { a, b })
           : wrapToQuantity(`b.ratio >= 0 ? a.quantity * b.ratio : a.quantity / abs(b.ratio)`, { a, b }),
-      entity: a.entity, unit: a.unit
+
     }
   }
   else if (a.agent == b.agentA) {
-    return {
-      kind: 'cont', agent: b.agentB,
+    result = {
+      agent: b.agentB,
       quantity: isNumber(a.quantity) && isNumber(b.ratio)
         ? b.ratio > 0 ? a.quantity / b.ratio : a.quantity * abs(b.ratio)
         : isNumber(b.ratio)
           ? b.ratio > 0 ? wrapToQuantity(`a.quantity / b.ratio`, { a, b }) : wrapToQuantity(`a.quantity * abs(b.ratio)`, { a, b })
           : wrapToQuantity(`b.ratio > 0 ? a.quantity / b.ratio : a.quantity * abs(b.ratio)`, { a, b }),
-      entity: a.entity, unit: a.unit
+
     }
   }
   else if (b.agentA == nthPart?.agent) {
-    return {
-      kind: 'cont', agent: b.agentA,
+    result = {
+      agent: b.agentA,
       quantity: isNumber(a.quantity) && isNumber(b.ratio)
         ? a.quantity / (abs(b.ratio) + 1) * abs(b.ratio)
         : wrapToQuantity(`a.quantity / (abs(b.ratio) + 1) * abs(b.ratio)`, { a, b }),
-      entity: a.entity, unit: a.unit
+
     }
   }
   else {
 
     //throw `Mismatch agent ${a.agent} any of ${b.agentA}, ${b.agentB}`
-    return {
-      kind: 'cont', agent: b.agentB,
+    result = {
+      agent: b.agentB,
       quantity: isNumber(a.quantity) && isNumber(b.ratio)
         ? a.quantity / (Math.abs(b.ratio) + 1)
         : wrapToQuantity(`a.quantity / (abs(b.ratio) + 1)`, { a, b }),
-      entity: a.entity, unit: a.unit
-    }
 
+    }
   }
+
+  return { ...a, ...result }
 }
 
-function ratioCompareRule(a: Container, b: RatioComparison, nthPart?: NthPart): Question {
+function ratioCompareRule(a: Container | Rate, b: RatioComparison, nthPart?: NthPart): Question {
   const result = ratioCompareRuleEx(a, b, nthPart)
   return {
-    question: `${computeQuestion(result.quantity)} ${a.agent == b.agentB || b.agentA === nthPart?.agent ? b.agentA : b.agentB}${formatEntity(result)}?`,
+    question: `${computeQuestion(result.quantity)} ${a.agent == b.agentB || b.agentA === nthPart?.agent ? b.agentA : b.agentB}${result.kind === "rate" ? formatEntity(result.entity) : formatEntity(result)}?`,
     result,
     options: isNumber(a.quantity) && isNumber(b.ratio) && isNumber(result.quantity) ? [
       { tex: `${formatNumber(a.quantity)} * ${formatRatio(abs(b.ratio))}`, result: formatNumber(a.quantity * b.ratio), ok: (a.agent == b.agentB && b.ratio >= 0) || (a.agent == b.agentA && b.ratio < 0) },
@@ -1143,7 +1145,7 @@ function compRatioToCompRuleEx(a: RatioComparison, b: Comparison): Container {
   }
 }
 
-function compRatioToCompRule(a: RatioComparison, b: Comparison): Question {
+function compRatioToCompRule(a: RatioComparison, b: Comparison, last?: NthPart): Question {
   const result = compRatioToCompRuleEx(a, b)
   return {
     question: containerQuestion(result),
@@ -1263,7 +1265,7 @@ function invertRatiosRule(a: PartToPartRatio, b: RatiosInvert): Question {
   }
   const result = mapRatiosByFactorEx(invertRatiosRuleEx(a, b), lcdCalc(a.ratios))
   return {
-    question: `Převoď poměry na obracené hodnoty.`,
+    question: `Převeď poměry na obracené hodnoty.`,
     result,
     options: areNumbers(a.ratios) ? [
       { tex: `obrátit poměr`, result: result.ratios.join(":"), ok: true },
@@ -2459,6 +2461,9 @@ export function inferenceRuleWithQuestion(children: Predicate[]) {
 function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   const [a, b, ...rest] = args;
   const last = rest?.length > 0 ? rest[rest.length - 1] : null;
+
+  const kind = last?.kind;
+
   if (['sum-combine', "sum", 'product-combine', "product", "gcd", "lcd", "sequence", "tuple", "eval-expr"].includes(last?.kind) || ((last?.kind === "ratios") && args.length > 3)) {
     const arr = [a, b].concat(rest.slice(0, -1)) as Container[];
 
@@ -2484,7 +2489,7 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
     return a.kind === "eval-option" ? evalToOption(b, a) : b.kind === "eval-option" ? evalToOption(a, b) : null
   }
   else if (a.kind === "cont" && b.kind == "cont") {
-    const kind = last?.kind;
+
     return kind === "comp-diff"
       ? toComparisonDiff(a, b)
       : (kind === "scale" || kind === "scale-invert")
@@ -2556,7 +2561,6 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
     return toRatio(a)
   }
   else if (a.kind === "ratio" && b.kind === "ratio") {
-    const kind = last?.kind;
     return kind === 'diff'
       ? toDifferenceAsRatio(a, b, last)
       : kind === "comp-ratio"
@@ -2564,11 +2568,11 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
         : transitiveRatioRule(a, b)
   }
   else if (a.kind === "comp" && b.kind === "cont") {
-    const kind = last?.kind;
+
     return kind === "comp-part-eq" ? partEqual(a, b) : compareRule(b, a);
   }
   else if (a.kind === "cont" && b.kind === "comp") {
-    const kind = last?.kind;
+
     return kind === "comp-part-eq" ? partEqual(b, a) : compareRule(a, b);
   }
   else if ((a.kind === "cont" || a.kind === "quota") && b.kind == "rate") {
@@ -2578,10 +2582,10 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
     return rateRule(b, a)
   }
   else if (a.kind === "comp" && b.kind == "comp-ratio") {
-    return compRatioToCompRule(b, a)
+    return compRatioToCompRule(b, a, kind === "nth-part" && last)
   }
   else if (a.kind === "comp-ratio" && b.kind == "comp") {
-    return compRatioToCompRule(a, b)
+    return compRatioToCompRule(a, b, kind === "nth-part" && last)
   }
   else if (a.kind === "comp" && b.kind == "ratios") {
     return compRatiosToCompRule(b, a)
@@ -2608,20 +2612,20 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
     return proportionRule(a, b)
   }
   else if (a.kind === "cont" && b.kind == "quota") {
-    const kind = last?.kind;
+
     return kind === "rate" ? toRate(a, b, last) : quotaRule(a, b)
   }
   else if (a.kind === "quota" && b.kind == "cont") {
-    const kind = last?.kind;
+
     return kind === "rate" ? toRate(b, a, last) : quotaRule(b, a)
   }
-  else if (a.kind === "comp-ratio" && b.kind === "cont") {
-    const kind = last?.kind;
-    return ratioCompareRule(b, a, kind === "nth-part" ? last : undefined);
+  else if (a.kind === "comp-ratio" && (b.kind === "cont" || b.kind === "rate")) {
+
+    return ratioCompareRule(b, a, kind === "nth-part" && last);
   }
-  else if (a.kind === "cont" && b.kind === "comp-ratio") {
-    const kind = last?.kind;
-    return ratioCompareRule(a, b, kind === "nth-part" ? last : undefined);
+  else if ((a.kind === "cont" || a.kind === "rate") && b.kind === "comp-ratio") {
+
+    return ratioCompareRule(a, b, kind === "nth-part" && last);
   }
   else if (a.kind === "comp-ratio" && b.kind === "convert-percent") {
     return convertPercentRule(a);
@@ -2675,23 +2679,23 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   //   return ratioConvertRule(b, a);
   // }
   else if (a.kind === "nth-part" && b.kind === "ratios") {
-    const kind = last?.kind;
+
     return kind === "ratio" ? ratiosConvertRule(a, b, last) : null;
   }
   else if (a.kind === "ratios" && b.kind === "nth-part") {
-    const kind = last?.kind;
+
     return kind === "ratio" ? ratiosConvertRule(b, a, last) : null;
   }
   else if (a.kind === "rate" && b.kind == "ratios") {
-    const kind = last?.kind;
-    return partToPartRule(a, b, kind === "nth-part" ? last : undefined)
+
+    return partToPartRule(a, b, kind === "nth-part" && last)
   }
   else if (a.kind === "ratios" && b.kind == "rate") {
-    const kind = last?.kind;
-    return partToPartRule(b, a, kind === "nth-part" ? last : undefined)
+
+    return partToPartRule(b, a, kind === "nth-part" && last)
   }
   else if (a.kind === "cont" && b.kind == "ratios") {
-    const kind = last?.kind;
+
 
     return kind === "scale"
       ? mapRatiosByFactor(b, a)
@@ -2703,7 +2707,7 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
             ? partToPartRule(a, b, last) : partToPartRule(a, b);
   }
   else if (a.kind === "ratios" && b.kind == "cont") {
-    const kind = last?.kind;
+
     return kind === "scale"
       ? mapRatiosByFactor(a, b)
       : kind === "scale-invert"
@@ -2722,11 +2726,11 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
     return diffRule(b, a);
   }
   else if (a.kind === "sequence" && b.kind === "cont") {
-    const kind = last?.kind;
+
     return kind === "nth" ? nthPositionRule(b, a, last.entity) : nthTermRule(b, a);
   }
   else if (a.kind === "cont" && b.kind === "sequence") {
-    const kind = last?.kind;
+
     return kind === "nth" ? nthPositionRule(a, b, last.entity) : nthTermRule(a, b);
   }
   else if (a.kind === "cont" && b.kind === "transfer") {
