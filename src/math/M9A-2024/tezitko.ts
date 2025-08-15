@@ -1,5 +1,5 @@
 
-import { cont } from "../../components/math";
+import { contLength } from "../../components/math";
 import { axiomInput, deduce } from "../../utils/deduce-utils";
 import { cylinder } from "../shapes/cylinder"
 
@@ -19,16 +19,15 @@ export default function build({ input }: {
 
   const agentOut = "čiré sklo";
   const agentIn = "modré sklo";
-  const entity = "cm"
 
 
-  const outRadius = axiomInput(cont(`${agentOut} podstava poloměr`, input.out.radius, entity), 1);
-  const outHeight = axiomInput(cont(`${agentOut} válec výška`, input.out.height, entity), 2)
-  const inRadius = axiomInput(cont(`${agentIn} podstava poloměr`, input.in.radius, entity), 3);
-  const inHeight = axiomInput(cont(`${agentIn} válec výška`, input.in.height, entity), 4);
+  const outRadius = axiomInput(contLength(`${agentOut} podstava poloměr`, input.out.radius), 1);
+  const outHeight = axiomInput(contLength(`${agentOut} válec výška`, input.out.height), 2)
+  const inRadius = axiomInput(contLength(`${agentIn} podstava poloměr`, input.in.radius), 3);
+  const inHeight = axiomInput(contLength(`${agentIn} válec výška`, input.in.height), 4);
 
-  const outCylinder = cylinder({ radius: outRadius, height: outHeight }, { surfaceBaseAreaLabel:`${agentOut} obsah`,volumeLabel:`${agentOut} objem`});
-  const inCylinder = cylinder({ radius: inRadius, height: inHeight }, {surfaceBaseAreaLabel:`${agentIn} obsah`, volumeLabel: `${agentIn} objem`});
+  const outCylinder = cylinder({ radius: outRadius, height: outHeight }, { surfaceBaseAreaLabel: `${agentOut} obsah`, volumeLabel: `${agentOut} objem` });
+  const inCylinder = cylinder({ radius: inRadius, height: inHeight }, { surfaceBaseAreaLabel: `${agentIn} obsah`, volumeLabel: `${agentIn} objem` });
 
 
   const deductionTree = deduce(

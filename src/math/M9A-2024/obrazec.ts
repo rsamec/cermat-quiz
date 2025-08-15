@@ -1,4 +1,4 @@
-import { commonSense, compRatio, cont, ctorOption, ratios, sum, product, counter } from "../../components/math";
+import { commonSense, compRatio, cont, ctorOption, ratios, sum, product, counter, contLength } from "../../components/math";
 import { axiomInput, deduce, last, to } from "../../utils/deduce-utils";
 
 export default function example({ input }: {
@@ -10,8 +10,8 @@ export default function example({ input }: {
   const ramenoLabel = "rameno"
   const zakladnaLabel = "základna"
   const obvodLabel = "obvod trojúhelníku";
-  const entity = "cm"
-  const obvod = axiomInput(cont(obvodLabel, 30, entity), 1)
+
+  const obvod = axiomInput(contLength(obvodLabel, 30), 1)
 
   const ramenoCount = axiomInput(counter("počet ramen", 4,), 2)
   const zakladnaCount = axiomInput(counter("počet základen", 3), 3)

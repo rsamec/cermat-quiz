@@ -1,14 +1,12 @@
-import { cont, ctor, ctorSlide } from "../../components/math";
+import { cont, counter, ctor, ctorSlide } from "../../components/math";
 import { axiomInput, deduce, last, toCont } from "../../utils/deduce-utils";
 import { cislaNaOse } from "../cislaNaOse";
 
 export function triCislaNaOse({ input }: { input: { mensiCislo: number, vetsiCislo: number, pocetUsekuMeziCisly: number, A: number, B: number, C: number } }) {
-  const entityLength = "délka";
-
   const entity = "úsek"
 
-  const mensi = axiomInput(cont('menší zadané číslo', input.mensiCislo, entityLength,), 1)
-  const vetsi = axiomInput(cont('větší zadnané číslo', input.vetsiCislo, entityLength,), 2)
+  const mensi = axiomInput(counter('menší zadané číslo', input.mensiCislo), 1)
+  const vetsi = axiomInput(counter('větší zadnané číslo', input.vetsiCislo), 2)
   const pocetUseku = axiomInput(cont('vzdálenost mezi zadanými čísly', input.pocetUsekuMeziCisly, "úsek",), 3)
 
   const positionA = axiomInput(cont('posun A', input.A, entity), 1)

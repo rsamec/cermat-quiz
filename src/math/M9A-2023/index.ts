@@ -1,4 +1,4 @@
-import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, pythagoras, rate, ratio, ratios, ctorOption, ctorBooleanOption, productCombine, counter, product, sum, ctorScale, double } from "../../components/math";
+import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, pythagoras, rate, ratio, ratios, ctorOption, ctorBooleanOption, productCombine, counter, product, sum, ctorScale, double, contLength, productArea, dimensionEntity } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 import trojuhelnik from "./trojuhelnik";
@@ -64,13 +64,14 @@ export function sud() {
 }
 
 export function rezaniKvadru() {
+  const dim = dimensionEntity("dm");
   const entity = "krychle"
   return {
     title: 'Rozřezání kvádru na krychličky',
     deductionTree: deduce(
       deduce(
         cont("kvádr", 200, entity),
-        rate("kvádr", 8, { entity: "objem", unit: "dm3" }, entity)
+        rate("kvádr", 8, dim.volume, entity)
       ),
       ctorUnit("cm3")
     )
@@ -135,18 +136,14 @@ export function propousteniVeFirme() {
 }
 
 export function povrchValce() {
-  const entity = "délka";
-  const unit = "cm"
-  const entity2d = "obsah";
-  const unit2d = "cm2"
 
-  const polomer = cont("poloměr podstavy", 10, entity, unit);
+  const polomer = contLength("poloměr podstavy", 10);
 
   const podstava = deduce(
     polomer,
     polomer,
     pi(),
-    productCombine("podstava", entity2d)
+    productArea("podstava")
   )
 
   return {
@@ -217,14 +214,10 @@ function krouzkyATridy() {
 }
 
 export function pozemekObdelnik() {
-  const entity = "délka"
-  const unit = "m"
-  const entity2d = "obsah"
-  const unit2d = "m2"
+  const dim = dimensionEntity("m")
 
-
-  const delsiStranaComp = comp("obdelník delší strana", "čtverec", 10, { entity, unit })
-  const kratsiStranaComp = comp("obdelník kratší strana", "čtverec", -10, { entity, unit })
+  const delsiStranaComp = comp("obdelník delší strana", "čtverec", 10, dim.length)
+  const kratsiStranaComp = comp("obdelník kratší strana", "čtverec", -10, dim.length)
   const stranaCtverce = deduce(
     compPercent("obdelník kratší strana", "čtverec", 75),
     to(
@@ -245,12 +238,12 @@ export function pozemekObdelnik() {
         deduce(
           last(stranaCtverce),
           last(stranaCtverce),
-          productCombine("čtverec", { entity: entity2d, unit: unit2d })
+          productArea("čtverec", "m2")
         ),
         deduce(
           deduce(last(stranaCtverce), kratsiStranaComp),
           deduce(last(stranaCtverce), delsiStranaComp),
-          productCombine("obdelník", { entity: entity2d, unit: unit2d })
+          productArea("obdelník", "m2")
         )
       )
     }

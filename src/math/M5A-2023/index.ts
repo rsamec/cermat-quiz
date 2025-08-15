@@ -1,4 +1,4 @@
-import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, lcd, primeFactorization, rate, sum, counter, product, productCombine, ctorScale, ctorScaleInvert, ratios, ctorDifference } from "../../components/math";
+import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, lcd, primeFactorization, rate, sum, counter, product, productCombine, ctorScale, ctorScaleInvert, ratios, ctorDifference, contLength, dimensionEntity, productVolume } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
@@ -130,41 +130,41 @@ function klubSEN() {
 
 function desitiuhelnik() {
   const squareSizeLabel = "strana čtverce";
-  const entity = "cm"
-  const entity2d = "cm2"
+
+
   const rectangleWidthLabel = "šířka obdelníka"
   const triangleWidthLabel = " nejdelší straně trojúhelníku"
 
   const squareSize = to(
-    axiomInput(cont("nejkratší strana desitiúhelník", 4, entity), 1),
+    axiomInput(contLength("nejkratší strana desitiúhelník", 4), 1),
     commonSense("tato délka odpovídá straně čtverce"),
-    cont(squareSizeLabel, 4, entity)
+    contLength(squareSizeLabel, 4)
   )
   const rectangleWidth = to(
-    axiomInput(cont("nejdelší strana desitiúhelník", 20, entity), 2),
+    axiomInput(contLength("nejdelší strana desitiúhelník", 20), 2),
     commonSense("tato délka odpovídá šířce obdélníku"),
-    cont(rectangleWidthLabel, 20, entity)
+    contLength(rectangleWidthLabel, 20)
   )
   const whiteTriangle = to(
     commonSense("2 čtverce tvoří výšku bílého rovnostranného trojúhelníku"),
-    cont("výška šedého trojúhelníku", 2 * 4, entity),
+    contLength("výška šedého trojúhelníku", 2 * 4),
   )
 
   const triangleHeight = to(
     commonSense("tři čtverce tvoří nejkratší straně trojúhelníku"),
-    cont("výška šedého trojúhelníku", 3 * 4, entity),
+    contLength("výška šedého trojúhelníku", 3 * 4),
   )
   const triangleWidth = to(
-    axiomInput(cont("nejdelší strana desitiúhelník", 20, entity), 2),
+    axiomInput(contLength("nejdelší strana desitiúhelník", 20), 2),
     commonSense("tato délka odpovídá nejdelší straně trojúhelníku"),
-    cont(triangleWidthLabel, 20, entity)
+    contLength(triangleWidthLabel, 20)
   )
 
-  //const rectangleWidth = cont(rectangleWidthLabel, 5, entity);
+  //const rectangleWidth = cont(rectangleWidthLabel, 5);
   const whiteTriangleSize = to(
     squareSize,
     commonSense("2 čtverce tvoří stranu bílého rovnostranného trojúhelníku"),
-    cont("strana bílý trojúhelník", 2 * 4, entity)
+    contLength("strana bílý trojúhelník", 2 * 4)
   );
   return {
     whiteTriangle: {
@@ -184,7 +184,7 @@ function desitiuhelnik() {
             to(
               last(whiteTriangleSize),
               commonSense("strana bíleho trojúhelníku odpovídá výška šedého obdelníku"),
-              cont("výška šedého obdelníku", 8, entity)
+              contLength("výška šedého obdelníku", 8)
             ),
             counter("počet stran", 2),
             product("horní a dolní strana")
@@ -218,12 +218,11 @@ function desitiuhelnik() {
 
 }
 function stavebnice() {
-  const entity = "cm";
-
+  const dim = dimensionEntity()
   const cube = ({ length, width, height }) => ({
-    length: cont("délka", length, entity),
-    width: cont("šířka", width, entity),
-    height: cont("výška", height, entity)
+    length: contLength("délka", length),
+    width: contLength("šířka", width),
+    height: contLength("výška", height)
   })
 
   const base = cube({ length: 4, width: 4, height: 6 })
@@ -233,7 +232,7 @@ function stavebnice() {
     base.length,
     base.width,
     base.height,
-    lcd("nejmenší možná velikost strany krychle", entity)
+    lcd("nejmenší možná velikost strany krychle", dim.length.entity)
   )
 
   return {
@@ -244,13 +243,13 @@ function stavebnice() {
             inputCube.length,
             inputCube.width,
             inputCube.height,
-            productCombine("objem", "cm3")
+            productVolume("kvádr")
           ),
           deduce(
             base.length,
             base.width,
             base.height,
-            productCombine("objem", "cm3")
+            productVolume("kvádr")
           ),
           ctor("rate")
         ),
@@ -264,13 +263,13 @@ function stavebnice() {
             minimalSize,
             last(minimalSize),
             last(minimalSize),
-            productCombine("objem", "cm3")
+            productVolume("kvádr")
           ),
           deduce(
             base.length,
             base.width,
             base.height,
-            productCombine("objem", "cm3")
+            productVolume("kvádr")
           ),
           ctor("rate")
         ),
@@ -294,7 +293,7 @@ function minceVKasicce() {
     celkem,
   )
   return {
-    deductionTree: deduce(      
+    deductionTree: deduce(
       deduce(
         deduce(petiPocet, rate(peti, 5, { entity }, { entity: minceEntity })),
         deduce(

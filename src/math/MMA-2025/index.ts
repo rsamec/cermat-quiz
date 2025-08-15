@@ -1,4 +1,4 @@
-import { productCombine, commonSense, comp, compRatio, compRelativePercent, cont, ctor, ctorDifference, ctorLinearEquation, product, ctorRatios, sum, ctorUnit, evalExprAsCont, primeFactorization, pythagoras, rate, ratio, counter, type Container, ctorOption, double, ctorScaleInvert, simplifyExpr, evalExprAsRate, ctorRound } from "../../components/math";
+import { productCombine, commonSense, comp, compRatio, compRelativePercent, cont, ctor, ctorDifference, ctorLinearEquation, product, ctorRatios, sum, ctorUnit, evalExprAsCont, primeFactorization, pythagoras, rate, ratio, counter, type Container, ctorOption, double, ctorScaleInvert, simplifyExpr, evalExprAsRate, ctorRound, contLength, dimensionEntity, productArea, EmptyUnit } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "../../utils/deduce-utils";
 
 
@@ -246,27 +246,22 @@ function prumernyPlat() {
 }
 
 function vzestupHladinyVody() {
-  const unit = "cm"
-  const entity = "délka"
-
-  const unit3d = "cm3"
-  const entity3d = "objem"
-
+  const dim = dimensionEntity()
 
   const objemKulicky =
     deduceAs("kulička")(
-      cont("kulička poloměr", 3, entity, unit),
-      evalExprAsCont("4/3*r^3*Pi", { kind: 'cont', agent: 'voda', entity: entity3d, unit: unit3d })
+      contLength("kulička poloměr", 3),
+      evalExprAsCont("4/3*r^3*Pi", { kind: 'cont', agent: 'voda', ...dim.volume })
     )
 
   const objemValce =
     deduceAs("válec")(
       deduce(
-        cont("válec průměr", 12, entity, unit),
+        contLength("válec průměr", 12),
         double(),
         ctorScaleInvert("válec poloměr")
       ),
-      evalExprAsRate("r^2*Pi", { kind: 'rate', agent: 'voda', entity: { entity: entity3d, unit: unit3d }, entityBase: { entity, unit }, baseQuantity: 1 })
+      evalExprAsRate("r^2*Pi", { kind: 'rate', agent: 'voda', entity: dim.volume, entityBase: dim.length, baseQuantity: 1 })
     )
 
 
@@ -293,19 +288,16 @@ function delitelnost() {
 }
 
 function rovnoramennySatek() {
+  const dim = dimensionEntity()
+
   const delsiStranaSatku = "delší strana šátku";
-  const preponaLabel = "přepona";
   const mensiSatekLabel = "menší šátek";
   const vetsiSatekLabel = "větší šátek";
-  const entity = "délka";
-  const unit = "cm";
-  const entity2d = "obsah";
-  const unit2d = "cm2"
-  const mensiSatekOdvesna = cont(mensiSatekLabel, 50, entity, unit);
+  const mensiSatekOdvesna = contLength(mensiSatekLabel, 50);
 
   const mensiSatek = deduce(
     mensiSatekOdvesna,
-    evalExprAsCont("1/2*delkaStrany^2", { kind: 'cont', agent: mensiSatekLabel, entity: entity2d, unit: unit2d })
+    evalExprAsCont("1/2*delkaStrany^2", { kind: 'cont', agent: mensiSatekLabel, ...dim.area })
   );
 
   const vetsiStatekOdvesna = deduce(
@@ -313,7 +305,7 @@ function rovnoramennySatek() {
       mensiSatek,
       compRelativePercent(vetsiSatekLabel, mensiSatekLabel, 125)
     ),
-    evalExprAsCont("sqrt(2*obsah)", { kind: 'cont', agent: vetsiSatekLabel, entity: entity, unit: unit })
+    evalExprAsCont("sqrt(2*obsah)", { kind: 'cont', agent: vetsiSatekLabel, ...dim.length })
   )
   return {
     deductionTree: deduce(
@@ -331,8 +323,7 @@ function rovnoramennySatek() {
 }
 
 function vyrezKrychle() {
-  const entity = "délka"
-  const entity2d = "obsah"
+
   const telesoLabel = "nové těleso";
   const krychleLabel = "krychle";
   const stranaLabel = "strana krychle";
@@ -344,7 +335,7 @@ function vyrezKrychle() {
   const stranaKrychle = to(
     commonSense("výřez se skládá ze dvou pravoúhlých trojúhlelníků, např. zvolím poměru délek pravoúhlého trojůhelníku odvěsna:odvěsna:přepona (3:4:5)"),
     commonSense("vede na výpočet délky strany krychle a = 6"),
-    cont(stranaLabel, 6, entity)
+    contLength(stranaLabel, 6, EmptyUnit)
   );
 
   const lastStranaKrychle = last(stranaKrychle)
@@ -364,7 +355,7 @@ function vyrezKrychle() {
           deduce(
             stranaKrychle,
             lastStranaKrychle,
-            productCombine(`stěna ${krychleLabel}`, entity2d)
+            productArea(`stěna ${krychleLabel}`, EmptyUnit)
           ),
           counter(`počet stěn ${krychleLabel}`, 6),
           product(`${krychleLabel}`)
@@ -374,7 +365,7 @@ function vyrezKrychle() {
             deduce(
               lastStranaKrychle,
               lastStranaKrychle,
-              productCombine("stěna krychle", entity2d)
+              productArea("stěna krychle", EmptyUnit)
             ),
             counter("počet čtvercových stěn", 3),
             product(`levá, pravá a spodní stěna - ${telesoLabel}`)
@@ -384,19 +375,19 @@ function vyrezKrychle() {
               deduce(
                 lastStranaKrychle,
                 lastStranaKrychle,
-                productCombine(`přední stěna - ${telesoLabel}`, entity2d)
+                productArea(`přední stěna - ${telesoLabel}`, EmptyUnit)
               ),
               deduce(
                 lastStranaKrychle,
                 lastStranaKrychle,
-                productCombine(`zadní stěna - ${telesoLabel}`, entity2d)
+                productArea(`zadní stěna - ${telesoLabel}`, EmptyUnit)
               ),
               sum(`přední a zadní stěna - ${telesoLabel}`)
             ),
             deduce(
               delsiOdvesna,
               lastStranaKrychle,
-              productCombine("přední a zadní trojúhelníkový výřez", entity2d)
+              productArea("přední a zadní trojúhelníkový výřez", EmptyUnit)
             ),
             ctorDifference(`přední a zadní stěna bez výřezu - ${telesoLabel}`)
           ),
@@ -404,7 +395,7 @@ function vyrezKrychle() {
             deduce(
               lastStranaKrychle,
               last(prepona),
-              productCombine(`obdelníková šikmá stěna - ${telesoLabel}`, entity2d)
+              productArea(`obdelníková šikmá stěna - ${telesoLabel}`, EmptyUnit)
             ),
             counter(`počet obdelníkových šikmých stěn - ${telesoLabel}`, 2),
             product(`obě obdelníkové šikmé stěny - ${telesoLabel}`)

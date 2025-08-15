@@ -1,9 +1,9 @@
-import { cont, ctorUnit } from "../../components/math";
+import { cont, ctorUnit, dimensionEntity } from "../../components/math";
 import { axiomInput, deduce } from "../../utils/deduce-utils";
 
 export function porovnani2Ploch({ }: { input: {} }) {
-  const entity = "";
-  const unit = "cm2"
+  const dim = dimensionEntity();
+  const { entity, unit } = dim.area;
   return {
     deductionTree: deduce(
       deduce(

@@ -1,4 +1,4 @@
-import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, rate, ratio, ratios, sum, counter, double, product, ctorScale, lcd, lcdCalc, type Container, ctorComparePercent, compRelative, ctor, ctorBooleanOption } from "../../components/math";
+import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, rate, ratio, ratios, sum, counter, double, product, ctorScale, lcd, lcdCalc, type Container, ctorComparePercent, compRelative, ctor, ctorBooleanOption, contLength } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, mapToCont, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -226,8 +226,6 @@ function penize() {
   }
 }
 function domecek() {
-  const entity = "délka";
-  const unit = "cm";
   const dumLabel = "domeček"
   const strechaLabel = "střecha"
   const onlyStrechLabel = `${strechaLabel} bez společené části`
@@ -238,7 +236,7 @@ function domecek() {
   const kratsiStranaLabel = "kratší strana obdelníku"
   const delsiStranLabel = "delší strana obdelníku"
 
-  const dum = cont(dumLabel, 24, entity, unit)
+  const dum = contLength(dumLabel, 24)
 
   const obvodJenStrecha = deduce(
     dum,

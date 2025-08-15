@@ -1,4 +1,4 @@
-import { productCombine, commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, sum, ctorComplement, ctorOption, counter, percent, rate, ratios, product, triangleAngle, ctorDifference, nthPart } from "../../components/math";
+import { productCombine, commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, sum, ctorComplement, ctorOption, counter, percent, rate, ratios, product, triangleAngle, ctorDifference, nthPart, contLength, productArea, dimensionEntity } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
@@ -153,20 +153,19 @@ function example_11() {
 }
 
 function example_12() {
+  const dim = dimensionEntity()
   const ctverecDelkaLabel = "strana čtverce";
-  const entity = "cm"
-  const entity2d = "cm2"
   const rectangleWidthLabel = "šířka obdelníka"
 
   const rectangleWidth = to(
-    axiomInput(cont("nejdelší strana sedmiúhelníku", 5, entity), 2),
+    axiomInput(contLength("nejdelší strana sedmiúhelníku", 5), 2),
     commonSense("tato délka odpovídá šířce obdélníku"),
-    cont(rectangleWidthLabel, 5, entity)
+    contLength(rectangleWidthLabel, 5)
   )
 
   const triangleHeight = to(
     commonSense("tři čtverce tvoří výšku trojůhelníku"),
-    cont("výška šedého trojúhelníku", 3, entity),
+    contLength("výška šedého trojúhelníku", 3),
   )
 
   //const rectangleWidth = cont(rectangleWidthLabel, 5, entity);
@@ -175,30 +174,30 @@ function example_12() {
     deductionTree: deduce(
       deduce(
         deduce(
-          axiomInput(cont(ctverecDelkaLabel, 1, entity), 1),
-          cont("počet čtverců", 3, ""),
-          productCombine("obsah tři shodné čtverce", entity2d)
+          axiomInput(contLength(ctverecDelkaLabel, 1), 1),
+          counter("počet čtverců", 3),
+          productArea("tři shodné čtverce")
         ),
         deduce(
           rectangleWidth,
           deduce(
             last(rectangleWidth),
-            compDiff(rectangleWidthLabel, "výška obdelníku", 3, entity)
+            compDiff(rectangleWidthLabel, "výška obdelníku", 3, dim.length.entity)
           ),
-          productCombine("obsah obdelníku", entity2d)
+          productArea("obdelník")
         ),
         deduce(
           deduce(
             triangleHeight,
             deduce(
               last(rectangleWidth),
-              compDiff(rectangleWidthLabel, "základna šedého trojúhelníku", 1, entity)
+              compDiff(rectangleWidthLabel, "základna šedého trojúhelníku", 1, dim.length.entity)
             ),
-            cont("polovina", 1 / 2, ""),
-            productCombine("obsah šedého trojúhelníku", entity2d)
+            counter("polovina", 1 / 2),
+            productArea("šedý trojúhelníku")
           ),
-          cont("počet šedých trojúhleníků", 3, ""),
-          productCombine("obsah tří šedých trojúhelníku", entity2d)
+          counter("počet šedých trojúhleníků", 3),
+          productArea("tři šedé trojúhelníky")
         ),
         sum("obsah sedmiúhelníku")
       ),

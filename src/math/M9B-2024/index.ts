@@ -1,4 +1,4 @@
-import { commonSense, compAngle, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorUnit, pythagoras, rate, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorScaleInvert, ctorBooleanOption, triangleAngle } from "../../components/math";
+import { commonSense, compAngle, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorUnit, pythagoras, rate, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorScaleInvert, ctorBooleanOption, triangleAngle, contLength, contArea, dimensionEntity } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 
@@ -25,17 +25,17 @@ export default createLazyMap({
 
 function delkaKroku() {
   const entityBase = "krok";
-  const entity = "délka";
-  const unit = "cm";
+  const dim = dimensionEntity();
+
   return {
     deductionTree: deduce(
       deduce(
         deduce(
-          rate("Josef", 75, { entity, unit }, entityBase),
+          rate("Josef", 75, dim.length, entityBase),
           cont("Josef", 10_000, entityBase)
         ),
         deduce(
-          rate("Naďa", 60, { entity, unit }, entityBase),
+          rate("Naďa", 60, dim.length, entityBase),
           cont("Naďa", 10_000, entityBase)
         ),
       ),
@@ -68,12 +68,10 @@ function AdamAOta() {
 }
 
 function ctyruhelnik() {
-  const entity = "délka";
-  const unit = "cm";
-  const entity2d = "obsah";
-  const unit2d = "cm2";
-  const AD = cont("AD", 17, entity, unit);
-  const BD = cont("BD", 8, entity, unit);
+
+  const dim = dimensionEntity();
+  const AD = contLength("AD", 17);
+  const BD = contLength("BD", 8);
 
   const AB = deduce(
     AD,
@@ -83,14 +81,14 @@ function ctyruhelnik() {
   const CD = toCont(
     deduce(
       deduce(
-        cont("trojúhelník BCD", 24, entity2d, unit2d),
+        contArea("trojúhelník BCD", 24),
         double(),
         product("obdelník")
       ),
       BD,
       ctor('quota')
     ),
-    { agent: "CD", entity: { entity, unit } }
+    { agent: "CD", entity: dim.length }
   );
   return {
     obsah: {
@@ -100,11 +98,11 @@ function ctyruhelnik() {
           height: BD,
           triangle: {
             agent: 'ABD',
-            entity: entity2d,
-            unit: unit2d
+            ...dim.area
+
           }
         }),
-        cont("trojúhelník BCD", 24, entity2d, unit2d),
+        contArea("trojúhelník BCD", 24),
         sum("lichoběžníku ABCD")
       )
     },
@@ -192,8 +190,7 @@ function pekar() {
   }
 }
 function pulkruh() {
-  const entity = "délka";
-  const unit = "cm";
+  const dim = dimensionEntity()
   return {
     deductionTree: deduce(
       deduce(
@@ -201,9 +198,9 @@ function pulkruh() {
           to(
             commonSense("čtvercová síť 4x4 s čtvercem o velikostí 2 cm"),
             commonSense("vepsaný kruh ve čtvercové síti"),
-            cont("poloměr (r)", 4, entity, unit)
+            contLength("poloměr (r)", 4)
           ),
-          evalExprAsCont("3.14*r^2", { kind: 'cont', agent: 'vepsaný kruh', entity: "obsah", unit: "cm2" })
+          evalExprAsCont("3.14*r^2", { kind: 'cont', agent: 'vepsaný kruh', ...dim.area})
         ),
         double(),
         ctorScaleInvert("šedý půlkruh")

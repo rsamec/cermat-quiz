@@ -1,24 +1,21 @@
-import { productCombine, cont, ctor, ctorOption } from "../../components/math";
+import { productCombine, cont, ctor, ctorOption, contLength, productArea } from "../../components/math";
 import { axiomInput, deduce } from "../../utils/deduce-utils";
 
 export function porovnatObsahObdelnikACtverec({ input }: { input: { obdelnik: { a: number, b: number }, ctverec: { a: number } } }) {
-  const entity = "";
-  const unit2d = "cm2";
-  const unit = "cm";
-  const ctverec = axiomInput(cont('čtverec a', input.ctverec.a, entity, unit), 3)
+  const ctverec = axiomInput(contLength('čtverec a', input.ctverec.a), 3)
 
   return {
     deductionTree: deduce(
       deduce(
         deduce(
-          axiomInput(cont('obdélník a', input.obdelnik.a, entity, unit), 1),
-          axiomInput(cont('obdélník b', input.obdelnik.b, entity, unit), 2),
-          productCombine("obsah obdélník", unit2d, ["a", "b"])
+          axiomInput(contLength('obdélník a', input.obdelnik.a), 1),
+          axiomInput(contLength('obdélník b', input.obdelnik.b), 2),
+          productArea("obdélník")
         ),
         deduce(
           ctverec,
           ctverec,
-          productCombine("obsah čtverec", unit2d, ["a", "a"])
+          productArea("čtverec")
         ),
         ctor('comp-ratio')
       ),

@@ -1,5 +1,5 @@
 
-import { cont, type Container, pi, piNumber, sum, productCombine } from "../../components/math.js";
+import { cont, type Container, pi, piNumber, sum, productCombine, contLength } from "../../components/math.js";
 import { axiomInput, connectTo, deduce, last, type TreeNode } from "../../utils/deduce-utils.js";
 
 
@@ -136,10 +136,10 @@ export function examples({ input }: {
 
   const radiusLabel = "poloměr"
   const heightLabel = "výška"
-  const entity = "cm";
+  
 
-  const radius = axiomInput(cont(radiusLabel, input.radius, entity), 1);
-  const height = axiomInput(cont(heightLabel, input.height, entity), 2);
+  const radius = axiomInput(contLength(radiusLabel, input.radius), 1);
+  const height = axiomInput(contLength(heightLabel, input.height), 2);
 
   const dTree1 = surfaceBaseArea({ radius })
 

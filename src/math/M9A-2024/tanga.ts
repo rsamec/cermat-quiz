@@ -1,5 +1,5 @@
 
-import { compRatio, cont, ctorRound, sum, productCombine, product, counter } from "../../components/math";
+import { compRatio, cont, ctorRound, sum, productCombine, product, counter, contLength, productArea, dimensionEntity } from "../../components/math";
 import { axiomInput, deduce, last, toCont } from "../../utils/deduce-utils";
 import { baseCircumference, surfaceBaseArea } from "../shapes/cylinder"
 
@@ -18,18 +18,15 @@ export default function build({ input }: {
   const circelPartLabel = "bílá čtvrtkružnice";
   const rectangleLabel = "celý obdelník";
   const reactangleHeight = `${rectangleLabel} výška`;
-  const entity = "cm"
-  const entity2d = "cm čtverečních"
-
-  const width = axiomInput(cont(`šedá tanga šířka`, input.tangaWidth, entity), 1)
-  const widthRectangle = axiomInput(cont(`${rectangleLabel} šířka`, input.tangaWidth, entity), 1)
+  const width = axiomInput(contLength(`šedá tanga šířka`, input.tangaWidth), 1)
+  const widthRectangle = axiomInput(contLength(`${rectangleLabel} šířka`, input.tangaWidth), 1)
   const ratio = compRatio(`šedá tanga šířka`, `${circelPartLabel} ${radiusLabel}`, 2)
   const dRadius = deduce(width, ratio);
 
 
   const obsah = surfaceBaseArea({ radius: last(dRadius) }, {
     surfaceBaseAreaLabel: areaCircleLabel,
-    entity2D: entity2d
+    entity2D: dimensionEntity().area.entity,      
   });
 
 
@@ -39,7 +36,7 @@ export default function build({ input }: {
       widthRectangle,
       //commonSense(`${radiusLabel} = ${reactangleHeight}`),
       toCont(dRadius, { agent: reactangleHeight }),                    
-      productCombine(`${rectangleLabel} obsah`, entity2d)
+      productArea(`${rectangleLabel} obsah`)
     ),
     deduce(
       counter(circelPartLabel, 2),

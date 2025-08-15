@@ -1,4 +1,4 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorOption, ctorRatios, nthPart, rate, ratio, ratios, sum, product, counter, ctorScaleInvert, ctorScale, ctorSlide, ctorSlideInvert, evalExprAsCont, comp, ctorBooleanOption, ctorUnit } from "../../components/math";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorOption, ctorRatios, nthPart, rate, ratio, ratios, sum, product, counter, ctorScaleInvert, ctorScale, ctorSlide, ctorSlideInvert, evalExprAsCont, comp, ctorBooleanOption, ctorUnit, contLength, contArea } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -61,18 +61,16 @@ function prevody() {
   }
 }
 function lepeniCtvercu() {
-  const entity = "délka"
-  const unit = "cm"
   return {
     nejdelsiMoznaStrana: {
       deductionTree: deduceAs("obdelník s nejdelší možnou stranu vytvoříme tak, že nalepíme čtverečky do jedná řady za sebou")
         (
           deduce(
-            cont("obvod", 18, entity, unit),
-            cont("2 kratší strany", 2, entity, unit),
+            contLength("obvod", 18),
+            contLength("2 kratší strany", 2),
             ctorDifference("zbytek na 2 delší strany")
           ),
-          evalExprAsCont("zbytekKRozdeleni / 2", cont("nejdelší možná strana", entity, unit))
+          evalExprAsCont("zbytekKRozdeleni / 2", contLength("nejdelší možná strana"))
         )
     },
     pocetKombinaci: {
@@ -86,7 +84,7 @@ function lepeniCtvercu() {
     nejvetsiMoznyObsah: {
       deductionTree: to(
         commonSense("vybere obdelní se stranamy 4x5=20"),
-        cont("největší možný obsah", 20, "obsah", "cm2")
+        contArea("největší možný obsah", 20)
       )
     }
   }
@@ -426,11 +424,8 @@ function cislaNaTabuly() {
 }
 
 function ctverce() {
-  const entity = "délka";
-  const unit = "cm";
 
   const entityBase = "strana";
-
   const entitySquare = "čtverec"
 
   const obrazec1 = "1. obrazec"
@@ -449,7 +444,7 @@ function ctverce() {
   const skupinaBilaV5 = "bílé pásmo (5 čtverců)"
 
 
-  const obvod1 = cont(obrazec1, 80, entity, unit)
+  const obvod1 = contLength(obrazec1, 80)
   const ctverec1PocetStran = cont(obrazec1, 4, entityBase)
   const ctverec2PocetStran = cont(obrazec2, 4, entityBase)
 
@@ -470,7 +465,7 @@ function ctverce() {
   const sedyRate = deduceAs("4 tmavě šedé čtverce = 5 šedých čtverců")(
     to(
       tmaveSede,
-      cont(skupinaSedaV5, lastQuantity(tmaveSede), entity, unit)
+      contLength(skupinaSedaV5, lastQuantity(tmaveSede))
     ),
     cont(skupinaSedaV5, 5, entitySquare),
     ctor('rate')

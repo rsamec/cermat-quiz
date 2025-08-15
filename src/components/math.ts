@@ -584,6 +584,36 @@ export function sumCombine(wholeAgent: string, wholeEntity: EntityDef, partAgent
   }
 }
 
+type EmptyUnitDim = ""
+type LengthDim = "mm" | "cm" | "dm" | "m" | "km" | "mi" | EmptyUnitDim
+type AreaDim = "mm2" | "cm2" | "dm2" | "m2" | "km2" | "mi2" | EmptyUnitDim
+type VolumeDim = "mm3" | "cm3" | "dm3" | "m3" | "km3" | "mi3" | EmptyUnitDim
+export const EmptyUnit: EmptyUnitDim = ""
+export function dimensionEntity(unit: LengthDim = "cm") {
+  return {
+    length: { entity: "délka", unit },
+    area: { entity: "obsah", unit: unit === EmptyUnit ? EmptyUnit : `${unit}2` },
+    volume: { entity: "objem", unit: unit === EmptyUnit ? EmptyUnit : `${unit}3` },
+    lengths: ["délka", unit] as [string, string],
+    areas: ["obsah", unit === EmptyUnit ? EmptyUnit : `${unit}2`] as [string, string],
+    volumes: ["objem", unit === EmptyUnit ? EmptyUnit : `${unit}3`] as [string, string]
+  }
+}
+export function contLength(agent: string, quantity: NumberOrVariable, unit: LengthDim = "cm") {
+  return cont(agent, quantity, dimensionEntity().length.entity, unit)
+}
+export function contArea(agent: string, quantity: NumberOrVariable, unit: AreaDim = "cm2") {
+  return cont(agent, quantity, dimensionEntity().area.entity, unit)
+}
+export function contVolume(agent: string, quantity: NumberOrVariable, unit: VolumeDim = "cm3") {
+  return cont(agent, quantity, dimensionEntity().volume.entity, unit)
+}
+export function productArea(wholeAgent: string, unit: AreaDim = "cm2") {
+  return productCombine(wholeAgent, { entity: dimensionEntity().area.entity, unit })
+}
+export function productVolume(wholeAgent: string, unit: VolumeDim = "cm3") {
+  return productCombine(wholeAgent, { entity: dimensionEntity().volume.entity, unit })
+}
 export function productCombine(wholeAgent: string, wholeEntity: EntityDef, partAgents?: string[]): ProductCombine {
   return {
     kind: 'product-combine',

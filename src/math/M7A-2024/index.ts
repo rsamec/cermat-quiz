@@ -1,4 +1,4 @@
-import { compAngle, compPercent, cont, ctor, ctorOption, sum, ctorUnit, nthPart, percent, ratios, type Container, isNumber, rate, ctorSlide, proportion, counter, compRatio, ctorDifference, product, productCombine, double } from "../../components/math";
+import { compAngle, compPercent, cont, ctor, ctorOption, sum, ctorUnit, nthPart, percent, ratios, type Container, isNumber, rate, ctorSlide, proportion, counter, compRatio, ctorDifference, product, productCombine, double, contLength, productArea, productVolume } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, toPredicate, toCont, deduceAs } from "../../utils/deduce-utils";
 import { porovnatAaB, najitMensiCislo } from "./1";
 import { porovnatObsahObdelnikACtverec } from "./13";
@@ -292,17 +292,12 @@ function angle() {
 
 
 function hranol() {
-  const entity2d = "obsah"
-  const entity3d = "objem"
-  const entity = "výška"
-  const unit = "cm";
-  const unit2d = "cm2"
-  const unit3d = "cm3"
-  const obdelnikStrana1 = cont("větší hranol kratší strana", 3, entity, unit)
-  const obdelnikStrana2 = cont("větší hranol delší strana", 6, entity, unit)
+  
+  const obdelnikStrana1 = contLength("větší hranol kratší strana", 3)
+  const obdelnikStrana2 = contLength("větší hranol delší strana", 6)
 
-  const ctverecStrana = cont("menší hranol kratší strana", 3, entity, unit)
-  const vyska = cont("výška", 15, entity, unit)
+  const ctverecStrana = contLength("menší hranol kratší strana", 3)
+  const vyska = contLength("výška", 15)
   return {
     povrh: {
       deductionTree: deduce(
@@ -311,13 +306,13 @@ function hranol() {
             deduce(
               ctverecStrana,
               ctverecStrana,
-              productCombine("menší hranol", { entity: entity2d, unit: unit2d })
+              productArea("menší hranol")
             ),
             deduce(
               deduce(
                 obdelnikStrana1,
                 obdelnikStrana2,
-                productCombine("větší hranol", { entity: entity2d, unit: unit2d })
+                productArea("větší hranol")
               ),
               double(),
               product("2 x větší hranol")
@@ -332,7 +327,7 @@ function hranol() {
             deduce(
               obdelnikStrana1,
               vyska,
-              productCombine("část boční plášť odpovídající kratší straně", { entity: entity2d, unit: unit2d })
+              productArea("část boční plášť odpovídající kratší straně")
             ),
             counter("osmkrát", 8),
             product("8 částí boční plášť odpovídající kratší straně")
@@ -341,7 +336,7 @@ function hranol() {
             deduce(
               obdelnikStrana2,
               vyska,
-              productCombine("část boční plášť odpovídající delší straně", { entity: entity2d, unit: unit2d })
+              productArea("část boční plášť odpovídající delší straně")
             ),
             double(),
             product("2 části boční plášť odpovídající delší straně")
@@ -357,14 +352,14 @@ function hranol() {
           ctverecStrana,
           ctverecStrana,
           vyska,
-          productCombine("menší hranol", { entity: entity3d, unit: unit3d })
+          productVolume("menší hranol")
         ),
         deduce(
           deduce(
             obdelnikStrana1,
             obdelnikStrana2,
             vyska,
-            productCombine("objem větší hranol", { entity: entity3d, unit: unit3d })
+            productVolume("objem větší hranol")
           ),
           double(),
           product("2 x větší hranol")

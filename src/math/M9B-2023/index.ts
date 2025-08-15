@@ -1,4 +1,4 @@
-import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, evalExprAsCont, counter, proportion, productCombine, ctorLinearEquation, comp, ctorScale, ctorComplementCompRatio, ctorSlideInvert, ctorScaleInvert, ctorBooleanOption, pythagoras, simplifyExpr } from "../../components/math";
+import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, evalExprAsCont, counter, proportion, productCombine, ctorLinearEquation, comp, ctorScale, ctorComplementCompRatio, ctorSlideInvert, ctorScaleInvert, ctorBooleanOption, pythagoras, simplifyExpr, contArea, dimensionEntity, contLength, productArea, productVolume } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -152,24 +152,21 @@ function cestaDoPrace() {
 }
 
 function dort() {
-    const entity = "délka"
-    const unit = "cm"
-    const entity2d = "obsah"
-    const unit2d = "cm2"
+    const dim = dimensionEntity();
     const stranaCtverce = deduce(
         deduce(
-            cont("plocha řezu dortu", 200, entity2d, unit2d),
+            contArea("plocha řezu dortu", 200),
             counter("polovina", 1 / 2),
             ctorScale("čtverec")
         ),
-        evalExprAsCont("sqrt(x)", { kind: 'cont', agent: "strana čtverce", entity, unit })
+        evalExprAsCont("sqrt(x)", { kind: 'cont', agent: "strana čtverce", ...dim.length })
     )
     return {
         prumerTacu: {
             deductionTree: deduce(
                 deduce(
-                    cont("π * obsah", 144, entity2d, unit2d),
-                    evalExprAsCont("sqrt(x)", { kind: 'cont', agent: "poloměr (r)", entity, unit })
+                    contArea("π * obsah", 144),
+                    evalExprAsCont("sqrt(x)", { kind: 'cont', agent: "poloměr (r)", ...dim.length })
                 ),
                 double(),
                 product("průměr")
@@ -181,16 +178,16 @@ function dort() {
                     to(
                         stranaCtverce,
                         commonSense("strana čtverce = poloměr dortu"),
-                        cont("poloměr dortu", lastQuantity(stranaCtverce), entity, unit)
+                        contLength("poloměr dortu", lastQuantity(stranaCtverce))
                     ),
-                    evalExprAsCont("π * r^2", { kind: 'cont', agent: "podstava dortu", entity: entity2d, unit: unit2d })
+                    evalExprAsCont("π * r^2", { kind: 'cont', agent: "podstava dortu", ...dim.area })
                 ),
                 to(
                     last(stranaCtverce),
                     commonSense("strana čtverce = výška dortu"),
-                    cont("výška dortu", lastQuantity(stranaCtverce), entity, unit)
+                    contLength("výška dortu", lastQuantity(stranaCtverce))
                 ),
-                productCombine("dort", { entity: "objem", unit: "cm3" })
+                productVolume("dort")
             )
         }
     }
@@ -272,23 +269,20 @@ function procenta() {
 }
 
 function kosoctverec() {
-    const entity = "délka"
-    const unit = "cm"
-    const entity2d = "obsah"
-    const unit2d = "cm2"
+    const dim = dimensionEntity()
 
     const stranaKosoctverec = deduce(
-        cont("trojúhelník kratší strana", 3, entity, unit),
-        cont("trojúhelník delší strana", 4, entity, unit),
+        contLength("trojúhelník kratší strana", 3),
+        contLength("trojúhelník delší strana", 4),
         pythagoras("přepona", ["kratší strana", "delší strana"])
     );
     return {
         obsah: {
             deductionTree: deduce(
                 deduceAs("samotné přemístěním 4 trojúhelníků sekládaných jako obdelník, resp. kosočtverec nemá vliv na obsah, pouze se změnil tvar obrazce nikoliv však jeho celková plocha")(
-                    cont("obdelník kratší strana", 3, entity, unit),
-                    cont("obdelník delší strana", 8, entity, unit),
-                    productCombine("obdelník = kosočtverec", { entity: entity2d, unit: unit2d })
+                    contLength("obdelník kratší strana", 3),
+                    contLength("obdelník delší strana", 8),
+                    productArea("obdelník = kosočtverec")
                 ),
                 ctorBooleanOption(24, "greater")
             )
@@ -303,12 +297,12 @@ function kosoctverec() {
             deductionTree: deduce(
                 deduce(
                     deduceAs("vztah pro obsah kosočtverce (obsah = strana x výška => výška = obsah / strana)")(
-                        cont("obdelník kratší strana", 3, entity, unit),
-                        cont("obdelník delší strana", 8, entity, unit),
-                        productCombine("obdelník = kosočtverec", { entity: entity2d, unit: unit2d })
+                        contLength("obdelník kratší strana", 3),
+                        contLength("obdelník delší strana", 8),
+                        productArea("obdelník = kosočtverec")
                     ),
                     last(stranaKosoctverec),
-                    evalExprAsCont("obsah / strana", { kind: 'cont', agent: 'výška', entity, unit })
+                    evalExprAsCont("obsah / strana", { kind: 'cont', agent: 'výška', ...dim.length })
                 ),
                 ctorBooleanOption(4.8)
             )
@@ -317,20 +311,17 @@ function kosoctverec() {
 }
 
 function hranol() {
-    const entity = "délka"
-    const unit = "cm"
-    const entity2d = "obsah"
-    const unit2d = "cm2"
-    const stranaZakladna = cont("základna", 24, entity, unit)
+    const dim = dimensionEntity();
+    const stranaZakladna = contLength("základna", 24)
     const vyska = toCont(deduce(
         deduceAs("doplnění trojúhleník na obdelník, tak že ho složím ze dvou stejných trojúhleníku")(
-            cont("základna", 60, entity2d, unit2d),
+            contArea("základna", 60),
             double(),
             ctorScale("obdelník")
         ),
         stranaZakladna,
         ctor("quota")),
-        { agent: "výška", entity: { entity, unit } }
+        { agent: "výška", entity: dim.length }
     )
 
     return {
@@ -340,7 +331,7 @@ function hranol() {
                     vyska,
                     stranaZakladna,
                     last(vyska),
-                    productCombine("kvádr", { entity: "objem", unit: "cm3" }, ["výška", "delší hrana", "kratší hrana"],)
+                    productVolume("kvádr")
                 ),
                 counter("zmenšení", 2),
                 ctorScaleInvert("hranol")

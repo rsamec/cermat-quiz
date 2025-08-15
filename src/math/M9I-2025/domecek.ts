@@ -1,4 +1,4 @@
-import { sum, commonSense, cont, ctorOption, primeFactorization, quota, ratio } from "../../components/math";
+import { sum, commonSense, cont, ctorOption, primeFactorization, quota, ratio, contLength, contArea, EmptyUnit } from "../../components/math";
 import { axiomInput, connectTo, deduce, deduceLbl, last, lastQuantity, to } from "../../utils/deduce-utils";
 import { volume } from "../shapes/rectangle";
 
@@ -8,12 +8,10 @@ interface InputParameters {
   quota: number
 }
 export function domecek({ input }: { input: InputParameters }) {
-  const entity = "cm";
-  const dumLabel = "domeček"
-  const entity2d = "čtverečků"
-  const entity3d = "krychliček"
 
-  const area = axiomInput(cont(`plocha ${dumLabel}`, input.baseSurfaceArea, entity2d), 1);
+  const dumLabel = "domeček"
+
+  const area = axiomInput(contArea(`plocha ${dumLabel}`, input.baseSurfaceArea, EmptyUnit), 1);
   const pasmo = axiomInput(quota(`plocha ${dumLabel}`, "čtverec", 4), 2);
 
   const ctverec = deduce(
@@ -24,10 +22,10 @@ export function domecek({ input }: { input: InputParameters }) {
   const strana = to(
     ctverec,
     commonSense(`rozklad na prvočísla:${primeFactorization([lastQuantity(ctverec)]).join(",")}`),
-    cont("šířka", 2, entity)
+    contLength("šířka", 2)
   );
 
-  const rectangleVolume = connectTo(volume({ width: last(strana), height: cont("výška", 2, entity), length: cont("délka", 8, entity) }, { volumeLabel: "objem přízemí" }), strana);
+  const rectangleVolume = connectTo(volume({ width: last(strana), height: contLength("výška", 2), length: contLength("délka", 8) }, { volumeLabel: "objem přízemí" }), strana);
   const deductionTree = deduce(
     deduce(
       rectangleVolume,

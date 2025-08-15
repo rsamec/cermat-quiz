@@ -1,4 +1,4 @@
-import { commonSense, comp, compRatio, compRelative, cont, ctorOption, counter, product } from "../../components/math";
+import { commonSense, comp, compRatio, compRelative, cont, ctorOption, counter, product, contLength, dimensionEntity } from "../../components/math";
 import { axiomInput, deduce, to } from "../../utils/deduce-utils";
 
 export default function example({ input }: {
@@ -9,13 +9,15 @@ export default function example({ input }: {
   }
 }) {
 
+  const dim = dimensionEntity();
+
   const ALabel = "strana obdelník A"
   const BLabel = "strana obdelník B"
-  const entity = "cm"
+  
   const bocniStrana = commonSense("boční strany obou čtverců jsou schodné, horní a spodní strana obdelníku mají rozdíl 3")
 
-  const rozdilObvod = axiomInput(cont("obvod rozdíl", 6, entity), 1)
-  const diffAbsolute = comp(ALabel, BLabel, input.rozdilObvod / 2, entity)
+  const rozdilObvod = axiomInput(contLength("obvod rozdíl", 6), 1)
+  const diffAbsolute = comp(ALabel, BLabel, input.rozdilObvod / 2, dim.length.entity)
   const compRel = axiomInput(compRelative(ALabel, BLabel, 3 / 2), 2);
 
   const kratsiStran = deduce(

@@ -1,4 +1,4 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, sum, product, productCombine, counter, triangleAngle } from "../../components/math";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, sum, product, counter, triangleAngle, contLength, productArea, dimensionEntity, contArea, productVolume } from "../../components/math";
 import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -45,17 +45,13 @@ function porovnani() {
 }
 
 function pozemek() {
-  const entity2d = "obsah"
-  const entity = "délka"
-  const unit = "m";
-  const unit2d = "m2"
 
 
-  const pozemek = cont("c", 30, entity, unit);
+  const pozemek = contLength("c", 30, "m");
   const obsahPozemek = deduce(
     pozemek,
     pozemek,
-    productCombine("pozemek", { entity: entity2d, unit: unit2d })
+    productArea("pozemek", "m2")
   )
   const obsahDum = deduce(
     obsahPozemek,
@@ -91,16 +87,11 @@ function pozemek() {
 
 
 function sud() {
-  const entity2d = "obsah"
-  const entity3d = "objem"
-  const entity = "výška"
-  const unit = "cm";
-  const unit2d = "cm2"
-  const unit3d = "cm3"
+  const dim = dimensionEntity();
 
-  const dnoSudu = cont("dno sudu", 1500, entity2d, unit2d);
+  const dnoSudu = contArea("dno sudu", 1500);
   const vzestupHladiny = deduce(
-    deduce(cont("přibylo vody", 3, entity3d, "l"), ctorUnit(unit3d)),
+    deduce(cont("přibylo vody", 3, dim.volume.entity, "l"), ctorUnit(dim.volume.unit)),
     dnoSudu,
     ctor("quota")
   )
@@ -109,8 +100,8 @@ function sud() {
       deductionTree: deduce(
         deduce(
           dnoSudu,
-          deduce(cont("vzestup hladiny", 10, entity, "mm"), ctorUnit("cm")),
-          productCombine("přibylo vody", { entity: entity3d, unit: unit3d })
+          deduce(cont("vzestup hladiny", 10, dim.length.entity, "mm"), ctorUnit("cm")),
+          productVolume("přibylo vody")
         ),
         ctorUnit("l")
       )
@@ -119,7 +110,7 @@ function sud() {
       deductionTree: deduce(
         toCont(
           vzestupHladiny,
-          { agent: "vzestup hladiny", entity: { entity, unit } }),
+          { agent: "vzestup hladiny", entity: dim.length }),
         ctorUnit("mm"))
     }
   }
@@ -158,13 +149,12 @@ function uhly() {
 }
 
 function zahon() {
-  const entity1d = "délka";
-  const unit1d = "cm";
+  const dim = dimensionEntity();
 
   const entity = "počet";
   const pocetRostlinQuantity = 65;
   const pocetRostlin = cont("rostliny", pocetRostlinQuantity, entity);
-  const rozestup = rate("rostliny", 40, { entity: entity1d, unit: unit1d }, entity);
+  const rozestup = rate("rostliny", 40, dim.length, entity);
 
 
   const obvod = deduce(
@@ -222,17 +212,13 @@ function zahon() {
 }
 
 function bazen() {
-  const entity = ""
   const unit = "m"
-  const entity3d = "objem";
-  const unit3d = "m3";
-
   const agentLabel = "bazén";
   const dnoLabel = "šikmé dno";
   const zonaLabel = "prohloubení zóna pro plavce"
-  const delka = cont(agentLabel, 40, "délka", unit)
-  const sirka = cont(agentLabel, 10, "šírka", unit)
-  const vyska = cont(agentLabel, 1, "výška", unit)
+  const delka = contLength(agentLabel, 40, unit)
+  const sirka = cont(agentLabel, 10, unit)
+  const vyska = cont(agentLabel, 1, unit)
   return {
     deductionTree: deduce(
       deduce(
@@ -240,14 +226,14 @@ function bazen() {
           delka,
           sirka,
           vyska,
-          productCombine(agentLabel, { entity: entity3d, unit: unit3d })
+          productVolume(agentLabel, "m3")
         ),
         deduce(
           deduce(
             cont(zonaLabel, 20, "délka", unit),
             cont(zonaLabel, 1, "výška", unit),
             sirka,
-            productCombine(zonaLabel, { entity: entity3d, unit: unit3d })
+            productVolume(zonaLabel, "m3")
           ),
           ratio(zonaLabel, dnoLabel, 1 / 2)
         ),
@@ -419,20 +405,22 @@ function atletika() {
 
 
 function obrazce() {
-  const entity = "délka"
+
+  const dim = dimensionEntity()
+
   const entityPocet = "obdelníků"
-  const unit = "cm";
-  const tmavyObrazec1 = cont("obrazec č.1", 5, entity, unit)
-  const tmavyObrazec2 = cont("obrazec č.1", 8, entity, unit)
-  const tmavyObrazec3 = cont("obrazec č.1", 11, entity, unit)
+
+  const tmavyObrazec1 = contLength("obrazec č.1", 5)
+  const tmavyObrazec2 = contLength("obrazec č.1", 8)
+  const tmavyObrazec3 = contLength("obrazec č.1", 11)
   return {
     pocetTmavyObrazec: {
       deductionTree: deduce(
         cont("obrazec č.1", 2, entityPocet),
         deduce(
           toCont(deduce(
-            cont("hledaný obrazec", 20, entity, unit),
-            cont("obrazec č.1", 5, entity, unit),
+            contLength("hledaný obrazec", 20),
+            contLength("obrazec č.1", 5),
             ctorDifference("přechody"),
           ), { agent: "přechody" }),
           to(deduce(
@@ -440,7 +428,7 @@ function obrazce() {
             tmavyObrazec2,
             tmavyObrazec3,
             ctor("sequence")
-          ), rate("přechody", 3, { entity, unit }, "obrazec")),
+          ), rate("přechody", 3, dim.length, "obrazec")),
           ctor("quota")
         ),
 

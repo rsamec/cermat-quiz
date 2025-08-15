@@ -1,4 +1,4 @@
-import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, rate, ratio, ratios, ctorPercent, compAngle, ctorComplement, ctorComparePercent, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, ctorLinearEquation, sum, productCombine, triangleAngle } from "../../components/math";
+import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, rate, ratio, ratios, ctorPercent, compAngle, ctorComplement, ctorComparePercent, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, ctorLinearEquation, sum, productCombine, triangleAngle, contLength, productVolume, contArea, dimensionEntity } from "../../components/math";
 import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 
@@ -94,19 +94,15 @@ function salaty() {
 }
 
 function dort() {
-  const entity = "poloměr"
-  const unit = "cm"
-  const entity2d = "obsah"
-  const unit2d = "cm2"
 
 
-  const vetsiKorpus = cont("větší korpus", 8, entity, unit)
+  const vetsiKorpus = contLength("větší korpus", 8)
   const mensiKorpus = deduce(
     vetsiKorpus,
     compRelative("menší korpus", "větší korpus", -1 / 4)
   );
 
-  const height = cont("korpus", 5, entity, unit);
+  const height = contLength("korpus", 5);
 
   return {
     deductionTree: deduce(
@@ -115,13 +111,13 @@ function dort() {
           vetsiKorpus,
           vetsiKorpus,
           height,
-          productCombine("větší korpus", { entity: entity2d, unit: unit2d })
+          productVolume("větší korpus")
         ),
         deduce(
           mensiKorpus,
           last(mensiKorpus),
           height,
-          productCombine("menší korpus", { entity: entity2d, unit: unit2d })
+          productVolume("menší korpus")
         ),
         sum("celkem")
       ),
@@ -163,16 +159,12 @@ function uhelAlfa() {
   }
 }
 function pravouhlyLichobeznik() {
-  const entity = "délka"
-  const unit = "cm"
-  const entity2d = "obsah";
-  const unit2d = "cm2";
 
   const agentLabel = "lichoběžník";
-  const spodniZakladna = cont("spodní základna", 140, entity, unit);
-  const horniZakladna = cont("horní základna", 100, entity, unit);
+  const spodniZakladna = contLength("spodní základna", 140);
+  const horniZakladna = contLength("horní základna", 100);
 
-  const height = cont(`${agentLabel} výška`, 30, entity, unit)
+  const height = contLength(`${agentLabel} výška`, 30)
   const prepona = deduce(
     deduce(
       spodniZakladna,
@@ -233,8 +225,8 @@ function zahrada() {
   const bazalkaL = "bazalka"
 
   const entity = "stupeň";
-  const entity2d = "obsah";
-  const magnoliePlocha = cont(magnolieL, 20, entity2d);
+
+  const magnoliePlocha = contArea(magnolieL, 20);
 
   const jablon = cont(jablonL, 105, entity);
   const magnolie = cont(magnolieL, 60, entity);
@@ -391,20 +383,21 @@ function tabor() {
 
 
 function obrazce() {
-  const entity = "délka"
+
+  const dim = dimensionEntity();
   const entityPocet = "obdelníků"
-  const unit = "cm";
-  const tmavyObrazec1 = cont("obrazec č.1", 5, entity, unit)
-  const tmavyObrazec2 = cont("obrazec č.1", 8, entity, unit)
-  const tmavyObrazec3 = cont("obrazec č.1", 11, entity, unit)
+
+  const tmavyObrazec1 = contLength("obrazec č.1", 5)
+  const tmavyObrazec2 = contLength("obrazec č.1", 8)
+  const tmavyObrazec3 = contLength("obrazec č.1", 11)
   return {
     pocetTmavyObrazec: {
       deductionTree: deduce(
         cont("obrazec č.1", 2, entityPocet),
         deduce(
           toCont(deduce(
-            cont("hledaný obrazec", 20, entity, unit),
-            cont("obrazec č.1", 5, entity, unit),
+            contLength("hledaný obrazec", 20),
+            contLength("obrazec č.1", 5),
             ctorDifference("přechody"),
           ), { agent: "přechody" }),
           to(deduce(
@@ -412,7 +405,7 @@ function obrazce() {
             tmavyObrazec2,
             tmavyObrazec3,
             ctor("sequence")
-          ), rate("přechody", 3, { entity, unit }, "obrazec")),
+          ), rate("přechody", 3, dim.length, "obrazec")),
           ctor("quota")
         ),
         sum("obrazec č.6")

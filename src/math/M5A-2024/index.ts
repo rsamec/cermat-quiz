@@ -1,4 +1,4 @@
-import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, primeFactorization, rate, ratio, transfer, sum, ctorSlide, counter, ctorScaleInvert, ctorBooleanOption, pythagoras, product, productCombine, ctorRate } from "../../components/math";
+import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, primeFactorization, rate, ratio, transfer, sum, ctorSlide, counter, ctorScaleInvert, ctorBooleanOption, product, dimensionEntity, contLength, contArea } from "../../components/math";
 import { axiomInput, deduce, last, to, createLazyMap, deduceAs, toPredicate } from "../../utils/deduce-utils";
 import { cislaNaOse } from "../cislaNaOse";
 const dveCislaNaOseParams = {
@@ -52,11 +52,8 @@ function souctovyTrojuhelnik() {
 }
 
 function ctvercovaSit() {
-  const entity = "délka"
-  const unit = "cm"
+  const dim = dimensionEntity();
 
-  const entity2d = "obsah"
-  const unit2d = "cm2"
   const obdelnikVLabel = "větší obdelník 2x3"
   const obdelnikMLabel = "menší obdelník 2x2"
   const trojV = "větší trojúhleník";
@@ -64,16 +61,16 @@ function ctvercovaSit() {
 
   const trojuhlenikV = to(
     commonSense(`${trojV} je polovinou ${obdelnikVLabel}`),
-    cont(trojV, 3, entity2d, unit2d)
+    contArea(trojV, 3)
   )
 
   const trojuhlenikM = to(
     commonSense(`${trojM} je polovinou ${obdelnikMLabel}`),
-    cont(trojV, 2, entity2d, unit2d)
+    contArea(trojV, 2)
   )
 
-  const obdelnikV = cont(obdelnikVLabel, 6, entity2d, unit2d)
-  const obdelnikM = cont(obdelnikMLabel, 4, entity2d, unit2d)
+  const obdelnikV = cont(obdelnikVLabel, 6, ...dim.areas)
+  const obdelnikM = cont(obdelnikMLabel, 4, ...dim.areas)
 
   const obsahA = deduce(
     obdelnikV,
@@ -108,13 +105,13 @@ function ctvercovaSit() {
       deductionTree: deduce(
         deduce(
           deduce(
-            cont("strana 2", 2, entity, unit),
+            contLength("strana 2", 2),
             counter("čtyřikrát", 4),
             product("část obvodu za přepony")
           ),
-          cont("strana 1", 2, entity, unit),
+          contLength("strana 1", 2),
           deduceAs("zde bereme délku přepony pouze 2 cm, víme však, že musí být delší než 2 cm")(
-            cont("min. virtuální délka přepony", 2, entity, unit),
+            contLength("min. virtuální délka přepony", 2),
             counter("tři přepony", 3),
             product("část obvodu za přepony")
           ),
@@ -223,11 +220,11 @@ function distanceUnitCompareDiff() {
 }
 
 export function dveCislaNaOse({ input }: { input: { mensiCislo: number, vetsiCislo: number, pocetUsekuMeziCisly: number, X: number, Y: number } }) {
-  const entityLength = "délka";
+
   const entity = "úsek"
 
-  const mensi = axiomInput(cont('menší zadané číslo', input.mensiCislo, entityLength,), 1)
-  const vetsi = axiomInput(cont('větší zadnané číslo', input.vetsiCislo, entityLength,), 2)
+  const mensi = axiomInput(counter('menší zadané číslo', input.mensiCislo), 1)
+  const vetsi = axiomInput(counter('větší zadnané číslo', input.vetsiCislo), 2)
   const pocetUseku = axiomInput(cont('vzdálenost mezi zadanými čísly', input.pocetUsekuMeziCisly, "úsek",), 3)
 
   const positionX = axiomInput(cont('posun X', input.X, entity), 1)
@@ -314,9 +311,9 @@ export function carTrip() {
 
 export function sestiuhelnik() {
   const entity = "trojúhleník"
-  const entity2d = "cm2"
+
   const dark = cont("tmavá část", 2, entity);
-  const obsah = cont("tmavá část", 112, entity2d)
+  const obsah = contArea("tmavá část", 112)
   return {
     deductionTree: deduce(
       deduce(
