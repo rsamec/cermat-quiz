@@ -1,5 +1,5 @@
-import { commonSense, compRelative, cont, ctor, sum, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, counter, gcd, nthPart, percent, proportion, rate, ratio, product, double, ctorScale } from "../../components/math"
-import { createLazyMap, deduce, deduceAs, last, to, toCont, type TreeNode } from "../../utils/deduce-utils"
+import { commonSense, compRelative, cont, ctor, sum, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, counter, gcd, nthPart, percent, proportion, rate, ratio, product, double, ctorScale, contLength, contArea, productArea, productVolume, dimensionEntity, evalExprAsCont } from "../../components/math"
+import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont, type TreeNode } from "../../utils/deduce-utils"
 
 export default createLazyMap({
   1: () => hledaneCislo(),
@@ -9,6 +9,10 @@ export default createLazyMap({
   4.3: () => vodniNadrz().pocetHodin,
   5.1: () => zaciSkupiny().dvojic,
   5.2: () => zaciSkupiny().zaku,
+  7.1: () => hranol().vyskaHranol,
+  7.2: () => hranol().obvodPodstava,
+  7.3: () => hranol().obsahPodstava,
+  7.4: () => hranol().objem,
   13: () => kapesne().utratila,
   14: () => kapesne().usetrila,
   15.1: () => cislo(),
@@ -257,7 +261,73 @@ function kapesne() {
           ),
           ctor('ratio')
         ),
-        ctorOption("B", 2 / 3, {asFraction: true})
+        ctorOption("B", 2 / 3, { asFraction: true })
+      )
+    }
+  }
+}
+
+function hranol() {
+  const dim = dimensionEntity()
+  const bocniStenaObdelnikL = "boční stěna - obdelník"
+  const bocniStenaCtverecL = "boční stěna - čtverec"
+
+  const podstavaVyska = contLength("výška podstavy", 4)
+
+  const bocniStenaObdelnik = contLength(bocniStenaObdelnikL, 11)
+  const vyskaHranol = toCont(deduce(
+    contArea(bocniStenaObdelnikL, 55),
+    bocniStenaObdelnik,
+    ctor("quota")
+  ), { agent: "výška hranolu", entity: dim.length })
+
+  const bocniStenaCtverec = to(
+    commonSense("boční stěna čtverec => výška hranolu = strana čtverce"),
+    last(vyskaHranol),
+    contLength(bocniStenaCtverecL, lastQuantity(vyskaHranol))
+  )
+  const obsah = deduce(
+    deduce(
+      last(bocniStenaCtverec),
+      podstavaVyska,
+      productArea("obdelník")
+    ),
+    deduce(
+
+      deduceAs("podstava hranol - rozdělení na obdelník 4x5 a levý a pravý pravoúhlý trojůhelník, které přiléhají k obdelníku")(
+        bocniStenaObdelnik,
+        last(bocniStenaCtverec),
+        ctorDifference("zbytek základny")
+      ),
+      podstavaVyska,
+      evalExprAsCont("1/2*zakladna*vyska", { kind: "cont", agent: "levý a pravý pravoúhlý trojůhelník", ...dim.area })
+    ),
+    sum("obsah postavy hranolu")
+  )
+
+  return {
+    vyskaHranol: {
+      deductionTree: vyskaHranol,
+    },
+    obvodPodstava: {
+      deductionTree: deduce(
+        deduce(
+          bocniStenaCtverec,
+          counter(bocniStenaCtverecL, 3),
+          product(bocniStenaCtverecL)
+        ),
+        bocniStenaObdelnik,
+        sum("obvod podstavy hranolu")
+      )
+    },
+    obsahPodstava: {
+      deductionTree: obsah
+    },
+    objem: {
+      deductionTree: deduce(
+        last(obsah),
+        last(vyskaHranol),
+        productVolume("objem hranolu")
       )
     }
   }

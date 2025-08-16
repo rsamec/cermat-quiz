@@ -1,12 +1,12 @@
 import { parseArgs } from "node:util";
 import { parseQuiz } from './utils/quiz-parser.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCodeAlt, text } from './utils/quiz-string-utils.js';
-import wordProblems, {  } from './math/word-problems.js';
+import wordProblems, { } from './math/word-problems.js';
 import { jsonToMarkdownChat } from "./utils/deduce-utils.js";
 //import mdPlus from './utils/md-utils.js';
 import Fraction from 'fraction.js';
 const mdFormatting = {
-  formatRatio: (d,asPercent) => asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%`  : new Fraction(d).toFraction(),  
+  formatRatio: (d, asPercent) => asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : new Fraction(d).toFraction(),
 }
 
 const {
@@ -36,7 +36,7 @@ toc: false
 ${ids.map(id => {
   const values = (wordProblem?.[id] != null)
     ? [[id, wordProblem[id]]]
-    : [1, 2, 3]
+    : [1, 2, 3, 4]
       .map(i => `${id}.${i}`)
       .map(subId => wordProblem?.[subId])
       .filter(Boolean)
@@ -46,8 +46,9 @@ ${ids.map(id => {
   return values?.length > 0 ? `
 ${quiz.content([id], { ids, render: 'content' })}\n
 ---
-${values.map(([key, value]) => 
-`**${key} Rozbor řešení úlohy** \n
-${jsonToMarkdownChat(value.deductionTree, mdFormatting).join("")}`).join("")} \n---`:''}).join('')}
+${values.map(([key, value]) =>
+    `**${key} Rozbor řešení úlohy** \n
+${jsonToMarkdownChat(value.deductionTree, mdFormatting).join("")}`).join("")} \n---` : ''
+}).join('')}
 \`\`\`
 `)

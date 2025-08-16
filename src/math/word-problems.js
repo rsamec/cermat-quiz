@@ -7583,6 +7583,10 @@ var M7B_2025_default = createLazyMap({
   4.3: () => vodniNadrz().pocetHodin,
   5.1: () => zaciSkupiny().dvojic,
   5.2: () => zaciSkupiny().zaku,
+  7.1: () => hranol2().vyskaHranol,
+  7.2: () => hranol2().obvodPodstava,
+  7.3: () => hranol2().obsahPodstava,
+  7.4: () => hranol2().objem,
   13: () => kapesne().utratila,
   14: () => kapesne().usetrila,
   15.1: () => cislo(),
@@ -7811,6 +7815,66 @@ function kapesne() {
           ctor("ratio")
         ),
         ctorOption("B", 2 / 3, { asFraction: true })
+      )
+    }
+  };
+}
+function hranol2() {
+  const dim = dimensionEntity();
+  const bocniStenaObdelnikL = "bo\u010Dn\xED st\u011Bna - obdeln\xEDk";
+  const bocniStenaCtverecL = "bo\u010Dn\xED st\u011Bna - \u010Dtverec";
+  const podstavaVyska = contLength("v\xFD\u0161ka podstavy", 4);
+  const bocniStenaObdelnik = contLength(bocniStenaObdelnikL, 11);
+  const vyskaHranol = toCont(deduce(
+    contArea(bocniStenaObdelnikL, 55),
+    bocniStenaObdelnik,
+    ctor("quota")
+  ), { agent: "v\xFD\u0161ka hranolu", entity: dim.length });
+  const bocniStenaCtverec = to(
+    commonSense("bo\u010Dn\xED st\u011Bna \u010Dtverec => v\xFD\u0161ka hranolu = strana \u010Dtverce"),
+    last(vyskaHranol),
+    contLength(bocniStenaCtverecL, lastQuantity(vyskaHranol))
+  );
+  const obsah = deduce(
+    deduce(
+      last(bocniStenaCtverec),
+      podstavaVyska,
+      productArea("obdeln\xEDk")
+    ),
+    deduce(
+      deduceAs("podstava hranol - rozd\u011Blen\xED na obdeln\xEDk 4x5 a lev\xFD a prav\xFD pravo\xFAhl\xFD troj\u016Fheln\xEDk, kter\xE9 p\u0159il\xE9haj\xED k obdeln\xEDku")(
+        bocniStenaObdelnik,
+        last(bocniStenaCtverec),
+        ctorDifference("zbytek z\xE1kladny")
+      ),
+      podstavaVyska,
+      evalExprAsCont("1/2*zakladna*vyska", { kind: "cont", agent: "lev\xFD a prav\xFD pravo\xFAhl\xFD troj\u016Fheln\xEDk", ...dim.area })
+    ),
+    sum("obsah postavy hranolu")
+  );
+  return {
+    vyskaHranol: {
+      deductionTree: vyskaHranol
+    },
+    obvodPodstava: {
+      deductionTree: deduce(
+        deduce(
+          bocniStenaCtverec,
+          counter(bocniStenaCtverecL, 3),
+          product(bocniStenaCtverecL)
+        ),
+        bocniStenaObdelnik,
+        sum("obvod podstavy hranolu")
+      )
+    },
+    obsahPodstava: {
+      deductionTree: obsah
+    },
+    objem: {
+      deductionTree: deduce(
+        last(obsah),
+        last(vyskaHranol),
+        productVolume("objem hranolu")
       )
     }
   };
@@ -15368,7 +15432,7 @@ var M9B_2023_default = createLazyMap({
   11.1: () => kosoctverec().obsah,
   11.2: () => kosoctverec().strana,
   11.3: () => kosoctverec().vyska,
-  13: () => hranol2(),
+  13: () => hranol3(),
   14: () => kosikar(),
   15.1: () => procenta().skauti,
   15.2: () => procenta().kapesne,
@@ -15646,7 +15710,7 @@ function kosoctverec() {
     }
   };
 }
-function hranol2() {
+function hranol3() {
   const dim = dimensionEntity();
   const stranaZakladna = contLength("z\xE1kladna", 24);
   const vyska = toCont(

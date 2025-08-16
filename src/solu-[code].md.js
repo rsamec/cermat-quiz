@@ -97,7 +97,7 @@ ${solutionsCount < quiz.questions.length ? `<div class=${solutionRate < 0.2 ? 'c
 <div class="root">${ids.map(id => {
   const values = (answers?.[id] != null || wordProblem?.[id] != null)
     ? [[id, answers[id] ?? wordProblem[id]]]
-    : [1, 2, 3]
+    : [1, 2, 3, 4]
       .map(i => `${id}.${i}`)
       .map(subId => answers?.[subId] ?? wordProblem?.[subId])
       .filter(Boolean)

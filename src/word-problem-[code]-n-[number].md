@@ -90,7 +90,7 @@ function toBase64Url(bytes) {
 // }
 const values = (wordProblem[id] != null)
    ? [[id, wordProblem[id]]] 
-   : [1, 2, 3]
+   : [1, 2, 3, 4]
     .map(i => `${id}.${i}`)
     .map(subId => wordProblem[subId])
     .filter(Boolean)
