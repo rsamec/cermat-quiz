@@ -1464,7 +1464,7 @@ function sumRuleEx(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine
     };
     const ratios = items.map(d => d.ratio);
     const ratio = areNumbers(ratios) ? ratios.reduce((out, d) => out += d, 0) : wrapToRatio(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
-    return { kind: 'ratio', whole: wholes[0], ratio, part: b.wholeAgent }
+    return { kind: 'ratio', whole: wholes[0], ratio, part: b.wholeAgent, asPercent: items[0].asPercent }
   }
   else if (items.every(d => isQuantityPredicate(d))) {
     const values = items.map(d => d.quantity);
@@ -1503,14 +1503,14 @@ function sumRule(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine |
     result,
     options: (isQuantity && isNumber(result.quantity)) || (isRatioPredicate(result) && isNumber(result.ratio)) ? [
       {
-        tex: items.map(d => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio)).join(" + "),
+        tex: items.map(d => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio, d.percent)).join(" + "),
         result: isQuantity
           ? isNumber(result.quantity) ? formatNumber(result.quantity) : 'N/A'
           : isNumber(result.ratio) ? formatRatio(result.ratio) : 'N/A',
         ok: true
       },
       {
-        tex: items.map(d => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio)).join(" * "),
+        tex: items.map(d => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio, d.percent)).join(" * "),
         result: isQuantity
           ? isNumber(result.quantity) ? formatNumber(result.quantity) : 'N/A'
           : isNumber(result.ratio) ? formatRatio(result.ratio) : 'N/A',

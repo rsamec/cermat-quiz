@@ -43,8 +43,8 @@ function isRatePredicate(value) {
 function ctor(kind) {
   return { kind };
 }
-function ctorUnit(unit2) {
-  return { kind: "unit", unit: unit2 };
+function ctorUnit(unit) {
+  return { kind: "unit", unit };
 }
 function sum(wholeAgent, wholeEntity) {
   return { kind: "sum", wholeAgent, wholeEntity };
@@ -75,8 +75,8 @@ function ctorScaleInvert(agent) {
 function ctorRound(fractionDigits = 0) {
   return { kind: "round", fractionDigits };
 }
-function ctorLinearEquation(agent, entity4, variable = "x") {
-  return { kind: "linear-equation", agent, variable, entity: entity4 };
+function ctorLinearEquation(agent, entity3, variable = "x") {
+  return { kind: "linear-equation", agent, variable, entity: entity3 };
 }
 function ctorDelta(agent) {
   return { kind: "delta", agent: { name: agent } };
@@ -105,8 +105,8 @@ function ctorSlide(agent) {
 function ctorSlideInvert(agent) {
   return { kind: "slide-invert", agent };
 }
-function cont(agent, quantity, entity4, unit2) {
-  return { kind: "cont", agent, quantity, entity: entity4, unit: unit2 };
+function cont(agent, quantity, entity3, unit) {
+  return { kind: "cont", agent, quantity, entity: entity3, unit };
 }
 function evalExprAsCont(expression, predicate) {
   return { kind: "eval-expr", expression, predicate };
@@ -165,8 +165,8 @@ function pi() {
 function piNumber() {
   return pi().quantity;
 }
-function comp(agentA, agentB, quantity, entity4) {
-  return { kind: "comp", agentA, agentB, quantity, entity: toEntity(entity4).entity, unit: toEntity(entity4).unit };
+function comp(agentA, agentB, quantity, entity3) {
+  return { kind: "comp", agentA, agentB, quantity, entity: toEntity(entity3).entity, unit: toEntity(entity3).unit };
 }
 function compAngle(agentA, agentB, relationship) {
   return { kind: "comp-angle", agentA, agentB, relationship };
@@ -177,8 +177,8 @@ function pythagoras(longestSite, sites) {
 function triangleAngle(agent) {
   return { kind: "triangle-angle", agent };
 }
-function transfer(agentSender, agentReceiver, quantity, entity4) {
-  return { kind: "transfer", agentReceiver: toAgentNames(agentReceiver), agentSender: toAgentNames(agentSender), quantity, entity: entity4 };
+function transfer(agentSender, agentReceiver, quantity, entity3) {
+  return { kind: "transfer", agentReceiver: toAgentNames(agentReceiver), agentSender: toAgentNames(agentSender), quantity, entity: entity3 };
 }
 function toAgentNames(agent) {
   return typeof agent === "string" ? { name: agent } : agent;
@@ -198,8 +198,8 @@ function compRatio(agentA, agentB, ratio2) {
 function compPercent(agentA, agentB, percent2) {
   return { kind: "comp-ratio", agentA, agentB, ratio: percent2 / 100, asPercent: true };
 }
-function compDiff(agentMinuend, agentSubtrahend, quantity, entity4) {
-  return { kind: "comp-diff", agentMinuend, agentSubtrahend, quantity, entity: entity4 };
+function compDiff(agentMinuend, agentSubtrahend, quantity, entity3) {
+  return { kind: "comp-diff", agentMinuend, agentSubtrahend, quantity, entity: entity3 };
 }
 function ratio(whole, part, ratio2) {
   return { kind: "ratio", whole, part, ratio: ratio2 };
@@ -211,27 +211,27 @@ function ratios(whole, parts, ratios3) {
   return { kind: "ratios", parts, whole, ratios: ratios3 };
 }
 var EmptyUnit = "";
-function dimensionEntity(unit2 = "cm") {
+function dimensionEntity(unit = "cm") {
   return {
-    length: { entity: "d\xE9lka", unit: unit2 },
-    area: { entity: "obsah", unit: unit2 === EmptyUnit ? EmptyUnit : `${unit2}2` },
-    volume: { entity: "objem", unit: unit2 === EmptyUnit ? EmptyUnit : `${unit2}3` },
-    lengths: ["d\xE9lka", unit2],
-    areas: ["obsah", unit2 === EmptyUnit ? EmptyUnit : `${unit2}2`],
-    volumes: ["objem", unit2 === EmptyUnit ? EmptyUnit : `${unit2}3`]
+    length: { entity: "d\xE9lka", unit },
+    area: { entity: "obsah", unit: unit === EmptyUnit ? EmptyUnit : `${unit}2` },
+    volume: { entity: "objem", unit: unit === EmptyUnit ? EmptyUnit : `${unit}3` },
+    lengths: ["d\xE9lka", unit],
+    areas: ["obsah", unit === EmptyUnit ? EmptyUnit : `${unit}2`],
+    volumes: ["objem", unit === EmptyUnit ? EmptyUnit : `${unit}3`]
   };
 }
-function contLength(agent, quantity, unit2 = "cm") {
-  return cont(agent, quantity, dimensionEntity().length.entity, unit2);
+function contLength(agent, quantity, unit = "cm") {
+  return cont(agent, quantity, dimensionEntity().length.entity, unit);
 }
-function contArea(agent, quantity, unit2 = "cm2") {
-  return cont(agent, quantity, dimensionEntity().area.entity, unit2);
+function contArea(agent, quantity, unit = "cm2") {
+  return cont(agent, quantity, dimensionEntity().area.entity, unit);
 }
-function productArea(wholeAgent, unit2 = "cm2") {
-  return productCombine(wholeAgent, { entity: dimensionEntity().area.entity, unit: unit2 });
+function productArea(wholeAgent, unit = "cm2") {
+  return productCombine(wholeAgent, { entity: dimensionEntity().area.entity, unit });
 }
-function productVolume(wholeAgent, unit2 = "cm3") {
-  return productCombine(wholeAgent, { entity: dimensionEntity().volume.entity, unit: unit2 });
+function productVolume(wholeAgent, unit = "cm3") {
+  return productCombine(wholeAgent, { entity: dimensionEntity().volume.entity, unit });
 }
 function productCombine(wholeAgent, wholeEntity, partAgents) {
   return {
@@ -241,11 +241,11 @@ function productCombine(wholeAgent, wholeEntity, partAgents) {
     wholeEntity: toEntity(wholeEntity)
   };
 }
-function gcd(agent, entity4) {
-  return { kind: "gcd", agent, entity: entity4 };
+function gcd(agent, entity3) {
+  return { kind: "gcd", agent, entity: entity3 };
 }
-function lcd(agent, entity4) {
-  return { kind: "lcd", agent, entity: entity4 };
+function lcd(agent, entity3) {
+  return { kind: "lcd", agent, entity: entity3 };
 }
 function nthPart(agent) {
   return { kind: "nth-part", agent };
@@ -253,8 +253,8 @@ function nthPart(agent) {
 function nthPartFactor(agent) {
   return { kind: "nth-factor", agent };
 }
-function rate(agent, quantity, entity4, entityBase, baseQuantity = 1) {
-  return { kind: "rate", agent, quantity, baseQuantity, entity: toEntity(entity4), entityBase: toEntity(entityBase) };
+function rate(agent, quantity, entity3, entityBase, baseQuantity = 1) {
+  return { kind: "rate", agent, quantity, baseQuantity, entity: toEntity(entity3), entityBase: toEntity(entityBase) };
 }
 function quota(agent, agentQuota, quantity, restQuantity = 0) {
   return { kind: "quota", agent, agentQuota, quantity, restQuantity };
@@ -265,8 +265,8 @@ function proportion(inverse, entities) {
 function commonSense(description) {
   return { kind: "common-sense", description };
 }
-function toEntity(entity4) {
-  return isEntityBase(entity4) ? entity4 : { entity: entity4 };
+function toEntity(entity3) {
+  return isEntityBase(entity3) ? entity3 : { entity: entity3 };
 }
 function compareRuleEx(a, b) {
   if (a.entity != b.entity) {
@@ -963,13 +963,13 @@ function sumRuleEx(items, b) {
     ;
     const ratios3 = items.map((d) => d.ratio);
     const ratio2 = areNumbers(ratios3) ? ratios3.reduce((out, d) => out += d, 0) : wrapToRatio(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
-    return { kind: "ratio", whole: wholes[0], ratio: ratio2, part: b.wholeAgent };
+    return { kind: "ratio", whole: wholes[0], ratio: ratio2, part: b.wholeAgent, asPercent: items[0].asPercent };
   } else if (items.every((d) => isQuantityPredicate(d))) {
     const values = items.map((d) => d.quantity);
     const quantity = areNumbers(values) ? values.reduce((out, d) => out += d, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
     if (items.every((d) => isRatePredicate(d))) {
-      const { entity: entity4, entityBase } = items[0];
-      return { kind: "rate", agent: b.wholeAgent, quantity, entity: entity4, entityBase, baseQuantity: 1 };
+      const { entity: entity3, entityBase } = items[0];
+      return { kind: "rate", agent: b.wholeAgent, quantity, entity: entity3, entityBase, baseQuantity: 1 };
     } else {
       if (b.kind !== "sum-combine") {
         const itemsEntities = items.map((d) => d.entity);
@@ -995,12 +995,12 @@ function sumRule(items, b) {
     result,
     options: isQuantity && isNumber(result.quantity) || isRatioPredicate(result) && isNumber(result.ratio) ? [
       {
-        tex: items.map((d) => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio)).join(" + "),
+        tex: items.map((d) => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio, d.percent)).join(" + "),
         result: isQuantity ? isNumber(result.quantity) ? formatNumber(result.quantity) : "N/A" : isNumber(result.ratio) ? formatRatio(result.ratio) : "N/A",
         ok: true
       },
       {
-        tex: items.map((d) => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio)).join(" * "),
+        tex: items.map((d) => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio, d.percent)).join(" * "),
         result: isQuantity ? isNumber(result.quantity) ? formatNumber(result.quantity) : "N/A" : isNumber(result.ratio) ? formatRatio(result.ratio) : "N/A",
         ok: false
       }
@@ -1009,8 +1009,8 @@ function sumRule(items, b) {
 }
 function productRuleEx(items, b) {
   const values = items.map((d) => d.quantity);
-  const entity4 = b.wholeEntity != null ? b.wholeEntity : items.find((d) => d.entity != null && d.entity != "");
-  const convertedEntity = entity4 != null ? toEntity(entity4) : { entity: "", unit: void 0 };
+  const entity3 = b.wholeEntity != null ? b.wholeEntity : items.find((d) => d.entity != null && d.entity != "");
+  const convertedEntity = entity3 != null ? toEntity(entity3) : { entity: "", unit: void 0 };
   return {
     kind: "cont",
     agent: b.wholeAgent,
@@ -1150,8 +1150,8 @@ function convertCompareToDeltaEx(a, b) {
   return { kind: "delta", agent: { name, nameBefore: nameBefore ?? a.agentA, nameAfter: nameAfter ?? a.agentB }, quantity: a.quantity, entity: a.entity, unit: a.unit };
 }
 function convertDeltaToCompareEx(a, b) {
-  const { agentA, agentB, entity: entity4, unit: unit2 } = b;
-  return { kind: "comp", agentA, agentB, quantity: a.quantity, entity: entity4, unit: unit2 };
+  const { agentA, agentB, entity: entity3, unit } = b;
+  return { kind: "comp", agentA, agentB, quantity: a.quantity, entity: entity3, unit };
 }
 function pythagorasRuleEx(a, b, last3) {
   if (a.entity != b.entity) {
@@ -2958,11 +2958,11 @@ Fraction.prototype = {
   "simplify": function(eps3) {
     const ieps = BigInt(1 / (eps3 || 1e-3) | 0);
     const thisABS = this["abs"]();
-    const cont6 = thisABS["toContinued"]();
-    for (let i = 1; i < cont6.length; i++) {
-      let s = newFraction(cont6[i - 1], C_ONE);
+    const cont7 = thisABS["toContinued"]();
+    for (let i = 1; i < cont7.length; i++) {
+      let s = newFraction(cont7[i - 1], C_ONE);
       for (let k = i - 2; k >= 0; k--) {
-        s = s["inverse"]()["add"](cont6[k]);
+        s = s["inverse"]()["add"](cont7[k]);
       }
       let t = s["sub"](thisABS);
       if (t["n"] * ieps < t["d"]) {
@@ -3079,9 +3079,9 @@ var Converter = class {
     }
     let best = null;
     for (const possibility of this.possibilities()) {
-      const unit2 = this.describe(possibility);
+      const unit = this.describe(possibility);
       const isIncluded = exclude.indexOf(possibility) === -1;
-      if (isIncluded && unit2.system === system) {
+      if (isIncluded && unit.system === system) {
         const result = this.to(possibility);
         if (isNegative ? result > cutOffNumber : result < cutOffNumber) {
           continue;
@@ -3090,8 +3090,8 @@ var Converter = class {
           best = {
             val: result,
             unit: possibility,
-            singular: unit2.singular,
-            plural: unit2.plural
+            singular: unit.singular,
+            plural: unit.plural
           };
         }
       }
@@ -3125,13 +3125,13 @@ var Converter = class {
     }
     this.throwUnsupportedUnitError(abbr);
   }
-  describeUnit(unit2) {
+  describeUnit(unit) {
     return {
-      abbr: unit2.abbr,
-      measure: unit2.measure,
-      system: unit2.system,
-      singular: unit2.unit.name.singular,
-      plural: unit2.unit.name.plural
+      abbr: unit.abbr,
+      measure: unit.measure,
+      system: unit.system,
+      singular: unit.unit.name.singular,
+      plural: unit.unit.name.plural
     };
   }
   /**
@@ -3151,12 +3151,12 @@ var Converter = class {
     if (measureName == null) {
       for (const [name, measure7] of Object.entries(this.measureData)) {
         for (const [systemName, units] of Object.entries(measure7.systems)) {
-          for (const [abbr, unit2] of Object.entries(units)) {
+          for (const [abbr, unit] of Object.entries(units)) {
             list.push(this.describeUnit({
               abbr,
               measure: name,
               system: systemName,
-              unit: unit2
+              unit
             }));
           }
         }
@@ -3166,12 +3166,12 @@ var Converter = class {
         throw new UnknownMeasureError(`Meausure "${measureName}" not found.`);
       const measure7 = this.measureData[measureName];
       for (const [systemName, units] of Object.entries(measure7.systems)) {
-        for (const [abbr, unit2] of Object.entries(units)) {
+        for (const [abbr, unit] of Object.entries(units)) {
           list.push(this.describeUnit({
             abbr,
             measure: measureName,
             system: systemName,
-            unit: unit2
+            unit
           }));
         }
       }
@@ -3227,12 +3227,12 @@ function buildUnitCache(measures) {
   const unitCache = /* @__PURE__ */ new Map();
   for (const [measureName, measure7] of Object.entries(measures)) {
     for (const [systemName, system] of Object.entries(measure7.systems)) {
-      for (const [testAbbr, unit2] of Object.entries(system)) {
+      for (const [testAbbr, unit] of Object.entries(system)) {
         unitCache.set(testAbbr, {
           measure: measureName,
           system: systemName,
           abbr: testAbbr,
-          unit: unit2
+          unit
         });
       }
     }
@@ -5712,7 +5712,7 @@ var convert = configureMeasurements({
 configure({
   convertToFraction: (d) => new Fraction(d).toFraction(),
   convertToUnit: (d, from, to3) => convert(d).from(from).to(to3),
-  unitAnchor: (unit2) => convert().getUnit(unit2)?.unit?.to_anchor,
+  unitAnchor: (unit) => convert().getUnit(unit)?.unit?.to_anchor,
   solveLinearEquation: (first, second, variable) => solveLinearEquation(first, second, variable),
   evalExpression: (expression, quantity) => evalExpression(expression, quantity)
 });
@@ -5760,18 +5760,18 @@ function toAs(context) {
 function to(...children) {
   return { children };
 }
-function toCont(child, { agent, entity: entity4 }) {
-  return toPredicate(child, mapToCont({ agent, entity: entity4 }));
+function toCont(child, { agent, entity: entity3 }) {
+  return toPredicate(child, mapToCont({ agent, entity: entity3 }));
 }
-function mapToCont({ agent, entity: entity4 }) {
+function mapToCont({ agent, entity: entity3 }) {
   return (node) => {
     const typeNode = node;
     return {
       kind: "cont",
       agent,
       quantity: typeNode.quantity,
-      entity: entity4 != null ? entity4.entity : typeNode.kind == "quota" ? typeNode.agentQuota : typeNode.kind == "rate" ? typeNode.entity.entity : typeNode.entity,
-      unit: entity4 != null ? entity4.unit : typeNode.kind == "rate" ? typeNode.entity.unit : typeNode.kind == "quota" ? void 0 : typeNode.unit
+      entity: entity3 != null ? entity3.entity : typeNode.kind == "quota" ? typeNode.agentQuota : typeNode.kind == "rate" ? typeNode.entity.entity : typeNode.entity,
+      unit: entity3 != null ? entity3.unit : typeNode.kind == "rate" ? typeNode.entity.unit : typeNode.kind == "quota" ? void 0 : typeNode.unit
     };
   };
 }
@@ -5822,8 +5822,8 @@ var mdFormatting = {
     }
   },
   formatRatio: (d, asPercent) => asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : d.toLocaleString("cs-CZ"),
-  formatEntity: (d, unit2) => {
-    const res = [unit2, d].filter((d2) => d2 != null).join(" ");
+  formatEntity: (d, unit) => {
+    const res = [unit, d].filter((d2) => d2 != null).join(" ");
     return isEmptyOrWhiteSpace(res) ? "" : `__${res.trim()}__`;
   },
   formatAgent: (d) => `**${d}**`,
@@ -5986,16 +5986,16 @@ function createLazyMap(thunks) {
 // src/math/comparing-values.ts
 var comparingValues = ({ input }) => {
   const { first, second } = input;
-  const entity4 = "litr";
+  const entity3 = "litr";
   return {
     deductionTree: deduce(
       deduce(
         axiomInput(ratio("zadan\xE1 hodnota", "prvn\xED hodnota", first.ratio), 1),
-        axiomInput(cont("zadan\xE1 hodnota", first.value, entity4), 2)
+        axiomInput(cont("zadan\xE1 hodnota", first.value, entity3), 2)
       ),
       deduce(
         axiomInput(ratio("zadan\xE1 hodnota", "druh\xE1 hodnota", second.ratio), 3),
-        axiomInput(cont("zadan\xE1 hodnota", second.value, entity4), 4)
+        axiomInput(cont("zadan\xE1 hodnota", second.value, entity3), 4)
       )
     )
   };
@@ -6027,7 +6027,7 @@ var obrazce = () => {
   const entityColumn = "sloupc\u016F";
   const entityTmave = "tmav\xFD \u010Dtvere\u010Dek";
   const entitySvetle = "sv\u011Btl\xE9 \u010Dtvere\u010Dek";
-  const entity4 = "\u010Dtvere\u010Dk\u016F";
+  const entity3 = "\u010Dtvere\u010Dk\u016F";
   const base = "z\xE1kladn\xED obrazec";
   const extended = "roz\u0161\xED\u0159en\xFD obrazec";
   const dd1 = deduce(
@@ -6051,8 +6051,8 @@ var obrazce = () => {
       deductionTree: deduce(
         deduce(
           deduce(
-            cont(`lev\xFD sloupec`, 3, entity4),
-            cont(`prav\xFD sloupec`, 3, entity4),
+            cont(`lev\xFD sloupec`, 3, entity3),
+            cont(`prav\xFD sloupec`, 3, entity3),
             sum("oba krajn\xED sloupce")
           ),
           ratios(extended, [entitySvetle, "horn\xED \u0159ada", "oba krajn\xED sloupce"], [2, 1, 1])
@@ -6080,8 +6080,8 @@ var obrazce = () => {
 var odmenySoutezici = () => {
   const souteziciLabel = "sout\u011B\u017E\xEDc\xED";
   const odmenaLabel = "odm\u011Bna";
-  const entity4 = "K\u010D";
-  const druhy = axiomInput(cont(`2.${souteziciLabel}`, 300, entity4), 3);
+  const entity3 = "K\u010D";
+  const druhy = axiomInput(cont(`2.${souteziciLabel}`, 300, entity3), 3);
   const prvni = axiomInput(ratio(odmenaLabel, `1.${souteziciLabel}`, 1 / 2), 1);
   const treti = deduce(
     prvni,
@@ -6116,16 +6116,16 @@ var odmenySoutezici = () => {
 var sesity = () => {
   const ctvereckovaniSesitLabel = "\u010Dtvere\u010Dkovan\xFD se\u0161it";
   const linkovanySesitLabel = "linkovan\xFD se\u0161it";
-  const entity4 = "se\u0161it";
+  const entity3 = "se\u0161it";
   const entityPrice = "K\u010D";
   const pocetLabel = "po\u010Det se\u0161it\u016F za stejnou cenu";
-  const ctvereckovanyPocet = cont(ctvereckovaniSesitLabel, 2, entity4);
-  const linkovanyPocet = cont(linkovanySesitLabel, 2, entity4);
+  const ctvereckovanyPocet = cont(ctvereckovaniSesitLabel, 2, entity3);
+  const linkovanyPocet = cont(linkovanySesitLabel, 2, entity3);
   const cenaSesitu = ratios(pocetLabel, [ctvereckovaniSesitLabel, linkovanySesitLabel], [2, 3]);
   return [
     {
       deductionTree: deduce(
-        cont("celkem koupeno", 36, entity4),
+        cont("celkem koupeno", 36, entity3),
         compRatio(linkovanySesitLabel, ctvereckovaniSesitLabel, 3),
         nthPart(linkovanySesitLabel)
       )
@@ -6160,35 +6160,35 @@ var trideni_odpadu = () => {
   const entityPapir = "pap\xEDr";
   const entityPlast = "plast";
   const entityKovy = "kovy";
-  const entity4 = "hmotnost";
-  const unit2 = "kg";
+  const entity3 = "hmotnost";
+  const unit = "kg";
   const kovyCelkem = deduce(
-    cont(oddilR, 3, entityKovy, unit2),
-    cont(oddilS, 3, entityKovy, unit2),
-    cont(oddilT, 4, entityKovy, unit2),
-    sum(`kovy v\u0161echny odd\xEDly`, { entity: entity4, unit: unit2 })
+    cont(oddilR, 3, entityKovy, unit),
+    cont(oddilS, 3, entityKovy, unit),
+    cont(oddilT, 4, entityKovy, unit),
+    sum(`kovy v\u0161echny odd\xEDly`, { entity: entity3, unit })
   );
   const papirCelkem = deduce(
-    cont(oddilR, 6, entityPapir, unit2),
-    cont(oddilS, 8, entityPapir, unit2),
-    cont(oddilT, 1, entityPapir, unit2),
-    sum(`pap\xEDr v\u0161echny odd\xEDly`, { entity: entity4, unit: unit2 })
+    cont(oddilR, 6, entityPapir, unit),
+    cont(oddilS, 8, entityPapir, unit),
+    cont(oddilT, 1, entityPapir, unit),
+    sum(`pap\xEDr v\u0161echny odd\xEDly`, { entity: entity3, unit })
   );
   const plast = deduce(
     deduce(
-      cont(oddilT, 9, entityPlast, unit2),
-      cont(oddilS, 11, entityPlast, unit2),
+      cont(oddilT, 9, entityPlast, unit),
+      cont(oddilS, 11, entityPlast, unit),
       sum(`odd\xEDl S a T`)
     ),
-    cont(oddilR, 15, entityPlast, unit2),
+    cont(oddilR, 15, entityPlast, unit),
     ctor("comp-ratio")
   );
   return {
     papirStoR: {
       deductionTree: deduce(
         deduce(
-          cont(oddilS, 8, entityPapir, unit2),
-          cont(oddilR, 6, entityPapir, unit2),
+          cont(oddilS, 8, entityPapir, unit),
+          cont(oddilR, 6, entityPapir, unit),
           ctor("comp-ratio")
         ),
         ctorBooleanOption(1 / 4)
@@ -6197,8 +6197,8 @@ var trideni_odpadu = () => {
     papirRtoS: {
       deductionTree: deduce(
         deduce(
-          cont(oddilR, 6, entityPapir, unit2),
-          cont(oddilS, 8, entityPapir, unit2),
+          cont(oddilR, 6, entityPapir, unit),
+          cont(oddilS, 8, entityPapir, unit),
           ctor("comp-ratio")
         ),
         ctorOption("C", 1 / 4, { asFraction: true })
@@ -6246,7 +6246,7 @@ function build({ input }) {
   const porucikLabel = "poru\u010D\xEDk";
   const cetarLabel = "\u010Deta\u0159";
   const vojinLabel = "voj\xEDn";
-  const entity4 = "rozkaz";
+  const entity3 = "rozkaz";
   const kapitan = axiomInput(cont(agent, input.kapitan, kapitanLabel), 1);
   const porucik = axiomInput(cont(agent, input.porucik, porucikLabel), 2);
   const cetarPerPorucik = axiomInput(rate(agent, input.cetarPerPorucik, cetarLabel, porucikLabel), 3);
@@ -6263,13 +6263,13 @@ function build({ input }) {
     kapitan,
     porucik,
     last(pocetCetaru),
-    sum("vydan\xE9 rozkazy", { entity: entity4 })
+    sum("vydan\xE9 rozkazy", { entity: entity3 })
   );
   const dTree3 = deduce(
     porucik,
     last(pocetCetaru),
     last(pocetVojinu),
-    sum("p\u0159ijat\xE9 rozkazy", { entity: entity4 })
+    sum("p\u0159ijat\xE9 rozkazy", { entity: entity3 })
   );
   const template1 = (html) => html`<br/><strong>Kolik osob v rotě dostalo rozkaz k nástupu?</strong>`;
   const template = (highlight) => highlight`V rotě je ${input.kapitan} kapitán a má pod sebou ${input.porucik} poručíky.Každý poručík má pod sebou ${input.cetarPerPorucik} své četaře
@@ -6297,11 +6297,11 @@ function build2({ input }) {
   const piece1 = "1.z\xE1kusek";
   const piece2 = "2.z\xE1kusek";
   const piece3 = "3.z\xE1kusek";
-  const entity4 = "K\u010D";
+  const entity3 = "K\u010D";
   const totalPrice = "celkem";
   const partTotalPrice = "1.z\xE1k.+2.z\xE1k";
   const p1p2 = axiomInput(compRelative(piece2, piece1, -1 / 4), 2);
-  const p1 = axiomInput(cont(piece1, input.cena, entity4), 1);
+  const p1 = axiomInput(cont(piece1, input.cena, entity3), 1);
   const p2Ratio = ratio(piece1, piece2, 3 / 4);
   const p3Ratio = ratio(totalPrice, partTotalPrice, 2 / 3);
   const oneThird = axiomInput(ratio(totalPrice, piece3, 1 / 3), 3);
@@ -6398,18 +6398,18 @@ var M7A_2023_default = createLazyMap({
   16.3: () => obrazce()[2]
 });
 function example_4_1() {
-  const entity4 = "\u017E\xE1ci";
+  const entity3 = "\u017E\xE1ci";
   return {
     deductionTree: toCont(
       deduce(
         deduce(
-          axiomInput(cont("pr\u016Fm\u011B\u0159", 21, entity4), 2),
+          axiomInput(cont("pr\u016Fm\u011B\u0159", 21, entity3), 2),
           counter("po\u010Det m\xED\u010Dov\xFDch sport\u016F", 3),
           product("po\u010Det v\u0161ech \u017E\xE1k\u016F m\xED\u010Dov\xE9 sporty")
         ),
         deduce(
-          cont("volejbal", 28, entity4),
-          cont("fotbal", 16, entity4),
+          cont("volejbal", 28, entity3),
+          cont("fotbal", 16, entity3),
           sum("fotbal a volejbal")
         ),
         ctor("comp-diff")
@@ -6427,7 +6427,7 @@ function example_4_2() {
   };
 }
 function minceVKasicce() {
-  const entity4 = "K\u010D";
+  const entity3 = "K\u010D";
   const dvou = "dvoukoruny";
   const deseti = "desetikoruny";
   const peti = "p\u011Btikoruny";
@@ -6451,9 +6451,9 @@ function minceVKasicce() {
   return {
     deductionTree: deduce(
       deduce(
-        deduce(dvouPocet, rate(dvou, 2, { entity: entity4 }, { entity: minceEntity })),
-        deduce(petiPocet, rate(peti, 5, { entity: entity4 }, { entity: minceEntity })),
-        deduce(desetiPocet, rate(deseti, 10, { entity: entity4 }, { entity: minceEntity })),
+        deduce(dvouPocet, rate(dvou, 2, { entity: entity3 }, { entity: minceEntity })),
+        deduce(petiPocet, rate(peti, 5, { entity: entity3 }, { entity: minceEntity })),
+        deduce(desetiPocet, rate(deseti, 10, { entity: entity3 }, { entity: minceEntity })),
         sum("celkem v kasi\u010Dce")
       ),
       ctorOption("E", 240)
@@ -6461,16 +6461,16 @@ function minceVKasicce() {
   };
 }
 function example_11() {
-  const entity4 = "stup\u0148\u016F";
+  const entity3 = "stup\u0148\u016F";
   const inputAngleLabel = `zadan\xFD \xFAhel`;
   const triangle = "\xFAhel troj\xFAheln\xEDku ABD";
   return {
     deductionTree: deduce(
       deduce(
         deduce(
-          deduce(axiomInput(cont(inputAngleLabel, 40, entity4), 2), compAngle(inputAngleLabel, `${triangle} u vrcholu B`, "alternate")),
+          deduce(axiomInput(cont(inputAngleLabel, 40, entity3), 2), compAngle(inputAngleLabel, `${triangle} u vrcholu B`, "alternate")),
           deduce(
-            axiomInput(cont(inputAngleLabel, 70, entity4), 1),
+            axiomInput(cont(inputAngleLabel, 70, entity3), 1),
             compAngle(inputAngleLabel, `${triangle} u vrcholu A`, "supplementary")
           ),
           triangleAngle(`${triangle} u vrcholu D`)
@@ -6545,8 +6545,8 @@ function example_15_1() {
   };
 }
 function example_15_2() {
-  const entity4 = "K\u010D";
-  const compare = axiomInput(comp("dosp\u011Bl\xE9 vstupn\xE9", "d\u011Btsk\xE9 vstupn\xE9", 210, entity4), 2);
+  const entity3 = "K\u010D";
+  const compare = axiomInput(comp("dosp\u011Bl\xE9 vstupn\xE9", "d\u011Btsk\xE9 vstupn\xE9", 210, entity3), 2);
   return {
     deductionTree: deduce(
       deduce(
@@ -6561,8 +6561,8 @@ function example_15_2() {
   };
 }
 function example_15_3() {
-  const entity4 = "obyvatel";
-  const den1 = axiomInput(cont("p\u0159i\u0161lo 1.den", 500, entity4), 2);
+  const entity3 = "obyvatel";
+  const den1 = axiomInput(cont("p\u0159i\u0161lo 1.den", 500, entity3), 2);
   const obec = deduce(
     axiomInput(percent("obec", "p\u0159i\u0161lo 1.den", 25), 1),
     den1
@@ -6575,7 +6575,7 @@ function example_15_3() {
           deduce(
             deduce(
               obec,
-              compDiff("obec", "zb\xFDvaj\xEDc\xED dosp\u011Bl\xFD", 500, entity4)
+              compDiff("obec", "zb\xFDvaj\xEDc\xED dosp\u011Bl\xFD", 500, entity3)
             ),
             axiomInput(percent("zb\xFDvaj\xEDc\xED dosp\u011Bl\xFD", "p\u0159i\u0161lo 2.den", 70), 3)
           ),
@@ -6591,9 +6591,9 @@ function example_15_3() {
 
 // src/math/M7A-2024/1.ts
 function porovnatAaB({ input }) {
-  const entity4 = "";
-  const a = axiomInput(cont("a", input.a, entity4), 1);
-  const b = axiomInput(cont("b", input.b, entity4), 2);
+  const entity3 = "";
+  const a = axiomInput(cont("a", input.a, entity3), 1);
+  const b = axiomInput(cont("b", input.b, entity3), 2);
   const rozdil = deduce(
     a,
     b,
@@ -6616,9 +6616,9 @@ function porovnatAaB({ input }) {
   };
 }
 function najitMensiCislo({ input }) {
-  const entity4 = "";
-  const a = axiomInput(cont("zadan\xE9 \u010D\xEDslo", input.zadane, entity4), 1);
-  const comparsion = axiomInput(comp("hledan\xE9 \u010D\xEDslo", "zadan\xE9 \u010D\xEDslo", -input.mensiO, entity4), 2);
+  const entity3 = "";
+  const a = axiomInput(cont("zadan\xE9 \u010D\xEDslo", input.zadane, entity3), 1);
+  const comparsion = axiomInput(comp("hledan\xE9 \u010D\xEDslo", "zadan\xE9 \u010D\xEDslo", -input.mensiO, entity3), 2);
   return {
     deductionTree: deduce(
       a,
@@ -6669,13 +6669,13 @@ function cislaNaOse({ mensi, vetsi, pocetUseku }) {
 
 // src/math/M7A-2024/3.ts
 function triCislaNaOse({ input }) {
-  const entity4 = "\xFAsek";
+  const entity3 = "\xFAsek";
   const mensi = axiomInput(counter("men\u0161\xED zadan\xE9 \u010D\xEDslo", input.mensiCislo), 1);
   const vetsi = axiomInput(counter("v\u011Bt\u0161\xED zadnan\xE9 \u010D\xEDslo", input.vetsiCislo), 2);
   const pocetUseku = axiomInput(cont("vzd\xE1lenost mezi zadan\xFDmi \u010D\xEDsly", input.pocetUsekuMeziCisly, "\xFAsek"), 3);
-  const positionA = axiomInput(cont("posun A", input.A, entity4), 1);
-  const positionB = axiomInput(cont("posun B", input.B, entity4), 1);
-  const positionC = axiomInput(cont("posun C", input.C, entity4), 1);
+  const positionA = axiomInput(cont("posun A", input.A, entity3), 1);
+  const positionB = axiomInput(cont("posun B", input.B, entity3), 1);
+  const positionC = axiomInput(cont("posun C", input.C, entity3), 1);
   const usekRate = cislaNaOse({ mensi, vetsi, pocetUseku });
   const rozdilPostion = deduce(positionB, positionA, ctor("comp-diff"));
   const dd1 = deduce(deduce(positionC, usekRate), mensi, ctorSlide("pozice C"));
@@ -6692,7 +6692,7 @@ function build3({ input }) {
   const vedouciLabel = "vedouc\xED";
   const instruktorLabel = "instruktor";
   const diteLabel = "d\xEDt\u011B";
-  const entity4 = "osob";
+  const entity3 = "osob";
   const zdravotnik = axiomInput(cont(agent, input.zdravotnik, zdravotniLabel), 1);
   const kucharPerZdravotnik = axiomInput(rate(agent, input.kucharPerZdravotnik, kucharLabel, zdravotniLabel), 2);
   const vedouciPerKuchar = axiomInput(rate(agent, input.vedouciPerKuchar, vedouciLabel, kucharLabel), 3);
@@ -6748,15 +6748,15 @@ function build3({ input }) {
 
 // src/math/M7A-2024/pocet-sportovcu.ts
 function build4({ input }) {
-  const entity4 = "sportovc\u016F";
-  const dvojice = axiomInput(cont("dvojice", 2, entity4), 1);
-  const trojice = axiomInput(cont("trojice", 3, entity4), 2);
-  const ctverice = axiomInput(cont("\u010Dtve\u0159ice", 4, entity4), 3);
-  const petice = axiomInput(cont("p\u011Btice", 5, entity4), 4);
+  const entity3 = "sportovc\u016F";
+  const dvojice = axiomInput(cont("dvojice", 2, entity3), 1);
+  const trojice = axiomInput(cont("trojice", 3, entity3), 2);
+  const ctverice = axiomInput(cont("\u010Dtve\u0159ice", 4, entity3), 3);
+  const petice = axiomInput(cont("p\u011Btice", 5, entity3), 4);
   const lcdLabel = "nejmen\u0161\xED mo\u017En\xE1 skupina";
-  const nasobek = lcd(lcdLabel, entity4);
+  const nasobek = lcd(lcdLabel, entity3);
   const dd1 = inferenceRule(dvojice, trojice, ctverice, petice, nasobek);
-  const rozdil = axiomInput(compDiff("po\u010Det sportovc\u016F", lcdLabel, 1, entity4), 5);
+  const rozdil = axiomInput(compDiff("po\u010Det sportovc\u016F", lcdLabel, 1, entity3), 5);
   const dd2 = inferenceRule(dd1, rozdil);
   const deductionTree = deduce(
     deduce(
@@ -6786,12 +6786,12 @@ function build5({ input }) {
   ];
   const hlava = "hlava";
   const celkem = "slepice a kr\xE1l\xEDci";
-  const entity4 = "zv\xED\u0159e";
+  const entity3 = "zv\xED\u0159e";
   const slepice = "slepice";
   const kralik = "kr\xE1l\xEDk";
   const total = axiomInput(cont(celkem, input.pocetHlav, hlava), 1);
-  const perHlava = rate(celkem, 1, hlava, entity4);
-  const slepicePlus = axiomInput(comp(kralik, slepice, -input.kralikuMene, entity4), 2);
+  const perHlava = rate(celkem, 1, hlava, entity3);
+  const slepicePlus = axiomInput(comp(kralik, slepice, -input.kralikuMene, entity3), 2);
   const deductionTree = deduce(
     deduce(
       deduce(
@@ -6855,23 +6855,23 @@ var M7A_2024_default = createLazyMap({
   16.2: () => hranol().objem
 });
 function koupaliste() {
-  const entity4 = "n\xE1v\u0161t\u011Bvn\xEDk\u016F";
+  const entity3 = "n\xE1v\u0161t\u011Bvn\xEDk\u016F";
   return {
     deductionTree: deduce(
       deduce(
         axiomInput(percent("koupali\u0161t\u011B loni", "koupali\u0161t\u011B letos", 80), 1),
-        axiomInput(cont("koupali\u0161t\u011B letos", 680, entity4), 2)
+        axiomInput(cont("koupali\u0161t\u011B letos", 680, entity3), 2)
       ),
       ctorOption("E", 850)
     )
   };
 }
 function cestovni_kancelar() {
-  const entity4 = "klient\u016F";
+  const entity3 = "klient\u016F";
   return {
     deductionTree: deduce(
       deduce(
-        axiomInput(cont("\u010Derven", 330, entity4), 1),
+        axiomInput(cont("\u010Derven", 330, entity3), 1),
         axiomInput(compPercent("\u010Derven", "\u010Dervenec", 100 - 40), 2)
       ),
       ctorOption("B", 550)
@@ -6881,13 +6881,13 @@ function cestovni_kancelar() {
 function pozemek() {
   const skutecnost = "skute\u010Dnost";
   const mapa = "pl\xE1n";
-  const entity4 = "";
+  const entity3 = "";
   return {
     deductionTree: deduce(
       deduce(
         deduce(
           axiomInput(ratios("pozemek m\u011B\u0159\xEDtko", [mapa, skutecnost], [1, 3e3]), 1),
-          axiomInput(cont(mapa, 15, entity4, "cm"), 2),
+          axiomInput(cont(mapa, 15, entity3, "cm"), 2),
           nthPart(skutecnost)
         ),
         ctorUnit("m")
@@ -6897,14 +6897,14 @@ function pozemek() {
   };
 }
 function krouzky() {
-  const entity4 = "d\u011Bti";
+  const entity3 = "d\u011Bti";
   const entityPercent2 = "%";
   const basketabal = cont("basketbal", 16, entityPercent2);
   const tanecni = cont("tane\u010Dn\xED", 15, entityPercent2);
   const lezeckaStena = cont("lezeck\xE1 st\u011Bna", 25, entityPercent2);
   const bezKrouzku = cont("\u017E\xE1dn\xFD krou\u017Eek", 6, entityPercent2);
   const celek = cont("celek", 100, entityPercent2);
-  const florbalPocet = cont("florbal", 114, entity4);
+  const florbalPocet = cont("florbal", 114, entity3);
   const florbalDiff = deduce(
     celek,
     deduce(
@@ -6948,10 +6948,10 @@ function krouzky() {
 function utulek() {
   const steneLabel = "\u0161t\u011Bn\u011B";
   const dospelyLabel = "dosp\u011Bl\xFD pes";
-  const entity4 = "krmeni";
+  const entity3 = "krmeni";
   const entityBase = "zv\xED\u0159e";
   const entityTime = "dny";
-  const puvodne = cont("p\u016Fvodn\u011B", 5, entity4);
+  const puvodne = cont("p\u016Fvodn\u011B", 5, entity3);
   return {
     deductionTree: deduce(
       deduce(
@@ -6963,9 +6963,9 @@ function utulek() {
               deduce(
                 puvodne,
                 deduce(
-                  cont(steneLabel, 1, entity4),
+                  cont(steneLabel, 1, entity3),
                   deduce(
-                    rate(dospelyLabel, 2, entity4, entityBase),
+                    rate(dospelyLabel, 2, entity3, entityBase),
                     cont(dospelyLabel, 2, entityBase)
                   ),
                   sum("p\u0159ibylo")
@@ -6987,11 +6987,11 @@ function utulek() {
   };
 }
 function charitativniZavod() {
-  const entity4 = "delka";
-  const unit2 = "km";
+  const entity3 = "delka";
+  const unit = "km";
   const entityBase = "doba";
   const unitBase = "h";
-  const janaRate = rate("Jana", 4, { entity: entity4, unit: unit2 }, { entity: entityBase, unit: unitBase });
+  const janaRate = rate("Jana", 4, { entity: entity3, unit }, { entity: entityBase, unit: unitBase });
   const adamDoba = cont("Adam", 40, entityBase, "min");
   return {
     deductionTree: deduce(
@@ -7030,11 +7030,11 @@ function charitativniZavod() {
   };
 }
 function angle() {
-  const entity4 = "stup\u0148\u016F";
+  const entity3 = "stup\u0148\u016F";
   const betaEntity = "beta \xFAhel";
   const inputAngleLabel = `zadan\xFD \xFAhel`;
   const triangleSumLabel = "sou\u010Det \xFAhl\u016F v troj\xFAheln\xEDku";
-  const triangleSum = cont(triangleSumLabel, 180, entity4);
+  const triangleSum = cont(triangleSumLabel, 180, entity3);
   const triangle = "\xFAhel troj\xFAheln\xEDku ABC";
   const doubleBeta = deduce(
     cont(inputAngleLabel, 2, betaEntity),
@@ -7049,7 +7049,7 @@ function angle() {
               deduce(
                 triangleSum,
                 deduce(
-                  axiomInput(cont(inputAngleLabel, 105, entity4), 1),
+                  axiomInput(cont(inputAngleLabel, 105, entity3), 1),
                   compAngle(inputAngleLabel, `${triangle} u vrcholu C`, "supplementary")
                 ),
                 ctor("comp-diff")
@@ -7160,20 +7160,26 @@ var M7A_2025_default = createLazyMap({
   5.1: () => nakupFigurek().zbytek,
   5.2: () => nakupFigurek().cenaFigurky,
   6.1: () => karticky().petr,
+  7.1: () => domecek().strana,
+  7.2: () => domecek().obsah,
   11: () => tornado(),
   12: () => cestaKeStudance().meritko,
-  13: () => cestaKeStudance().delkaTrasa
+  13: () => cestaKeStudance().delkaTrasa,
+  14: () => schody(),
+  15.1: () => jazyky().porovnaniZaku,
+  15.2: () => jazyky().fracouzstina,
+  15.3: () => jazyky().nemcinaVsFrancouzstina
 });
 function ceremonial() {
-  const entity4 = "doba";
-  const unit2 = "minut";
+  const entity3 = "doba";
+  const unit = "minut";
   const ceremonial2 = "ceremoni\xE1l";
   const promitani = "prom\xEDt\xE1n\xED";
   const zacatekLabel = "zacatek";
   const konecLabel = "konec";
   const dobaCeremonial = to(
     commonSense(`${zacatekLabel} (17:45) - ${konecLabel} (19:35)`),
-    cont(ceremonial2, 110, entity4, unit2)
+    cont(ceremonial2, 110, entity3, unit)
   );
   const dobaPrvniPulka = deduce(
     dobaCeremonial,
@@ -7206,15 +7212,15 @@ function ceremonial() {
   };
 }
 function doplneniCisel() {
-  const entity4 = "";
-  const rozdilCisel = comp("\u010D\xEDslo v siln\u011B ohrani\u010Den\xE9m krou\u017Eku", "\u010D\xEDslo v krou\u017Eku", 80, entity4);
+  const entity3 = "";
+  const rozdilCisel = comp("\u010D\xEDslo v siln\u011B ohrani\u010Den\xE9m krou\u017Eku", "\u010D\xEDslo v krou\u017Eku", 80, entity3);
   const rozdilCisel2 = to(
     deduce(
       counter("rozdil ", 34),
       counter("rozdil", -10),
       sum("rozd\xEDl")
     ),
-    comp("\u010D\xEDslo v siln\u011B ohrani\u010Den\xE9m krou\u017Eku", "1. \u010D\xEDslo v krou\u017Eku", 24, entity4)
+    comp("\u010D\xEDslo v siln\u011B ohrani\u010Den\xE9m krou\u017Eku", "1. \u010D\xEDslo v krou\u017Eku", 24, entity3)
   );
   return {
     cislo1: {
@@ -7238,10 +7244,10 @@ function doplneniCisel() {
   };
 }
 function nakupFigurek() {
-  const entity4 = "cena";
-  const unit2 = "korun";
+  const entity3 = "cena";
+  const unit = "korun";
   const entityBase = "figurka";
-  const puvodniCena = rate("p\u016Fvodn\xED n\xE1kup", 39, { entity: entity4, unit: unit2 }, { entity: entityBase });
+  const puvodniCena = rate("p\u016Fvodn\xED n\xE1kup", 39, { entity: entity3, unit }, { entity: entityBase });
   const obnos = toCont(deduce(
     puvodniCena,
     cont("p\u016Fvodn\xED n\xE1kup", 7, entityBase)
@@ -7268,9 +7274,9 @@ function asistencniPes() {
   const adamL = "Adam";
   const baraL = "B\xE1ra";
   const cyrilL = "Cyril";
-  const entity4 = "korun";
+  const entity3 = "korun";
   const entityArtifical = "pomysln\xFD d\xEDlek";
-  const adamToBara = comp(adamL, baraL, 300, entity4);
+  const adamToBara = comp(adamL, baraL, 300, entity3);
   const adamEqualBaraL = `1/3 ${adamL} = 1/2 ${baraL}`;
   const baraEqualCyrilL = `1/3 ${baraL} = 1/2 ${cyrilL}`;
   const baraPolovina = ratio(baraL, adamEqualBaraL, 1 / 2);
@@ -7299,7 +7305,7 @@ function asistencniPes() {
     adamToBara
   );
   const rate2 = deduce(
-    cont("rozd\xEDl", 300, entity4),
+    cont("rozd\xEDl", 300, entity3),
     deduce(
       last(adamDilku),
       last(baraDilku),
@@ -7331,14 +7337,14 @@ function asistencniPes() {
   };
 }
 function karticky() {
-  const entity4 = "karti\u010Dky";
-  const tondaToPeter = transfer("Tonda", "Petr", 4, entity4);
-  const petrToTonda = transfer("Petr", "Tonda", 6, entity4);
-  const jirkaToTonda = transfer("Jirka", "Tonda", 3, entity4);
-  const petrToJirka = transfer("Petr", "Jirka", 2, entity4);
-  const jirkaToPetr = transfer("Jirka", "Petr", 3, entity4);
-  const vedouciToPetr = transfer("vedouci", "Petr", 4, entity4);
-  const petr = cont("Petr", 80, entity4);
+  const entity3 = "karti\u010Dky";
+  const tondaToPeter = transfer("Tonda", "Petr", 4, entity3);
+  const petrToTonda = transfer("Petr", "Tonda", 6, entity3);
+  const jirkaToTonda = transfer("Jirka", "Tonda", 3, entity3);
+  const petrToJirka = transfer("Petr", "Jirka", 2, entity3);
+  const jirkaToPetr = transfer("Jirka", "Petr", 3, entity3);
+  const vedouciToPetr = transfer("vedouci", "Petr", 4, entity3);
+  const petr = cont("Petr", 80, entity3);
   return {
     petr: {
       deductionTree: deduce(
@@ -7360,13 +7366,160 @@ function karticky() {
     }
   };
 }
+function domecek() {
+  const dim = dimensionEntity();
+  const stranaRate = deduceAs("obvod se skl\xE1d\xE1 z 4 stran \u010Dtverce a dvou ramen troj\xFAhlen\xEDku a ka\u017Ed\xE9 rameno = 2 strany \u010Dterce zv\u011Bt\u0161en\xE9 o 3")(
+    deduce(
+      contLength("obvod", 46),
+      contLength("zv\u011Bt\u0161en\xED ramen", 6),
+      ctorDifference("obvod zmen\u0161en\xFD")
+    ),
+    cont("obvod zmen\u0161en\xFD", 8, "strana"),
+    ctor("rate")
+  );
+  const strana = toCont(stranaRate, { agent: "\u010Dtverec" });
+  return {
+    strana: {
+      deductionTree: stranaRate
+    },
+    obsah: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            last(strana),
+            last(strana),
+            productArea("\u010Dtverec")
+          ),
+          double(),
+          productArea("z\xE1kladna")
+        ),
+        deduce(
+          deduce(
+            deduce(
+              deduce(
+                last(strana),
+                double(),
+                product("z\xE1kladna")
+              ),
+              comp("rameno", "z\xE1kladna", 3, dim.length.entity)
+            ),
+            comp("rameno", "v\xFD\u0161ka", 1, dim.length.entity)
+          ),
+          last(strana),
+          productArea("rovnoramenn\xFD troj\xFAhlen\xEDk")
+        ),
+        sum("dome\u010Dek")
+      )
+    }
+  };
+}
+function schody() {
+  const dim = dimensionEntity();
+  const entity3 = "obdeln\xEDk";
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduceAs("rozd\xEDl vznik\xE1 pouze v horn\xED a spodn\xED \u010D\xE1sti")(
+          cont("schodi\u0161t\u011B", 6, entity3),
+          cont("krychle", 4, entity3),
+          ctorDifference("rozd\xEDl")
+        ),
+        deduce(
+          contLength("obdeln\xEDk", 9),
+          contLength("obdeln\xEDk", 9 / 2),
+          productArea("obdeln\xEDk")
+        ),
+        productCombine("rozd\xEDl", dim.area)
+      ),
+      ctorOption("D", 81)
+    )
+  };
+}
+function jazyky() {
+  const deLabel = "n\u011Bm\u010Dina";
+  const frLabel = "francouz\u0161tina";
+  const esLabel = "\u0161pan\u011Bl\u0161tina";
+  const school1Label = "1.\u0161kola";
+  const school2Label = "2.\u0161kola";
+  const entity3 = "\u017E\xE1k";
+  const de1 = percent(school1Label, deLabel, 62);
+  const fr1 = percent(school1Label, frLabel, 18);
+  const es1 = deduce(
+    deduce(
+      de1,
+      fr1,
+      sum("dva jazyky")
+    ),
+    ctorComplement(esLabel)
+  );
+  const es1Val = cont(esLabel, 100, entity3);
+  const es2 = percent(school2Label, esLabel, 35);
+  const fr2 = percent(school2Label, frLabel, 20);
+  const de2 = deduce(
+    deduce(
+      fr2,
+      es2,
+      sum("dva jazyky")
+    ),
+    ctorComplement(deLabel)
+  );
+  const de2Val = cont(deLabel, 270, entity3);
+  const school1 = deduce(
+    es1,
+    es1Val
+  );
+  const school2 = deduce(
+    de2,
+    de2Val
+  );
+  const fr1Pocet = deduce(
+    fr1,
+    last(school1)
+  );
+  return {
+    porovnaniZaku: {
+      deductionTree: deduce(
+        deduce(
+          school2,
+          school1
+        ),
+        ctorOption("A", 100)
+      )
+    },
+    fracouzstina: {
+      deductionTree: deduce(
+        deduce(
+          fr1Pocet,
+          deduce(
+            fr2,
+            last(school2)
+          ),
+          sum(frLabel)
+        ),
+        ctorOption("E", 210)
+      )
+    },
+    nemcinaVsFrancouzstina: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            de1,
+            last(school1)
+          ),
+          fr1Pocet
+        ),
+        ctorOption("F", 220)
+      )
+    }
+  };
+}
 function cestaKeStudance() {
-  const entity4 = "skute\u010Dnost";
+  const entity3 = "skute\u010Dnost";
   const entityBase = "mapa";
-  const unit2 = "cm";
+  const unit = "cm";
   const tiborAgent = "pl\xE1novan\xE1 trasa";
-  const tiborMeritko = rate(tiborAgent, 5e4, { entity: entity4, unit: unit2 }, entityBase);
-  const tiborTrasaPlan = cont(tiborAgent, 4.2, entityBase, unit2);
+  const tiborMeritko = rate(tiborAgent, 5e4, { entity: entity3, unit }, entityBase);
+  const tiborTrasaPlan = cont(tiborAgent, 4.2, entityBase, unit);
   const matyasAgent = "pl\xE1novan\xE1 trasa";
   const matyasTrasaPlan = cont(matyasAgent, 28, entityBase, "mm");
   const trasaSkutecnost = deduce(
@@ -7396,10 +7549,10 @@ function cestaKeStudance() {
   };
 }
 function tornado() {
-  const entity4 = "d\u016Fm";
+  const entity3 = "d\u016Fm";
   const neposkozenoLabel = "nepo\u0161kozeno";
   const poskozenoLabel = "po\u0161kozeno";
-  const domuBezeSkod = cont(neposkozenoLabel, 270, entity4);
+  const domuBezeSkod = cont(neposkozenoLabel, 270, entity3);
   const poskozenoRate = percent("celkem", poskozenoLabel, 40);
   return {
     deductionTree: deduce(
@@ -7437,13 +7590,13 @@ var M7B_2025_default = createLazyMap({
   15.3: () => predstaveni()
 });
 function hledaneCislo() {
-  const entity4 = "";
+  const entity3 = "";
   const prvniL = "osmina";
   const druhyL = "polovina";
-  const prvniRelative = cont(prvniL, 1 / 8, entity4);
-  const druhyRelative = cont(druhyL, 1 / 2, entity4);
-  const prvni = cont(prvniL, 1, entity4);
-  const druhy = cont(druhyL, 16, entity4);
+  const prvniRelative = cont(prvniL, 1 / 8, entity3);
+  const druhyRelative = cont(druhyL, 1 / 2, entity3);
+  const prvni = cont(prvniL, 1, entity3);
+  const druhy = cont(druhyL, 16, entity3);
   return {
     deductionTree: deduce(
       deduceAs("Osmina \u010D\xEDsla + 16 = Polovina \u010D\xEDsla + 1")(
@@ -7463,9 +7616,9 @@ function hledaneCislo() {
   };
 }
 function pomer() {
-  const entity4 = "";
-  const a3 = cont("3. \u010D\xEDslo", 72, entity4);
-  const a4 = cont("4. \u010D\xEDslo", 108, entity4);
+  const entity3 = "";
+  const a3 = cont("3. \u010D\xEDslo", 72, entity3);
+  const a4 = cont("4. \u010D\xEDslo", 108, entity3);
   const sousedniCislaPomerLabel = "sousedn\xED \u010D\xEDsla";
   const sousedniCislaPomer = deduce(
     deduce(
@@ -7473,7 +7626,7 @@ function pomer() {
       a4,
       ctorRatios(sousedniCislaPomerLabel)
     ),
-    deduce(a3, a4, gcd("nejv\u011Bt\u0161\xED spole\u010Dn\xFD n\xE1sobek", entity4)),
+    deduce(a3, a4, gcd("nejv\u011Bt\u0161\xED spole\u010Dn\xFD n\xE1sobek", entity3)),
     ctor("scale-invert")
   );
   const createRatios = (treeNode, n1, n2) => {
@@ -7511,15 +7664,15 @@ function pomer() {
   };
 }
 function vodniNadrz() {
-  const entity4 = "doba";
-  const unit2 = "h";
+  const entity3 = "doba";
+  const unit = "h";
   const entityCerpadlo = "\u010Derpadlo";
   return {
     pomer: {
       deductionTree: deduce(
         deduce(
-          cont("dopln\u011Bno", 4, entity4, unit2),
-          cont("pln\u011B napln\u011Bno", 6, entity4, unit2),
+          cont("dopln\u011Bno", 4, entity3, unit),
+          cont("pln\u011B napln\u011Bno", 6, entity3, unit),
           ctor("ratio")
         ),
         ctorComplement("r\xE1no ji\u017E napln\u011Bno")
@@ -7529,11 +7682,11 @@ function vodniNadrz() {
       deductionTree: deduce(
         deduce(
           deduce(
-            cont("p\u016Fvodn\u011B", 6, entity4, unit2),
-            cont("nov\u011B", 8, entity4, unit2),
+            cont("p\u016Fvodn\u011B", 6, entity3, unit),
+            cont("nov\u011B", 8, entity3, unit),
             ctor("comp-ratio")
           ),
-          proportion(true, [entity4, entityCerpadlo])
+          proportion(true, [entity3, entityCerpadlo])
         ),
         cont("p\u016Fvodn\u011B", 4, entityCerpadlo)
       )
@@ -7547,9 +7700,9 @@ function vodniNadrz() {
               cont("nov\u011B", 2, entityCerpadlo),
               ctor("comp-ratio")
             ),
-            proportion(true, [entityCerpadlo, entity4])
+            proportion(true, [entityCerpadlo, entity3])
           ),
-          cont("p\u016Fvodn\u011B", 6, entity4, unit2)
+          cont("p\u016Fvodn\u011B", 6, entity3, unit)
         ),
         ratio("nov\u011B", "nov\u011B polovina n\xE1dr\u017Ee", 1 / 2)
       )
@@ -7560,7 +7713,7 @@ function zaciSkupiny() {
   const entityGroup = "skupina";
   const entityDvojic = "dvojic";
   const entityTrojic = "trojic";
-  const entity4 = "\u017E\xE1k\u016F";
+  const entity3 = "\u017E\xE1k\u016F";
   const pomer2 = deduce(
     deduce(
       cont("dvojice", 3, entityGroup),
@@ -7594,14 +7747,14 @@ function zaciSkupiny() {
       deductionTree: deduce(
         deduce(
           last(dvojic),
-          rate("skupina", 2, entity4, entityDvojic)
+          rate("skupina", 2, entity3, entityDvojic)
         ),
         deduce(
           to(
             last(pomer2),
             cont("skupina trojic", 4, entityTrojic)
           ),
-          rate("skupina", 3, entity4, entityTrojic)
+          rate("skupina", 3, entity3, entityTrojic)
         ),
         sum("celkem")
       )
@@ -7609,16 +7762,16 @@ function zaciSkupiny() {
   };
 }
 function kapesne() {
-  const entity4 = "korun";
+  const entity3 = "korun";
   const entityBase = "m\u011Bs\xEDc";
   const agentHelena = "Helena";
   const agentTereza = "Tereza";
-  const ledenPocatekHelena = cont("po\u010D\xE1tek leden", 550, entity4);
-  const brezenPocatekHelena = cont("po\u010D\xE1tek b\u0159ezen", 1e3, entity4);
-  const kapesneRateHelena = rate(agentHelena, 400, entity4, entityBase);
-  const kapesneRateTereza = rate(agentTereza, 400, entity4, entityBase);
-  const ledenPocateTereza = cont("po\u010D\xE1tek leden", 400, entity4);
-  const dubenPocateTereza = cont("po\u010D\xE1tek duben", 1200, entity4);
+  const ledenPocatekHelena = cont("po\u010D\xE1tek leden", 550, entity3);
+  const brezenPocatekHelena = cont("po\u010D\xE1tek b\u0159ezen", 1e3, entity3);
+  const kapesneRateHelena = rate(agentHelena, 400, entity3, entityBase);
+  const kapesneRateTereza = rate(agentTereza, 400, entity3, entityBase);
+  const ledenPocateTereza = cont("po\u010D\xE1tek leden", 400, entity3);
+  const dubenPocateTereza = cont("po\u010D\xE1tek duben", 1200, entity3);
   return {
     utratila: {
       deductionTree: deduce(
@@ -7663,12 +7816,12 @@ function kapesne() {
   };
 }
 function cislo() {
-  const entity4 = "";
+  const entity3 = "";
   return {
     deductionTree: deduce(
       deduce(
-        cont("zv\u011Bt\u0161en\xE9 \u010D\xEDslo", 98, entity4),
-        cont("zadan\xE9 \u010D\xEDslo", 56, entity4),
+        cont("zv\u011Bt\u0161en\xE9 \u010D\xEDslo", 98, entity3),
+        cont("zadan\xE9 \u010D\xEDslo", 56, entity3),
         ctorComparePercent()
       ),
       ctorOption("F", 75, { asPercent: true })
@@ -7676,14 +7829,14 @@ function cislo() {
   };
 }
 function zahradnictvi() {
-  const entity4 = "sazenic";
+  const entity3 = "sazenic";
   const celkemLabel = "kv\u011Btina";
   const kopretinyLabel = "kopretina";
   const hvozdikyLabel = "hvozd\xEDk";
   const astraLabel = "astra";
-  const celkem = cont(celkemLabel, 120, entity4);
+  const celkem = cont(celkemLabel, 120, entity3);
   const hvozdiky = deduce(
-    rate(hvozdikyLabel, 24, entity4, "bedna"),
+    rate(hvozdikyLabel, 24, entity3, "bedna"),
     cont(hvozdikyLabel, 2, "bedna")
   );
   return {
@@ -7709,11 +7862,11 @@ function zahradnictvi() {
   };
 }
 function predstaveni() {
-  const entity4 = "div\xE1k\u016F";
+  const entity3 = "div\xE1k\u016F";
   const dospeliLabel = "dosp\u011Bl\xFD";
   const detiLabel = "d\u011Bti";
   const predskolniDetiLabel = "p\u0159ed\u0161kol\xE1ci";
-  const dospely = cont(dospeliLabel, 100, entity4);
+  const dospely = cont(dospeliLabel, 100, entity3);
   const deti = deduce(
     dospely,
     compRelative(detiLabel, dospeliLabel, 1 / 2)
@@ -7807,15 +7960,15 @@ function hledani_cisel({ input }) {
   };
 }
 function klubSEN() {
-  const entity4 = "d\xEDt\u011B";
+  const entity3 = "d\xEDt\u011B";
   const entityKrouzek = "\xFA\u010Dast krou\u017Eek";
-  const sportovni = cont("sportovn\xED", 14, entity4);
-  const divadelni = cont("divadeln\xED", 12, entity4);
-  const roboticky = cont("robotick\xFD", 6, entity4);
-  const threeRate = rate("nav\u0161t\u011Bvuje 3 krou\u017Eky", 3, entityKrouzek, entity4);
-  const twoRate = rate("nav\u0161t\u011Bvuje 2 krou\u017Eky", 2, entityKrouzek, entity4);
-  const three = cont("nav\u0161t\u011Bvuje 3 krou\u017Eky", 3, entity4);
-  const two = cont("nav\u0161t\u011Bvuje 2 krou\u017Eky", 8, entity4);
+  const sportovni = cont("sportovn\xED", 14, entity3);
+  const divadelni = cont("divadeln\xED", 12, entity3);
+  const roboticky = cont("robotick\xFD", 6, entity3);
+  const threeRate = rate("nav\u0161t\u011Bvuje 3 krou\u017Eky", 3, entityKrouzek, entity3);
+  const twoRate = rate("nav\u0161t\u011Bvuje 2 krou\u017Eky", 2, entityKrouzek, entity3);
+  const three = cont("nav\u0161t\u011Bvuje 3 krou\u017Eky", 3, entity3);
+  const two = cont("nav\u0161t\u011Bvuje 2 krou\u017Eky", 8, entity3);
   const one = deduce(
     deduce(
       sportovni,
@@ -7832,7 +7985,7 @@ function klubSEN() {
         twoRate,
         two
       ),
-      sum("nav\u0161t\u011Bvuje v\xEDce krou\u017Ek\u016F", { entity: entity4 })
+      sum("nav\u0161t\u011Bvuje v\xEDce krou\u017Ek\u016F", { entity: entity3 })
     ),
     ctor("comp-diff")
   );
@@ -7991,7 +8144,7 @@ function stavebnice() {
   };
 }
 function minceVKasicce2() {
-  const entity4 = "K\u010D";
+  const entity3 = "K\u010D";
   const deseti = "desetikoruny";
   const peti = "p\u011Btikoruny";
   const minceEntity = "mince";
@@ -8003,14 +8156,14 @@ function minceVKasicce2() {
   return {
     deductionTree: deduce(
       deduce(
-        deduce(petiPocet, rate(peti, 5, { entity: entity4 }, { entity: minceEntity })),
+        deduce(petiPocet, rate(peti, 5, { entity: entity3 }, { entity: minceEntity })),
         deduce(
           deduce(
             celkem,
             last(petiPocet),
             ctorDifference(deseti)
           ),
-          rate(deseti, 10, { entity: entity4 }, { entity: minceEntity })
+          rate(deseti, 10, { entity: entity3 }, { entity: minceEntity })
         ),
         sum("celkem v kasi\u010Dce")
       ),
@@ -8133,11 +8286,11 @@ function ctvercovaSit() {
   };
 }
 function giftAndBox() {
-  const entity4 = "K\u010D";
+  const entity3 = "K\u010D";
   const giftLabel = "d\xE1rek";
   const boxLabel = "krabi\u010Dka";
-  const paidTotal = axiomInput(cont("zaplaceno", 84, entity4), 2);
-  const giftToBox = axiomInput(comp(giftLabel, boxLabel, 72, entity4), 1);
+  const paidTotal = axiomInput(cont("zaplaceno", 84, entity3), 2);
+  const giftToBox = axiomInput(comp(giftLabel, boxLabel, 72, entity3), 1);
   const box = deduce(giftToBox, paidTotal, ctor("comp-part-eq"));
   return {
     deductionTree: deduce(
@@ -8148,12 +8301,12 @@ function giftAndBox() {
   };
 }
 function lukasAccount() {
-  const entity4 = "K\u010D";
-  const grandMotherIn = cont("babi\u010Dka", 500, entity4);
-  const bookCostOut = cont("kniha", 186, entity4);
-  const pocketMoneyIn = cont("kapesn\xE9", 150, entity4);
-  const fatherGiftOut = cont("d\xE1rek pro tat\xEDnka", 263, entity4);
-  const newState = cont("\xFA\u010Det nov\u011B", 470, entity4);
+  const entity3 = "K\u010D";
+  const grandMotherIn = cont("babi\u010Dka", 500, entity3);
+  const bookCostOut = cont("kniha", 186, entity3);
+  const pocketMoneyIn = cont("kapesn\xE9", 150, entity3);
+  const fatherGiftOut = cont("d\xE1rek pro tat\xEDnka", 263, entity3);
+  const newState = cont("\xFA\u010Det nov\u011B", 470, entity3);
   const moneyIn = deduce(grandMotherIn, pocketMoneyIn, sum("p\u0159ijato"));
   const moneyOut = deduce(bookCostOut, fatherGiftOut, sum("vyd\xE1no"));
   const balance = deduce(moneyIn, moneyOut, ctorDifference("zm\u011Bna na \xFA\u010Dt\u011B"));
@@ -8166,11 +8319,11 @@ function lukasAccount() {
   };
 }
 function appleBox() {
-  const entity4 = "jablko";
+  const entity3 = "jablko";
   const soldLabel = "prod\xE1no";
   const boxLabel = "pln\xE1 bedna";
   const soldRatio = ratio(boxLabel, `${soldLabel} dopoledne`, 1 / 5);
-  const sold = cont(`${soldLabel} odpoledne`, 20, entity4);
+  const sold = cont(`${soldLabel} odpoledne`, 20, entity3);
   const restRatio = ratio(boxLabel, "2. den zbytek", 2 / 5);
   return {
     deductionTree: deduce(
@@ -8184,13 +8337,13 @@ function appleBox() {
   };
 }
 function timeUnitSum() {
-  const entity4 = "";
+  const entity3 = "";
   const minutes = "min";
   return {
     deductionTree: deduce(
       deduce(
-        deduce(cont("hodin", 1, entity4, "h"), ctorUnit(minutes)),
-        cont("minut", 20, entity4, minutes),
+        deduce(cont("hodin", 1, entity3, "h"), ctorUnit(minutes)),
+        cont("minut", 20, entity3, minutes),
         sum("celkem")
       ),
       ctorUnit("s")
@@ -8198,16 +8351,16 @@ function timeUnitSum() {
   };
 }
 function distanceUnitCompareDiff() {
-  const entity4 = "";
+  const entity3 = "";
   return {
     deductionTree: deduce(
       deduce(
         deduce(
-          deduce(cont("m", 1, entity4, "m"), ctorUnit("cm")),
-          cont("cm", 26, entity4, "cm"),
+          deduce(cont("m", 1, entity3, "m"), ctorUnit("cm")),
+          cont("cm", 26, entity3, "cm"),
           ctorDifference("prav\xE1 strana")
         ),
-        deduce(cont("lev\xE1 strana", 1 / 2, entity4, "m"), ctorUnit("cm")),
+        deduce(cont("lev\xE1 strana", 1 / 2, entity3, "m"), ctorUnit("cm")),
         ctorDifference("v\xFDsledek")
       ),
       ctorUnit("mm")
@@ -8215,12 +8368,12 @@ function distanceUnitCompareDiff() {
   };
 }
 function dveCislaNaOse({ input }) {
-  const entity4 = "\xFAsek";
+  const entity3 = "\xFAsek";
   const mensi = axiomInput(counter("men\u0161\xED zadan\xE9 \u010D\xEDslo", input.mensiCislo), 1);
   const vetsi = axiomInput(counter("v\u011Bt\u0161\xED zadnan\xE9 \u010D\xEDslo", input.vetsiCislo), 2);
   const pocetUseku = axiomInput(cont("vzd\xE1lenost mezi zadan\xFDmi \u010D\xEDsly", input.pocetUsekuMeziCisly, "\xFAsek"), 3);
-  const positionX = axiomInput(cont("posun X", input.X, entity4), 1);
-  const positionY = axiomInput(cont("posun Y", input.Y, entity4), 1);
+  const positionX = axiomInput(cont("posun X", input.X, entity3), 1);
+  const positionY = axiomInput(cont("posun Y", input.Y, entity3), 1);
   const usekRate = cislaNaOse({ mensi, vetsi, pocetUseku });
   const dd1 = deduce(deduce(positionX, usekRate), mensi, ctorSlide("pozice X"));
   const dd2 = deduce(deduce(positionY, last(usekRate)), mensi, ctorSlide("pozice Y"));
@@ -8234,20 +8387,20 @@ function dveCislaNaOse({ input }) {
   };
 }
 function novorocniPrani() {
-  const entity4 = "p\u0159\xE1n\xED";
+  const entity3 = "p\u0159\xE1n\xED";
   const entityBase = "minuty";
-  const spolecne = cont("spole\u010Dn\u011B", 120, entity4);
+  const spolecne = cont("spole\u010Dn\u011B", 120, entity3);
   return {
     deductionTree: deduce(
       deduce(
         spolecne,
         toPredicate(
           deduce(
-            cont("Tereza", 14, entity4),
-            cont("Nikola", 10, entity4),
+            cont("Tereza", 14, entity3),
+            cont("Nikola", 10, entity3),
             sum("spole\u010Dn\u011B")
           ),
-          (node) => ({ kind: "rate", quantity: node.quantity, agent: "spole\u010Dn\u011B", entity: { entity: entity4 }, entityBase: { entity: entityBase }, baseQuantity: 5 })
+          (node) => ({ kind: "rate", quantity: node.quantity, agent: "spole\u010Dn\u011B", entity: { entity: entity3 }, entityBase: { entity: entityBase }, baseQuantity: 5 })
         )
       ),
       ctorOption("B", 25)
@@ -8255,10 +8408,10 @@ function novorocniPrani() {
   };
 }
 function carTrip() {
-  const entity4 = "minuty";
+  const entity3 = "minuty";
   const pocatekLabel = "\u010Das odjezdu";
-  const pocatekMinut = axiomInput(cont(pocatekLabel, 8, entity4), 1);
-  const dobaCesta = axiomInput(cont("cesta", 24, entity4), 1);
+  const pocatekMinut = axiomInput(cont(pocatekLabel, 8, entity3), 1);
+  const dobaCesta = axiomInput(cont("cesta", 24, entity3), 1);
   const pocatekPosun = deduce(
     dobaCesta,
     ratio("cesta", "1. t\u0159etina cesty", 1 / 3)
@@ -8284,7 +8437,7 @@ function carTrip() {
       deductionTree: deduce(
         deduce(
           deduce(last(pocatek), dobaCesta, ctorSlide("\u010Das odjezdu")),
-          cont("posun odjezdu o", 6, entity4),
+          cont("posun odjezdu o", 6, entity3),
           ctorSlide("posunut\xFD \u010Das p\u0159\xEDjezdu")
         ),
         ctorOption("A", 30)
@@ -8293,15 +8446,15 @@ function carTrip() {
   };
 }
 function sestiuhelnik() {
-  const entity4 = "troj\xFAhlen\xEDk";
-  const dark = cont("tmav\xE1 \u010D\xE1st", 2, entity4);
+  const entity3 = "troj\xFAhlen\xEDk";
+  const dark = cont("tmav\xE1 \u010D\xE1st", 2, entity3);
   const obsah = contArea("tmav\xE1 \u010D\xE1st", 112);
   return {
     deductionTree: deduce(
       deduce(
         deduce(
           deduce(
-            cont("pravideln\xFD \u0161esti\xFAhlen\xEDk", 6, entity4),
+            cont("pravideln\xFD \u0161esti\xFAhlen\xEDk", 6, entity3),
             dark,
             ctorDifference("sv\u011Btl\xE1 \u010D\xE1st")
           ),
@@ -8315,12 +8468,12 @@ function sestiuhelnik() {
   };
 }
 function vyvojObyvatel() {
-  const entity4 = "obyvatel";
+  const entity3 = "obyvatel";
   const lidovLabel = "Lidov";
   return {
     panov: {
       deductionTree: deduce(
-        cont("p\u0159\xEDr\u016Fstek 2021", 10, entity4),
+        cont("p\u0159\xEDr\u016Fstek 2021", 10, entity3),
         ctorOption("E", 10)
       )
     },
@@ -8329,12 +8482,12 @@ function vyvojObyvatel() {
         deduce(
           deduce(
             deduce(
-              cont(lidovLabel, 300, entity4),
-              transfer(`p\u0159\xEDr\u016Fstek 2019`, lidovLabel, 10, entity4)
+              cont(lidovLabel, 300, entity3),
+              transfer(`p\u0159\xEDr\u016Fstek 2019`, lidovLabel, 10, entity3)
             ),
-            transfer(`p\u0159\xEDr\u016Fstek 2020`, lidovLabel, 5, entity4)
+            transfer(`p\u0159\xEDr\u016Fstek 2020`, lidovLabel, 5, entity3)
           ),
-          transfer(lidovLabel, "\xFAbytek 2021", 5, entity4)
+          transfer(lidovLabel, "\xFAbytek 2021", 5, entity3)
         ),
         ctorOption("D", 310)
       )
@@ -8342,10 +8495,10 @@ function vyvojObyvatel() {
     damov: {
       deductionTree: deduce(
         deduce(
-          cont("2019", -5, entity4),
-          cont("2020", -10, entity4),
-          cont("2021", 10, entity4),
-          cont("2022", 5, entity4),
+          cont("2019", -5, entity3),
+          cont("2020", -10, entity3),
+          cont("2021", 10, entity3),
+          cont("2022", 5, entity3),
           sum("zm\u011Bna obyvatel")
         ),
         ctorOption("B", 0)
@@ -8354,14 +8507,14 @@ function vyvojObyvatel() {
   };
 }
 function pyramida() {
-  const entity4 = "schody";
+  const entity3 = "schody";
   const entityFloor = "patra";
   const pyramida7 = cont("pyramida", 7, entityFloor);
-  const pyramida90 = cont("pyramida", 90, entity4);
+  const pyramida90 = cont("pyramida", 90, entity3);
   return {
     floor8: {
       deductionTree: deduce(
-        cont("\u010Dern\xE9 schody", 48, entity4),
+        cont("\u010Dern\xE9 schody", 48, entity3),
         deduce(
           cont("pyramida", 8, entityFloor),
           ratio("pyramida", "\u010Dern\xE9 schody", 1 / 2)
@@ -8372,7 +8525,7 @@ function pyramida() {
     floor7: {
       deductionTree: deduce(
         deduce(
-          cont("b\xEDl\xE9 schody", 84, entity4),
+          cont("b\xEDl\xE9 schody", 84, entity3),
           to(
             pyramida7,
             commonSense("patra se st\u0159\xEDdaj\xED pravideln\u011B, prvn\xED patro je \u010Dern\xE9"),
@@ -8391,7 +8544,7 @@ function pyramida() {
           commonSense(`hled\xE1me co nejmen\u0161\xED periodu opakov\xE1n\xED schod\u016F z rozkladu`),
           commonSense(`2 a 3 m\u016F\u017Eeme vylou\u010Dit, proto\u017Ee opakov\xE1n schod\u016F po 2,3 nespl\u0148ujem podm\xEDnku stejn\xE9 barvnosti pro 27.patro = 30.patro`),
           commonSense(`5 je nejmen\u0161\xED mo\u017En\xFD po\u010Det schod\u016F, kter\xFD spl\u0148uje podm\xEDnku podm\xEDnku stejn\xE9 barvnosti pro 27.patro = 30.patro`),
-          rate("pyramida", 5, entity4, entityFloor)
+          rate("pyramida", 5, entity3, entityFloor)
         ),
         pyramida90
       )
@@ -8408,8 +8561,8 @@ var M5A_2025_default = createLazyMap({
   5.1: () => patrovyDum().druhePatroChlapci,
   5.2: () => patrovyDum().prvniPatroPocetDeti,
   5.3: () => patrovyDum().pocetDivek,
-  6.1: () => domecek().obvod,
-  6.2: () => domecek().kratsiStranaObdelni,
+  6.1: () => domecek2().obvod,
+  6.2: () => domecek2().kratsiStranaObdelni,
   8.1: () => turistickyOdil().pocetMuzu,
   8.2: () => turistickyOdil().pocetClenu,
   8.3: () => turistickyOdil().pocetZen,
@@ -8468,32 +8621,32 @@ function turistickyOdil() {
   };
 }
 function jizdniKolo() {
-  const entity4 = "oto\u010Den\xED";
+  const entity3 = "oto\u010Den\xED";
   const otaceniKola = ratios("ot\xE1\u010Den\xED kola", ["t\xE1ta", "Mirek"], [25, 30]);
   return {
     a: {
       deductionTree: deduce(
         otaceniKola,
-        cont("t\xE1ta", 30, entity4),
+        cont("t\xE1ta", 30, entity3),
         nthPart("Mirek")
       )
     },
     b: {
       deductionTree: deduce(
         otaceniKola,
-        comp("t\xE1ta", "Mirek", -30, entity4)
+        comp("t\xE1ta", "Mirek", -30, entity3)
       )
     }
   };
 }
 function kulicka() {
-  const entity4 = "v\xE1ha";
-  const unit2 = "g";
+  const entity3 = "v\xE1ha";
+  const unit = "g";
   const entityBase = "kuli\u010Dka";
   const bigLabel = "velk\xE1 kuli\u010Dka";
   const smallLabel = "mal\xE1 kuli\u010Dka";
-  const big = rate(bigLabel, 30, { entity: entity4, unit: unit2 }, entityBase);
-  const small = rate(smallLabel, 20, { entity: entity4, unit: unit2 }, entityBase);
+  const big = rate(bigLabel, 30, { entity: entity3, unit }, entityBase);
+  const small = rate(smallLabel, 20, { entity: entity3, unit }, entityBase);
   const pocetSrovnani = compRatio(smallLabel, bigLabel, 2);
   const bigPocet = deduce(
     deduce(
@@ -8506,7 +8659,7 @@ function kulicka() {
         cont(smallLabel, 2, ""),
         nthPartFactor(smallLabel)
       ),
-      cont("celkem", 560, entity4, unit2),
+      cont("celkem", 560, entity3, unit),
       nthPart(bigLabel)
     ),
     big
@@ -8534,7 +8687,7 @@ function kulicka() {
 function patrovyDum() {
   const boyLabel = "chlapci";
   const girlLabel = "d\xEDvky";
-  const entity4 = "d\xEDt\u011B";
+  const entity3 = "d\xEDt\u011B";
   const prvniL = "prvn\xED patro";
   const druheL = "druh\xE9 patro";
   const tretiL = "t\u0159et\xED patro";
@@ -8544,11 +8697,11 @@ function patrovyDum() {
     commonSense("Ze v\u0161ech chlapc\u016F z na\u0161eho domu pouze 3 chlapci nebydl\xED ve t\u0159et\xEDm pat\u0159e."),
     ratios("rozlo\u017Een\xED chlapc\u016F v patrech", [prvniL, druheL, tretiL], [3, 0, 2])
   );
-  const celkem = cont("celkem", 11, entity4);
+  const celkem = cont("celkem", 11, entity3);
   const chlapci = to(
     commonSense("Ve druh\xE9m pat\u0159e bydl\xED jen d\xEDvky."),
     commonSense("V prvn\xEDm a t\u0159et\xEDm pat\u0159e bydl\xED dohromady 5 chlapc\u016F a 3 d\xEDvky."),
-    cont(boyLabel, 5, entity4)
+    cont(boyLabel, 5, entity3)
   );
   const celkovyPocetDivek = deduce(
     celkem,
@@ -8564,10 +8717,10 @@ function patrovyDum() {
     },
     prvniPatroPocetDeti: {
       deductionTree: deduce(
-        cont("v prvn\xEDm a t\u0159et\xEDm pat\u0159e", 8, entity4),
+        cont("v prvn\xEDm a t\u0159et\xEDm pat\u0159e", 8, entity3),
         deduce(
           celkem,
-          cont("v prvn\xEDm a druh\xE9m pat\u0159e", 8, entity4),
+          cont("v prvn\xEDm a druh\xE9m pat\u0159e", 8, entity3),
           ctorDifference(tretiL)
         ),
         ctorDifference(prvniL)
@@ -8579,10 +8732,10 @@ function patrovyDum() {
   };
 }
 function penize() {
-  const entity4 = "K\u010D";
+  const entity3 = "K\u010D";
   const janaRatio = ratio("celkem", "Jana", 1 / 5);
   const ivoCompare = compRatio("Ivo", "Jana", 2);
-  const eva = cont("Eva", 240, entity4);
+  const eva = cont("Eva", 240, entity3);
   return {
     deductionTree: deduce(
       deduce(
@@ -8603,7 +8756,7 @@ function penize() {
     )
   };
 }
-function domecek() {
+function domecek2() {
   const dumLabel = "dome\u010Dek";
   const strechaLabel = "st\u0159echa";
   const onlyStrechLabel = `${strechaLabel} bez spole\u010Den\xE9 \u010D\xE1sti`;
@@ -8651,14 +8804,14 @@ function domecek() {
 }
 function farmar() {
   const entityBase = "kr\xE1va";
-  const entity4 = "objem";
-  const unit2 = "l";
+  const entity3 = "objem";
+  const unit = "l";
   const farmaPuvodneLabel = "farma p\u016Fvodn\u011B";
   const farmaNove = "farma nov\u011B";
   const farmaPuvodne = cont(farmaPuvodneLabel, 7, entityBase);
   const prodano = cont("prod\xE1no", 5, entityBase);
-  const puvodneMlekoPerKrava = rate(farmaPuvodneLabel, 15, { entity: entity4, unit: unit2 }, entityBase);
-  const noveMlekoPerKrava = rate(farmaNove, 20, { entity: entity4, unit: unit2 }, entityBase);
+  const puvodneMlekoPerKrava = rate(farmaPuvodneLabel, 15, { entity: entity3, unit }, entityBase);
+  const noveMlekoPerKrava = rate(farmaNove, 20, { entity: entity3, unit }, entityBase);
   return {
     deductionTree: deduce(
       deduce(
@@ -8688,10 +8841,10 @@ function farmar() {
   };
 }
 function poutnik() {
-  const entity4 = "duk\xE1ty";
-  const kouzelnik = cont("kouzeln\xEDk", 54, entity4);
-  const kouzelnikPuvodne = cont("kouzeln\xEDk p\u016Fvodn\u011B", 54, entity4);
-  const poutnik2 = cont("poutn\xEDk", 54, entity4);
+  const entity3 = "duk\xE1ty";
+  const kouzelnik = cont("kouzeln\xEDk", 54, entity3);
+  const kouzelnikPuvodne = cont("kouzeln\xEDk p\u016Fvodn\u011B", 54, entity3);
+  const poutnik2 = cont("poutn\xEDk", 54, entity3);
   const compareKvP = compRatio("poutn\xEDk", "kouzeln\xEDk", 1 / 2);
   const ratiosKvP = deduce(
     compareKvP,
@@ -8809,28 +8962,28 @@ function lepeniCtvercu() {
   };
 }
 function hledaneCisla() {
-  const entity4 = "";
+  const entity3 = "";
   const unknownNumberLabel = "nezn\xE1m\xE9 \u010D\xEDslo";
   const prvniL = "prvn\xED";
   const druhyL = "druh\xFD";
   const soucet = deduce(
-    cont("sou\u010Det", 109, entity4),
-    evalExprAsCont("soucet / 2", { kind: "cont", agent: "polovina sou\u010Dtu", entity: entity4 })
+    cont("sou\u010Det", 109, entity3),
+    evalExprAsCont("soucet / 2", { kind: "cont", agent: "polovina sou\u010Dtu", entity: entity3 })
   );
   const rozdil = deduce(
-    cont("rozd\xEDl", 13, entity4),
-    evalExprAsCont("rozdil / 2", { kind: "cont", agent: "polovina sou\u010Dtu", entity: entity4 })
+    cont("rozd\xEDl", 13, entity3),
+    evalExprAsCont("rozdil / 2", { kind: "cont", agent: "polovina sou\u010Dtu", entity: entity3 })
   );
   return {
     cislo1: {
       deductionTree: deduce(
         deduce(
           deduce(
-            cont("zn\xE1m\xFD v\xFDsledek", 20, entity4),
+            cont("zn\xE1m\xFD v\xFDsledek", 20, entity3),
             counter("zdojn\xE1soben\xED", 2),
             ctorScaleInvert("\u010D\xEDslo bez n\xE1soben\xED")
           ),
-          cont("opak p\u0159i\u010Dten\xE9 \u010D\xEDslo", 3, entity4),
+          cont("opak p\u0159i\u010Dten\xE9 \u010D\xEDslo", 3, entity3),
           ctorDifference("\u010D\xEDslo bez p\u0159i\u010Dten\xE9ho \u010D\xEDsla")
         ),
         counter("d\u011Blen\xED 7", 7),
@@ -8843,7 +8996,7 @@ function hledaneCisla() {
           compRelative("zv\u011Bt\u0161en\xED", unknownNumberLabel, -1 / 2),
           ctorRatios("zn\xE1m\xFD v\xFDsledek")
         ),
-        cont("zn\xE1m\xFD v\xFDsledek", 198, entity4),
+        cont("zn\xE1m\xFD v\xFDsledek", 198, entity3),
         nthPart(unknownNumberLabel)
       )
     },
@@ -8865,8 +9018,8 @@ function hledaneCisla() {
   };
 }
 function koralky() {
-  const entity4 = "kor\xE1lky";
-  const skupina3 = cont(`3. skupina`, 32, entity4);
+  const entity3 = "kor\xE1lky";
+  const skupina3 = cont(`3. skupina`, 32, entity3);
   const groupRatioFactory = (num) => compRatio(`${num}. skupina`, `${num - 1}. skupina`, 4);
   const skupina2 = deduce(
     skupina3,
@@ -8911,7 +9064,7 @@ function koralky() {
           colorQuota,
           commonSense("ka\u017Ed\xE1 skupina obsahuje 1 b\xEDl\xFD"),
           commonSense("zbytek obsahuje 1 b\xEDl\xFD"),
-          cont("b\xEDl\xE9", lastQuantity(colorQuota) + 1, entity4)
+          cont("b\xEDl\xE9", lastQuantity(colorQuota) + 1, entity3)
         ),
         ctorDifference("\u010Dern\xE9")
       )
@@ -8919,14 +9072,14 @@ function koralky() {
   };
 }
 function restaurace() {
-  const entity4 = "host";
+  const entity3 = "host";
   const entityBase = "st\u016Fl";
   const bigLabel = "velk\xE9 st\u016Fl";
   const mediumLabel = "standardn\xED st\u016Fl";
   const smallLabel = "mal\xE9 st\u016Fl";
-  const bigRate = rate(bigLabel, 4, entity4, entityBase);
-  const mediumRate = rate(mediumLabel, 3, entity4, entityBase);
-  const smallRate = rate(smallLabel, 2, entity4, entityBase);
+  const bigRate = rate(bigLabel, 4, entity3, entityBase);
+  const mediumRate = rate(mediumLabel, 3, entity3, entityBase);
+  const smallRate = rate(smallLabel, 2, entity3, entityBase);
   const celkemStolu = deduce(
     ratio("restaurace", "rezervace", 1 / 4),
     cont("rezervace", 9, entityBase)
@@ -8963,14 +9116,14 @@ function restaurace() {
   };
 }
 function zahon() {
-  const entity4 = "rostlina";
+  const entity3 = "rostlina";
   const entityYellow = "\u017Elut\xE1 rostlina";
   const entityVelvet = "fialov\xE1 rostlina";
   const entityBase = "mal\xFD troj\xFAhlen\xEDkov\xFD z\xE1hon";
   const strany = cont("z\xE1hon", 3, "strana");
   const subZahon = cont("po obvodu ke ka\u017Ed\xE9 stran\u011B", 3, entityBase);
-  const rohove = cont("rohov\xE9", 3, entity4);
-  const celkem = cont("z\xE1hon celkem", 39, entity4);
+  const rohove = cont("rohov\xE9", 3, entity3);
+  const celkem = cont("z\xE1hon celkem", 39, entity3);
   return {
     yellow: {
       deductionTree: deduce(
@@ -9090,15 +9243,15 @@ function grafPocetMinci() {
   };
 }
 function cislaNaTabuly() {
-  const entity4 = "hodnota";
+  const entity3 = "hodnota";
   const rozdil = deduce(
     deduce(
-      cont("desitky", 10, entity4),
+      cont("desitky", 10, entity3),
       counter("po\u010Det", 3),
       product("Karel v\u011Bt\u0161\xED ne\u017E Mirka o")
     ),
     deduce(
-      cont("jednotky", 1, entity4),
+      cont("jednotky", 1, entity3),
       counter("po\u010Det", 2),
       product("Karel men\u0161\xED ne\u017E Mirka o")
     ),
@@ -9260,11 +9413,11 @@ function convertToExpression2(expectedValue, compareTo, expectedValueOptions) {
       return `closeTo(x, ${convertedValue})`;
   }
 }
-function compDiff2(agentMinuend, agentSubtrahend, quantity, entity4) {
-  return { kind: "comp-diff", agentMinuend, agentSubtrahend, quantity, entity: entity4 };
+function compDiff2(agentMinuend, agentSubtrahend, quantity, entity3) {
+  return { kind: "comp-diff", agentMinuend, agentSubtrahend, quantity, entity: entity3 };
 }
-function toEntity2(entity4) {
-  return isEntityBase2(entity4) ? entity4 : { entity: entity4 };
+function toEntity2(entity3) {
+  return isEntityBase2(entity3) ? entity3 : { entity: entity3 };
 }
 function compareRuleEx2(a, b) {
   if (a.entity != b.entity) {
@@ -9961,13 +10114,13 @@ function sumRuleEx2(items, b) {
     ;
     const ratios3 = items.map((d) => d.ratio);
     const ratio2 = areNumbers2(ratios3) ? ratios3.reduce((out, d) => out += d, 0) : wrapToRatio2(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
-    return { kind: "ratio", whole: wholes[0], ratio: ratio2, part: b.wholeAgent };
+    return { kind: "ratio", whole: wholes[0], ratio: ratio2, part: b.wholeAgent, asPercent: items[0].asPercent };
   } else if (items.every((d) => isQuantityPredicate2(d))) {
     const values = items.map((d) => d.quantity);
     const quantity = areNumbers2(values) ? values.reduce((out, d) => out += d, 0) : wrapToQuantity2(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
     if (items.every((d) => isRatePredicate2(d))) {
-      const { entity: entity4, entityBase } = items[0];
-      return { kind: "rate", agent: b.wholeAgent, quantity, entity: entity4, entityBase, baseQuantity: 1 };
+      const { entity: entity3, entityBase } = items[0];
+      return { kind: "rate", agent: b.wholeAgent, quantity, entity: entity3, entityBase, baseQuantity: 1 };
     } else {
       if (b.kind !== "sum-combine") {
         const itemsEntities = items.map((d) => d.entity);
@@ -9993,12 +10146,12 @@ function sumRule2(items, b) {
     result,
     options: isQuantity && isNumber2(result.quantity) || isRatioPredicate2(result) && isNumber2(result.ratio) ? [
       {
-        tex: items.map((d) => isQuantity ? formatNumber2(d.quantity) : formatRatio2(d.ratio)).join(" + "),
+        tex: items.map((d) => isQuantity ? formatNumber2(d.quantity) : formatRatio2(d.ratio, d.percent)).join(" + "),
         result: isQuantity ? isNumber2(result.quantity) ? formatNumber2(result.quantity) : "N/A" : isNumber2(result.ratio) ? formatRatio2(result.ratio) : "N/A",
         ok: true
       },
       {
-        tex: items.map((d) => isQuantity ? formatNumber2(d.quantity) : formatRatio2(d.ratio)).join(" * "),
+        tex: items.map((d) => isQuantity ? formatNumber2(d.quantity) : formatRatio2(d.ratio, d.percent)).join(" * "),
         result: isQuantity ? isNumber2(result.quantity) ? formatNumber2(result.quantity) : "N/A" : isNumber2(result.ratio) ? formatRatio2(result.ratio) : "N/A",
         ok: false
       }
@@ -10007,8 +10160,8 @@ function sumRule2(items, b) {
 }
 function productRuleEx2(items, b) {
   const values = items.map((d) => d.quantity);
-  const entity4 = b.wholeEntity != null ? b.wholeEntity : items.find((d) => d.entity != null && d.entity != "");
-  const convertedEntity = entity4 != null ? toEntity2(entity4) : { entity: "", unit: void 0 };
+  const entity3 = b.wholeEntity != null ? b.wholeEntity : items.find((d) => d.entity != null && d.entity != "");
+  const convertedEntity = entity3 != null ? toEntity2(entity3) : { entity: "", unit: void 0 };
   return {
     kind: "cont",
     agent: b.wholeAgent,
@@ -10148,8 +10301,8 @@ function convertCompareToDeltaEx2(a, b) {
   return { kind: "delta", agent: { name, nameBefore: nameBefore ?? a.agentA, nameAfter: nameAfter ?? a.agentB }, quantity: a.quantity, entity: a.entity, unit: a.unit };
 }
 function convertDeltaToCompareEx2(a, b) {
-  const { agentA, agentB, entity: entity4, unit: unit2 } = b;
-  return { kind: "comp", agentA, agentB, quantity: a.quantity, entity: entity4, unit: unit2 };
+  const { agentA, agentB, entity: entity3, unit } = b;
+  return { kind: "comp", agentA, agentB, quantity: a.quantity, entity: entity3, unit };
 }
 function pythagorasRuleEx2(a, b, last22) {
   if (a.entity != b.entity) {
@@ -11937,11 +12090,11 @@ Fraction2.prototype = {
   "simplify": function(eps22) {
     const ieps = BigInt(1 / (eps22 || 1e-3) | 0);
     const thisABS = this["abs"]();
-    const cont6 = thisABS["toContinued"]();
-    for (let i = 1; i < cont6.length; i++) {
-      let s = newFraction2(cont6[i - 1], C_ONE2);
+    const cont7 = thisABS["toContinued"]();
+    for (let i = 1; i < cont7.length; i++) {
+      let s = newFraction2(cont7[i - 1], C_ONE2);
       for (let k = i - 2; k >= 0; k--) {
-        s = s["inverse"]()["add"](cont6[k]);
+        s = s["inverse"]()["add"](cont7[k]);
       }
       let t = s["sub"](thisABS);
       if (t["n"] * ieps < t["d"]) {
@@ -12056,9 +12209,9 @@ var Converter2 = class {
     }
     let best = null;
     for (const possibility of this.possibilities()) {
-      const unit2 = this.describe(possibility);
+      const unit = this.describe(possibility);
       const isIncluded = exclude.indexOf(possibility) === -1;
-      if (isIncluded && unit2.system === system) {
+      if (isIncluded && unit.system === system) {
         const result = this.to(possibility);
         if (isNegative ? result > cutOffNumber : result < cutOffNumber) {
           continue;
@@ -12067,8 +12220,8 @@ var Converter2 = class {
           best = {
             val: result,
             unit: possibility,
-            singular: unit2.singular,
-            plural: unit2.plural
+            singular: unit.singular,
+            plural: unit.plural
           };
         }
       }
@@ -12102,13 +12255,13 @@ var Converter2 = class {
     }
     this.throwUnsupportedUnitError(abbr);
   }
-  describeUnit(unit2) {
+  describeUnit(unit) {
     return {
-      abbr: unit2.abbr,
-      measure: unit2.measure,
-      system: unit2.system,
-      singular: unit2.unit.name.singular,
-      plural: unit2.unit.name.plural
+      abbr: unit.abbr,
+      measure: unit.measure,
+      system: unit.system,
+      singular: unit.unit.name.singular,
+      plural: unit.unit.name.plural
     };
   }
   /**
@@ -12128,12 +12281,12 @@ var Converter2 = class {
     if (measureName == null) {
       for (const [name, measure62] of Object.entries(this.measureData)) {
         for (const [systemName, units] of Object.entries(measure62.systems)) {
-          for (const [abbr, unit2] of Object.entries(units)) {
+          for (const [abbr, unit] of Object.entries(units)) {
             list.push(this.describeUnit({
               abbr,
               measure: name,
               system: systemName,
-              unit: unit2
+              unit
             }));
           }
         }
@@ -12143,12 +12296,12 @@ var Converter2 = class {
         throw new UnknownMeasureError2(`Meausure "${measureName}" not found.`);
       const measure62 = this.measureData[measureName];
       for (const [systemName, units] of Object.entries(measure62.systems)) {
-        for (const [abbr, unit2] of Object.entries(units)) {
+        for (const [abbr, unit] of Object.entries(units)) {
           list.push(this.describeUnit({
             abbr,
             measure: measureName,
             system: systemName,
-            unit: unit2
+            unit
           }));
         }
       }
@@ -12204,12 +12357,12 @@ function buildUnitCache2(measures) {
   const unitCache = /* @__PURE__ */ new Map();
   for (const [measureName, measure62] of Object.entries(measures)) {
     for (const [systemName, system] of Object.entries(measure62.systems)) {
-      for (const [testAbbr, unit2] of Object.entries(system)) {
+      for (const [testAbbr, unit] of Object.entries(system)) {
         unitCache.set(testAbbr, {
           measure: measureName,
           system: systemName,
           abbr: testAbbr,
-          unit: unit2
+          unit
         });
       }
     }
@@ -14675,7 +14828,7 @@ var convert2 = configureMeasurements2({
 configure2({
   convertToFraction: (d) => new Fraction2(d).toFraction(),
   convertToUnit: (d, from, to22) => convert2(d).from(from).to(to22),
-  unitAnchor: (unit2) => convert2().getUnit(unit2)?.unit?.to_anchor,
+  unitAnchor: (unit) => convert2().getUnit(unit)?.unit?.to_anchor,
   solveLinearEquation: (first, second, variable) => solveLinearEquation2(first, second, variable),
   evalExpression: (expression, quantity) => evalExpression2(expression, quantity)
 });
@@ -14707,8 +14860,8 @@ var mdFormatting2 = {
     }
   },
   formatRatio: (d, asPercent) => asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : d.toLocaleString("cs-CZ"),
-  formatEntity: (d, unit2) => {
-    const res = [unit2, d].filter((d2) => d2 != null).join(" ");
+  formatEntity: (d, unit) => {
+    const res = [unit, d].filter((d2) => d2 != null).join(" ");
     return isEmptyOrWhiteSpace2(res) ? "" : `__${res.trim()}__`;
   },
   formatAgent: (d) => `**${d}**`,
@@ -14750,26 +14903,26 @@ function concatString2(strings, ...substitutions) {
 // src/math/shapes/triangle.ts
 function triangleArea({ size, height, triangle }) {
   const agent = triangle.agent;
-  const unit2 = triangle.unit ?? "";
-  const entity4 = triangle.entity ?? "obsah";
+  const unit = triangle.unit ?? "";
+  const entity3 = triangle.entity ?? "obsah";
   const container = size.kind === "cont" ? size : last2(size);
   return deduce2(
     cont("polovina", 1 / 2, ""),
     size,
     height,
-    productCombine(agent, { entity: entity4, unit: unit2 }, ["1/2", container.agent, height.agent])
+    productCombine(agent, { entity: entity3, unit }, ["1/2", container.agent, height.agent])
   );
 }
 
 // src/math/M9A-2023/trojuhelnik.ts
 function build6({ input }) {
   const agent = "obrazec";
-  const entity4 = "troj\xFAheln\xEDk";
-  const whiteEntity = `b\xEDl\xFD ${entity4}`;
-  const grayEntity = `\u0161ed\xFD ${entity4}`;
+  const entity3 = "troj\xFAheln\xEDk";
+  const whiteEntity = `b\xEDl\xFD ${entity3}`;
+  const grayEntity = `\u0161ed\xFD ${entity3}`;
   const nthLabel = "pozice";
   const inputContainers = [1, 3, 9].map((d, i) => cont(`${agent} \u010D.${i + 1}`, d, whiteEntity));
-  const soucet = sum("obrazec \u010D.7", { entity: entity4 });
+  const soucet = sum("obrazec \u010D.7", { entity: entity3 });
   const rule1 = commonSense("V ka\u017Ed\xE9m kroku se p\u0159id\xE1v\xE1 \u0161ed\xFD troj\xFAheln\xEDk do ka\u017Ed\xE9ho b\xEDl\xE9ho troj\xFAheln\xEDku.");
   const rule2 = commonSense("Po\u010Det \u0161ed\xFDch troj\xFAheln\xEDk\u016F v obrazci n je stejn\xFD jako po\u010Det b\xEDl\xFDch troj\xFAheln\xEDk\u016F v p\u0159edchoz\xEDm obrazci");
   const dBase = deduce(
@@ -14849,12 +15002,12 @@ var M9A_2023_default = createLazyMap({
   16.3: () => build6({ input: {} })[2]
 });
 function dobaFilmu({ input }) {
-  const entity4 = "hodin";
+  const entity3 = "hodin";
   return {
     title: "Zb\xFDvaj\xEDc\xED \u010Das filmu",
     deductionTree: deduce(
       deduce(
-        axiomInput(cont("film", input.celkovaDobaFilmuVHodina, entity4, "h"), 1),
+        axiomInput(cont("film", input.celkovaDobaFilmuVHodina, entity3, "h"), 1),
         ctorUnit("min")
       ),
       deduce(
@@ -14866,13 +15019,13 @@ function dobaFilmu({ input }) {
   };
 }
 function sud() {
-  const entity4 = "litr";
+  const entity3 = "litr";
   return {
     title: "Objem konvi\u010Dky",
     deductionTree: deduce(
       deduce(
         deduce(
-          cont("zbylo", 60, entity4),
+          cont("zbylo", 60, entity3),
           deduce(ratio("sud", "odebr\xE1no", 1 / 3), ctorComplement("zbylo"))
         ),
         compRatio("sud", "kbel\xEDk", 15)
@@ -14883,25 +15036,25 @@ function sud() {
 }
 function rezaniKvadru() {
   const dim = dimensionEntity("dm");
-  const entity4 = "krychle";
+  const entity3 = "krychle";
   return {
     title: "Roz\u0159ez\xE1n\xED kv\xE1dru na krychli\u010Dky",
     deductionTree: deduce(
       deduce(
-        cont("kv\xE1dr", 200, entity4),
-        rate("kv\xE1dr", 8, dim.volume, entity4)
+        cont("kv\xE1dr", 200, entity3),
+        rate("kv\xE1dr", 8, dim.volume, entity3)
       ),
       ctorUnit("cm3")
     )
   };
 }
 function vyrobenoVyrobku() {
-  const entity4 = "v\xFDrobk\u016F";
+  const entity3 = "v\xFDrobk\u016F";
   return {
     deductionTree: deduce(
       deduce(
         deduce(
-          cont("vyrobeno 2020", 250, entity4),
+          cont("vyrobeno 2020", 250, entity3),
           compPercent("vyrobeno 2021", "vyrobeno 2020", 120)
         ),
         compPercent("vyrobeno 2022", "vyrobeno 2021", 120)
@@ -14911,12 +15064,12 @@ function vyrobenoVyrobku() {
   };
 }
 function dovolenaNaKole() {
-  const entity4 = "vzd\xE1lenost";
-  const unit2 = "km";
+  const entity3 = "vzd\xE1lenost";
+  const unit = "km";
   return {
     deductionTree: deduce(
       deduce(
-        cont("Roman", 400, entity4, unit2),
+        cont("Roman", 400, entity3, unit),
         compRatio("Roman", "Jana", 5 / 4)
       ),
       ctorOption("C", 320)
@@ -14924,12 +15077,12 @@ function dovolenaNaKole() {
   };
 }
 function propousteniVeFirme() {
-  const entity4 = "zam\u011Bstnanec";
+  const entity3 = "zam\u011Bstnanec";
   return {
     deductionTree: deduce(
       deduce(
         deduce(
-          comp("nov\u011B p\u0159ijato", "konec krize", 42, entity4),
+          comp("nov\u011B p\u0159ijato", "konec krize", 42, entity3),
           compPercent("nov\u011B p\u0159ijato", "konec krize", 125)
         ),
         compPercent("konec krize", "po\u010D\xE1tek krize", 60)
@@ -14960,7 +15113,7 @@ function povrchValce() {
   };
 }
 function krouzkyATridy() {
-  const entity4 = "\u017E\xE1k";
+  const entity3 = "\u017E\xE1k";
   const entityBase = "jednotka grafu";
   const hudebniLabel = "hudebn\xED";
   const sachovyLabel = "\u0161achov\xFD";
@@ -14983,7 +15136,7 @@ function krouzkyATridy() {
       title: "Po\u010Det \u017E\xE1k\u016F 9. t\u0159\xEDd v \u0161achov\xE9m krou\u017Eku",
       deductionTree: deduce(
         deduce(
-          comp(hudebniLabel, sachovyLabel, -6, entity4),
+          comp(hudebniLabel, sachovyLabel, -6, entity3),
           comp(hudebniLabel, sachovyLabel, -2, entityBase)
         ),
         sachovy9
@@ -15042,10 +15195,10 @@ function pozemekObdelnik() {
   };
 }
 function angleBeta() {
-  const entity4 = "stup\u0148\u016F";
+  const entity3 = "stup\u0148\u016F";
   const alfaEntity = "alfa";
   const triangleSumLabel = "sou\u010Det \xFAhl\u016F v troj\xFAheln\xEDku";
-  const triangleSum = cont(triangleSumLabel, 180, entity4);
+  const triangleSum = cont(triangleSumLabel, 180, entity3);
   const triangle = "\xFAhel troj\xFAheln\xEDku ABC";
   const alfaA = cont(`vnit\u0159n\xED ${triangle} u vrcholu A`, 4, alfaEntity);
   return {
@@ -15139,12 +15292,12 @@ function rovinataOblast() {
   };
 }
 function lomanaCaraACFHA() {
-  const entity4 = "d\xE9lka";
-  const unit2 = "cm";
-  const ac = cont("AC", 17, entity4, unit2);
+  const entity3 = "d\xE9lka";
+  const unit = "cm";
+  const ac = cont("AC", 17, entity3, unit);
   const bc = deduce(
     ac,
-    cont("AB", 15, entity4, unit2),
+    cont("AB", 15, entity3, unit),
     pythagoras("AC", ["AB", "BC"])
   );
   return {
@@ -15153,7 +15306,7 @@ function lomanaCaraACFHA() {
         deduce(
           deduce(
             bc,
-            cont("BF", 6, entity4, unit2),
+            cont("BF", 6, entity3, unit),
             pythagoras("CF", ["BF", "BC"])
           ),
           ac,
@@ -15167,12 +15320,12 @@ function lomanaCaraACFHA() {
   };
 }
 function triangleExample() {
-  const entity4 = "d\xE9lka";
-  const unit2 = "cm";
+  const entity3 = "d\xE9lka";
+  const unit = "cm";
   const unit2D = "cm2";
-  const height = cont("v\xFD\u0161ka CB", 8, entity4, unit2);
+  const height = cont("v\xFD\u0161ka CB", 8, entity3, unit);
   const abd = triangleArea({
-    size: cont("z\xE1kladna AB", 6, entity4, unit2),
+    size: cont("z\xE1kladna AB", 6, entity3, unit),
     height,
     triangle: {
       agent: "troj\xFAheln\xEDk ABD",
@@ -15187,7 +15340,7 @@ function triangleExample() {
       deductionTree: deduce(
         last(abd),
         triangleArea({
-          size: cont("z\xE1kladna CD", 10, entity4, unit2),
+          size: cont("z\xE1kladna CD", 10, entity3, unit),
           height,
           triangle: {
             agent: "troj\xFAheln\xEDk BCD",
@@ -15227,8 +15380,8 @@ var M9B_2023_default = createLazyMap({
 function expedice() {
   const newState = "nov\u011B";
   const currentState = "p\u016Fvodn\u011B";
-  const entity4 = "dny";
-  const dny = cont("dny", 30, entity4);
+  const entity3 = "dny";
+  const dny = cont("dny", 30, entity3);
   const osoby = cont("osoby", 12, "osob");
   const osoboDnyEntity = { entity: "spot\u0159eba", unit: "osobodenni" };
   const prvniExpedice = cont("prvn\xED expedice", "x", "osob");
@@ -15239,15 +15392,15 @@ function expedice() {
           compRatio("nov\u011B", "p\u016Fvodn\u011B", 5 / 6),
           proportion(false, ["z\xE1soby masa", "po\u010Det dn\xED"])
         ),
-        cont("p\u016Fvodn\u011B", 30, entity4)
+        cont("p\u016Fvodn\u011B", 30, entity3)
       )
     },
     velikostExpedice: {
       deductionTree: deduce(
         deduce(
           deduce(
-            cont(newState, 45, entity4),
-            cont(currentState, 30, entity4),
+            cont(newState, 45, entity3),
+            cont(currentState, 30, entity3),
             ctor("comp-ratio")
           ),
           proportion(true, ["velikost expedice", "po\u010Det dn\xED"])
@@ -15265,7 +15418,7 @@ function expedice() {
         deduce(
           deduce(
             prvniExpedice,
-            cont("prvn\xED expedice", 4, entity4),
+            cont("prvn\xED expedice", 4, entity3),
             productCombine("prvn\xED expedice", osoboDnyEntity)
           ),
           deduce(
@@ -15273,7 +15426,7 @@ function expedice() {
               compRatio("druh\xE1 expedice", "prvn\xED expedice", 2),
               prvniExpedice
             ),
-            cont("druh\xE1 expedice", 8, entity4),
+            cont("druh\xE1 expedice", 8, entity3),
             productCombine("druh\xE1 expedice", osoboDnyEntity)
           ),
           sum("ob\u011B expedice")
@@ -15284,8 +15437,8 @@ function expedice() {
   };
 }
 function lyzarskaPermice() {
-  const entity4 = "korun";
-  const jednodenni = cont("jednodenn\xED", 600, entity4);
+  const entity3 = "korun";
+  const jednodenni = cont("jednodenn\xED", 600, entity3);
   const porovnani2 = compRelativePercent("t\u0159\xEDdenn\xED", "jednodenn\xED", 150);
   return {
     porovnani: {
@@ -15310,9 +15463,9 @@ function lyzarskaPermice() {
   };
 }
 function cestaDoPrace() {
-  const entity4 = "doba";
-  const unit2 = "minut";
-  const bus = cont("autobus", "x", entity4);
+  const entity3 = "doba";
+  const unit = "minut";
+  const bus = cont("autobus", "x", entity3);
   const busVsRychlik = compRatio("autobus", "rychl\xEDk", 2);
   const vlakVsBus = compRelative("osobn\xED vlak", "autobus", 1 / 4);
   return {
@@ -15335,7 +15488,7 @@ function cestaDoPrace() {
             vlakVsBus,
             busVsRychlik
           ),
-          comp("rychl\xEDk", "osobn\xED vlak", -15, { entity: entity4, unit: unit2 })
+          comp("rychl\xEDk", "osobn\xED vlak", -15, { entity: entity3, unit })
         ),
         busVsRychlik
       )
@@ -15384,7 +15537,7 @@ function dort() {
   };
 }
 function kosikar() {
-  const entity4 = "poml\xE1zka";
+  const entity3 = "poml\xE1zka";
   return {
     deductionTree: deduce(
       deduce(
@@ -15395,17 +15548,17 @@ function kosikar() {
           ),
           ctorComplementCompRatio("prod\xE1no 1.den")
         ),
-        comp("prod\xE1no 2.den", "prod\xE1no 1.den", 180, entity4)
+        comp("prod\xE1no 2.den", "prod\xE1no 1.den", 180, entity3)
       ),
       ctorOption("A", 60)
     )
   };
 }
 function procenta() {
-  const entity4 = "\u010Dleni";
-  const letos = cont("letos", 60, entity4);
+  const entity3 = "\u010Dleni";
+  const letos = cont("letos", 60, entity3);
   const vstupenkyEntity = "vstupenky";
-  const den2 = cont("2.den", 3, entity4);
+  const den2 = cont("2.den", 3, entity3);
   const den3 = deduce(
     den2,
     compRelative("3.den", "2.den", 1 / 3)
@@ -15417,7 +15570,7 @@ function procenta() {
           letos,
           deduce(
             letos,
-            comp("letos", "loni", 20, entity4)
+            comp("letos", "loni", 20, entity3)
           ),
           ctorComparePercent()
         ),
@@ -15441,7 +15594,7 @@ function procenta() {
         deduceAs("zvol\xEDme vhodn\xE9 \u010D\xEDslo pro po\u010Det \u010Dlen\u016F 1.den, nap\u0159. 1.den = 3 \u010Dleni")(
           den3,
           deduce(
-            cont("1.den", 3, entity4),
+            cont("1.den", 3, entity3),
             den2,
             last(den3),
             sum("celkem")
@@ -15515,7 +15668,7 @@ function hranol2() {
           vyska,
           stranaZakladna,
           last(vyska),
-          productCombine("kv\xE1dr", { entity: "objem", unit: "cm3" }, ["v\xFD\u0161ka", "del\u0161\xED hrana", "krat\u0161\xED hrana"])
+          productVolume("kv\xE1dr")
         ),
         counter("zmen\u0161en\xED", 2),
         ctorScaleInvert("hranol")
@@ -15525,28 +15678,28 @@ function hranol2() {
   };
 }
 function vzorCtverce() {
-  const entity4 = "pole";
+  const entity3 = "pole";
   const position = "pozice";
   const currentPosition = deduceAs("vzor opakov\xE1n\xED, resp. po\u010Det pol\xED je z\xE1visl\xFD na pozici = n * n, kde n je pozice")(
-    cont("obrazec", 400, entity4),
+    cont("obrazec", 400, entity3),
     evalExprAsCont("sqrt(x)", { kind: "cont", agent: "pozice obrazec", entity: position })
   );
   return {
     pridano: {
       deductionTree: deduceAs("vzor opakov\xE1n\xED, resp. po\u010Det p\u0159\xEDdan\xFDch pol\xED je z\xE1visl\xFD na pozici = (4 * n) - 4, kde n je pozice")(
         cont("9. obrazec", 9, position),
-        evalExprAsCont("(4 * n) - 4", { kind: "cont", agent: "p\u0159idan\xE1 pole na 9. obrazec", entity: entity4 })
+        evalExprAsCont("(4 * n) - 4", { kind: "cont", agent: "p\u0159idan\xE1 pole na 9. obrazec", entity: entity3 })
       )
     },
     rozdil: {
       deductionTree: deduceAs("vzor opakov\xE1n\xED, resp. po\u010Det pol\xED je z\xE1visl\xFD na pozici = n * n, kde n je pozice")(
         deduceAs("u sud\xFDch obrazc\u016F tmav\xE1")(
           cont("10. obrazec - celkem tmav\xE1", 10, position),
-          evalExprAsCont("n * n", { kind: "cont", agent: "10. obrazec", entity: entity4 })
+          evalExprAsCont("n * n", { kind: "cont", agent: "10. obrazec", entity: entity3 })
         ),
         deduceAs("u sud\xFDch obrazc\u016F sv\u011Btl\xE1")(
           cont("9. obrazec - celkem sv\u011Btl\xE1", 9, position),
-          evalExprAsCont("n * n", { kind: "cont", agent: "9. obrazec", entity: entity4 })
+          evalExprAsCont("n * n", { kind: "cont", agent: "9. obrazec", entity: entity3 })
         ),
         ctorDifference("rozd\xEDl")
       )
@@ -15559,7 +15712,7 @@ function vzorCtverce() {
             cont("posun na dal\u0161\xED obrazec", 1, position),
             ctorSlide("n\xE1sleduj\xEDc\xED obrazec")
           ),
-          evalExprAsCont("n * n", { kind: "cont", agent: "obrazec", entity: entity4 })
+          evalExprAsCont("n * n", { kind: "cont", agent: "obrazec", entity: entity3 })
         ),
         deduce(
           deduce(
@@ -15567,7 +15720,7 @@ function vzorCtverce() {
             cont("posun na p\u0159edchoz\xED obrazec", 1, position),
             ctorSlideInvert("p\u0159edchoz\xED obrazec")
           ),
-          evalExprAsCont("n * n", { kind: "cont", agent: "obrazec", entity: entity4 })
+          evalExprAsCont("n * n", { kind: "cont", agent: "obrazec", entity: entity3 })
         ),
         ctor("tuple")
       )
@@ -15577,9 +15730,9 @@ function vzorCtverce() {
 
 // src/math/M9A-2024/angle.ts
 function rozdilUhlu({ input }) {
-  const entity4 = "";
-  const beta = axiomInput(cont("beta", input.beta, entity4), 1);
-  const delta = axiomInput(cont("delta", input.delta, entity4), 2);
+  const entity3 = "";
+  const beta = axiomInput(cont("beta", input.beta, entity3), 1);
+  const delta = axiomInput(cont("delta", input.delta, entity3), 2);
   const alfa = deduce(delta, compAngle("delta", "alfa", "supplementary"));
   const deductionTree = deduce(
     deduce(
@@ -15602,12 +15755,12 @@ function build7({ input }) {
   const plan = "pl\xE1n";
   const widthLabel = "\u0161\xED\u0159ka";
   const lengthLabel = "d\xE9lka";
-  const unit2 = "cm";
+  const unit = "cm";
   const unit2D = "cm2";
   const width = axiomInput(cont(widthLabel, input.sirkaM, skutecnost, "m"), 1);
-  const widthOnPlan = axiomInput(cont(widthLabel, input.planSirkaCM, plan, unit2), 2);
+  const widthOnPlan = axiomInput(cont(widthLabel, input.planSirkaCM, plan, unit), 2);
   const lengthOnPlan = axiomInput(cont(lengthLabel, input.planDelkaDM, plan, "dm"), 3);
-  const dWidth = deduce(width, ctorUnit(unit2));
+  const dWidth = deduce(width, ctorUnit(unit));
   const meritko = deduce(
     dWidth,
     widthOnPlan,
@@ -15615,7 +15768,7 @@ function build7({ input }) {
   );
   const lastMeritko = last(meritko);
   const dTree2 = deduce(
-    deduce(lengthOnPlan, ctorUnit(unit2)),
+    deduce(lengthOnPlan, ctorUnit(unit)),
     lastMeritko
   );
   const ddSkutecnost = deduce(
@@ -15624,7 +15777,7 @@ function build7({ input }) {
     productCombine(`obsah`, { entity: skutecnost, unit: unit2D }, [lengthLabel, widthLabel])
   );
   const ddPlan = deduce(
-    deduce(lengthOnPlan, ctorUnit(unit2)),
+    deduce(lengthOnPlan, ctorUnit(unit)),
     widthOnPlan,
     productCombine(`obsah`, { entity: plan, unit: unit2D }, [lengthLabel, widthLabel])
   );
@@ -15652,12 +15805,12 @@ function build7({ input }) {
 
 // src/math/M9A-2024/dva-ctverce.ts
 function example({ input }) {
+  const dim = dimensionEntity();
   const ALabel = "strana obdeln\xEDk A";
   const BLabel = "strana obdeln\xEDk B";
-  const entity4 = "cm";
   const bocniStrana = commonSense("bo\u010Dn\xED strany obou \u010Dtverc\u016F jsou schodn\xE9, horn\xED a spodn\xED strana obdeln\xEDku maj\xED rozd\xEDl 3");
-  const rozdilObvod = axiomInput(cont("obvod rozd\xEDl", 6, entity4), 1);
-  const diffAbsolute = comp(ALabel, BLabel, input.rozdilObvod / 2, entity4);
+  const rozdilObvod = axiomInput(contLength("obvod rozd\xEDl", 6), 1);
+  const diffAbsolute = comp(ALabel, BLabel, input.rozdilObvod / 2, dim.length.entity);
   const compRel = axiomInput(compRelative(ALabel, BLabel, 3 / 2), 2);
   const kratsiStran = deduce(
     to(rozdilObvod, bocniStrana, diffAbsolute),
@@ -15682,13 +15835,13 @@ function example({ input }) {
 }
 
 // src/math/M9A-2024/kolo.ts
-var entity2 = "K\u010D";
+var entity = "K\u010D";
 function example3({ input }) {
   const agentPercentBase = "cena";
   const agentPercentPart = "sleva";
-  const entity4 = "K\u010D";
+  const entity3 = "K\u010D";
   const zlevneniPercent = axiomInput(percent(agentPercentBase, agentPercentPart, input.percentageDown), 2);
-  const puvodniCena = axiomInput(cont(agentPercentBase, input.base, entity4), 1);
+  const puvodniCena = axiomInput(cont(agentPercentBase, input.base, entity3), 1);
   const zdrazeniPercent = axiomInput(percent("cena po slev\u011B", "zdra\u017Eeno", input.percentageNewUp), 3);
   const cenaPoSleve = deduce(
     puvodniCena,
@@ -15717,7 +15870,7 @@ function example1({ input }) {
   Pan Novák si vypůjčil ${input.base.toLocaleString("cs-CZ")} Kč na jeden rok.
   Po roce vrátí věřiteli vypůjčenou částku, a navíc mu zaplatí úrok ve výši ${input.percentage} % z vypůjčené částky.
   Kolik korun celkem věřiteli vrátí?`;
-  const vypujceno = axiomInput(cont("vyp\u016Fj\u010Deno", 2e4, entity2), 1);
+  const vypujceno = axiomInput(cont("vyp\u016Fj\u010Deno", 2e4, entity), 1);
   const urok = axiomInput(percent("vyp\u016Fj\u010Deno", "\xFArok", 13.5), 2);
   const deductionTree = deduce(
     deduce(
@@ -15737,7 +15890,7 @@ function example2({ input }) {
   Paní Dlouhá na začátku roku vložila do banky ${input.vlozeno.toLocaleString("cs-CZ")} Kč s roční úrokovou sazbou ${input.urokPercentage} %.
   Výnosy z úroků jsou zdaněny srážkovou daní.
   Kolik korun získá paní Dlouhá navíc ke svému vkladu za jeden rok, bude-li jí odečtena daň z úroků ${input.urokPercentage} %?`;
-  const vlozeno = axiomInput(cont("vklad", input.vlozeno, entity2), 1);
+  const vlozeno = axiomInput(cont("vklad", input.vlozeno, entity), 1);
   const vynosPercent = axiomInput(percent("vklad", "v\xFDnos", input.urokPercentage), 2);
   const danPercent = axiomInput(percent("v\xFDnos", "da\u0148", input.danPercentage), 3);
   const vynos = deduce(vynosPercent, vlozeno);
@@ -15867,7 +16020,7 @@ function cylinder({ radius, height }, options) {
     },
     ...options ?? {}
   };
-  const entity4 = radius.entity;
+  const entity3 = radius.entity;
   const surfaceBaseAreaTree = surfaceBaseArea({ radius }, { entity2D, radiusLabel, surfaceBaseAreaLabel });
   const volume2 = deduce2(
     surfaceBaseAreaTree,
@@ -15977,7 +16130,7 @@ function build11({ input }) {
   const celkemAgent = "chlapc\u016F celkem";
   const entityChlapci = "chlapci";
   const entityDivky = "d\xEDvky";
-  const entity4 = "";
+  const entity3 = "";
   const chlapci = axiomInput(cont(celkemAgent, input.chlapci, entityChlapci), 1);
   const chlapciDiff = axiomInput(compDiff(celkemAgent, skupinaDE, input.anglictinaChlapci, entityChlapci), 2);
   const de = axiomInput(cont(skupinaDE, input.nemcinaDivky, entityDivky), 3);
@@ -15987,20 +16140,20 @@ function build11({ input }) {
       chlapciDiff
     ),
     de,
-    sum(skupinaDE, { entity: entity4 })
+    sum(skupinaDE, { entity: entity3 })
   );
   const dTree1 = deduce(
     to(
       dBase,
       commonSense("angli\u010Dtina a n\u011Bm\u010Dina - stejn\xFD po\u010Det \u017E\xE1k\u016F"),
-      cont(skupinaEN, input.chlapci - input.anglictinaChlapci + input.nemcinaDivky, entity4)
+      cont(skupinaEN, input.chlapci - input.anglictinaChlapci + input.nemcinaDivky, entity3)
     ),
-    compDiff(skupinaEN, entityDivky, input.anglictinaChlapci, entity4)
+    compDiff(skupinaEN, entityDivky, input.anglictinaChlapci, entity3)
   );
   const dTree2 = to(
     dBase,
     commonSense("angli\u010Dtina a n\u011Bm\u010Dina - stejn\xFD po\u010Det \u017E\xE1k\u016F"),
-    cont("t\u0159\xEDda", (input.chlapci - input.anglictinaChlapci + input.nemcinaDivky) * 2, entity4)
+    cont("t\u0159\xEDda", (input.chlapci - input.anglictinaChlapci + input.nemcinaDivky) * 2, entity3)
   );
   const templateBase = (highlight) => highlight`Žáci třídy 8.B se dělí na dvě skupiny podle toho, zda chodí na němčinu nebo angličtinu.
      V obou skupinách je stejný počet žáků. Ve třídě je ${input.chlapci} chlapců a ${input.anglictinaChlapci} z nich chodí na angličtinu.
@@ -16100,10 +16253,10 @@ function delkaKroku() {
   };
 }
 function AdamAOta() {
-  const entity4 = "d\xE9lka";
-  const unit2 = "m";
-  const adam1 = cont("Adam 1.\u010D\xE1st", 40, entity4, unit2);
-  const adam2 = cont("Adam 2.\u010D\xE1st", 30, entity4, unit2);
+  const entity3 = "d\xE9lka";
+  const unit = "m";
+  const adam1 = cont("Adam 1.\u010D\xE1st", 40, entity3, unit);
+  const adam2 = cont("Adam 2.\u010D\xE1st", 30, entity3, unit);
   return {
     deductionTree: deduce(
       deduce(
@@ -16172,7 +16325,7 @@ function modely() {
   const druhyRokLabel = "Petr 2. rok";
   const tretiRokLabel = "Petr 3. rok";
   const prvniDvaRokyLabel = "Petr dohromady za dva roky";
-  const entity4 = "model";
+  const entity3 = "model";
   const prvniRok = cont(prvniRokLabel, "x", "model");
   const prvniDruhyComp = compRatio(druhyRokLabel, prvniRokLabel, 3 / 2);
   return {
@@ -16182,8 +16335,8 @@ function modely() {
     tretiRok: {
       deductionTree: deduce(
         deduce(
-          cont("Petr celkem za 3 roky", 217, entity4),
-          cont(tretiRokLabel, 72, entity4),
+          cont("Petr celkem za 3 roky", 217, entity3),
+          cont(tretiRokLabel, 72, entity3),
           ctorDifference(prvniDvaRokyLabel)
         ),
         prvniDruhyComp
@@ -16192,10 +16345,10 @@ function modely() {
   };
 }
 function hracka() {
-  const entity4 = "korun";
+  const entity3 = "korun";
   const hrackaPuvodniCenaLabel = "hra\u010Dka p\u016Fvodn\xED cena";
   const hrackaPoZdrazeniLabel = "hra\u010Dka cena po zdra\u017Een\xED";
-  const hracka2 = cont(hrackaPuvodniCenaLabel, 250, entity4);
+  const hracka2 = cont(hrackaPuvodniCenaLabel, 250, entity3);
   return {
     deductionTree: deduce(
       deduce(
@@ -16213,16 +16366,16 @@ function pekar() {
   const labelSmall = "mal\xE9";
   const labelBig = "velk\xE9";
   const entityBase = "kol\xE1\u010Dky";
-  const entity4 = "korun";
+  const entity3 = "korun";
   return {
     deductionTree: deduce(
       deduce(
         deduce(
           toPredicate(deduce(
-            cont(labelBig, 30, entity4),
+            cont(labelBig, 30, entity3),
             compRelative(labelBig, labelSmall, 1 / 2)
-          ), (node) => ({ kind: "rate", agent: "prod\xE1no", quantity: node.quantity, entity: { entity: entity4 }, entityBase: { entity: entityBase }, baseQuantity: 1 })),
-          cont("prod\xE1no", 3600, entity4)
+          ), (node) => ({ kind: "rate", agent: "prod\xE1no", quantity: node.quantity, entity: { entity: entity3 }, entityBase: { entity: entityBase }, baseQuantity: 1 })),
+          cont("prod\xE1no", 3600, entity3)
         ),
         deduce(
           ratio("p\u0159ivezeno", "neprod\xE1no", 1 / 10),
@@ -16234,6 +16387,7 @@ function pekar() {
   };
 }
 function pulkruh() {
+  const dim = dimensionEntity();
   return {
     deductionTree: deduce(
       deduce(
@@ -16243,7 +16397,7 @@ function pulkruh() {
             commonSense("vepsan\xFD kruh ve \u010Dtvercov\xE9 s\xEDti"),
             contLength("polom\u011Br (r)", 4)
           ),
-          evalExprAsCont("3.14*r^2", { kind: "cont", agent: "vepsan\xFD kruh", entity: "obsah", unit: "cm2" })
+          evalExprAsCont("3.14*r^2", { kind: "cont", agent: "vepsan\xFD kruh", ...dim.area })
         ),
         double(),
         ctorScaleInvert("\u0161ed\xFD p\u016Flkruh")
@@ -16255,7 +16409,7 @@ function pulkruh() {
 function graf() {
   const entityGirls = "d\xEDvky";
   const entityBoys = "chlapci";
-  const entity4 = "d\u011Bti";
+  const entity3 = "d\u011Bti";
   const matika = "M";
   const cestina = "\u010Cj";
   const ang = "Aj";
@@ -16271,7 +16425,7 @@ function graf() {
     cont(ang, 5, entityBoys),
     cont(telak, 7, entityBoys),
     cont(vytvarka, 4, entityBoys),
-    sum("celkem chlapci", { entity: entity4 })
+    sum("celkem chlapci", { entity: entity3 })
   );
   const divky = deduce(
     matikaDivky,
@@ -16279,7 +16433,7 @@ function graf() {
     cont(ang, 8, entityGirls),
     cont(telak, 5, entityGirls),
     cont(vytvarka, 2, entityGirls),
-    sum("celkem d\xEDvky", { entity: entity4 })
+    sum("celkem d\xEDvky", { entity: entity3 })
   );
   return {
     stejnyPocet: {
@@ -16322,18 +16476,18 @@ function graf() {
   };
 }
 function uhlyTrojuhelniku() {
-  const entity4 = "stup\u0148\u016F";
+  const entity3 = "stup\u0148\u016F";
   const uhelUVrcholu = (vrchol, typUhel) => `${typUhel} \xFAhel u vrcholu ${vrchol}`;
   return {
     deductionTree: deduce(
       deduce(
         deduce(
           deduce(
-            cont(uhelUVrcholu("A", "zn\xE1m\xFD vn\u011Bj\u0161\xED"), 105, entity4),
+            cont(uhelUVrcholu("A", "zn\xE1m\xFD vn\u011Bj\u0161\xED"), 105, entity3),
             compAngle(uhelUVrcholu("A", "dopo\u010Dten\xFD"), uhelUVrcholu("A", "zn\xE1m\xFD"), "supplementary")
           ),
           deduce(
-            cont(uhelUVrcholu("C", "zn\xE1m\xFD vn\u011Bj\u0161\xED"), 125, entity4),
+            cont(uhelUVrcholu("C", "zn\xE1m\xFD vn\u011Bj\u0161\xED"), 125, entity3),
             compAngle(uhelUVrcholu("C", "dopo\u010Dten\xFD vnit\u0159n\xED"), uhelUVrcholu("C", "zn\xE1m\xFD"), "supplementary")
           ),
           triangleAngle(uhelUVrcholu("B", "dopo\u010Dten\xFD vnit\u0159n\xED"))
@@ -16345,19 +16499,19 @@ function uhlyTrojuhelniku() {
   };
 }
 function kruhy() {
-  const entity4 = "b\xEDl\xFD kruh";
+  const entity3 = "b\xEDl\xFD kruh";
   const position = "pozice";
   return {
     osmyObrazec: {
       deductionTree: deduceAs("vzor opakov\xE1n\xED, resp. po\u010Det b\xEDl\xFDch kruh\u016F je z\xE1visl\xFD na pozici = n * n, kde n je pozice")(
         cont("8. obrazec", 8, position),
-        evalExprAsCont("n * n", { kind: "cont", agent: "8. obrazec", entity: entity4 })
+        evalExprAsCont("n * n", { kind: "cont", agent: "8. obrazec", entity: entity3 })
       )
     },
     tmaveKruhy: {
       deductionTree: deduceAs("po\u010Det tmav\xFDch kruh\u016F je roven po\u010Dtu b\xEDl\xFDch kruh\u016F v p\u0159edch\xE1zej\xEDc\xEDm obrazci")(
         to(
-          cont("obrazec", 361, entity4),
+          cont("obrazec", 361, entity3),
           commonSense("vzor opakov\xE1n\xED, resp. po\u010Det b\xEDl\xFDch kruh\u016F je z\xE1visl\xFD na pozici = n * n, kde n je pozice"),
           cont("obrazec", 19, position)
         ),
@@ -16368,7 +16522,7 @@ function kruhy() {
   };
 }
 function procenta2() {
-  const entity4 = "korun";
+  const entity3 = "korun";
   const entityEUR = "euro";
   const entityPercent2 = "%";
   const doprava = cont("doprava", 10, entityPercent2);
@@ -16391,8 +16545,8 @@ function procenta2() {
     cenaUcebnice: {
       deductionTree: deduce(
         deduce(
-          cont("nov\u011B", 1500, entity4),
-          cont("p\u016Fvodn\u011B", 2e3, entity4),
+          cont("nov\u011B", 1500, entity3),
+          cont("p\u016Fvodn\u011B", 2e3, entity3),
           ctorComparePercent()
         ),
         ctorOption("C", 25, { asPercent: true })
@@ -16413,15 +16567,15 @@ function procenta2() {
 
 // src/math/M9I-2025/angle.ts
 function desetiuhelnik({ input }) {
-  const entity4 = "stup\u0148\u016F";
+  const entity3 = "stup\u0148\u016F";
   const pocetUhlu = "\xFAhl\u016F";
   const rovnoramennyTrojLabel = "rovnoramenn\xFD troj\xFAheln\xEDk";
   const vrcholovyUhelLabel = "vrcholov\xFD \xFAhel";
-  const celkem = cont("desiti\xFAheln\xEDk", 360, entity4);
+  const celkem = cont("desiti\xFAheln\xEDk", 360, entity3);
   const pocet = axiomInput(cont("desiti\xFAheln\xEDk", input.pocetUhlu, pocetUhlu), 1);
   const minUhel = deduce(celkem, pocet, ctor("rate"));
   const alfa = deduce(minUhel, cont("alfa", 2, pocetUhlu));
-  const triangleSum = cont(rovnoramennyTrojLabel, 180, entity4);
+  const triangleSum = cont(rovnoramennyTrojLabel, 180, entity3);
   const uhelRamenaRovnoramennehoTrojuhelniku = ({ vrcholovyUhel: vrcholovyUhel2 }, { uhelRamenoLabel }) => toCont(
     deduce(
       toCont(deduce(
@@ -16448,7 +16602,7 @@ function desetiuhelnik({ input }) {
     last(alfa),
     uhelRamenaRovnoramennehoTrojuhelniku(
       {
-        vrcholovyUhel: cont(vrcholovyUhelLabel, lastQuantity(minUhel), entity4)
+        vrcholovyUhel: cont(vrcholovyUhelLabel, lastQuantity(minUhel), entity3)
       },
       { uhelRamenoLabel: "gama" }
     )
@@ -16481,7 +16635,7 @@ function volume({ width, length, height }, options) {
 }
 
 // src/math/M9I-2025/domecek.ts
-function domecek2({ input }) {
+function domecek3({ input }) {
   const dumLabel = "dome\u010Dek";
   const area = axiomInput(contArea(`plocha ${dumLabel}`, input.baseSurfaceArea, EmptyUnit), 1);
   const pasmo = axiomInput(quota(`plocha ${dumLabel}`, "\u010Dtverec", 4), 2);
@@ -16513,11 +16667,11 @@ function plnaKrabice({ input }) {
   const plnaKrabiceLabel = "pln\xE1 krabice";
   const plnaKrabiceVyrobkyLabel = "v\u0161echny v\xFDrobky v pln\xE9 krabici";
   const vyrobekEntity = "kus";
-  const entity4 = "gram";
+  const entity3 = "gram";
   const plnaKrabiceVyrobkuPocet = axiomInput(cont(plnaKrabiceVyrobkyLabel, input.pocetKusuVKrabice, vyrobekEntity), 1);
   const missingVyrobkyPocet = axiomInput(cont(missingVyrobkyLabel, input.missingVyrobku, vyrobekEntity), 2);
-  const triKrabice = axiomInput(cont(triKrabiceABezPetiLabel, 2e3, entity4), 3);
-  const rozdil = axiomInput(compDiff(triKrabiceABezPetiLabel, `2 ${plnaKrabiceLabel}`, 480, entity4), 4);
+  const triKrabice = axiomInput(cont(triKrabiceABezPetiLabel, 2e3, entity3), 3);
+  const rozdil = axiomInput(compDiff(triKrabiceABezPetiLabel, `2 ${plnaKrabiceLabel}`, 480, entity3), 4);
   const deductionTree1 = deduce(
     deduce(triKrabice, rozdil),
     cont(`2 ${plnaKrabiceLabel}`, 2, vyrobekEntity),
@@ -16562,13 +16716,13 @@ function kytice({ input }) {
   const ruzeAgent = "r\u016F\u017Ee";
   const staticAgent = "statice";
   const kusEntity = "kus";
-  const entity4 = "cena";
+  const entity3 = "cena";
   const rozdilRuze = axiomInput(comp(ruzeAgent, staticAgent, 2, kusEntity), 1);
   const RtoS = axiomInput(compRatio(ruzeAgent, staticAgent, 5 / 4), 2);
   const CHxS = axiomInput(ratios(kyticeAgent, [chryzatemaAgent, staticAgent], [3, 2]), 3);
-  const ruzeRate = axiomInput(rate(chryzatemaAgent, input.cenaZaKus.ruze, entity4, kusEntity), 4);
-  const chryzantemaRate = axiomInput(rate(chryzatemaAgent, input.cenaZaKus.chryzantema, entity4, kusEntity), 5);
-  const staticeRate = axiomInput(rate(chryzatemaAgent, input.cenaZaKus.statice, entity4, kusEntity), 6);
+  const ruzeRate = axiomInput(rate(chryzatemaAgent, input.cenaZaKus.ruze, entity3, kusEntity), 4);
+  const chryzantemaRate = axiomInput(rate(chryzatemaAgent, input.cenaZaKus.chryzantema, entity3, kusEntity), 5);
+  const staticeRate = axiomInput(rate(chryzatemaAgent, input.cenaZaKus.statice, entity3, kusEntity), 6);
   const statice = deduce(
     rozdilRuze,
     RtoS
@@ -16598,7 +16752,7 @@ function kytice({ input }) {
 
 // src/math/M9I-2025/letajiciCtverecky.ts
 function letajiciCtverecky({ input }) {
-  const entity4 = "\u010Dtverec";
+  const entity3 = "\u010Dtverec";
   const rowLabel = "\u0159ad";
   const columnLabel = "sloupec";
   const lowerRectLabel = "ni\u017E\u0161\xED obdeln\xEDk";
@@ -16630,11 +16784,11 @@ function letajiciCtverecky({ input }) {
 }
 
 // src/math/M9I-2025/nadoba.ts
-var entity3 = "litr\u016F";
+var entity2 = "litr\u016F";
 var entityPercent = "%";
 function objemNadoby1({ input }) {
   const percentage = axiomInput(ratio("celkem", "zapln\u011Bno", input.zaplnenoPomer), 1);
-  const part = axiomInput(cont("zbytek", input.zbyva, entity3), 2);
+  const part = axiomInput(cont("zbytek", input.zbyva, entity2), 2);
   const deductionTree = deduce(
     deduce(
       deduce(percentage, ctorComplement("zbytek")),
@@ -16646,7 +16800,7 @@ function objemNadoby1({ input }) {
 }
 function objemNadoby2({ input }) {
   const percentage = axiomInput(cont("p\u016Fvodn\u011B zapln\u011Bno", input.zaplnenoProcento, entityPercent), 1);
-  const odebrano = axiomInput(comp("p\u016Fvodn\u011B zapln\u011Bno", "nov\u011B zapln\u011Bno", input.odebrano, entity3), 2);
+  const odebrano = axiomInput(comp("p\u016Fvodn\u011B zapln\u011Bno", "nov\u011B zapln\u011Bno", input.odebrano, entity2), 2);
   const zaplnenoPoOddebrani = axiomInput(ratio("celek", "nov\u011B zapln\u011Bno", input.zaplnenoPoOdebraniRatio), 3);
   const celek = cont("celek", 100, entityPercent);
   const deductionTree = deduce(
@@ -16667,7 +16821,7 @@ function objemNadoby2({ input }) {
 function objemNadoby3({ input }) {
   const nadoba1 = axiomInput(cont("n\xE1doba 1", input.nadoba1Procent, entityPercent), 1);
   const nadoba2 = axiomInput(cont("n\xE1doba 2", input.nadoba2Procent, entityPercent), 2);
-  const nadoba3 = axiomInput(cont("n\xE1doba 3", input.nadoba3, entity3), 3);
+  const nadoba3 = axiomInput(cont("n\xE1doba 3", input.nadoba3, entity2), 3);
   const prumer = axiomInput(ratio("n\xE1doba celkem", "napln\u011Bno pr\u016Fm\u011Br", input.prumerNadobaRatio), 4);
   return {
     deductionTree: deduce(
@@ -16689,16 +16843,16 @@ function objemNadoby3({ input }) {
 
 // src/math/M9I-2025/okurky.ts
 function okurkyASalaty({ input }) {
-  const entity4 = "sazenice";
+  const entity3 = "sazenice";
   const okurkaLabel = "zasazeno okurek";
   const salatLabel = "zasazeno sal\xE1t\u016F";
   const ujaloOkurekLabel = "ujalo okurek";
   const ujaloSalatLabel = "ujalo sal\xE1t\u016F";
   const variableName = "okurky";
-  const salatyAndOkurkyCompare = axiomInput(comp(salatLabel, okurkaLabel, input.salatyNavic, entity4), 1);
+  const salatyAndOkurkyCompare = axiomInput(comp(salatLabel, okurkaLabel, input.salatyNavic, entity3), 1);
   const ujaloSalataRatio = axiomInput(ratio(salatLabel, ujaloSalatLabel, 3 / 4), 2);
   const ujaloOkurekRatio = axiomInput(ratio(okurkaLabel, ujaloOkurekLabel, 5 / 6), 3);
-  const okurka = axiomInput(cont(okurkaLabel, variableName, entity4), 1);
+  const okurka = axiomInput(cont(okurkaLabel, variableName, entity3), 1);
   const sazenicSalatu = deduce(
     okurka,
     salatyAndOkurkyCompare
@@ -16711,7 +16865,7 @@ function okurkyASalaty({ input }) {
     okurka,
     ujaloOkurekRatio
   );
-  const sazenicOkurek = deduce(ujaloSalatu, ujaloOkurek, ctorLinearEquation(okurkaLabel, { entity: entity4 }, variableName));
+  const sazenicOkurek = deduce(ujaloSalatu, ujaloOkurek, ctorLinearEquation(okurkaLabel, { entity: entity3 }, variableName));
   return [
     { deductionTree: deduce(sazenicOkurek, salatyAndOkurkyCompare), template: () => "" },
     { deductionTree: deduce(last(sazenicOkurek), ujaloOkurekRatio), template: () => "" }
@@ -16720,10 +16874,10 @@ function okurkyASalaty({ input }) {
 
 // src/math/M9I-2025/papirACary.ts
 function caryNaPapire({ input }) {
-  const entity4 = "\u010D\xE1st";
+  const entity3 = "\u010D\xE1st";
   const usekLabel = "po\u010Det p\xE1sem";
   const separatorLabel = "po\u010Det \u010Dar";
-  const pocetCasti = axiomInput(cont("po\u010Det \u010D\xE1st\xED", input.pocetCasti, entity4), 1);
+  const pocetCasti = axiomInput(cont("po\u010Det \u010D\xE1st\xED", input.pocetCasti, entity3), 1);
   const emptyEntity = "";
   const diff = compDiff(usekLabel, separatorLabel, 1, emptyEntity);
   const dvojice = to(
@@ -16747,14 +16901,14 @@ function caryNaPapire({ input }) {
 // src/math/M9I-2025/plocha.ts
 function porovnani2Ploch({}) {
   const dim = dimensionEntity();
-  const { entity: entity4, unit: unit2 } = dim.area;
+  const { entity: entity3, unit } = dim.area;
   return {
     deductionTree: deduce(
       deduce(
-        axiomInput(cont("1. plocha", 0.2, entity4, "m2"), 1),
-        ctorUnit(unit2)
+        axiomInput(cont("1. plocha", 0.2, entity3, "m2"), 1),
+        ctorUnit(unit)
       ),
-      axiomInput(cont("2. plocha", 20, entity4, unit2), 2)
+      axiomInput(cont("2. plocha", 20, entity3, unit), 2)
     )
   };
 }
@@ -16773,7 +16927,7 @@ var M9I_2025_default = createLazyMap({
   11.3: () => desetiuhelnik({ input: { pocetUhlu: 10 } })[2],
   12: () => kytice({ input: { cenaZaKus: { ruze: 54, chryzantema: 40, statice: 35 } } }),
   13: () => caryNaPapire({ input: { pocetCasti: 40 } }),
-  14: () => domecek2({ input: { baseSurfaceArea: 16, quota: 4 } }),
+  14: () => domecek3({ input: { baseSurfaceArea: 16, quota: 4 } }),
   15.1: () => objemNadoby1({ input: { zbyva: 14, zaplnenoPomer: 3 / 5 } }),
   15.2: () => objemNadoby2({ input: { zaplnenoProcento: 55, odebrano: 12, zaplnenoPoOdebraniRatio: 1 / 4 } }),
   15.3: () => objemNadoby3({ input: { nadoba1Procent: 30, nadoba2Procent: 40, nadoba3: 19, prumerNadobaRatio: 2 / 5 } }),
@@ -16871,11 +17025,11 @@ function sud2() {
   };
 }
 function uhly() {
-  const entity4 = "\xFAhel";
-  const unit2 = "stup\u0148\u016F";
+  const entity3 = "\xFAhel";
+  const unit = "stup\u0148\u016F";
   const angleLabel = "zadan\xE1 hodnota";
-  const angle1 = cont(angleLabel, 30, entity4, unit2);
-  const angle2 = cont(angleLabel, 130, entity4, unit2);
+  const angle1 = cont(angleLabel, 30, entity3, unit);
+  const angle2 = cont(angleLabel, 130, entity3, unit);
   return {
     alfa: {
       deductionTree: deduce(
@@ -16893,7 +17047,7 @@ function uhly() {
       deductionTree: deduce(
         deduce(
           deduce(angle2, compAngle(angleLabel, "bod R v pravo\xFAhl\xE9m troj\xFAheln\xEDku", "supplementary")),
-          cont("prav\xFD \xFAhel", 90, entity4, unit2),
+          cont("prav\xFD \xFAhel", 90, entity3, unit),
           triangleAngle("vrchol v pravo\xFAhl\xE9m troj\xFAheln\xEDku")
         ),
         compAngle("vrchol v pravo\xFAhl\xE9m troj\xFAheln\xEDku", "gamma", "supplementary")
@@ -16903,10 +17057,10 @@ function uhly() {
 }
 function zahon2() {
   const dim = dimensionEntity();
-  const entity4 = "po\u010Det";
+  const entity3 = "po\u010Det";
   const pocetRostlinQuantity = 65;
-  const pocetRostlin = cont("rostliny", pocetRostlinQuantity, entity4);
-  const rozestup = rate("rostliny", 40, dim.length, entity4);
+  const pocetRostlin = cont("rostliny", pocetRostlinQuantity, entity3);
+  const rozestup = rate("rostliny", 40, dim.length, entity3);
   const obvod = deduce(
     pocetRostlin,
     rozestup
@@ -16948,7 +17102,7 @@ function zahon2() {
             ),
             pocetRostlin
           ),
-          cont("b\xEDl\xFDch rostlin", 2, entity4),
+          cont("b\xEDl\xFDch rostlin", 2, entity3),
           ctorDifference("\u010Derven\xFDch rostlin")
         ),
         counter("po\u010Det opakov\xE1n\xED", 13),
@@ -16958,13 +17112,13 @@ function zahon2() {
   };
 }
 function bazen() {
-  const unit2 = "m";
+  const unit = "m";
   const agentLabel = "baz\xE9n";
   const dnoLabel = "\u0161ikm\xE9 dno";
   const zonaLabel = "prohlouben\xED z\xF3na pro plavce";
-  const delka = contLength(agentLabel, 40, unit2);
-  const sirka = cont(agentLabel, 10, unit2);
-  const vyska = cont(agentLabel, 1, unit2);
+  const delka = contLength(agentLabel, 40, unit);
+  const sirka = cont(agentLabel, 10, unit);
+  const vyska = cont(agentLabel, 1, unit);
   return {
     deductionTree: deduce(
       deduce(
@@ -16976,8 +17130,8 @@ function bazen() {
         ),
         deduce(
           deduce(
-            cont(zonaLabel, 20, "d\xE9lka", unit2),
-            cont(zonaLabel, 1, "v\xFD\u0161ka", unit2),
+            cont(zonaLabel, 20, "d\xE9lka", unit),
+            cont(zonaLabel, 1, "v\xFD\u0161ka", unit),
             sirka,
             productVolume(zonaLabel, "m3")
           ),
@@ -16990,9 +17144,9 @@ function bazen() {
   };
 }
 function pelhrimov() {
-  const entity4 = "osob";
+  const entity3 = "osob";
   const entityBase = "term\xEDn";
-  const prihlasek = cont("t\xE1bor p\u0159ihl\xE1\u0161eno", 375, entity4);
+  const prihlasek = cont("t\xE1bor p\u0159ihl\xE1\u0161eno", 375, entity3);
   const pocet = cont("t\xE1bor nab\xEDzeno", 2, entityBase);
   return {
     deductionTree: deduce(
@@ -17020,9 +17174,9 @@ function pelhrimov() {
   };
 }
 function organizatoriPercent() {
-  const entity4 = "osoby";
+  const entity3 = "osoby";
   const entityBase = "dru\u017Estvo";
-  const celkem = cont("nastoupilo", 200, entity4);
+  const celkem = cont("nastoupilo", 200, entity3);
   return {
     deductionTree: deduce(
       deduce(
@@ -17030,7 +17184,7 @@ function organizatoriPercent() {
           celkem,
           deduce(
             cont("hr\xE1\u010Di", 10, entityBase),
-            rate("hr\xE1\u010Di", 11, entity4, entityBase)
+            rate("hr\xE1\u010Di", 11, entity3, entityBase)
           ),
           ctorDifference("organiz\xE1to\u0159i")
         ), { agent: "organiz\xE1to\u0159i" }),
@@ -17042,7 +17196,7 @@ function organizatoriPercent() {
   };
 }
 function znamkyPrumer() {
-  const entity4 = "hodnota";
+  const entity3 = "hodnota";
   const entityPocet = "zn\xE1mka";
   const pocetJednicek = cont("jedni\u010Dky", "x", entityPocet);
   const pocetDvojek = cont("dvojky", "x", entityPocet);
@@ -17062,14 +17216,14 @@ function znamkyPrumer() {
         deduce(
           deduce(
             pocetJednicek,
-            deduce(pocetDvojek, cont("dvojka", 2, entity4), product("dvojka")),
-            deduce(pocetTrojek, cont("trojka", 3, entity4), product("trojka")),
-            sum("celkem", { entity: entity4 })
+            deduce(pocetDvojek, cont("dvojka", 2, entity3), product("dvojka")),
+            deduce(pocetTrojek, cont("trojka", 3, entity3), product("trojka")),
+            sum("celkem", { entity: entity3 })
           ),
           pocetCelkem,
           ctor("rate")
         ),
-        rate("aritmetick\xFD pr\u016Fm\u011Br", 1.8, entity4, entityPocet),
+        rate("aritmetick\xFD pr\u016Fm\u011Br", 1.8, entity3, entityPocet),
         ctorLinearEquation("jedni\u010Dka", { entity: entityPocet }, "x")
       ),
       ctorOption("D", 8)
@@ -17077,7 +17231,7 @@ function znamkyPrumer() {
   };
 }
 function soutez() {
-  const entity4 = "osoby";
+  const entity3 = "osoby";
   const entityBase = "dru\u017Estvo";
   const druzstva = cont("celkem", 20, entityBase);
   const viceMuzuLabel = "dru\u017Estvo s jednou \u017Eenou";
@@ -17102,11 +17256,11 @@ function soutez() {
               druzstva,
               nthPart(viceZenLabel)
             ),
-            rate(viceZenLabel, 2, entity4, entityBase)
+            rate(viceZenLabel, 2, entity3, entityBase)
           ),
-          sum(women, { entity: entity4 })
+          sum(women, { entity: entity3 })
         ),
-        deduce(druzstva, rate("celkem", 3, entity4, entityBase)),
+        deduce(druzstva, rate("celkem", 3, entity3, entityBase)),
         ctorPercent()
       ),
       ctorOption("E", 60, { asPercent: true })
@@ -17114,8 +17268,8 @@ function soutez() {
   };
 }
 function atletika() {
-  const entity4 = "atlet";
-  const ostep = cont("o\u0161t\u011Bp", 12, entity4);
+  const entity3 = "atlet";
+  const ostep = cont("o\u0161t\u011Bp", 12, entity3);
   const skok = deduce(
     ostep,
     compRelative("skok", "o\u0161t\u011Bp", 1 / 2)
@@ -17160,12 +17314,12 @@ var M9B_2025_default = createLazyMap({
   15.3: () => tabor().pocetDivek
 });
 function porovnani() {
-  const entity4 = "kusy";
+  const entity3 = "kusy";
   const vstupenkaDestskaLabel = "vstupenka d\u011Btsk\xE1";
   const vstupenkaDospelyLabel = "vstupenka dosp\u011Bl\xFD";
   const porovnat = compRatio(vstupenkaDestskaLabel, vstupenkaDospelyLabel, 2 / 5);
   const celkem = cont("celkem", 330, "K\u010D");
-  const pocetDeti = cont(vstupenkaDestskaLabel, 3, entity4);
+  const pocetDeti = cont(vstupenkaDestskaLabel, 3, entity3);
   return {
     deductionTree: deduce(
       deduce(
@@ -17182,7 +17336,7 @@ function porovnani() {
   };
 }
 function salaty() {
-  const entity4 = "sal\xE1t";
+  const entity3 = "sal\xE1t";
   const den1Ratio = ratio("celkem", "prod\xE1no 1.den", 1 / 3);
   const den2vsDen1 = compRelative("prod\xE1no 2.den", "prod\xE1no 1.den", -1 / 3);
   const celkem = cont("celkem", 5400, "K\u010D");
@@ -17201,7 +17355,7 @@ function salaty() {
     druhyDenVyrazSPromenou: {
       deductionTree: deduce(
         last(den2),
-        cont("celkem", "x", entity4)
+        cont("celkem", "x", entity3)
       )
     },
     pocetSalatu: {
@@ -17255,10 +17409,10 @@ function dort2() {
   };
 }
 function uhelAlfa() {
-  const entity4 = "\xFAhel";
-  const unit2 = "stup\u0148\u016F";
+  const entity3 = "\xFAhel";
+  const unit = "stup\u0148\u016F";
   const triangleSumLabel = "sou\u010Det \xFAhl\u016F v troj\xFAheln\xEDku";
-  const soucetUhluVTrojuhelniku = cont(triangleSumLabel, 180, entity4, unit2);
+  const soucetUhluVTrojuhelniku = cont(triangleSumLabel, 180, entity3, unit);
   const praveRameho = deduce(
     ratios(triangleSumLabel, ["vrcholov\xFD \xFAhel", "lev\xE9 rameno", "prav\xE9 rameno"], [40, 70, 70]),
     soucetUhluVTrojuhelniku
@@ -17346,14 +17500,14 @@ function zahrada() {
   const hortenzieL = "hortenzie";
   const levanduleL = "levandule";
   const bazalkaL = "bazalka";
-  const entity4 = "stupe\u0148";
+  const entity3 = "stupe\u0148";
   const magnoliePlocha = contArea(magnolieL, 20);
-  const jablon = cont(jablonL, 105, entity4);
-  const magnolie = cont(magnolieL, 60, entity4);
-  const hortenzie = cont(hortenzieL, 30, entity4);
-  const levandule = cont(levanduleL, 60, entity4);
-  const bazalka = cont(bazalkaL, 15, entity4);
-  const celkem = cont("celkem", 360, entity4);
+  const jablon = cont(jablonL, 105, entity3);
+  const magnolie = cont(magnolieL, 60, entity3);
+  const hortenzie = cont(hortenzieL, 30, entity3);
+  const levandule = cont(levanduleL, 60, entity3);
+  const bazalka = cont(bazalkaL, 15, entity3);
+  const celkem = cont("celkem", 360, entity3);
   const ruze = deduce(
     celkem,
     deduce(
@@ -17421,15 +17575,15 @@ function zahrada() {
   };
 }
 function tabor() {
-  const entity4 = "d\u011Bti";
+  const entity3 = "d\u011Bti";
   const entityBase = "vedouc\xED";
-  const deti = cont("t\xE1bor", 80, entity4);
+  const deti = cont("t\xE1bor", 80, entity3);
   const vedouci = cont("t\xE1bor", 5, entityBase);
   const mladsiLabel = "mlad\u0161\xED d\u011Bti";
   const starsiLabel = "star\u0161\xED d\u011Bti";
   const divkyL = "v\u0161echny d\xEDvky";
   const chlapciL = "v\u0161ichni chlapci";
-  const divky = cont(divkyL, "x", entity4);
+  const divky = cont(divkyL, "x", entity3);
   const chlapci = deduce(
     deti,
     divky,
@@ -17477,8 +17631,8 @@ function tabor() {
               ),
               ctorDifference("rozdil")
             ),
-            cont("rozdil", 4, entity4),
-            ctorLinearEquation("po\u010Det d\xEDvek", { entity: entity4 }, "x")
+            cont("rozdil", 4, entity3),
+            ctorLinearEquation("po\u010Det d\xEDvek", { entity: entity3 }, "x")
           ),
           deti,
           ctorPercent()
@@ -17576,13 +17730,13 @@ function spotrebaPaliva() {
   const standard = "b\u011B\u017En\xE9 palivo";
   const power = "power";
   const entityPrice = "korun";
-  const entity4 = "";
+  const entity3 = "";
   const entityLength = "vzd\xE1lenost";
   const unitLength = "km";
-  const unit2 = "l";
-  const standardRate = rate(standard, 6.5, { entity: entity4, unit: unit2 }, { entity: entityLength, unit: unitLength }, 100);
-  const powerRate = rate(power, 5.8, { entity: entity4, unit: unit2 }, { entity: entityLength, unit: unitLength }, 100);
-  const standardPriceRate = rate(standard, 34.8, entityPrice, { entity: entity4, unit: unit2 });
+  const unit = "l";
+  const standardRate = rate(standard, 6.5, { entity: entity3, unit }, { entity: entityLength, unit: unitLength }, 100);
+  const powerRate = rate(power, 5.8, { entity: entity3, unit }, { entity: entityLength, unit: unitLength }, 100);
+  const standardPriceRate = rate(standard, 34.8, entityPrice, { entity: entity3, unit });
   const standardPrice = cont(standard, 34.8, entityPrice);
   const powerCompare = comp(power, standard, "x", entityPrice);
   const powerPrice = deduce(
@@ -17611,7 +17765,7 @@ function spotrebaPaliva() {
           kind: "rate",
           agent: power,
           entity: { entity: entityPrice },
-          entityBase: { entity: entity4, unit: unit2 },
+          entityBase: { entity: entity3, unit },
           quantity: d.quantity,
           baseQuantity: 1
         }))
@@ -17629,7 +17783,7 @@ function spotrebaPaliva() {
             kind: "rate",
             agent: power,
             entity: { entity: entityPrice },
-            entityBase: { entity: entity4, unit: unit2 },
+            entityBase: { entity: entity3, unit },
             quantity: d.quantity,
             baseQuantity: 1
           }))
@@ -17647,7 +17801,7 @@ function spotrebaPaliva() {
   };
 }
 function prumernyPlat() {
-  const entity4 = "zam\u011Bstnanci";
+  const entity3 = "zam\u011Bstnanci";
   const entityPrice = "korun";
   const zamLabel = "celkem";
   const seniorLabel = "senior";
@@ -17830,7 +17984,7 @@ function vyrezKrychle() {
 function kruhovaVysec() {
   const vetsiLabel = "celkov\xFD \xFAhel kruhu";
   const mensiLabel = "uhel \u03C6 odpov\xEDdaj\xEDc\xED v\xFDse\u010Di kruhu";
-  const entity4 = "stup\u0148\u016F";
+  const entity3 = "stup\u0148\u016F";
   return {
     deductionTree: deduce(
       deduce(
@@ -17841,7 +17995,7 @@ function kruhovaVysec() {
           commonSense(`v\xFDse\u010D je \u010D\xE1st z cel\xE9ho kruhu s v\u011Bt\u0161\xEDm polom\u011Brem`),
           compRatio(vetsiLabel, mensiLabel, 9 / 4)
         ),
-        cont(vetsiLabel, 360, entity4)
+        cont(vetsiLabel, 360, entity3)
       ),
       ctorOption("B", 160)
     )

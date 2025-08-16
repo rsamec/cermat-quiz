@@ -1,6 +1,5 @@
-import { countReset } from "node:console"
-import { commonSense, comp, cont, ctor, sum, ctorComplement, ctorDifference, ctorOption, ctorUnit, percent, rate, ratio, ratios, transfer, ctorSlide, compRatio, nthPart, counter, double, product } from "../../components/math"
-import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils"
+import { commonSense, comp, cont, ctor, sum, ctorComplement, ctorDifference, ctorOption, ctorUnit, percent, rate, ratio, ratios, transfer, ctorSlide, compRatio, nthPart, counter, double, product, contLength, productArea, dimensionEntity, contArea, productCombine } from "../../components/math"
+import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "../../utils/deduce-utils"
 
 export default createLazyMap({
   1.1: () => ceremonial().polovina,
@@ -14,9 +13,15 @@ export default createLazyMap({
   5.1: () => nakupFigurek().zbytek,
   5.2: () => nakupFigurek().cenaFigurky,
   6.1: () => karticky().petr,
+  7.1: () => domecek().strana,
+  7.2: () => domecek().obsah,
   11: () => tornado(),
   12: () => cestaKeStudance().meritko,
   13: () => cestaKeStudance().delkaTrasa,
+  14: () => schody(),
+  15.1: () => jazyky().porovnaniZaku,
+  15.2: () => jazyky().fracouzstina,
+  15.3: () => jazyky().nemcinaVsFrancouzstina,
 })
 
 function ceremonial() {
@@ -242,6 +247,170 @@ function karticky() {
       )
     }
   }
+}
+function domecek() {
+  const dim = dimensionEntity();
+
+  const stranaRate = deduceAs("obvod se skládá z 4 stran čtverce a dvou ramen trojúhleníku a každé rameno = 2 strany čterce zvětšené o 3")(
+    deduce(
+      contLength("obvod", 46),
+      contLength("zvětšení ramen", 6),
+      ctorDifference("obvod zmenšený")
+    ),
+    cont("obvod zmenšený", 8, "strana"),
+    ctor("rate")
+  );
+
+  const strana = toCont(stranaRate, { agent: "čtverec" })
+  return {
+    strana: {
+      deductionTree: stranaRate
+    },
+    obsah: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            last(strana),
+            last(strana),
+            productArea("čtverec")
+          ),
+          double(),
+          productArea("základna")
+        ),
+        deduce(
+          deduce(
+            deduce(
+              deduce(
+                last(strana),
+                double(),
+                product("základna")
+              ),
+              comp("rameno", "základna", 3, dim.length.entity)
+            ),
+            comp("rameno", "výška", 1, dim.length.entity)
+          ),
+          last(strana),
+          productArea("rovnoramenný trojúhleník")
+        ),
+        sum("domeček")
+      )
+    }
+  }
+}
+
+function schody() {
+  const dim = dimensionEntity()
+  const entity = "obdelník"
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduceAs("rozdíl vzniká pouze v horní a spodní části")(
+          cont("schodiště", 6, entity),
+          cont("krychle", 4, entity),
+          ctorDifference("rozdíl")
+        ),
+        deduce(
+          contLength("obdelník", 9),
+          contLength("obdelník", 9 / 2),
+          productArea("obdelník")
+        ),
+        productCombine("rozdíl", dim.area)
+      ),
+      ctorOption("D", 81)
+    )
+  }
+}
+
+function jazyky() {
+  const deLabel = "němčina"
+  const frLabel = "francouzština"
+  const esLabel = "španělština"
+
+  const school1Label = "1.škola"
+  const school2Label = "2.škola"
+  const entity = "žák"
+
+  const de1 = percent(school1Label, deLabel, 62);
+  const fr1 = percent(school1Label, frLabel, 18);
+  const es1 = deduce(
+    deduce(
+      de1,
+      fr1,
+      sum("dva jazyky")
+    ),
+    ctorComplement(esLabel)
+  )
+
+
+  const es1Val = cont(esLabel, 100, entity);
+
+  const es2 = percent(school2Label, esLabel, 35);
+  const fr2 = percent(school2Label, frLabel, 20);
+  const de2 = deduce(
+    deduce(
+      fr2,
+      es2,
+      sum("dva jazyky")
+    ),
+    ctorComplement(deLabel)
+  )
+
+
+  const de2Val = cont(deLabel, 270, entity);
+
+  const school1 = deduce(
+    es1,
+    es1Val
+  )
+
+  const school2 = deduce(
+    de2,
+    de2Val
+  )
+
+  const fr1Pocet = deduce(
+    fr1,
+    last(school1)
+  )
+
+  return {
+    porovnaniZaku: {
+      deductionTree: deduce(
+        deduce(
+          school2,
+          school1,
+        ),
+        ctorOption("A", 100)
+      )
+    },
+    fracouzstina: {
+      deductionTree: deduce(
+        deduce(
+          fr1Pocet,
+          deduce(
+            fr2,
+            last(school2)
+          ),
+          sum(frLabel)
+        ),
+        ctorOption("E", 210)
+      )
+    },
+    nemcinaVsFrancouzstina: {
+      deductionTree: deduce(
+        deduce(
+          deduce(de1,
+            last(school1)
+          ),
+          fr1Pocet,
+        ),
+        ctorOption("F", 220)
+      )
+    }
+
+
+  }
+
 }
 
 function cestaKeStudance() {
