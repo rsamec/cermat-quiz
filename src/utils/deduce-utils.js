@@ -5973,6 +5973,16 @@ function wordProblemGroupById(wordProblem) {
   }, []);
   return Object.groupBy(deductionTrees, ({ key }) => parseInt(key.split(".")[0]));
 }
+function wordProblemsGroupById(wordProblem) {
+  const deductionTrees = Object.entries(wordProblem).reduce((out, [key, value], index) => {
+    out.push({
+      key,
+      deductionTree: value.deductionTree
+    });
+    return out;
+  }, []);
+  return Object.groupBy(deductionTrees, ({ key }) => parseInt(key.split(".")[0]));
+}
 function generateAIMessages({ template, deductionTrees }) {
   const alternateMessage = `
 Zad\xE1n\xED \xFAlohy je 
@@ -6082,7 +6092,8 @@ export {
   toAs,
   toCont,
   toPredicate,
-  wordProblemGroupById
+  wordProblemGroupById,
+  wordProblemsGroupById
 };
 /*!
  Based on ndef.parser, by Raphael Graf(r@undefined.ch)

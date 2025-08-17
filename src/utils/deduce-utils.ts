@@ -596,8 +596,8 @@ export function wordProblemGroupById(wordProblem: Record<string, { deductionTree
   }, []);
 
   return Object.groupBy(deductionTrees, ({ key }) => parseInt(key.split(".")[0]));
-
 }
+
 
 export function generateAIMessages({ template, deductionTrees }: { template, deductionTrees: [string, TreeNode][] }) {
 

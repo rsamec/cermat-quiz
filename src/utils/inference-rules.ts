@@ -92,6 +92,6 @@ export default function rules() {
     quadraticSequence: [...nthRule(quadratic, tenthTerm)],
     geometricSequence: [...nthRule(geometric, tenthTerm)],
     unit: [deduceRule(cont("Honzík", 4, "jablek", "kg"), ctorUnit("g")), deduceRule(cont("Ája", 400, "mléka", "cm3"), ctorUnit("l"))],
-    eval: [deduceRule(cont("poloměr", 4, "délka", "cm"), evalExprAsCont("PI*r^2", { kind: 'cont', agent: "kruh", entity: "obsah", unit: "cm2" }))]
+    eval: [deduceRule(cont("poloměr", 4, "délka", "cm"), evalExprAsCont("π*r^2", { kind: 'cont', agent: "kruh", entity: "obsah", unit: "cm2" }))]
   }
 }

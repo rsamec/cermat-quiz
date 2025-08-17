@@ -1,0 +1,2586 @@
+{
+  "M5A-2023": {
+    "2": {
+      "predicates": [
+        "ratio",
+        "cont",
+        "comp",
+        "scale",
+        "scale-invert"
+      ],
+      "usages": {
+        "ratio": 1,
+        "cont": 2,
+        "comp": 1,
+        "scale": 1,
+        "scale-invert": 1
+      }
+    },
+    "3": {
+      "predicates": [
+        "cont",
+        "rate",
+        "sum"
+      ],
+      "usages": {
+        "cont": 3,
+        "rate": 1,
+        "sum": 2
+      }
+    },
+    "4": {
+      "predicates": [
+        "cont",
+        "comp-ratio",
+        "nth-part",
+        "ratios",
+        "sum",
+        "rate",
+        "ratios-invert"
+      ],
+      "usages": {
+        "cont": 3,
+        "comp-ratio": 1,
+        "nth-part": 2,
+        "ratios": 1,
+        "sum": 2,
+        "rate": 2,
+        "ratios-invert": 1
+      }
+    },
+    "5": {
+      "predicates": [
+        "cont",
+        "sum",
+        "rate",
+        "comp-diff"
+      ],
+      "usages": {
+        "cont": 2,
+        "sum": 2,
+        "rate": 1,
+        "comp-diff": 2
+      }
+    },
+    "6": {
+      "predicates": [
+        "ratio",
+        "comp-ratio",
+        "sum",
+        "complement",
+        "cont"
+      ],
+      "usages": {
+        "ratio": 2,
+        "comp-ratio": 1,
+        "sum": 1,
+        "complement": 1,
+        "cont": 1
+      }
+    },
+    "8": {
+      "predicates": [
+        "cont",
+        "common-sense",
+        "product",
+        "eval-option",
+        "sum",
+        "comp-diff"
+      ],
+      "usages": {
+        "cont": 3,
+        "common-sense": 3,
+        "product": 2,
+        "eval-option": 3,
+        "sum": 2,
+        "comp-diff": 1
+      }
+    },
+    "9": {
+      "predicates": [
+        "cont",
+        "comp-ratio",
+        "sum",
+        "ratio",
+        "complement",
+        "comp",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "comp-ratio": 1,
+        "sum": 1,
+        "ratio": 1,
+        "complement": 1,
+        "comp": 1,
+        "eval-option": 1
+      }
+    },
+    "10": {
+      "predicates": [
+        "ratios",
+        "cont",
+        "rate",
+        "diff",
+        "sum",
+        "eval-option"
+      ],
+      "usages": {
+        "ratios": 1,
+        "cont": 1,
+        "rate": 1,
+        "diff": 1,
+        "sum": 1,
+        "eval-option": 1
+      }
+    },
+    "11": {
+      "predicates": [
+        "cont",
+        "product-combine",
+        "rate",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "product-combine": 1,
+        "rate": 1,
+        "eval-option": 1
+      }
+    },
+    "12": {
+      "predicates": [
+        "cont",
+        "lcd",
+        "product-combine",
+        "rate",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "lcd": 1,
+        "product-combine": 1,
+        "rate": 1,
+        "eval-option": 1
+      }
+    },
+    "13": {
+      "predicates": [
+        "cont",
+        "comp-ratio",
+        "eval-option",
+        "sum"
+      ],
+      "usages": {
+        "cont": 3,
+        "comp-ratio": 3,
+        "eval-option": 3,
+        "sum": 2
+      }
+    },
+    "14": {
+      "predicates": [
+        "cont",
+        "sum",
+        "comp-diff",
+        "ratios",
+        "rate",
+        "common-sense"
+      ],
+      "usages": {
+        "cont": 3,
+        "sum": 2,
+        "comp-diff": 1,
+        "ratios": 1,
+        "rate": 2,
+        "common-sense": 1
+      }
+    }
+  },
+  "M5A-2024": {
+    "3": {
+      "predicates": [
+        "cont",
+        "diff",
+        "scale-invert"
+      ],
+      "usages": {
+        "cont": 1,
+        "diff": 1,
+        "scale-invert": 1
+      }
+    },
+    "4": {
+      "predicates": [
+        "comp",
+        "cont",
+        "comp-part-eq",
+        "comp-ratio",
+        "sum",
+        "diff",
+        "ratio",
+        "complement"
+      ],
+      "usages": {
+        "comp": 1,
+        "cont": 3,
+        "comp-part-eq": 1,
+        "comp-ratio": 1,
+        "sum": 1,
+        "diff": 2,
+        "ratio": 1,
+        "complement": 1
+      }
+    },
+    "5": {
+      "predicates": [
+        "cont",
+        "unit",
+        "sum",
+        "diff"
+      ],
+      "usages": {
+        "cont": 2,
+        "unit": 2,
+        "sum": 1,
+        "diff": 1
+      }
+    },
+    "6": {
+      "predicates": [
+        "cont",
+        "rate",
+        "slide",
+        "tuple"
+      ],
+      "usages": {
+        "cont": 2,
+        "rate": 2,
+        "slide": 1,
+        "tuple": 1
+      }
+    },
+    "8": {
+      "predicates": [
+        "cont",
+        "common-sense",
+        "sum",
+        "comp",
+        "eval-option",
+        "product"
+      ],
+      "usages": {
+        "cont": 3,
+        "common-sense": 2,
+        "sum": 3,
+        "comp": 1,
+        "eval-option": 3,
+        "product": 1
+      }
+    },
+    "9": {
+      "predicates": [
+        "cont",
+        "sum",
+        "rate",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "sum": 1,
+        "rate": 1,
+        "eval-option": 1
+      }
+    },
+    "11": {
+      "predicates": [
+        "cont",
+        "diff",
+        "comp-ratio",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "diff": 1,
+        "comp-ratio": 1,
+        "eval-option": 1
+      }
+    },
+    "12": {
+      "predicates": [
+        "cont",
+        "eval-option",
+        "transfer",
+        "sum"
+      ],
+      "usages": {
+        "cont": 3,
+        "eval-option": 3,
+        "transfer": 1,
+        "sum": 1
+      }
+    },
+    "13": {
+      "predicates": [
+        "cont",
+        "ratio",
+        "diff",
+        "eval-option",
+        "slide"
+      ],
+      "usages": {
+        "cont": 3,
+        "ratio": 2,
+        "diff": 1,
+        "eval-option": 3,
+        "slide": 1
+      }
+    },
+    "14": {
+      "predicates": [
+        "cont",
+        "ratio",
+        "rate",
+        "common-sense"
+      ],
+      "usages": {
+        "cont": 3,
+        "ratio": 1,
+        "rate": 3,
+        "common-sense": 2
+      }
+    }
+  },
+  "M5A-2025": {
+    "3": {
+      "predicates": [
+        "ratios",
+        "cont",
+        "nth-part",
+        "comp"
+      ],
+      "usages": {
+        "ratios": 2,
+        "cont": 2,
+        "nth-part": 1,
+        "comp": 1
+      }
+    },
+    "4": {
+      "predicates": [
+        "rate",
+        "ratios",
+        "cont",
+        "nth-factor",
+        "nth-part",
+        "comp-ratio",
+        "sum"
+      ],
+      "usages": {
+        "rate": 2,
+        "ratios": 1,
+        "cont": 2,
+        "nth-factor": 1,
+        "nth-part": 1,
+        "comp-ratio": 1,
+        "sum": 1
+      }
+    },
+    "5": {
+      "predicates": [
+        "common-sense",
+        "cont",
+        "diff"
+      ],
+      "usages": {
+        "common-sense": 2,
+        "cont": 3,
+        "diff": 2
+      }
+    },
+    "6": {
+      "predicates": [
+        "cont",
+        "ratios",
+        "common-sense",
+        "nth-part",
+        "diff"
+      ],
+      "usages": {
+        "cont": 2,
+        "ratios": 2,
+        "common-sense": 1,
+        "nth-part": 1,
+        "diff": 1
+      }
+    },
+    "8": {
+      "predicates": [
+        "cont",
+        "comp-ratio",
+        "eval-option",
+        "comp"
+      ],
+      "usages": {
+        "cont": 3,
+        "comp-ratio": 2,
+        "eval-option": 3,
+        "comp": 1
+      }
+    },
+    "9": {
+      "predicates": [
+        "cont",
+        "rate",
+        "product",
+        "diff",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "rate": 1,
+        "product": 1,
+        "diff": 1,
+        "eval-option": 1
+      }
+    },
+    "10": {
+      "predicates": [
+        "ratio",
+        "comp-ratio",
+        "sum",
+        "complement",
+        "cont",
+        "eval-option"
+      ],
+      "usages": {
+        "ratio": 1,
+        "comp-ratio": 1,
+        "sum": 1,
+        "complement": 1,
+        "cont": 1,
+        "eval-option": 1
+      }
+    },
+    "14": {
+      "predicates": [
+        "cont",
+        "sum",
+        "comp-ratio",
+        "ratios",
+        "delta",
+        "nth-part",
+        "product"
+      ],
+      "usages": {
+        "cont": 3,
+        "sum": 3,
+        "comp-ratio": 1,
+        "ratios": 3,
+        "delta": 1,
+        "nth-part": 2,
+        "product": 2
+      }
+    }
+  },
+  "M5B-2025": {
+    "1": {
+      "predicates": [
+        "cont",
+        "scale-invert",
+        "diff",
+        "scale",
+        "comp-ratio",
+        "ratios",
+        "nth-part",
+        "eval-expr",
+        "slide",
+        "slide-invert",
+        "tuple"
+      ],
+      "usages": {
+        "cont": 3,
+        "scale-invert": 1,
+        "diff": 1,
+        "scale": 1,
+        "comp-ratio": 1,
+        "ratios": 1,
+        "nth-part": 1,
+        "eval-expr": 1,
+        "slide": 1,
+        "slide-invert": 1,
+        "tuple": 1
+      }
+    },
+    "3": {
+      "predicates": [
+        "cont",
+        "comp-ratio",
+        "sum",
+        "quota",
+        "common-sense",
+        "diff"
+      ],
+      "usages": {
+        "cont": 3,
+        "comp-ratio": 2,
+        "sum": 1,
+        "quota": 1,
+        "common-sense": 1,
+        "diff": 1
+      }
+    },
+    "4": {
+      "predicates": [
+        "ratio",
+        "cont",
+        "rate",
+        "sum",
+        "diff"
+      ],
+      "usages": {
+        "ratio": 2,
+        "cont": 2,
+        "rate": 1,
+        "sum": 1,
+        "diff": 1
+      }
+    },
+    "5": {
+      "predicates": [
+        "cont",
+        "diff",
+        "eval-expr",
+        "common-sense"
+      ],
+      "usages": {
+        "cont": 3,
+        "diff": 1,
+        "eval-expr": 1,
+        "common-sense": 2
+      }
+    },
+    "6": {
+      "predicates": [
+        "cont",
+        "product",
+        "diff",
+        "ratio"
+      ],
+      "usages": {
+        "cont": 2,
+        "product": 1,
+        "diff": 2,
+        "ratio": 1
+      }
+    },
+    "8": {
+      "predicates": [
+        "cont",
+        "sum",
+        "comp",
+        "eval-option",
+        "comp-ratio"
+      ],
+      "usages": {
+        "cont": 3,
+        "sum": 3,
+        "comp": 1,
+        "eval-option": 3,
+        "comp-ratio": 2
+      }
+    },
+    "10": {
+      "predicates": [
+        "cont",
+        "diff",
+        "rate",
+        "common-sense",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "diff": 1,
+        "rate": 1,
+        "common-sense": 1,
+        "eval-option": 1
+      }
+    },
+    "11": {
+      "predicates": [
+        "common-sense",
+        "rate",
+        "cont",
+        "eval-option"
+      ],
+      "usages": {
+        "common-sense": 1,
+        "rate": 1,
+        "cont": 1,
+        "eval-option": 1
+      }
+    },
+    "14": {
+      "predicates": [
+        "cont",
+        "rate",
+        "product",
+        "sum",
+        "comp"
+      ],
+      "usages": {
+        "cont": 2,
+        "rate": 2,
+        "product": 1,
+        "sum": 1,
+        "comp": 1
+      }
+    }
+  },
+  "M7A-2023": {
+    "1": {
+      "predicates": [
+        "ratio",
+        "cont",
+        "comp"
+      ],
+      "usages": {
+        "ratio": 1,
+        "cont": 1,
+        "comp": 1
+      }
+    },
+    "3": {
+      "predicates": [
+        "cont",
+        "rate",
+        "sum"
+      ],
+      "usages": {
+        "cont": 3,
+        "rate": 1,
+        "sum": 2
+      }
+    },
+    "4": {
+      "predicates": [
+        "cont",
+        "product",
+        "sum",
+        "comp-diff",
+        "comp-ratio",
+        "ratios"
+      ],
+      "usages": {
+        "cont": 1,
+        "product": 1,
+        "sum": 1,
+        "comp-diff": 1,
+        "comp-ratio": 1,
+        "ratios": 1
+      }
+    },
+    "5": {
+      "predicates": [
+        "cont",
+        "ratios",
+        "nth-part",
+        "sum",
+        "rate",
+        "ratios-invert"
+      ],
+      "usages": {
+        "cont": 2,
+        "ratios": 1,
+        "nth-part": 1,
+        "sum": 2,
+        "rate": 2,
+        "ratios-invert": 1
+      }
+    },
+    "6": {
+      "predicates": [
+        "ratio",
+        "comp-ratio",
+        "sum",
+        "complement",
+        "cont"
+      ],
+      "usages": {
+        "ratio": 2,
+        "comp-ratio": 1,
+        "sum": 1,
+        "complement": 1,
+        "cont": 1
+      }
+    },
+    "10": {
+      "predicates": [
+        "cont",
+        "comp-ratio",
+        "eval-option",
+        "sum"
+      ],
+      "usages": {
+        "cont": 3,
+        "comp-ratio": 3,
+        "eval-option": 3,
+        "sum": 2
+      }
+    },
+    "11": {
+      "predicates": [
+        "cont",
+        "comp-angle",
+        "triangle-angle",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "comp-angle": 1,
+        "triangle-angle": 1,
+        "eval-option": 1
+      }
+    },
+    "12": {
+      "predicates": [
+        "cont",
+        "product-combine",
+        "common-sense",
+        "comp-diff",
+        "sum",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "product-combine": 1,
+        "common-sense": 1,
+        "comp-diff": 1,
+        "sum": 1,
+        "eval-option": 1
+      }
+    },
+    "13": {
+      "predicates": [
+        "ratios",
+        "cont",
+        "rate",
+        "nth-part",
+        "sum",
+        "eval-option"
+      ],
+      "usages": {
+        "ratios": 1,
+        "cont": 1,
+        "rate": 1,
+        "nth-part": 1,
+        "sum": 1,
+        "eval-option": 1
+      }
+    },
+    "14": {
+      "predicates": [
+        "cont",
+        "comp-ratio",
+        "sum",
+        "ratio",
+        "complement",
+        "comp",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "comp-ratio": 1,
+        "sum": 1,
+        "ratio": 1,
+        "complement": 1,
+        "comp": 1,
+        "eval-option": 1
+      }
+    },
+    "15": {
+      "predicates": [
+        "cont",
+        "ratio",
+        "complement",
+        "eval-option",
+        "comp-ratio",
+        "comp",
+        "comp-diff",
+        "sum"
+      ],
+      "usages": {
+        "cont": 3,
+        "ratio": 2,
+        "complement": 1,
+        "eval-option": 3,
+        "comp-ratio": 1,
+        "comp": 1,
+        "comp-diff": 1,
+        "sum": 1
+      }
+    },
+    "16": {
+      "predicates": [
+        "cont",
+        "sum",
+        "comp-diff",
+        "ratios",
+        "rate",
+        "common-sense"
+      ],
+      "usages": {
+        "cont": 3,
+        "sum": 2,
+        "comp-diff": 1,
+        "ratios": 1,
+        "rate": 2,
+        "common-sense": 1
+      }
+    }
+  },
+  "M7A-2024": {
+    "1": {
+      "predicates": [
+        "cont",
+        "sum",
+        "comp-diff",
+        "comp-ratio",
+        "comp"
+      ],
+      "usages": {
+        "cont": 2,
+        "sum": 1,
+        "comp-diff": 1,
+        "comp-ratio": 1,
+        "comp": 1
+      }
+    },
+    "3": {
+      "predicates": [
+        "cont",
+        "rate",
+        "slide",
+        "comp-ratio",
+        "comp-diff"
+      ],
+      "usages": {
+        "cont": 3,
+        "rate": 3,
+        "slide": 2,
+        "comp-ratio": 1,
+        "comp-diff": 1
+      }
+    },
+    "5": {
+      "predicates": [
+        "cont",
+        "sum",
+        "comp-diff",
+        "ratio"
+      ],
+      "usages": {
+        "cont": 2,
+        "sum": 1,
+        "comp-diff": 1,
+        "ratio": 2
+      }
+    },
+    "6": {
+      "predicates": [
+        "cont",
+        "lcd",
+        "comp-diff"
+      ],
+      "usages": {
+        "cont": 1,
+        "lcd": 1,
+        "comp-diff": 1
+      }
+    },
+    "7": {
+      "predicates": [
+        "cont",
+        "rate",
+        "sum",
+        "comp-ratio",
+        "proportion",
+        "slide"
+      ],
+      "usages": {
+        "cont": 1,
+        "rate": 1,
+        "sum": 1,
+        "comp-ratio": 1,
+        "proportion": 1,
+        "slide": 1
+      }
+    },
+    "10": {
+      "predicates": [
+        "cont",
+        "rate",
+        "sum",
+        "eval-option",
+        "comp-ratio"
+      ],
+      "usages": {
+        "cont": 3,
+        "rate": 3,
+        "sum": 1,
+        "eval-option": 3,
+        "comp-ratio": 1
+      }
+    },
+    "11": {
+      "predicates": [
+        "cont",
+        "rate",
+        "comp",
+        "comp-part-eq",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "rate": 1,
+        "comp": 1,
+        "comp-part-eq": 1,
+        "eval-option": 1
+      }
+    },
+    "12": {
+      "predicates": [
+        "cont",
+        "rate",
+        "comp-ratio",
+        "unit",
+        "diff",
+        "sum",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "rate": 1,
+        "comp-ratio": 1,
+        "unit": 1,
+        "diff": 1,
+        "sum": 1,
+        "eval-option": 1
+      }
+    },
+    "13": {
+      "predicates": [
+        "cont",
+        "product-combine",
+        "comp-ratio",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "product-combine": 1,
+        "comp-ratio": 1,
+        "eval-option": 1
+      }
+    },
+    "14": {
+      "predicates": [
+        "cont",
+        "comp-angle",
+        "comp-diff",
+        "sum",
+        "rate",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "comp-angle": 1,
+        "comp-diff": 1,
+        "sum": 1,
+        "rate": 1,
+        "eval-option": 1
+      }
+    },
+    "15": {
+      "predicates": [
+        "ratio",
+        "cont",
+        "eval-option",
+        "comp-ratio",
+        "ratios",
+        "nth-part",
+        "unit"
+      ],
+      "usages": {
+        "ratio": 1,
+        "cont": 3,
+        "eval-option": 3,
+        "comp-ratio": 1,
+        "ratios": 1,
+        "nth-part": 1,
+        "unit": 1
+      }
+    },
+    "16": {
+      "predicates": [
+        "cont",
+        "product-combine",
+        "product",
+        "sum"
+      ],
+      "usages": {
+        "cont": 2,
+        "product-combine": 2,
+        "product": 2,
+        "sum": 2
+      }
+    }
+  },
+  "M7A-2025": {
+    "1": {
+      "predicates": [
+        "common-sense",
+        "cont",
+        "ratios",
+        "ratio",
+        "slide",
+        "diff"
+      ],
+      "usages": {
+        "common-sense": 1,
+        "cont": 2,
+        "ratios": 1,
+        "ratio": 1,
+        "slide": 1,
+        "diff": 1
+      }
+    },
+    "3": {
+      "predicates": [
+        "comp-ratio",
+        "comp",
+        "cont",
+        "sum"
+      ],
+      "usages": {
+        "comp-ratio": 2,
+        "comp": 2,
+        "cont": 2,
+        "sum": 1
+      }
+    },
+    "4": {
+      "predicates": [
+        "common-sense",
+        "cont",
+        "ratio",
+        "comp-ratio",
+        "comp",
+        "diff",
+        "rate",
+        "sum"
+      ],
+      "usages": {
+        "common-sense": 2,
+        "cont": 3,
+        "ratio": 2,
+        "comp-ratio": 1,
+        "comp": 1,
+        "diff": 2,
+        "rate": 2,
+        "sum": 1
+      }
+    },
+    "5": {
+      "predicates": [
+        "rate",
+        "cont",
+        "ratios",
+        "nth-part",
+        "product"
+      ],
+      "usages": {
+        "rate": 1,
+        "cont": 2,
+        "ratios": 1,
+        "nth-part": 1,
+        "product": 1
+      }
+    },
+    "6": {
+      "predicates": [
+        "transfer",
+        "cont"
+      ],
+      "usages": {
+        "transfer": 1,
+        "cont": 1
+      }
+    },
+    "7": {
+      "predicates": [
+        "cont",
+        "diff",
+        "rate",
+        "product-combine",
+        "product",
+        "comp",
+        "sum"
+      ],
+      "usages": {
+        "cont": 2,
+        "diff": 1,
+        "rate": 1,
+        "product-combine": 1,
+        "product": 1,
+        "comp": 1,
+        "sum": 1
+      }
+    },
+    "11": {
+      "predicates": [
+        "ratio",
+        "complement",
+        "cont",
+        "eval-option"
+      ],
+      "usages": {
+        "ratio": 1,
+        "complement": 1,
+        "cont": 1,
+        "eval-option": 1
+      }
+    },
+    "12": {
+      "predicates": [
+        "rate",
+        "cont",
+        "unit",
+        "eval-option"
+      ],
+      "usages": {
+        "rate": 1,
+        "cont": 1,
+        "unit": 1,
+        "eval-option": 1
+      }
+    },
+    "13": {
+      "predicates": [
+        "cont",
+        "unit",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "unit": 1,
+        "eval-option": 1
+      }
+    },
+    "14": {
+      "predicates": [
+        "cont",
+        "diff",
+        "product-combine",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "diff": 1,
+        "product-combine": 1,
+        "eval-option": 1
+      }
+    },
+    "15": {
+      "predicates": [
+        "ratio",
+        "sum",
+        "complement",
+        "cont",
+        "comp",
+        "eval-option"
+      ],
+      "usages": {
+        "ratio": 3,
+        "sum": 2,
+        "complement": 1,
+        "cont": 3,
+        "comp": 2,
+        "eval-option": 3
+      }
+    }
+  },
+  "M7B-2025": {
+    "1": {
+      "predicates": [
+        "cont",
+        "comp-ratio",
+        "comp",
+        "scale"
+      ],
+      "usages": {
+        "cont": 1,
+        "comp-ratio": 1,
+        "comp": 1,
+        "scale": 1
+      }
+    },
+    "2": {
+      "predicates": [
+        "cont",
+        "ratios",
+        "gcd",
+        "scale-invert",
+        "nth-part",
+        "tuple"
+      ],
+      "usages": {
+        "cont": 1,
+        "ratios": 1,
+        "gcd": 1,
+        "scale-invert": 1,
+        "nth-part": 1,
+        "tuple": 1
+      }
+    },
+    "4": {
+      "predicates": [
+        "cont",
+        "ratio",
+        "complement",
+        "comp-ratio",
+        "proportion"
+      ],
+      "usages": {
+        "cont": 3,
+        "ratio": 2,
+        "complement": 1,
+        "comp-ratio": 2,
+        "proportion": 2
+      }
+    },
+    "5": {
+      "predicates": [
+        "cont",
+        "ratios",
+        "diff",
+        "product",
+        "scale",
+        "sum",
+        "rate"
+      ],
+      "usages": {
+        "cont": 2,
+        "ratios": 2,
+        "diff": 1,
+        "product": 1,
+        "scale": 1,
+        "sum": 2,
+        "rate": 1
+      }
+    },
+    "7": {
+      "predicates": [
+        "cont",
+        "quota",
+        "common-sense",
+        "product",
+        "sum",
+        "product-combine",
+        "diff",
+        "eval-expr"
+      ],
+      "usages": {
+        "cont": 4,
+        "quota": 1,
+        "common-sense": 1,
+        "product": 1,
+        "sum": 2,
+        "product-combine": 2,
+        "diff": 1,
+        "eval-expr": 1
+      }
+    },
+    "13": {
+      "predicates": [
+        "rate",
+        "cont",
+        "delta",
+        "diff",
+        "eval-option"
+      ],
+      "usages": {
+        "rate": 1,
+        "cont": 1,
+        "delta": 1,
+        "diff": 1,
+        "eval-option": 1
+      }
+    },
+    "14": {
+      "predicates": [
+        "cont",
+        "delta",
+        "rate",
+        "ratio",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "delta": 1,
+        "rate": 1,
+        "ratio": 1,
+        "eval-option": 1
+      }
+    },
+    "15": {
+      "predicates": [
+        "cont",
+        "comp-ratio",
+        "eval-option",
+        "ratio",
+        "rate",
+        "sum",
+        "diff"
+      ],
+      "usages": {
+        "cont": 3,
+        "comp-ratio": 2,
+        "eval-option": 3,
+        "ratio": 2,
+        "rate": 1,
+        "sum": 2,
+        "diff": 1
+      }
+    }
+  },
+  "M9A-2023": {
+    "1": {
+      "predicates": [
+        "cont",
+        "unit",
+        "comp-ratio",
+        "ratios",
+        "nth-part"
+      ],
+      "usages": {
+        "cont": 1,
+        "unit": 1,
+        "comp-ratio": 1,
+        "ratios": 1,
+        "nth-part": 1
+      }
+    },
+    "2": {
+      "predicates": [
+        "cont",
+        "ratio",
+        "complement",
+        "comp-ratio",
+        "rate",
+        "unit"
+      ],
+      "usages": {
+        "cont": 2,
+        "ratio": 1,
+        "complement": 1,
+        "comp-ratio": 1,
+        "rate": 1,
+        "unit": 1
+      }
+    },
+    "6": {
+      "predicates": [
+        "cont",
+        "product-combine",
+        "sum"
+      ],
+      "usages": {
+        "cont": 2,
+        "product-combine": 2,
+        "sum": 1
+      }
+    },
+    "7": {
+      "predicates": [
+        "cont",
+        "comp-ratio",
+        "comp",
+        "rate",
+        "sum",
+        "ratios",
+        "nth-part",
+        "diff"
+      ],
+      "usages": {
+        "cont": 3,
+        "comp-ratio": 1,
+        "comp": 1,
+        "rate": 1,
+        "sum": 1,
+        "ratios": 1,
+        "nth-part": 1,
+        "diff": 1
+      }
+    },
+    "8": {
+      "predicates": [
+        "comp-ratio",
+        "comp",
+        "common-sense",
+        "cont",
+        "product-combine"
+      ],
+      "usages": {
+        "comp-ratio": 1,
+        "comp": 2,
+        "common-sense": 1,
+        "cont": 2,
+        "product-combine": 1
+      }
+    },
+    "11": {
+      "predicates": [
+        "cont",
+        "unit",
+        "rate",
+        "eval-option",
+        "comp-ratio",
+        "diff",
+        "nth-part"
+      ],
+      "usages": {
+        "cont": 3,
+        "unit": 3,
+        "rate": 3,
+        "eval-option": 3,
+        "comp-ratio": 1,
+        "diff": 1,
+        "nth-part": 1
+      }
+    },
+    "12": {
+      "predicates": [
+        "cont",
+        "pythagoras",
+        "sum",
+        "product",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "pythagoras": 1,
+        "sum": 1,
+        "product": 1,
+        "eval-option": 1
+      }
+    },
+    "13": {
+      "predicates": [
+        "cont",
+        "product-combine",
+        "comp-ratio",
+        "sum",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "product-combine": 1,
+        "comp-ratio": 1,
+        "sum": 1,
+        "eval-option": 1
+      }
+    },
+    "14": {
+      "predicates": [
+        "cont",
+        "comp-angle",
+        "ratios",
+        "nth-part",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "comp-angle": 1,
+        "ratios": 1,
+        "nth-part": 1,
+        "eval-option": 1
+      }
+    },
+    "15": {
+      "predicates": [
+        "cont",
+        "comp-ratio",
+        "eval-option",
+        "comp"
+      ],
+      "usages": {
+        "cont": 3,
+        "comp-ratio": 3,
+        "eval-option": 3,
+        "comp": 1
+      }
+    },
+    "16": {
+      "predicates": [
+        "cont",
+        "sequence",
+        "common-sense",
+        "sum",
+        "comp",
+        "product-combine"
+      ],
+      "usages": {
+        "cont": 3,
+        "sequence": 3,
+        "common-sense": 2,
+        "sum": 1,
+        "comp": 1,
+        "product-combine": 1
+      }
+    }
+  },
+  "M9B-2023": {
+    "2": {
+      "predicates": [
+        "comp-ratio",
+        "convert-percent",
+        "cont",
+        "product",
+        "comp"
+      ],
+      "usages": {
+        "comp-ratio": 2,
+        "convert-percent": 1,
+        "cont": 1,
+        "product": 1,
+        "comp": 1
+      }
+    },
+    "6": {
+      "predicates": [
+        "comp-ratio",
+        "proportion",
+        "cont",
+        "product-combine",
+        "sum",
+        "linear-equation"
+      ],
+      "usages": {
+        "comp-ratio": 3,
+        "proportion": 2,
+        "cont": 3,
+        "product-combine": 1,
+        "sum": 1,
+        "linear-equation": 1
+      }
+    },
+    "7": {
+      "predicates": [
+        "comp-ratio",
+        "cont",
+        "comp"
+      ],
+      "usages": {
+        "comp-ratio": 3,
+        "cont": 3,
+        "comp": 1
+      }
+    },
+    "8": {
+      "predicates": [
+        "cont",
+        "eval-expr",
+        "product",
+        "scale",
+        "common-sense",
+        "product-combine"
+      ],
+      "usages": {
+        "cont": 2,
+        "eval-expr": 2,
+        "product": 1,
+        "scale": 1,
+        "common-sense": 1,
+        "product-combine": 1
+      }
+    },
+    "11": {
+      "predicates": [
+        "cont",
+        "product-combine",
+        "eval-option",
+        "pythagoras",
+        "eval-expr"
+      ],
+      "usages": {
+        "cont": 3,
+        "product-combine": 2,
+        "eval-option": 3,
+        "pythagoras": 1,
+        "eval-expr": 1
+      }
+    },
+    "13": {
+      "predicates": [
+        "cont",
+        "scale",
+        "quota",
+        "product-combine",
+        "scale-invert",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "scale": 1,
+        "quota": 1,
+        "product-combine": 1,
+        "scale-invert": 1,
+        "eval-option": 1
+      }
+    },
+    "14": {
+      "predicates": [
+        "ratio",
+        "complement",
+        "complement-comp-ratio",
+        "comp-ratio",
+        "comp",
+        "cont",
+        "eval-option"
+      ],
+      "usages": {
+        "ratio": 1,
+        "complement": 1,
+        "complement-comp-ratio": 1,
+        "comp-ratio": 1,
+        "comp": 1,
+        "cont": 1,
+        "eval-option": 1
+      }
+    },
+    "15": {
+      "predicates": [
+        "cont",
+        "comp",
+        "comp-ratio",
+        "eval-option",
+        "ratio",
+        "convert-percent",
+        "sum"
+      ],
+      "usages": {
+        "cont": 2,
+        "comp": 1,
+        "comp-ratio": 2,
+        "eval-option": 3,
+        "ratio": 2,
+        "convert-percent": 1,
+        "sum": 1
+      }
+    },
+    "16": {
+      "predicates": [
+        "cont",
+        "eval-expr",
+        "diff",
+        "slide",
+        "slide-invert",
+        "tuple"
+      ],
+      "usages": {
+        "cont": 3,
+        "eval-expr": 3,
+        "diff": 1,
+        "slide": 1,
+        "slide-invert": 1,
+        "tuple": 1
+      }
+    }
+  },
+  "M9A-2024": {
+    "1": {
+      "predicates": [
+        "cont",
+        "comp-ratio",
+        "proportion"
+      ],
+      "usages": {
+        "cont": 1,
+        "comp-ratio": 1,
+        "proportion": 1
+      }
+    },
+    "2": {
+      "predicates": [
+        "cont",
+        "product-combine",
+        "comp"
+      ],
+      "usages": {
+        "cont": 1,
+        "product-combine": 1,
+        "comp": 1
+      }
+    },
+    "7": {
+      "predicates": [
+        "cont",
+        "comp-diff",
+        "sum",
+        "common-sense"
+      ],
+      "usages": {
+        "cont": 2,
+        "comp-diff": 2,
+        "sum": 2,
+        "common-sense": 2
+      }
+    },
+    "8": {
+      "predicates": [
+        "cont",
+        "comp-ratio",
+        "product-combine",
+        "product",
+        "comp",
+        "sum",
+        "round"
+      ],
+      "usages": {
+        "cont": 2,
+        "comp-ratio": 2,
+        "product-combine": 2,
+        "product": 1,
+        "comp": 1,
+        "sum": 1,
+        "round": 1
+      }
+    },
+    "11": {
+      "predicates": [
+        "cont",
+        "comp-angle",
+        "triangle-angle",
+        "comp-diff",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "comp-angle": 1,
+        "triangle-angle": 1,
+        "comp-diff": 1,
+        "eval-option": 1
+      }
+    },
+    "12": {
+      "predicates": [
+        "common-sense",
+        "ratios",
+        "cont",
+        "product",
+        "comp-ratio",
+        "sum",
+        "eval-option"
+      ],
+      "usages": {
+        "common-sense": 1,
+        "ratios": 1,
+        "cont": 1,
+        "product": 1,
+        "comp-ratio": 1,
+        "sum": 1,
+        "eval-option": 1
+      }
+    },
+    "13": {
+      "predicates": [
+        "cont",
+        "common-sense",
+        "comp",
+        "comp-ratio",
+        "product",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "common-sense": 1,
+        "comp": 1,
+        "comp-ratio": 1,
+        "product": 1,
+        "eval-option": 1
+      }
+    },
+    "15": {
+      "predicates": [
+        "cont",
+        "unit",
+        "rate",
+        "eval-option",
+        "product-combine"
+      ],
+      "usages": {
+        "cont": 3,
+        "unit": 3,
+        "rate": 3,
+        "eval-option": 3,
+        "product-combine": 1
+      }
+    },
+    "16": {
+      "predicates": [
+        "ratio",
+        "cont",
+        "sum",
+        "eval-option",
+        "comp",
+        "diff"
+      ],
+      "usages": {
+        "ratio": 3,
+        "cont": 3,
+        "sum": 2,
+        "eval-option": 3,
+        "comp": 1,
+        "diff": 1
+      }
+    }
+  },
+  "M9B-2024": {
+    "1": {
+      "predicates": [
+        "rate",
+        "cont",
+        "comp",
+        "unit"
+      ],
+      "usages": {
+        "rate": 1,
+        "cont": 1,
+        "comp": 1,
+        "unit": 1
+      }
+    },
+    "2": {
+      "predicates": [
+        "cont",
+        "slide",
+        "pythagoras",
+        "comp-ratio"
+      ],
+      "usages": {
+        "cont": 1,
+        "slide": 1,
+        "pythagoras": 1,
+        "comp-ratio": 1
+      }
+    },
+    "6": {
+      "predicates": [
+        "cont",
+        "pythagoras",
+        "product-combine",
+        "sum",
+        "product",
+        "quota"
+      ],
+      "usages": {
+        "cont": 2,
+        "pythagoras": 2,
+        "product-combine": 1,
+        "sum": 2,
+        "product": 1,
+        "quota": 1
+      }
+    },
+    "7": {
+      "predicates": [
+        "cont",
+        "comp-ratio",
+        "diff"
+      ],
+      "usages": {
+        "cont": 2,
+        "comp-ratio": 2,
+        "diff": 1
+      }
+    },
+    "8": {
+      "predicates": [
+        "cont",
+        "eval-expr",
+        "common-sense",
+        "slide"
+      ],
+      "usages": {
+        "cont": 2,
+        "eval-expr": 1,
+        "common-sense": 1,
+        "slide": 1
+      }
+    },
+    "11": {
+      "predicates": [
+        "cont",
+        "comp-ratio",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "comp-ratio": 1,
+        "eval-option": 1
+      }
+    },
+    "12": {
+      "predicates": [
+        "cont",
+        "comp-ratio",
+        "rate",
+        "ratio",
+        "complement",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "comp-ratio": 1,
+        "rate": 1,
+        "ratio": 1,
+        "complement": 1,
+        "eval-option": 1
+      }
+    },
+    "13": {
+      "predicates": [
+        "cont",
+        "comp-angle",
+        "triangle-angle",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "comp-angle": 1,
+        "triangle-angle": 1,
+        "eval-option": 1
+      }
+    },
+    "14": {
+      "predicates": [
+        "common-sense",
+        "cont",
+        "eval-expr",
+        "scale-invert",
+        "eval-option"
+      ],
+      "usages": {
+        "common-sense": 1,
+        "cont": 1,
+        "eval-expr": 1,
+        "scale-invert": 1,
+        "eval-option": 1
+      }
+    },
+    "15": {
+      "predicates": [
+        "cont",
+        "sum",
+        "comp",
+        "eval-option",
+        "ratio",
+        "comp-ratio"
+      ],
+      "usages": {
+        "cont": 3,
+        "sum": 2,
+        "comp": 1,
+        "eval-option": 3,
+        "ratio": 1,
+        "comp-ratio": 1
+      }
+    },
+    "16": {
+      "predicates": [
+        "cont",
+        "sum",
+        "diff",
+        "eval-option",
+        "comp-ratio",
+        "ratio"
+      ],
+      "usages": {
+        "cont": 3,
+        "sum": 1,
+        "diff": 1,
+        "eval-option": 3,
+        "comp-ratio": 1,
+        "ratio": 1
+      }
+    }
+  },
+  "M9I-2025": {
+    "1": {
+      "predicates": [
+        "cont",
+        "unit",
+        "comp"
+      ],
+      "usages": {
+        "cont": 1,
+        "unit": 1,
+        "comp": 1
+      }
+    },
+    "6": {
+      "predicates": [
+        "cont",
+        "comp",
+        "ratio",
+        "linear-equation"
+      ],
+      "usages": {
+        "cont": 2,
+        "comp": 1,
+        "ratio": 2,
+        "linear-equation": 1
+      }
+    },
+    "7": {
+      "predicates": [
+        "cont",
+        "comp-diff",
+        "rate",
+        "comp"
+      ],
+      "usages": {
+        "cont": 3,
+        "comp-diff": 2,
+        "rate": 3,
+        "comp": 1
+      }
+    },
+    "11": {
+      "predicates": [
+        "cont",
+        "rate",
+        "eval-option",
+        "comp-diff",
+        "comp"
+      ],
+      "usages": {
+        "cont": 3,
+        "rate": 3,
+        "eval-option": 3,
+        "comp-diff": 2,
+        "comp": 1
+      }
+    },
+    "12": {
+      "predicates": [
+        "comp",
+        "comp-ratio",
+        "cont",
+        "rate",
+        "ratios",
+        "nth-part",
+        "sum",
+        "eval-option"
+      ],
+      "usages": {
+        "comp": 1,
+        "comp-ratio": 1,
+        "cont": 1,
+        "rate": 1,
+        "ratios": 1,
+        "nth-part": 1,
+        "sum": 1,
+        "eval-option": 1
+      }
+    },
+    "13": {
+      "predicates": [
+        "cont",
+        "common-sense",
+        "comp-diff",
+        "sum",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "common-sense": 1,
+        "comp-diff": 1,
+        "sum": 1,
+        "eval-option": 1
+      }
+    },
+    "14": {
+      "predicates": [
+        "cont",
+        "quota",
+        "common-sense",
+        "product-combine",
+        "ratio",
+        "sum",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "quota": 1,
+        "common-sense": 1,
+        "product-combine": 1,
+        "ratio": 1,
+        "sum": 1,
+        "eval-option": 1
+      }
+    },
+    "15": {
+      "predicates": [
+        "ratio",
+        "complement",
+        "cont",
+        "eval-option",
+        "comp",
+        "rate",
+        "common-sense",
+        "convert-percent",
+        "transfer"
+      ],
+      "usages": {
+        "ratio": 3,
+        "complement": 1,
+        "cont": 3,
+        "eval-option": 3,
+        "comp": 1,
+        "rate": 1,
+        "common-sense": 1,
+        "convert-percent": 1,
+        "transfer": 1
+      }
+    },
+    "16": {
+      "predicates": [
+        "cont",
+        "common-sense",
+        "product-combine"
+      ],
+      "usages": {
+        "cont": 2,
+        "common-sense": 2,
+        "product-combine": 1
+      }
+    }
+  },
+  "M9A-2025": {
+    "5": {
+      "predicates": [
+        "cont",
+        "product-combine",
+        "comp-ratio",
+        "quota",
+        "ratio",
+        "sum",
+        "diff"
+      ],
+      "usages": {
+        "cont": 2,
+        "product-combine": 1,
+        "comp-ratio": 1,
+        "quota": 1,
+        "ratio": 1,
+        "sum": 1,
+        "diff": 1
+      }
+    },
+    "6": {
+      "predicates": [
+        "cont",
+        "unit",
+        "product-combine",
+        "quota"
+      ],
+      "usages": {
+        "cont": 2,
+        "unit": 2,
+        "product-combine": 1,
+        "quota": 1
+      }
+    },
+    "7": {
+      "predicates": [
+        "cont",
+        "comp-angle",
+        "triangle-angle"
+      ],
+      "usages": {
+        "cont": 3,
+        "comp-angle": 3,
+        "triangle-angle": 1
+      }
+    },
+    "8": {
+      "predicates": [
+        "cont",
+        "rate",
+        "unit",
+        "ratios",
+        "comp-ratio",
+        "comp",
+        "common-sense",
+        "quota",
+        "diff",
+        "product"
+      ],
+      "usages": {
+        "cont": 3,
+        "rate": 2,
+        "unit": 1,
+        "ratios": 1,
+        "comp-ratio": 1,
+        "comp": 1,
+        "common-sense": 1,
+        "quota": 1,
+        "diff": 1,
+        "product": 1
+      }
+    },
+    "12": {
+      "predicates": [
+        "cont",
+        "product-combine",
+        "ratio",
+        "sum",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "product-combine": 1,
+        "ratio": 1,
+        "sum": 1,
+        "eval-option": 1
+      }
+    },
+    "13": {
+      "predicates": [
+        "cont",
+        "ratio",
+        "sum",
+        "rate",
+        "diff",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "ratio": 1,
+        "sum": 1,
+        "rate": 1,
+        "diff": 1,
+        "eval-option": 1
+      }
+    },
+    "14": {
+      "predicates": [
+        "cont",
+        "product",
+        "sum",
+        "diff",
+        "rate",
+        "linear-equation",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "product": 1,
+        "sum": 1,
+        "diff": 1,
+        "rate": 1,
+        "linear-equation": 1,
+        "eval-option": 1
+      }
+    },
+    "15": {
+      "predicates": [
+        "cont",
+        "rate",
+        "diff",
+        "ratio",
+        "eval-option",
+        "comp-ratio",
+        "ratios",
+        "nth-part",
+        "sum"
+      ],
+      "usages": {
+        "cont": 3,
+        "rate": 2,
+        "diff": 1,
+        "ratio": 3,
+        "eval-option": 3,
+        "comp-ratio": 2,
+        "ratios": 1,
+        "nth-part": 1,
+        "sum": 2
+      }
+    }
+  },
+  "M9B-2025": {
+    "1": {
+      "predicates": [
+        "comp-ratio",
+        "ratios",
+        "cont",
+        "nth-factor",
+        "nth-part"
+      ],
+      "usages": {
+        "comp-ratio": 1,
+        "ratios": 1,
+        "cont": 1,
+        "nth-factor": 1,
+        "nth-part": 1
+      }
+    },
+    "7": {
+      "predicates": [
+        "ratio",
+        "comp-ratio",
+        "cont",
+        "sum",
+        "complement",
+        "rate"
+      ],
+      "usages": {
+        "ratio": 3,
+        "comp-ratio": 1,
+        "cont": 3,
+        "sum": 1,
+        "complement": 1,
+        "rate": 1
+      }
+    },
+    "8": {
+      "predicates": [
+        "cont",
+        "product-combine",
+        "sum",
+        "diff",
+        "pythagoras",
+        "ratios"
+      ],
+      "usages": {
+        "cont": 3,
+        "product-combine": 1,
+        "sum": 3,
+        "diff": 2,
+        "pythagoras": 2,
+        "ratios": 1
+      }
+    },
+    "11": {
+      "predicates": [
+        "cont",
+        "ratio",
+        "comp",
+        "eval-option",
+        "sum",
+        "comp-ratio",
+        "diff"
+      ],
+      "usages": {
+        "cont": 3,
+        "ratio": 2,
+        "comp": 1,
+        "eval-option": 3,
+        "sum": 2,
+        "comp-ratio": 1,
+        "diff": 1
+      }
+    },
+    "12": {
+      "predicates": [
+        "ratios",
+        "cont",
+        "comp-angle",
+        "triangle-angle",
+        "eval-option"
+      ],
+      "usages": {
+        "ratios": 1,
+        "cont": 1,
+        "comp-angle": 1,
+        "triangle-angle": 1,
+        "eval-option": 1
+      }
+    },
+    "14": {
+      "predicates": [
+        "cont",
+        "product-combine",
+        "comp-ratio",
+        "sum",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "product-combine": 1,
+        "comp-ratio": 1,
+        "sum": 1,
+        "eval-option": 1
+      }
+    },
+    "15": {
+      "predicates": [
+        "cont",
+        "rate",
+        "ratio",
+        "eval-option",
+        "comp-ratio",
+        "reverse-comp-ratio",
+        "convert-percent",
+        "diff",
+        "linear-equation"
+      ],
+      "usages": {
+        "cont": 2,
+        "rate": 1,
+        "ratio": 2,
+        "eval-option": 3,
+        "comp-ratio": 1,
+        "reverse-comp-ratio": 1,
+        "convert-percent": 1,
+        "diff": 1,
+        "linear-equation": 1
+      }
+    }
+  },
+  "MMA-2025": {
+    "1": {
+      "predicates": [
+        "cont",
+        "quota",
+        "unit",
+        "rate",
+        "comp-ratio"
+      ],
+      "usages": {
+        "cont": 1,
+        "quota": 1,
+        "unit": 1,
+        "rate": 1,
+        "comp-ratio": 1
+      }
+    },
+    "5": {
+      "predicates": [
+        "cont",
+        "rate",
+        "comp"
+      ],
+      "usages": {
+        "cont": 2,
+        "rate": 2,
+        "comp": 1
+      }
+    },
+    "6": {
+      "predicates": [
+        "cont",
+        "rate",
+        "comp",
+        "linear-equation"
+      ],
+      "usages": {
+        "cont": 1,
+        "rate": 1,
+        "comp": 1,
+        "linear-equation": 1
+      }
+    },
+    "8": {
+      "predicates": [
+        "cont",
+        "comp",
+        "ratio",
+        "sum",
+        "linear-equation"
+      ],
+      "usages": {
+        "cont": 1,
+        "comp": 1,
+        "ratio": 1,
+        "sum": 1,
+        "linear-equation": 1
+      }
+    },
+    "18": {
+      "predicates": [
+        "cont",
+        "eval-expr",
+        "comp-ratio",
+        "pythagoras",
+        "round",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "eval-expr": 1,
+        "comp-ratio": 1,
+        "pythagoras": 1,
+        "round": 1,
+        "eval-option": 1
+      }
+    },
+    "19": {
+      "predicates": [
+        "common-sense",
+        "comp-ratio",
+        "cont",
+        "eval-option"
+      ],
+      "usages": {
+        "common-sense": 1,
+        "comp-ratio": 1,
+        "cont": 1,
+        "eval-option": 1
+      }
+    },
+    "20": {
+      "predicates": [
+        "cont",
+        "scale-invert",
+        "eval-expr",
+        "rate",
+        "simplify-expr",
+        "eval-option"
+      ],
+      "usages": {
+        "cont": 1,
+        "scale-invert": 1,
+        "eval-expr": 1,
+        "rate": 1,
+        "simplify-expr": 1,
+        "eval-option": 1
+      }
+    },
+    "21": {
+      "predicates": [
+        "common-sense",
+        "cont",
+        "product-combine",
+        "product",
+        "sum",
+        "ratio",
+        "diff",
+        "ratios",
+        "scale-invert"
+      ],
+      "usages": {
+        "common-sense": 1,
+        "cont": 1,
+        "product-combine": 1,
+        "product": 1,
+        "sum": 1,
+        "ratio": 1,
+        "diff": 1,
+        "ratios": 1,
+        "scale-invert": 1
+      }
+    }
+  }
+}

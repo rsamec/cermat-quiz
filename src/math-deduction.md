@@ -862,34 +862,22 @@ export function kytice() {
 
 ```
 
-
 Další příklady jsou [zde](https://github.com/rsamec/cermat-quiz/tree/master/src/math)
 
-## API 
-
-### Predikáty (predicates)
-
-```typescript
-export declare type Predicate = Container | Comparison | RatioComparison | Transfer | Rate | Combine | PartWholeRatio | PartToPartRatio | ComparisonDiff | CommonSense | GCD | LCD;
-export declare function cont(agent: string, quantity: number, entity: string): Container;
-export declare function comp(agentA: string, agentB: string, quantity: number, entity: string): Comparison;
-export declare function compRatio(agentA: string, agentB: string, quantity: number, entity: string): RatioComparison;
-export declare function compDiff(agentMinuend: string, agentSubtrahend: string, quantity: number, entity: string): ComparisonDiff;
-export declare function ratio(whole: EntityMatcher, part: EntityMatcher, ratio: number): PartWholeRatio;
-export declare function ratios(whole: EntityMatcher, parts: EntityMatcher[], ratios: number[]): PartToPartRatio;
-export declare function sum(wholeAgent: string, partAgents: string[], wholeEntity: string, partEntity: string): Combine;
-export declare function gcd(agent: string, entity: string): GCD;
-export declare function lcd(agent: string, entity: string): LCD;
-export declare function rate(agent: string, quantity: number, entity: string, entityBase: string): Rate;
-export declare function commonSense(description: string): CommonSense;
-```
-
-### Odvozovací pravidla (inference rules)
-
-```typescript
-export declare function inferenceRule(a: Predicate | Container[], b: Predicate, c?: {
-    kind: 'ratio' | 'comp-ratio' | 'rate' | "comp-diff" | 'comp-part-eq';
-})
-```
-
 Inspirováno prací [MathGAP](https://arxiv.org/pdf/2410.13502).
+
+## Reprezentace dedukčního stromu
+
+Ke každé úloze lze zobrazit různé reprezentace dedukčního stromu
+- textový strom - **shora dolů** kompaktní textový zápis, kořen představuje konečný výsledek
+- dedukční strom - **zdola nahoru** - vizuální strom, který umožňuje zobrazovat i grafické prvky
+- textový chat - **plochý seznam kroků řešení úlohy** - každý krok má strukturu otázka, vstupy a vyvozený závěr spolu s numerickým výpočtem
+- chat - **grafický chat** - oddělení otázky a numerického výpočtu
+- chat dialog - **interaktivní chat** - rozhodovačka po jednotlivých krocích s nutností volby z nabízených možností
+- video - animace průchodu stromem
+
+<div class="tip" label="Rozhodovačka">  
+  Čtení samo o sobě je silný nástroj pro rozvoj myšlení, ale když se k němu přidají interaktivní prvky (např. dotazy), posouvá se jeho vliv na ještě vyšší úroveň.
+
+  Vyzkoušej <b>interaktivní rozhodovačku</b> ve formě chatu po jednotlivých krocích s nutností volby z nabízených možností.
+</div>

@@ -2,6 +2,7 @@
 footer: false
 pager: true
 toc: true
+style: /assets/css/word-problems.css
 ---
 <style>
   .description {
@@ -11,27 +12,137 @@ toc: true
  
 </style>
 ```js
-import { formatCode, parseCode} from './utils/quiz-string-utils.js';
+import { formatCode, parseCode, formatPeriod} from './utils/quiz-string-utils.js';
 import { unique, download } from "./utils/common-utils.js";
 import wordProblems from './math/word-problems.js';
 
-const quizGeneratedCategories = await FileAttachment("./data/quiz-categories-gemini-2.5-flash.json").json();
+import {categories} from './utils/quiz-utils.js';
+import { renderChatStepper, useInput } from './utils/deduce-chat.js';
+import { jsonToMarkdownChat} from './utils/deduce-utils.js';
+import mdPlus from './utils/md-utils.js';
+import { parser } from '@lezer/markdown';
+import { getQuizBuilder } from "./utils/parse-utils.js";
 
+const quizQuestionsMap4 = await FileAttachment(`./data/quiz-math-4.json`).json();
+const quizQuestionsMap6 = await FileAttachment(`./data/quiz-math-6.json`).json();
+const quizQuestionsMap8 = await FileAttachment(`./data/quiz-math-8.json`).json();
+const quizQuestionsMapD = await FileAttachment(`./data/quiz-math-diploma.json`).json();
 
-
-const wordProblemsKeyValuePairs = Object.entries(wordProblems).sort(([fKey],[sKey]) => {
-  const f = parseCode(sKey);
-  const s = parseCode(fKey);
-  if (f.period === s.period){
-    return f.year - s.year
+function getQuestionMapByPeriod(period){
+  if (period == "4"){
+    return quizQuestionsMap4
   }
-  return f.period - s.period;  
-}).map(([key,value]) => {
-  const ids = Object.keys(value).map(d => d.split('.')[0]).filter(unique).sort((f,s) => f - s)
-  const categoryMap =  new Map(quizGeneratedCategories[key].questions.map(d => [d.id,d]));
-  return [key,ids, categoryMap]
+  else if (period == "6"){
+    return quizQuestionsMap6
+  }
+  else if (period == "8"){
+    return quizQuestionsMap8
+  }
+  else if (period == "diploma"){
+    return quizQuestionsMapD
+  }
 }
-);
+
+const quizGeneratedCategories = await FileAttachment("./data/quiz-categories-gemini-2.5-flash.json").json();
+const wordProblemsMetrics = await FileAttachment("./data/word-problems-metrics.json").json();
+
+const markdownParser = parser.configure([]);
+function makeQuizBuilder(normalizedQuiz) {  
+  const parsedTree = markdownParser.parse(normalizedQuiz);
+  return getQuizBuilder(parsedTree, normalizedQuiz,{});
+}
+
+const filteredQuizCategories = Object.entries(quizGeneratedCategories).flatMap(([code, value]) => {
+  const wordProblem = wordProblems[code] ?? {};  
+  
+  const parsedCode = parseCode(code);      
+  const questionMap = getQuestionMapByPeriod(parsedCode.period);
+  
+  const quiz = questionMap[code];
+  const builder = makeQuizBuilder(quiz.rawContent)
+  
+  return value.questions.map((d,i) => {
+      return {
+        ...d,
+        code,
+        year: parsedCode.year,
+        period: parsedCode.period,
+        subject: parsedCode.subject,
+        predicates:wordProblemsMetrics[code]?.[d.id]?.predicates ?? [],
+        hasSolution:wordProblemsMetrics[code]?.[d.id] != null,
+        builder,      
+        deductionTrees: wordProblem[d.id] != null 
+          ? [wordProblem[d.id].deductionTree] 
+          : [1, 2, 3, 4]
+          .map(i => `${d.id}.${i}`)
+          .map(subId => wordProblem[subId])
+          .filter(Boolean)
+          .map(d => d.deductionTree)
+
+      };
+    })
+  }
+).filter(d => d.subject === "math" && d.hasSolution)
+
+const resetValue = (input, defaultValue) => {
+  input.value = defaultValue;
+  input.dispatchEvent(new Event("input", {bubbles: true}));
+}
+const years = Object.keys(Object.groupBy(filteredQuizCategories, ({year}) => year));
+const selectedYearsInput = Inputs.select(years,{ multiple:true, label:"Rok"});
+const selectedYears = Generators.input(selectedYearsInput);
+
+const codes = Object.keys(Object.groupBy(filteredQuizCategories, ({code}) => code));
+const selectedCodesInput = Inputs.select(codes,{ multiple:true, format: d => formatCode(d), label:"Test" });
+const selectedCodes = Generators.input(selectedCodesInput);
+
+const uniquePredicates = new Map([
+  ["Porovnání rozdílem",["comp"]],
+  ["Porovnání podílem",["comp-ratio"]],
+  ["Část z celku", ["ratio"]],
+  ["Poměr část ku části", ["ratios"]],
+  ["Stav a změna stavu", ["delta","transfer"]],
+  ["Úměrnosti", ["proportion"]],
+  ["Škálování", ["scale","slace-invert"]],
+  ["Posuny",["slide","slide-invert"]],
+  ["Rozdělování", ["rate","quota"]],
+  ["Spojování", ["sum","sum-combine", "product", "product-combine"]],
+  ["Převod jednotek", ["unit"]],
+  ["Převod jednotek", ["unit"]],
+  ["Vztahy úhlů", ["comp-angle", "triangle"]],
+  ["Největší společný dělitel", ["gcd"]],
+  ["Nejmenší společný násobek", ["lcd"]],
+  ["Výrazy", ["eval-expr", "simpl-expr"]],
+  ["Posloupnosti", ["sequence"]],
+  ["Zaokrouhlování", ["round"]],
+  ["Zdravý rozum", ["common-sense"]],
+])
+const selectedPredicatesInput = Inputs.select(uniquePredicates,{ multiple:true, label:"Predikáty"});
+const selectedPredicates = Generators.input(selectedPredicatesInput);
+
+const controlsInput = Inputs.radio(
+    new Map([
+      ["Pouze zadání", "A"],
+      ["Pouze řešení", "B"],
+      ["Zadání a řešení", "AB"]
+    ]),
+    {value: "AB"}
+  )
+const controls = Generators.input(controlsInput);
+
+const toBadge = (selected, selectedInput, label) => selected.length > 0 ? html`<div class="badge">
+  ${label != null ? `${label}: ${selected.length}`: `${selected.join(", ")}` }
+  <i class="fa-solid fa-xmark" onClick=${() => resetValue(selectedInput, [])}></i>
+</div>`: ''
+
+function renderMarkdownWithCopy(content, lang){
+  return html`<div class="observablehq-pre-container" data-language="${lang}">
+  <button title="Copy code" class="observablehq-pre-copy" onclick=${() => navigator.clipboard.writeText(content)}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6C2 5.44772 2.44772 5 3 5H10C10.5523 5 11 5.44772 11 6V13C11 13.5523 10.5523 14 10 14H3C2.44772 14 2 13.5523 2 13V6Z M4 2.00004L12 2.00001C13.1046 2 14 2.89544 14 4.00001V12"></path></svg></button>
+  <div style="padding: 0px 20px;">
+  ${mdPlus.unsafe(content)}
+  </div>
+  </div>`
+}
 ```
 
 # Řešení slovních úloh
@@ -42,38 +153,76 @@ Slovní úlohy jsou řešeny rozložením na podproblémy, které jsou řešitel
   Žádné zavádění proměných. Žádné sestavování rovnic. Žádné složité výpočty.
 </div>
 
-
-${wordProblemsKeyValuePairs.map(([code, problems, categoryMap]) => html`<h3><a href="solu-${code}">${formatCode(code)}</a> - <a href="word-problems-${code}"><i class="fa-brands fa-markdown"></i></a> <a  href="word-problems-tldr-${code}"><i class="fa fa-draw-polygon"></i></a></h3></div><ul>${
-  problems.map(key => html`<li><a href="./word-problem-${code}-n-${key}">${categoryMap.has(key) ? `${key}. ${categoryMap.get(key).name}` : `Řešení úloha ${key}`}</a><div class="description">${categoryMap.get(key).summary}</div></li>`
-)}</ul>`)}
-
-
-## Jak je to uděláno?
-
-Řešení je vytvořeno jako dedukční strom. [více podrobností](/math-deduction)
-
-Ke každé úloze lze zobrazit různé reprezentace dedukčního stromu
-- textový strom - **shora dolů** kompaktní textový zápis, kořen představuje konečný výsledek
-- dedukční strom - **zdola nahoru** - vizuální strom, který umožňuje zobrazovat i grafické prvky
-- textový chat - **plochý seznam kroků řešení úlohy** - každý krok má strukturu otázka, vstupy a vyvozený závěr spolu s numerickým výpočtem
-- chat - **grafický chat** - oddělení otázky a numerického výpočtu
-- chat dialog - **interaktivní chat** - rozhodovačka po jednotlivých krocích s nutností volby z nabízených možností
-- video - animace průchodu stromem
-
-<div class="tip" label="Rozhodovačka">  
-  Čtení samo o sobě je silný nástroj pro rozvoj myšlení, ale když se k němu přidají interaktivní prvky (např. dotazy), posouvá se jeho vliv na ještě vyšší úroveň.
-
-  Vyzkoušej <b>interaktivní rozhodovačku</b> ve formě chatu po jednotlivých krocích s nutností volby z nabízených možností.
+<details>
+    <summary>
+    Filtrování úloh
+    </summary>
+  <section>
+    <div class="grid grid-cols-3">
+      <div>
+        ${selectedYearsInput}
+      </div>
+      <div>
+        ${selectedCodesInput}
+      </div>
+      <div>
+        ${selectedPredicatesInput}
+      </div>
+    </div>
+  </section>
+</details>
+<div class="h-stack h-stack--l h-stack--wrap">
+  ${toBadge(selectedYears, selectedYearsInput)}
+  ${toBadge(selectedCodes, selectedCodesInput,"Testy")}
+  ${toBadge(selectedPredicates, selectedPredicatesInput, "Predikáty")}
 </div>
 
-Propojení s AI - je vygenerován jednoduchí prompt, který může obsahovat zadání i textové řešení úlohy
-- smart řešení - prompt na převedení heslovitého řešení do srozumitelnější podoby pro uživatele
-- generování více příkladů - prompt na vytvoření obdobních úloh v jiné doméně
-- audio - generovaný pomocí <a href="https://notebooklm.google.com/"><i class="fa-brands fa-google"></i> NotebookLM</a>
 
-<div class="tip" label="Poslechni si podcast">
-  Poslech vyžaduje aktivní zapojení a schopnost soustředit se na obsah. Protože audio neposkytuje vizuální podněty, posluchač si musí sám <b>vytvářet mentální obrazy</b> na základě slyšeného obsahu.
-  
-  Podcast je v angličtině, což <b>podporuje abstraktní myšlení</b> a vyžadují přemýšlení na více úrovních: nejen o číslech a vzorcích, ale i o jejich jazykovém vyjádření.
-</div>
+
+```js
+let filtered = filteredQuizCategories;
+if (selectedYears.length > 0){
+  filtered = filtered.filter(d=> selectedYears.some(year => d.year === year));
+}
+if (selectedCodes.length > 0){
+  filtered = filtered.filter(d=> selectedCodes.some(code => d.code === code));
+}
+if (selectedPredicates.length > 0){
+  filtered = filtered.filter(d=> selectedPredicates.flatMap(d => d).some(predicate => d.predicates.includes(predicate)));
+}
+
+const search = view(Inputs.search(filtered,{placeholder: "Vyhledej úlohy…"}));
+
+```
+
+```js
+const selected = view(Inputs.table(search,{  
+  columns: [
+    "name",
+    "summary",
+    "year",
+    "period",
+    "predicates",
+  ],
+  header: {
+    year:"Rok",
+    period: "Period",
+    name: "Název",
+    summary: "Popis",
+  },
+  width: {
+    name: 240,
+    year: 40,
+    period: 70,    
+  },
+  format: {
+    name: (d,i,o) => html`<a href="./word-problem-${o[i].code}-n-${o[i].id}" target="_blank">${d}</a>`,
+    period: d => html`${formatPeriod(d)}`
+  }
+}))
+```
+
+<div>${controlsInput}</div>
+
+${html`<div class="card">${renderMarkdownWithCopy(selected.map(d => (controls.startsWith("A") ? d.builder.content([parseInt(d.id)], { render: 'content' }) : "") + ' ' + (controls.endsWith("B") ? d.deductionTrees.map(tree => jsonToMarkdownChat(tree)).join("") : "")).join("\n---\n"), 'md')}</div>`}
 
