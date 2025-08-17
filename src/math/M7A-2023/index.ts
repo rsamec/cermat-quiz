@@ -1,4 +1,4 @@
-import { productCombine, commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, sum, ctorComplement, ctorOption, counter, percent, rate, ratios, product, triangleAngle, ctorDifference, nthPart, contLength, productArea, dimensionEntity } from "../../components/math";
+import { commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, sum, ctorComplement, ctorOption, counter, percent, rate, ratios, product, triangleAngle, ctorDifference, nthPart, contLength, productArea, dimensionEntity } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";

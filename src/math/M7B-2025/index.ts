@@ -1,4 +1,4 @@
-import { commonSense, compRelative, cont, ctor, sum, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, counter, gcd, nthPart, percent, proportion, rate, ratio, product, double, ctorScale, contLength, contArea, productArea, productVolume, dimensionEntity, evalExprAsCont } from "../../components/math"
+import { commonSense, compRelative, cont, ctor, sum, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, counter, nthPart, percent, proportion, rate, ratio, product, double, ctorScale, contLength, contArea, productArea, productVolume, dimensionEntity, evalExprAsCont } from "../../components/math"
 import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont, type TreeNode } from "../../utils/deduce-utils"
 
 export default createLazyMap({
@@ -57,14 +57,12 @@ function pomer() {
 
   const sousedniCislaPomerLabel = "sousední čísla";
 
-  const sousedniCislaPomer = deduce(
+  const sousedniCislaPomer =
     deduce(
       a3, a4,
-      ctorRatios(sousedniCislaPomerLabel)
-    ),
-    deduce(a3, a4, gcd("největší společný násobek", entity)),
-    ctor('scale-invert')
-  );
+      ctorRatios(sousedniCislaPomerLabel, { useBase: true }),
+    )
+
 
   const createRatios = (treeNode: TreeNode, n1: number, n2: number) => {
     const newRatio = last(treeNode)

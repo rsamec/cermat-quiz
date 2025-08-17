@@ -90,8 +90,8 @@ function ctorComparePercent() {
 function ctorComplementCompRatio(agent) {
   return { kind: "complement-comp-ratio", agent };
 }
-function ctorRatios(agent) {
-  return { kind: "ratios", whole: agent };
+function ctorRatios(agent, { useBase } = {}) {
+  return { kind: "ratios", whole: agent, useBase };
 }
 function ctorComplement(part) {
   return { kind: "complement", part };
@@ -240,9 +240,6 @@ function productCombine(wholeAgent, wholeEntity, partAgents) {
     partAgents: partAgents ?? [],
     wholeEntity: toEntity(wholeEntity)
   };
-}
-function gcd(agent, entity3) {
-  return { kind: "gcd", agent, entity: entity3 };
 }
 function lcd(agent, entity3) {
   return { kind: "lcd", agent, entity: entity3 };
@@ -420,14 +417,14 @@ function convertToPartToPartRatiosEx(b, a) {
   }
   return { kind: "ratios", whole: a.whole, parts: [b.agentA, b.agentB], ratios: [abs(b.ratio), 1] };
 }
-function convertToPartToPartRatios(b, a) {
+function convertToPartToPartRatios(b, a, last3) {
   const tempResult = convertToPartToPartRatiosEx(b, a);
   if (!isNumber(b.ratio) || !areNumbers(tempResult.ratios)) {
     throw "convertToPartToPartRatios does not support expressions";
   }
   const result = {
     ...tempResult,
-    ratios: ratiosToBaseForm(tempResult.ratios)
+    ratios: last3 != null ? ratiosToBaseForm(tempResult.ratios) : tempResult.ratios
   };
   return {
     question: `Vyj\xE1d\u0159i pom\u011Brem \u010D\xE1st\xED ${[b.agentA, b.agentB].join(":")}?`,
@@ -1505,16 +1502,17 @@ function divide(total, divisor, isPartitative = false) {
     remainder
   };
 }
-function toRatiosEx(parts, whole) {
+function toRatiosEx(parts, last3) {
+  const ratios3 = parts.map((d) => d.quantity);
   return {
     kind: "ratios",
     parts: parts.map((d) => d.agent),
-    ratios: parts.map((d) => d.quantity),
-    whole
+    ratios: last3.useBase ? ratiosToBaseForm(ratios3) : ratios3,
+    whole: last3.whole
   };
 }
 function toRatios(parts, last3) {
-  const result = toRatiosEx(parts, last3.whole);
+  const result = toRatiosEx(parts, last3);
   return {
     question: `Vyj\xE1d\u0159i pom\u011Brem mezi ${result.parts.join(":")}?`,
     result,
@@ -1708,7 +1706,7 @@ function nthPartFactorBy(multi, factor, nthPart2) {
   }
   const result = nthPartFactorByEx(multi, factor.quantity, nthPart2);
   return {
-    question: `Vyj\xE1d\u0159i pom\u011Brem ${nthPart2.agent} ${formatNumber(factor.quantity)} ${formatEntity(factor)}`,
+    question: `Roz\u0161\xED\u0159it pom\u011Br o ${nthPart2.agent} ${formatNumber(factor.quantity)} kr\xE1t ${formatEntity(factor)}`,
     result,
     options: []
   };
@@ -1903,9 +1901,9 @@ function inferenceRuleEx(...args) {
   } else if (a.kind === "ratio" && b.kind === "comp-ratio") {
     return comparisonRatioRule(b, a);
   } else if (a.kind === "comp-ratio" && b.kind === "ratios") {
-    return a.ratio == null ? convertRatiosToCompRatio(b, a) : convertToPartToPartRatios(a, b);
+    return a.ratio == null ? convertRatiosToCompRatio(b, a) : convertToPartToPartRatios(a, b, kind === "ratios-base" && last3);
   } else if (a.kind === "ratios" && b.kind === "comp-ratio") {
-    return b.ratio == null ? convertRatiosToCompRatio(a, b) : convertToPartToPartRatios(b, a);
+    return b.ratio == null ? convertRatiosToCompRatio(a, b) : convertToPartToPartRatios(b, a, kind === "ratios-base" && last3);
   } else if (a.kind === "comp-ratio" && b.kind === "reverse-comp-ratio") {
     return reverseCompRatio(a);
   } else if (a.kind === "reverse-comp-ratio" && b.kind === "comp-ratio") {
@@ -2205,10 +2203,10 @@ function resultAsQuestion(result) {
 function ratiosToBaseForm(ratios3) {
   let precision = 1e6;
   let nums = ratios3.map((r) => Math.round(r * precision));
-  function gcd4(a, b) {
-    return b === 0 ? a : gcd4(b, a % b);
+  function gcd3(a, b) {
+    return b === 0 ? a : gcd3(b, a % b);
   }
-  let overallGCD = nums.reduce((a, b) => gcd4(a, b));
+  let overallGCD = nums.reduce((a, b) => gcd3(a, b));
   return nums.map((v) => v / overallGCD);
 }
 
@@ -2248,7 +2246,7 @@ function newFraction(n, d) {
   const f = Object.create(Fraction.prototype);
   f["s"] = n < C_ZERO ? -C_ONE : C_ONE;
   n = n < C_ZERO ? -n : n;
-  const a = gcd2(n, d);
+  const a = gcd(n, d);
   f["n"] = n / a;
   f["d"] = d / a;
   return f;
@@ -2461,7 +2459,7 @@ function cycleStart(n, d, len) {
   }
   return 0;
 }
-function gcd2(a, b) {
+function gcd(a, b) {
   if (!a)
     return b;
   if (!b)
@@ -2478,7 +2476,7 @@ function gcd2(a, b) {
 function Fraction(a, b) {
   parse(a, b);
   if (this instanceof Fraction) {
-    a = gcd2(P["d"], P["n"]);
+    a = gcd(P["d"], P["n"]);
     this["s"] = P["s"];
     this["n"] = P["n"] / a;
     this["d"] = P["d"] / a;
@@ -2597,7 +2595,7 @@ Fraction.prototype = {
    */
   "gcd": function(a, b) {
     parse(a, b);
-    return newFraction(gcd2(P["n"], this["n"]) * gcd2(P["d"], this["d"]), P["d"] * this["d"]);
+    return newFraction(gcd(P["n"], this["n"]) * gcd(P["d"], this["d"]), P["d"] * this["d"]);
   },
   /**
    * Calculates the fractional lcm of two rational numbers
@@ -2609,7 +2607,7 @@ Fraction.prototype = {
     if (P["n"] === C_ZERO && this["n"] === C_ZERO) {
       return newFraction(C_ZERO, C_ONE);
     }
-    return newFraction(P["n"] * this["n"], gcd2(P["n"], this["n"]) * gcd2(P["d"], this["d"]));
+    return newFraction(P["n"] * this["n"], gcd(P["n"], this["n"]) * gcd(P["d"], this["d"]));
   },
   /**
    * Gets the inverse of the fraction, means numerator and denominator are exchanged
@@ -2711,7 +2709,7 @@ Fraction.prototype = {
       }
       let curN = numberExponent;
       let curD = baseExponent;
-      const gcdValue = gcd2(curN, curD);
+      const gcdValue = gcd(curN, curD);
       curN /= gcdValue;
       curD /= gcdValue;
       if (retN === null && retD === null) {
@@ -2958,11 +2956,11 @@ Fraction.prototype = {
   "simplify": function(eps3) {
     const ieps = BigInt(1 / (eps3 || 1e-3) | 0);
     const thisABS = this["abs"]();
-    const cont7 = thisABS["toContinued"]();
-    for (let i = 1; i < cont7.length; i++) {
-      let s = newFraction(cont7[i - 1], C_ONE);
+    const cont5 = thisABS["toContinued"]();
+    for (let i = 1; i < cont5.length; i++) {
+      let s = newFraction(cont5[i - 1], C_ONE);
       for (let k = i - 2; k >= 0; k--) {
-        s = s["inverse"]()["add"](cont7[k]);
+        s = s["inverse"]()["add"](cont5[k]);
       }
       let t = s["sub"](thisABS);
       if (t["n"] * ieps < t["d"]) {
@@ -7625,13 +7623,9 @@ function pomer() {
   const a4 = cont("4. \u010D\xEDslo", 108, entity3);
   const sousedniCislaPomerLabel = "sousedn\xED \u010D\xEDsla";
   const sousedniCislaPomer = deduce(
-    deduce(
-      a3,
-      a4,
-      ctorRatios(sousedniCislaPomerLabel)
-    ),
-    deduce(a3, a4, gcd("nejv\u011Bt\u0161\xED spole\u010Dn\xFD n\xE1sobek", entity3)),
-    ctor("scale-invert")
+    a3,
+    a4,
+    ctorRatios(sousedniCislaPomerLabel, { useBase: true })
   );
   const createRatios = (treeNode, n1, n2) => {
     const newRatio = last(treeNode);
@@ -9635,14 +9629,14 @@ function convertToPartToPartRatiosEx2(b, a) {
   }
   return { kind: "ratios", whole: a.whole, parts: [b.agentA, b.agentB], ratios: [abs2(b.ratio), 1] };
 }
-function convertToPartToPartRatios2(b, a) {
+function convertToPartToPartRatios2(b, a, last22) {
   const tempResult = convertToPartToPartRatiosEx2(b, a);
   if (!isNumber2(b.ratio) || !areNumbers2(tempResult.ratios)) {
     throw "convertToPartToPartRatios does not support expressions";
   }
   const result = {
     ...tempResult,
-    ratios: ratiosToBaseForm2(tempResult.ratios)
+    ratios: last22 != null ? ratiosToBaseForm2(tempResult.ratios) : tempResult.ratios
   };
   return {
     question: `Vyj\xE1d\u0159i pom\u011Brem \u010D\xE1st\xED ${[b.agentA, b.agentB].join(":")}?`,
@@ -10261,7 +10255,7 @@ function gcdRule2(items, b) {
     question: containerQuestion2(result),
     result,
     options: areNumbers2(values) && isNumber2(result.quantity) ? [
-      { tex: gcdFromPrimeFactors2(primeFactorization3(values)).join(" * "), result: formatNumber2(result.quantity), ok: true }
+      { tex: gcdFromPrimeFactors2(primeFactorization2(values)).join(" * "), result: formatNumber2(result.quantity), ok: true }
       //{ tex: lcdFromPrimeFactors(factors).join(" * "), result: formatNumber(result.quantity), ok: false },
     ] : []
   };
@@ -10281,7 +10275,7 @@ function lcdRule2(items, b) {
     question: containerQuestion2(result),
     result,
     options: areNumbers2(values) && isNumber2(result.quantity) ? [
-      { tex: lcdFromPrimeFactors2(primeFactorization3(values)).join(" * "), result: formatNumber2(result.quantity), ok: true }
+      { tex: lcdFromPrimeFactors2(primeFactorization2(values)).join(" * "), result: formatNumber2(result.quantity), ok: true }
       //{ tex: gcdFromPrimeFactors(factors).join(" * "), result: formatNumber(result.quantity), ok: false },
     ] : []
   };
@@ -10720,16 +10714,17 @@ function divide2(total, divisor, isPartitative = false) {
     remainder
   };
 }
-function toRatiosEx2(parts, whole) {
+function toRatiosEx2(parts, last22) {
+  const ratios3 = parts.map((d) => d.quantity);
   return {
     kind: "ratios",
     parts: parts.map((d) => d.agent),
-    ratios: parts.map((d) => d.quantity),
-    whole
+    ratios: last22.useBase ? ratiosToBaseForm2(ratios3) : ratios3,
+    whole: last22.whole
   };
 }
 function toRatios2(parts, last22) {
-  const result = toRatiosEx2(parts, last22.whole);
+  const result = toRatiosEx2(parts, last22);
   return {
     question: `Vyj\xE1d\u0159i pom\u011Brem mezi ${result.parts.join(":")}?`,
     result,
@@ -10923,7 +10918,7 @@ function nthPartFactorBy2(multi, factor, nthPart2) {
   }
   const result = nthPartFactorByEx2(multi, factor.quantity, nthPart2);
   return {
-    question: `Vyj\xE1d\u0159i pom\u011Brem ${nthPart2.agent} ${formatNumber2(factor.quantity)} ${formatEntity2(factor)}`,
+    question: `Roz\u0161\xED\u0159it pom\u011Br o ${nthPart2.agent} ${formatNumber2(factor.quantity)} kr\xE1t ${formatEntity2(factor)}`,
     result,
     options: []
   };
@@ -11105,9 +11100,9 @@ function inferenceRuleEx2(...args) {
   } else if (a.kind === "ratio" && b.kind === "comp-ratio") {
     return comparisonRatioRule2(b, a);
   } else if (a.kind === "comp-ratio" && b.kind === "ratios") {
-    return a.ratio == null ? convertRatiosToCompRatio2(b, a) : convertToPartToPartRatios2(a, b);
+    return a.ratio == null ? convertRatiosToCompRatio2(b, a) : convertToPartToPartRatios2(a, b, kind === "ratios-base" && last22);
   } else if (a.kind === "ratios" && b.kind === "comp-ratio") {
-    return b.ratio == null ? convertRatiosToCompRatio2(a, b) : convertToPartToPartRatios2(b, a);
+    return b.ratio == null ? convertRatiosToCompRatio2(a, b) : convertToPartToPartRatios2(b, a, kind === "ratios-base" && last22);
   } else if (a.kind === "comp-ratio" && b.kind === "reverse-comp-ratio") {
     return reverseCompRatio2(a);
   } else if (a.kind === "reverse-comp-ratio" && b.kind === "comp-ratio") {
@@ -11269,7 +11264,7 @@ function toGenerAgent2(a) {
     entity: ""
   };
 }
-function primeFactorization3(numbers) {
+function primeFactorization2(numbers) {
   const getPrimeFactors = (num) => {
     const factors = [];
     let divisor = 2;
@@ -11444,7 +11439,7 @@ function newFraction2(n, d) {
   const f = Object.create(Fraction2.prototype);
   f["s"] = n < C_ZERO2 ? -C_ONE2 : C_ONE2;
   n = n < C_ZERO2 ? -n : n;
-  const a = gcd3(n, d);
+  const a = gcd2(n, d);
   f["n"] = n / a;
   f["d"] = d / a;
   return f;
@@ -11657,7 +11652,7 @@ function cycleStart2(n, d, len) {
   }
   return 0;
 }
-function gcd3(a, b) {
+function gcd2(a, b) {
   if (!a)
     return b;
   if (!b)
@@ -11674,7 +11669,7 @@ function gcd3(a, b) {
 function Fraction2(a, b) {
   parse2(a, b);
   if (this instanceof Fraction2) {
-    a = gcd3(P2["d"], P2["n"]);
+    a = gcd2(P2["d"], P2["n"]);
     this["s"] = P2["s"];
     this["n"] = P2["n"] / a;
     this["d"] = P2["d"] / a;
@@ -11793,7 +11788,7 @@ Fraction2.prototype = {
    */
   "gcd": function(a, b) {
     parse2(a, b);
-    return newFraction2(gcd3(P2["n"], this["n"]) * gcd3(P2["d"], this["d"]), P2["d"] * this["d"]);
+    return newFraction2(gcd2(P2["n"], this["n"]) * gcd2(P2["d"], this["d"]), P2["d"] * this["d"]);
   },
   /**
    * Calculates the fractional lcm of two rational numbers
@@ -11805,7 +11800,7 @@ Fraction2.prototype = {
     if (P2["n"] === C_ZERO2 && this["n"] === C_ZERO2) {
       return newFraction2(C_ZERO2, C_ONE2);
     }
-    return newFraction2(P2["n"] * this["n"], gcd3(P2["n"], this["n"]) * gcd3(P2["d"], this["d"]));
+    return newFraction2(P2["n"] * this["n"], gcd2(P2["n"], this["n"]) * gcd2(P2["d"], this["d"]));
   },
   /**
    * Gets the inverse of the fraction, means numerator and denominator are exchanged
@@ -11907,7 +11902,7 @@ Fraction2.prototype = {
       }
       let curN = numberExponent;
       let curD = baseExponent;
-      const gcdValue = gcd3(curN, curD);
+      const gcdValue = gcd2(curN, curD);
       curN /= gcdValue;
       curD /= gcdValue;
       if (retN === null && retD === null) {
@@ -12154,11 +12149,11 @@ Fraction2.prototype = {
   "simplify": function(eps22) {
     const ieps = BigInt(1 / (eps22 || 1e-3) | 0);
     const thisABS = this["abs"]();
-    const cont7 = thisABS["toContinued"]();
-    for (let i = 1; i < cont7.length; i++) {
-      let s = newFraction2(cont7[i - 1], C_ONE2);
+    const cont5 = thisABS["toContinued"]();
+    for (let i = 1; i < cont5.length; i++) {
+      let s = newFraction2(cont5[i - 1], C_ONE2);
       for (let k = i - 2; k >= 0; k--) {
-        s = s["inverse"]()["add"](cont7[k]);
+        s = s["inverse"]()["add"](cont5[k]);
       }
       let t = s["sub"](thisABS);
       if (t["n"] * ieps < t["d"]) {

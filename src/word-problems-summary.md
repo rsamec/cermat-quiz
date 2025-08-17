@@ -103,7 +103,7 @@ const uniquePredicates = new Map([
   ["Poměr část ku části", ["ratios"]],
   ["Stav a změna stavu", ["delta","transfer"]],
   ["Úměrnosti", ["proportion"]],
-  ["Škálování", ["scale","slace-invert"]],
+  ["Škálování", ["scale","slace-invert","nth-factor"]],
   ["Posuny",["slide","slide-invert"]],
   ["Rozdělování", ["rate","quota"]],
   ["Spojování", ["sum","sum-combine", "product", "product-combine"]],
@@ -113,7 +113,8 @@ const uniquePredicates = new Map([
   ["Největší společný dělitel", ["gcd"]],
   ["Nejmenší společný násobek", ["lcd"]],
   ["Výrazy", ["eval-expr", "simpl-expr"]],
-  ["Posloupnosti", ["sequence"]],
+  ["Pythagorova věta", ["pythagoras"]],
+  ["Posloupnosti", ["sequence","nth"]],
   ["Zaokrouhlování", ["round"]],
   ["Zdravý rozum", ["common-sense"]],
 ])
@@ -202,7 +203,6 @@ const selected = view(Inputs.table(search,{
     "summary",
     "year",
     "period",
-    "predicates",
   ],
   header: {
     year:"Rok",
@@ -224,5 +224,5 @@ const selected = view(Inputs.table(search,{
 
 <div>${controlsInput}</div>
 
-${html`<div class="card">${renderMarkdownWithCopy(selected.map(d => (controls.startsWith("A") ? d.builder.content([parseInt(d.id)], { render: 'content' }) : "") + ' ' + (controls.endsWith("B") ? d.deductionTrees.map(tree => jsonToMarkdownChat(tree)).join("") : "")).join("\n---\n"), 'md')}</div>`}
+${html`<div class="card">${renderMarkdownWithCopy(selected.map(d => (controls.startsWith("A") ? d.builder.content([parseInt(d.id)], { render: 'content' }) : "") + ' ' + (controls.endsWith("B") ? d.deductionTrees.map(tree => jsonToMarkdownChat(tree).join("")).join("") : "")).join("\n---\n"), 'md')}</div>`}
 

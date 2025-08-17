@@ -1,4 +1,4 @@
-import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, pythagoras, rate, ratio, ratios, ctorOption, ctorBooleanOption, productCombine, counter, product, sum, ctorScale, double, contLength, productArea, dimensionEntity } from "../../components/math";
+import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, pythagoras, rate, ratio, ratios, ctorOption, ctorBooleanOption, counter, product, sum, contLength, productArea, dimensionEntity } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 import trojuhelnik from "./trojuhelnik";

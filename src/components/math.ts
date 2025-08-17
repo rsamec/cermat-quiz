@@ -109,9 +109,13 @@ export type ConvertPercent = {
 export type ReverseCompRatio = {
   kind: 'reverse-comp-ratio'
 }
+export type RatiosBase = {
+  kind: 'ratios-base'
+}
+
 export type RatiosInvert = {
   kind: 'ratios-invert',
-  agent: AgentMatcher
+  agent: AgentMatcher,
 }
 
 export type ComplementCompRatio = {
@@ -242,6 +246,7 @@ export type PartToPartRatio = {
   parts: AgentMatcher[]
   whole: AgentMatcher,
   ratios: Ratio[],
+  useBase?: boolean,
 }
 
 
@@ -357,7 +362,7 @@ export type RatiosPredicate = PartToPartRatio | TwoPartRatio | ThreePartRatio;
 export type ExpressionPredicate = EvalExpr<ContainerEval | RateEval> | SimplifyExpr | LinearEquation | Phytagoras;
 export type CommonSensePredicate = CommonSense | Proportion
 export type MultipleOperationPredicate = Sum | SumCombine | Product | ProductCombine | GCD | LCD
-export type SingleOperationPredicate = Scale | InvertScale | Slide | InvertSlide | Difference | Complement | ConvertUnit | Round | ConvertPercent | ReverseCompRatio | ComplementCompRatio | RatiosInvert
+export type SingleOperationPredicate = Scale | InvertScale | Slide | InvertSlide | Difference | Complement | ConvertUnit | Round | ConvertPercent | ReverseCompRatio | ComplementCompRatio | RatiosInvert | RatiosBase
 export type OperationPredicate = SingleOperationPredicate | MultipleOperationPredicate
 
 export type Predicate = QuantityPredicate | RatioPredicate | RatiosPredicate | ExpressionPredicate | MultipleOperationPredicate | CommonSensePredicate | OperationPredicate
@@ -389,7 +394,7 @@ function isRatePredicate(value: Predicate): value is Rate {
 
 export function ctor(kind: 'ratio' | 'comp-ratio' | 'rate' | 'quota' | "comp-diff"
   | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'scale' | 'scale-invert' | 'slide' | 'slide-invert'
-  | 'complement' | 'delta' | 'tuple' | 'simplify-expr' | 'convert-percent' | 'reverse-comp-ratio') {
+  | 'complement' | 'delta' | 'tuple' | 'simplify-expr' | 'convert-percent' | 'reverse-comp-ratio' | 'ratios-base') {
   return { kind } as Predicate
 }
 
@@ -448,8 +453,8 @@ export function ctorComparePercent(): RatioComparison {
 export function ctorComplementCompRatio(agent: AgentMatcher): ComplementCompRatio {
   return { kind: "complement-comp-ratio", agent }
 }
-export function ctorRatios(agent: AgentMatcher): PartToPartRatio {
-  return { kind: "ratios", whole: agent } as PartToPartRatio
+export function ctorRatios(agent: AgentMatcher, { useBase }: { useBase?: boolean } = {}): PartToPartRatio {
+  return { kind: "ratios", whole: agent, useBase } as PartToPartRatio
 }
 export function ctorComplement(part: AgentMatcher): Complement {
   return { kind: "complement", part }
@@ -807,7 +812,7 @@ function convertToPartToPartRatiosEx(b: RatioComparison, a: PartToPartRatio): Pa
   }
   return { kind: 'ratios', whole: a.whole, parts: [b.agentA, b.agentB], ratios: [abs(b.ratio), 1] }
 }
-function convertToPartToPartRatios(b: RatioComparison, a: PartToPartRatio): Question {
+function convertToPartToPartRatios(b: RatioComparison, a: PartToPartRatio, last?: RatiosBase): Question {
   const tempResult = convertToPartToPartRatiosEx(b, a);
   if (!isNumber(b.ratio) || !areNumbers(tempResult.ratios)) {
     throw "convertToPartToPartRatios does not support expressions"
@@ -815,7 +820,7 @@ function convertToPartToPartRatios(b: RatioComparison, a: PartToPartRatio): Ques
 
   const result = {
     ...tempResult,
-    ratios: ratiosToBaseForm(tempResult.ratios)
+    ratios: last != null ? ratiosToBaseForm(tempResult.ratios) : tempResult.ratios
   }
 
   return {
@@ -2097,16 +2102,17 @@ function divide(total: number, divisor: number, isPartitative: boolean = false) 
   }
 }
 
-function toRatiosEx(parts: Container[] | Rate[], whole: AgentMatcher): PartToPartRatio {
+function toRatiosEx(parts: Container[] | Rate[], last: PartToPartRatio): PartToPartRatio {
+  const ratios = parts.map(d => d.quantity);
   return {
     kind: 'ratios',
     parts: parts.map(d => d.agent),
-    ratios: parts.map(d => d.quantity),
-    whole
+    ratios: last.useBase ? ratiosToBaseForm(ratios) : ratios,
+    whole: last.whole
   }
 }
 function toRatios(parts: Container[] | Rate[], last: PartToPartRatio): Question {
-  const result = toRatiosEx(parts, last.whole)
+  const result = toRatiosEx(parts, last)
   return {
     question: `Vyjádři poměrem mezi ${result.parts.join(":")}?`,
     result,
@@ -2355,7 +2361,7 @@ function nthPartFactorBy(multi: PartToPartRatio, factor: Container, nthPart: Nth
   const result = nthPartFactorByEx(multi, factor.quantity, nthPart)
 
   return {
-    question: `Vyjádři poměrem ${nthPart.agent} ${formatNumber(factor.quantity)} ${formatEntity(factor)}`,
+    question: `Rozšířit poměr o ${nthPart.agent} ${formatNumber(factor.quantity)} krát ${formatEntity(factor)}`,
     result,
     options: []
 
@@ -2676,10 +2682,10 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
     return comparisonRatioRule(b, a);
   }
   else if (a.kind === "comp-ratio" && b.kind === "ratios") {
-    return a.ratio == null ? convertRatiosToCompRatio(b, a) : convertToPartToPartRatios(a, b);
+    return a.ratio == null ? convertRatiosToCompRatio(b, a) : convertToPartToPartRatios(a, b, kind === "ratios-base" && last);
   }
   else if (a.kind === "ratios" && b.kind === "comp-ratio") {
-    return b.ratio == null ? convertRatiosToCompRatio(a, b) : convertToPartToPartRatios(b, a);
+    return b.ratio == null ? convertRatiosToCompRatio(a, b) : convertToPartToPartRatios(b, a, kind === "ratios-base" && last);
   }
   else if (a.kind === "comp-ratio" && b.kind === "reverse-comp-ratio") {
     return reverseCompRatio(a);

@@ -1,4 +1,4 @@
-import { compAngle, compPercent, cont, ctor, ctorOption, sum, ctorUnit, nthPart, percent, ratios, type Container, isNumber, rate, ctorSlide, proportion, counter, compRatio, ctorDifference, product, productCombine, double, contLength, productArea, productVolume } from "../../components/math";
+import { compAngle, compPercent, cont, ctor, ctorOption, sum, ctorUnit, nthPart, percent, ratios, type Container, isNumber, rate, ctorSlide, proportion, counter, compRatio, ctorDifference, product, double, contLength, productArea, productVolume } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, toPredicate, toCont, deduceAs } from "../../utils/deduce-utils";
 import { porovnatAaB, najitMensiCislo } from "./1";
 import { porovnatObsahObdelnikACtverec } from "./13";

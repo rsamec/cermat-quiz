@@ -1,5 +1,5 @@
 
-import { compRatio, cont, ctorRound, sum, productCombine, product, counter, contLength, productArea, dimensionEntity } from "../../components/math";
+import { compRatio, ctorRound, sum, product, counter, contLength, productArea, dimensionEntity } from "../../components/math";
 import { axiomInput, deduce, last, toCont } from "../../utils/deduce-utils";
 import { baseCircumference, surfaceBaseArea } from "../shapes/cylinder"
 

@@ -3928,14 +3928,14 @@ function convertToPartToPartRatiosEx(b, a) {
   }
   return { kind: "ratios", whole: a.whole, parts: [b.agentA, b.agentB], ratios: [abs(b.ratio), 1] };
 }
-function convertToPartToPartRatios(b, a) {
+function convertToPartToPartRatios(b, a, last) {
   const tempResult = convertToPartToPartRatiosEx(b, a);
   if (!isNumber2(b.ratio) || !areNumbers(tempResult.ratios)) {
     throw "convertToPartToPartRatios does not support expressions";
   }
   const result = {
     ...tempResult,
-    ratios: ratiosToBaseForm(tempResult.ratios)
+    ratios: last != null ? ratiosToBaseForm(tempResult.ratios) : tempResult.ratios
   };
   return {
     question: `Vyj\xE1d\u0159i pom\u011Brem \u010D\xE1st\xED ${[b.agentA, b.agentB].join(":")}?`,
@@ -5013,16 +5013,17 @@ function divide(total, divisor, isPartitative = false) {
     remainder
   };
 }
-function toRatiosEx(parts, whole) {
+function toRatiosEx(parts, last) {
+  const ratios = parts.map((d) => d.quantity);
   return {
     kind: "ratios",
     parts: parts.map((d) => d.agent),
-    ratios: parts.map((d) => d.quantity),
-    whole
+    ratios: last.useBase ? ratiosToBaseForm(ratios) : ratios,
+    whole: last.whole
   };
 }
 function toRatios(parts, last) {
-  const result = toRatiosEx(parts, last.whole);
+  const result = toRatiosEx(parts, last);
   return {
     question: `Vyj\xE1d\u0159i pom\u011Brem mezi ${result.parts.join(":")}?`,
     result,
@@ -5216,7 +5217,7 @@ function nthPartFactorBy(multi, factor, nthPart) {
   }
   const result = nthPartFactorByEx(multi, factor.quantity, nthPart);
   return {
-    question: `Vyj\xE1d\u0159i pom\u011Brem ${nthPart.agent} ${formatNumber(factor.quantity)} ${formatEntity(factor)}`,
+    question: `Roz\u0161\xED\u0159it pom\u011Br o ${nthPart.agent} ${formatNumber(factor.quantity)} kr\xE1t ${formatEntity(factor)}`,
     result,
     options: []
   };
@@ -5404,9 +5405,9 @@ function inferenceRuleEx(...args) {
   } else if (a.kind === "ratio" && b.kind === "comp-ratio") {
     return comparisonRatioRule(b, a);
   } else if (a.kind === "comp-ratio" && b.kind === "ratios") {
-    return a.ratio == null ? convertRatiosToCompRatio(b, a) : convertToPartToPartRatios(a, b);
+    return a.ratio == null ? convertRatiosToCompRatio(b, a) : convertToPartToPartRatios(a, b, kind === "ratios-base" && last);
   } else if (a.kind === "ratios" && b.kind === "comp-ratio") {
-    return b.ratio == null ? convertRatiosToCompRatio(a, b) : convertToPartToPartRatios(b, a);
+    return b.ratio == null ? convertRatiosToCompRatio(a, b) : convertToPartToPartRatios(b, a, kind === "ratios-base" && last);
   } else if (a.kind === "comp-ratio" && b.kind === "reverse-comp-ratio") {
     return reverseCompRatio(a);
   } else if (a.kind === "reverse-comp-ratio" && b.kind === "comp-ratio") {

@@ -1,4 +1,4 @@
-import { productCombine, cont, ctor, ctorOption, contLength, productArea } from "../../components/math";
+import { ctor, ctorOption, contLength, productArea } from "../../components/math";
 import { axiomInput, deduce } from "../../utils/deduce-utils";
 
 export function porovnatObsahObdelnikACtverec({ input }: { input: { obdelnik: { a: number, b: number }, ctverec: { a: number } } }) {

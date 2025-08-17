@@ -1,4 +1,4 @@
-import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, rate, ratio, ratios, ctorPercent, compAngle, ctorComplement, ctorComparePercent, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, ctorLinearEquation, sum, productCombine, triangleAngle, contLength, productVolume, contArea, dimensionEntity } from "../../components/math";
+import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, rate, ratio, ratios, ctorPercent, compAngle, ctorComplement, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, ctorLinearEquation, sum, triangleAngle, contLength, productVolume, contArea, dimensionEntity } from "../../components/math";
 import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 
