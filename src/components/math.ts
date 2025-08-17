@@ -654,6 +654,10 @@ export function proportion(inverse: boolean, entities: [string, string]): Propor
   return { kind: 'proportion', inverse, entities };
 }
 
+export function primeFactors(numbers: number[]): CommonSense {
+  return { kind: 'common-sense', description: `rozklad na prvočísla:${primeFactorization(numbers).join(",")}` }
+
+}
 export function commonSense(description: string): CommonSense {
   return { kind: 'common-sense', description }
 }
@@ -2117,8 +2121,7 @@ function toRatios(parts: Container[] | Rate[], last: PartToPartRatio): Question 
     question: `Vyjádři poměrem mezi ${result.parts.join(":")}?`,
     result,
     options: areNumbers(result.ratios) ? [
-      { tex: `${result.ratios.map(d => formatNumber(d)).join(":")}`, result: result.ratios.map(d => formatNumber(d)).join(":"), ok: true },
-      { tex: `${result.ratios.map(d => formatNumber(d)).join(":")}`, result: result.ratios.map(d => formatNumber(d)).join(":"), ok: false },
+      { tex: `${last.useBase ? parts.map(d => d.quantity).map(d => formatNumber(d)).join(":") : ''}`, result: result.ratios.map(d => formatNumber(d)).join(":"), ok: true },
     ] : []
   }
 }

@@ -259,6 +259,9 @@ function quota(agent, agentQuota, quantity, restQuantity = 0) {
 function proportion(inverse, entities) {
   return { kind: "proportion", inverse, entities };
 }
+function primeFactors(numbers) {
+  return { kind: "common-sense", description: `rozklad na prvo\u010D\xEDsla:${primeFactorization(numbers).join(",")}` };
+}
 function commonSense(description) {
   return { kind: "common-sense", description };
 }
@@ -1517,8 +1520,7 @@ function toRatios(parts, last3) {
     question: `Vyj\xE1d\u0159i pom\u011Brem mezi ${result.parts.join(":")}?`,
     result,
     options: areNumbers(result.ratios) ? [
-      { tex: `${result.ratios.map((d) => formatNumber(d)).join(":")}`, result: result.ratios.map((d) => formatNumber(d)).join(":"), ok: true },
-      { tex: `${result.ratios.map((d) => formatNumber(d)).join(":")}`, result: result.ratios.map((d) => formatNumber(d)).join(":"), ok: false }
+      { tex: `${last3.useBase ? parts.map((d) => d.quantity).map((d) => formatNumber(d)).join(":") : ""}`, result: result.ratios.map((d) => formatNumber(d)).join(":"), ok: true }
     ] : []
   };
 }
@@ -2080,7 +2082,7 @@ function primeFactorization(numbers) {
   };
   return numbers.map(getPrimeFactors);
 }
-function gcdFromPrimeFactors(primeFactors) {
+function gcdFromPrimeFactors(primeFactors2) {
   const intersection = (arr1, arr2) => {
     const result = [];
     const countMap = /* @__PURE__ */ new Map();
@@ -2095,9 +2097,9 @@ function gcdFromPrimeFactors(primeFactors) {
     }
     return result;
   };
-  return primeFactors.reduce((acc, curr) => intersection(acc, curr), primeFactors[0] || []);
+  return primeFactors2.reduce((acc, curr) => intersection(acc, curr), primeFactors2[0] || []);
 }
-function lcdFromPrimeFactors(primeFactors) {
+function lcdFromPrimeFactors(primeFactors2) {
   const union = (arr1, arr2) => {
     const result = [];
     const countMap = /* @__PURE__ */ new Map();
@@ -2114,7 +2116,7 @@ function lcdFromPrimeFactors(primeFactors) {
     }
     return result;
   };
-  return primeFactors.reduce((acc, curr) => union(acc, curr), []);
+  return primeFactors2.reduce((acc, curr) => union(acc, curr), []);
 }
 function formatEntity(d) {
   return d.entity || d.unit ? `(${[d.unit, d.entity].filter((d2) => d2 != null && d2 != "").join(" ")})` : "";
@@ -2956,11 +2958,11 @@ Fraction.prototype = {
   "simplify": function(eps3) {
     const ieps = BigInt(1 / (eps3 || 1e-3) | 0);
     const thisABS = this["abs"]();
-    const cont5 = thisABS["toContinued"]();
-    for (let i = 1; i < cont5.length; i++) {
-      let s = newFraction(cont5[i - 1], C_ONE);
+    const cont4 = thisABS["toContinued"]();
+    for (let i = 1; i < cont4.length; i++) {
+      let s = newFraction(cont4[i - 1], C_ONE);
       for (let k = i - 2; k >= 0; k--) {
-        s = s["inverse"]()["add"](cont5[k]);
+        s = s["inverse"]()["add"](cont4[k]);
       }
       let t = s["sub"](thisABS);
       if (t["n"] * ieps < t["d"]) {
@@ -8598,7 +8600,7 @@ function pyramida() {
       deductionTree: deduce(
         to(
           pyramida90,
-          commonSense(`rozklad na prvo\u010D\xEDsla:${primeFactorization([pyramida90.quantity]).join(",")}`),
+          primeFactors([90]),
           commonSense(`hled\xE1me co nejmen\u0161\xED periodu opakov\xE1n\xED schod\u016F z rozkladu`),
           commonSense(`2 a 3 m\u016F\u017Eeme vylou\u010Dit, proto\u017Ee opakov\xE1n schod\u016F po 2,3 nespl\u0148ujem podm\xEDnku stejn\xE9 barvnosti pro 27.patro = 30.patro`),
           commonSense(`5 je nejmen\u0161\xED mo\u017En\xFD po\u010Det schod\u016F, kter\xFD spl\u0148uje podm\xEDnku podm\xEDnku stejn\xE9 barvnosti pro 27.patro = 30.patro`),
@@ -10729,8 +10731,7 @@ function toRatios2(parts, last22) {
     question: `Vyj\xE1d\u0159i pom\u011Brem mezi ${result.parts.join(":")}?`,
     result,
     options: areNumbers2(result.ratios) ? [
-      { tex: `${result.ratios.map((d) => formatNumber2(d)).join(":")}`, result: result.ratios.map((d) => formatNumber2(d)).join(":"), ok: true },
-      { tex: `${result.ratios.map((d) => formatNumber2(d)).join(":")}`, result: result.ratios.map((d) => formatNumber2(d)).join(":"), ok: false }
+      { tex: `${last22.useBase ? parts.map((d) => d.quantity).map((d) => formatNumber2(d)).join(":") : ""}`, result: result.ratios.map((d) => formatNumber2(d)).join(":"), ok: true }
     ] : []
   };
 }
@@ -11279,7 +11280,7 @@ function primeFactorization2(numbers) {
   };
   return numbers.map(getPrimeFactors);
 }
-function gcdFromPrimeFactors2(primeFactors) {
+function gcdFromPrimeFactors2(primeFactors2) {
   const intersection = (arr1, arr2) => {
     const result = [];
     const countMap = /* @__PURE__ */ new Map();
@@ -11294,9 +11295,9 @@ function gcdFromPrimeFactors2(primeFactors) {
     }
     return result;
   };
-  return primeFactors.reduce((acc, curr) => intersection(acc, curr), primeFactors[0] || []);
+  return primeFactors2.reduce((acc, curr) => intersection(acc, curr), primeFactors2[0] || []);
 }
-function lcdFromPrimeFactors2(primeFactors) {
+function lcdFromPrimeFactors2(primeFactors2) {
   const union = (arr1, arr2) => {
     const result = [];
     const countMap = /* @__PURE__ */ new Map();
@@ -11313,7 +11314,7 @@ function lcdFromPrimeFactors2(primeFactors) {
     }
     return result;
   };
-  return primeFactors.reduce((acc, curr) => union(acc, curr), []);
+  return primeFactors2.reduce((acc, curr) => union(acc, curr), []);
 }
 function formatEntity2(d) {
   return d.entity || d.unit ? `(${[d.unit, d.entity].filter((d2) => d2 != null && d2 != "").join(" ")})` : "";
@@ -12149,11 +12150,11 @@ Fraction2.prototype = {
   "simplify": function(eps22) {
     const ieps = BigInt(1 / (eps22 || 1e-3) | 0);
     const thisABS = this["abs"]();
-    const cont5 = thisABS["toContinued"]();
-    for (let i = 1; i < cont5.length; i++) {
-      let s = newFraction2(cont5[i - 1], C_ONE2);
+    const cont4 = thisABS["toContinued"]();
+    for (let i = 1; i < cont4.length; i++) {
+      let s = newFraction2(cont4[i - 1], C_ONE2);
       for (let k = i - 2; k >= 0; k--) {
-        s = s["inverse"]()["add"](cont5[k]);
+        s = s["inverse"]()["add"](cont4[k]);
       }
       let t = s["sub"](thisABS);
       if (t["n"] * ieps < t["d"]) {
@@ -16704,7 +16705,7 @@ function domecek3({ input }) {
   );
   const strana = to(
     ctverec,
-    commonSense(`rozklad na prvo\u010D\xEDsla:${primeFactorization([lastQuantity(ctverec)]).join(",")}`),
+    primeFactors([lastQuantity(ctverec)]),
     contLength("\u0161\xED\u0159ka", 2)
   );
   const rectangleVolume = connectTo(volume({ width: last(strana), height: contLength("v\xFD\u0161ka", 2), length: contLength("d\xE9lka", 8) }, { volumeLabel: "objem p\u0159\xEDzem\xED" }), strana);
@@ -16830,7 +16831,7 @@ function letajiciCtverecky({ input }) {
   );
   const dd2 = to(
     columns,
-    commonSense(`rozklad na prvo\u010D\xEDsla:${primeFactorization([input.pocetSloupcu]).join(",")}`),
+    primeFactors([input.pocetSloupcu]),
     commonSense(`seskup je do dvojic (5x22), (10x11), (2x55)`),
     commonSense(`najdi dvojici, kter\xE1 m\xE1 \u010D\xEDsla za sebou = (10x11)`),
     rule,
@@ -16941,7 +16942,7 @@ function caryNaPapire({ input }) {
   const diff = compDiff(usekLabel, separatorLabel, 1, emptyEntity);
   const dvojice = to(
     pocetCasti,
-    commonSense(`rozklad na prvo\u010D\xEDsla:${primeFactorization([input.pocetCasti]).join(",")}`),
+    primeFactors([input.pocetCasti]),
     commonSense(`seskup je do dvojic (2x20), (4x10), (8x5)`),
     commonSense(`najdi dvojici, kter\xE1 m\xE1 nejmen\u0161\xED sou\u010Det = (8x5)`),
     cont(usekLabel, 8, emptyEntity)
@@ -17155,7 +17156,7 @@ function zahon2() {
           deduce(
             to(
               pocetRostlin,
-              commonSense(`rozklad na prvo\u010D\xEDsla:${primeFactorization([pocetRostlinQuantity]).join(",")}`),
+              primeFactors([pocetRostlinQuantity]),
               commonSense(`kombinace 5x13 nebo 13x5, vybereme v\u011Bt\u0161\xED po\u010Det opakov\xE1n\xED, aby jsme doc\xEDlili men\u0161\xEDho po\u010Dtu \u010Derven\xFDch r\u016F\u017E\xED`),
               quota("rostliny", "skupina dohromady b\xEDl\xE9 a \u010Derven\xE9 rostliny", 13)
             ),
@@ -17983,60 +17984,56 @@ function vyrezKrychle() {
     deductionTree: deduce(
       deduce(
         deduce(
+          stranaKrychle,
+          lastStranaKrychle,
+          productArea(`st\u011Bna ${krychleLabel}`, EmptyUnit)
+        ),
+        counter(`po\u010Det st\u011Bn ${krychleLabel}`, 6),
+        product(`${krychleLabel}`)
+      ),
+      deduce(
+        deduce(
           deduce(
-            stranaKrychle,
             lastStranaKrychle,
-            productArea(`st\u011Bna ${krychleLabel}`, EmptyUnit)
+            lastStranaKrychle,
+            productArea("st\u011Bna krychle", EmptyUnit)
           ),
-          counter(`po\u010Det st\u011Bn ${krychleLabel}`, 6),
-          product(`${krychleLabel}`)
+          counter("po\u010Det \u010Dtvercov\xFDch st\u011Bn", 3),
+          product(`lev\xE1, prav\xE1 a spodn\xED st\u011Bna - ${telesoLabel}`)
         ),
         deduce(
           deduce(
             deduce(
               lastStranaKrychle,
               lastStranaKrychle,
-              productArea("st\u011Bna krychle", EmptyUnit)
+              productArea(`p\u0159edn\xED st\u011Bna - ${telesoLabel}`, EmptyUnit)
             ),
-            counter("po\u010Det \u010Dtvercov\xFDch st\u011Bn", 3),
-            product(`lev\xE1, prav\xE1 a spodn\xED st\u011Bna - ${telesoLabel}`)
-          ),
-          deduce(
-            deduce(
-              deduce(
-                lastStranaKrychle,
-                lastStranaKrychle,
-                productArea(`p\u0159edn\xED st\u011Bna - ${telesoLabel}`, EmptyUnit)
-              ),
-              deduce(
-                lastStranaKrychle,
-                lastStranaKrychle,
-                productArea(`zadn\xED st\u011Bna - ${telesoLabel}`, EmptyUnit)
-              ),
-              sum(`p\u0159edn\xED a zadn\xED st\u011Bna - ${telesoLabel}`)
-            ),
-            deduce(
-              delsiOdvesna,
-              lastStranaKrychle,
-              productArea("p\u0159edn\xED a zadn\xED troj\xFAheln\xEDkov\xFD v\xFD\u0159ez", EmptyUnit)
-            ),
-            ctorDifference(`p\u0159edn\xED a zadn\xED st\u011Bna bez v\xFD\u0159ezu - ${telesoLabel}`)
-          ),
-          deduce(
             deduce(
               lastStranaKrychle,
-              last(prepona),
-              productArea(`obdeln\xEDkov\xE1 \u0161ikm\xE1 st\u011Bna - ${telesoLabel}`, EmptyUnit)
+              lastStranaKrychle,
+              productArea(`zadn\xED st\u011Bna - ${telesoLabel}`, EmptyUnit)
             ),
-            counter(`po\u010Det obdeln\xEDkov\xFDch \u0161ikm\xFDch st\u011Bn - ${telesoLabel}`, 2),
-            product(`ob\u011B obdeln\xEDkov\xE9 \u0161ikm\xE9 st\u011Bny - ${telesoLabel}`)
+            sum(`p\u0159edn\xED a zadn\xED st\u011Bna - ${telesoLabel}`)
           ),
-          sum(`${telesoLabel}`)
+          deduce(
+            delsiOdvesna,
+            lastStranaKrychle,
+            productArea("p\u0159edn\xED a zadn\xED troj\xFAheln\xEDkov\xFD v\xFD\u0159ez", EmptyUnit)
+          ),
+          ctorDifference(`p\u0159edn\xED a zadn\xED st\u011Bna bez v\xFD\u0159ezu - ${telesoLabel}`)
         ),
-        ctorRatios("pom\u011Br t\u011Bles")
+        deduce(
+          deduce(
+            lastStranaKrychle,
+            last(prepona),
+            productArea(`obdeln\xEDkov\xE1 \u0161ikm\xE1 st\u011Bna - ${telesoLabel}`, EmptyUnit)
+          ),
+          counter(`po\u010Det obdeln\xEDkov\xFDch \u0161ikm\xFDch st\u011Bn - ${telesoLabel}`, 2),
+          product(`ob\u011B obdeln\xEDkov\xE9 \u0161ikm\xE9 st\u011Bny - ${telesoLabel}`)
+        ),
+        sum(`${telesoLabel}`)
       ),
-      cont("nejv\u011Bt\u0161\xED spole\u010Dn\xFD d\u011Blitel", 216, ""),
-      ctor("scale-invert")
+      ctorRatios("pom\u011Br t\u011Bles", { useBase: true })
     )
   };
 }

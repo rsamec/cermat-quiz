@@ -1,4 +1,4 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, primeFactorization, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, sum, product, counter, triangleAngle, contLength, productArea, dimensionEntity, contArea, productVolume } from "../../components/math";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, sum, product, counter, triangleAngle, contLength, productArea, dimensionEntity, contArea, productVolume, primeFactors } from "../../components/math";
 import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -194,7 +194,7 @@ function zahon() {
           deduce(
             to(
               pocetRostlin,
-              commonSense(`rozklad na prvočísla:${primeFactorization([pocetRostlinQuantity]).join(",")}`),
+              primeFactors([pocetRostlinQuantity]),
               commonSense(`kombinace 5x13 nebo 13x5, vybereme větší počet opakování, aby jsme docílili menšího počtu červených růží`),
               quota("rostliny", "skupina dohromady bílé a červené rostliny", 13)
             ),

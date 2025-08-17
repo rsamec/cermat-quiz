@@ -1,4 +1,4 @@
-import { commonSense, compDiff, cont, ctorOption, primeFactorization, sum } from "../../components/math";
+import { commonSense, compDiff, cont, ctorOption, primeFactors, sum } from "../../components/math";
 import { axiomInput, deduce, deduceLbl, to } from "../../utils/deduce-utils";
 
 
@@ -19,7 +19,7 @@ export function caryNaPapire({ input }: { input: InputParameters }) {
 
   const dvojice = to(
     pocetCasti,
-    commonSense(`rozklad na prvočísla:${primeFactorization([input.pocetCasti]).join(",")}`),
+    primeFactors([input.pocetCasti]),
     commonSense(`seskup je do dvojic (2x20), (4x10), (8x5)`),
     commonSense(`najdi dvojici, která má nejmenší součet = (8x5)`),
     cont(usekLabel, 8, emptyEntity)

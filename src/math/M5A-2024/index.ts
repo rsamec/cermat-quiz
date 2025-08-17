@@ -1,4 +1,4 @@
-import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, primeFactorization, rate, ratio, transfer, sum, ctorSlide, counter, ctorScaleInvert, ctorBooleanOption, product, dimensionEntity, contLength, contArea } from "../../components/math";
+import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, rate, ratio, transfer, sum, ctorSlide, counter, ctorScaleInvert, ctorBooleanOption, product, dimensionEntity, contLength, contArea, primeFactors } from "../../components/math";
 import { axiomInput, deduce, last, to, createLazyMap, deduceAs, toPredicate } from "../../utils/deduce-utils";
 import { cislaNaOse } from "../cislaNaOse";
 const dveCislaNaOseParams = {
@@ -409,7 +409,7 @@ export function pyramida() {
       deductionTree: deduce(
         to(
           pyramida90,
-          commonSense(`rozklad na prvočísla:${primeFactorization([pyramida90.quantity]).join(",")}`),
+          primeFactors([90]),
           commonSense(`hledáme co nejmenší periodu opakování schodů z rozkladu`),
           commonSense(`2 a 3 můžeme vyloučit, protože opakován schodů po 2,3 nesplňujem podmínku stejné barvnosti pro 27.patro = 30.patro`),
           commonSense(`5 je nejmenší možný počet schodů, který splňuje podmínku podmínku stejné barvnosti pro 27.patro = 30.patro`),

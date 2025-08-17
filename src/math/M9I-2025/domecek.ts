@@ -1,4 +1,4 @@
-import { sum, commonSense, cont, ctorOption, primeFactorization, quota, ratio, contLength, contArea, EmptyUnit } from "../../components/math";
+import { sum, ctorOption, quota, ratio, contLength, contArea, EmptyUnit, primeFactors } from "../../components/math";
 import { axiomInput, connectTo, deduce, deduceLbl, last, lastQuantity, to } from "../../utils/deduce-utils";
 import { volume } from "../shapes/rectangle";
 
@@ -21,7 +21,7 @@ export function domecek({ input }: { input: InputParameters }) {
 
   const strana = to(
     ctverec,
-    commonSense(`rozklad na prvočísla:${primeFactorization([lastQuantity(ctverec)]).join(",")}`),
+    primeFactors([lastQuantity(ctverec)]),
     contLength("šířka", 2)
   );
 

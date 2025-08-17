@@ -1,4 +1,4 @@
-import { commonSense, comp, compRatio, compRelativePercent, cont, ctor, ctorDifference, ctorLinearEquation, product, ctorRatios, sum, ctorUnit, evalExprAsCont, primeFactorization, pythagoras, rate, ratio, counter, type Container, ctorOption, double, ctorScaleInvert, simplifyExpr, evalExprAsRate, ctorRound, contLength, dimensionEntity, productArea, EmptyUnit } from "../../components/math";
+import { commonSense, comp, compRatio, compRelativePercent, cont, ctor, ctorDifference, ctorLinearEquation, product, ctorRatios, sum, ctorUnit, evalExprAsCont, pythagoras, rate, ratio, counter, type Container, ctorOption, double, ctorScaleInvert, simplifyExpr, evalExprAsRate, ctorRound, contLength, dimensionEntity, productArea, EmptyUnit, primeFactors } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "../../utils/deduce-utils";
 
 
@@ -282,7 +282,7 @@ function vzestupHladinyVody() {
 function delitelnost() {
   return {
     deductionTree: to(
-      commonSense(`${primeFactorization([1470])}`)
+      primeFactors([1470])
     )
   }
 }
@@ -352,61 +352,58 @@ function vyrezKrychle() {
     deductionTree: deduce(
       deduce(
         deduce(
+          stranaKrychle,
+          lastStranaKrychle,
+          productArea(`stěna ${krychleLabel}`, EmptyUnit)
+        ),
+        counter(`počet stěn ${krychleLabel}`, 6),
+        product(`${krychleLabel}`)
+      ),
+      deduce(
+        deduce(
           deduce(
-            stranaKrychle,
             lastStranaKrychle,
-            productArea(`stěna ${krychleLabel}`, EmptyUnit)
+            lastStranaKrychle,
+            productArea("stěna krychle", EmptyUnit)
           ),
-          counter(`počet stěn ${krychleLabel}`, 6),
-          product(`${krychleLabel}`)
+          counter("počet čtvercových stěn", 3),
+          product(`levá, pravá a spodní stěna - ${telesoLabel}`)
         ),
         deduce(
           deduce(
             deduce(
               lastStranaKrychle,
               lastStranaKrychle,
-              productArea("stěna krychle", EmptyUnit)
+              productArea(`přední stěna - ${telesoLabel}`, EmptyUnit)
             ),
-            counter("počet čtvercových stěn", 3),
-            product(`levá, pravá a spodní stěna - ${telesoLabel}`)
-          ),
-          deduce(
-            deduce(
-              deduce(
-                lastStranaKrychle,
-                lastStranaKrychle,
-                productArea(`přední stěna - ${telesoLabel}`, EmptyUnit)
-              ),
-              deduce(
-                lastStranaKrychle,
-                lastStranaKrychle,
-                productArea(`zadní stěna - ${telesoLabel}`, EmptyUnit)
-              ),
-              sum(`přední a zadní stěna - ${telesoLabel}`)
-            ),
-            deduce(
-              delsiOdvesna,
-              lastStranaKrychle,
-              productArea("přední a zadní trojúhelníkový výřez", EmptyUnit)
-            ),
-            ctorDifference(`přední a zadní stěna bez výřezu - ${telesoLabel}`)
-          ),
-          deduce(
             deduce(
               lastStranaKrychle,
-              last(prepona),
-              productArea(`obdelníková šikmá stěna - ${telesoLabel}`, EmptyUnit)
+              lastStranaKrychle,
+              productArea(`zadní stěna - ${telesoLabel}`, EmptyUnit)
             ),
-            counter(`počet obdelníkových šikmých stěn - ${telesoLabel}`, 2),
-            product(`obě obdelníkové šikmé stěny - ${telesoLabel}`)
+            sum(`přední a zadní stěna - ${telesoLabel}`)
           ),
-          sum(`${telesoLabel}`)
+          deduce(
+            delsiOdvesna,
+            lastStranaKrychle,
+            productArea("přední a zadní trojúhelníkový výřez", EmptyUnit)
+          ),
+          ctorDifference(`přední a zadní stěna bez výřezu - ${telesoLabel}`)
         ),
-        ctorRatios("poměr těles")
+        deduce(
+          deduce(
+            lastStranaKrychle,
+            last(prepona),
+            productArea(`obdelníková šikmá stěna - ${telesoLabel}`, EmptyUnit)
+          ),
+          counter(`počet obdelníkových šikmých stěn - ${telesoLabel}`, 2),
+          product(`obě obdelníkové šikmé stěny - ${telesoLabel}`)
+        ),
+        sum(`${telesoLabel}`)
       ),
-      cont("největší společný dělitel", 216, ""),
-      ctor('scale-invert')
+      ctorRatios("poměr těles", { useBase: true })
     )
+
   }
 }
 

@@ -1,4 +1,4 @@
-import { productCombine, commonSense, cont, primeFactorization } from "../../components/math";
+import { productCombine, commonSense, cont, primeFactors } from "../../components/math";
 import { axiomInput, deduce, to } from "../../utils/deduce-utils";
 
 
@@ -32,7 +32,7 @@ export function letajiciCtverecky({ input }: { input: InputParameters }) {
 
   const dd2 = to(
     columns,
-    commonSense(`rozklad na prvočísla:${primeFactorization([input.pocetSloupcu]).join(",")}`),
+    primeFactors([input.pocetSloupcu]),
     commonSense(`seskup je do dvojic (5x22), (10x11), (2x55)`),
     commonSense(`najdi dvojici, která má čísla za sebou = (10x11)`),
     rule,
