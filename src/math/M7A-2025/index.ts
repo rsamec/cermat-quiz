@@ -143,13 +143,14 @@ function asistencniPes() {
 
   const adamToBara = comp(adamL, baraL, 300, entity)
 
-  const adamEqualBaraL = `1/3 ${adamL} = 1/2 ${baraL}`;
-  const baraEqualCyrilL = `1/3 ${baraL} = 1/2 ${cyrilL}`;
+  const baraPolovinaL = `polovina ${baraL}`;
+  const cyrilPolovinaL = `polovina ${cyrilL}`;
 
-  const baraPolovina = ratio(baraL, adamEqualBaraL, 1 / 2)
-  const baraTretina = ratio(baraL, baraEqualCyrilL, 1 / 3)
-  const adamTretina = ratio(adamL, adamEqualBaraL, 1 / 3)
-  const cyrilPolovina = ratio(cyrilL, baraEqualCyrilL, 1 / 2)
+  
+  const baraPolovina = ratio(baraL, baraPolovinaL, 1 / 2)
+  const baraTretina = ratio(baraL, cyrilPolovinaL, 1 / 3)
+  const adamTretina = ratio(adamL, baraPolovinaL, 1 / 3)
+  const cyrilPolovina = ratio(cyrilL, cyrilPolovinaL, 1 / 2)
 
   const baraDilku = to(
     commonSense("Bářina částku - dělitelná 3 a 2."),
@@ -163,14 +164,14 @@ function asistencniPes() {
   )
 
   const cyrilDilku = deduce(
-    deduce(baraDilku, baraTretina),
+    deduce(last(baraDilku), baraTretina),
     cyrilPolovina
   )
 
   const bara = deduce(
     deduce(
       adamDilku,
-      baraDilku,
+      last(baraDilku),
       ctor('comp-ratio')
     ),
     adamToBara,

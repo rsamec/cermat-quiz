@@ -200,7 +200,7 @@ function pulkruh() {
             commonSense("vepsaný kruh ve čtvercové síti"),
             contLength("poloměr (r)", 4)
           ),
-          evalExprAsCont("3.14*r^2", { kind: 'cont', agent: 'vepsaný kruh', ...dim.area})
+          evalExprAsCont("π*r^2", { kind: 'cont', agent: 'vepsaný kruh', ...dim.area})
         ),
         double(),
         ctorScaleInvert("šedý půlkruh")

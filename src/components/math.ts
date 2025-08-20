@@ -1950,28 +1950,38 @@ function toDifference(a: Container, b: Container, diff: Difference): Question {
   }
 }
 
-function toDifferenceAsRatioEx(a: PartWholeRatio, b: PartWholeRatio, diff: Difference): PartWholeRatio {
-  if (a.whole !== b.whole) {
-    throw `Mismatch whole agents ${a.whole}, ${b.whole}`
+function toDifferenceAsRatioEx(a: PartWholeRatio | RatioComparison, b: PartWholeRatio | RatioComparison, diff: Difference): PartWholeRatio {
+  const aBase = a.kind === "comp-ratio" ? a.agentB : a.whole;
+  const bBase = b.kind === "comp-ratio" ? b.agentB : b.whole;
+
+  if (aBase !== bBase) {
+    throw `Mismatch base agents ${aBase}, ${bBase}`
   }
   return {
     kind: "ratio",
-    whole: a.whole,
+    whole: aBase,
     part: diff.differenceAgent,
-    ratio: isNumber(a.ratio) && isNumber(b.ratio) ? a.ratio - b.ratio : wrapToRatio(`a.ratio - b.ratio`, { a, b })
+    ratio: isNumber(a.ratio) && isNumber(b.ratio) ? a.ratio - b.ratio : wrapToRatio(`a.ratio - b.ratio`, { a, b }),
+    asPercent: a.asPercent
   }
 }
-function toDifferenceAsRatio(a: PartWholeRatio, b: PartWholeRatio, diff: Difference): Question {
-  const result = toDifferenceAsRatioEx(a, b, diff)
+
+
+function toDifferenceAsRatio(a: PartWholeRatio | RatioComparison, b: PartWholeRatio | RatioComparison, diff: Difference): Question {
+  const result = toDifferenceAsRatioEx(a, b, diff)  
+  const aPart = a.kind === "comp-ratio" ? a.agentA : a.part;
+  const bPart = b.kind === "comp-ratio" ? b.agentA : b.part;
+
   return {
-    question: `${computeQuestion(result.ratio)} rozdíl mezi ${a.part} a ${b.part}`,
+    question: `${computeQuestion(result.ratio)} rozdíl mezi ${aPart} a ${bPart}`,
     result,
     options: isNumber(a.ratio) && isNumber(b.ratio) && isNumber(result.ratio) ? [
-      { tex: `${formatRatio(a.ratio)} - ${formatRatio(b.ratio)}`, result: formatRatio(result.ratio), ok: true },
-      { tex: `${formatRatio(b.ratio)} - ${formatRatio(a.ratio)}`, result: formatRatio(b.ratio - a.ratio), ok: false },
+      { tex: `${formatRatio(a.ratio, a.asPercent)} - ${formatRatio(b.ratio, b.asPercent)}`, result: formatRatio(result.ratio, result.asPercent), ok: true },
+      { tex: `${formatRatio(b.ratio, b.asPercent)} - ${formatRatio(a.ratio, a.asPercent)}`, result: formatRatio(result.ratio, result.asPercent), ok: false },
     ] : []
   }
 }
+
 function transitiveRatioRuleEx(a: PartWholeRatio, b: PartWholeRatio): PartWholeRatio {
 
   if (!((a.whole === b.part) || (b.whole === a.part))) {
@@ -2697,7 +2707,7 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
     return reverseCompRatio(b);
   }
   else if (a.kind === "comp-ratio" && b.kind === "comp-ratio") {
-    return comparisonRatioTransitiveRule(a, b)
+    return kind === "diff" ? toDifferenceAsRatio(a, b, last) : comparisonRatioTransitiveRule(a, b)
   }
   else if (a.kind === "cont" && b.kind === "ratio") {
     return partToWholeRule(a, b);
