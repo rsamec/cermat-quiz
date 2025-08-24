@@ -125,7 +125,7 @@ export type ComplementCompRatio = {
 
 export type Round = {
   kind: 'round',
-  fractionDigits: number
+  order: number
 }
 
 export type AngleComparison = {
@@ -274,6 +274,10 @@ export type Phytagoras = {
   longest: AgentMatcher
   sites: [AgentMatcher, AgentMatcher]
 }
+export type Alligation = {
+  kind: 'alligation'
+  agent: AgentMatcher,
+}
 export type TriangleAngle = {
   kind: 'triangle-angle'
   agent: AgentMatcher
@@ -376,7 +380,7 @@ export type SingleOperationPredicate = Scale | InvertScale | Slide | InvertSlide
 export type OperationPredicate = SingleOperationPredicate | MultipleOperationPredicate
 
 export type Predicate = QuantityPredicate | RatioPredicate | RatiosPredicate | ExpressionPredicate | MultipleOperationPredicate | CommonSensePredicate | OperationPredicate
-  | Sequence | Pattern | BalancedPartition | NthRule | NthPart | NthPartFactor | AngleComparison | TriangleAngle | Tuple | Option | CompareAndPartEqual
+  | Sequence | Pattern | BalancedPartition | Alligation | NthRule | NthPart | NthPartFactor | AngleComparison | TriangleAngle | Tuple | Option | CompareAndPartEqual
 
 export function isQuantityPredicate(value: Predicate): value is QuantityPredicate {
   return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "quota", "delta"].includes(value.kind);
@@ -444,8 +448,8 @@ export function ctorScale(agent: AgentMatcher): Scale {
 export function ctorScaleInvert(agent: AgentMatcher): InvertScale {
   return { kind: 'scale-invert', agent }
 }
-export function ctorRound(fractionDigits: number = 0): Round {
-  return { kind: "round", fractionDigits }
+export function ctorRound(order: number = 1): Round {
+  return { kind: "round", order }
 }
 export function ctorLinearEquation(agent: string, entity: EntityBase, variable: string = 'x'): LinearEquation {
   return { kind: "linear-equation", agent, variable, entity }
@@ -551,6 +555,9 @@ export function compAngle(agentA: string, agentB: string, relationship: AngleRel
 }
 export function pythagoras(longestSite: AgentMatcher, sites: [AgentMatcher, AgentMatcher]): Phytagoras {
   return { kind: 'pythagoras', longest: longestSite, sites }
+}
+export function alligation(agent: AgentMatcher): Alligation {
+  return { kind: 'alligation', agent }
 }
 export function triangleAngle(agent: AgentMatcher): TriangleAngle {
   return { kind: 'triangle-angle', agent }
@@ -929,17 +936,40 @@ function convertToUnit(a: Container | Comparison, b: ConvertUnit): Question {
     ]
   }
 }
+
+function computeRoundTo(value: number, order: number = 1): number {
+  if (order <= 0) {
+    throw new Error("Order must be positive");
+  }
+  return Math.round(value / order) * order;
+}
+
+function formatOrder(order: number) {
+  switch (order) {
+    case 1:
+      return "jednotky"
+    case 10:
+      return "desítky"
+    case 100:
+      return "stovky"
+    case 1000:
+      return "tisíce"
+    default:
+      return order
+  }
+}
+
 function roundTo(a: Container, b: Round): Question {
   const result = {
     ...a,
-    quantity: isNumber(a.quantity) ? Math.round(a.quantity)
+    quantity: isNumber(a.quantity) ? computeRoundTo(a.quantity, b.order)
       : wrapToQuantity(`round ${a.quantity}`, { a })
   };
   return {
-    question: isNumber(a.quantity) ? `Zaokrouhli ${formatNumber(a.quantity)} ${formatEntity(a)} na celé číslo.` : `Zaokrouhli na celé číslo.`,
+    question: isNumber(a.quantity) ? `Zaokrouhli ${formatNumber(a.quantity)} ${formatEntity(a)} na ${formatOrder(b.order)}.` : `Zaokrouhli na ${formatOrder(b.order)}.`,
     result,
     options: isNumber(a.quantity) && isNumber(result.quantity) ? [
-      { tex: `${formatNumber(a.quantity)}`, result: formatNumber(result.quantity), ok: true },
+      { tex: `${formatNumber(a.quantity)} `, result: formatNumber(result.quantity), ok: true },
     ] : []
   }
 }
@@ -989,7 +1019,7 @@ function ratioCompareRuleEx(a: Container | Rate, b: RatioComparison, nthPart: Nt
   }
   else {
 
-    //throw `Mismatch agent ${a.agent} any of ${b.agentA}, ${b.agentB}`
+    //throw `Mismatch agent ${ a.agent } any of ${ b.agentA }, ${ b.agentB } `
     result = {
       agent: b.agentB,
       quantity: isNumber(a.quantity) && isNumber(b.ratio)
@@ -1008,8 +1038,10 @@ function ratioCompareRule(a: Container | Rate, b: RatioComparison, nthPart?: Nth
     question: `${computeQuestion(result.quantity)} ${result.agent} ${result.kind === "rate" ? formatEntity(result.entity) : formatEntity(result)}?`,
     result,
     options: isNumber(a.quantity) && isNumber(b.ratio) && isNumber(result.quantity) ? [
-      { tex: `${formatNumber(a.quantity)} * ${formatRatio(abs(b.ratio))}`, result: formatNumber(a.quantity * b.ratio), ok: ([a.agent, a.entity].includes(b.agentB) && b.ratio >= 0) || ([a.agent, a.entity].includes(b.agentA) && b.ratio < 0) },
-      { tex: `${formatNumber(a.quantity)} / ${formatRatio(abs(b.ratio))}`, result: formatNumber(a.quantity / b.ratio), ok: ([a.agent, a.entity].includes(b.agentA) && b.ratio >= 0) || ([a.agent, a.entity].includes(b.agentB) && b.ratio < 0) },
+      { tex: `${formatNumber(a.quantity)} * ${formatRatio(abs(b.ratio))} `, result: formatNumber(a.quantity * b.ratio), ok: ([a.agent, a.entity].includes(b.agentB) && b.ratio >= 0) || ([a.agent, a.entity].includes(b.agentA) && b.ratio < 0) },
+      {
+        tex: `${formatNumber(a.quantity)} / ${formatRatio(abs(b.ratio))}`, result: formatNumber(a.quantity / b.ratio), ok: ([a.agent, a.entity].includes(b.agentA) && b.ratio >= 0) || ([a.agent, a.entity].includes(b.agentB) && b.ratio < 0)
+      },
       { tex: `${formatNumber(a.quantity)} / (${formatRatio(abs(b.ratio))} + 1)`, result: formatNumber(result.quantity), ok: ![a.agent, a.entity].includes(b.agentA) && ![a.agent, a.entity].includes(b.agentB) && b.agentA !== nthPart?.agent },
       { tex: `${formatNumber(a.quantity)} / (${formatRatio(abs(b.ratio))} + 1) * ${formatRatio(abs(b.ratio))}`, result: formatNumber(result.quantity), ok: b.agentA == nthPart?.agent },
     ] : []
@@ -1732,17 +1764,20 @@ function sequenceRule(items: Container[]): Question {
   }
 }
 
-function toComparisonEx(a: Container, b: Container): Comparison {
-  if (a.entity != b.entity) {
-    throw `Mismatch entity ${a.entity}, ${b.entity}`
+function toComparisonEx(a: Container | Rate, b: Container | Rate): Comparison {
+  const aEntity = a.kind === "rate" ? a.entity : { entity: a.entity, unit: a.unit }
+  const bEntity = b.kind === "rate" ? b.entity : { entity: b.entity, unit: b.unit }
+  if (aEntity.entity != bEntity.entity) {
+    throw `Mismatch entity ${aEntity.entity}, ${bEntity.entity}`
   }
   return {
     kind: 'comp', agentB: b.agent, agentA: a.agent,
     quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity - b.quantity : wrapToQuantity(`a.quantity - b.quantity`, { a, b }),
-    entity: a.entity, unit: a.unit
+    ...aEntity
   }
 }
-function toComparison(a: Container, b: Container): Question {
+
+function toComparison(a: Container | Rate, b: Container | Rate): Question {
   const result = toComparisonEx(a, b)
   return {
     question: `Porovnej ${result.agentA} a ${result.agentB}. O kolik?`,
@@ -1753,6 +1788,7 @@ function toComparison(a: Container, b: Container): Question {
     ] : []
   }
 }
+
 function toTransferEx(a: Container, b: Container, last: Delta): Transfer {
   if (a.entity != b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`
@@ -1842,6 +1878,7 @@ function pythagorasRuleEx(a: Container, b: Container, last: Phytagoras): Contain
     }
   }
 }
+
 function pythagorasRule(a: Container, b: Container, last: Phytagoras): Question {
   const result = pythagorasRuleEx(a, b, last)
   const longest = a.agent === last.longest ? a : b;
@@ -1855,6 +1892,54 @@ function pythagorasRule(a: Container, b: Container, last: Phytagoras): Question 
     ] : []
   }
 }
+function alligationRuleEx(items: Container[] | Rate[], last: Alligation): TwoPartRatio {
+
+  const [a, b, c] = items;
+  const aEntity = a.kind === "rate" ? a.entity : { entity: a.entity, unit: a.unit }
+  const bEntity = b.kind === "rate" ? b.entity : { entity: b.entity, unit: b.unit }
+  const cEntity = c.kind === "rate" ? c.entity : { entity: c.entity, unit: c.unit }
+
+  if (aEntity.entity != bEntity.entity || bEntity.entity != cEntity.entity) {
+    throw `Mismatch entity ${aEntity.entity}, ${bEntity.entity}, ${cEntity.entity}`
+  }
+  if (aEntity.unit != bEntity.unit || bEntity.unit != cEntity.unit) {
+    throw `Mismatch unit ${aEntity.unit}, ${bEntity.unit}, ${cEntity.unit}`
+  }
+
+  const nums = [a, b, c]
+
+  if (!areNumbers(nums.map(d => d.quantity))) {
+    throw `A=lligationRule does not support non quantitive numbers.`
+  }
+
+  // Sort them to find the middle (median)
+  nums.sort((x, y) => (x.quantity as number) - (y.quantity as number));
+
+  const small = nums[0].quantity as number
+  const middle = nums[1].quantity as number
+  const large = nums[2].quantity as number
+
+  return {
+    kind: 'ratios',
+    whole: last.agent,
+    ...aEntity,
+    ratios: [Math.abs(small - middle), Math.abs(large - middle)],
+    parts: [nums[0].agent, nums[2].agent]
+  }
+}
+
+function alligationRule(items: Container[] | Rate[], last: Alligation): Question {
+  const result = alligationRuleEx(items, last)
+  const [min, avarage, max] = items.map(d => d.quantity as number).sort((f, s) => f - s);
+  return {
+    question: `Vypočítej ${result.whole} mezi ${result.parts.join(" a ")} vyvážením vůči průměru?`,
+    result,
+    options: areNumbers(result.ratios) ? [
+      { tex: `${formatNumber(avarage)} - ${formatNumber(min)} :: ${formatNumber(max)} - ${formatNumber(avarage)}`, result: result.ratios.join(":"), ok: true },
+    ] : []
+  }
+}
+
 function triangleAngleRuleEx(a: Container, b: Container, last: TriangleAngle): Container {
   if (a.entity != b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`
@@ -2241,6 +2326,7 @@ function toRatios(parts: Container[] | Rate[], last: PartToPartRatio): Question 
   }
 }
 
+
 function evalToQuantityEx<
   T extends Predicate & { quantity: Quantity },
   K extends Omit<Predicate, 'quantity'>
@@ -2441,34 +2527,29 @@ function balancedPartitionRule(a: Container, balanced: BalancedPartition, nth?: 
   }
 }
 
-function mapContByScaleEx(target: Container, quantity: number, agent: string) {
-  if (!isNumber(target.quantity)) {
-    throw "mapContByScale is not supported by non quantity types"
-  }
-  return {
-    ...target,
-    agent: agent ?? target.agent,
-    quantity: target.quantity * quantity,
-  }
-}
 function mapContByScale(target: Container, factor: Container, last: Scale | InvertScale): Question {
-  if (!isNumber(target.quantity) || !isNumber(factor.quantity)) {
-    throw "mapContByScale is not supported by non quantity types"
-  }
   const inverse = last.kind === "scale-invert";
-  const quantity = inverse ? 1 / factor.quantity : factor.quantity;
-  const result = mapContByScaleEx(target, quantity, last.agent)
+
+  const quantity = isNumber(target.quantity) && isNumber(factor.quantity)
+    ? inverse ? target.quantity * 1 / factor.quantity : target.quantity * factor.quantity
+    : inverse ? wrapToQuantity('target.quantity * 1 / factor.quantity', { target, factor }) : wrapToQuantity('target.quantity * factor.quantity', { target, factor });
+
+  const result = {
+    ...target,
+    agent: last.agent ?? target.agent,
+    quantity
+  }
 
   return {
-    question: `${quantity > 1 ? "Zvětši" : "Zmenši"} ${factor.quantity} krát ${target.agent}.`,
+    question: isNumber(factor.quantity) ? `${factor.quantity > 1 ? "Zvětši" : "Zmenši"} ${factor.quantity} krát ${target.agent}.` : `${computeQuestion(result.quantity)}`,
     result,
-    options: [
+    options: isNumber(target.quantity) && isNumber(factor.quantity) && isNumber(result.quantity) ? [
       {
         tex: inverse
           ? `${formatNumber(target.quantity)} / ${formatNumber(factor.quantity)}`
           : `${formatNumber(target.quantity)} * ${formatNumber(factor.quantity)}`, result: formatNumber(result.quantity), ok: true
       }
-    ]
+    ] : []
 
   }
 }
@@ -2691,7 +2772,7 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
 
   const kind = last?.kind;
 
-  if (['sum-combine', "sum", 'product-combine', "product", "gcd", "lcd", "sequence", "tuple", "eval-expr"].includes(last?.kind) || ((last?.kind === "ratios") && args.length > 3)) {
+  if (['sum-combine', "sum", 'product-combine', "product", "gcd", "lcd", "sequence", "tuple", "eval-expr", "alligation"].includes(last?.kind) || ((last?.kind === "ratios") && args.length > 3)) {
     const arr = [a, b].concat(rest.slice(0, -1)) as Container[];
 
     return last.kind === "sequence"
@@ -2710,7 +2791,9 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
                   ? sumRule(arr, last as SumCombine | Sum)
                   : last.kind === "ratios"
                     ? toRatios(arr, last)
-                    : null
+                    : last.kind === "alligation"
+                      ? alligationRule(arr, last)
+                      : null
   }
   else if (a.kind === "eval-option" || b.kind === "eval-option") {
     return a.kind === "eval-option" ? evalToOption(b, a) : b.kind === "eval-option" ? evalToOption(a, b) : null
@@ -2757,11 +2840,14 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   else if (a.kind === "eval-expr" && b.kind === "cont") {
     return evalToQuantity([b], a)
   }
-  else if (a.kind === "rate" && b.kind === "rate" && last.kind === "ratios") {
+  else if (a.kind === "rate" && b.kind === "rate" && last?.kind === "ratios") {
     return toRatios([a, b], last)
   }
-  else if (a.kind === "rate" && b.kind === "rate" && last.kind === "linear-equation") {
+  else if (a.kind === "rate" && b.kind === "rate" && last?.kind === "linear-equation") {
     return solveEquation(a, b, last)
+  }
+  else if (a.kind === "comp" && b.kind === "comp" && last?.kind === "ratios") {
+    return toRatios([a, b], last)
   }
   else if ((a.kind === "cont" || a.kind === "comp") && b.kind === "unit") {
     return convertToUnit(a, b);
