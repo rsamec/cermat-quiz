@@ -49,11 +49,17 @@ function ctorUnit(unit) {
 function sum(wholeAgent, wholeEntity) {
   return { kind: "sum", wholeAgent, wholeEntity };
 }
-function counter(agent, quantity) {
-  return { kind: "cont", agent, quantity, entity: "" };
+function counter(agent, quantity, { asRatio } = {}) {
+  return { kind: "cont", agent, quantity, entity: "", asRatio };
 }
 function double() {
   return counter("dvojn\xE1sobek", 2);
+}
+function half() {
+  return counter("polovina", 1 / 2, { asRatio: true });
+}
+function halfProduct(agent) {
+  return [half(), product(agent)];
 }
 function product(wholeAgent, partAgents, asEntity) {
   return {
@@ -6088,7 +6094,7 @@ function formatPredicate(d, formatting) {
   let result = "";
   switch (d.kind) {
     case "cont":
-      result = compose`${formatAgent(d.agent)}=${formatQuantity(d.quantity)} ${formatEntity3(d.entity, d.unit)}`;
+      result = compose`${formatAgent(d.agent)}=${d.asRatio ? formatRatio3(d.quantity) : formatQuantity(d.quantity)} ${formatEntity3(d.entity, d.unit)}`;
       break;
     case "comp":
       if (isNumber(d.quantity)) {
@@ -6752,7 +6758,7 @@ function example_12() {
               last(rectangleWidth),
               compDiff(rectangleWidthLabel, "z\xE1kladna \u0161ed\xE9ho troj\xFAheln\xEDku", 1, dim.length.entity)
             ),
-            counter("polovina", 1 / 2),
+            half(),
             productArea("\u0161ed\xFD troj\xFAheln\xEDku")
           ),
           counter("po\u010Det \u0161ed\xFDch troj\xFAhlen\xEDk\u016F", 3),
@@ -16042,8 +16048,7 @@ function dort() {
   const stranaCtverce = deduce(
     deduce(
       contArea("plocha \u0159ezu dortu", 200),
-      counter("polovina", 1 / 2),
-      ctorScale("\u010Dtverec")
+      ...halfProduct("\u010Dtverec")
     ),
     evalExprAsCont("sqrt(x)", { kind: "cont", agent: "strana \u010Dtverce", ...dim.length })
   );
@@ -16284,6 +16289,7 @@ var M9C_2023_default = createLazyMap({
   11.2: () => tabor().oddilB,
   11.3: () => tabor().pocet,
   12: () => vagony(),
+  14: () => hranol4(),
   15.1: () => procenta2().encyklopediePocetStran,
   15.2: () => procenta2().rozaPocetStran,
   15.3: () => procenta2().pocetKnih,
@@ -16335,8 +16341,7 @@ function valec() {
       contLength("strana b", 6),
       pythagoras("uhlop\u0159\xED\u010Dka", ["strana a", "strana b"])
     ),
-    counter("polovina", 1 / 2),
-    product("polom\u011Br")
+    ...halfProduct("polom\u011Br")
   );
   return {
     polomerPodstavy: {
@@ -16461,6 +16466,35 @@ function tabor() {
         ctorBooleanOption(1 / 5, "closeTo", { asFraction: true })
       )
     }
+  };
+}
+function hranol4() {
+  const dim = dimensionEntity();
+  const plastL = "pl\xE1\u0161t";
+  const podstavaL = "podstava";
+  const podstavaArea = deduce(
+    contArea("hranol", 144),
+    ratios("hranol", [plastL, podstavaL, podstavaL], [2, 1, 1])
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        podstavaArea,
+        toCont(deduce(
+          deduceAs("pl\xE1\u0161t hranolu (4 schodn\xE9 bo\u010Dn\xED st\u011Bny) je dvakr\xE1t v\u011Bt\u0161\xED ne\u017E obsah podstavy, resp. bocni stena = podstava * 2 / 4 = podstava * 1/2")(
+            last(podstavaArea),
+            ...halfProduct("bo\u010Dn\xED st\u011Bna")
+          ),
+          deduce(
+            last(podstavaArea),
+            evalExprAsCont("sqrt(x)", { kind: "cont", agent: "strana podstavy", ...dim.length })
+          ),
+          ctor("quota")
+        ), { agent: "v\xFD\u0161ka", entity: dim.length }),
+        productVolume("hranol")
+      ),
+      ctorOption("B", 108)
+    )
   };
 }
 function procenta2() {

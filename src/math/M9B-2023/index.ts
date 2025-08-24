@@ -1,4 +1,4 @@
-import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, evalExprAsCont, counter, proportion, productCombine, ctorLinearEquation, comp, ctorScale, ctorComplementCompRatio, ctorSlideInvert, ctorScaleInvert, ctorBooleanOption, pythagoras, simplifyExpr, contArea, dimensionEntity, contLength, productArea, productVolume, squareNumbersPattern, nth } from "../../components/math";
+import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, evalExprAsCont, counter, proportion, productCombine, ctorLinearEquation, comp, ctorScale, ctorComplementCompRatio, ctorSlideInvert, ctorScaleInvert, ctorBooleanOption, pythagoras, simplifyExpr, contArea, dimensionEntity, contLength, productArea, productVolume, squareNumbersPattern, nth, halfProduct } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -156,8 +156,7 @@ function dort() {
     const stranaCtverce = deduce(
         deduce(
             contArea("plocha řezu dortu", 200),
-            counter("polovina", 1 / 2),
-            ctorScale("čtverec")
+            ...halfProduct("čtverec")
         ),
         evalExprAsCont("sqrt(x)", { kind: 'cont', agent: "strana čtverce", ...dim.length })
     )

@@ -1,4 +1,4 @@
-import { commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, sum, ctorComplement, ctorOption, counter, percent, rate, ratios, product, triangleAngle, ctorDifference, nthPart, contLength, productArea, dimensionEntity } from "../../components/math";
+import { commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, sum, ctorComplement, ctorOption, counter, percent, rate, ratios, product, triangleAngle, ctorDifference, nthPart, contLength, productArea, dimensionEntity, half } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
@@ -193,7 +193,7 @@ function example_12() {
               last(rectangleWidth),
               compDiff(rectangleWidthLabel, "základna šedého trojúhelníku", 1, dim.length.entity)
             ),
-            counter("polovina", 1 / 2),
+            half(),
             productArea("šedý trojúhelníku")
           ),
           counter("počet šedých trojúhleníků", 3),

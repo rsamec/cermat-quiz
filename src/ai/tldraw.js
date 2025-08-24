@@ -3605,7 +3605,7 @@ function formatPredicate(d, formatting) {
   let result = "";
   switch (d.kind) {
     case "cont":
-      result = compose`${formatAgent(d.agent)}=${formatQuantity(d.quantity)} ${formatEntity2(d.entity, d.unit)}`;
+      result = compose`${formatAgent(d.agent)}=${d.asRatio ? formatRatio2(d.quantity) : formatQuantity(d.quantity)} ${formatEntity2(d.entity, d.unit)}`;
       break;
     case "comp":
       if (isNumber(d.quantity)) {

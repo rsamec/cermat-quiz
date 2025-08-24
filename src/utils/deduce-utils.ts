@@ -462,7 +462,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
   let result = ''
   switch (d.kind) {
     case "cont":
-      result = compose`${formatAgent(d.agent)}=${formatQuantity(d.quantity)} ${formatEntity(d.entity, d.unit)}`;
+      result = compose`${formatAgent(d.agent)}=${d.asRatio ? formatRatio(d.quantity) : formatQuantity(d.quantity)} ${formatEntity(d.entity, d.unit)}`;
       break;
     case "comp":
       if (isNumber(d.quantity)) {

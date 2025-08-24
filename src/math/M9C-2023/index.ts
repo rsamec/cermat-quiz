@@ -1,4 +1,4 @@
-import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, pythagoras, rate, ratio, sum, product, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorBooleanOption, contLength, dimensionEntity, nthPart, comp, oblongNumbers, nth, productVolume, counter, ctorRound, ratios, alligation, ctorRatiosInvert, percent, ctorExpressionOption } from "../../components/math";
+import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, pythagoras, rate, ratio, sum, product, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorBooleanOption, contLength, dimensionEntity, nthPart, comp, oblongNumbers, nth, productVolume, counter, ctorRound, ratios, alligation, ctorRatiosInvert, percent, ctorExpressionOption, contArea, double, halfProduct } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, to, toCont, toRate } from "../../utils/deduce-utils";
 
 
@@ -13,6 +13,7 @@ export default createLazyMap({
     11.2: () => tabor().oddilB,
     11.3: () => tabor().pocet,
     12: () => vagony(),
+    14: () => hranol(),
     15.1: () => procenta().encyklopediePocetStran,
     15.2: () => procenta().rozaPocetStran,
     15.3: () => procenta().pocetKnih,
@@ -72,8 +73,7 @@ function valec() {
             contLength("strana b", 6),
             pythagoras("uhlopříčka", ["strana a", "strana b"])
         ),
-        counter("polovina", 1 / 2),
-        product("poloměr")
+        ...halfProduct("poloměr")
     )
     return {
         polomerPodstavy: {
@@ -216,6 +216,37 @@ function tabor() {
         }
 
 
+    }
+}
+
+function hranol() {
+    const dim = dimensionEntity()
+    const plastL = "plášt"
+    const podstavaL = "podstava"
+    const podstavaArea = deduce(
+        contArea("hranol", 144),
+        ratios("hranol", [plastL, podstavaL, podstavaL], [2, 1, 1])
+    )
+
+    return {
+        deductionTree: deduce(
+            deduce(
+                podstavaArea,
+                toCont(deduce(
+                    deduceAs("plášt hranolu (4 schodné boční stěny) je dvakrát větší než obsah podstavy, resp. bocni stena = podstava * 2 / 4 = podstava * 1/2")(
+                        last(podstavaArea),
+                        ...halfProduct("boční stěna")
+                    ),
+                    deduce(
+                        last(podstavaArea),
+                        evalExprAsCont("sqrt(x)", { kind: 'cont', agent: 'strana podstavy', ...dim.length })
+                    ),
+                    ctor("quota")
+                ), { agent: "výška", entity: dim.length }),
+                productVolume("hranol")
+            ),
+            ctorOption("B", 108)
+        )
     }
 }
 

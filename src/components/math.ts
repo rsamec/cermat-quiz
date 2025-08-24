@@ -75,6 +75,7 @@ export type Container = EntityBase &
   kind: 'cont',
   agent: string,
   quantity: Quantity
+  asRatio?: boolean
 }
 
 export type EvalExpr<T extends Omit<Predicate, 'quantity'>> = {
@@ -424,11 +425,21 @@ export function ctorRate(baseQuantity: number) {
   return { kind: 'rate', baseQuantity } as Predicate
 }
 
-export function counter(agent, quantity: number): Container {
-  return { kind: "cont", agent, quantity, entity: '' }
+export function counter(agent, quantity: number, { asRatio }: { asRatio?: boolean } = {}): Container {
+  return { kind: "cont", agent, quantity, entity: '', asRatio }
 }
 export function double() {
   return counter("dvojnásobek", 2)
+}
+export function doubleProduct(agent: string) {
+  return [double(), product(agent)]
+}
+
+export function half() {
+  return counter("polovina", 1 / 2, { asRatio: true })
+}
+export function halfProduct(agent: string) {
+  return [half(), product(agent)]
 }
 
 export function product(wholeAgent: string, partAgents?: string[], asEntity?: EntityDef): Product {
