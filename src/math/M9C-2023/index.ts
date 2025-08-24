@@ -1,5 +1,5 @@
-import { commonSense, compAngle, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorUnit, pythagoras, rate, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorScaleInvert, ctorBooleanOption, triangleAngle, contLength, contArea, dimensionEntity, triangularNumbersPattern, nthPart, comp, ctorSlideInvert, quota, oblongNumbers, rectangularNumbersPatternLower, nth, productVolume, counter, ctorRound, ratios, ctorLinearEquation, ctorRatios, alligation, ctorRatiosInvert } from "../../components/math";
-import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont, toPredicate } from "../../utils/deduce-utils";
+import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, pythagoras, rate, ratio, sum, product, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorBooleanOption, contLength, dimensionEntity, nthPart, comp, oblongNumbers, nth, productVolume, counter, ctorRound, ratios, alligation, ctorRatiosInvert, percent, ctorExpressionOption } from "../../components/math";
+import { createLazyMap, deduce, deduceAs, last, to, toCont, toRate } from "../../utils/deduce-utils";
 
 
 export default createLazyMap({
@@ -12,8 +12,10 @@ export default createLazyMap({
     11.1: () => tabor().oddilC,
     11.2: () => tabor().oddilB,
     11.3: () => tabor().pocet,
-
-
+    12: () => vagony(),
+    15.1: () => procenta().encyklopediePocetStran,
+    15.2: () => procenta().rozaPocetStran,
+    15.3: () => procenta().pocetKnih,
     16.1: () => obrazce().bileCtverce,
     16.2: () => obrazce().sedeCtverce,
     16.3: () => obrazce().sedeCtverecPosledniObrazec,
@@ -198,7 +200,7 @@ function tabor() {
                     oddilBChlapci,
                     oddilBDivky,
                     ctor("comp-ratio")
-                ),                
+                ),
                 ctorBooleanOption(1 / 2, "closeTo", { asFraction: true })
             )
         },
@@ -217,6 +219,70 @@ function tabor() {
     }
 }
 
+function procenta() {
+    const entity = "knih"
+    const nemecky = cont("německy psaných", 30, entity)
+    const celkemKnih = deduce(
+        nemecky,
+        percent("knihovna", "německy psaných", 10)
+    )
+    return {
+        encyklopediePocetStran: {
+            deductionTree: deduce(
+                deduce(
+                    compRelativePercent("encyklopedie", "atlas", 25),
+                    cont("atlas", 200, "stran")
+                ),
+                ctorOption("E", 250)
+            )
+        },
+        rozaPocetStran: {
+            deductionTree: deduce(
+                deduce(
+                    cont("kniha", 500, "stran"),
+                    compRelativePercent("přečetla", "nepřečetla", 50)
+                ),
+                ctorExpressionOption("A", "x < 210")
+            )
+        },
+        pocetKnih: {
+            deductionTree: deduce(
+                deduce(
+                    celkemKnih,
+                    deduce(
+                        nemecky,
+                        deduce(
+                            last(celkemKnih),
+                            ratio("knihovna", "anglicky psaných", 1 / 5)
+                        ),
+                        sum("německy a anglicky psaných")
+                    ),
+                    ctorDifference("česky psaných")
+                ),
+                ctorOption("B", 210)
+            )
+        },
+    }
+}
+function vagony() {
+    const vagonL = "vagón"
+    const entity = "lokomotivních délek"
+    return {
+        deductionTree: deduce(
+            deduce(
+                to(
+                    ratio("souprava", "lokomotiva", 1 / 17),
+                    cont("všechny vagóny", 16, entity),
+                ),
+                toRate(
+                    compRelative("lokomotiva", vagonL, -1 / 4), {
+                    agent: "souprava", entity: { entity: vagonL }, entityBase: { entity }
+                })
+            ),
+            ctorOption("C", 12)
+        )
+    }
+}
 function obrazce() {
     const obrazec = "obrazec";
     const sedyEntity = "šedý čtverec"

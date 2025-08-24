@@ -1,5 +1,5 @@
 import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate } from "../components/math.js"
-import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta } from "../components/math.js"
+import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison } from "../components/math.js"
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
 import { evaluate, simplify, substitute, toEquationExpr } from "./math-solver.js"
 
@@ -63,6 +63,17 @@ export function to(...children: Node[]): TreeNode {
 }
 export function toCont(child: TreeNode, { agent, entity }: { agent: string, entity?: { entity: string, unit?: string } }): TreeNode {
   return toPredicate(child, mapToCont({ agent, entity }));
+}
+export function toRate(child: RatioComparison, { agent, entity, entityBase }: { agent: string, entity: EntityDef, entityBase: EntityDef }) {
+  return to(child, {
+    kind: 'rate',
+    agent,
+    entity,
+    entityBase,
+    quantity: child.ratio,
+    baseQuantity: 1,
+    asRatio: true
+  } as Rate)
 }
 export function mapToCont({ agent, entity }: { agent: string, entity?: { entity: string, unit?: string } }) {
   return (node: Container | Transfer | ComparisonDiff | Comparison | Rate | Quota | Delta): Container => {
@@ -511,7 +522,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = compose`${formatKind(d)} ${joinArray(d.partAgents?.map(d => formatAgent(d)), " * ")}`;
       break;
     case "rate":
-      result = compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} per ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? '' : formatQuantity(d.baseQuantity)} ${formatEntity(d.entityBase.entity, d.entityBase.unit)}`
+      result = compose`${formatAgent(d.agent)} ${d.asRatio ? formatRatio(d.quantity) : formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} per ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? '' : formatQuantity(d.baseQuantity)} ${formatEntity(d.entityBase.entity, d.entityBase.unit)}`
       break;
     case "quota":
       result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${d.restQuantity !== 0 ? ` se zbytkem ${formatQuantity(d.restQuantity)}` : ''}`

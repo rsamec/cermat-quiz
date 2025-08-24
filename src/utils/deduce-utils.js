@@ -5730,6 +5730,17 @@ function to(...children) {
 function toCont(child, { agent, entity }) {
   return toPredicate(child, mapToCont({ agent, entity }));
 }
+function toRate2(child, { agent, entity, entityBase }) {
+  return to(child, {
+    kind: "rate",
+    agent,
+    entity,
+    entityBase,
+    quantity: child.ratio,
+    baseQuantity: 1,
+    asRatio: true
+  });
+}
 function mapToCont({ agent, entity }) {
   return (node) => {
     const typeNode = node;
@@ -6078,7 +6089,7 @@ function formatPredicate(d, formatting) {
       result = compose`${formatKind(d)} ${joinArray(d.partAgents?.map((d2) => formatAgent(d2)), " * ")}`;
       break;
     case "rate":
-      result = compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} per ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? "" : formatQuantity(d.baseQuantity)} ${formatEntity2(d.entityBase.entity, d.entityBase.unit)}`;
+      result = compose`${formatAgent(d.agent)} ${d.asRatio ? formatRatio2(d.quantity) : formatQuantity(d.quantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} per ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? "" : formatQuantity(d.baseQuantity)} ${formatEntity2(d.entityBase.entity, d.entityBase.unit)}`;
       break;
     case "quota":
       result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${d.restQuantity !== 0 ? ` se zbytkem ${formatQuantity(d.restQuantity)}` : ""}`;
@@ -6275,6 +6286,7 @@ export {
   toAs,
   toCont,
   toPredicate,
+  toRate2 as toRate,
   wordProblemGroupById
 };
 /*!

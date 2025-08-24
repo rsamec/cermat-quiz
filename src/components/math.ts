@@ -177,6 +177,7 @@ export type Rate = {
   entityBase: EntityBase,
   quantity: Quantity
   baseQuantity: Quantity
+  asRatio?: boolean
 }
 
 export type Quota = {
@@ -1031,7 +1032,6 @@ function ratioCompareRuleEx(a: Container | Rate, b: RatioComparison, nthPart: Nt
 
   return { ...a, ...result }
 }
-
 function ratioCompareRule(a: Container | Rate, b: RatioComparison, nthPart?: NthPart): Question {
   const result = ratioCompareRuleEx(a, b, nthPart)
   return {
@@ -1047,6 +1047,7 @@ function ratioCompareRule(a: Container | Rate, b: RatioComparison, nthPart?: Nth
     ] : []
   }
 }
+
 
 function transferRuleEx(a: Container, b: Transfer, transferOrder: "after" | "before"): Container {
   if (a.entity != b.entity) {
