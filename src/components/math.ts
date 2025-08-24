@@ -1345,7 +1345,7 @@ function toCompRule(a: Comparison, b: RatioComparison): Question {
   }
 }
 
-function compRatiosToCompRuleEx(a: PartToPartRatio, b: Comparison): Container {
+function compRatiosToCompRuleEx(a: PartToPartRatio, b: Comparison, nthPart: NthPart): Container {
   if (!areNumbers(a.ratios) || !isNumber(b.quantity)) {
     throw "ratios does not support non quantity type"
   }
@@ -1359,11 +1359,11 @@ function compRatiosToCompRuleEx(a: PartToPartRatio, b: Comparison): Container {
   const aAgent = a.parts[aIndex];
   const bAgent = a.parts[bIndex];
   const diff = a.ratios[aIndex] - a.ratios[bIndex];
-  if (!((diff > 0 && b.quantity > 0) || (diff < 0 && b.quantity < 0 || (diff == 0 && b.quantity == 0)))) {
+  if (!((diff > 0 && b.quantity > 0) || (diff < 0 && b.quantity < 0) || (diff == 0 && b.quantity == 0))) {
     throw `Uncompatible compare rules. Absolute compare ${b.quantity} between ${b.agentA} a ${b.agentB} does not match relative compare.`
   }
 
-  const lastIndex = aIndex > bIndex ? aIndex : bIndex;
+  const lastIndex = nthPart?.agent != null ? a.parts.findIndex(d => d === nthPart.agent) : aIndex > bIndex ? aIndex : bIndex;
   const nthPartAgent = a.parts[lastIndex]
 
   return {
@@ -1375,8 +1375,8 @@ function compRatiosToCompRuleEx(a: PartToPartRatio, b: Comparison): Container {
   }
 }
 
-function compRatiosToCompRule(a: PartToPartRatio, b: Comparison): Question {
-  const result = compRatiosToCompRuleEx(a, b)
+function compRatiosToCompRule(a: PartToPartRatio, b: Comparison, nthPart: NthPart): Question {
+  const result = compRatiosToCompRuleEx(a, b, nthPart)
   const aIndex = a.parts.indexOf(b.agentA);
   const bIndex = a.parts.indexOf(b.agentB);
   const lastIndex = aIndex > bIndex ? aIndex : bIndex;
@@ -1614,15 +1614,20 @@ function diffRule(a: Container, b: ComparisonDiff): Question {
   }
 }
 
-function sumRuleEx(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine | Sum): Container | PartWholeRatio | Rate {
+function sumRuleEx(items: Container[] | PartWholeRatio[] | Rate[] | RatioComparison[], b: SumCombine | Sum): Container | PartWholeRatio | Rate | RatioComparison {
   if (items.every(d => isRatioPredicate(d))) {
-    const wholes = items.map(d => (d as any).whole);
-    if (wholes.filter(unique).length == wholes.length) {
-      throw `Sum only part to whole ratio with the same whole ${wholes}`
+
+    const bases = items.every(d => d.kind === "ratio") ? items.map(d => d.whole) : items.map(d => d.agentB);
+    if (bases.filter(unique).length == bases.length) {
+      throw `Sum only part to whole ratio with the same whole ${bases}`
     };
+
     const ratios = items.map(d => d.ratio);
     const ratio = areNumbers(ratios) ? ratios.reduce((out, d) => out += d, 0) : wrapToRatio(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
-    return { kind: 'ratio', whole: wholes[0], ratio, part: b.wholeAgent, asPercent: items[0].asPercent }
+
+    return items.every(d => d.kind === "ratio")
+      ? { kind: 'ratio', whole: bases[0], ratio, part: b.wholeAgent, asPercent: items[0].asPercent }
+      : { kind: 'comp-ratio', agentA: b.wholeAgent, agentB: bases[0], ratio, asPercent: items[0].asPercent }
   }
   else if (items.every(d => isQuantityPredicate(d))) {
     const values = items.map(d => d.quantity);
@@ -1649,29 +1654,31 @@ function sumRuleEx(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine
   }
 
 }
-function sumRule(items: Container[] | PartWholeRatio[] | Rate[], b: SumCombine | Sum): Question {
+function sumRule(items: Container[] | PartWholeRatio[] | Rate[] | RatioComparison[], b: SumCombine | Sum): Question {
   const result = sumRuleEx(items, b)
   const isQuantity = isQuantityPredicate(result);
   return {
     question: result.kind === "cont"
       ? containerQuestion(result)
       : result.kind === "rate"
-        ? `${computeQuestion(result.quantity)} ${result.agent}`
-        : `${computeQuestion(result.ratio)} ${result.part}`,
+        ? `${computeQuestion(result.quantity)} ${result.agent}?`
+        : result.kind === "ratio"
+          ? `${computeQuestion(result.ratio)} ${result.part} z ${result.whole}?`
+          : `${computeQuestion(result.ratio)} kolikrát ${result.agentA} více nebo méně než ${result.agentB}?`,
     result,
     options: (isQuantity && isNumber(result.quantity)) || (isRatioPredicate(result) && isNumber(result.ratio)) ? [
       {
         tex: items.map(d => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio, d.percent)).join(" + "),
         result: isQuantity
           ? isNumber(result.quantity) ? formatNumber(result.quantity) : 'N/A'
-          : isNumber(result.ratio) ? formatRatio(result.ratio) : 'N/A',
+          : isNumber(result.ratio) ? formatRatio(result.ratio, result.asPercent) : 'N/A',
         ok: true
       },
       {
         tex: items.map(d => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio, d.percent)).join(" * "),
         result: isQuantity
           ? isNumber(result.quantity) ? formatNumber(result.quantity) : 'N/A'
-          : isNumber(result.ratio) ? formatRatio(result.ratio) : 'N/A',
+          : isNumber(result.ratio) ? formatRatio(result.ratio, result.asPercent) : 'N/A',
         ok: false
       },
     ] : []
@@ -2610,14 +2617,14 @@ function nthPartFactorByEx(multi: PartToPartRatio, factor: NumberOrExpression, n
     ratios: multiplePartByFactor(multi.ratios),
   }
 }
-function nthPartFactorBy(multi: PartToPartRatio, factor: Container, nthPart: NthPartFactor): Question {
+function nthPartFactorBy(multi: PartToPartRatio, factor: Container | Rate, nthPart: NthPartFactor): Question {
   if (!areNumbers(multi.ratios) || !isNumber(factor.quantity)) {
     throw "ratios are not supported by non quantity types"
   }
   const result = nthPartFactorByEx(multi, factor.quantity, nthPart)
 
   return {
-    question: `Rozšířit poměr o ${nthPart.agent} ${formatNumber(factor.quantity)} krát ${formatEntity(factor)}`,
+    question: `Rozšířit poměr o ${nthPart.agent} ${formatNumber(factor.quantity)} krát ${formatEntity(factor.kind === "rate" ? factor.entity : factor)}`,
     result,
     options: []
 
@@ -2858,9 +2865,6 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
   else if (a.kind === "rate" && b.kind === "rate" && last?.kind === "linear-equation") {
     return solveEquation(a, b, last)
   }
-  else if (a.kind === "comp" && b.kind === "comp" && last?.kind === "ratios") {
-    return toRatios([a, b], last)
-  }
   else if ((a.kind === "cont" || a.kind === "comp") && b.kind === "unit") {
     return convertToUnit(a, b);
   }
@@ -2913,10 +2917,10 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
     return kind === "comp" ? toCompRule(b, a) : compRatioToCompRule(a, b, kind === "nth-part" && last)
   }
   else if (a.kind === "comp" && b.kind == "ratios") {
-    return compRatiosToCompRule(b, a)
+    return compRatiosToCompRule(b, a, kind === "nth-part" && last)
   }
   else if (a.kind === "ratios" && b.kind == "comp") {
-    return compRatiosToCompRule(a, b)
+    return compRatiosToCompRule(a, b, kind === "nth-part" && last)
   }
   else if (a.kind === "ratios-invert" && b.kind == "ratios") {
     return invertRatiosRule(b, a)
@@ -3006,10 +3010,14 @@ function inferenceRuleEx(...args: Predicate[]): Question | Predicate {
     return kind === "ratio" ? ratiosConvertRule(b, a, last) : null;
   }
   else if (a.kind === "rate" && b.kind == "ratios") {
-    return partToPartRule(a, b, kind === "nth-part" && last)
+    return kind === "nth-factor"
+      ? nthPartFactorBy(b, a, last)
+      : partToPartRule(a, b, kind === "nth-part" && last)
   }
   else if (a.kind === "ratios" && b.kind == "rate") {
-    return partToPartRule(b, a, kind === "nth-part" && last)
+    return kind === "nth-factor"
+      ? nthPartFactorBy(a, b, last)
+      : partToPartRule(b, a, kind === "nth-part" && last)
   }
   else if (a.kind === "cont" && b.kind == "balanced-partition") {
     return balancedPartitionRule(a, b, kind === "nth-part" && last)
@@ -3227,7 +3235,8 @@ function formatNumber(d: number) {
 
 function formatRatio(d: number, asPercent?: boolean) {
   if (asPercent) return `${formatNumber(d * 100)} %`;
-  return (d > -2 && d < 2) ? helpers.convertToFraction(d) as string : formatNumber(d)
+  return helpers.convertToFraction(d) as string;
+  //return (d > -2 && d < 2) ? helpers.convertToFraction(d) as string : formatNumber(d)
 }
 
 function containerQuestion(d: Container) {
