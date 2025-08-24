@@ -1,7 +1,6 @@
-import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, pythagoras, rate, ratio, ratios, ctorOption, ctorBooleanOption, counter, product, sum, contLength, productArea, dimensionEntity } from "../../components/math";
+import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, pythagoras, rate, ratio, ratios, ctorOption, ctorBooleanOption, counter, product, sum, contLength, productArea, dimensionEntity, pattern, range } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
-import trojuhelnik from "./trojuhelnik";
 
 export default createLazyMap({
   1: () => dobaFilmu({ input: { celkovaDobaFilmuVHodina: 1 } }),
@@ -23,10 +22,60 @@ export default createLazyMap({
   15.1: () => vyrobenoVyrobku(),
   15.2: () => dovolenaNaKole(),
   15.3: () => propousteniVeFirme(),
-  16.1: () => trojuhelnik({ input: {} })[0],
-  16.2: () => trojuhelnik({ input: {} })[1],
-  16.3: () => trojuhelnik({ input: {} })[2],
+  16.1: () => trojuhelnik().patyObrazec,
+  16.2: () => trojuhelnik().sestyObrazec,
+  16.3: () => trojuhelnik().posledniObrazec,
 })
+
+function trojuhelnik() {
+
+
+  const agent = "obrazec"
+  const entity = "trojúhelník";
+  const whiteEntity = `bílý ${entity}`
+  const grayEntity = `šedý ${entity}`
+  const nthLabel = "pozice"
+
+  const vzor = pattern({
+    nthTerm: `3^(n-1)`,
+    nthPosition: 'ln(x)/ln(3)',
+    nthTermFormat: n => n == 1 ? "1" : `${range(n,1).map(d => 3).join(" * ")}`
+  }, {
+    entity: whiteEntity
+  })
+
+
+  return {
+    patyObrazec: {
+      deductionTree: deduce(
+        vzor,
+        cont(`${agent} 5`, 5, nthLabel)
+      )
+    },
+    sestyObrazec: {
+      deductionTree: deduce(
+        deduce(
+          vzor,
+          cont(`${agent} 6`, 6, nthLabel)
+        ),
+        cont(`${agent} 6`, 121, grayEntity),
+        sum("celkem", { entity: grayEntity })
+      )
+    },
+    posledniObrazec: {
+      deductionTree: deduce(
+        to(
+          comp("poslední", "předposlední", 6561, grayEntity),
+          commonSense("Počet šedých trojúhelníků v následujícím obrazci se zvýší o počet bílých trojúhelníků v předchozím obrazci."),
+          cont("předposlední", 6561, whiteEntity)
+        ),
+        counter("trojnásobek", 3),
+        product("poslední obrazec")
+      )
+    },
+
+  }
+}
 
 function dobaFilmu({ input }: { input: { celkovaDobaFilmuVHodina: number } }) {
   const entity = "hodin";

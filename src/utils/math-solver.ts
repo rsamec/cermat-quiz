@@ -51,11 +51,15 @@ export function evaluate(expression: string, context?: Record<string, any>) {
   return parser.parse(expression).evaluate(context)
 }
 
+export function substitute(expression: string, source: string, replace: string) {
+  return parser.parse(expression).substitute(source, replace)
+}
+
 export function evalExpression(expression: any, quantityOrContext: number | Record<string, any>): string {
   const expr = typeof expression === "string" ? parser.parse(expression) : toEquationExpr(expression);
   const variables = expr.variables();
   const context = typeof quantityOrContext === "number" ? { [variables.length === 1 ? variables : variables[0]]: quantityOrContext } : quantityOrContext;
-  
+
   if (variables.length <= Object.keys(context).length) {
     //throw `Eval only expression with exactly one variable. Variables ${variables.join(",")}`  
     return expr.evaluate(context);
@@ -110,10 +114,10 @@ export function toEquationExpr(lastExpr) {
 
 function cleanUpExpression(exp) {
   const replaced = exp.toString()
-  .replaceAll(".quantity", "")
-  .replaceAll(".ratio", "")
-  .replaceAll(".baseQuantity", "")
-  return formatNumbersInExpression(replaced)  
+    .replaceAll(".quantity", "")
+    .replaceAll(".ratio", "")
+    .replaceAll(".baseQuantity", "")
+  return formatNumbersInExpression(replaced)
 }
 function formatNumbersInExpression(expr) {
   return expr.replace(/(\d*\.\d+|\d+)/g, (match) => {
@@ -125,7 +129,7 @@ function formatNumbersInExpression(expr) {
   });
 }
 
-export function solveLinearEquation(lhs, rhs, variable = 'x'): number {  
+export function solveLinearEquation(lhs, rhs, variable = 'x'): number {
   const expr = `(${typeof lhs === "number" ? lhs : toEquationExpr(lhs)}) - (${typeof rhs === "number" ? rhs : toEquationExpr(rhs)})`;
   const terms = evaluateLinearExpression(expr, variable);
 

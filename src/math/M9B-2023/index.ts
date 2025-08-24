@@ -1,4 +1,4 @@
-import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, evalExprAsCont, counter, proportion, productCombine, ctorLinearEquation, comp, ctorScale, ctorComplementCompRatio, ctorSlideInvert, ctorScaleInvert, ctorBooleanOption, pythagoras, simplifyExpr, contArea, dimensionEntity, contLength, productArea, productVolume } from "../../components/math";
+import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, evalExprAsCont, counter, proportion, productCombine, ctorLinearEquation, comp, ctorScale, ctorComplementCompRatio, ctorSlideInvert, ctorScaleInvert, ctorBooleanOption, pythagoras, simplifyExpr, contArea, dimensionEntity, contLength, productArea, productVolume, squareNumbersPattern, nth } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -345,28 +345,30 @@ function vzorCtverce() {
     const entity = "pole"
 
     const position = "pozice"
-    const currentPosition = deduceAs("vzor opakování, resp. počet polí je závislý na pozici = n * n, kde n je pozice")(
+    const pattern = squareNumbersPattern({ entity });
+    const currentPosition = deduce(
         cont("obrazec", 400, entity),
-        evalExprAsCont("sqrt(x)", { kind: 'cont', agent: "pozice obrazec", entity: position })
+        pattern,
+        nth(position)
     )
 
 
     return {
         pridano: {
-            deductionTree: deduceAs("vzor opakování, resp. počet přídaných polí je závislý na pozici = (4 * n) - 4, kde n je pozice")(
+            deductionTree: deduceAs("vzor opakování, resp. počet přídaných polí je závislý na pozici = (4 x spodní, horní, levé a pravá okraje) - 4 za rohové prvky")(
                 cont("9. obrazec", 9, position),
                 evalExprAsCont("(4 * n) - 4", { kind: 'cont', agent: "přidaná pole na 9. obrazec", entity })
             )
         },
         rozdil: {
-            deductionTree: deduceAs("vzor opakování, resp. počet polí je závislý na pozici = n * n, kde n je pozice")(
+            deductionTree: deduce(
                 deduceAs("u sudých obrazců tmavá")(
-                    cont("10. obrazec - celkem tmavá", 10, position),
-                    evalExprAsCont("n * n", { kind: 'cont', agent: "10. obrazec", entity })
+                    cont("10. obrazec", 10, position),
+                    pattern,
                 ),
                 deduceAs("u sudých obrazců světlá")(
-                    cont("9. obrazec - celkem světlá", 9, position),
-                    evalExprAsCont("n * n", { kind: 'cont', agent: "9. obrazec", entity })
+                    cont("9. obrazec", 9, position),
+                    pattern
                 ),
                 ctorDifference("rozdíl",)
             )
@@ -378,14 +380,14 @@ function vzorCtverce() {
                         currentPosition,
                         cont("posun na další obrazec", 1, position),
                         ctorSlide("následující obrazec")
-                    ), evalExprAsCont("n * n", { kind: 'cont', agent: "obrazec", entity })
+                    ), pattern
                 ),
                 deduce(
                     deduce(
                         last(currentPosition),
                         cont("posun na předchozí obrazec", 1, position),
                         ctorSlideInvert("předchozí obrazec")
-                    ), evalExprAsCont("n * n", { kind: 'cont', agent: "obrazec", entity })
+                    ), pattern
                 ),
                 ctor("tuple")
             )

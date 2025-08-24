@@ -1657,6 +1657,9 @@ function lcdCalc(numbers) {
 function evaluate2(expression, context) {
   return parser.parse(expression).evaluate(context);
 }
+function substitute2(expression, source, replace) {
+  return parser.parse(expression).substitute(source, replace);
+}
 function evalExpression(expression, quantityOrContext) {
   const expr = typeof expression === "string" ? parser.parse(expression) : toEquationExpr(expression);
   const variables = expr.variables();
@@ -1820,6 +1823,7 @@ export {
   evalExpression,
   evaluate2 as evaluate,
   solveLinearEquation,
+  substitute2 as substitute,
   toEquation,
   toEquationExpr
 };

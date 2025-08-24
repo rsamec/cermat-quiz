@@ -1,4 +1,4 @@
-import { commonSense, comp, cont, ctor, sum, ctorComplement, ctorDifference, ctorOption, ctorUnit, percent, rate, ratio, ratios, transfer, ctorSlide, compRatio, nthPart, counter, double, product, contLength, productArea, dimensionEntity, contArea, productCombine } from "../../components/math"
+import { commonSense, comp, cont, ctor, sum, ctorComplement, ctorDifference, ctorOption, ctorUnit, percent, rate, ratio, ratios, transfer, ctorSlide, compRatio, nthPart, counter, double, product, contLength, productArea, dimensionEntity, contArea, productCombine, pattern, balancedPartition, balancedEntityPartition, ctorRatios, range } from "../../components/math"
 import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "../../utils/deduce-utils"
 
 export default createLazyMap({
@@ -22,8 +22,112 @@ export default createLazyMap({
   15.1: () => jazyky().porovnaniZaku,
   15.2: () => jazyky().fracouzstina,
   15.3: () => jazyky().nemcinaVsFrancouzstina,
+  16.1: () => obrazec().pozice,
+  16.2: () => obrazec().pocet,
+  16.3: () => obrazec().pomer,
 })
+function obrazec() {
+  const obrazec = "obrazec"
+  const entityObdelnik = "obdelník"
+  const entityRady = "číslo řada"
+  const nthPosition = "pozice"
 
+  const vzorCtverce = pattern({
+    nthTerm: '(n % 2)==0 ? 0: n',
+    nthPosition: '',
+    nthTermFormat: n => n % 2 == 0 ? "0" : [1].concat(range((n - 1) / 2, 1).map(_ => 2)).join(" + ")
+  }, { entity: "čtverec" })
+
+  const vzorObdelnik = pattern({
+    nthTerm: '(n % 2)==0 ? 1/2*n: 0',
+    nthPosition: '',
+    nthTermFormat: n => n % 2 == 0 ? range(n / 2, 1).map(_ => 1).join(" + ") : "0"
+  }, { entity: "obdelník" })
+
+  const obdelnik50 = deduce(
+    vzorObdelnik,
+    cont("obrazec č. 50", 50, nthPosition)
+  )
+  const ctverce51 = deduce(
+    vzorCtverce,
+    cont("obrazec č. 51", 51, nthPosition)
+  )
+
+  const bily = balancedEntityPartition(["bílý", "šedý"], { entity: "bílý" });
+  const sedy = balancedEntityPartition(["bílý", "šedý"], { entity: "šedý" });
+
+  return {
+    pozice: {
+      deductionTree: deduce(
+        to(
+          commonSense("Obdélníky se nacházejí v sudých řadách a jejich počet odpovídá polovině čísla sudé řady."),
+          commonSense("18 obdelníků (končí šedým obdelníkem) nebo 19 obdelníků (končí bílým obdelníkem)"),
+          cont(obrazec, 19, entityObdelnik)
+        ),
+        double(),
+        product("nejvýšší pořadové číslo řady")
+      )
+    },
+    pocet: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            vzorCtverce,
+            cont("obrazec č. 29", 29, nthPosition)
+          ),
+          bily,
+          nthPart("bílý")
+        ),
+        deduce(
+          deduce(
+            vzorObdelnik,
+            cont("obrazec č. 30", 30, nthPosition)
+          ),
+          bily,
+          nthPart("bílý")
+        ),
+        sum("celkem")
+      )
+    },
+    pomer: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            deduce(
+              obdelnik50,
+              bily,
+              nthPart("bílý")
+            ),
+            double(),
+            product("obrazec č. 50")
+          ),
+          deduce(
+            ctverce51,
+            bily,
+            nthPart("bílý")
+          ),
+          sum("celkem")
+        ),
+        deduce(
+          deduce(
+            deduce(
+              last(obdelnik50),
+              sedy
+            ),
+            double(),
+            product("obrazec č. 50")
+          ),
+          deduce(
+            last(ctverce51),
+            sedy,
+          ),
+          sum("celkem")
+        ),
+        ctorRatios("pom")
+      )
+    }
+  }
+}
 function ceremonial() {
   const entity = "doba"
   const unit = "minut"
@@ -70,7 +174,9 @@ function ceremonial() {
 
 function doplneniCisel() {
   const entity = ""
-  const rozdilCisel = comp("číslo v silně ohraničeném kroužku", "číslo v kroužku", 80, entity)
+  const boldNumberL = "číslo v silně ohraničeném kroužku"
+  const numberL = "číslo v kroužku"
+  const rozdilCisel = comp(boldNumberL, numberL, 80, entity)
 
   const rozdilCisel2 = to(
     deduce(
@@ -78,13 +184,13 @@ function doplneniCisel() {
       counter("rozdil", -10),
       sum("rozdíl")
     ),
-    comp("číslo v silně ohraničeném kroužku", "1. číslo v kroužku", 24, entity)
+    comp(boldNumberL, numberL, 24, entity)
   )
   return {
     cislo1: {
       deductionTree: deduce(
         deduce(
-          compRatio("číslo v silně ohraničeném kroužku", "číslo v kroužku", 3),
+          compRatio(boldNumberL, numberL, 3),
           rozdilCisel
         ),
         rozdilCisel
@@ -93,7 +199,7 @@ function doplneniCisel() {
     cislo2: {
       deductionTree: deduce(
         deduce(
-          compRatio("číslo v silně ohraničeném kroužku", "1.číslo v kroužku", 2),
+          compRatio(boldNumberL, numberL, 2),
           rozdilCisel2
         ),
         last(rozdilCisel2)
@@ -146,7 +252,7 @@ function asistencniPes() {
   const baraPolovinaL = `polovina ${baraL}`;
   const cyrilPolovinaL = `polovina ${cyrilL}`;
 
-  
+
   const baraPolovina = ratio(baraL, baraPolovinaL, 1 / 2)
   const baraTretina = ratio(baraL, cyrilPolovinaL, 1 / 3)
   const adamTretina = ratio(adamL, baraPolovinaL, 1 / 3)

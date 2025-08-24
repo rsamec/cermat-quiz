@@ -1,7 +1,7 @@
 import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate } from "../components/math.js"
 import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta } from "../components/math.js"
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
-import { toEquationExpr } from "./math-solver.js"
+import { evaluate, simplify, substitute, toEquationExpr } from "./math-solver.js"
 
 type PredicateLabel = { labelKind?: 'input' | 'deduce', label?: number }
 
@@ -313,7 +313,7 @@ export function jsonToMarkdownChat(node, formatting?: any) {
     const args = []
     // Add node details if they exist
     if (isPredicate(node)) {
-      return formatPredicate(node, { ...mdFormatting, formatKind: () => ``, ...formatting });
+      return formatPredicate(node, { ...mdFormatting, formatKind: () => ``, formatTable: d => `vzor opakování \n\n${mdFormatTable(d)}`, ...formatting });
     }
 
     let q = null
@@ -390,9 +390,29 @@ const mdFormatting = {
     return isEmptyOrWhiteSpace(res) ? '' : `__${res.trim()}__`;
   },
   formatAgent: d => `**${d}**`,
-  formatSequence: d => `${formatSequence(d)}`
+  formatSequence: d => `${formatSequence(d)}`,
+  formatTable: (data: (string | number)[][]) => `vzor opakování ${data.map(d => d[1]).join()}`
 }
+export function mdFormatTable(data: (string | number)[][]) {
+  if (!Array.isArray(data) || data.length === 0) return "";
 
+  // First row is header
+  const header: (string | number)[] = data[0].map(d => "");
+  const rows: (string | number)[][] = data;
+
+  // Build header row
+  let markdown = "| " + header.join(" | ") + " |\n";
+
+  // Build separator row
+  markdown += "| " + header.map(() => "---").join(" | ") + " |\n";
+
+  // Build data rows
+  for (const row of rows) {
+    markdown += "| " + row.join(" | ") + " |\n";
+  }
+
+  return markdown;
+}
 const mermaidFormatting = {
   ...mdFormatting,
   formatKind: d => ``,
@@ -421,7 +441,7 @@ function formatSequence(type) {
 }
 
 export function formatPredicate(d: Predicate, formatting: any) {
-  const { formatKind, formatAgent, formatEntity, formatQuantity, formatRatio, formatSequence, compose } = { ...mdFormatting, ...formatting }
+  const { formatKind, formatAgent, formatEntity, formatQuantity, formatRatio, formatSequence, formatTable, compose } = { ...mdFormatting, ...formatting }
   if ((isQuantityPredicate(d) && d.quantity == null) ||
     (isRatioPredicate(d) && d.ratio == null) ||
     (isRatiosPredicate(d) && d.ratios == null)) {
@@ -498,6 +518,14 @@ export function formatPredicate(d: Predicate, formatting: any) {
       break;
     case "sequence":
       result = compose`${d.type != null ? formatSequence(d.type) : ''}`
+      break;
+    case "pattern":
+      result = compose`${formatTable(
+        [...[1, 2, 3, 4, 5]
+          .map(pos => [pos, evaluate(d.nthTerm, { n: pos }), d.nthTermFormat != null ? d.nthTermFormat(pos) : substitute(d.nthTerm, "n", pos.toString())])
+          , ["...", "...", "..."]
+        ])
+        }`
       break;
     case "nth-part":
       result = compose`${formatAgent(d.agent)}`;

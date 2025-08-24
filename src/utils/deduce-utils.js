@@ -272,17 +272,25 @@ function roundTo(a, b) {
     ] : []
   };
 }
+function computeQuantityByRatioBase(a, b) {
+  return isNumber(a.quantity) && isNumber(b.ratio) ? b.ratio >= 0 ? a.quantity * b.ratio : a.quantity / abs(b.ratio) : isNumber(b.ratio) ? b.ratio >= 0 ? wrapToQuantity(`a.quantity * b.ratio`, { a, b }) : wrapToQuantity(`a.quantity / abs(b.ratio)`, { a, b }) : wrapToQuantity(`b.ratio >= 0 ? a.quantity * b.ratio : a.quantity / abs(b.ratio)`, { a, b });
+}
+function computeQuantityByRatioPart(a, b) {
+  return isNumber(a.quantity) && isNumber(b.ratio) ? b.ratio > 0 ? a.quantity / b.ratio : a.quantity * abs(b.ratio) : isNumber(b.ratio) ? b.ratio > 0 ? wrapToQuantity(`a.quantity / b.ratio`, { a, b }) : wrapToQuantity(`a.quantity * abs(b.ratio)`, { a, b }) : wrapToQuantity(`b.ratio > 0 ? a.quantity / b.ratio : a.quantity * abs(b.ratio)`, { a, b });
+}
 function ratioCompareRuleEx(a, b, nthPart) {
   let result;
-  if (a.agent == b.agentB) {
+  if (a.agent == b.agentB || a.entity == b.agentB) {
     result = {
-      agent: b.agentA,
-      quantity: isNumber(a.quantity) && isNumber(b.ratio) ? b.ratio >= 0 ? a.quantity * b.ratio : a.quantity / abs(b.ratio) : isNumber(b.ratio) ? b.ratio >= 0 ? wrapToQuantity(`a.quantity * b.ratio`, { a, b }) : wrapToQuantity(`a.quantity / abs(b.ratio)`, { a, b }) : wrapToQuantity(`b.ratio >= 0 ? a.quantity * b.ratio : a.quantity / abs(b.ratio)`, { a, b })
+      agent: a.agent == b.agentB ? b.agentA : a.agent,
+      entity: a.entity == b.agentB ? b.agentA : a.entity,
+      quantity: computeQuantityByRatioBase(a, b)
     };
-  } else if (a.agent == b.agentA) {
+  } else if (a.agent == b.agentA || a.entity == b.agentA) {
     result = {
-      agent: b.agentB,
-      quantity: isNumber(a.quantity) && isNumber(b.ratio) ? b.ratio > 0 ? a.quantity / b.ratio : a.quantity * abs(b.ratio) : isNumber(b.ratio) ? b.ratio > 0 ? wrapToQuantity(`a.quantity / b.ratio`, { a, b }) : wrapToQuantity(`a.quantity * abs(b.ratio)`, { a, b }) : wrapToQuantity(`b.ratio > 0 ? a.quantity / b.ratio : a.quantity * abs(b.ratio)`, { a, b })
+      agent: a.agent == b.agentA ? b.agentB : a.agent,
+      entity: a.entity == b.agentA ? b.agentB : a.entity,
+      quantity: computeQuantityByRatioPart(a, b)
     };
   } else if (b.agentA == nthPart?.agent) {
     result = {
@@ -300,12 +308,12 @@ function ratioCompareRuleEx(a, b, nthPart) {
 function ratioCompareRule(a, b, nthPart) {
   const result = ratioCompareRuleEx(a, b, nthPart);
   return {
-    question: `${computeQuestion(result.quantity)} ${a.agent == b.agentB || b.agentA === nthPart?.agent ? b.agentA : b.agentB}${result.kind === "rate" ? formatEntity(result.entity) : formatEntity(result)}?`,
+    question: `${computeQuestion(result.quantity)} ${result.agent} ${result.kind === "rate" ? formatEntity(result.entity) : formatEntity(result)}?`,
     result,
     options: isNumber(a.quantity) && isNumber(b.ratio) && isNumber(result.quantity) ? [
-      { tex: `${formatNumber(a.quantity)} * ${formatRatio(abs(b.ratio))}`, result: formatNumber(a.quantity * b.ratio), ok: a.agent == b.agentB && b.ratio >= 0 || a.agent == b.agentA && b.ratio < 0 },
-      { tex: `${formatNumber(a.quantity)} / ${formatRatio(abs(b.ratio))}`, result: formatNumber(a.quantity / b.ratio), ok: a.agent == b.agentA && b.ratio >= 0 || a.agent == b.agentB && b.ratio < 0 },
-      { tex: `${formatNumber(a.quantity)} / (${formatRatio(abs(b.ratio))} + 1)`, result: formatNumber(result.quantity), ok: a.agent !== b.agentA && a.agent !== b.agentB && b.agentA !== nthPart?.agent },
+      { tex: `${formatNumber(a.quantity)} * ${formatRatio(abs(b.ratio))}`, result: formatNumber(a.quantity * b.ratio), ok: [a.agent, a.entity].includes(b.agentB) && b.ratio >= 0 || [a.agent, a.entity].includes(b.agentA) && b.ratio < 0 },
+      { tex: `${formatNumber(a.quantity)} / ${formatRatio(abs(b.ratio))}`, result: formatNumber(a.quantity / b.ratio), ok: [a.agent, a.entity].includes(b.agentA) && b.ratio >= 0 || [a.agent, a.entity].includes(b.agentB) && b.ratio < 0 },
+      { tex: `${formatNumber(a.quantity)} / (${formatRatio(abs(b.ratio))} + 1)`, result: formatNumber(result.quantity), ok: ![a.agent, a.entity].includes(b.agentA) && ![a.agent, a.entity].includes(b.agentB) && b.agentA !== nthPart?.agent },
       { tex: `${formatNumber(a.quantity)} / (${formatRatio(abs(b.ratio))} + 1) * ${formatRatio(abs(b.ratio))}`, result: formatNumber(result.quantity), ok: b.agentA == nthPart?.agent }
     ] : []
   };
@@ -498,6 +506,9 @@ function ratiosConvertRule(a, b, last2) {
   };
 }
 function compRatioToCompRuleEx(a, b) {
+  if (!(a.agentA == b.agentA && a.agentB == b.agentB || a.agentA == b.agentB && a.agentB == b.agentA)) {
+    throw "Uncompatible compare rules. Absolute compare agent does not match relative compare agent";
+  }
   const agent = a.agentB === b.agentA ? b.agentA : b.agentB;
   if (isNumber(a.ratio) && isNumber(b.quantity)) {
     const quantity = a.agentB === b.agentA ? -1 * b.quantity : b.quantity;
@@ -521,6 +532,27 @@ function compRatioToCompRule(a, b, last2) {
     options: isNumber(a.ratio) && isNumber(b.quantity) && isNumber(result.quantity) ? [
       { tex: `${formatNumber(abs(b.quantity))} / ${formatRatio(abs(a.ratio - 1))}`, result: formatNumber(result.quantity), ok: true },
       { tex: `${formatNumber(abs(b.quantity))} / ${formatRatio(abs(1 - a.ratio))}`, result: formatNumber(abs(b.quantity / (1 - a.ratio))), ok: false }
+    ] : []
+  };
+}
+function toCompRuleEx(a, b) {
+  if (a.entity != b.agentA && a.entity != b.agentB) {
+    throw `Mismatch entity with ${a.agentA} with agents ${b.agentA}, ${b.agentB}`;
+  }
+  return {
+    ...a,
+    entity: a.entity == b.agentA ? b.agentB : b.agentA,
+    quantity: a.entity == b.agentA ? computeQuantityByRatioPart(a, b) : computeQuantityByRatioBase(a, b)
+  };
+}
+function toCompRule(a, b) {
+  const result = toCompRuleEx(a, b);
+  return {
+    question: `Porovnej ${result.agentA} a ${result.agentB}. O kolik ${result.entity}?`,
+    result,
+    options: isNumber(b.ratio) && isNumber(a.quantity) && isNumber(result.quantity) ? [
+      { tex: `${formatNumber(a.quantity)} * ${formatRatio(abs(b.ratio))}`, result: formatNumber(a.quantity * b.ratio), ok: [a.entity].includes(b.agentB) && b.ratio >= 0 || [a.entity].includes(b.agentA) && b.ratio < 0 },
+      { tex: `${formatNumber(a.quantity)} / ${formatRatio(abs(b.ratio))}`, result: formatNumber(a.quantity / b.ratio), ok: [a.entity].includes(b.agentA) && b.ratio >= 0 || [a.entity].includes(b.agentB) && b.ratio < 0 }
     ] : []
   };
 }
@@ -1434,6 +1466,42 @@ function partToPartRule(a, partToPartRatio, nth) {
     ] : []
   };
 }
+function computeBalancedPartition(n, k, i) {
+  if (i < 0 || i >= k) {
+    throw new Error("Index out of range");
+  }
+  const q = Math.floor(n / k);
+  const r = n % k;
+  return i < r ? q + 1 : q;
+}
+function balancedPartitionRuleEx(a, balanced, nth) {
+  if (!isNumber(a.quantity)) {
+    throw "balancedPartitionRule is not supported by non quantity types";
+  }
+  const index = nth?.agent != null ? balanced.parts.findIndex((d) => d === nth.agent) : balanced.parts.length - 1;
+  if (index === -1) {
+    throw `No part found ${nth?.agent ?? balanced.parts.length} - ${balanced.parts.join(",")}`;
+  }
+  const agent = balanced.parts[index];
+  return {
+    kind: "cont",
+    agent: balanced.entity != null ? a.agent : agent,
+    entity: balanced.entity != null ? balanced.entity.entity : a.entity,
+    unit: balanced.entity != null ? balanced.entity.unit : a.unit,
+    quantity: computeBalancedPartition(a.quantity, balanced.parts.length, index)
+  };
+}
+function balancedPartitionRule(a, balanced, nth) {
+  if (!isNumber(a.quantity)) {
+    throw "balancedPartitionRule is not supported by non quantity types";
+  }
+  const result = balancedPartitionRuleEx(a, balanced, nth);
+  return {
+    question: containerQuestion(result),
+    result,
+    options: isNumber(a.quantity) && isNumber(result.quantity) ? [] : []
+  };
+}
 function mapContByScaleEx(target, quantity, agent) {
   if (!isNumber(target.quantity)) {
     throw "mapContByScale is not supported by non quantity types";
@@ -1558,13 +1626,26 @@ function nthTermRuleEx(a, b) {
     quantity: b.type.kind === "arithmetic" ? first + (a.quantity - 1) * b.type.commonDifference : b.type.kind === "quadratic" ? nthQuadraticElementFromDifference(first, second, b.type.secondDifference, a.quantity) : b.type.kind === "geometric" ? first * Math.pow(b.type.commonRatio, a.quantity - 1) : NaN
   };
 }
+function nthTermExpressionRuleEx(a, b) {
+  if (!isNumber(a.quantity)) {
+    throw "nthTermExpressionRule are not supported by non quantity types";
+  }
+  return evalToQuantityEx([a], {
+    predicate: {
+      kind: "cont",
+      agent: a.agent,
+      entity: b.entity
+    },
+    expression: b.nthTerm
+  });
+}
 function nthTermRule(a, b) {
-  const result = nthTermRuleEx(a, b);
+  const result = b.kind === "pattern" ? nthTermExpressionRuleEx(a, b) : nthTermRuleEx(a, b);
   return {
-    question: `Vypo\u010Dti ${result.agent} na pozici ${a.quantity}?`,
+    question: `Vypo\u010Dti ${result.entity}?`,
     result,
     options: isNumber(a.quantity) && isNumber(result.quantity) ? [
-      { tex: formatSequence(b.type, a.quantity), result: formatNumber(result.quantity), ok: true }
+      { tex: b.kind === "pattern" ? b.nthTerm : formatSequence(b.type, a.quantity), result: formatNumber(result.quantity), ok: true }
     ] : []
   };
 }
@@ -1581,8 +1662,21 @@ function nthPositionRuleEx(a, b, newEntity = "nth") {
     quantity: kind === "arithmetic" ? Math.round((a.quantity - first) / b.type.commonDifference) + 1 : kind === "quadratic" ? findPositionInQuadraticSequence(a.quantity, first, second, b.type.secondDifference) : kind === "geometric" ? Math.round(Math.log(a.quantity / first) / Math.log(b.type.commonRatio)) + 1 : NaN
   };
 }
+function nthPositionExpressionRuleEx(a, b, newEntity = "nth") {
+  if (!isNumber(a.quantity)) {
+    throw "nthPositionExpressionRuleEx are not supported by non quantity types";
+  }
+  return evalToQuantityEx([a], {
+    predicate: {
+      kind: "cont",
+      agent: a.agent,
+      entity: newEntity
+    },
+    expression: b.nthPosition
+  });
+}
 function nthPositionRule(a, b, newEntity = "nth") {
-  const result = nthPositionRuleEx(a, b, newEntity);
+  const result = b.kind === "pattern" ? nthPositionExpressionRuleEx(a, b, newEntity) : nthPositionRuleEx(a, b, newEntity);
   return {
     question: `Vypo\u010Dti pozici ${result.agent} = ${formatEntity(a)}?`,
     result,
@@ -1664,9 +1758,9 @@ function inferenceRuleEx(...args) {
   } else if (a.kind === "rate" && (b.kind == "cont" || b.kind === "quota")) {
     return rateRule(b, a);
   } else if (a.kind === "comp" && b.kind == "comp-ratio") {
-    return compRatioToCompRule(b, a, kind === "nth-part" && last2);
+    return kind === "comp" ? toCompRule(a, b) : compRatioToCompRule(b, a, kind === "nth-part" && last2);
   } else if (a.kind === "comp-ratio" && b.kind == "comp") {
-    return compRatioToCompRule(a, b, kind === "nth-part" && last2);
+    return kind === "comp" ? toCompRule(b, a) : compRatioToCompRule(a, b, kind === "nth-part" && last2);
   } else if (a.kind === "comp" && b.kind == "ratios") {
     return compRatiosToCompRule(b, a);
   } else if (a.kind === "ratios" && b.kind == "comp") {
@@ -1729,6 +1823,10 @@ function inferenceRuleEx(...args) {
     return partToPartRule(a, b, kind === "nth-part" && last2);
   } else if (a.kind === "ratios" && b.kind == "rate") {
     return partToPartRule(b, a, kind === "nth-part" && last2);
+  } else if (a.kind === "cont" && b.kind == "balanced-partition") {
+    return balancedPartitionRule(a, b, kind === "nth-part" && last2);
+  } else if (a.kind === "balanced-partition" && b.kind == "cont") {
+    return balancedPartitionRule(b, a, kind === "nth-part" && last2);
   } else if (a.kind === "cont" && b.kind == "ratios") {
     return kind === "scale" ? mapRatiosByFactor(b, a) : kind === "scale-invert" ? mapRatiosByFactor(b, a, true) : kind === "nth-factor" ? nthPartFactorBy(b, a, last2) : kind === "nth-part" ? partToPartRule(a, b, last2) : partToPartRule(a, b);
   } else if (a.kind === "ratios" && b.kind == "cont") {
@@ -1740,6 +1838,10 @@ function inferenceRuleEx(...args) {
   } else if (a.kind === "sequence" && b.kind === "cont") {
     return kind === "nth" ? nthPositionRule(b, a, last2.entity) : nthTermRule(b, a);
   } else if (a.kind === "cont" && b.kind === "sequence") {
+    return kind === "nth" ? nthPositionRule(a, b, last2.entity) : nthTermRule(a, b);
+  } else if (a.kind === "pattern" && b.kind === "cont") {
+    return kind === "nth" ? nthPositionRule(b, a, last2.entity) : nthTermRule(b, a);
+  } else if (a.kind === "cont" && b.kind === "pattern") {
     return kind === "nth" ? nthPositionRule(a, b, last2.entity) : nthTermRule(a, b);
   } else if (a.kind === "cont" && b.kind === "transfer") {
     return transferRule(a, b, "after");
@@ -1962,23 +2064,23 @@ function formatAngle(relationship) {
   }
 }
 function formatSequence(type, n) {
-  const simplify2 = (d, op = "") => d !== 1 ? `${d}${op}` : "";
+  const simplify3 = (d, op = "") => d !== 1 ? `${d}${op}` : "";
   if (type.kind === "arithmetic")
     return `${type.sequence[0]} + ${type.commonDifference}(${formatNumber(n)}-1)`;
   if (type.kind === "quadratic") {
     const [first, second] = type.sequence;
     const { A, B, C } = nthQuadraticElements(first, second, type.secondDifference);
-    let parts = [`${simplify2(A, "*")}${formatNumber(n)}^2^`];
+    let parts = [`${simplify3(A, "*")}${formatNumber(n)}^2^`];
     if (B !== 0) {
-      parts = parts.concat(`${simplify2(B, "*")}${formatNumber(n)}`);
+      parts = parts.concat(`${simplify3(B, "*")}${formatNumber(n)}`);
     }
     if (C !== 0) {
-      parts = parts.concat(`${simplify2(C, "*")}${formatNumber(n)}`);
+      parts = parts.concat(`${simplify3(C, "*")}${formatNumber(n)}`);
     }
     return `${parts.map((d, i) => `${i !== 0 ? " + " : ""}${d}`).join(" ")}`;
   }
   if (type.kind === "geometric") {
-    return `${simplify2(type.sequence[0], "*")}${type.commonRatio}^(${formatNumber(n)}-1)^`;
+    return `${simplify3(type.sequence[0], "*")}${type.commonRatio}^(${formatNumber(n)}-1)^`;
   }
 }
 function sequenceOptions(seqType) {
@@ -5342,6 +5444,12 @@ function lcdCalcEx2(a, b) {
 function lcdCalc2(numbers) {
   return numbers.reduce((acc, num) => lcdCalcEx2(acc, num), 1);
 }
+function evaluate2(expression, context) {
+  return parser.parse(expression).evaluate(context);
+}
+function substitute2(expression, source, replace) {
+  return parser.parse(expression).substitute(source, replace);
+}
 function evalExpression(expression, quantityOrContext) {
   const expr = typeof expression === "string" ? parser.parse(expression) : toEquationExpr(expression);
   const variables = expr.variables();
@@ -5757,7 +5865,9 @@ function jsonToMarkdownChat(node, formatting) {
   function traverseEx(node2) {
     const args = [];
     if (isPredicate(node2)) {
-      return formatPredicate(node2, { ...mdFormatting, formatKind: () => ``, ...formatting });
+      return formatPredicate(node2, { ...mdFormatting, formatKind: () => ``, formatTable: (d) => `vzor opakov\xE1n\xED 
+
+${mdFormatTable(d)}`, ...formatting });
     }
     let q = null;
     if (node2.children && Array.isArray(node2.children)) {
@@ -5820,34 +5930,47 @@ var mdFormatting = {
     return isEmptyOrWhiteSpace(res) ? "" : `__${res.trim()}__`;
   },
   formatAgent: (d) => `**${d}**`,
-  formatSequence: (d) => `${formatSequence2(d)}`
+  formatSequence: (d) => `${formatSequence2(d)}`,
+  formatTable: (data) => `vzor opakov\xE1n\xED ${data.map((d) => d[1]).join()}`
 };
+function mdFormatTable(data) {
+  if (!Array.isArray(data) || data.length === 0)
+    return "";
+  const header = data[0].map((d) => "");
+  const rows = data;
+  let markdown = "| " + header.join(" | ") + " |\n";
+  markdown += "| " + header.map(() => "---").join(" | ") + " |\n";
+  for (const row of rows) {
+    markdown += "| " + row.join(" | ") + " |\n";
+  }
+  return markdown;
+}
 var mermaidFormatting = {
   ...mdFormatting,
   formatKind: (d) => ``
 };
 function formatSequence2(type) {
-  const simplify2 = (d, op = "") => d !== 1 ? `${d}${op}` : "";
+  const simplify3 = (d, op = "") => d !== 1 ? `${d}${op}` : "";
   if (type.kind === "arithmetic")
     return `${type.sequence.join()} => a^n^ = ${type.sequence[0]} + ${type.commonDifference}(n-1)`;
   if (type.kind === "quadratic") {
     const [first, second] = type.sequence;
     const { A, B, C } = nthQuadraticElements(first, second, type.secondDifference);
-    const parts = [`${simplify2(A)}n^2^`];
+    const parts = [`${simplify3(A)}n^2^`];
     if (B !== 0) {
-      parts.concat(`${simplify2(B)}n`);
+      parts.concat(`${simplify3(B)}n`);
     }
     if (C !== 0) {
-      parts.concat(`${simplify2(C)}n`);
+      parts.concat(`${simplify3(C)}n`);
     }
     return `${type.sequence.join()} => a^n^ = ${parts.map((d, i) => `${i !== 0 ? " + " : ""}${d}`)}`;
   }
   if (type.kind === "geometric") {
-    return `${type.sequence.join()} => a^n^ = ${simplify2(type.sequence[0], "*")}${type.commonRatio}^(n-1)^`;
+    return `${type.sequence.join()} => a^n^ = ${simplify3(type.sequence[0], "*")}${type.commonRatio}^(n-1)^`;
   }
 }
 function formatPredicate(d, formatting) {
-  const { formatKind, formatAgent, formatEntity: formatEntity2, formatQuantity, formatRatio: formatRatio2, formatSequence: formatSequence3, compose } = { ...mdFormatting, ...formatting };
+  const { formatKind, formatAgent, formatEntity: formatEntity2, formatQuantity, formatRatio: formatRatio2, formatSequence: formatSequence3, formatTable, compose } = { ...mdFormatting, ...formatting };
   if (isQuantityPredicate(d) && d.quantity == null || isRatioPredicate(d) && d.ratio == null || isRatiosPredicate(d) && d.ratios == null) {
     return formatKind(d);
   }
@@ -5906,6 +6029,14 @@ function formatPredicate(d, formatting) {
       break;
     case "sequence":
       result = compose`${d.type != null ? formatSequence3(d.type) : ""}`;
+      break;
+    case "pattern":
+      result = compose`${formatTable(
+        [
+          ...[1, 2, 3, 4, 5].map((pos) => [pos, evaluate2(d.nthTerm, { n: pos }), d.nthTermFormat != null ? d.nthTermFormat(pos) : substitute2(d.nthTerm, "n", pos.toString())]),
+          ["...", "...", "..."]
+        ]
+      )}`;
       break;
     case "nth-part":
       result = compose`${formatAgent(d.agent)}`;
@@ -6083,6 +6214,7 @@ export {
   lastQuantity,
   mapNodeChildrenToPredicates,
   mapToCont,
+  mdFormatTable,
   to,
   toAs,
   toCont,

@@ -243,7 +243,8 @@ const richTextFormatting = {
         return isEmptyOrWhiteSpace(res) ? '' : toItalictMark(res.trim());
     },
     formatAgent: d => toStrongTextMark(d),
-    formatSequence: d => `${d}`
+    formatSequence: d => `${d}`,
+    formatTable: d => `${d.map(d => d[1])}`
 }
 export function deductionTreeToHierarchy(node: { children: any[], context: DeduceContext }, links: any[], isLast: boolean, extra: { counter: number }) {
 

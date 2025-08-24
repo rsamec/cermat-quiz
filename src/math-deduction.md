@@ -392,6 +392,20 @@ ${partion([
 <div>${renderRules(rules.eval)}</div>
 
 
+
+## Vzory opakování
+<div class="badge badge--large">PATTERN</div>
+
+### Square numbers
+<div>${renderRules(rules.squareNumbers)}</div>
+
+### Triangular numbers
+<div>${renderRules(rules.triangularNumbers)}</div>
+
+### Rectangular numbers
+<div>${renderRules(rules.rectangularNumbers)}</div>
+
+
 ## Posloupnosti
 <div class="badge badge--large">SEQUENCE</div>
 

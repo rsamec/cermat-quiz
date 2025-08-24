@@ -1,5 +1,5 @@
 
-import { type Predicate, cont, ratio, comp, rate, ratios, compRatio, compDiff, lcd, gcd, ctor, inferenceRule, nth, quota, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont, counter, sum, product, productVolume } from "../components/math.js";
+import { type Predicate, type Pattern, cont, ratio, comp, rate, ratios, compRatio, compDiff, lcd, gcd, ctor, inferenceRule, nth, quota, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont, counter, sum, product, productVolume, squareNumbersPattern, triangularNumbersPattern, oblongNumbers } from "../components/math.js";
 
 export default function rules() {
 
@@ -17,6 +17,16 @@ export default function rules() {
       [seq, nthTerm, nth('pozice')],
     ]
   }
+
+  const nthPatternRule = (pattern: Pattern, nthPosition: Predicate) => {
+    const nthTerm = inferenceRule(pattern, nthPosition)
+
+    return [
+      [pattern, nthPosition],
+      [pattern, nthTerm, nth('pozice')],
+    ]
+  }
+
 
   const a = cont("Ája", 2, "sešity");
   const b = cont("Honzík", 6, "sešity");
@@ -91,6 +101,9 @@ export default function rules() {
     aritmeticSequence: [...nthRule(arithmetic, tenthTerm)],
     quadraticSequence: [...nthRule(quadratic, tenthTerm)],
     geometricSequence: [...nthRule(geometric, tenthTerm)],
+    squareNumbers: [...nthPatternRule(squareNumbersPattern({entity: 'čtverec'}),tenthTerm)],
+    triangularNumbers: [...nthPatternRule(triangularNumbersPattern({entity: 'čtverec'}),tenthTerm)],
+    rectangularNumbers: [...nthPatternRule(oblongNumbers({entity: 'čtverec'}),tenthTerm)],
     unit: [deduceRule(cont("Honzík", 4, "jablek", "kg"), ctorUnit("g")), deduceRule(cont("Ája", 400, "mléka", "cm3"), ctorUnit("l"))],
     eval: [deduceRule(cont("poloměr", 4, "délka", "cm"), evalExprAsCont("π*r^2", { kind: 'cont', agent: "kruh", entity: "obsah", unit: "cm2" }))]
   }

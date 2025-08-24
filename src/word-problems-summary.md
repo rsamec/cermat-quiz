@@ -114,7 +114,7 @@ const uniquePredicates = new Map([
   ["Nejmenší společný násobek", ["lcd"]],
   ["Výrazy", ["eval-expr", "simpl-expr"]],
   ["Pythagorova věta", ["pythagoras"]],
-  ["Posloupnosti", ["sequence","nth"]],
+  ["Vzory opakování", ["sequence","nth", "pattern","balanced-partition"]],
   ["Zaokrouhlování", ["round"]],
   ["Zdravý rozum", ["common-sense"]],
 ])

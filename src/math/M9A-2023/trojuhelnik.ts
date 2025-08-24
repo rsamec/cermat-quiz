@@ -1,5 +1,5 @@
 
-import { commonSense, comp, cont, ctor, sum, productCombine } from "../../components/math";
+import { commonSense, comp, cont, ctor, sum, productCombine, pattern } from "../../components/math";
 import { deduce, last, to } from "../../utils/deduce-utils";
 
 
@@ -15,13 +15,12 @@ export default function build({ input }: {
   const grayEntity = `šedý ${entity}`
   const nthLabel = "pozice"
 
-
   const inputContainers = [1, 3, 9].map((d, i) => cont(`${agent} č.${i + 1}`, d, whiteEntity));
 
   const soucet = sum("obrazec č.7", { entity })
 
   const rule1 = commonSense("V každém kroku se přidává šedý trojúhelník do každého bílého trojúhelníku.")
-  const rule2 = commonSense("Počet šedých trojúhelníků v obrazci n je stejný jako počet bílých trojúhelníků v předchozím obrazci")
+  const rule2 = commonSense("Počet šedých trojúhelníků v následujícím obrazci se zvýší o počet bílých trojúhelníků v předchozím obrazci.")
 
 
   const dBase = deduce(
@@ -58,7 +57,7 @@ export default function build({ input }: {
       last(dBase),
       cont("následující obrazec (n*3)", 3, "")
     ),
-    productCombine("poslední obrazec", whiteEntity,["předposlední obrazec", "3"]),
+    productCombine("poslední obrazec", whiteEntity, ["předposlední obrazec", "3"]),
   )
 
 
