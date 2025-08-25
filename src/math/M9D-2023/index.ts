@@ -1,5 +1,5 @@
-import { commonSense, compRatio, cont, ctor, ctorDifference, rate, sum, ctorSlide, compRelative, compRelativePercent, triangularNumbersPattern, nthPart, comp, ratios, counter, ctorRatios, nthPartFactor, ctorOption, ctorBooleanOption, ctorExpressionOption } from "../../components/math";
-import { createLazyMap, deduce, lastQuantity, to } from "../../utils/deduce-utils";
+import { commonSense, compRatio, cont, ctor, ctorDifference, rate, sum, ctorSlide, compRelative, compRelativePercent, triangularNumbersPattern, nthPart, comp, ratios, counter, ctorRatios, nthPartFactor, ctorOption, ctorBooleanOption, ctorExpressionOption, contLength, halfProduct, doubleProduct, dimensionEntity, productVolume, pythagoras, productArea, double, half } from "../../components/math";
+import { createLazyMap, deduce, last, lastQuantity, to } from "../../utils/deduce-utils";
 
 
 export default createLazyMap({
@@ -11,7 +11,12 @@ export default createLazyMap({
     6.3: () => vysazovaniStromu().patek,
     7.1: () => parkoviste().osobnichAut,
     7.2: () => parkoviste().autobus,
+    11.1: () => park()[1],
+    11.2: () => park()[2],
+    11.3: () => park()[3],
+    12: () => obdelnik(),
 
+    14: () => kvadr(),
     15.1: () => procenta().loni,
     15.2: () => procenta().zaci,
     15.3: () => procenta().muzi,
@@ -126,6 +131,34 @@ function parkoviste() {
     }
 }
 
+function obdelnik() {
+    const delsiStrana =
+        deduce(
+            ratios("obvod menší obdelník", ["pravá strana", "horní strana", "levá strana", "dolní strana"], [1, 4, 1, 4]),
+            contLength("obvod menší obdelník", 30)
+        )
+
+    return {
+        deductionTree: deduce(
+            deduce(
+                deduce(
+                    deduce(
+                        delsiStrana,
+                        ...halfProduct("strana čtverce")
+                    ),
+                    ...doubleProduct("velký obdelník - levá a pravá strana")
+                ),
+                deduce(
+                    last(delsiStrana),
+                    ...doubleProduct("velký obdelník - horní a dolní strana"),
+                ),
+                sum("obvod velký obdelník")
+            ),
+            ctorOption("B", 36)
+        )
+    }
+}
+
 function procenta() {
     const entity = "uchazečů"
     const zaci = "žáci"
@@ -205,5 +238,132 @@ function obrazce() {
                 useckaVsTrojuhelnik
             )
         }
+    }
+}
+
+function park() {
+    const currentLabel = "pracovalo"
+    const addedLabel = "nově přijato"
+    const removedLabel = "odešlo"
+    const current2019 = deduce(
+        deduce(
+            counter(`${currentLabel} 2018`, 14),
+            counter(`${addedLabel} 2018`, 10),
+            sum("celkem")
+        ),
+        counter(`${removedLabel} 2018`, 8),
+        ctorDifference(`${currentLabel} 2019`)
+    )
+
+    return {
+        "1": {
+            deductionTree: deduce(
+                current2019,
+                ctorBooleanOption(16)
+            )
+        },
+        "2": {
+            deductionTree: deduce(
+                deduce(
+                    counter(`${currentLabel} 2021`, 16),
+                    deduce(
+                        counter(`${currentLabel} 2020`, 13),
+                        counter(`${removedLabel} 2020`, 3),
+                        ctorDifference("zbytek")
+                    ),
+                    ctorDifference(`${addedLabel} 2020`)
+                ),
+                ctorBooleanOption(7, "smaller")
+            )
+        },
+        "3": {
+            deductionTree: deduce(
+                deduce(
+                    deduce(
+                        counter(`${currentLabel} 2021`, 16),
+                        counter(`${addedLabel} 2021`, 5),
+                        sum("celkem")
+                    ),
+                    counter(`${currentLabel} 2022`, 9),
+                    ctorDifference(`${removedLabel} 2021`)
+                ),
+                ctorBooleanOption(12, "greater")
+            )
+        }
+    }
+}
+
+function kvadr() {
+
+    const delkaL = "délka"
+    const sirkaL = "šířka"
+    const delka = contLength(delkaL, 8);
+    const sirka = contLength(sirkaL, 6);
+    const vyska = contLength("výška", 10);
+    const uhloprickaL = "úhlopříčka"
+    const uhlopricka = deduce(
+        delka,
+        sirka,
+        pythagoras(uhloprickaL, [delkaL, sirkaL])
+    )
+
+    const puvodniKvard = deduce(
+        deduce(
+            delka,
+            vyska,
+            double(),
+            productArea("přední a zadní plocha")
+        ),
+        deduce(
+            sirka,
+            vyska,
+            double(),
+            productArea("pravá a levá boční plocha")
+        ),
+        deduce(
+            delka,
+            sirka,
+            double(),
+            productArea("spodní a horní plocha")
+        ),
+        sum("původní kvádr")
+    )
+    return {
+        deductionTree: deduce(
+            deduce(
+                puvodniKvard,
+                deduce(
+                    deduce(
+                        last(puvodniKvard),
+                        deduce(
+                            deduce(
+                                delka,
+                                vyska,
+                                productArea("chybějící původní přední plocha")
+                            ),
+                            deduce(
+                                delka,
+                                sirka,
+                                half(),
+                                productArea("chybějící původní horní a spodní plocha výřezu = polovina plochy podstavy")
+                            ),
+                            sum("chybějící plochy")
+                        ),
+                        ctorDifference("nový pětiboký kvádr")
+                    ),
+                    deduce(
+                        deduce(
+                            uhlopricka,
+                            ...halfProduct("polovina úhlopříčky obdelníku v podstavě")
+                        ),
+                        vyska,
+                        double(),
+                        productArea("2 obdelníkové plochy v řezu")
+                    ),
+                    sum("nový pětiboký kvádr")
+                )
+            ),
+            ctorOption("A", 4)
+        )
     }
 }

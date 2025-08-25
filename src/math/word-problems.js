@@ -55,6 +55,9 @@ function counter(agent, quantity, { asRatio } = {}) {
 function double() {
   return counter("dvojn\xE1sobek", 2);
 }
+function doubleProduct(agent) {
+  return [double(), product(agent)];
+}
 function half() {
   return counter("polovina", 1 / 2, { asRatio: true });
 }
@@ -16654,6 +16657,11 @@ var M9D_2023_default = createLazyMap({
   6.3: () => vysazovaniStromu().patek,
   7.1: () => parkoviste().osobnichAut,
   7.2: () => parkoviste().autobus,
+  11.1: () => park()[1],
+  11.2: () => park()[2],
+  11.3: () => park()[3],
+  12: () => obdelnik(),
+  14: () => kvadr(),
   15.1: () => procenta3().loni,
   15.2: () => procenta3().zaci,
   15.3: () => procenta3().muzi,
@@ -16761,6 +16769,31 @@ function parkoviste() {
     }
   };
 }
+function obdelnik() {
+  const delsiStrana = deduce(
+    ratios("obvod men\u0161\xED obdeln\xEDk", ["prav\xE1 strana", "horn\xED strana", "lev\xE1 strana", "doln\xED strana"], [1, 4, 1, 4]),
+    contLength("obvod men\u0161\xED obdeln\xEDk", 30)
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          deduce(
+            delsiStrana,
+            ...halfProduct("strana \u010Dtverce")
+          ),
+          ...doubleProduct("velk\xFD obdeln\xEDk - lev\xE1 a prav\xE1 strana")
+        ),
+        deduce(
+          last(delsiStrana),
+          ...doubleProduct("velk\xFD obdeln\xEDk - horn\xED a doln\xED strana")
+        ),
+        sum("obvod velk\xFD obdeln\xEDk")
+      ),
+      ctorOption("B", 36)
+    )
+  };
+}
 function procenta3() {
   const entity3 = "uchaze\u010D\u016F";
   const zaci = "\u017E\xE1ci";
@@ -16834,6 +16867,128 @@ function obrazce3() {
         useckaVsTrojuhelnik
       )
     }
+  };
+}
+function park() {
+  const currentLabel = "pracovalo";
+  const addedLabel = "nov\u011B p\u0159ijato";
+  const removedLabel = "ode\u0161lo";
+  const current2019 = deduce(
+    deduce(
+      counter(`${currentLabel} 2018`, 14),
+      counter(`${addedLabel} 2018`, 10),
+      sum("celkem")
+    ),
+    counter(`${removedLabel} 2018`, 8),
+    ctorDifference(`${currentLabel} 2019`)
+  );
+  return {
+    "1": {
+      deductionTree: deduce(
+        current2019,
+        ctorBooleanOption(16)
+      )
+    },
+    "2": {
+      deductionTree: deduce(
+        deduce(
+          counter(`${currentLabel} 2021`, 16),
+          deduce(
+            counter(`${currentLabel} 2020`, 13),
+            counter(`${removedLabel} 2020`, 3),
+            ctorDifference("zbytek")
+          ),
+          ctorDifference(`${addedLabel} 2020`)
+        ),
+        ctorBooleanOption(7, "smaller")
+      )
+    },
+    "3": {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            counter(`${currentLabel} 2021`, 16),
+            counter(`${addedLabel} 2021`, 5),
+            sum("celkem")
+          ),
+          counter(`${currentLabel} 2022`, 9),
+          ctorDifference(`${removedLabel} 2021`)
+        ),
+        ctorBooleanOption(12, "greater")
+      )
+    }
+  };
+}
+function kvadr() {
+  const delkaL = "d\xE9lka";
+  const sirkaL = "\u0161\xED\u0159ka";
+  const delka = contLength(delkaL, 8);
+  const sirka = contLength(sirkaL, 6);
+  const vyska = contLength("v\xFD\u0161ka", 10);
+  const uhloprickaL = "\xFAhlop\u0159\xED\u010Dka";
+  const uhlopricka = deduce(
+    delka,
+    sirka,
+    pythagoras(uhloprickaL, [delkaL, sirkaL])
+  );
+  const puvodniKvard = deduce(
+    deduce(
+      delka,
+      vyska,
+      double(),
+      productArea("p\u0159edn\xED a zadn\xED plocha")
+    ),
+    deduce(
+      sirka,
+      vyska,
+      double(),
+      productArea("prav\xE1 a lev\xE1 bo\u010Dn\xED plocha")
+    ),
+    deduce(
+      delka,
+      sirka,
+      double(),
+      productArea("spodn\xED a horn\xED plocha")
+    ),
+    sum("p\u016Fvodn\xED kv\xE1dr")
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        puvodniKvard,
+        deduce(
+          deduce(
+            last(puvodniKvard),
+            deduce(
+              deduce(
+                delka,
+                vyska,
+                productArea("chyb\u011Bj\xEDc\xED p\u016Fvodn\xED p\u0159edn\xED plocha")
+              ),
+              deduce(
+                delka,
+                sirka,
+                half(),
+                productArea("chyb\u011Bj\xEDc\xED p\u016Fvodn\xED horn\xED a spodn\xED plocha v\xFD\u0159ezu = polovina plochy podstavy")
+              ),
+              sum("chyb\u011Bj\xEDc\xED plochy")
+            ),
+            ctorDifference("nov\xFD p\u011Btibok\xFD kv\xE1dr")
+          ),
+          deduce(
+            deduce(
+              uhlopricka,
+              ...halfProduct("polovina \xFAhlop\u0159\xED\u010Dky obdeln\xEDku v podstav\u011B")
+            ),
+            vyska,
+            double(),
+            productArea("2 obdeln\xEDkov\xE9 plochy v \u0159ezu")
+          ),
+          sum("nov\xFD p\u011Btibok\xFD kv\xE1dr")
+        )
+      ),
+      ctorOption("A", 4)
+    )
   };
 }
 
