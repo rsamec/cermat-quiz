@@ -155,7 +155,7 @@ function ctorBooleanOption(expectedValue, compareTo = "closeTo", expectedValueOp
 }
 function convertToExpression(expectedValue, compareTo, expectedValueOptions) {
   const convertedValue = expectedValueOptions.asFraction ? helpers.convertToFraction(expectedValue) : expectedValueOptions.asPercent ? expectedValue / 100 : expectedValue;
-  const toCompare = (comp4) => `x ${comp4} ${convertedValue}`;
+  const toCompare = (comp3) => `x ${comp3} ${convertedValue}`;
   switch (compareTo) {
     case "equal":
       return toCompare("==");
@@ -1372,7 +1372,7 @@ function triangleAngleRule(a, b, last4) {
     ] : []
   };
 }
-function toRatioComparisonEx(a, b, ctor4) {
+function toRatioComparisonEx(a, b, ctor3) {
   if (b.agent === a.agent && b.entity != a.entity) {
     b = toGenerAgent(b);
     a = toGenerAgent(a);
@@ -1385,7 +1385,7 @@ function toRatioComparisonEx(a, b, ctor4) {
     agentB: b.agent,
     agentA: a.agent,
     ratio: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity / b.quantity : wrapToRatio(`a.quantity / b.quantity`, { a, b }),
-    ...ctor4.asPercent && { asPercent: true }
+    ...ctor3.asPercent && { asPercent: true }
   };
 }
 function convertPercentRuleEx(a) {
@@ -1405,8 +1405,8 @@ function convertPercentRule(a) {
     ] : []
   };
 }
-function toRatioComparison(a, b, ctor4) {
-  const result = toRatioComparisonEx(a, b, ctor4);
+function toRatioComparison(a, b, ctor3) {
+  const result = toRatioComparisonEx(a, b, ctor3);
   if (isNumber(result.ratio) && isNumber(a.quantity) && isNumber(b.quantity)) {
     const between = result.ratio > 1 / 2 && result.ratio < 2;
     return {
@@ -3162,11 +3162,11 @@ Fraction.prototype = {
   "simplify": function(eps3) {
     const ieps = BigInt(1 / (eps3 || 1e-3) | 0);
     const thisABS = this["abs"]();
-    const cont6 = thisABS["toContinued"]();
-    for (let i = 1; i < cont6.length; i++) {
-      let s = newFraction(cont6[i - 1], C_ONE);
+    const cont5 = thisABS["toContinued"]();
+    for (let i = 1; i < cont5.length; i++) {
+      let s = newFraction(cont5[i - 1], C_ONE);
       for (let k = i - 2; k >= 0; k--) {
-        s = s["inverse"]()["add"](cont6[k]);
+        s = s["inverse"]()["add"](cont5[k]);
       }
       let t = s["sub"](thisABS);
       if (t["n"] * ieps < t["d"]) {
@@ -9934,7 +9934,7 @@ function isRatePredicate2(value) {
 }
 function convertToExpression2(expectedValue, compareTo, expectedValueOptions) {
   const convertedValue = expectedValueOptions.asFraction ? helpers2.convertToFraction(expectedValue) : expectedValueOptions.asPercent ? expectedValue / 100 : expectedValue;
-  const toCompare = (comp4) => `x ${comp4} ${convertedValue}`;
+  const toCompare = (comp3) => `x ${comp3} ${convertedValue}`;
   switch (compareTo) {
     case "equal":
       return toCompare("==");
@@ -11002,7 +11002,7 @@ function triangleAngleRule2(a, b, last22) {
     ] : []
   };
 }
-function toRatioComparisonEx2(a, b, ctor4) {
+function toRatioComparisonEx2(a, b, ctor3) {
   if (b.agent === a.agent && b.entity != a.entity) {
     b = toGenerAgent2(b);
     a = toGenerAgent2(a);
@@ -11015,7 +11015,7 @@ function toRatioComparisonEx2(a, b, ctor4) {
     agentB: b.agent,
     agentA: a.agent,
     ratio: isNumber2(a.quantity) && isNumber2(b.quantity) ? a.quantity / b.quantity : wrapToRatio2(`a.quantity / b.quantity`, { a, b }),
-    ...ctor4.asPercent && { asPercent: true }
+    ...ctor3.asPercent && { asPercent: true }
   };
 }
 function convertPercentRuleEx2(a) {
@@ -11035,8 +11035,8 @@ function convertPercentRule2(a) {
     ] : []
   };
 }
-function toRatioComparison2(a, b, ctor4) {
-  const result = toRatioComparisonEx2(a, b, ctor4);
+function toRatioComparison2(a, b, ctor3) {
+  const result = toRatioComparisonEx2(a, b, ctor3);
   if (isNumber2(result.ratio) && isNumber2(a.quantity) && isNumber2(b.quantity)) {
     const between = result.ratio > 1 / 2 && result.ratio < 2;
     return {
@@ -12773,11 +12773,11 @@ Fraction2.prototype = {
   "simplify": function(eps22) {
     const ieps = BigInt(1 / (eps22 || 1e-3) | 0);
     const thisABS = this["abs"]();
-    const cont6 = thisABS["toContinued"]();
-    for (let i = 1; i < cont6.length; i++) {
-      let s = newFraction2(cont6[i - 1], C_ONE2);
+    const cont5 = thisABS["toContinued"]();
+    for (let i = 1; i < cont5.length; i++) {
+      let s = newFraction2(cont5[i - 1], C_ONE2);
       for (let k = i - 2; k >= 0; k--) {
-        s = s["inverse"]()["add"](cont6[k]);
+        s = s["inverse"]()["add"](cont5[k]);
       }
       let t = s["sub"](thisABS);
       if (t["n"] * ieps < t["d"]) {
@@ -17476,7 +17476,7 @@ function build7({ input }) {
   const aPrevious = axiomInput(cont(agentPrevious, input.previousWorker, entityA), 1);
   const aCurrent = axiomInput(cont(agentCurrent, input.currentWorker, entityA), 3);
   const bPrevious = axiomInput(cont(agentPrevious, input.previousHours, entityB), 2);
-  const comp4 = compRatio(agentNew, agentCurrent, 3 / 2);
+  const comp3 = compRatio(agentNew, agentCurrent, 3 / 2);
   const deductionTree = deduce(
     deduce(
       deduce(
@@ -17490,7 +17490,7 @@ function build7({ input }) {
       bPrevious
     ),
     deduce(
-      comp4,
+      comp3,
       proportion(false, [`mno\u017Estv\xED`, `hodin`])
     )
   );
@@ -18226,8 +18226,110 @@ function build12({ input }) {
 // src/math/M9C-2024/index.ts
 var M9C_2024_default = createLazyMap({
   1: () => build11({ input: { celkem: 86200, jihlavaPlus: 16e3 } }),
-  12: () => build12({ input: { evaPodil: 40, michalPlus: 24, zbyvaNasporit: 72 } })
+  12: () => build12({ input: { evaPodil: 40, michalPlus: 24, zbyvaNasporit: 72 } }),
+  13: () => divadlo(),
+  14: () => triKamaradi(),
+  16.1: () => zednici().pocetDnu,
+  16.2: () => zednici().pocetZedniku,
+  16.3: () => zednici().pocetDnuPolovinaStavby
 });
+function divadlo() {
+  const pocetMista = "m\xEDst";
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          percent("divadlo", "obsazenost nov\u011B", 75),
+          percent("divadlo", "obsazenost p\u016Fvodn\u011B", 70),
+          ctorDifference("zm\u011Bna obsazenosti")
+        ),
+        cont("zm\u011Bna obsazenosti", 11, pocetMista)
+      ),
+      ctorOption("D", 220)
+    )
+  };
+}
+function triKamaradi() {
+  const entity3 = "komiks";
+  const petrVsCyril = comp("Petr", "Cyril", 3, entity3);
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          petrVsCyril,
+          deduce(
+            compRatio("Petr", "Honza", 1),
+            compRelative("Honza", "Cyril", 1 / 8)
+          )
+        ),
+        petrVsCyril
+      ),
+      ctorOption("E", 27)
+    )
+  };
+}
+function zednici() {
+  const dnyEntity = "dny";
+  const pocetZednikuEntity = "zedn\xEDci";
+  const pocetZednikuPuvodne = cont("pr\xE1ce p\u016Fvodn\u011B", 10, pocetZednikuEntity);
+  const pocetZednikuNove = cont("pr\xE1ce nov\u011B", 4, pocetZednikuEntity);
+  const dnyPuvodne = cont("pr\xE1ce p\u016Fvodn\u011B", 20, dnyEntity);
+  const dnyNove = cont("pr\xE1ce nov\u011B", 5, dnyEntity);
+  const indirect = proportion(true, [pocetZednikuEntity, dnyEntity]);
+  return {
+    pocetDnu: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            deduce(
+              pocetZednikuNove,
+              pocetZednikuPuvodne,
+              ctor("comp-ratio")
+            ),
+            indirect
+          ),
+          dnyPuvodne
+        ),
+        ctorOption("E", 50)
+      )
+    },
+    pocetZedniku: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            deduce(
+              dnyNove,
+              dnyPuvodne,
+              ctor("comp-ratio")
+            ),
+            indirect
+          ),
+          pocetZednikuPuvodne
+        ),
+        ctorOption("D", 40)
+      )
+    },
+    pocetDnuPolovinaStavby: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            deduce(
+              cont("pr\xE1ce nov\u011B", 8, pocetZednikuEntity),
+              pocetZednikuPuvodne,
+              ctor("comp-ratio")
+            ),
+            indirect
+          ),
+          deduceAs("polovina stavby odpov\xEDd\xE1 polovin\u011B pr\xE1ce p\u016Fvodn\u011B")(
+            dnyPuvodne,
+            ...halfProduct("pr\xE1ce p\u016Fvodn\u011B")
+          )
+        ),
+        ctorOption("B", 12.5)
+      )
+    }
+  };
+}
 
 // src/math/M9I-2025/angle.ts
 function desetiuhelnik({ input }) {
