@@ -1638,6 +1638,15 @@ parser.functions.closeTo = function(value, center) {
   const end = center + eps;
   return start <= value && value <= end;
 };
+parser.functions.red = function(value) {
+  return value;
+};
+parser.functions.blue = function(value) {
+  return value;
+};
+parser.functions.color = function(color, value) {
+  return value;
+};
 function gcdCalc(numbers) {
   let num = 2, res = 1;
   while (num <= Math.min(...numbers)) {
@@ -1660,6 +1669,9 @@ function evaluate2(expression, context) {
 function substitute2(expression, source, replace) {
   return parser.parse(expression).substitute(source, replace);
 }
+function simplify2(expression, context) {
+  return parser.parse(expression).simplify(expression, context);
+}
 function evalExpression(expression, quantityOrContext) {
   const expr = typeof expression === "string" ? parser.parse(expression) : toEquationExpr(expression);
   const variables = expr.variables();
@@ -1670,20 +1682,29 @@ function evalExpression(expression, quantityOrContext) {
   const res = expr.simplify(context);
   return res.toString();
 }
-function recurExpr(node) {
+function recurExpr(node, level, requiredLevel = 0) {
   const quantity = node.quantity ?? node.ratio ?? {};
   const { context, expression } = quantity;
   if (expression) {
     let expr = parser.parse(expression);
     const variables = expr.variables();
     for (let variable of variables) {
-      const res = recurExpr(context[variable]);
+      const res = recurExpr(context[variable], level + 1, requiredLevel);
       if (res.substitute != null) {
+        expr = parser.parse(cleanUpExpression(expr, variable));
         expr = expr.substitute(variable, res);
+        if (level >= requiredLevel) {
+          expr = expr.simplify();
+        }
       } else {
         const q = res.quantity ?? res.ratio;
         if (typeof q == "number" || !isNaN(parseFloat(q))) {
-          expr = expr.simplify({ [variable]: res });
+          if (level >= requiredLevel) {
+            expr = expr.simplify({ [variable]: res });
+          } else {
+            expr = parser.parse(cleanUpExpression(expr, variable));
+            expr = expr.substitute(variable, q);
+          }
         } else {
           expr = expr.substitute(variable, q);
         }
@@ -1695,15 +1716,21 @@ function recurExpr(node) {
   }
 }
 function toEquation(lastNode) {
-  const final = recurExpr(lastNode);
+  const final = recurExpr(lastNode, 0);
   return parser.parse(cleanUpExpression(final));
 }
-function toEquationExpr(lastExpr) {
-  const final = recurExpr({ quantity: lastExpr });
+function toEquationExpr(lastExpr, requiredLevel = 0) {
+  const final = recurExpr({ quantity: lastExpr }, 0, requiredLevel);
   return parser.parse(cleanUpExpression(final));
 }
-function cleanUpExpression(exp) {
-  const replaced = exp.toString().replaceAll(".quantity", "").replaceAll(".ratio", "").replaceAll(".baseQuantity", "");
+function toEquationExprAsText(lastExpr, requiredLevel = 0) {
+  return expressionToString2(toEquationExpr(lastExpr, requiredLevel).tokens, false);
+}
+function toEquationExprAsTex(lastExpr, requiredLevel = 0) {
+  return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel).tokens)} $`;
+}
+function cleanUpExpression(exp, variable = "") {
+  const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, variable);
   return formatNumbersInExpression(replaced);
 }
 function formatNumbersInExpression(expr) {
@@ -1819,13 +1846,262 @@ function applyOp(a, b, op, variable) {
     };
   }
 }
+var colors = {
+  darkred: "#e7040f",
+  red: "#ff4136",
+  lightred: "#ff725c",
+  orange: "#ff6300",
+  gold: "#ffb700",
+  yellow: "#ffd700",
+  lightyellow: "#fbf1a9",
+  purple: "#5e2ca5",
+  lightpurple: "#a463f2",
+  darkpink: "#d5008f",
+  hotpink: "#ff41b4",
+  pink: "#ff80cc",
+  lightpink: "#ffa3d7",
+  darkgreen: "#137752",
+  green: "#19a974",
+  lightgreen: "#9eebcf",
+  navy: "#001b44",
+  darkblue: "#1b4b98",
+  blue: "#266bd9",
+  lightblue: "#96ccff"
+};
+function tokensToTex(tokens, opts = {}) {
+  const options = {
+    mulSymbol: "\\cdot",
+    // "\\cdot", " ", "\\times", ""
+    divMode: "frac",
+    // "frac" | "slash"
+    stretchyParens: true,
+    implicitMul: false,
+    ...opts
+  };
+  const stack = [];
+  function parens(str) {
+    return options.stretchyParens ? `\\left(${str}\\right)` : `(${str})`;
+  }
+  for (const tok of tokens) {
+    switch (tok.type) {
+      case "INUMBER":
+        stack.push(String(tok.value));
+        break;
+      case "IVARNAME":
+      case "IVAR":
+        stack.push(tok.value);
+        break;
+      case "IOP1": {
+        const a = stack.pop();
+        if (tok.value === "sqrt") {
+          stack.push(`\\sqrt{${a}}`);
+        } else {
+          stack.push(`${tok.value}${parens(a)}`);
+        }
+        break;
+      }
+      case "IOP2": {
+        const b = stack.pop();
+        const a = stack.pop();
+        if (tok.value === "/") {
+          if (options.divMode === "frac") {
+            stack.push(`\\frac{${a}}{${b}}`);
+          } else {
+            stack.push(`${a} / ${b}`);
+          }
+        } else if (tok.value === "^") {
+          stack.push(`${parens(a)}^{${b}}`);
+        } else if (tok.value === "*") {
+          const sym = options.implicitMul ? "" : options.mulSymbol;
+          stack.push(`${a}${sym}${b}`);
+        } else {
+          const texOps = { "==": "=", "!=": "\\ne", "<=": "\\le", ">=": "\\ge" };
+          stack.push(`${a} ${texOps[tok.value] || tok.value} ${b}`);
+        }
+        break;
+      }
+      case "IOP3": {
+        const c = stack.pop();
+        const b = stack.pop();
+        const a = stack.pop();
+        stack.push(`${a}\\ ?\\ ${b}\\ :\\ ${c}`);
+        break;
+      }
+      case "FUNCALL":
+      case "IFUNCALL": {
+        const argCount = tok.value || 0;
+        const args = [];
+        for (let i = 0; i < argCount; i++) {
+          args.unshift(stack.pop());
+        }
+        const f = stack.pop();
+        if (tok.value === "sqrt" && args.length === 1) {
+          stack.push(`\\sqrt{${args[0]}}`);
+        } else if (tok.value === "abs" && args.length === 1) {
+          stack.push(`\\left|${args[0]}\\right|`);
+        } else if (["sin", "cos", "tan", "log", "ln"].includes(tok.value)) {
+          stack.push(`\\${tok.value}\\left(${args.join(", ")}\\right)`);
+        } else if (["red", "blue", "green"].includes(f)) {
+          stack.push(`\\textcolor{${colors[f]}}{${args.join(", ")}}`);
+        } else {
+          stack.push(`${tok.value}\\left(${args.join(", ")}\\right)`);
+        }
+        break;
+      }
+      default:
+        stack.push(String(tok.value));
+    }
+  }
+  return stack.pop();
+}
+var INUMBER2 = "INUMBER";
+var IOP12 = "IOP1";
+var IOP22 = "IOP2";
+var IOP32 = "IOP3";
+var IVAR2 = "IVAR";
+var IVARNAME2 = "IVARNAME";
+var IFUNCALL2 = "IFUNCALL";
+var IFUNDEF2 = "IFUNDEF";
+var IEXPR2 = "IEXPR";
+var IMEMBER2 = "IMEMBER";
+var IENDSTATEMENT2 = "IENDSTATEMENT";
+var IARRAY2 = "IARRAY";
+function expressionToString2(tokens, toJS) {
+  var nstack = [];
+  var n1, n2, n3;
+  var f, args, argCount;
+  for (var i = 0; i < tokens.length; i++) {
+    var item = tokens[i];
+    var type = item.type;
+    if (type === INUMBER2) {
+      if (typeof item.value === "number" && item.value < 0) {
+        nstack.push("(" + item.value + ")");
+      } else if (Array.isArray(item.value)) {
+        nstack.push("[" + item.value.map(escapeValue2).join(", ") + "]");
+      } else {
+        nstack.push(escapeValue2(item.value));
+      }
+    } else if (type === IOP22) {
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      f = item.value;
+      if (toJS) {
+        if (f === "^") {
+          nstack.push("Math.pow(" + n1 + ", " + n2 + ")");
+        } else if (f === "and") {
+          nstack.push("(!!" + n1 + " && !!" + n2 + ")");
+        } else if (f === "or") {
+          nstack.push("(!!" + n1 + " || !!" + n2 + ")");
+        } else if (f === "||") {
+          nstack.push("(function(a,b){ return Array.isArray(a) && Array.isArray(b) ? a.concat(b) : String(a) + String(b); }((" + n1 + "),(" + n2 + ")))");
+        } else if (f === "==") {
+          nstack.push("(" + n1 + " === " + n2 + ")");
+        } else if (f === "!=") {
+          nstack.push("(" + n1 + " !== " + n2 + ")");
+        } else if (f === "[") {
+          nstack.push(n1 + "[(" + n2 + ") | 0]");
+        } else {
+          nstack.push("(" + n1 + " " + f + " " + n2 + ")");
+        }
+      } else {
+        if (f === "[") {
+          nstack.push(n1 + "[" + n2 + "]");
+        } else {
+          nstack.push(n1 + " " + f + " " + n2);
+        }
+      }
+    } else if (type === IOP32) {
+      n3 = nstack.pop();
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      f = item.value;
+      if (f === "?") {
+        nstack.push("(" + n1 + " ? " + n2 + " : " + n3 + ")");
+      } else {
+        throw new Error("invalid Expression");
+      }
+    } else if (type === IVAR2 || type === IVARNAME2) {
+      nstack.push(item.value);
+    } else if (type === IOP12) {
+      n1 = nstack.pop();
+      f = item.value;
+      if (f === "-" || f === "+") {
+        nstack.push("(" + f + n1 + ")");
+      } else if (toJS) {
+        if (f === "not") {
+          nstack.push("(!" + n1 + ")");
+        } else if (f === "!") {
+          nstack.push("fac(" + n1 + ")");
+        } else {
+          nstack.push(f + "(" + n1 + ")");
+        }
+      } else if (f === "!") {
+        nstack.push("(" + n1 + "!)");
+      } else {
+        nstack.push(f + " " + n1);
+      }
+    } else if (type === IFUNCALL2) {
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+      }
+      f = nstack.pop();
+      nstack.push(f + "(" + args.join(", ") + ")");
+    } else if (type === IFUNDEF2) {
+      n2 = nstack.pop();
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+      }
+      n1 = nstack.pop();
+      if (toJS) {
+        nstack.push("(" + n1 + " = function(" + args.join(", ") + ") { return " + n2 + " })");
+      } else {
+        nstack.push("(" + n1 + "(" + args.join(", ") + ") = " + n2 + ")");
+      }
+    } else if (type === IMEMBER2) {
+      n1 = nstack.pop();
+      nstack.push(n1 + "." + item.value);
+    } else if (type === IARRAY2) {
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+      }
+      nstack.push("[" + args.join(", ") + "]");
+    } else if (type === IEXPR2) {
+      nstack.push("(" + expressionToString2(item.value, toJS) + ")");
+    } else if (type === IENDSTATEMENT2) {
+    } else {
+      throw new Error("invalid Expression");
+    }
+  }
+  if (nstack.length > 1) {
+    if (toJS) {
+      nstack = [nstack.join(",")];
+    } else {
+      nstack = [nstack.join(";")];
+    }
+  }
+  return String(nstack[0]);
+}
+function escapeValue2(v) {
+  if (typeof v === "string") {
+    return JSON.stringify(v).replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
+  }
+  return v;
+}
 export {
   evalExpression,
   evaluate2 as evaluate,
+  simplify2 as simplify,
   solveLinearEquation,
   substitute2 as substitute,
   toEquation,
-  toEquationExpr
+  toEquationExprAsTex,
+  toEquationExprAsText
 };
 /*!
  Based on ndef.parser, by Raphael Graf(r@undefined.ch)

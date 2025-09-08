@@ -29,7 +29,16 @@ parser.functions.closeTo = function (value: number, center: number) {
   const end = center + eps;
   return start <= value && value <= end;
 }
+parser.functions.red = function (value: number) {
+  return value;
+}
+parser.functions.blue = function (value: number) {
+  return value;
+}
 
+parser.functions.color = function (color: 'blue' | 'red', value: number) {
+  return value;
+}
 function gcdCalc(numbers: number[]) {
   let num = 2, res = 1;
   while (num <= Math.min(...numbers)) {
@@ -55,6 +64,10 @@ export function substitute(expression: string, source: string, replace: string) 
   return parser.parse(expression).substitute(source, replace)
 }
 
+export function simplify(expression: string, context?: Record<string, any>) {
+  return parser.parse(expression).simplify(expression, context)
+}
+
 export function evalExpression(expression: any, quantityOrContext: number | Record<string, any>): string {
   const expr = typeof expression === "string" ? parser.parse(expression) : toEquationExpr(expression);
   const variables = expr.variables();
@@ -68,29 +81,40 @@ export function evalExpression(expression: any, quantityOrContext: number | Reco
   return res.toString();
 }
 
-function recurExpr(node) {
+function recurExpr(node, level, requiredLevel = 0) {
   const quantity = node.quantity ?? node.ratio ?? {};
   const { context, expression } = quantity;
 
   if (expression) {
     let expr = parser.parse(expression);
     const variables = expr.variables();
-    // console.log(variables, context)
+    // console.log(level, expression.toString(), expr.toString(), variables, context)    
     for (let variable of variables) {
-      const res = recurExpr(context[variable]);
+      const res = recurExpr(context[variable], level + 1, requiredLevel);
 
+      // console.log(variable, expr.toString(), level)
       if (res.substitute != null) {
-        // console.log(".....", variable, res.toString())
+        expr = parser.parse(cleanUpExpression(expr, variable))
         expr = expr.substitute(variable, res)
+
+        if (level >= requiredLevel) {
+          expr = expr.simplify()
+        }
       }
       else {
         const q = res.quantity ?? res.ratio;
-
-
+        // console.log(":", variable, q, expr.toString())
         if (typeof q == 'number' || !isNaN(parseFloat(q))) {
-          expr = expr.simplify({ [variable]: res })
+          if (level >= requiredLevel) {
+            expr = expr.simplify({ [variable]: res })
+          }
+          else {
+
+            expr = parser.parse(cleanUpExpression(expr, variable))
+            expr = expr.substitute(variable, q);
+          }
         }
-        else {
+        else {      
           expr = expr.substitute(variable, q)
 
         }
@@ -103,22 +127,30 @@ function recurExpr(node) {
   }
 }
 export function toEquation(lastNode) {
-  const final = recurExpr(lastNode);
+  const final = recurExpr(lastNode, 0);
   return parser.parse(cleanUpExpression(final))
 }
-export function toEquationExpr(lastExpr) {
-  const final = recurExpr({ quantity: lastExpr });
-  return parser.parse(cleanUpExpression(final))
+function toEquationExpr(lastExpr, requiredLevel = 0){
+  const final = recurExpr({ quantity: lastExpr }, 0, requiredLevel);
+  return parser.parse(cleanUpExpression(final));  
+}
+export function toEquationExprAsText(lastExpr, requiredLevel = 0) {
+  return expressionToString(toEquationExpr(lastExpr, requiredLevel).tokens, false);  
+}
+export function toEquationExprAsTex(lastExpr, requiredLevel = 0) {
+  return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel).tokens)} $`
 }
 
+function cleanUpExpression(exp, variable = '') {
 
-function cleanUpExpression(exp) {
   const replaced = exp.toString()
-    .replaceAll(".quantity", "")
-    .replaceAll(".ratio", "")
-    .replaceAll(".baseQuantity", "")
+    .replaceAll(`${variable}.quantity`, variable)
+    .replaceAll(`${variable}.ratio`, variable)
+    .replaceAll(`${variable}.baseQuantity`, variable)
+
   return formatNumbersInExpression(replaced)
 }
+
 function formatNumbersInExpression(expr) {
   return expr.replace(/(\d*\.\d+|\d+)/g, (match) => {
     const num = parseFloat(match);
@@ -249,4 +281,263 @@ function applyOp(a, b, op, variable) {
       constant: aConst / bConst
     };
   }
+}
+const colors = ({
+  darkred: "#e7040f",
+  red: "#ff4136",
+  lightred: "#ff725c",
+  orange: "#ff6300",
+  gold: "#ffb700",
+  yellow: "#ffd700",
+  lightyellow: "#fbf1a9",
+  purple: "#5e2ca5",
+  lightpurple: "#a463f2",
+  darkpink: "#d5008f",
+  hotpink: "#ff41b4",
+  pink: "#ff80cc",
+  lightpink: "#ffa3d7",
+  darkgreen: "#137752",
+  green: "#19a974",
+  lightgreen: "#9eebcf",
+  navy: "#001b44",
+  darkblue: "#1b4b98",
+  blue: "#266bd9",
+  lightblue: "#96ccff"
+})
+
+function tokensToTex(tokens, opts = {}) {
+  const options = {
+    mulSymbol: "\\cdot",   // "\\cdot", " ", "\\times", ""
+    divMode: "frac",       // "frac" | "slash"
+    stretchyParens: true,
+    implicitMul: false,
+    ...opts,
+  };
+
+  const stack = [];
+
+  function parens(str) {
+    return options.stretchyParens ? `\\left(${str}\\right)` : `(${str})`;
+  }
+  for (const tok of tokens) {
+
+    switch (tok.type) {
+      case "INUMBER":
+        stack.push(String(tok.value));
+        break;
+      case "IVARNAME":
+      case "IVAR":
+        stack.push(tok.value);
+        break;
+
+      case "IOP1": { // unary operator
+        const a = stack.pop();
+        if (tok.value === "sqrt") {
+          stack.push(`\\sqrt{${a}}`);
+        }
+        else {
+          stack.push(`${tok.value}${parens(a)}`);
+        }
+        break;
+      }
+
+      case "IOP2": { // binary operator
+        const b = stack.pop();
+        const a = stack.pop();
+        if (tok.value === "/") {
+          if (options.divMode === "frac") {
+            stack.push(`\\frac{${a}}{${b}}`);
+          } else {
+            stack.push(`${a} / ${b}`);
+          }
+        } else if (tok.value === "^") {
+          stack.push(`${parens(a)}^{${b}}`);
+        } else if (tok.value === "*") {
+          const sym = options.implicitMul ? "" : options.mulSymbol;
+          stack.push(`${a}${sym}${b}`);
+        } else {
+          const texOps = { "==": "=", "!=": "\\ne", "<=": "\\le", ">=": "\\ge" };
+          stack.push(`${a} ${(texOps[tok.value] || tok.value)} ${b}`);
+        }
+        break;
+      }
+
+      case "IOP3": { // ternary operator ?:
+        const c = stack.pop();
+        const b = stack.pop();
+        const a = stack.pop();
+        stack.push(`${a}\\ ?\\ ${b}\\ :\\ ${c}`);
+        break;
+      }      
+      case "FUNCALL":
+      case "IFUNCALL": {
+        const argCount = tok.value || 0
+        const args = [];
+        for (let i = 0; i < argCount; i++) {
+          args.unshift(stack.pop());
+        }
+        const f = stack.pop();
+        
+        if (tok.value === "sqrt" && args.length === 1) {
+          stack.push(`\\sqrt{${args[0]}}`);
+        } else if (tok.value === "abs" && args.length === 1) {
+          stack.push(`\\left|${args[0]}\\right|`);
+        } else if (["sin", "cos", "tan", "log", "ln"].includes(tok.value)) {
+          stack.push(`\\${tok.value}\\left(${args.join(", ")}\\right)`);
+        } else if (["red", "blue", "green"].includes(f)) {
+          stack.push(`\\textcolor{${colors[f]}}{${args.join(", ")}}`);          
+        } else {
+          stack.push(`${tok.value}\\left(${args.join(", ")}\\right)`);
+        }
+        break;
+      }
+
+      default:
+        stack.push(String(tok.value));
+    }
+  }
+
+  return stack.pop();
+}
+const INUMBER = 'INUMBER';
+const IOP1 = 'IOP1';
+const IOP2 = 'IOP2';
+const IOP3 = 'IOP3';
+const IVAR = 'IVAR';
+const IVARNAME = 'IVARNAME';
+const IFUNCALL = 'IFUNCALL';
+const IFUNDEF = 'IFUNDEF';
+const IEXPR = 'IEXPR';
+const IEXPREVAL = 'IEXPREVAL';
+const IMEMBER = 'IMEMBER';
+const IENDSTATEMENT = 'IENDSTATEMENT';
+const IARRAY = 'IARRAY';
+function expressionToString(tokens, toJS) {
+  var nstack = [];
+  var n1, n2, n3;
+  var f, args, argCount;
+  for (var i = 0; i < tokens.length; i++) {
+    var item = tokens[i];
+    var type = item.type;
+    if (type === INUMBER) {
+      if (typeof item.value === 'number' && item.value < 0) {
+        nstack.push('(' + item.value + ')');
+      } else if (Array.isArray(item.value)) {
+        nstack.push('[' + item.value.map(escapeValue).join(', ') + ']');
+      } else {
+        nstack.push(escapeValue(item.value));
+      }
+    } else if (type === IOP2) {
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      f = item.value;
+      if (toJS) {
+        if (f === '^') {
+          nstack.push('Math.pow(' + n1 + ', ' + n2 + ')');
+        } else if (f === 'and') {
+          nstack.push('(!!' + n1 + ' && !!' + n2 + ')');
+        } else if (f === 'or') {
+          nstack.push('(!!' + n1 + ' || !!' + n2 + ')');
+        } else if (f === '||') {
+          nstack.push('(function(a,b){ return Array.isArray(a) && Array.isArray(b) ? a.concat(b) : String(a) + String(b); }((' + n1 + '),(' + n2 + ')))');
+        } else if (f === '==') {
+          nstack.push('(' + n1 + ' === ' + n2 + ')');
+        } else if (f === '!=') {
+          nstack.push('(' + n1 + ' !== ' + n2 + ')');
+        } else if (f === '[') {
+          nstack.push(n1 + '[(' + n2 + ') | 0]');
+        } else {
+          nstack.push('(' + n1 + ' ' + f + ' ' + n2 + ')');
+        }
+      } else {
+        if (f === '[') {
+          nstack.push(n1 + '[' + n2 + ']');
+        } else {
+          nstack.push(n1 + ' ' + f + ' ' + n2);
+        }
+      }
+    } else if (type === IOP3) {
+      n3 = nstack.pop();
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      f = item.value;
+      if (f === '?') {
+        nstack.push('(' + n1 + ' ? ' + n2 + ' : ' + n3 + ')');
+      } else {
+        throw new Error('invalid Expression');
+      }
+    } else if (type === IVAR || type === IVARNAME) {
+      nstack.push(item.value);
+    } else if (type === IOP1) {
+      n1 = nstack.pop();
+      f = item.value;
+      if (f === '-' || f === '+') {
+        nstack.push('(' + f + n1 + ')');
+      } else if (toJS) {
+        if (f === 'not') {
+          nstack.push('(' + '!' + n1 + ')');
+        } else if (f === '!') {
+          nstack.push('fac(' + n1 + ')');
+        } else {
+          nstack.push(f + '(' + n1 + ')');
+        }
+      } else if (f === '!') {
+        nstack.push('(' + n1 + '!)');
+      } else {
+        nstack.push(f + ' ' + n1);
+      }
+    } else if (type === IFUNCALL) {
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+      }
+      f = nstack.pop();
+      nstack.push(f + '(' + args.join(', ') + ')');
+    } else if (type === IFUNDEF) {
+      n2 = nstack.pop();
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+      }
+      n1 = nstack.pop();
+      if (toJS) {
+        nstack.push('(' + n1 + ' = function(' + args.join(', ') + ') { return ' + n2 + ' })');
+      } else {
+        nstack.push('(' + n1 + '(' + args.join(', ') + ') = ' + n2 + ')');
+      }
+    } else if (type === IMEMBER) {
+      n1 = nstack.pop();
+      nstack.push(n1 + '.' + item.value);
+    } else if (type === IARRAY) {
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+      }
+      nstack.push('[' + args.join(', ') + ']');
+    } else if (type === IEXPR) {
+      nstack.push('(' + expressionToString(item.value, toJS) + ')');
+    } else if (type === IENDSTATEMENT) {
+      // eslint-disable no-empty
+    } else {
+      throw new Error('invalid Expression');
+    }
+  }
+  if (nstack.length > 1) {
+    if (toJS) {
+      nstack = [nstack.join(',')];
+    } else {
+      nstack = [nstack.join(';')];
+    }
+  }
+  return String(nstack[0]);
+}
+
+function escapeValue(v) {
+  if (typeof v === 'string') {
+    return JSON.stringify(v).replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+  }
+  return v;
 }

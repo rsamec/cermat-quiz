@@ -33,6 +33,9 @@ type Ratio = NumberOrExpression
 export function isNumber(quantity: NumberOrExpression | NumberOrVariable): quantity is number {
   return typeof quantity === "number";
 }
+export function isExpressionNode(quantity: NumberOrExpression | NumberOrVariable): quantity is ExpressionNode {
+  return (quantity as any)?.expression != null;
+}
 export function areNumbers(ratios: NumberOrExpression[]): ratios is number[] {
   return ratios.every(d => isNumber(d))
 }
@@ -1766,7 +1769,7 @@ function tupleRule(items: Predicate[]): Question {
 function sequenceRuleEx(items: Container[]): Sequence {
   const values = items.map(d => d.quantity);
   if (!areNumbers(values)) {
-    throw "quota does not support non quantity type"
+    throw "sequenceRule does not support non quantity type"
   }
   if (new Set(items.map(d => d.entity)).size > 1) {
     throw `Mismatch entity ${items.map(d => d.entity).join()}`
@@ -1892,7 +1895,7 @@ function pythagorasRuleEx(a: Container, b: Container, last: Phytagoras): Contain
       ...temp,
       quantity: isNumber(a.quantity) && isNumber(b.quantity)
         ? Math.sqrt(Math.pow(a.quantity, 2) + Math.pow(b.quantity, 2))
-        : wrapToQuantity(`sqrt(a.quantity^2 + b.quantity^2)`, { a, b }),
+        : wrapToQuantity(`sqrt (a.quantity^2 + b.quantity^2)`, { a, b }),
       agent: last.longest
     }
   }
@@ -2279,16 +2282,13 @@ function toQuotaEx(a: Container, quota: Container): Quota {
   // if (a.entity !== quota.entity) {
   //   throw `Mismatch entity ${a.entity}, ${quota.entity}`
   // }
-  if (!isNumber(a.quantity) || !isNumber(quota.quantity)) {
-    throw "quota does not support non quantity type"
-  }
-  const { groupCount, remainder } = divide(a.quantity, quota.quantity);
+  
   return {
     kind: 'quota',
     agentQuota: quota.agent,
     agent: a.agent,
-    quantity: groupCount,
-    restQuantity: remainder
+    quantity: isNumber(a.quantity) && isNumber(quota.quantity) ? Math.floor(a.quantity / quota.quantity) : wrapToQuantity(`floor(a.quantity / quota.quantity)`, { a, quota }),
+    restQuantity: isNumber(a.quantity) && isNumber(quota.quantity) ? a.quantity % quota.quantity : wrapToQuantity(`a.quantity % quota.quantity`, { a, quota })
   }
 }
 function toQuota(a: Container, quota: Container): Question {
@@ -2355,7 +2355,7 @@ function evalToQuantityEx<
   const variables = extractDistinctWords(b.expression);
 
   if (!areNumbers(quantities)) {
-    throw `evalToQuantity does not support non quantity types`
+    throw `evalToQuantity does not support non quantity types. ${quantities}`
   }
   const context = quantities.reduce((out, d, i) => {
     out[variables[i]] = d
@@ -2425,10 +2425,14 @@ function simplifyExprAsRule(a: RatioComparison | Container, b: SimplifyExpr): Qu
 function evalToOptionEx<T extends Predicate & { quantity?: Quantity, ratio?: Quantity }>(a: T, b: Option): Option {
   let valueToEval = a.quantity ?? a.ratio;
 
-
-  if (!isNumber(valueToEval)) {
-    console.log(valueToEval)
-    throw `evalToQuantity does not support non quantity types`
+  if (isExpressionNode(valueToEval)){
+      
+      valueToEval = helpers.evalExpression(valueToEval.expression, valueToEval.context )
+      //console.log(a.quantity ?? a.ratio, valueToEval)
+  }
+  
+  if (!isNumber(valueToEval)){  
+    throw `evalToQuantity does not support non quantity types. ${JSON.stringify(valueToEval)}`
   }
   if (a.kind == "comp-ratio" && valueToEval > 1 / 2 && valueToEval < 2) {
     valueToEval = valueToEval > 1 ? valueToEval - 1 : 1 - valueToEval;

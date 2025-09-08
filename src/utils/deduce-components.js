@@ -5,7 +5,7 @@ import { nthQuadraticElements, primeFactorization, lcdCalc, isNumber, gcdCalc } 
 import { isPredicate, formatPredicate, mapNodeChildrenToPredicates } from "../utils/deduce-utils.js";
 import { deduce } from "./deduce.js";
 import { inferenceRuleWithQuestion } from "../math/math-configure.js";
-import { toEquationExpr } from "./math-solver.js";
+import { toEquationExprAsText } from "./math-solver.js";
 
 export function partion(items, options) {
   const total = items.reduce((out, d) => out += d.value, 0);
@@ -213,14 +213,30 @@ export const formatting = {
     if (typeof d === "number") {
       return d.toLocaleString("cs-CZ");
     }
+    else if (d?.expression != null) {
+      return html`<div class="badge badge--warning">${toEquationExprAsText(d)}</div>`
+    }
     else if (typeof d === "string") {
       return d;
     }
     else {
-      return html`<div class="badge badge--warning">${toEquationExpr(d)}</div>`
+      return d;
     }
   },
-  formatRatio: (d, asPercent) => asPercent ? `${(d * 100).toLocaleString('cs-CZ')}%` : new Fraction(d).toFraction(),
+  formatRatio: (d, asPercent) => {
+    if (typeof d === "number") {
+      return  asPercent ? `${(d * 100).toLocaleString('cs-CZ')}%` : new Fraction(d).toFraction()
+    }
+    else if (d?.expression != null) {
+        html`<div class="badge badge--warning">${ asPercent ? toEquationExprAsText({...d,expression: `(${d.expression}) * 100`}) : toEquationExprAsText(d)}</div>`
+    }
+    else if (typeof d === "string") {
+      return d;
+    }
+    else {
+      return d
+    }
+  },
   formatEntity: (d, u) => [u, d].filter(d => d != null).join(" "),
   formatAgent: d => html`<b>${d}</b>`,
   formatSequence: d => formatSequence(d),

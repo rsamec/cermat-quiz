@@ -1,5 +1,5 @@
 
-import { type Predicate, type Pattern, cont, ratio, comp, rate, ratios, compRatio, compDiff, lcd, gcd, ctor, inferenceRule, nth, quota, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont, counter, sum, product, productVolume, squareNumbersPattern, triangularNumbersPattern, oblongNumbers } from "../components/math.js";
+import { type Predicate, type Pattern, cont, ratio, comp, rate, ratios, compRatio, compDiff, lcd, gcd, ctor, inferenceRule, nth, quota, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont, counter, sum, product, productVolume, squareNumbersPattern, triangularNumbersPattern, oblongNumbers, halfProduct } from "../components/math.js";
 
 export default function rules() {
 
@@ -105,6 +105,10 @@ export default function rules() {
     triangularNumbers: [...nthPatternRule(triangularNumbersPattern({entity: 'čtverec'}),tenthTerm)],
     rectangularNumbers: [...nthPatternRule(oblongNumbers({entity: 'čtverec'}),tenthTerm)],
     unit: [deduceRule(cont("Honzík", 4, "jablek", "kg"), ctorUnit("g")), deduceRule(cont("Ája", 400, "mléka", "cm3"), ctorUnit("l"))],
-    eval: [deduceRule(cont("poloměr", 4, "délka", "cm"), evalExprAsCont("π*r^2", { kind: 'cont', agent: "kruh", entity: "obsah", unit: "cm2" }))]
+    eval: [
+      deduceRule(cont("poloměr", 4, "délka", "cm"), evalExprAsCont("π*r^2", { kind: 'cont', agent: "kruh", entity: "obsah", unit: "cm2" })),
+      deduceRule(cont("průměr", 4, "délka", "cm"), evalExprAsCont("prumer*0.5", { kind: 'cont', agent: "poloměr", entity: "délka", unit: "cm" })),
+      deduceRule(cont("průměr", "4", "délka", "cm"), ...halfProduct("poloměr"))
+    ]
   }
 }

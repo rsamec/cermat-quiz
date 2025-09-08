@@ -1,5 +1,5 @@
-import { cont, ctor, ctorComplement, sum } from "../../components/math";
-import { axiomInput, deduce } from "../../utils/deduce-utils";
+import { cont, ctor, ctorComplement, ctorOption, sum } from "../../components/math";
+import { deduce } from "../../utils/deduce-utils";
 
 interface SourozenciParams {
   evaPodil;
@@ -17,27 +17,31 @@ export default function build({ input }: {
     { agent: "zbyva", value: input.zbyvaNasporit }];
 
   const entity = "Kč";
-  const zbyva = axiomInput(cont("zbývá", input.zbyvaNasporit, entity), 4);
-  const michalPlus = axiomInput(cont("Michal+", input.michalPlus, entity), 3);
+  const zbyva = cont("zbývá", input.zbyvaNasporit, entity);
+  const michalPlus = cont("Michal+", input.michalPlus, entity);
   const penize = sum("Michal+zbývá");
 
-  const eva = axiomInput(cont("Eva", input.evaPodil, "%"), 2)
+  const eva = cont("Eva", input.evaPodil, "%")
   const michal = cont("Michal", input.evaPodil, "%");
-  const spolecne = axiomInput(sum("Eva + Michal"), 1);
+  const spolecne = sum("Eva + Michal");
   const celek = cont("celek", 100, "%")
 
 
   const deductionTree = deduce(
     deduce(
       deduce(
-        deduce(eva, michal, spolecne),
-        celek,
-        ctor('ratio')
+        deduce(
+          deduce(eva, michal, spolecne),
+          celek,
+          ctor('ratio')
+        ),
+        ctorComplement("Michal+zbývá"),
       ),
-      ctorComplement("Michal+zbývá"),
+      deduce(michalPlus, zbyva, penize),      
     ),
-    deduce(michalPlus, zbyva, penize),
+    ctorOption("C", 480)
   )
+
 
   const template = highlight => highlight`
   Dva sourozenci Eva a Michal šetří ${'společně'} na dárek pro rodiče.

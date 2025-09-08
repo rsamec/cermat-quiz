@@ -13,6 +13,9 @@ function configure(config) {
 function isNumber(quantity) {
   return typeof quantity === "number";
 }
+function isExpressionNode(quantity) {
+  return quantity?.expression != null;
+}
 function areNumbers(ratios) {
   return ratios.every((d) => isNumber(d));
 }
@@ -934,7 +937,7 @@ function tupleRule(items) {
 function sequenceRuleEx(items) {
   const values = items.map((d) => d.quantity);
   if (!areNumbers(values)) {
-    throw "quota does not support non quantity type";
+    throw "sequenceRule does not support non quantity type";
   }
   if (new Set(items.map((d) => d.entity)).size > 1) {
     throw `Mismatch entity ${items.map((d) => d.entity).join()}`;
@@ -1029,7 +1032,7 @@ function pythagorasRuleEx(a, b, last2) {
   } else {
     return {
       ...temp,
-      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? Math.sqrt(Math.pow(a.quantity, 2) + Math.pow(b.quantity, 2)) : wrapToQuantity(`sqrt(a.quantity^2 + b.quantity^2)`, { a, b }),
+      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? Math.sqrt(Math.pow(a.quantity, 2) + Math.pow(b.quantity, 2)) : wrapToQuantity(`sqrt (a.quantity^2 + b.quantity^2)`, { a, b }),
       agent: last2.longest
     };
   }
@@ -1361,16 +1364,12 @@ function solveEquation(a, b, last2) {
   };
 }
 function toQuotaEx(a, quota) {
-  if (!isNumber(a.quantity) || !isNumber(quota.quantity)) {
-    throw "quota does not support non quantity type";
-  }
-  const { groupCount, remainder } = divide(a.quantity, quota.quantity);
   return {
     kind: "quota",
     agentQuota: quota.agent,
     agent: a.agent,
-    quantity: groupCount,
-    restQuantity: remainder
+    quantity: isNumber(a.quantity) && isNumber(quota.quantity) ? Math.floor(a.quantity / quota.quantity) : wrapToQuantity(`floor(a.quantity / quota.quantity)`, { a, quota }),
+    restQuantity: isNumber(a.quantity) && isNumber(quota.quantity) ? a.quantity % quota.quantity : wrapToQuantity(`a.quantity % quota.quantity`, { a, quota })
   };
 }
 function toQuota(a, quota) {
@@ -1387,19 +1386,6 @@ function toQuota(a, quota) {
   } else {
     return resultAsQuestion(result);
   }
-}
-function divide(total, divisor, isPartitative = false) {
-  const rawQuotient = total / divisor;
-  const rawRemainder = rawQuotient % 1;
-  const quotient = rawQuotient - rawRemainder;
-  const remainder = isPartitative ? (divisor - Math.floor(divisor)) * rawQuotient : rawRemainder * divisor;
-  const groupCount = isPartitative ? divisor : quotient;
-  const groupSize = isPartitative ? rawQuotient : divisor;
-  return {
-    groupCount,
-    groupSize,
-    remainder
-  };
 }
 function toRatiosEx(parts, last2) {
   const ratios = parts.map((d) => d.quantity);
@@ -1424,7 +1410,7 @@ function evalToQuantityEx(a, b) {
   const quantities = a.map((d) => d.quantity);
   const variables = extractDistinctWords(b.expression);
   if (!areNumbers(quantities)) {
-    throw `evalToQuantity does not support non quantity types`;
+    throw `evalToQuantity does not support non quantity types. ${quantities}`;
   }
   const context = quantities.reduce((out, d, i) => {
     out[variables[i]] = d;
@@ -1476,9 +1462,11 @@ function simplifyExprAsRule(a, b) {
 }
 function evalToOptionEx(a, b) {
   let valueToEval = a.quantity ?? a.ratio;
+  if (isExpressionNode(valueToEval)) {
+    valueToEval = helpers.evalExpression(valueToEval.expression, valueToEval.context);
+  }
   if (!isNumber(valueToEval)) {
-    console.log(valueToEval);
-    throw `evalToQuantity does not support non quantity types`;
+    throw `evalToQuantity does not support non quantity types. ${JSON.stringify(valueToEval)}`;
   }
   if (a.kind == "comp-ratio" && valueToEval > 1 / 2 && valueToEval < 2) {
     valueToEval = valueToEval > 1 ? valueToEval - 1 : 1 - valueToEval;
@@ -2118,23 +2106,23 @@ function formatAngle(relationship) {
   }
 }
 function formatSequence(type, n) {
-  const simplify3 = (d, op = "") => d !== 1 ? `${d}${op}` : "";
+  const simplify2 = (d, op = "") => d !== 1 ? `${d}${op}` : "";
   if (type.kind === "arithmetic")
     return `${type.sequence[0]} + ${type.commonDifference}(${formatNumber(n)}-1)`;
   if (type.kind === "quadratic") {
     const [first, second] = type.sequence;
     const { A, B, C } = nthQuadraticElements(first, second, type.secondDifference);
-    let parts = [`${simplify3(A, "*")}${formatNumber(n)}^2^`];
+    let parts = [`${simplify2(A, "*")}${formatNumber(n)}^2^`];
     if (B !== 0) {
-      parts = parts.concat(`${simplify3(B, "*")}${formatNumber(n)}`);
+      parts = parts.concat(`${simplify2(B, "*")}${formatNumber(n)}`);
     }
     if (C !== 0) {
-      parts = parts.concat(`${simplify3(C, "*")}${formatNumber(n)}`);
+      parts = parts.concat(`${simplify2(C, "*")}${formatNumber(n)}`);
     }
     return `${parts.map((d, i) => `${i !== 0 ? " + " : ""}${d}`).join(" ")}`;
   }
   if (type.kind === "geometric") {
-    return `${simplify3(type.sequence[0], "*")}${type.commonRatio}^(${formatNumber(n)}-1)^`;
+    return `${simplify2(type.sequence[0], "*")}${type.commonRatio}^(${formatNumber(n)}-1)^`;
   }
 }
 function sequenceOptions(seqType) {
@@ -5482,6 +5470,15 @@ parser.functions.closeTo = function(value, center) {
   const end = center + eps;
   return start <= value && value <= end;
 };
+parser.functions.red = function(value) {
+  return value;
+};
+parser.functions.blue = function(value) {
+  return value;
+};
+parser.functions.color = function(color, value) {
+  return value;
+};
 function gcdCalc2(numbers) {
   let num = 2, res = 1;
   while (num <= Math.min(...numbers)) {
@@ -5514,20 +5511,29 @@ function evalExpression(expression, quantityOrContext) {
   const res = expr.simplify(context);
   return res.toString();
 }
-function recurExpr(node) {
+function recurExpr(node, level, requiredLevel = 0) {
   const quantity = node.quantity ?? node.ratio ?? {};
   const { context, expression } = quantity;
   if (expression) {
     let expr = parser.parse(expression);
     const variables = expr.variables();
     for (let variable of variables) {
-      const res = recurExpr(context[variable]);
+      const res = recurExpr(context[variable], level + 1, requiredLevel);
       if (res.substitute != null) {
+        expr = parser.parse(cleanUpExpression(expr, variable));
         expr = expr.substitute(variable, res);
+        if (level >= requiredLevel) {
+          expr = expr.simplify();
+        }
       } else {
         const q = res.quantity ?? res.ratio;
         if (typeof q == "number" || !isNaN(parseFloat(q))) {
-          expr = expr.simplify({ [variable]: res });
+          if (level >= requiredLevel) {
+            expr = expr.simplify({ [variable]: res });
+          } else {
+            expr = parser.parse(cleanUpExpression(expr, variable));
+            expr = expr.substitute(variable, q);
+          }
         } else {
           expr = expr.substitute(variable, q);
         }
@@ -5538,12 +5544,15 @@ function recurExpr(node) {
     return node;
   }
 }
-function toEquationExpr(lastExpr) {
-  const final = recurExpr({ quantity: lastExpr });
+function toEquationExpr(lastExpr, requiredLevel = 0) {
+  const final = recurExpr({ quantity: lastExpr }, 0, requiredLevel);
   return parser.parse(cleanUpExpression(final));
 }
-function cleanUpExpression(exp) {
-  const replaced = exp.toString().replaceAll(".quantity", "").replaceAll(".ratio", "").replaceAll(".baseQuantity", "");
+function toEquationExprAsTex(lastExpr, requiredLevel = 0) {
+  return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel).tokens)} $`;
+}
+function cleanUpExpression(exp, variable = "") {
+  const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, variable);
   return formatNumbersInExpression(replaced);
 }
 function formatNumbersInExpression(expr) {
@@ -5658,6 +5667,114 @@ function applyOp(a, b, op, variable) {
       constant: aConst / bConst
     };
   }
+}
+var colors = {
+  darkred: "#e7040f",
+  red: "#ff4136",
+  lightred: "#ff725c",
+  orange: "#ff6300",
+  gold: "#ffb700",
+  yellow: "#ffd700",
+  lightyellow: "#fbf1a9",
+  purple: "#5e2ca5",
+  lightpurple: "#a463f2",
+  darkpink: "#d5008f",
+  hotpink: "#ff41b4",
+  pink: "#ff80cc",
+  lightpink: "#ffa3d7",
+  darkgreen: "#137752",
+  green: "#19a974",
+  lightgreen: "#9eebcf",
+  navy: "#001b44",
+  darkblue: "#1b4b98",
+  blue: "#266bd9",
+  lightblue: "#96ccff"
+};
+function tokensToTex(tokens, opts = {}) {
+  const options = {
+    mulSymbol: "\\cdot",
+    // "\\cdot", " ", "\\times", ""
+    divMode: "frac",
+    // "frac" | "slash"
+    stretchyParens: true,
+    implicitMul: false,
+    ...opts
+  };
+  const stack = [];
+  function parens(str) {
+    return options.stretchyParens ? `\\left(${str}\\right)` : `(${str})`;
+  }
+  for (const tok of tokens) {
+    switch (tok.type) {
+      case "INUMBER":
+        stack.push(String(tok.value));
+        break;
+      case "IVARNAME":
+      case "IVAR":
+        stack.push(tok.value);
+        break;
+      case "IOP1": {
+        const a = stack.pop();
+        if (tok.value === "sqrt") {
+          stack.push(`\\sqrt{${a}}`);
+        } else {
+          stack.push(`${tok.value}${parens(a)}`);
+        }
+        break;
+      }
+      case "IOP2": {
+        const b = stack.pop();
+        const a = stack.pop();
+        if (tok.value === "/") {
+          if (options.divMode === "frac") {
+            stack.push(`\\frac{${a}}{${b}}`);
+          } else {
+            stack.push(`${a} / ${b}`);
+          }
+        } else if (tok.value === "^") {
+          stack.push(`${parens(a)}^{${b}}`);
+        } else if (tok.value === "*") {
+          const sym = options.implicitMul ? "" : options.mulSymbol;
+          stack.push(`${a}${sym}${b}`);
+        } else {
+          const texOps = { "==": "=", "!=": "\\ne", "<=": "\\le", ">=": "\\ge" };
+          stack.push(`${a} ${texOps[tok.value] || tok.value} ${b}`);
+        }
+        break;
+      }
+      case "IOP3": {
+        const c = stack.pop();
+        const b = stack.pop();
+        const a = stack.pop();
+        stack.push(`${a}\\ ?\\ ${b}\\ :\\ ${c}`);
+        break;
+      }
+      case "FUNCALL":
+      case "IFUNCALL": {
+        const argCount = tok.value || 0;
+        const args = [];
+        for (let i = 0; i < argCount; i++) {
+          args.unshift(stack.pop());
+        }
+        const f = stack.pop();
+        if (tok.value === "sqrt" && args.length === 1) {
+          stack.push(`\\sqrt{${args[0]}}`);
+        } else if (tok.value === "abs" && args.length === 1) {
+          stack.push(`\\left|${args[0]}\\right|`);
+        } else if (["sin", "cos", "tan", "log", "ln"].includes(tok.value)) {
+          stack.push(`\\${tok.value}\\left(${args.join(", ")}\\right)`);
+        } else if (["red", "blue", "green"].includes(f)) {
+          stack.push(`\\textcolor{${colors[f]}}{${args.join(", ")}}`);
+        } else {
+          stack.push(`${tok.value}\\left(${args.join(", ")}\\right)`);
+        }
+        break;
+      }
+      default:
+        stack.push(String(tok.value));
+    }
+  }
+  return stack.pop();
 }
 
 // src/math/math-configure.ts
@@ -5925,14 +6042,12 @@ function jsonToTLDrawEx(node, isConclusion, level = 0) {
   }
   return markdown;
 }
-function jsonToMarkdownChat(node, formatting) {
+function jsonToMarkdownChat(node) {
   const flatStructure = [];
   function traverseEx(node2) {
     const args = [];
     if (isPredicate(node2)) {
-      return formatPredicate(node2, { ...mdFormatting, formatKind: () => ``, formatTable: (d) => `vzor opakov\xE1n\xED 
-
-${mdFormatTable(d)}`, ...formatting });
+      return node2;
     }
     let q = null;
     if (node2.children && Array.isArray(node2.children)) {
@@ -5957,12 +6072,13 @@ ${mdFormatTable(d)}`, ...formatting });
       const premises = arr.slice(0, -1);
       const conclusion = arr[arr.length - 1];
       const answer = q?.options?.find((d) => d.ok);
+      const formattedPremises = premises.map((d) => isPredicate(d) ? formatPredicate(d, chatFormattingFunc(0)) : d).filter((d) => !isEmptyOrWhiteSpace(d)).map((d) => `- ${d}`).join("\n");
       flatStructure.push((q != null ? q.question + `
-${premises.filter((d) => !isEmptyOrWhiteSpace(d)).map((d) => `- ${d}`).join("\n")} 
+${formattedPremises}
 
-` + (answer != null ? `V\xFDpo\u010Det: ${answer.tex} = ${answer.result}` : "") : `${premises.filter((d) => !isEmptyOrWhiteSpace(d)).map((d) => `- ${d}`).join("\n")}`) + `
+` + (answer != null ? `V\xFDpo\u010Det: ${answer.tex} = ${answer.result}` : "") : `${formattedPremises}`) + `
 
-Z\xE1v\u011Br:${conclusion}
+Z\xE1v\u011Br:${formatPredicate(conclusion, chatFormattingFunc(1))}
 
 `);
     }
@@ -5977,19 +6093,31 @@ function isEmptyOrWhiteSpace(value) {
 function mapNodeChildrenToPredicates(node) {
   return node.children.map((d) => isPredicate(d) ? d : d.children.slice(-1)[0]);
 }
-var mdFormatting = {
+var mdFormattingFunc = (requiredLevel) => ({
   compose: (strings, ...args) => concatString(strings, ...args),
   formatKind: (d) => `[${d.kind.toUpperCase()}]`,
   formatQuantity: (d) => {
     if (typeof d === "number") {
       return d.toLocaleString("cs-CZ");
+    } else if (d?.expression != null) {
+      return toEquationExprAsTex(d, requiredLevel);
     } else if (typeof d === "string") {
       return d;
     } else {
-      return toEquationExpr(d);
+      return d;
     }
   },
-  formatRatio: (d, asPercent) => asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : d.toLocaleString("cs-CZ"),
+  formatRatio: (d, asPercent) => {
+    if (typeof d === "number") {
+      return asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : d.toLocaleString("cs-CZ");
+    } else if (d?.expression != null) {
+      return asPercent ? toEquationExprAsTex({ ...d, expression: `(${d.expression}) * 100` }, requiredLevel) : toEquationExprAsTex(d, requiredLevel);
+    } else if (typeof d === "string") {
+      return d;
+    } else {
+      return d;
+    }
+  },
   formatEntity: (d, unit) => {
     const res = [unit, d].filter((d2) => d2 != null).join(" ");
     return isEmptyOrWhiteSpace(res) ? "" : `__${res.trim()}__`;
@@ -5997,7 +6125,15 @@ var mdFormatting = {
   formatAgent: (d) => `**${d}**`,
   formatSequence: (d) => `${formatSequence2(d)}`,
   formatTable: (data) => `vzor opakov\xE1n\xED ${data.map((d) => d[1]).join()}`
-};
+});
+var mdFormatting = mdFormattingFunc(0);
+var chatFormattingFunc = (requiredLevel) => ({
+  ...mdFormattingFunc(requiredLevel),
+  formatKind: () => ``,
+  formatTable: (d) => `vzor opakov\xE1n\xED 
+
+${mdFormatTable(d)}`
+});
 function mdFormatTable(data) {
   if (!Array.isArray(data) || data.length === 0)
     return "";
@@ -6015,23 +6151,23 @@ var mermaidFormatting = {
   formatKind: (d) => ``
 };
 function formatSequence2(type) {
-  const simplify3 = (d, op = "") => d !== 1 ? `${d}${op}` : "";
+  const simplify2 = (d, op = "") => d !== 1 ? `${d}${op}` : "";
   if (type.kind === "arithmetic")
     return `${type.sequence.join()} => a^n^ = ${type.sequence[0]} + ${type.commonDifference}(n-1)`;
   if (type.kind === "quadratic") {
     const [first, second] = type.sequence;
     const { A, B, C } = nthQuadraticElements(first, second, type.secondDifference);
-    const parts = [`${simplify3(A)}n^2^`];
+    const parts = [`${simplify2(A)}n^2^`];
     if (B !== 0) {
-      parts.concat(`${simplify3(B)}n`);
+      parts.concat(`${simplify2(B)}n`);
     }
     if (C !== 0) {
-      parts.concat(`${simplify3(C)}n`);
+      parts.concat(`${simplify2(C)}n`);
     }
     return `${type.sequence.join()} => a^n^ = ${parts.map((d, i) => `${i !== 0 ? " + " : ""}${d}`)}`;
   }
   if (type.kind === "geometric") {
-    return `${type.sequence.join()} => a^n^ = ${simplify3(type.sequence[0], "*")}${type.commonRatio}^(n-1)^`;
+    return `${type.sequence.join()} => a^n^ = ${simplify2(type.sequence[0], "*")}${type.commonRatio}^(n-1)^`;
   }
 }
 function formatPredicate(d, formatting) {

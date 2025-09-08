@@ -1,7 +1,7 @@
 import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate } from "../components/math.js"
 import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison } from "../components/math.js"
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
-import { evaluate, simplify, substitute, toEquationExpr } from "./math-solver.js"
+import { evaluate, substitute, toEquationExprAsTex } from "./math-solver.js"
 
 type PredicateLabel = { labelKind?: 'input' | 'deduce', label?: number }
 
@@ -317,14 +317,18 @@ export function jsonToTLDrawEx(node, isConclusion, level = 0) {
   }
   return markdown
 }
-export function jsonToMarkdownChat(node, formatting?: any) {
+
+
+
+export function jsonToMarkdownChat(node) {
 
   const flatStructure = [];
   function traverseEx(node) {
     const args = []
     // Add node details if they exist
     if (isPredicate(node)) {
-      return formatPredicate(node, { ...mdFormatting, formatKind: () => ``, formatTable: d => `vzor opakování \n\n${mdFormatTable(d)}`, ...formatting });
+      //return formatPredicate(node,chatFormatting);
+      return node;
     }
 
     let q = null
@@ -361,9 +365,11 @@ export function jsonToMarkdownChat(node, formatting?: any) {
       const conclusion = arr[arr.length - 1];
 
       const answer = q?.options?.find(d => d.ok)
+
+      const formattedPremises = premises.map(d => isPredicate(d) ? formatPredicate(d, chatFormattingFunc(0)) : d).filter(d => !isEmptyOrWhiteSpace(d)).map(d => `- ${d}`).join("\n")
       flatStructure.push((q != null
-        ? q.question + `\n` + `${premises.filter(d => !isEmptyOrWhiteSpace(d)).map(d => `- ${d}`).join("\n")} ` + '\n\n' + (answer != null ? `Výpočet: ${answer.tex} = ${answer.result}` : '')
-        : `${premises.filter(d => !isEmptyOrWhiteSpace(d)).map(d => `- ${d}`).join("\n")}`) + '\n\n' + `Závěr:${conclusion}` + "\n\n");
+        ? q.question + `\n` + `${formattedPremises}` + '\n\n' + (answer != null ? `Výpočet: ${answer.tex} = ${answer.result}` : '')
+        : `${formattedPremises}`) + '\n\n' + `Závěr:${formatPredicate(conclusion, chatFormattingFunc(1))}` + "\n\n");
     }
 
     return args
@@ -381,21 +387,37 @@ export function mapNodeChildrenToPredicates(node: TreeNode): Predicate[] {
 }
 
 
-const mdFormatting = {
+const mdFormattingFunc = (requiredLevel: number) => ({
   compose: (strings: TemplateStringsArray, ...args) => concatString(strings, ...args),
   formatKind: d => `[${d.kind.toUpperCase()}]`,
   formatQuantity: d => {
     if (typeof d === "number") {
       return d.toLocaleString("cs-CZ");
     }
+    else if (d?.expression != null) {
+      return toEquationExprAsTex(d, requiredLevel);
+    }
     else if (typeof d === "string") {
       return d;
     }
     else {
-      return toEquationExpr(d)
+      return d;
     }
   },
-  formatRatio: (d, asPercent) => asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : d.toLocaleString("cs-CZ"),
+  formatRatio: (d, asPercent) => {
+    if (typeof d === "number") {
+      return asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : d.toLocaleString("cs-CZ")
+    }
+    else if (d?.expression != null) {
+      return asPercent ? toEquationExprAsTex({ ...d, expression: `(${d.expression}) * 100` }, requiredLevel) : toEquationExprAsTex(d, requiredLevel)
+    }
+    else if (typeof d === "string") {
+      return d;
+    }
+    else {
+      return d;
+    }
+  },
   formatEntity: (d, unit) => {
     const res = [unit, d].filter(d => d != null).join(" ");
     return isEmptyOrWhiteSpace(res) ? '' : `__${res.trim()}__`;
@@ -403,7 +425,12 @@ const mdFormatting = {
   formatAgent: d => `**${d}**`,
   formatSequence: d => `${formatSequence(d)}`,
   formatTable: (data: (string | number)[][]) => `vzor opakování ${data.map(d => d[1]).join()}`
-}
+})
+const mdFormatting = mdFormattingFunc(0)
+const chatFormattingFunc = (requiredLevel: number) => ({
+  ...mdFormattingFunc(requiredLevel),
+  formatKind: () => ``, formatTable: d => `vzor opakování \n\n${mdFormatTable(d)}`
+})
 export function mdFormatTable(data: (string | number)[][]) {
   if (!Array.isArray(data) || data.length === 0) return "";
 
@@ -716,7 +743,6 @@ export function createLazyMap<T>(thunks: ThunkMap<T>): T {
 
 
   for (const key in thunks) {
-    //console.log("Creating....", key)
     Object.defineProperty(lazyMap, key, {
       get() {
         try {

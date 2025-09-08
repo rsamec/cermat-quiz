@@ -3,6 +3,40 @@ title: Quiz markdown
 draft: true
 ---
 
+```js
+const colors = ({
+  darkred: "#e7040f",
+  red: "#ff4136",
+  lightred: "#ff725c",
+  orange: "#ff6300",
+  gold: "#ffb700",
+  yellow: "#ffd700",
+  lightyellow: "#fbf1a9",
+  purple: "#5e2ca5",
+  lightpurple: "#a463f2",
+  darkpink: "#d5008f",
+  hotpink: "#ff41b4",
+  pink: "#ff80cc",
+  lightpink: "#ffa3d7",
+  darkgreen: "#137752",
+  green: "#19a974",
+  lightgreen: "#9eebcf",
+  navy: "#001b44",
+  darkblue: "#1b4b98",
+  blue: "#266bd9",
+  lightblue: "#96ccff"
+})
+```
+${
+html`<style>${Object.entries(colors).map(([name, value]) => `
+.${name}{color:${value}}`).join(``)}
+</style>`
+}
+
+```tex
+\textcolor{${colors.hotpink}}{e}
+\textcolor{${colors.blue}}{E} = \textcolor{${colors.yellow}}{mc^2}
+```
 <script type="module">
 
 

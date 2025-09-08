@@ -3,7 +3,7 @@ import { concatString, type DeduceContext, formatPredicate, isPredicate, mapNode
 import { isEmptyOrWhiteSpace } from "../utils/string-utils.js";
 import { isOperationPredicate, isQuantityPredicate, isRatioPredicate, isRatiosPredicate, type Predicate, type Question } from "../components/math.js";
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
-import { toEquationExpr } from "../utils/math-solver.js";
+import { toEquationExprAsText } from "../utils/math-solver.js";
 import { flextree } from 'd3-flextree';
 import Fraction from 'fraction.js';
 import { convertToShapes, createFrame, createShapeId } from "./tldraw-utils.js";
@@ -226,18 +226,34 @@ const richTextFormatting = {
             ? toText("PRODUCT")
             : toText(d.kind.toUpperCase())
         : '',
-    formatQuantity: d => {
+    formatQuantity: (d) => {
         if (typeof d === "number") {
             return toText(d.toLocaleString("cs-CZ"));
+        }
+        else if (d?.expression != null) {
+            return toText(toEquationExprAsText(d))
         }
         else if (typeof d === "string") {
             return toText(d);
         }
         else {
-            return toText(toEquationExpr(d))
+            return toText(d);
         }
     },
-    formatRatio: (d, asPercent) => asPercent ? toText(`${(d * 100).toLocaleString("cs-CZ")}%`) : toText(new Fraction(d).toFraction()),
+    formatRatio: (d, asPercent) => {
+        if (typeof d === "number") {
+            return toText(asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : toText(new Fraction(d).toFraction()));
+        }
+        else if (d?.expression != null) {
+            return toText(asPercent ? toEquationExprAsText({ ...d, expression: `(${d.expression}) * 100` }) : toEquationExprAsText(d))
+        }
+        else if (typeof d === "string") {
+            return toText(d);
+        }
+        else {
+            return toText(d);
+        }
+    },
     formatEntity: (d, unit) => {
         const res = [unit, d].filter(d => d != null).join(" ");
         return isEmptyOrWhiteSpace(res) ? '' : toItalictMark(res.trim());
