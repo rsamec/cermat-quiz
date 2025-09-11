@@ -12,7 +12,7 @@ style: /assets/css/word-problems.css
  
 </style>
 ```js
-import { formatCode, parseCode, formatPeriod} from './utils/quiz-string-utils.js';
+import { formatCode, parseCode, formatPeriod, formatVersion} from './utils/quiz-string-utils.js';
 import { unique, download } from "./utils/common-utils.js";
 import wordProblems from './math/word-problems.js';
 
@@ -22,6 +22,8 @@ import { jsonToMarkdownChat} from './utils/deduce-utils.js';
 import mdPlus from './utils/md-utils.js';
 import { parser } from '@lezer/markdown';
 import { getQuizBuilder } from "./utils/parse-utils.js";
+
+const questionsMaxLimit = 50;
 
 const quizQuestionsMap4 = await FileAttachment(`./data/quiz-math-4.json`).json();
 const quizQuestionsMap6 = await FileAttachment(`./data/quiz-math-6.json`).json();
@@ -68,6 +70,8 @@ const filteredQuizCategories = Object.entries(quizGeneratedCategories).flatMap((
         year: parsedCode.year,
         period: parsedCode.period,
         subject: parsedCode.subject,
+        order: parsedCode.order,
+        version: formatVersion(parsedCode),
         predicates:wordProblemsMetrics[code]?.[d.id]?.predicates ?? [],
         hasSolution:wordProblemsMetrics[code]?.[d.id] != null,
         builder,      
@@ -91,6 +95,15 @@ const resetValue = (input, defaultValue) => {
 const years = Object.keys(Object.groupBy(filteredQuizCategories, ({year}) => year));
 const selectedYearsInput = Inputs.select(years,{ multiple:true, label:"Rok"});
 const selectedYears = Generators.input(selectedYearsInput);
+
+const periods = Object.keys(Object.groupBy(filteredQuizCategories, ({period}) => period));
+const selectedPeriodsInput = Inputs.select(periods,{ multiple:true, format: d => formatPeriod(d), label:"Studium" });
+const selectedPeriods = Generators.input(selectedPeriodsInput);
+
+const versions = Object.keys(Object.groupBy(filteredQuizCategories, ({order}) => order));
+const selectedVersionsInput = Inputs.select(versions,{ multiple:true, format: order => formatVersion({order}), label:"Verze" });
+const selectedVersions = Generators.input(selectedVersionsInput);
+
 
 const codes = Object.keys(Object.groupBy(filteredQuizCategories, ({code}) => code));
 const selectedCodesInput = Inputs.select(codes,{ multiple:true, format: d => formatCode(d), label:"Test" });
@@ -164,7 +177,10 @@ Slovní úlohy jsou řešeny rozložením na podproblémy, které jsou řešitel
         ${selectedYearsInput}
       </div>
       <div>
-        ${selectedCodesInput}
+        ${selectedPeriodsInput}
+      </div>
+      <div>
+        ${selectedVersionsInput}
       </div>
       <div>
         ${selectedPredicatesInput}
@@ -174,7 +190,8 @@ Slovní úlohy jsou řešeny rozložením na podproblémy, které jsou řešitel
 </details>
 <div class="h-stack h-stack--l h-stack--wrap">
   ${toBadge(selectedYears, selectedYearsInput)}
-  ${toBadge(selectedCodes, selectedCodesInput,"Testy")}
+  ${toBadge(selectedPeriods, selectedPeriodsInput,"Studium")}
+  ${toBadge(selectedVersions, selectedVersionsInput,"Verze")}
   ${toBadge(selectedPredicates, selectedPredicatesInput, "Predikáty")}
 </div>
 
@@ -185,9 +202,17 @@ let filtered = filteredQuizCategories;
 if (selectedYears.length > 0){
   filtered = filtered.filter(d=> selectedYears.some(year => d.year === year));
 }
-if (selectedCodes.length > 0){
-  filtered = filtered.filter(d=> selectedCodes.some(code => d.code === code));
+if (selectedPeriods.length > 0){
+  filtered = filtered.filter(d=> selectedPeriods.some(period => d.period === period));
 }
+if (selectedVersions.length > 0){
+  filtered = filtered.filter(d=> selectedVersions.some(order => d.order === order));
+}
+
+// if (selectedCodes.length > 0){
+//   filtered = filtered.filter(d=> selectedCodes.some(code => d.code === code));
+// }
+
 if (selectedPredicates.length > 0){
   filtered = filtered.filter(d=> selectedPredicates.flatMap(d => d).some(predicate => d.predicates.includes(predicate)));
 }
@@ -203,17 +228,20 @@ const selected = view(Inputs.table(search,{
     "summary",
     "year",
     "period",
+    "version",
   ],
   header: {
     year:"Rok",
     period: "Period",
     name: "Název",
     summary: "Popis",
+    version: "Verze",
   },
   width: {
     name: 240,
     year: 40,
-    period: 70,    
+    period: 70,
+    version: 70,   
   },
   format: {
     name: (d,i,o) => html`<a href="./word-problem-${o[i].code}-n-${o[i].id}" target="_blank">${d}</a>`,
@@ -221,8 +249,18 @@ const selected = view(Inputs.table(search,{
   }
 }))
 ```
+```js
+const selectedToRender = selected.length > questionsMaxLimit ? selected.filter((_,i)=> i < questionsMaxLimit): selected;
+```
 
 <div>${controlsInput}</div>
 
-${html`<div class="card">${renderMarkdownWithCopy(selected.map(d => (controls.startsWith("A") ? d.builder.content([parseInt(d.id)], { render: 'content' }) : "") + ' ' + (controls.endsWith("B") ? d.deductionTrees.map(tree => jsonToMarkdownChat(tree).join("")).join("") : "")).join("\n---\n"), 'md')}</div>`}
+${html`${selected.length > questionsMaxLimit
+            ? html`<div class="caution" label="Limit - maximální počet otázek">
+              <div>Zobrazeno <b>${selectedToRender.length}</b> z <b>${selected.length} otázek</b></div>
+            <div>`
+          :''}`}
+
+
+${html`<div class="card">${renderMarkdownWithCopy(selectedToRender.map(d => (controls.startsWith("A") ? d.builder.content([parseInt(d.id)], { render: 'content' }) : "") + ' ' + (controls.endsWith("B") ?  (controls.startsWith("A") ? `\n---\n`:'') + d.deductionTrees.map(tree => jsonToMarkdownChat(tree).join("")).join("---\n") : "")).join("\n---\n"), 'md')}</div>`}
 

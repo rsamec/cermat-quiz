@@ -517,7 +517,7 @@ export function ctorOption(optionValue: "A" | "B" | "C" | "D" | "E" | "F", expec
   return {
     kind: 'eval-option',
     expression: convertToExpression(expectedValue, "closeTo", expectedValueOptions),
-    expressionNice: convertToExpression(expectedValue, "equal", { ...expectedValueOptions, asPercent: false }),
+    expressionNice: convertToNiceExpression(expectedValue, "equal", { ...expectedValueOptions, asPercent: false }),
     expectedValue, expectedValueOptions, optionValue, compareTo: "closeTo"
   }
 }
@@ -530,18 +530,20 @@ export function ctorBooleanOption(expectedValue: number, compareTo: ComparisonTy
   return {
     kind: 'eval-option',
     expression: convertToExpression(expectedValue, compareTo, expectedValueOptions),
-    expressionNice: convertToExpression(expectedValue, compareTo == "closeTo" ? "equal" : compareTo, { ...expectedValueOptions, asPercent: false }),
+    expressionNice: convertToNiceExpression(expectedValue, compareTo == "closeTo" ? "equal" : compareTo, { ...expectedValueOptions, asPercent: false }),
     expectedValue, expectedValueOptions, compareTo
   }
 }
-
-function convertToExpression(expectedValue: number, compareTo: ComparisonType, expectedValueOptions: FormattingOptions) {
+function convertToNiceExpression(expectedValue: number, compareTo: ComparisonType, expectedValueOptions: FormattingOptions) {
+  return convertToExpression(expectedValue, compareTo, expectedValueOptions, 'zjištěná hodnota');
+}
+function convertToExpression(expectedValue: number, compareTo: ComparisonType, expectedValueOptions: FormattingOptions, variable = "x") {
   const convertedValue = expectedValueOptions.asFraction
     ? helpers.convertToFraction(expectedValue)
     : expectedValueOptions.asPercent
       ? expectedValue / 100
       : expectedValue;
-  const toCompare = (comp) => `x ${comp} ${convertedValue}`
+  const toCompare = (comp) => `${variable} ${comp} ${convertedValue}`
   switch (compareTo) {
     case "equal": return toCompare("==")
     case "greater": return toCompare(">");
@@ -549,7 +551,7 @@ function convertToExpression(expectedValue: number, compareTo: ComparisonType, e
     case "smaller": return toCompare("<");
     case "smallerOrEqual": return toCompare("=<");
     default:
-      return `closeTo(x, ${convertedValue})`;
+      return `closeTo(${variable}, ${convertedValue})`;
   }
 }
 export function delta(agent: AgentNames, quantity: number, entity: string, unit?: string): Delta {
@@ -1909,8 +1911,8 @@ function pythagorasRule(a: Container, b: Container, last: Phytagoras): Question 
     question: `Vypočítej stranu ${result.agent} dle Pythagorovi věty?`,
     result,
     options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(longest.quantity) && isNumber(otherSite.quantity) && isNumber(result.quantity) ? [
-      { tex: `odmocnina z (${formatNumber(longest.quantity)}^2^ - ${formatNumber(otherSite.quantity)}^2^)`, result: formatNumber(result.quantity), ok: a.agent === last.longest },
-      { tex: `odmocnina z (${formatNumber(a.quantity)}^2^ + ${formatNumber(b.quantity)}^2^)`, result: formatNumber(result.quantity), ok: a.agent !== last.longest },
+      { tex: `odmocnina z (${formatNumber(longest.quantity)}^2 - ${formatNumber(otherSite.quantity)}^2)`, result: formatNumber(result.quantity), ok: a.agent === last.longest || b.agent === last.longest },
+      { tex: `odmocnina z (${formatNumber(a.quantity)}^2 + ${formatNumber(b.quantity)}^2)`, result: formatNumber(result.quantity), ok: !(a.agent === last.longest || b.agent === last.longest) },
     ] : []
   }
 }
@@ -2449,7 +2451,7 @@ function evalToOptionEx<T extends Predicate & { quantity?: Quantity, ratio?: Qua
 function evalToOption<T extends Predicate>(a: T, b: Option): Question {
   const result = evalToOptionEx(a, b);
   return {
-    question: b.optionValue != null ? `Vyhodnoť volbu [${b.optionValue}]?` : `Vyhodnoť výraz ${b.expressionNice}?`,
+    question: b.optionValue != null ? `Vyhodnoť volbu [${b.optionValue}]?` : `Vyhodnoť pravdivost ${b.expressionNice}?`,
     result,
     options: []
   }

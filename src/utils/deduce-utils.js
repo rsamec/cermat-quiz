@@ -43,9 +43,9 @@ function isRatiosPredicate(value) {
 function isRatePredicate(value) {
   return value.kind === "rate";
 }
-function convertToExpression(expectedValue, compareTo, expectedValueOptions) {
+function convertToExpression(expectedValue, compareTo, expectedValueOptions, variable = "x") {
   const convertedValue = expectedValueOptions.asFraction ? helpers.convertToFraction(expectedValue) : expectedValueOptions.asPercent ? expectedValue / 100 : expectedValue;
-  const toCompare = (comp) => `x ${comp} ${convertedValue}`;
+  const toCompare = (comp) => `${variable} ${comp} ${convertedValue}`;
   switch (compareTo) {
     case "equal":
       return toCompare("==");
@@ -58,7 +58,7 @@ function convertToExpression(expectedValue, compareTo, expectedValueOptions) {
     case "smallerOrEqual":
       return toCompare("=<");
     default:
-      return `closeTo(x, ${convertedValue})`;
+      return `closeTo(${variable}, ${convertedValue})`;
   }
 }
 function compDiff(agentMinuend, agentSubtrahend, quantity, entity) {
@@ -1045,8 +1045,8 @@ function pythagorasRule(a, b, last2) {
     question: `Vypo\u010D\xEDtej stranu ${result.agent} dle Pythagorovi v\u011Bty?`,
     result,
     options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(longest.quantity) && isNumber(otherSite.quantity) && isNumber(result.quantity) ? [
-      { tex: `odmocnina z (${formatNumber(longest.quantity)}^2^ - ${formatNumber(otherSite.quantity)}^2^)`, result: formatNumber(result.quantity), ok: a.agent === last2.longest },
-      { tex: `odmocnina z (${formatNumber(a.quantity)}^2^ + ${formatNumber(b.quantity)}^2^)`, result: formatNumber(result.quantity), ok: a.agent !== last2.longest }
+      { tex: `odmocnina z (${formatNumber(longest.quantity)}^2 - ${formatNumber(otherSite.quantity)}^2)`, result: formatNumber(result.quantity), ok: a.agent === last2.longest || b.agent === last2.longest },
+      { tex: `odmocnina z (${formatNumber(a.quantity)}^2 + ${formatNumber(b.quantity)}^2)`, result: formatNumber(result.quantity), ok: !(a.agent === last2.longest || b.agent === last2.longest) }
     ] : []
   };
 }
@@ -1482,7 +1482,7 @@ function evalToOptionEx(a, b) {
 function evalToOption(a, b) {
   const result = evalToOptionEx(a, b);
   return {
-    question: b.optionValue != null ? `Vyhodno\u0165 volbu [${b.optionValue}]?` : `Vyhodno\u0165 v\xFDraz ${b.expressionNice}?`,
+    question: b.optionValue != null ? `Vyhodno\u0165 volbu [${b.optionValue}]?` : `Vyhodno\u0165 pravdivost ${b.expressionNice}?`,
     result,
     options: []
   };
@@ -6109,7 +6109,7 @@ var mdFormattingFunc = (requiredLevel) => ({
   },
   formatRatio: (d, asPercent) => {
     if (typeof d === "number") {
-      return asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : d.toLocaleString("cs-CZ");
+      return asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : new Fraction(d).toFraction();
     } else if (d?.expression != null) {
       return asPercent ? toEquationExprAsTex({ ...d, expression: `(${d.expression}) * 100` }, requiredLevel) : toEquationExprAsTex(d, requiredLevel);
     } else if (typeof d === "string") {

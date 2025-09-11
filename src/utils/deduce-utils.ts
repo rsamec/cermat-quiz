@@ -2,6 +2,7 @@ import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityP
 import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison } from "../components/math.js"
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
 import { evaluate, substitute, toEquationExprAsTex } from "./math-solver.js"
+import Fraction from 'fraction.js';
 
 type PredicateLabel = { labelKind?: 'input' | 'deduce', label?: number }
 
@@ -406,7 +407,7 @@ const mdFormattingFunc = (requiredLevel: number) => ({
   },
   formatRatio: (d, asPercent) => {
     if (typeof d === "number") {
-      return asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : d.toLocaleString("cs-CZ")
+      return asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : new Fraction(d).toFraction();
     }
     else if (d?.expression != null) {
       return asPercent ? toEquationExprAsTex({ ...d, expression: `(${d.expression}) * 100` }, requiredLevel) : toEquationExprAsTex(d, requiredLevel)

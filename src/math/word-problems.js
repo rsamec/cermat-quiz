@@ -133,7 +133,7 @@ function ctorOption(optionValue, expectedValue, expectedValueOptions = { asPerce
   return {
     kind: "eval-option",
     expression: convertToExpression(expectedValue, "closeTo", expectedValueOptions),
-    expressionNice: convertToExpression(expectedValue, "equal", { ...expectedValueOptions, asPercent: false }),
+    expressionNice: convertToNiceExpression(expectedValue, "equal", { ...expectedValueOptions, asPercent: false }),
     expectedValue,
     expectedValueOptions,
     optionValue,
@@ -147,15 +147,18 @@ function ctorBooleanOption(expectedValue, compareTo = "closeTo", expectedValueOp
   return {
     kind: "eval-option",
     expression: convertToExpression(expectedValue, compareTo, expectedValueOptions),
-    expressionNice: convertToExpression(expectedValue, compareTo == "closeTo" ? "equal" : compareTo, { ...expectedValueOptions, asPercent: false }),
+    expressionNice: convertToNiceExpression(expectedValue, compareTo == "closeTo" ? "equal" : compareTo, { ...expectedValueOptions, asPercent: false }),
     expectedValue,
     expectedValueOptions,
     compareTo
   };
 }
-function convertToExpression(expectedValue, compareTo, expectedValueOptions) {
+function convertToNiceExpression(expectedValue, compareTo, expectedValueOptions) {
+  return convertToExpression(expectedValue, compareTo, expectedValueOptions, "zji\u0161t\u011Bn\xE1 hodnota");
+}
+function convertToExpression(expectedValue, compareTo, expectedValueOptions, variable = "x") {
   const convertedValue = expectedValueOptions.asFraction ? helpers.convertToFraction(expectedValue) : expectedValueOptions.asPercent ? expectedValue / 100 : expectedValue;
-  const toCompare = (comp3) => `x ${comp3} ${convertedValue}`;
+  const toCompare = (comp3) => `${variable} ${comp3} ${convertedValue}`;
   switch (compareTo) {
     case "equal":
       return toCompare("==");
@@ -168,7 +171,7 @@ function convertToExpression(expectedValue, compareTo, expectedValueOptions) {
     case "smallerOrEqual":
       return toCompare("=<");
     default:
-      return `closeTo(x, ${convertedValue})`;
+      return `closeTo(${variable}, ${convertedValue})`;
   }
 }
 function pi() {
@@ -1304,8 +1307,8 @@ function pythagorasRule(a, b, last4) {
     question: `Vypo\u010D\xEDtej stranu ${result.agent} dle Pythagorovi v\u011Bty?`,
     result,
     options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(longest.quantity) && isNumber(otherSite.quantity) && isNumber(result.quantity) ? [
-      { tex: `odmocnina z (${formatNumber(longest.quantity)}^2^ - ${formatNumber(otherSite.quantity)}^2^)`, result: formatNumber(result.quantity), ok: a.agent === last4.longest },
-      { tex: `odmocnina z (${formatNumber(a.quantity)}^2^ + ${formatNumber(b.quantity)}^2^)`, result: formatNumber(result.quantity), ok: a.agent !== last4.longest }
+      { tex: `odmocnina z (${formatNumber(longest.quantity)}^2 - ${formatNumber(otherSite.quantity)}^2)`, result: formatNumber(result.quantity), ok: a.agent === last4.longest || b.agent === last4.longest },
+      { tex: `odmocnina z (${formatNumber(a.quantity)}^2 + ${formatNumber(b.quantity)}^2)`, result: formatNumber(result.quantity), ok: !(a.agent === last4.longest || b.agent === last4.longest) }
     ] : []
   };
 }
@@ -1741,7 +1744,7 @@ function evalToOptionEx(a, b) {
 function evalToOption(a, b) {
   const result = evalToOptionEx(a, b);
   return {
-    question: b.optionValue != null ? `Vyhodno\u0165 volbu [${b.optionValue}]?` : `Vyhodno\u0165 v\xFDraz ${b.expressionNice}?`,
+    question: b.optionValue != null ? `Vyhodno\u0165 volbu [${b.optionValue}]?` : `Vyhodno\u0165 pravdivost ${b.expressionNice}?`,
     result,
     options: []
   };
@@ -6175,7 +6178,7 @@ var mdFormattingFunc = (requiredLevel) => ({
   },
   formatRatio: (d, asPercent) => {
     if (typeof d === "number") {
-      return asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : d.toLocaleString("cs-CZ");
+      return asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : new Fraction(d).toFraction();
     } else if (d?.expression != null) {
       return asPercent ? toEquationExprAsTex({ ...d, expression: `(${d.expression}) * 100` }, requiredLevel) : toEquationExprAsTex(d, requiredLevel);
     } else if (typeof d === "string") {
@@ -9932,9 +9935,9 @@ function isRatioPredicate2(value) {
 function isRatePredicate2(value) {
   return value.kind === "rate";
 }
-function convertToExpression2(expectedValue, compareTo, expectedValueOptions) {
+function convertToExpression2(expectedValue, compareTo, expectedValueOptions, variable = "x") {
   const convertedValue = expectedValueOptions.asFraction ? helpers2.convertToFraction(expectedValue) : expectedValueOptions.asPercent ? expectedValue / 100 : expectedValue;
-  const toCompare = (comp3) => `x ${comp3} ${convertedValue}`;
+  const toCompare = (comp3) => `${variable} ${comp3} ${convertedValue}`;
   switch (compareTo) {
     case "equal":
       return toCompare("==");
@@ -9947,7 +9950,7 @@ function convertToExpression2(expectedValue, compareTo, expectedValueOptions) {
     case "smallerOrEqual":
       return toCompare("=<");
     default:
-      return `closeTo(x, ${convertedValue})`;
+      return `closeTo(${variable}, ${convertedValue})`;
   }
 }
 function compDiff2(agentMinuend, agentSubtrahend, quantity, entity3) {
@@ -10934,8 +10937,8 @@ function pythagorasRule2(a, b, last22) {
     question: `Vypo\u010D\xEDtej stranu ${result.agent} dle Pythagorovi v\u011Bty?`,
     result,
     options: isNumber2(a.quantity) && isNumber2(b.quantity) && isNumber2(longest.quantity) && isNumber2(otherSite.quantity) && isNumber2(result.quantity) ? [
-      { tex: `odmocnina z (${formatNumber2(longest.quantity)}^2^ - ${formatNumber2(otherSite.quantity)}^2^)`, result: formatNumber2(result.quantity), ok: a.agent === last22.longest },
-      { tex: `odmocnina z (${formatNumber2(a.quantity)}^2^ + ${formatNumber2(b.quantity)}^2^)`, result: formatNumber2(result.quantity), ok: a.agent !== last22.longest }
+      { tex: `odmocnina z (${formatNumber2(longest.quantity)}^2 - ${formatNumber2(otherSite.quantity)}^2)`, result: formatNumber2(result.quantity), ok: a.agent === last22.longest || b.agent === last22.longest },
+      { tex: `odmocnina z (${formatNumber2(a.quantity)}^2 + ${formatNumber2(b.quantity)}^2)`, result: formatNumber2(result.quantity), ok: !(a.agent === last22.longest || b.agent === last22.longest) }
     ] : []
   };
 }
@@ -11371,7 +11374,7 @@ function evalToOptionEx2(a, b) {
 function evalToOption2(a, b) {
   const result = evalToOptionEx2(a, b);
   return {
-    question: b.optionValue != null ? `Vyhodno\u0165 volbu [${b.optionValue}]?` : `Vyhodno\u0165 v\xFDraz ${b.expressionNice}?`,
+    question: b.optionValue != null ? `Vyhodno\u0165 volbu [${b.optionValue}]?` : `Vyhodno\u0165 pravdivost ${b.expressionNice}?`,
     result,
     options: []
   };
@@ -15675,7 +15678,7 @@ var mdFormattingFunc2 = (requiredLevel) => ({
   },
   formatRatio: (d, asPercent) => {
     if (typeof d === "number") {
-      return asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : d.toLocaleString("cs-CZ");
+      return asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : new Fraction2(d).toFraction();
     } else if (d?.expression != null) {
       return asPercent ? toEquationExprAsTex2({ ...d, expression: `(${d.expression}) * 100` }, requiredLevel) : toEquationExprAsTex2(d, requiredLevel);
     } else if (typeof d === "string") {
