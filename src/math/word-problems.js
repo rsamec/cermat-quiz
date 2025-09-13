@@ -19412,6 +19412,22 @@ function tabor2() {
   };
 }
 
+// src/math/MMA-2023/index.ts
+var MMA_2023_default = createLazyMap({
+  1: () => trzby()
+});
+function trzby() {
+  return {
+    deductionTree: deduce(
+      deduce(
+        compRatio("\xFAnor", "leden", 4 / 5),
+        ctor("reverse-comp-ratio")
+      ),
+      ctor("convert-percent")
+    )
+  };
+}
+
 // src/math/MMA-2025/index.ts
 var MMA_2025_default = createLazyMap({
   1: () => boruvky({
@@ -19787,6 +19803,7 @@ var word_problems_default = createLazyMap({
   "M9I-2025": () => M9I_2025_default,
   "M9A-2025": () => M9A_2025_default,
   "M9B-2025": () => M9B_2025_default,
+  "MMA-2023": () => MMA_2023_default,
   "MMA-2025": () => MMA_2025_default
 });
 export {

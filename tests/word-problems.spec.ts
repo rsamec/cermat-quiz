@@ -44,7 +44,7 @@ for (const code of codes.filter(code => parseCode(code).subject === "math")) {
 
 
     for (let key in problems) {
-
+      console.log(`  - ${key}`);
       const { verifyBy } = metadataMap.get(key);
       const validator = getVerifyFunction(verifyBy);
       const problem = problems[key];
