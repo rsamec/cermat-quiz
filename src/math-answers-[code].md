@@ -78,7 +78,7 @@ function renderStep({Step, Hint, Expression}, index){
 
 ```js
 html`${entries.length > 0 ? entries.map(([key, value]) => html`<div>
-  <h2>${mdPlus.unsafe(normalizeMath(value.header))}</h2>
+  <h2 name="${key.split(".").length == 2 && key.split(".")[1] == '1' ? `go-${key.split(".")[0]}`: ''}">${mdPlus.unsafe(normalizeMath(value.header))}</h2>
   ${mdPlus.unsafe(normalizeMath(`$${value.mathContent}$`))}
   ${(value.results ?? []).map(d =>  renderResult(key, d))}
 </div><hr/>`): 'Bohužel, žádné úlohy zde nejsou.'}`

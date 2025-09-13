@@ -831,7 +831,7 @@ Obecný postup vytvoření dedukčního stromu ze zadání úlohy
 - výsledek úlohy získáme __průchodem stromu__ do hloubky (post-order), tj. aplikujeme __odvozovací pravidla__ až poté, co známe všechny vstupy (premises)
 
 
-Konkrétní příklad řešení pro zadání [úlohy](./solu-M9I-2025#7)
+Konkrétní příklad řešení pro zadání [úlohy](./solution-M9I-2025#7)
 <video src="./assets/kytice.mp4" autoplay playsinline muted controls style="width: 100%;"></video>
 
 ```typescript

@@ -21,10 +21,47 @@
   border-radius: 10px;
   border-width: 0px;
 }
+.btn--dual {
+  display: inline-flex;
+  padding: 0px;
+  cursor: pointer;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  text-decoration: none;
+
+}
 
 .btn--primary {
   color: white;
   background-color: var(--form-color-primary);
+
+  &:hover {
+    background-color: brightness(1.75);
+  }
+}
+
+.btn__left-part {
+  /* border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-width: 0px; */
+  padding: 10px;
+  color: white;
+  background-color: #555555;
+
+  
+  &:hover {
+    background-color: brightness(1.75);
+  }
+
+}
+.btn__right-part {
+  /* border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-width: 0px; */
+  padding: 10px;  
+  color: white;
+  background-color: #74aa9c;
 
   &:hover {
     background-color: brightness(1.75);

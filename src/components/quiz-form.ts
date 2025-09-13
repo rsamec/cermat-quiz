@@ -12,7 +12,6 @@ import { isEmptyOrWhiteSpace, cls } from '../utils/string-utils.js';
 
 import wordProblems from '../math/word-problems.js';
 import { renderChatStepper } from '../utils/deduce-chat.js';
-import { generateAIMessages } from '../utils/deduce-utils.js';
 
 type QuizParams = {
   questions: string[][],
@@ -20,7 +19,6 @@ type QuizParams = {
   subject: string,
   displayOptions: { useAIHelpers?: boolean, questionCustomClass?: string, useFormControl?: boolean, useResources?: boolean }
   mathResourcesMap?: Record<string, any>
-  videoExcludesMap?: Record<string, any>
 }
 
 function parseQuestionId(id, subject) {
@@ -58,7 +56,7 @@ function chunkMetadataByInputs(metadata, subject, selectedIds = []) {
   }, []);
 }
 
-function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, displayOptions, mathResourcesMap, videoExcludesMap }: QuizParams) {
+function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, displayOptions, mathResourcesMap }: QuizParams) {
   const { questionCustomClass, useAIHelpers, useFormControl, useResources } = displayOptions;
   const inputsStore: Record<string, Record<string, any>> = {}
   const indexMap: Record<string, number[][]> = {}
@@ -73,10 +71,9 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
         );
         const chunks = chunkMetadataByInputs(quiz.metadata, subject, ids);
         const submit = "Odeslat"
-
+        
         const mathResource = mathResourcesMap?.[code];
         const wordProblem = wordProblems[code];
-        const videoExclude = videoExcludesMap?.[code] ?? {};
 
         let currentIndex = indexMap[code];
         if (currentIndex == null) {
@@ -163,7 +160,7 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                 .flatMap(d => {
                   return (mathResource[d.leaf.data.id]?.results ?? [])
                     .flatMap((x) => (x.TemplateSteps ?? []).map((x, i) => ({ x, i })))
-                    .map(({ x, i }) => ([d.leaf.data.id, x, i]));
+                    .map(({ x, i }) => ([d.leaf.data.id, x, i, mathResource[d.leaf.data.id]?.mathContent!=null]));
                 }) : [];
 
               const wordProblemEntries = wordProblem != null ? leafs
@@ -173,23 +170,20 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
               return html`<div class=${cls(['q', `q-${key}`, `group-${questionsMap[ids[0]].groupKey}`, questionCustomClass])}>
             
               ${rawContent}
-
+              
             
-            ${useAIHelpers ? html`<div class="h-stack h-stack-items--center h-stack--m h-stack--wrap h-stack--end">
-              <a style="height:34px;" href="#" onclick=${(e) => {
+            ${html`<div class="h-stack h-stack-items--center h-stack--m h-stack--wrap h-stack--end">
+                  ${useAIHelpers ? html`<a style="height:34px;" href="#" onclick=${(e) => {
                     e.preventDefault();
                     window.open(`https://chat.openai.com/?q=${encodeURIComponent(quizBuilder.content(ids, { render: 'content' }))}`)
-                  }}><img style="height:34px;" src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white" alt="ChatGPT" /></a>              
-            ${html`<a href="#" class="a-button a-button--secondary" onclick=${(e) => {
-                    e.preventDefault();
-                    var el = e.target.querySelector("i") ?? e.target;
-                    if (el != null) {
-                      el.classList.remove("fa-clipboard");
-                      el.classList.add("fa-clipboard-check");
-                    }
-                    navigator.clipboard.writeText(quizBuilder.content(ids, { render: 'content' }));
-                  }} title="Zkopírovat do schránky"><i class="fa-solid fa-clipboard"></i></a>`}
-              </div>`: ''}
+                  }}><img style="height:34px;" src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white" alt="ChatGPT" /></a>` : ''}
+                  ${useFormControl && mathResourceEntries.length > 0 
+                    ? html`<a href="./math-${mathResourceEntries[0]?.[3] ? 'answers':'geometry'}-${code}#go-${key}" class="a-button" title="Podrobný rozbor úlohy" target="_blank"><i class="fa-solid fa-up-right-from-square"></i></a>`
+                    : ''}
+                  ${useFormControl && wordProblemEntries.length > 0 
+                    ? html`<a href="./word-problem-${code}-n-${key}" class="a-button" title="Podrobný rozbor úlohy" target="_blank"><i class="fa-solid fa-up-right-from-square"></i></a>`
+                    : ''}                    
+              </div>`}
           
             ${useFormControl ? rhtml`<div class="form-group">${leafs.map((data) => {
                     const d = data.leaf.data.node;
@@ -267,30 +261,14 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                     ;
                   })}</div>` : ''}
             ${useResources ? html`<div class="v-stack v-stack--s">
-              ${useResources && mathResourceEntries.length > 0 || wordProblemEntries.length > 0 ? html`<details class="solution break-inside-avoid-column"><summary>Řešení krok za krokem</summary><div class="v-stack v-stack--s">
-              ${mathResourceEntries.map(([key, value, i]) => html`<div class="h-stack h-stack-items--center h-stack--s">
-                <h3 style="flex:1">Řešení ${key} - ${value.Name}</h3>
-                <a href="./solu-${code}#s-${key}" target="_blank"><span>↗︎</span></a>
-              </div>
-              ${videoExclude[key]?.includes(i) ? '':html`<video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`}`)}
+              ${useResources && wordProblemEntries.length > 0 ? html`<details class="solution break-inside-avoid-column"><summary>Rozhodovačka - krok za krokem</summary><div class="v-stack v-stack--s">
               
-              ${wordProblemEntries.length > 0 ? html`<div class="h-stack h-stack--end">${renderChatButton("Smart řešení", generateAIMessages({
-                    template: quizBuilder.content(ids, { ids: groupedIds, render: 'content' }),
-                    deductionTrees: wordProblemEntries.map(([key, d]) => [`Řešení ${key}`, d.deductionTree])
-                  }).explainSolution)}<div>` : ""}
               ${wordProblemEntries.map(([key, d]) => html`<div class="h-stack h-stack-items--center h-stack--s">
-                <h3 style="flex:1">Řešení ${key} - rozhodovačka</h3>
-                <a href="./solu-${code}#s-${key}" target="_blank"><span>↗︎</span></a>
+                <h3 style="flex:1">Rozhodovačka ${key}</h3>                
               </div>
-              
               ${html.fragment`${renderChatStepper(d.deductionTree)}`}
-              `)}
-            
-              
+              `)}                          
               </div></details>` : ''}
-                           
-
-
             </div>
             `: ''}
           </div>`

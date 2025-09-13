@@ -23,7 +23,6 @@ function getQuestionIds(metadata, code) {
 }
  
 const metadata = await FileAttachment(`./data/form-${observable.params.code}.json`).json();
-const videoExcludesMap = await FileAttachment('./data/math-answers-video-exclude.json').json();
 const mathResourcesMap = await FileAttachment(`./data/math-results.json`).json();
 
 const rawContent = await FileAttachment(`./data/form-${observable.params.code}.md`).text();
@@ -70,9 +69,8 @@ const parameters = ({
   questions: [[code].concat(getQuestionIds(metadata,code))],
   subject:parseCode(code).subject,
   quizQuestionsMap,
-  displayOptions: {useFormControl:true,useAIHelpers:true,useResources:true},
+  displayOptions: {useFormControl:true,useAIHelpers:true,useResources:false},
   mathResourcesMap,
-  videoExcludesMap,
 })
 const {renderedQuestions, inputs:inputsStore} = renderedQuestionsPerQuizWithInputs(parameters);
 

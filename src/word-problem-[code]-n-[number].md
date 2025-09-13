@@ -28,13 +28,28 @@ const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [baseUrl])
 const quiz = parseQuiz(rawContent);
 
 const wordProblem = wordProblems[code] ?? {};
+
+const providersConfig = [
+  {name:"Open AI ChatGTP",shortName:"ChatGTP",url:"https://chat.openai.com/?q="},
+  {name:"Google AI Gemini",shortName:"Gemini",url:"https://www.google.com/search?udm=50&q="},    
+  {name:"Microsoft Copilot", shortName:"Copilot", url:"https://www.bing.com/search?showconv=1&sendquery=1&q="},
+  {name:"Anthropic Claude", shortName:"Claude", url:"https://claude.ai/new?q="},  
+  {name:"Mistral Le Chat", shortName:"Mistral", url:"https://chat.mistral.ai/chat?q="},  
+  {name:"Google Search",shortName:"Google",url:"https://www.google.com/search?q="}, 
+  
+]
+
+const providers = new Map(providersConfig.map(d => [d.name, d]));
+const selectedProviderInput = Inputs.select(providers,{ label:"Poskytovatel"});
+const selectedProvider = Generators.input(selectedProviderInput);
+
 ```
 
 
 ```js
 
-function renderChatButton(label, query){
-  return html`<a style="height:34px;" href="https://chat.openai.com/?q=${encodeURIComponent(query)}" target="_blank"><img style="height:34px;" src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white&label=${encodeURIComponent(label)}" alt="ChatGPT" /></a>`
+function renderChatButton(label, provider, query){
+  return html`<a href="${provider.url}${encodeURIComponent(query)}" target="_blank"><button class="btn btn--dual h-stack"><div class="btn__left-part">${label}</div><div class="btn__right-part">${provider.shortName}<div/></button></a>`
 }
 
 function renderAudio(code,id) {
@@ -184,12 +199,17 @@ ${renderQuestion(id)}
 
 ## AI řešení
 
-${renderChatButton("Základní řešení", template)}
-${renderChatButton("Smart řešení", aiPromts.explainSolution)}
-${renderChatButton("Hlavní myšlenky řešení", aiPromts.generateImportantPoints)}
-${renderChatButton("Obdobné úlohy", aiPromts.generateMoreQuizes)}
-${renderChatButton("Pracovní list", aiPromts.generateSubQuizes)}
-${renderChatButton("Generalizace úlohy", aiPromts.generalization)}
+${selectedProviderInput}
+<div class="h-stack h-stack--m h-stack--wrap">
+${renderChatButton("Základní řešení",selectedProvider, template)}
+${renderChatButton("Krokové řešení", selectedProvider, aiPromts.explainSolution)}
+${renderChatButton("Hlavní myšlenky",  selectedProvider, aiPromts.generateImportantPoints)}
+${renderChatButton("Obdobné úlohy",  selectedProvider, aiPromts.generateMoreQuizes)}
+${renderChatButton("Pracovní list", selectedProvider, aiPromts.generateSubQuizes)}
+${renderChatButton("Generalizace", selectedProvider, aiPromts.generalization)}
+</div>
+
+---
 
 ## Strukturované řešení úlohy
 

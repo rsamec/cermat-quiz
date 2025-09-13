@@ -32,11 +32,11 @@ const audios = ['M5A-2024', 'M5A-2023', 'M7A-2024', 'M7A-2023', 'M9A-2025', 'M9B
           return html`<div class="h-stack h-stack--m h-stack--wrap">
               <a class="h-stack h-stack--xs" href="./form-${code}"><span>${formatVersion({order,period})}</span><span>↗︎</span></a>
               <a class="h-stack h-stack--xs" href="./print-${code}"><span>tisk</span><i class="fa-solid fa-print"></i></a>
-              ${subject === "math" ? html`<a class="h-stack h-stack--xs" href="./solu-${code}"><span>rozbor</span><i class="fa-solid fa-mug-hot"></i></a>`:''}
+              ${subject === "math" ? html`<a class="h-stack h-stack--xs" href="./solution-${code}"><span>rozbor</span><i class="fa-solid fa-mug-hot"></i></a>`:''}
               ${subject === "math" ? html`<a class="h-stack h-stack--xs" href="./ai-${code}"><span>AI</span><i class="fa-solid fa-comment-nodes"></i></a>`:''}
               ${subject === "math" ? html`<a href="word-problems-${code}" title="Řešení slovních úloh"><i class="fa fa-brands fa-markdown"></i></a>`:''}
               ${subject === "math" ? html`<a href="word-problems-tldr-${code}"  title="Řešení slovních úloh"><i class="fa fa-draw-polygon"></i></a>`:''}               
-              ${subject === "math" && audios.indexOf(code) != -1? html`<a href="/assets/math/${code}.mp3"><i class="fa-solid fa-microphone"></i></a>`:''}
+              <!-- ${subject === "math" && audios.indexOf(code) != -1? html`<a href="/assets/math/${code}.mp3"><i class="fa-solid fa-microphone"></i></a>`:''} -->
           <div>`
         })}
       </div>
