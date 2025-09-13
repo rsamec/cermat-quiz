@@ -558,7 +558,7 @@ export function delta(agent: AgentNames, quantity: number, entity: string, unit?
   return { kind: 'delta', agent, quantity, entity, unit };
 }
 export function pi(): Container {
-  return { kind: 'cont', agent: "PI", quantity: 3.14, entity: '' }
+  return { kind: 'cont', agent: "π", quantity: 3.14, entity: '' }
 }
 export function piNumber() {
   return pi().quantity as number

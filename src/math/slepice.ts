@@ -46,7 +46,7 @@ export default function build({ input }: {
 
   const template = highlight =>
     highlight`Když v průměru ${input.previousWorkers} slepice za ${input.previousDays} dne snese ${input.previousEggs} vejce.
-    ${html => html`</br><strong>${highlight`Kolik vajec pak snesou ${input.currentWorkers} slepic za ${input.currentDays} dny?`}</strong>`}`
+    Kolik vajec pak snesou ${input.currentWorkers} slepic za ${input.currentDays} dny?`
 
 
   return { deductionTree, template }

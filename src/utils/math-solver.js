@@ -1913,7 +1913,7 @@ function tokensToTex(tokens, opts = {}) {
           stack.push(`${parens(a)}^{${b}}`);
         } else if (tok.value === "*") {
           const sym = options.implicitMul ? "" : options.mulSymbol;
-          stack.push(`${a}${sym}${b}`);
+          stack.push(`${a}${sym} ${b}`);
         } else {
           const texOps = { "==": "=", "!=": "\\ne", "<=": "\\le", ">=": "\\ge" };
           stack.push(`${a} ${texOps[tok.value] || tok.value} ${b}`);

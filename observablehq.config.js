@@ -65,7 +65,7 @@ export default {
     },
     {
       open: false,
-      name: "Úlohy",
+      name: "Sestavení testu z úloh",
       pages: quizes.map(d => ({
         name: `${formatSubject(d.subject)} ${formatPeriod(d.period)}`,
         path: `/quiz-sel-${d.subject}-${d.period}`,
@@ -77,10 +77,10 @@ export default {
       pages: [
         { name: "Data", path: "/inputs" },
         { name: "Tisk", path: "/print" },
-        { name: "Sestavení úloh", path: "/builder" },
-        { name: "Přepoužitelnost", path: "/embedding" },
+        // { name: "Sestavení úloh", path: "/builder" },
+        // { name: "Přepoužitelnost", path: "/embedding" },
         { name: "AI", path: "/ai" },
-        { name: "Novinky", path: "/news" },
+        // { name: "Novinky", path: "/news" },
         // {name: "Kategorie", path: "/categories"},
         // {name: "Inline md", path: "/quiz-markdown"},
         // {name: "Rozvržení stránky", path: "/layout"},
@@ -92,8 +92,7 @@ export default {
       pages: [        
         { name: "Slovní úlohy", path: "/word-problems-summary" },
         { name: "Slovní úlohy - matematizace", path: "/math-deduction" },
-        { name: "Výrazy, rovnice", path: "/math" },
-        { name: "Konstrukční úlohy", path: "/math-geometry" },
+        { name: "Výrazy, konstrukční úlohy", path: "/math" },
         // { name: "Prostředí", path:"math-environments"},
       ]
     },
@@ -120,7 +119,8 @@ export default {
     .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/ai-${code}`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-${code}`))
+    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-answers-${code}`))
+    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-geometry-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solu-${code}`))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solution-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-${code}`))  

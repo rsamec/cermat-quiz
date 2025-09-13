@@ -3,6 +3,8 @@ footer: false
 pager: true
 toc: true
 ---
+# Výrazy, rovnice, konstrukční úlohy
+
 
 ```js
 import { baseDomain, baseDomainPublic, formatSubject, formatPeriod, formatShortCode} from './utils/quiz-string-utils.js';
@@ -10,18 +12,16 @@ import { quizes } from "./utils/quiz-utils.js";
 import mdPlus from './utils/md-utils.js';
 ```
 
-# Řešení matematických výrazů
+${quizes.filter(d => d.subject == 'math').map(({subject, period, codes}) => html`<h3>${formatSubject(subject)} ${formatPeriod(period)}</h3> <ul>${
+  codes.map(code => html`<li>${formatShortCode(code)}<ul><li><a class="h-stack h-stack--s h-stack-items--center" href="./math-answers-${code}"><i class="fa-solid fa-square-root-variable"></i>výrazy, rovnice</a></li><li><a class="h-stack h-stack--s h-stack-items--center" href="./math-geometry-${code}"><i class="fa-solid fa-drafting-compass"></i>konstruční úlohy</a></li></ul></li>`
+)}</ul>`)}
+
+
+## Řešení matematických výrazů a rovnic
 
 K automatickému řešení matematických výrazů je použití <a href="https://math.microsoft.com/"><i class="fa-brands fa-microsoft"></i> Microsoft Math</a> API.
 
 Hlavní přidanou hodnotou je krokové vysvětlení řešení, které pomáhá uživateli pochopit problematiku hlouběji. Na základě kroků řešení jsou generována i vysvětlující videa.
-
-
-*Pro zobrazení řešení úloh vyberte odkaz na test ze seznamu*
-
-${quizes.filter(d => d.subject == 'math').map(({subject, period, codes}) => html`<h3>${formatSubject(subject)} ${formatPeriod(period)}</h3> <ul>${
-  codes.map(code => html`<li>${formatShortCode(code)}<ul><li><a class="h-stack h-stack--s h-stack-items--center" href="./math-${code}"><i class="fa-solid fa-square-root-variable"></i>řešení výrazů</a></li></ul></li>`
-)}</ul>`)}
 
 
 ## Jak je to uděláno?
@@ -82,4 +82,69 @@ async function solveLatex(latexExpression) {
 }
 
 solveLatex('\\frac{5}{9} - \\frac{5}{9}: 5 =')
+```
+
+## Řešení konstrukčních úloh
+
+K vytvoření gemoetrických konstrukcí je použita knihovna <a href="https://rulerandcompass.org/">RAC - Ruler and Compass</a>.
+
+Konstrukční úloha je rozdělena na části
+
+ - zadání úlohy - kalibrace úlohy, dle obrázku vytvoříme geometrickou konstrukci, která odpovídá zadání (libovoná velikost konstrukce, ale vždy zachovat proporci mezi objekty)
+ - kroky řešení - jednotlivé operace simulují použití pravítka a kružítka
+ - finální konstrukce
+  
+
+Každá část je vykreslena jinou barvou. Řešení je rozděleno na jednotlivé kroky, aby bylo možno vykreslovat po krocích. Toto řešení umožňuje generovat vysvětlující videa.
+
+
+## Jak je to uděláno?
+
+```js run=false
+
+smartDrawing(300, (rac, shared) => {  
+
+    //calibration
+    const S = rac.Point(116, 159);
+    const E = rac.Point(218, 144);
+    const A = rac.Point(59, 211);
+
+    const radius = S.distanceToPoint(A);
+    const k = S.arc(radius, 5 / 8, 5 / 8);
+
+    const calibration = rac
+      .Composite([
+        markPoint(rac, S, "S", rac.Text.Format.tl),
+        markPoint(rac, E, "E", rac.Text.Format.bl),
+        markPoint(rac, A, "A"),
+        k,
+        k.text("k")
+      ])
+      .draw(); // draw input
+
+    //solution steps
+    const rAS = A.rayToPoint(S); // 1. ↦AS
+    const C = k.intersectionChordEndWithRay(rAS); // 2. C;C∈k∩↦AS
+    const rCE = C.rayToPoint(E); // 3. ↦E
+    const B = rCE.pointAtDistance(C.distanceToPoint(E) * 2); // 4. B;B∈↦CE;∣CE∣=∣BE∣    
+    const rBA = B.rayToPoint(A); // 5. ↦BA
+    const rAD = A.ray(rBA.perpendicular().angle); // 6. ↦A;↦A⊥↦BA
+    const D = k.intersectionChordEndWithRay(rAD); // 7. D;D∈k∩↦A
+
+    const steps = rac.Composite([
+      rAS,
+      markPoint(rac, C, "C", rac.Text.Format.bl),
+      rCE,
+      markPoint(rac, B, "B", rac.Text.Format.bl),
+      rBA,
+      rAD,
+      markPoint(rac, D, "D", rac.Text.Format.br),
+      result
+    ])
+    .draw(shared.secondary); // draw solution steps
+
+    
+    polygon(rac, [A, B, C, D]) //final construction -  □ABCD
+    .draw(shared.primary) // draw final polygon
+})
 ```

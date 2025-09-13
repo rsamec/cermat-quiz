@@ -35,7 +35,7 @@ import mdPlus from './utils/md-utils.js';
 import { isEmptyOrWhiteSpace } from './utils/string-utils.js';
 import { formatCode } from './utils/quiz-string-utils.js';
 
-const metadata = await FileAttachment(`./data/math-${observable.params.code}.json`).json();
+const metadata = await FileAttachment(`./data/math-answers-${observable.params.code}.json`).json();
 const videoExlusions = await FileAttachment('./data/math-answers-video-exclude.json').json();
 const videoExclude = videoExlusions[observable.params.code] ?? {};
 const entries = Object.entries(metadata);
@@ -77,9 +77,9 @@ function renderStep({Step, Hint, Expression}, index){
 # ${formatCode(observable.params.code)}
 
 ```js
-html`${entries.map(([key, value]) => html`<div>
+html`${entries.length > 0 ? entries.map(([key, value]) => html`<div>
   <h2>${mdPlus.unsafe(normalizeMath(value.header))}</h2>
   ${mdPlus.unsafe(normalizeMath(`$${value.mathContent}$`))}
   ${(value.results ?? []).map(d =>  renderResult(key, d))}
-</div><hr/>` )}`
+</div><hr/>`): 'Bohužel, žádné úlohy zde nejsou.'}`
 ```

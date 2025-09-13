@@ -159,13 +159,7 @@ function renderMarkdownWithCopy(content, lang){
 }
 ```
 
-# Řešení slovních úloh
-
-Slovní úlohy jsou řešeny rozložením na podproblémy, které jsou řešitelné pomocí jednoduchých početních operacích.
-
-<div class="tip" label="Řešení pouze logickou úvahou">
-  Žádné zavádění proměných. Žádné sestavování rovnic. Žádné složité výpočty.
-</div>
+# Slovní úlohy
 
 <details>
     <summary>

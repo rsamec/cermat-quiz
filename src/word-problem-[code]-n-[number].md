@@ -118,13 +118,15 @@ function renderValues (values) {
       </div>
     </div>
   </div>
-  
-  <details>
-    <summary>Video</summary>
-    <video src="./assets/math/${code}/${key}-0.mp4" playsinline muted controls style="width: 100%;"></video>
-  </details>
 
   <details open>
+    <summary>Rozhodovačka</summary>
+    <div class="card">
+      ${renderChatStepper(value.deductionTree)}
+    </div>  
+  </details>
+
+  <details>
     <summary>Chat</summary>
 
     <div class="card">
@@ -133,10 +135,10 @@ function renderValues (values) {
   </details>
 
   <details>
-    <summary>Rozhodovačka</summary>
+    <summary>Chat - textově</summary>
     <div class="card">
-      ${renderChatStepper(value.deductionTree)}
-    </div>  
+      ${renderMarkdownWithCopy(jsonToMarkdownChat(value.deductionTree).join(''), "md")}
+    </div>
   </details>
 
   <details>
@@ -152,27 +154,21 @@ function renderValues (values) {
       ${renderMarkdownWithCopy(jsonToMarkdownTree(value.deductionTree).join(''), "md")}
     </div>
   </details>
-  <details>
-    <summary>Chat - textově</summary>
-    <div class="card">
-      ${renderMarkdownWithCopy(jsonToMarkdownChat(value.deductionTree).join(''), "md")}
-    </div>
-  </details>
   ${false ? html`
   <details>
-    <summary>Mermaid mind map</summary>
+    <summary>MermSaid mind map</summary>
     <a href="${createMermaidEditorUrl(jsonToMermaidMindMap(value.deductionTree).join(''),'edit')}" target="_blank">Open</a>
     <div class="card">
       ${renderAsCodeBlock(jsonToMermaidMindMap(value.deductionTree).join(''), "mermaid")}
     </div>    
-  </details>
+  </details>`: ''}
+  ${true ? html`
   <details>
-    <summary>Tree json</summary>
+    <summary>Strom - json</summary>
     <div class="card">
       ${renderAsCodeBlock(JSON.stringify(deductionTreeToHierarchy(value.deductionTree, node => {
         return { 
           name:formatPredicate(node, {formatKind:(d) => d.kind ?? ''}),
-          size: [200,100]
         }
   }), null, 2), "json")}
     </div>    
@@ -183,17 +179,10 @@ function renderValues (values) {
 
   
 ```
-#
 
 ${renderQuestion(id)}
 
-# AI řešení úlohy
-
-<div class="tip" label="Smart řešení úlohy">  
-  AI dostane kromě zadání úlohy i řešení úlohy rozpadnuté na základní jednoduché operace.
-  AI následně upraví řešení tak, aby bylo co nejjasnější a nejpochopitelnější.
-</div>
-
+## AI řešení
 
 ${renderChatButton("Základní řešení", template)}
 ${renderChatButton("Smart řešení", aiPromts.explainSolution)}
@@ -202,8 +191,6 @@ ${renderChatButton("Obdobné úlohy", aiPromts.generateMoreQuizes)}
 ${renderChatButton("Pracovní list", aiPromts.generateSubQuizes)}
 ${renderChatButton("Generalizace úlohy", aiPromts.generalization)}
 
-${values?.some(([key,value]) => value.audio) ? html`<div class="tip" label="Podcast">Poslechni si podcast vygenerovaný pro danou úlohu v anglickém jazyce. Generováno pomocí <a href="https://notebooklm.google/">NotebookLM</></div>${renderAudio(code,id)}`:''}
-
-# Strukturované řešení úlohy
+## Strukturované řešení úlohy
 
 ${renderValues(values)}

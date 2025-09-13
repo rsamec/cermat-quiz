@@ -5,7 +5,7 @@ pager: true
 toc: true
 ---
 
-V sekci úlohy lze z jednotlivých úloh sestavit vlastní test. Ten si následně vytisknout, nasdílet přes url a použít pro online trénování. 
+V sekci 'Sestavení testu z úloh' lze z jednotlivých úloh sestavit vlastní test. Ten si následně vytisknout, nasdílet přes url a použít pro online trénování. 
 
 
 <div class="tip" label="Filtrování">

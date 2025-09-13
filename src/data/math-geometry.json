@@ -66,7 +66,17 @@
           "TemplateSteps": [
             {
               "Name": "Postup řešení",
-              "Steps": []
+              "Steps": [
+                
+  {"Step":"Sestroj přímku AS","Expression":"$ \\mapsto AS $"},
+  {"Step":"Označ bod C jako průsečík kružnice k a přímky AS","Expression":"$ C;C\\in k \\cap \\mapsto AS $"},
+  {"Step":"","Expression":"$ \\mapsto CE $"},
+  {"Step":"","Expression":"$ B;B\\in \\mapsto CE; |CE|=|BE| $"},
+  {"Step":"","Expression":"$ \\mapsto BA $"},
+  {"Step":"","Expression":"$ \\mapsto A; \\mapsto A \\perp \\mapsto BA $"},
+  {"Step":"","Expression":"$ D;D \\in k  \\cap \\mapsto A $"},
+  {"Step":"","Expression":"$ \\square ABCD $"}
+              ]
             }
           ]
         }

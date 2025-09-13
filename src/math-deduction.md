@@ -71,7 +71,14 @@ function renderRules(rules){
 const rules = allRules();
 const opacity = 0.3;
 ```
-Dedukčního strom je __strukturovaná reprezentace řešení__ úlohy.
+
+Slovní úlohy jsou řešeny rozložením na podproblémy, které jsou řešitelné pomocí jednoduchých početních operacích.
+
+<div class="tip" label="Řešení logickou úvahou">
+  Žádné zavádění proměných. Žádné sestavování rovnic. Žádné složité výpočty.
+</div>
+
+Zápis řešení je ve formě dedukčního stromu a slouží jako __strukturovaná reprezentace řešení__ úlohy.
 
 Řešení úlohy je rozděleno na posloupnost __jednoduchých kroků__. Pořadí a návaznosti jednotlivých kroků definuje  dedukčního strom, kde __kroky__ jsou __uzly stromu__ a __vrchol stromu__ je __konečný výsledek__.
 
@@ -878,7 +885,6 @@ export function kytice() {
 
 Další příklady jsou [zde](https://github.com/rsamec/cermat-quiz/tree/master/src/math)
 
-Inspirováno prací [MathGAP](https://arxiv.org/pdf/2410.13502).
 
 ## Reprezentace dedukčního stromu
 
@@ -888,10 +894,7 @@ Ke každé úloze lze zobrazit různé reprezentace dedukčního stromu
 - textový chat - **plochý seznam kroků řešení úlohy** - každý krok má strukturu otázka, vstupy a vyvozený závěr spolu s numerickým výpočtem
 - chat - **grafický chat** - oddělení otázky a numerického výpočtu
 - chat dialog - **interaktivní chat** - rozhodovačka po jednotlivých krocích s nutností volby z nabízených možností
-- video - animace průchodu stromem
 
-<div class="tip" label="Rozhodovačka">  
-  Čtení samo o sobě je silný nástroj pro rozvoj myšlení, ale když se k němu přidají interaktivní prvky (např. dotazy), posouvá se jeho vliv na ještě vyšší úroveň.
-
+<div class="tip" label="Rozhodovačka">    
   Vyzkoušej <b>interaktivní rozhodovačku</b> ve formě chatu po jednotlivých krocích s nutností volby z nabízených možností.
 </div>
