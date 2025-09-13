@@ -195,7 +195,7 @@ const selectedQuestions = Generators.observe((notify) => {
 ```js
 const columnsSetting = { theme, layout}
 const queryValue = selectedQuestions.map(([code,values]) => values?.length > 0 ? [code].concat((values ?? []).join(",")) :[]).filter(d => d.length > 0).join("|");
-const getExportUrlPart = (usePrint) => `./${usePrint ? 'quiz-print':'quiz'}-${observable.params.subject}-${observable.params.period}?q=${queryValue}&${convertFlagsToQueryParam(usePrint? {useCode: true}: {...columnsSetting, ...controlsSetting})}`
+const getExportUrlPart = (usePrint) => `./${usePrint ? 'quiz-print':'quiz'}-${observable.params.subject}-${observable.params.period}?q=${queryValue}&${convertFlagsToQueryParam(usePrint? {useCode: true}: {useCode: true,...columnsSetting, ...controlsSetting})}`
 const getExportUrl = (usePrint) => `${window.location.origin}/${getExportUrlPart(usePrint)}`
 const selectedQuestionsCount = selectedQuestions.flatMap(d => d[1]).length;
 
