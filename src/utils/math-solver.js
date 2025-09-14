@@ -1724,7 +1724,7 @@ function toEquationExpr(lastExpr, requiredLevel = 0) {
   return parser.parse(cleanUpExpression(final));
 }
 function toEquationExprAsText(lastExpr, requiredLevel = 0) {
-  return expressionToString2(toEquationExpr(lastExpr, requiredLevel).tokens, false);
+  return expressionToString2(toEquationExpr(lastExpr, requiredLevel).tokens, false).replaceAll('"', "");
 }
 function toEquationExprAsTex(lastExpr, requiredLevel = 0) {
   return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel).tokens)} $`;

@@ -17,7 +17,7 @@ type QuizParams = {
   questions: string[][],
   quizQuestionsMap: Record<string, { metadata: any, rawContent: string }>,
   subject: string,
-  displayOptions: { useAIHelpers?: boolean, questionCustomClass?: string, useFormControl?: boolean, useResources?: boolean }
+  displayOptions: { useAIHelpers?: boolean, questionCustomClass?: string, useFormControl?: boolean, useGoToDetail?: boolean, useResources?: boolean }
   mathResourcesMap?: Record<string, any>
 }
 
@@ -57,7 +57,7 @@ function chunkMetadataByInputs(metadata, subject, selectedIds = []) {
 }
 
 function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, displayOptions, mathResourcesMap }: QuizParams) {
-  const { questionCustomClass, useAIHelpers, useFormControl, useResources } = displayOptions;
+  const { questionCustomClass, useAIHelpers, useFormControl, useGoToDetail, useResources } = displayOptions;
   const inputsStore: Record<string, Record<string, any>> = {}
   const indexMap: Record<string, number[][]> = {}
   return {
@@ -177,10 +177,10 @@ function renderedQuestionsByQuiz({ questions, quizQuestionsMap, subject, display
                     e.preventDefault();
                     window.open(`https://chat.openai.com/?q=${encodeURIComponent(quizBuilder.content(ids, { render: 'content' }))}`)
                   }}><img style="height:34px;" src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white" alt="ChatGPT" /></a>` : ''}
-                  ${useFormControl && mathResourceEntries.length > 0 
+                  ${useGoToDetail && mathResourceEntries.length > 0 
                     ? html`<a href="./math-${mathResourceEntries[0]?.[3] ? 'answers':'geometry'}-${code}#go-${key}" class="a-button" title="Podrobný rozbor úlohy" target="_blank"><i class="fa-solid fa-up-right-from-square"></i></a>`
                     : ''}
-                  ${useFormControl && wordProblemEntries.length > 0 
+                  ${useGoToDetail && wordProblemEntries.length > 0 
                     ? html`<a href="./word-problem-${code}-n-${key}" class="a-button" title="Podrobný rozbor úlohy" target="_blank"><i class="fa-solid fa-up-right-from-square"></i></a>`
                     : ''}                    
               </div>`}

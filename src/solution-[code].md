@@ -60,11 +60,12 @@ const output = ids.map(id => {
   ${mdPlus.unsafe(quiz.content([id], { ids, render: 'content' }), { docId: `${code}-${id}` })}
   ${values?.filter(([key, value]) =>  value.deductionTree != null).length > 0
       ? html.fragment`
-      <div class="h-stack h-stack--wrap">
-      <div>${renderChatButton("Vysvětli", generateAIMessages({
+      <div class="h-stack h-stack--s h-stack--end h-stack--wrap">
+      <div>${renderChatButton("Vysvětli kroky", generateAIMessages({
         template: quiz.content([id], { ids, render: 'content' }),
-        deductionTrees:values.map(([key, value]) => [`Řešení ${key}`,value.deductionTree])}).explainSolution)}
+        deductionTrees:values.map(([key, value]) => [`Řešení ${key}`,value.deductionTree])}).steps)}
       </div>
+      <a href="./word-problem-${code}-n-${id}" class="a-button" title="Podrobný rozbor úlohy" target="_blank"><i class="fa-solid fa-up-right-from-square"></i></a>
     </div>`:''}
   ${values?.length > 0 
   ? html.fragment`

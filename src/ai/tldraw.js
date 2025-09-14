@@ -9405,7 +9405,7 @@ function toEquationExpr2(lastExpr, requiredLevel = 0) {
   return parser2.parse(cleanUpExpression2(final));
 }
 function toEquationExprAsText(lastExpr, requiredLevel = 0) {
-  return expressionToString22(toEquationExpr2(lastExpr, requiredLevel).tokens, false);
+  return expressionToString22(toEquationExpr2(lastExpr, requiredLevel).tokens, false).replaceAll('"', "");
 }
 function cleanUpExpression2(exp, variable = "") {
   const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, variable);

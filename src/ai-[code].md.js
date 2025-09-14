@@ -4,8 +4,6 @@ import mdPlus from './utils/md-utils.js';
 import { parseQuiz } from './utils/quiz-parser.js';
 import {readJsonFromFile} from './utils/file.utils.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, normalizeLatex } from './utils/quiz-string-utils.js';
-import wordProblems from './math/word-problems.js';
-import {generateAIMessages} from './utils/deduce-utils.js'
 const {
   values: { code }
 } = parseArgs({
@@ -25,7 +23,7 @@ const data = await readJsonFromFile(filePath);
 const answers = data[code];
 const ids = quiz.questions.map(d => d.id);
 
-const wordProblem = wordProblems[code];
+
 
 
 process.stdout.write(`---
@@ -73,27 +71,11 @@ ${answers == null ? ` <div class="warning" label="Upozornění">
   K tomuto testu v tuto chvíli neexistují žádná řešení.
 </div>`:''}
 
-${wordProblem != null ? `<div class="tip" label="Tlačítko smart řešení úlohy">
-  AI dostane kromě zadání úlohy i řešení úlohy rozpadnuté na základní jednoduché operace.
-  AI následně upraví řešení tak, aby bylo co nejjasnější a nejpochopitelnější.
-</div>
-`:''}
 
 <div class="root">${ids.map(id => {
 
-const values = (wordProblem?.[id] != null)
-      ? [[id, wordProblem[id]]]
-      : [1, 2, 3, 4]
-        .map(i => `${id}.${i}`)
-        .map(subId => wordProblem?.[subId])
-        .filter(Boolean)
-        .map((d, index) => [`${id}.${index + 1}`, d])
 
 const template = quiz.content([id],{ ids, render:'content'});
-const aiPrompts =  values?.length > 0 ? generateAIMessages({
-  template,
-  deductionTrees:values.map(([key, value]) => [`Řešení ${key}`,value.deductionTree])}): null;
-
   
 
 return `
@@ -101,18 +83,11 @@ ${mdPlus.renderToString(template, {docId:`${code}-${id}` })}
 
 ${answers != null ? `
 <details class="solutions" open>
-<summary><h2 style="flex:1;" id="s-${id}">Řešení úloha ${id}</h2>${aiPrompts?.explainSolution != null ? `<a href="/word-problem-${code}-n-${id}"> více<span>↗︎</span></a>`:''}</summary>
+<summary><h2 id="go-${id}">Řešení úloha ${id}</h2></summary>
 <div class="break-inside-avoid-column">
-<div class="h-stack h-stack--end">${aiPrompts?.explainSolution != null ? renderChatButton("Smart řešení", aiPrompts.explainSolution) :''}</div>
 <div class="card">
 <div class="h-stack h-stack--end"><div class="badge badge--danger">Neověřeno</div></div>
 ${answers[id] != null ? mdPlus.renderToString(normalizeLatex(answers[id])): 'N/A'}
 </div></details>`:''}
 `}).join('')}
 </div></div>`)
-
-
-
-function renderChatButton(label, query){
-  return `<a style="height:34px;" href="#" onclick="((e) => { e.preventDefault(); window.open('https://chat.openai.com/?q=${encodeURIComponent(query)}');})(event)"><img style="height:34px;" src="https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white&label=${encodeURIComponent(label)}" alt="ChatGPT" /></a>`
-}

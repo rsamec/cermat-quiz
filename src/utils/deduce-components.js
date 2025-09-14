@@ -5,7 +5,7 @@ import { nthQuadraticElements, primeFactorization, lcdCalc, isNumber, gcdCalc } 
 import { isPredicate, formatPredicate, mapNodeChildrenToPredicates } from "../utils/deduce-utils.js";
 import { deduce } from "./deduce.js";
 import { inferenceRuleWithQuestion } from "../math/math-configure.js";
-import { toEquationExprAsText } from "./math-solver.js";
+import { toEquationExprAsText, toEquationExprAsTex } from "./math-solver.js";
 
 export function partion(items, options) {
   const total = items.reduce((out, d) => out += d.value, 0);
@@ -217,7 +217,7 @@ export const formatting = {
       return html`<div class="badge badge--warning">${toEquationExprAsText(d)}</div>`
     }
     else if (typeof d === "string") {
-      return d;
+      return html`<div class="badge badge--warning">${d}</div>`;
     }
     else {
       return d;
@@ -231,7 +231,7 @@ export const formatting = {
         html`<div class="badge badge--warning">${ asPercent ? toEquationExprAsText({...d,expression: `(${d.expression}) * 100`}) : toEquationExprAsText(d)}</div>`
     }
     else if (typeof d === "string") {
-      return d;
+      return html`<div class="badge badge--warning">${d}</div>`;
     }
     else {
       return d

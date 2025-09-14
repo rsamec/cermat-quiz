@@ -135,7 +135,8 @@ function toEquationExpr(lastExpr, requiredLevel = 0){
   return parser.parse(cleanUpExpression(final));  
 }
 export function toEquationExprAsText(lastExpr, requiredLevel = 0) {
-  return expressionToString(toEquationExpr(lastExpr, requiredLevel).tokens, false);  
+  return expressionToString(toEquationExpr(lastExpr, requiredLevel).tokens, false)
+        .replaceAll('"', '');  
 }
 export function toEquationExprAsTex(lastExpr, requiredLevel = 0) {
   return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel).tokens)} $`
