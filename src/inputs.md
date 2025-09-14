@@ -16,7 +16,7 @@ Databanka úloh výchází z oficiálních cermat úloh. Použité formáty dat 
 - json - meta data - klíč správných řešení, body, ...
 
 <div class="caution" label="Upozornění">
-  Využití dat je limitováno doržením <a href="https://prijimacky.cermat.cz/files/files/CZVV_pravidla-vyuziti-webstrankyn.pdf">CERMAT licence</a>.
+  Využití dat je limitováno dodržením pravidel <a href="https://prijimacky.cermat.cz/files/files/CZVV_pravidla-vyuziti-webstrankyn.pdf">CERMAT licence</a>.
 </div>
 <!-- 
 Pro postupy řešení matematických úloh (ve formátu json)

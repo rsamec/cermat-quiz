@@ -2,7 +2,7 @@
 # Podmínky používání aplikace
 
 <div class="caution" label="Upozornění">
-  Využití dat je limitováno doržením <a href="https://prijimacky.cermat.cz/files/files/CZVV_pravidla-vyuziti-webstrankyn.pdf">CERMAT licence</a>. 🤦
+  Využití dat je limitováno dodržením pravidel <a href="https://prijimacky.cermat.cz/files/files/CZVV_pravidla-vyuziti-webstrankyn.pdf">CERMAT licence</a>. 🤦
 </div>
 
 1. Aplikace je zdarma a je poskytována „tak, jak je“, bez jakýchkoliv záruk. „Experimentální režim: používejte jen na vlastní riziko a s přimhouřeným okem.“ 😉

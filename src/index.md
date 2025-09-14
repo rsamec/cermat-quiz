@@ -1,6 +1,5 @@
 ---
 toc: false
-footer: false,
 ---
 <div class="hero">
   <h1>Cermat úlohy</h1>
