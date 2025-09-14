@@ -42,6 +42,8 @@ const aiPrompts = [...Object.entries(wordProblemGroups)].map(([id, group]) => [i
   deductionTrees: group.map(d => d.deductionTrees)
 })]);
 
+//console.log("Word problems prompts:", aiPrompts.map(([key,prompts]) => prompts[prompt]).join('\n\n'));
+
 async function main() {
 
   // console.log(aiPrompts);

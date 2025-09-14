@@ -18,7 +18,7 @@ const content = await text(`${baseUrl}/index.md`);
 const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [baseUrl])
 const quiz = parseQuiz(rawContent);
 
-const filePath = path.resolve('./src/data/quiz-answers-detail-o1-mini.json');
+const filePath = path.resolve('./src/data/quiz-answers-detail-gpt-5-mini.json');
 const data = await readJsonFromFile(filePath);
 const answers = data[code];
 const ids = quiz.questions.map(d => d.id);
@@ -64,7 +64,7 @@ details.solutions > summary > h1, h2 {
 </style>
 <div class="caution" label="Řešení může obsahovat chyby">
   Generováno pomocí AI. Doporučujeme kontrolovat důležité informace.
-  <div class="h-stack h-stack--end"><small>o1-mini, poslední aktualizace: 9.2.2025</small></div>
+  <div class="h-stack h-stack--end"><small>gpt-5-mini, poslední aktualizace: 14.09.2025</small></div>
 </div>
 
 ${answers == null ? ` <div class="warning" label="Upozornění">

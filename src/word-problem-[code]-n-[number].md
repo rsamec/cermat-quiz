@@ -202,7 +202,7 @@ ${renderQuestion(id)}
 ${selectedProviderInput}
 <div class="h-stack h-stack--m h-stack--wrap">
 ${renderChatButton("Základní řešení",selectedProvider, template)}
-${renderChatButton("Krokové řešení", selectedProvider, aiPromts.explainSolution)}
+${renderChatButton("Krokové řešení", selectedProvider, aiPromts.steps)}
 ${renderChatButton("Hlavní myšlenky",  selectedProvider, aiPromts.generateImportantPoints)}
 ${renderChatButton("Obdobné úlohy",  selectedProvider, aiPromts.generateMoreQuizes)}
 ${renderChatButton("Pracovní list", selectedProvider, aiPromts.generateSubQuizes)}

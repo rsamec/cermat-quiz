@@ -1,5 +1,6 @@
 ---
 toc: false
+footer: false,
 ---
 <div class="hero">
   <h1>Cermat úlohy</h1>
@@ -81,15 +82,8 @@ function codesBy({subject, period}){
   <div class="card">
     <h1><strong>Strukturovná data</strong></h1>
     <div class="v-stack v-stack--m">
-      <span>Možnost vložit do vlastních školních stránek. Vytvořit si vlastní grafickou podobu testu. Stavět vlastní aplikace.</span>
-      <a href="/embedding">Více informací</a>
-    </div>
-  </div>
-  <div class="card grow">
-    <h1><strong>Vlastní sestavení testu</strong></h1>
-     <div class="v-stack v-stack--m">
-      <span>Naklikej si vlastní porci úloh. Výsledek si vytiskni nebo využij na online trénování.</span>
-      <a href="/builder">Více informací</a>
+      <span>Databanka úloh výchází z oficiálních cermat úloh. Strukturovaná data zadání a řešení.</span>
+      <a href="/inputs">Více informací</a>
     </div>
   </div>
   <div class="card grow">
@@ -113,6 +107,21 @@ function codesBy({subject, period}){
       <a href="/ai">Více informací</a>
     </div>
   </div> 
+  <div class="card grow">
+    <h1><strong>Vlastní sestavení testu</strong></h1>
+     <div class="v-stack v-stack--m">
+      <span>Naklikej si vlastní porci úloh. Výsledek si vytiskni nebo využij na online trénování.</span>
+      <a href="/builder">Více informací</a>
+    </div>
+  </div>
+  <!-- <div class="card">
+    <h1><strong>Přepoužitelnost</strong></h1>
+    <div class="v-stack v-stack--m">
+      <span>Možnost vložit do vlastních školních stránek. Vytvořit si vlastní grafickou podobu testu. Stavět vlastní aplikace.</span>
+      <a href="/embedding">Více informací</a>
+    </div>
+  </div> -->
+
 
 </div>
 

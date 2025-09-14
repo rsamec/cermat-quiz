@@ -45,7 +45,7 @@ function renderExample({example, unit, showRelativeValues}={}){
   const renderType = Inputs.radio(new Map([['Textový strom','text-tree'],['Dedukční strom','deduce-tree'],['Textový chat','text-chat'],['Chat', 'chat'],['Chat dialog', 'stepper-chat']]), {value:'text-tree', label:'Zobrazit'})  
   const renderType$ = useInput(renderType);
 
-  const {explainSolution, vizualizeSolution, generateMoreQuizes} = generateAIMessages({template: example.template(highlight), deductionTrees:[["Řešení",example.deductionTree]]})
+  const {steps, vizualizeSolution, generateMoreQuizes} = generateAIMessages({template: example.template(highlight), deductionTrees:[["Řešení",example.deductionTree]]})
 
 return html`
   <div class="v-stack v-stack--l">
@@ -55,7 +55,7 @@ return html`
         ${renderType}
       </div>
       <div class="h-stack h-stack--m h-stack--wrap" style="align-items: flex-start;">
-        ${renderChatButton("Vysvětli", explainSolution)}
+        ${renderChatButton("Vysvětli", steps)}
         ${renderChatButton("Vizualizuj", vizualizeSolution)}
         ${renderChatButton("Generuj více příkladů", generateMoreQuizes)}
       </div>

@@ -6323,8 +6323,12 @@ Jednotliv\xE9 kroky jsou odd\u011Bleny horizont\xE1ln\xED \u010D\xE1rou. Pod\xFA
 ${deductionTrees.map(([title, deductionTree]) => `${title} 
 
  ${jsonToMarkdownChat(deductionTree).join("\n---\n")}`).join("\n---\n---\n")}`;
-  const explainSolution = `${alternateMessage}
+  const steps = `${alternateMessage}
 M\u016F\u017Ee\u0161 vysv\u011Btlit podrobn\xE9 \u0159e\u0161en\xED krok po kroku v \u010De\u0161tin\u011B. Vysv\u011Btluj ve stejn\xFDch kroc\xEDch jako je uvedeno v heslovit\xE9m \u0159e\u0161en\xED.`;
+  const keyPointsAndSteps = `${alternateMessage}
+  M\u016F\u017Ee\u0161 vysv\u011Btlit podrobn\xE9 \u0159e\u0161en\xED krok po kroku v \u010De\u0161tin\u011B. Vysv\u011Btluj ve stejn\xFDch kroc\xEDch jako je uvedeno v heslovit\xE9m \u0159e\u0161en\xED.
+  Na za\u010D\xE1tku stru\u010Dn\u011B p\u0159edstavit koncept nebo strategii \u0159e\u0161en\xED, resp. 1 a\u017E maxim\xE1ln\u011B 3 nejd\u016Fle\u017Eit\u011Bj\u0161\xED my\u0161lenky d\u016Fle\u017Eit\xE9 k pochopen\xED pro\u010D se jednotliv\xE9 kroky \u0159e\u0161en\xED d\u011Blaj\xED.
+.`;
   const vizualizeSolution = `${alternateMessage}
 M\u016F\u017Ee\u0161 vytvo\u0159it vizualizaci, kter\xE1 popisuje situaci, resp. \u0159e\u0161en\xED ve form\u011B obr\xE1zku. Nap\u0159. ve form\u011B p\u0159ehledn\xE9 infografiky.`;
   const generateMoreQuizes = `${alternateMessage}
@@ -6360,7 +6364,6 @@ Dle slo\u017Eitosti \xFAlohy vymysli 1 a\u017E maxim\xE1ln\u011B 3 nejd\u016Fle\
 Vizualizuj vhodn\u011B tyto my\u0161lenky do obr\xE1zku pomoc\xED infografiky s vhodn\xFDmi grafick\xFDmi prvky.
 `;
   return {
-    explainSolution,
     vizualizeSolution,
     generateMoreQuizes,
     generateSubQuizes,
@@ -6370,7 +6373,7 @@ Vizualizuj vhodn\u011B tyto my\u0161lenky do obr\xE1zku pomoc\xED infografiky s 
     "key-points": generateImportantPoints,
     "working-sheet": generateSubQuizes,
     "more-quizes": generateMoreQuizes,
-    steps: explainSolution
+    steps: keyPointsAndSteps
   };
 }
 function createLazyMap(thunks) {

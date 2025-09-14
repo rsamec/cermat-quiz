@@ -17,7 +17,7 @@
     "build:schema": "esbuild ./src/ai/schema.ts --bundle --platform=neutral --outfile=./src/ai/schema.js",
     "build:all": "npm run build:math-solver && npm run build:deduce-utils && npm run build:word-problems && npm run build:schema && npm run build:ai && npm run build:tldraw",
     "generate:word-problems": "node ./src/data/word-problems-solu-[code].txt.js --code M9I-2025",
-    "ai:word-problems:steps": "node ./src/data/word-problems-ai-[prompt]-[code]-[model].json.js --code M9B-2025 --prompt steps --model gpt-4o > ./src/data/word-problems-ai-steps-M9B-2025-gpt-4o.json",
+    "ai:word-problems:steps": "node ./src/data/word-problems-ai-[prompt]-[code]-[model].json.js --code M9B-2025 --prompt steps --model gpt-5-mini > ./src/data/word-problems-ai-steps-M9B-2025-gpt-5-mini.json",
     "ai:word-problems:key-points": "node ./src/data/word-problems-ai-[prompt]-[code]-[model].json.js --code M9B-2025 --prompt key-points --model o4-mini > ./src/data/word-problems-ai-key-points-M9B-2025-o4-mini.json",
     "ai:word-problems:key-points:shapes": "node ./src/data/word-problems-ai-[prompt]-[code]-[model]-shapes.json.js --code M9B-2025 --prompt key-points --model o4-mini > ./src/data/word-problems-ai-key-points-M9B-2025-o4-mini-shapes.json",
     "ai:word-problems:working-sheet": "node ./src/data/word-problems-ai-[prompt]-[code]-[model].json.js --code M9B-2025 --prompt working-sheet --model o4-mini > ./src/data/word-problems-ai-working-sheet-M9B-2025-o4-mini.json",

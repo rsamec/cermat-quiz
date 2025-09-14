@@ -680,8 +680,13 @@ Jednotlivé kroky jsou odděleny horizontální čárou. Podúlohy jsou oddělen
 ${deductionTrees.map(([title, deductionTree]) => `${title} \n\n ${jsonToMarkdownChat(deductionTree).join("\n---\n")}`).join("\n---\n---\n")}`
 
 
-  const explainSolution = `${alternateMessage}
+  const steps = `${alternateMessage}
 Můžeš vysvětlit podrobné řešení krok po kroku v češtině. Vysvětluj ve stejných krocích jako je uvedeno v heslovitém řešení.`
+
+  const keyPointsAndSteps = `${alternateMessage}
+  Můžeš vysvětlit podrobné řešení krok po kroku v češtině. Vysvětluj ve stejných krocích jako je uvedeno v heslovitém řešení.
+  Na začátku stručně představit koncept nebo strategii řešení, resp. 1 až maximálně 3 nejdůležitější myšlenky důležité k pochopení proč se jednotlivé kroky řešení dělají.
+.`
 
   const vizualizeSolution = `${alternateMessage}
 Můžeš vytvořit vizualizaci, která popisuje situaci, resp. řešení ve formě obrázku. Např. ve formě přehledné infografiky.`
@@ -722,7 +727,6 @@ Vizualizuj vhodně tyto myšlenky do obrázku pomocí infografiky s vhodnými gr
 `
 
   return {
-    explainSolution,
     vizualizeSolution,
     generateMoreQuizes,
     generateSubQuizes,
@@ -732,7 +736,7 @@ Vizualizuj vhodně tyto myšlenky do obrázku pomocí infografiky s vhodnými gr
     "key-points": generateImportantPoints,
     "working-sheet": generateSubQuizes,
     "more-quizes": generateMoreQuizes,
-    steps: explainSolution,
+    steps: keyPointsAndSteps,
   }
 }
 type ThunkMap<T> = {

@@ -157,7 +157,7 @@ for (let code of codes) {
 
         const allPrompts = [
           { title: "Klíčové myšlenky", description: "Hlavní myšlenky řešení", prompt: aiPrompts.generateImportantPoints },
-          { title: "Krok za krokem", description: "Podrobné vysvětlení řešení úlohy krok za krokem", prompt: aiPrompts.explainSolution },
+          { title: "Krok za krokem", description: "Podrobné vysvětlení řešení úlohy krok za krokem", prompt: aiPrompts.steps },
           { title: "Generalizace", description: "Generalizace úlohy", prompt: aiPrompts.generalization },
           { title: "Obdobné úlohy", description: "Generuj obdobné úlohy", prompt: aiPrompts.generateMoreQuizes },
           { title: "Pracovní list", description: "Generuj pracovní list", prompt: aiPrompts.generateSubQuizes }

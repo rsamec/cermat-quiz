@@ -25,9 +25,24 @@ interface AIWrapperOptions {
   geminiKey: string;
   githubKey: string;
 }
+
+type TextInputModality = {
+  type: "text";
+  text: string;
+}
+type ImageInputModality = {
+  type: "image";
+  url: string;
+}
+
+type InputModality = TextInputModality | ImageInputModality;
+interface InputPrompt {
+  role: "user" | "system" | "developer";
+  content: string | InputModality[];
+}
 interface CallAIOptions {
   model: string;
-  prompt: [{role:"user" | "system" | "developer", content:string}];
+  prompt: InputPrompt[];
 }
 interface SchemaCallAIOptions<T extends z.ZodRawShape> extends CallAIOptions {
   schema: z.ZodObject<T>;
