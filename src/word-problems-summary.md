@@ -12,7 +12,7 @@ style: /assets/css/word-problems.css
  
 </style>
 ```js
-import { formatCode, parseCode, formatPeriod, formatVersion} from './utils/quiz-string-utils.js';
+import { formatCode, parseCode, formatPeriod, formatCodeAlt, formatShortCode, formatVersion} from './utils/quiz-string-utils.js';
 import { unique, download } from "./utils/common-utils.js";
 import wordProblems from './math/word-problems.js';
 
@@ -269,5 +269,5 @@ ${html`${selected.length > questionsMaxLimit
           :''}`}
 
 
-${viewValue == 'links' ? html`<ul>${selectedToRender.map(d => html`<li><a href=n-${d.code}-${d.id}>${d.code} - ${d.id}</a></li>`)}</ul>` : html`<div class="card">${renderMarkdownWithCopy(selectedToRender.map(d => (controls.startsWith("A") ? d.builder.content([parseInt(d.id)], { render: 'content' }) : "") + ' ' + (controls.endsWith("B") ?  (controls.startsWith("A") ? `\n---\n`:'') + d.deductionTrees.map(tree => jsonToMarkdownChat(tree).join("")).join("---\n") : "")).join("\n---\n"), 'md')}</div>`}
+${viewValue == 'links' ? html`<ul>${selectedToRender.map(d => html`<li><a href=n-${d.code}-${d.id}>${formatCodeAlt(d.code)} - ${d.id}</a></li>`)}</ul>` : html`<div class="card">${renderMarkdownWithCopy(selectedToRender.map(d => (controls.startsWith("A") ? d.builder.content([parseInt(d.id)], { render: 'content' }) : "") + ' ' + (controls.endsWith("B") ?  (controls.startsWith("A") ? `\n---\n`:'') + d.deductionTrees.map(tree => jsonToMarkdownChat(tree).join("")).join("---\n") : "")).join("\n---\n"), 'md')}</div>`}
 
