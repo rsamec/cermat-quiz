@@ -29,7 +29,9 @@ const ids = quiz.questions.map(d => d.id);
 const wordProblem = wordProblems[code];
 process.stdout.write(`---
 title: ${formatCodeAlt(code)}
-source: české statní zkoušky
+sidebar: false
+footer: false
+pager: false
 toc: false
 ---
 ${ids.map(id => {
