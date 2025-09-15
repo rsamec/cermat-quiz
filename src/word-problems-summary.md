@@ -144,6 +144,16 @@ const controlsInput = Inputs.radio(
   )
 const controls = Generators.input(controlsInput);
 
+const viewInput = Inputs.radio(
+    new Map([
+      ["Náhled", "view"],
+      ["Odkazy", "links"],
+    ]),
+    {value: "view"}
+  )
+const viewValue = Generators.input(viewInput);
+
+
 const toBadge = (selected, selectedInput, label) => selected.length > 0 ? html`<div class="badge">
   ${label != null ? `${label}: ${selected.length}`: `${selected.join(", ")}` }
   <i class="fa-solid fa-xmark" onClick=${() => resetValue(selectedInput, [])}></i>
@@ -247,7 +257,10 @@ const selected = view(Inputs.table(search,{
 const selectedToRender = selected.length > questionsMaxLimit ? selected.filter((_,i)=> i < questionsMaxLimit): selected;
 ```
 
-<div>${controlsInput}</div>
+<div>
+  ${controlsInput}
+  ${viewInput}
+</div>
 
 ${html`${selected.length > questionsMaxLimit
             ? html`<div class="caution" label="Limit - maximální počet otázek">
@@ -256,5 +269,5 @@ ${html`${selected.length > questionsMaxLimit
           :''}`}
 
 
-${html`<div class="card">${renderMarkdownWithCopy(selectedToRender.map(d => (controls.startsWith("A") ? d.builder.content([parseInt(d.id)], { render: 'content' }) : "") + ' ' + (controls.endsWith("B") ?  (controls.startsWith("A") ? `\n---\n`:'') + d.deductionTrees.map(tree => jsonToMarkdownChat(tree).join("")).join("---\n") : "")).join("\n---\n"), 'md')}</div>`}
+${viewValue == 'links' ? html`<ul>${selectedToRender.map(d => html`<li><a href=n-${d.code}-${d.id}>${d.code} - ${d.id}</a></li>`)}</ul>` : html`<div class="card">${renderMarkdownWithCopy(selectedToRender.map(d => (controls.startsWith("A") ? d.builder.content([parseInt(d.id)], { render: 'content' }) : "") + ' ' + (controls.endsWith("B") ?  (controls.startsWith("A") ? `\n---\n`:'') + d.deductionTrees.map(tree => jsonToMarkdownChat(tree).join("")).join("---\n") : "")).join("\n---\n"), 'md')}</div>`}
 
