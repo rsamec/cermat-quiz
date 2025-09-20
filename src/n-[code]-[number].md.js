@@ -54,5 +54,5 @@ ${quiz.content([id], { ids, render: 'content' })}\n
 ---
 ${values.map(([key, value]) => 
 `**${key} Rozbor řešení úlohy** \n
-${jsonToMarkdownChat(value.deductionTree, mdFormatting).join("")}`).join("")} \n---`:''}
+${jsonToMarkdownChat(value.deductionTree).join("")}`).join("")} \n---`:''}
 `)
