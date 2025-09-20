@@ -282,14 +282,14 @@ function organizatoriPercent() {
   return {
     deductionTree: deduce(
       deduce(
-        toCont(deduce(
+        deduce(
           celkem,
           deduce(
             cont("hráči", 10, entityBase),
             rate("hráči", 11, entity, entityBase),
           ),
           ctorDifference("organizátoři")
-        ), { agent: 'organizátoři' }),
+        ),
         celkem,
         ctorPercent(),
       ),

@@ -178,13 +178,13 @@ function doplneniCisel() {
   const numberL = "číslo v kroužku"
   const rozdilCisel = comp(boldNumberL, numberL, 80, entity)
 
-  const rozdilCisel2 = to(
+  const rozdilCisel2 = toPredicate(
     deduce(
-      counter("rozdil ", 34),
+      counter("rozdil", 34),
       counter("rozdil", -10),
       sum("rozdíl")
     ),
-    comp(boldNumberL, numberL, 24, entity)
+    node => comp(boldNumberL, numberL, 24, entity)
   )
   return {
     cislo1: {

@@ -351,7 +351,7 @@ export function poutnik() {
     prvniKouzlo: {
       deductionTree: deduce(
         mapToCont({ agent: "kouzelník původně" })(kouzelnik),
-        toCont(kouzelnik1, { agent: "kouzelník po 1.kouzle " }),
+        toCont(kouzelnik1, { agent: "kouzelník po 1.kouzle" }),
         ctorDelta("kouzelník")
       )
     },

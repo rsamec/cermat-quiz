@@ -1,4 +1,4 @@
-import { cont, ctor, ctorBooleanOption } from "../../components/math";
+import { cont, ctor, ctorBooleanOption, ctorDifference } from "../../components/math";
 import { axiomInput, connectTo, deduce, last, lastQuantity, toCont } from "../../utils/deduce-utils";
 
 
@@ -22,11 +22,11 @@ export function desetiuhelnik({ input }: {
   const uhelRamenaRovnoramennehoTrojuhelniku = (
     { vrcholovyUhel }: { vrcholovyUhel: any },
     { uhelRamenoLabel }: { uhelRamenoLabel?: string }) => toCont(deduce(
-      toCont(deduce(
+      deduce(
         triangleSum,
         vrcholovyUhel,
-        ctor('comp-diff')
-      ), { agent: 'obě ramena' }),
+        ctorDifference('obě ramena')
+      ),
       cont('obě ramena', 2, pocetUhlu),
       ctor('rate')), { agent: uhelRamenoLabel ?? 'úhel ramena' }
     )

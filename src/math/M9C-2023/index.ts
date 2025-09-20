@@ -1,5 +1,5 @@
 import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, pythagoras, rate, ratio, sum, product, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorBooleanOption, contLength, dimensionEntity, nthPart, comp, oblongNumbers, nth, productVolume, counter, ctorRound, ratios, alligation, ctorRatiosInvert, percent, ctorExpressionOption, contArea, double, halfProduct } from "../../components/math";
-import { createLazyMap, deduce, deduceAs, last, to, toCont, toRate } from "../../utils/deduce-utils";
+import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate, toRate } from "../../utils/deduce-utils";
 
 
 export default createLazyMap({

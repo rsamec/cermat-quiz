@@ -1,5 +1,5 @@
-import { commonSense, compRatio, cont, ctor, ctorDifference, rate, sum, ctorSlide, compRelative, compRelativePercent, triangularNumbersPattern, nthPart, comp, ratios, counter, ctorRatios, nthPartFactor, ctorOption, ctorBooleanOption, ctorExpressionOption, contLength, halfProduct, doubleProduct, dimensionEntity, productVolume, pythagoras, productArea, double, half, product, proportion, percent } from "../../components/math";
-import { createLazyMap, deduce, deduceAs, last, lastQuantity, to } from "../../utils/deduce-utils";
+import { compRatio, cont, ctor, ctorDifference, sum, compRelative, comp, ctorOption, contLength, halfProduct, pythagoras, proportion, percent } from "../../components/math";
+import { createLazyMap, deduce, deduceAs } from "../../utils/deduce-utils";
 import pocetObyvatel from "./pocet-obyvatel";
 import sourozenci from "./sourozenci";
 

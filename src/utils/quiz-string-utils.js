@@ -90,6 +90,11 @@ export function formatShortCode(code) {
   const { order, year, period } = parseCode(code);
   return `${year} - ${formatVersion({ order, period })}`;
 }
+export function formatShortCodeAlt(code) {
+  const { order, year, period, grade } = parseCode(code);
+  return `${year} ${formatGradeAlt(grade)} ${formatVersion({ order, period })}`;
+}
+
 export function formatVersionByCode(code) {
   const { order, period } = parseCode(code);
   return formatVersion({ order, period });

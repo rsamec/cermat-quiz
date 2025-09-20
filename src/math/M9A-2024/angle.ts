@@ -1,5 +1,5 @@
-import { cont, ctor, compAngle, ctorOption, sum, triangleAngle } from "../../components/math";
-import { axiomInput, deduce, last, toCont } from "../../utils/deduce-utils";
+import { cont, ctor, compAngle, ctorOption, triangleAngle } from "../../components/math";
+import { axiomInput, deduce, last } from "../../utils/deduce-utils";
 
 
 

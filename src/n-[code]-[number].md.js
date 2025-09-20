@@ -1,6 +1,6 @@
 import { parseArgs } from "node:util";
 import { parseQuiz } from './utils/quiz-parser.js';
-import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, text, formatCodeAlt } from './utils/quiz-string-utils.js';
+import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, text, formatShortCodeAlt } from './utils/quiz-string-utils.js';
 import wordProblems from './math/word-problems.js';
 import { jsonToMarkdownChat } from "./utils/deduce-utils.js";
 //import mdPlus from './utils/md-utils.js';
@@ -43,7 +43,7 @@ const values = (wordProblem?.[id] != null)
 
 
 process.stdout.write(`---
-title: ${formatCodeAlt(code)} - ${number}
+title: ${formatShortCodeAlt(code)} - ${number}
 sidebar: false
 footer: false
 pager: false

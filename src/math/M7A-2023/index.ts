@@ -1,5 +1,5 @@
-import { commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, sum, ctorComplement, ctorOption, counter, percent, rate, ratios, product, triangleAngle, ctorDifference, nthPart, contLength, productArea, dimensionEntity, half } from "../../components/math";
-import { axiomInput, createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
+import { commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, sum, ctorComplement, ctorOption, counter, percent, rate, ratios, product, triangleAngle, ctorDifference, nthPart, contLength, productArea, dimensionEntity, half, ctorRatios } from "../../components/math";
+import { axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
 import { obrazce } from "../obrazce";
@@ -45,7 +45,7 @@ export default createLazyMap({
   10.3: () => trideni_odpadu().kovyToPapir,
   11: () => example_11(),
   12: () => example_12(),
-  13:() => minceVKasicce(),
+  13: () => minceVKasicce(),
   14: () => zakusek({
     input: {
       cena: 72
@@ -61,29 +61,29 @@ export default createLazyMap({
 function example_4_1() {
   const entity = "žáci";
   return {
-    deductionTree: toCont(
+    deductionTree: deduce(
       deduce(
-        deduce(
-          axiomInput(cont("průměř", 21, entity), 2),
-          counter("počet míčových sportů", 3),
-          product("počet všech žáků míčové sporty")
-        ),
-        deduce(
-          cont("volejbal", 28, entity),
-          cont("fotbal", 16, entity),
-          sum("fotbal a volejbal")
-        ),
-        ctor('comp-diff')
+        axiomInput(cont("průměř", 21, entity), 2),
+        counter("počet míčových sportů", 3),
+        product("počet všech žáků míčové sporty")
       ),
-      { agent: "vybíjená" }
+      deduce(
+        cont("volejbal", 28, entity),
+        cont("fotbal", 16, entity),
+        sum("fotbal a volejbal")
+      ),
+      ctorDifference('vybíjená')
     )
   }
 }
 function example_4_2() {
   return {
-    deductionTree: to(
-      compRatio("chlapci", "dívky", 3 / 2),
-      ratios("plavání", ["dívky", "chlapci"], [2, 3])
+    deductionTree: deduce(
+      deduce(
+        compRatio("chlapci", "dívky", 3 / 2),
+        ctorRatios("plavání")
+      ),
+      ctor("reverse")
     )
   }
 }
@@ -118,7 +118,7 @@ function minceVKasicce() {
       deduce(
         deduce(dvouPocet, rate(dvou, 2, { entity }, { entity: minceEntity })),
         deduce(petiPocet, rate(peti, 5, { entity }, { entity: minceEntity })),
-        deduce(desetiPocet, rate(deseti, 10, { entity }, { entity: minceEntity })),      
+        deduce(desetiPocet, rate(deseti, 10, { entity }, { entity: minceEntity })),
         sum("celkem v kasičce")
       ),
       ctorOption("E", 240)
@@ -264,7 +264,7 @@ function example_15_3() {
           den1,
           sum("přišlo celkem")
         ),
-        ctor('comp-diff')
+        ctorDifference('nepřišlo')
       ),
       ctorOption("B", 450)
     )

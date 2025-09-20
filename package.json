@@ -30,7 +30,7 @@
     "generate:period-8:tldr": "node ./src/data/word-problems-math-[period].tldr.js --period 8  > ./src/data/word-problems-math-8.tldr",
     "generate:page:tldr": "node ./src/data/word-problems-page-[code].tldr.js --code MMA-2025 > ./src/data/word-problems-page-MMA-2025.tldr",
     "generate:json": "node ./src/data/word-problems-[code].tldr.js --code M9I-2025 > ./src/data/word-problems-M9I-2025.json",
-    "generate:word-problems:metrics" :"node ./src/data/word-problems-metrics.json.js > ./src/data/word-problems-metrics.json"
+    "generate:word-problems:metrics": "node ./src/data/word-problems-metrics.json.js > ./src/data/word-problems-metrics.json"
   },
   "dependencies": {
     "@google/genai": "^1.10.0",
@@ -54,6 +54,7 @@
     "markdown-it-footnote": "^4.0.0",
     "markdown-it-html5-embed": "^1.0.0",
     "markdown-it-katex": "^2.0.3",
+    "markdown-it-mark": "^4.0.0",
     "markdown-it-sup": "^2.0.0",
     "openai": "^4.91.1",
     "pako": "^2.1.0",

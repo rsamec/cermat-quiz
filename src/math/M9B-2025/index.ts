@@ -347,7 +347,7 @@ function tabor() {
         deduce(
           deduce(
             compRelative(mladsiLabel, starsiLabel, -1 / 3),
-            ctor("reverse-comp-ratio")
+            ctor("invert-comp-ratio")
           ),
           ctor("convert-percent")
         ),
@@ -395,17 +395,20 @@ function obrazce() {
       deductionTree: deduce(
         cont("obrazec č.1", 2, entityPocet),
         deduce(
-          toCont(deduce(
+          deduce(
             contLength("hledaný obrazec", 20),
             contLength("obrazec č.1", 5),
             ctorDifference("přechody"),
-          ), { agent: "přechody" }),
-          to(deduce(
-            tmavyObrazec1,
-            tmavyObrazec2,
-            tmavyObrazec3,
-            ctor("sequence")
-          ), rate("přechody", 3, dim.length, "obrazec")),
+          ),
+          to(
+            deduce(
+              tmavyObrazec1,
+              tmavyObrazec2,
+              tmavyObrazec3,
+              ctor("sequence")
+            ),
+            rate("přechody", 3, dim.length, "obrazec")
+          ),
           ctor("quota")
         ),
         sum("obrazec č.6")

@@ -111,7 +111,7 @@ function klubSEN() {
       ),
       sum("navštěvuje více kroužků", { entity })
     ),
-    ctor('comp-diff')
+    ctorDifference('navštěvuje 1 kroužek')
   );
   return {
     jedenKrouzek: {
@@ -133,7 +133,7 @@ function desitiuhelnik() {
 
 
   const rectangleWidthLabel = "šířka obdelníka"
-  const triangleWidthLabel = " nejdelší straně trojúhelníku"
+  const triangleWidthLabel = "nejdelší straně trojúhelníku"
 
   const squareSize = to(
     axiomInput(contLength("nejkratší strana desitiúhelník", 4), 1),

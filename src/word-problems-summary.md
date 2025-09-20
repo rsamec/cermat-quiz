@@ -12,7 +12,7 @@ style: /assets/css/word-problems.css
  
 </style>
 ```js
-import { formatCode, parseCode, formatPeriod, formatCodeAlt, formatShortCode, formatVersion} from './utils/quiz-string-utils.js';
+import { formatCode, parseCode, formatPeriod, formatShortCodeAlt, formatShortCode, formatVersion} from './utils/quiz-string-utils.js';
 import { unique, download } from "./utils/common-utils.js";
 import wordProblems from './math/word-problems.js';
 
@@ -64,6 +64,8 @@ const filteredQuizCategories = Object.entries(quizGeneratedCategories).flatMap((
   const builder = makeQuizBuilder(quiz.rawContent)
   
   return value.questions.map((d,i) => {
+
+    const metrics = wordProblemsMetrics[code]?.[d.id]; 
       return {
         ...d,
         code,
@@ -72,8 +74,9 @@ const filteredQuizCategories = Object.entries(quizGeneratedCategories).flatMap((
         subject: parsedCode.subject,
         order: parsedCode.order,
         version: formatVersion(parsedCode),
-        predicates:wordProblemsMetrics[code]?.[d.id]?.predicates ?? [],
-        hasSolution:wordProblemsMetrics[code]?.[d.id] != null,
+        predicates:metrics?.predicates ?? [],
+        rules:metrics?.rules ?? [],
+        hasSolution: metrics != null,
         builder,      
         deductionTrees: wordProblem[d.id] != null 
           ? [wordProblem[d.id].deductionTree] 
@@ -110,29 +113,94 @@ const selectedCodesInput = Inputs.select(codes,{ multiple:true, format: d => for
 const selectedCodes = Generators.input(selectedCodesInput);
 
 const uniquePredicates = new Map([
-  ["Porovnání rozdílem",["comp"]],
-  ["Porovnání podílem",["comp-ratio"]],
+  ["Porovnání rozdílem",["comp", "comp-diff", "diff"]],
+  ["Porovnání podílem (poměr)",["comp-ratio"]],
   ["Část z celku", ["ratio"]],
-  ["Poměr část ku části", ["ratios"]],
+  ["Část ku části", ["ratios"]],
   ["Stav a změna stavu", ["delta","transfer"]],
+  ["Rozdělování", ["rate","quota"]],
+  ["Seskupování", ["sum","sum-combine", "product", "product-combine"]],
   ["Úměrnosti", ["proportion"]],
   ["Škálování", ["scale","slace-invert","nth-factor"]],
   ["Posuny",["slide","slide-invert"]],
-  ["Rozdělování", ["rate","quota"]],
-  ["Spojování", ["sum","sum-combine", "product", "product-combine"]],
-  ["Převod jednotek", ["unit"]],
-  ["Převod jednotek", ["unit"]],
-  ["Vztahy úhlů", ["comp-angle", "triangle"]],
+  ["Převod jednotek", ["unit"]],  
+  ["Zaokrouhlování", ["round"]],
   ["Největší společný dělitel", ["gcd"]],
   ["Nejmenší společný násobek", ["lcd"]],
   ["Výrazy", ["eval-expr", "simpl-expr"]],
   ["Pythagorova věta", ["pythagoras"]],
+  ["Vztahy úhlů", ["comp-angle", "triangle"]],
   ["Vzory opakování", ["sequence","nth", "pattern","balanced-partition"]],
-  ["Zaokrouhlování", ["round"]],
   ["Zdravý rozum", ["common-sense"]],
 ])
 const selectedPredicatesInput = Inputs.select(uniquePredicates,{ multiple:true, label:"Predikáty"});
 const selectedPredicates = Generators.input(selectedPredicatesInput);
+
+//const uniqueRules = filteredQuizCategories.flatMap(d => d.rules).filter(unique)
+
+
+const uniqueRules = new Map([
+  ["Porovnání rozdílem", [`compareRule`,'toCompareRule', `compareDiffRule`,'toCompareDiffRule', 'toDifferenceRule']],
+  ["Porovnání poměrů", [`ratioCompareRule`,'toRatioCompareRule']],  
+  ["Porovnání rozdílem z celku", [`partEqualRule`]],  
+  ["Část z celku", ["partToWholeRule", "toPartWholeRatio"]],  
+  ["Část ku části", ["partToPartRule", "toRatiosRule"]],
+  ["Doplněk k celku", [`partWholeComplementRule`]],      
+  ["Propojení porovnání s část–celek", ["partWholeCompareRule","toPartWholeCompareRule"]],    
+  ["Propojení porovnání s část-část", ["compRatiosToCompRule"]],
+  ["Převod mezi část-celek a poměr", ["convertPartWholeToRatioCompareRule"]],
+  ["Převod mezi část-část a poměr", ["convertRatioCompareToTwoPartRatioRule","convertTwoPartRatioToRatioCompareRule"]],    
+  ["Převod mezi poměr a procenta", ["togglePartWholeAsPercentRule", "convertPercentRule"]],
+  ["Převod část-část na část-celek", ["convertPartToPartToPartWholeRule"]],
+  ["Obrácení poměru", ["invertRatioCompareRule","invertRatiosRule", "reverseRatiosRule"]],
+  ["Rozdíl jako poměr", ['toDifferenceAsRatioRule']],  
+  ["Rozdíl z absolutního a relativního porovnání", ["ratioCompareToCompareRule"]],
+  ["Řetězení porovnání či poměrů)", [`transitiveRatioCompareRule`, "transitiveCompareRule","transitiveRatioRule"]],
+  
+  ["Spojování", [`sumRule`,`productRule`]],
+  ["Rozdělení (rovnoměrně)", [`rateRule`,"toRateRule"]],  
+  ["Rozdělení dle kvóty", [`quotaRule`,"toQuotaRule"]],  
+  ["Rozdělení dle rate", ["compareToRateRule"]],
+
+  ["Úměrnosti", [`proportionRule`]],
+  ["Úměrnost pro část-část", ["proportionTwoPartRatioRule"]],
+
+  ["Změny stavu", [`deltaRule`, "toDeltaRule"]],
+  ["Transfer", [`transferRule`]],
+    
+  ["NSD (největší společný dělitel)", [`gcdRule`]],
+  ["NSN (nejmenší společný násobek)", [`lcdRule`]],
+  
+
+  ["Převod jednotek", [`convertToUnitRule`]],
+  ["Zaokrouhlení", [`roundToRule`]],
+
+  ["Pythagorovy věta", [`pythagorasRule`]],
+  ["Pravidla úhlu v trojúhelníku", ["triangleAngleRule"]],
+  ["Vztahy úhlů", [`angleCompareRule`]],  
+
+  ["Posuny", ["toSlideRule"]],
+  ["Škálování", ["scaleRule"]],
+  ["Škálování část-část", ["mapRationsByFactorRule", "nthPartFactorByRule"]],
+
+  ["Míšení(aligace)", ["alligationRule"]],
+
+  ["Vyhodnocení výrazu", ["evalToQuantityRule"]],
+  ["Zjednodušení výrazu", ["simplifyExprRule"]],
+  ["Řešení rovnice", ["solveEquationRule"]],
+  
+  ["Vzor opakování", ["sequenceRule"]],
+  ["n-tého členu", ["nthTermRule"]],
+  ["n-té pozice", ["nthPositionRule"]],
+  ["Uspořádané n-tice", ["tupleRule"]],
+  ["Vyvážené rozdělování", ["balancedPartitionRule"]],
+  
+  ["Volba z možností", ["evalToOptionRule"]],  
+  
+])
+
+const selectedRulesInput = Inputs.select(uniqueRules,{ multiple:true, label:"Pravidla"});
+const selectedRules = Generators.input(selectedRulesInput);
 
 const controlsInput = Inputs.radio(
     new Map([
@@ -167,6 +235,7 @@ function renderMarkdownWithCopy(content, lang){
   </div>
   </div>`
 }
+
 ```
 
 # Slovní úlohy
@@ -189,6 +258,9 @@ function renderMarkdownWithCopy(content, lang){
       <div>
         ${selectedPredicatesInput}
       </div>
+      <div>
+        ${selectedRulesInput}
+      </div>
     </div>
   </section>
 </details>
@@ -197,6 +269,7 @@ function renderMarkdownWithCopy(content, lang){
   ${toBadge(selectedPeriods, selectedPeriodsInput,"Studium")}
   ${toBadge(selectedVersions, selectedVersionsInput,"Verze")}
   ${toBadge(selectedPredicates, selectedPredicatesInput, "Predikáty")}
+  ${toBadge(selectedRules, selectedRulesInput, "Rules")}
 </div>
 
 
@@ -219,6 +292,9 @@ if (selectedVersions.length > 0){
 
 if (selectedPredicates.length > 0){
   filtered = filtered.filter(d=> selectedPredicates.flatMap(d => d).some(predicate => d.predicates.includes(predicate)));
+}
+if (selectedRules.length > 0){
+  filtered = filtered.filter(d=> selectedRules.flatMap(d => d).some(rule => d.rules.includes(rule)));
 }
 
 const search = view(Inputs.search(filtered,{placeholder: "Vyhledej úlohy…"}));
@@ -254,6 +330,8 @@ const selected = view(Inputs.table(search,{
 }))
 ```
 ```js
+// const uniqueRulesValues = [...uniqueRules.values()].flatMap(d => d);
+// console.log(selected.flatMap(d =>  d.rules.filter(r => !uniqueRulesValues.includes(r))).filter(d => d!= "commonSense"));
 const selectedToRender = selected.length > questionsMaxLimit ? selected.filter((_,i)=> i < questionsMaxLimit): selected;
 ```
 
@@ -262,12 +340,14 @@ const selectedToRender = selected.length > questionsMaxLimit ? selected.filter((
   ${viewInput}
 </div>
 
-${html`${selected.length > questionsMaxLimit
+${html`${viewValue != 'links' && selected.length > questionsMaxLimit
             ? html`<div class="caution" label="Limit - maximální počet otázek">
               <div>Zobrazeno <b>${selectedToRender.length}</b> z <b>${selected.length} otázek</b></div>
             <div>`
           :''}`}
 
 
-${viewValue == 'links' ? html`<ul>${selectedToRender.map(d => html`<li><a href=n-${d.code}-${d.id}>${formatCodeAlt(d.code)} - ${d.id}</a></li>`)}</ul>` : html`<div class="card">${renderMarkdownWithCopy(selectedToRender.map(d => (controls.startsWith("A") ? d.builder.content([parseInt(d.id)], { render: 'content' }) : "") + ' ' + (controls.endsWith("B") ?  (controls.startsWith("A") ? `\n---\n`:'') + d.deductionTrees.map(tree => jsonToMarkdownChat(tree).join("")).join("---\n") : "")).join("\n---\n"), 'md')}</div>`}
+${ html`<div class="card">${renderMarkdownWithCopy(viewValue == 'links' 
+? selected.map(d => `- [${formatShortCodeAlt(d.code)} ${d.id}. ${d.name}](./n-${d.code}-${d.id})`).join("\n")
+: selectedToRender.map(d => (controls.startsWith("A") ? d.builder.content([parseInt(d.id)], { render: 'content' }) : "") + ' ' + (controls.endsWith("B") ?  (controls.startsWith("A") ? `\n---\n`:'') + d.deductionTrees.map(tree => jsonToMarkdownChat(tree, {rules:selectedRules.flatMap(d => d),predicates:selectedPredicates.flatMap(d => d)}).join("")).join("---\n") : "")).join("\n---\n"), 'md')}</div>`}
 

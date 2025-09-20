@@ -143,19 +143,21 @@ type TreeMetrics = {
   depth: number;
   width: number;
   predicates: string[]
+  rules: string[]
 };
 
 export function computeTreeMetrics(
   node: Node,
   level = 0,
   levels: Record<number, number> = {},
-  predicates: string[] = []
+  predicates: string[] = [],
+  rules: string[] = []
 ): TreeMetrics {
   // Base case: If the node is a leaf
   if (isPredicate(node)) {
     levels[level] = (levels[level] || 0) + 1; // Count nodes at this level
 
-    return { depth: level + 1, width: Math.max(...Object.values(levels)), predicates: predicates.includes(node.kind) ? predicates : predicates.concat(node.kind) };
+    return { depth: level + 1, width: Math.max(...Object.values(levels)), predicates: predicates.includes(node.kind) ? predicates : predicates.concat(node.kind), rules };
   }
 
   // Recursive case: Process children and calculate depth
@@ -163,17 +165,25 @@ export function computeTreeMetrics(
     levels[level] = (levels[level] || 0) + 1; // Count nodes at this level
     let maxDepth = level + 1;
 
-    for (const child of node.children) {
-      const metrics = computeTreeMetrics(child, level + 1, levels, predicates);
+    for (let i = 0; i != node.children.length; i++) {
+      const child = node.children[i];
+      const isConclusion = i === node.children.length - 1;
+
+      if (isConclusion) {
+        const result = inferenceRuleWithQuestion(mapNodeChildrenToPredicates(node));
+        rules.push(result.name);
+      }
+
+      const metrics = computeTreeMetrics(child, level + 1, levels, predicates, rules);
       predicates = metrics.predicates;
       maxDepth = Math.max(maxDepth, metrics.depth);
     }
 
-    return { depth: maxDepth, width: Math.max(...Object.values(levels)), predicates };
+    return { depth: maxDepth, width: Math.max(...Object.values(levels)), predicates, rules };
   }
 
   // Fallback for empty nodes
-  return { depth: level, width: Math.max(...Object.values(levels)), predicates };
+  return { depth: level, width: Math.max(...Object.values(levels)), predicates, rules };
 }
 
 
@@ -321,7 +331,7 @@ export function jsonToTLDrawEx(node, isConclusion, level = 0) {
 
 
 
-export function jsonToMarkdownChat(node) {
+export function jsonToMarkdownChat(node, { predicates, rules }: { predicates: string[], rules: string[] } = { predicates: [], rules: [] }) {
 
   const flatStructure = [];
   function traverseEx(node) {
@@ -366,11 +376,21 @@ export function jsonToMarkdownChat(node) {
       const conclusion = arr[arr.length - 1];
 
       const answer = q?.options?.find(d => d.ok)
+      const formattedPremises = premises.map(d => {
+        return isPredicate(d)
+          ? predicates.includes(d.kind)
+            ? `==${formatPredicate(d, chatFormattingFunc(0))}==`
+            : formatPredicate(d, chatFormattingFunc(0))
+          : d
+      }).filter(d => !isEmptyOrWhiteSpace(d)).map(d => `- ${d}`).join("\n");
 
-      const formattedPremises = premises.map(d => isPredicate(d) ? formatPredicate(d, chatFormattingFunc(0)) : d).filter(d => !isEmptyOrWhiteSpace(d)).map(d => `- ${d}`).join("\n")
       flatStructure.push((q != null
-        ? q.question + `\n` + `${formattedPremises}` + '\n\n' + (answer != null ? `Výpočet: ${answer.tex} = ${answer.result}` : '')
-        : `${formattedPremises}`) + '\n\n' + `Závěr:${formatPredicate(conclusion, chatFormattingFunc(1))}` + "\n\n");
+        ? `${rules.includes(q.name) ? `==${q.question.trim()}==` : q.question}\n${formattedPremises}\n\n` + (answer != null
+          ? `${rules.includes(q.name) ? '==Výpočet==' : 'Výpočet'}: ${answer.tex} = ${answer.result}`
+          : '')
+        : `${formattedPremises}`) + '\n\n' + `${rules.includes(q?.name) ? '==Závěr==' : 'Závěr'}:${predicates.includes(conclusion.kind)
+          ? `==${formatPredicate(conclusion, chatFormattingFunc(1))}==`
+          : formatPredicate(conclusion, chatFormattingFunc(1))}` + "\n\n");
     }
 
     return args
@@ -430,7 +450,7 @@ const mdFormattingFunc = (requiredLevel: number) => ({
 const mdFormatting = mdFormattingFunc(0)
 const chatFormattingFunc = (requiredLevel: number) => ({
   ...mdFormattingFunc(requiredLevel),
-  formatKind: () => ``, formatTable: d => `vzor opakování \n\n${mdFormatTable(d)}`
+  formatTable: d => `vzor opakování \n\n${mdFormatTable(d)}`
 })
 export function mdFormatTable(data: (string | number)[][]) {
   if (!Array.isArray(data) || data.length === 0) return "";
@@ -490,13 +510,13 @@ export function formatPredicate(d: Predicate, formatting: any) {
   let result = ''
   switch (d.kind) {
     case "cont":
-      result = compose`${formatAgent(d.agent)}=${d.asRatio ? formatRatio(d.quantity) : formatQuantity(d.quantity)} ${formatEntity(d.entity, d.unit)}`;
+      result = compose`${formatAgent(d.agent)}=${d.asRatio ? formatRatio(d.quantity) : formatQuantity(d.quantity)}${d.entity != "" ? " " : ""}${formatEntity(d.entity, d.unit)}`;
       break;
     case "comp":
       if (isNumber(d.quantity)) {
         result = d.quantity === 0
           ? compose`${formatAgent(d.agentA)} je rovno ${formatAgent(d.agentB)}`
-          : compose`${formatAgent(d.agentA)} ${d.quantity > 0 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} o ${formatQuantity(Math.abs(d.quantity))} ${formatEntity(d.entity, d.unit)}`
+          : compose`${formatAgent(d.agentA)} ${d.quantity > 0 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} o ${formatQuantity(Math.abs(d.quantity))}${d.entity != "" ? " " : ""}${formatEntity(d.entity, d.unit)}`
       }
       else {
         result = compose`rozdíl o ${formatQuantity(d.quantity)} ${formatEntity(d.entity, d.unit)} mezi ${formatAgent(d.agentA)} a ${formatAgent(d.agentB)}`
@@ -525,15 +545,15 @@ export function formatPredicate(d: Predicate, formatting: any) {
       if (isNumber(d.ratio)) {
         const between = (d.ratio > 1 / 2 && d.ratio < 2);
         result = between || d.asPercent
-          ? compose`${formatAgent(d.agentA)} ${d.ratio < 1 ? 'méně' : 'více'} o ${formatRatio(d.ratio > 1 ? d.ratio - 1 : 1 - d.ratio, d.asPercent)} než ${formatAgent(d.agentB)} `
-          : compose`${formatAgent(d.agentA)} ${formatRatio(d.ratio > 1 ? Math.abs(d.ratio) : 1 / Math.abs(d.ratio), false)} krát ${d.ratio > 1 ? 'více' : 'méně'} než ${formatAgent(d.agentB)} `
+          ? compose`${formatAgent(d.agentA)} ${d.ratio < 1 ? 'méně' : 'více'} o ${formatRatio(d.ratio > 1 ? d.ratio - 1 : 1 - d.ratio, d.asPercent)} než ${formatAgent(d.agentB)}`
+          : compose`${formatAgent(d.agentA)} ${formatRatio(d.ratio > 1 ? Math.abs(d.ratio) : 1 / Math.abs(d.ratio), false)} krát ${d.ratio > 1 ? 'více' : 'méně'} než ${formatAgent(d.agentB)}`
       }
       else {
         result = compose`poměr ${formatQuantity(d.ratio)} mezi ${formatAgent(d.agentA)} a ${formatAgent(d.agentB)}`
       }
       break;
     case "comp-diff":
-      result = compose`${formatAgent(d.agentMinuend)} - ${formatAgent(d.agentSubtrahend)}=${formatQuantity(d.quantity)} ${formatEntity(d.entity, d.unit)}`
+      result = compose`${formatAgent(d.agentMinuend)} - ${formatAgent(d.agentSubtrahend)}=${formatQuantity(d.quantity)}${d.entity != "" ? " " : ""}${formatEntity(d.entity, d.unit)}`
       break;
     case "ratio":
       result = compose`${formatAgent(d.part)} z ${formatAgent(d.whole)}=${formatRatio(d.ratio, d.asPercent)}`;
@@ -550,7 +570,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = compose`${formatKind(d)} ${joinArray(d.partAgents?.map(d => formatAgent(d)), " * ")}`;
       break;
     case "rate":
-      result = compose`${formatAgent(d.agent)} ${d.asRatio ? formatRatio(d.quantity) : formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} per ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? '' : formatQuantity(d.baseQuantity)} ${formatEntity(d.entityBase.entity, d.entityBase.unit)}`
+      result = compose`${formatAgent(d.agent)} ${d.asRatio ? formatRatio(d.quantity) : formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} per ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? '' : formatQuantity(d.baseQuantity)}${d.entityBase.entity != "" ? " " : ""}${formatEntity(d.entityBase.entity, d.entityBase.unit)}`
       break;
     case "quota":
       result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${d.restQuantity !== 0 ? ` se zbytkem ${formatQuantity(d.restQuantity)}` : ''}`
@@ -587,9 +607,11 @@ export function formatPredicate(d: Predicate, formatting: any) {
     case "eval-expr":
       const { predicate, expression } = d;
       result = predicate.kind === "cont"
-        ? compose`${formatAgent(predicate.agent)} = [${expression}] ${formatEntity(predicate.entity, predicate.unit)}`
+        ? compose`${formatAgent(predicate.agent)} = [${expression}]${predicate.entity != "" ? " " : ""}${formatEntity(predicate.entity, predicate.unit)}`
         : predicate.kind === "rate"
-          ? compose`${formatAgent(predicate.agent)} [${expression}] ${formatEntity(predicate.entity.entity, predicate.entity.unit)} per ${isNumber(predicate.baseQuantity) && predicate.baseQuantity == 1 ? '' : formatQuantity(predicate.baseQuantity)} ${formatEntity(predicate.entityBase.entity, predicate.entityBase.unit)}`
+          ? compose`${formatAgent(predicate.agent)} [${expression}]${predicate.entity.entity != "" ? " " : ""}${formatEntity(predicate.entity.entity, predicate.entity.unit)} per ${isNumber(predicate.baseQuantity) && predicate.baseQuantity == 1
+            ? ''
+            : formatQuantity(predicate.baseQuantity)}${predicate.entityBase.entity != "" ? " " : ""}${formatEntity(predicate.entityBase.entity, predicate.entityBase.unit)}`
           : compose`${expression}`
       break;
     case "simplify-expr":

@@ -1,4 +1,4 @@
-import { cont, counter, ctor, ctorSlide } from "../../components/math";
+import { cont, counter, ctor, ctorDifference, ctorSlide } from "../../components/math";
 import { axiomInput, deduce, last, toCont } from "../../utils/deduce-utils";
 import { cislaNaOse } from "../cislaNaOse";
 
@@ -15,10 +15,10 @@ export function triCislaNaOse({ input }: { input: { mensiCislo: number, vetsiCis
 
   const usekRate = cislaNaOse({ mensi, vetsi, pocetUseku })
 
-  const rozdilPostion = deduce(positionB, positionA, ctor('comp-diff'));
+  const rozdilPosition = deduce(positionB, positionA, ctorDifference('rozdíl'));
   const dd1 = deduce(deduce(positionC, usekRate), mensi, ctorSlide("pozice C"));
   const dd2 = deduce(deduce(deduce(positionB, last(usekRate)), mensi, ctorSlide("pozice B")), mensi, ctor('comp-ratio'));
-  const dd3 = deduce(toCont(rozdilPostion, { agent: 'rozdíl' }), last(usekRate))
+  const dd3 = deduce(rozdilPosition, last(usekRate))
 
   return { "C": { deductionTree: dd1 }, "B": { deductionTree: dd2 }, "rozdil": { deductionTree: dd3 } }
 }

@@ -1,4 +1,4 @@
-import { commonSense, compRelative, cont, ctor, sum, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, counter, nthPart, percent, proportion, rate, ratio, product, double, ctorScale, contLength, contArea, productArea, productVolume, dimensionEntity, evalExprAsCont } from "../../components/math"
+import { commonSense, compRelative, cont, ctor, sum, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, counter, nthPart, percent, proportion, rate, ratio, product, double, ctorScale, contLength, contArea, productArea, productVolume, dimensionEntity, evalExprAsCont, ratios, ctorRatiosInvert, comp } from "../../components/math"
 import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont, type TreeNode } from "../../utils/deduce-utils"
 
 export default createLazyMap({
@@ -150,36 +150,29 @@ function vodniNadrz() {
 
 function zaciSkupiny() {
   const entityGroup = "skupina";
-  const entityDvojic = "dvojic"
-  const entityTrojic = "trojic"
   const entity = "žáků"
 
+  const dvojice = "dvojic"
+  const trojice = "trojic"
 
-  const pomer = deduce(
-    deduce(
-      cont("dvojice", 3, entityGroup),
-      cont("trojice", 2, entityGroup),
-      ctorRatios("rozložení při rovnosti")
-    ),
-    deduce(
-      deduce(
-        cont("dvojice", 3, entityGroup),
-        cont("trojice", 2, entityGroup),
-        ctorDifference("jednotkový rozdíl při rovnosti")
-      ),
-      counter("rozdíl při rovnosti", 2),
-      product("rozdíl při rovnosti")
-    ),
-    ctor("scale")
+
+  const skupinaRatios = deduce(
+    ratios("rozložení žáků", [dvojice, trojice], [2, 3]),
+    ctorRatiosInvert("rozložení skupin")
   )
 
-  const dvojic = deduce(
-    to(
-      pomer,
-      cont("skupina dvojic", 6, entityDvojic)
-    ),
-    cont("zbývající žáci", 1, entityDvojic),
-    sum("skupina dvojic")
+  const dvojicePriRovnosti = deduceAs("rozložení žáků,resp. vytvořených skupin při rovnosti")(
+    skupinaRatios,
+    comp(dvojice, trojice, 2, entityGroup),
+    nthPart(dvojice)
+  )
+
+
+
+  const dvojiceCelkem = deduce(
+    dvojicePriRovnosti,
+    cont("zbývající dvojice", 1, entityGroup),
+    sum(dvojice)
   )
 
 
@@ -187,21 +180,22 @@ function zaciSkupiny() {
 
   return {
     dvojic: {
-      deductionTree: dvojic,
+      deductionTree: dvojiceCelkem,
 
     },
     zaku: {
       deductionTree: deduce(
         deduce(
-          last(dvojic),
-          rate("skupina", 2, entity, entityDvojic)
+          last(dvojiceCelkem),
+          rate(dvojice, 2, entity, entityGroup)
         ),
         deduce(
-          to(
-            last(pomer),
-            cont("skupina trojic", 4, entityTrojic)
+          deduce(
+            last(skupinaRatios),
+            last(dvojicePriRovnosti),
+            nthPart(trojice)
           ),
-          rate("skupina", 3, entity, entityTrojic)
+          rate(trojice, 3, entity, entityGroup)
         ),
         sum("celkem")
       )

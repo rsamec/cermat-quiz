@@ -12,7 +12,7 @@ function trzby() {
     deductionTree: deduce(
       deduce(
         compRatio("únor", "leden", 4 / 5),
-        ctor('reverse-comp-ratio')
+        ctor('invert-comp-ratio')
       ),
       ctor("convert-percent"),
     )

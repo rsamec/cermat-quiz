@@ -1,4 +1,4 @@
-import { compAngle, compPercent, cont, ctor, ctorOption, sum, ctorUnit, nthPart, percent, ratios, type Container, isNumber, rate, ctorSlide, proportion, counter, compRatio, ctorDifference, product, double, contLength, productArea, productVolume } from "../../components/math";
+import { compAngle, compPercent, cont, ctor, ctorOption, sum, ctorUnit, nthPart, percent, ratios, type Container, isNumber, rate, ctorSlide, proportion, counter, compRatio, ctorDifference, product, double, contLength, productArea, productVolume, triangleAngle, compDiff } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, toPredicate, toCont, deduceAs } from "../../utils/deduce-utils";
 import { porovnatAaB, najitMensiCislo } from "./1";
 import { porovnatObsahObdelnikACtverec } from "./13";
@@ -124,7 +124,7 @@ function krouzky() {
       lezeckaStena,
       sum(`zadané údaje`)
     ),
-    ctor('comp-diff')
+    ctorDifference('florbal')
   );
 
   const celekPocet = deduce(
@@ -147,7 +147,7 @@ function krouzky() {
           last(celekPocet),
           percent("celek", "žádný kroužek", 6)
         ),
-        ctor('comp-diff')
+        ctorDifference('florbal')
       )
     },
     pocetZaku: {
@@ -266,15 +266,14 @@ function angle() {
       deduce(
         deduce(
           deduce(
-            toCont(
+            deduce(
+              triangleSum,
               deduce(
-                triangleSum,
-                deduce(
-                  axiomInput(cont(inputAngleLabel, 105, entity), 1),
-                  compAngle(inputAngleLabel, `${triangle} u vrcholu C`, 'supplementary')
-                ),
-                ctor('comp-diff'))
-              , { agent: `beta`, }),
+                axiomInput(cont(inputAngleLabel, 105, entity), 1),
+                compAngle(inputAngleLabel, `${triangle} u vrcholu C`, 'supplementary')
+              ),
+              ctorDifference("beta")
+            ),
             deduce(
               doubleBeta,
               cont(`${triangle} u vrcholu B`, 1, betaEntity),
@@ -292,7 +291,7 @@ function angle() {
 
 
 function hranol() {
-  
+
   const obdelnikStrana1 = contLength("větší hranol kratší strana", 3)
   const obdelnikStrana2 = contLength("větší hranol delší strana", 6)
 
