@@ -324,7 +324,7 @@ const resultJson = Object.entries(wordProblem).sort(([f], [s]) => f.localeCompar
       //   y: cumulativeY,
       //   parentId: newPage.id,
       //   meta: {
-      //     steps: jsonToMarkdownChat(value.deductionTree, mdFormatting).join("")
+      //     steps: jsonToMarkdownChat(value.deductionTree).join("")
       //   }
       // }
 

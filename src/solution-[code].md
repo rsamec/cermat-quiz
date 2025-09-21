@@ -13,7 +13,7 @@ import mdPlus from './utils/md-utils.js';
 import { parseQuiz } from './utils/quiz-parser.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, isEmptyOrWhiteSpace } from './utils/quiz-string-utils.js';
 import wordProblems from './math/word-problems.js';
-import { isPredicate, jsonToMarkdownChat, generateAIMessages } from "./utils/deduce-utils.js";
+import { isPredicate, generateAIMessages } from "./utils/deduce-utils.js";
 import { deduceTraverse, highlightLabel, renderChat } from './utils/deduce-components.js';
 import Fraction from 'fraction.js';
 

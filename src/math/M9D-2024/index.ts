@@ -1,10 +1,23 @@
-import { compRatio, cont, ctor, rate, compRelativePercent, comp, contLength, dimensionEntity, ctorUnit, ctorComparePercent } from "../../components/math";
-import { createLazyMap, deduce, last, toCont } from "../../utils/deduce-utils";
+import { compRatio, cont, ctor, rate, compRelativePercent, comp, contLength, dimensionEntity, ctorUnit, ctorComparePercent, ctorRatios, nthPartFactor, nthPartScale, ctorRate, nthPart, ctorDifference, sum, ctorPercent, ctorOption, lcd, compPercent, ratio, percent, ctorComplement, ctorBooleanOption, ctorExpressionOption, ctorRound, counter, ratios } from "../../components/math";
+import { createLazyMap, deduce, deduceAs, last, toCont } from "../../utils/deduce-utils";
 
 
 export default createLazyMap({
     1: () => trasa(),
-    // 2: () => reproduktory(),
+    2: () => reproduktory(),
+    6.1: () => rychlik().vagon,
+    6.2: () => rychlik().mista,
+    7.1: () => obedy().cenaB,
+    7.2: () => obedy().cenaC,
+    8.1: () => kratochvilova().zamestnani,
+    8.2: () => kratochvilova().sport,
+    11: () => obchod(),
+    12: () => knizniSerie(),
+    13: () => brambory(),
+    16.1: () => procenta().neznameCislo,
+    16.2: () => procenta().zlomky,
+    // 16.3: () => procenta().cerpadla,
+
 })
 
 function trasa() {
@@ -78,15 +91,280 @@ function rychlik() {
     const trida2Mista = rate(trida2, 8, mistaEntity, kupeEntity)
 
     const celkem = cont("vlak", 440, mistaEntity)
+    const vagonTrida1 = deduce(
+        kupeRate,
+        trida1Mista,
+        ctorRate(trida1)
+    )
+    const vagonTrida2 = deduce(
+        kupeRate,
+        trida2Mista,
+        ctorRate(trida1)
+    )
+
+    const vlakTrida2 = deduce(
+        deduce(
+            deduce(
+                deduce(
+                    compRatio(trida2, trida1, 2),
+                    ctorRatios("vlak")
+                ),
+                vagonTrida1,
+                nthPartScale(trida1),
+            ),
+            vagonTrida2,
+            nthPartScale(trida2)
+        ),
+        celkem,
+        nthPart(trida2)
+    )
+
     return {
         vagon: {
             deductionTree: deduce(
-                compRatio(trida2, trida1, 2)
+                vlakTrida2,
+                vagonTrida2
             )
         },
         mista: {
-            deductionTree: deduce()
+            deductionTree: deduce(
+                celkem,
+                last(vlakTrida2),
+                ctorDifference(`vlak ${trida1}`)
+            )
         }
+
+    }
+}
+function kratochvilova() {
+    const den = cont("všechny denní čínnosti", 24, "čas", "h")
+
+    return {
+        zamestnani: {
+            deductionTree: deduce(
+                percent("všechny denní čínnosti", "zaměstnání", 25),
+                den
+            )
+        },
+        sport: {
+            deductionTree: deduce(
+                deduce(
+                    deduce(
+                        deduce(
+                            percent("všechny denní čínnosti", "volný čas", 10),
+                            den
+                        ),
+                        percent("volný čas", "sport", 40)
+                    ),
+                    ctorUnit("min")
+                ),
+                ctorRound()
+            )
+        },
+    }
+}
+function obchod() {
+    const entity = "trička"
+    const damska = "dámská"
+    const panska = "pánská"
+
+    const damskaZCelkem = percent("celkem naskladněno", `${damska} naskladněno`, 60);
+    const damskaProdano = cont(`${damska} prodáno`, 45, entity);
+
+    const damskaNaskladneno = deduce(
+        ratio(`${damska} naskladněno`, `${damska} prodáno`, 1 / 4),
+        damskaProdano
+    )
+
+    const celkem = deduce(
+        damskaNaskladneno,
+        damskaZCelkem
+    )
+
+    return {
+        deductionTree: deduce(
+            deduce(
+                celkem,
+                deduce(
+                    deduce(
+                        deduce(
+                            last(celkem),
+                            deduce(
+                                damskaZCelkem,
+                                ctorComplement(`${panska} naskladněno`)
+                            )
+                        ),
+                        ratio(`${panska} naskladněno`, `${panska} prodáno`, 1 / 2)
+                    ),
+                    damskaProdano,
+                    sum("celkem prodáno")
+                ),
+                ctorDifference("neprodáno")
+            ),
+            ctorExpressionOption("A", "x < 200")
+        )
+    }
+}
+
+function obedy() {
+    const entity = "cena"
+    const entityBase = "oběd"
+
+    const rateA = deduce(
+        cont("A", 4_000, entity),
+        cont("A", 20, entityBase),
+        ctor("rate")
+    )
+    const rateB = deduce(
+        deduce(
+            cont("B", 4_800, entity),
+            deduce(
+                cont("A", 10, entityBase),
+                rateA
+            ),
+            ctorDifference("B")
+        ),
+        cont("B", 10, entityBase),
+        ctor('rate')
+    )
+    return {
+        cenaB: {
+            deductionTree: rateB
+        },
+        cenaC: {
+            deductionTree: deduce(
+                deduce(
+                    cont("C", 5_400, entity),
+                    deduce(
+                        deduce(
+                            cont("A", 5, entityBase),
+                            last(rateA)
+                        ),
+                        deduce(
+                            cont("B", 5, entityBase),
+                            last(rateB)
+                        ),
+                        sum("A a B")
+                    ),
+                    ctorDifference("C")
+                ),
+                cont("C", 10, entityBase),
+                ctor('rate')
+            )
+        }
+    }
+}
+function brambory() {
+    const agent = "škrabání brambor";
+    const entityCas = "čas"
+    const hmotnost = { entity: "hmotnost", unit: "kg" }
+
+    const maminkaCas = deduce(
+        deduce(
+            cont(agent, 2, entityCas, "h"),
+            ctorUnit("min")
+        ),
+        cont(agent, 24, entityCas, "min"),
+        sum(agent)
+    )
+    const babickaCas = deduce(
+        deduce(
+            cont(agent, 1, entityCas, "h"),
+            ctorUnit("min")
+        ),
+        cont(agent, 20, entityCas, "min"),
+        sum(agent)
+    )
+
+    const maminka = cont(agent, 6, hmotnost.entity, hmotnost.unit)
+    const babicka = cont(agent, 2, hmotnost.entity, hmotnost.unit)
+
+    const maminkaRate = deduce(
+        maminkaCas,
+        maminka,
+        ctorRate("maminka")
+    )
+    const babickaRate = deduce(
+        babickaCas,
+        babicka,
+        ctorRate("babička")
+    )
+    const nsn = deduceAs("společný násobek jejich času")(
+        maminkaRate,
+        babickaRate,
+        lcd("dohromady", entityCas, "min")
+    )
+
+    return {
+        deductionTree: deduce(
+            deduce(
+                nsn,
+                deduce(
+                    deduce(
+                        last(maminkaRate),
+                        toCont(last(nsn), { agent: "maminka" }),
+                    ),
+                    deduce(
+                        last(babickaRate),
+                        toCont(last(nsn), { agent: "babička" }),
+                    ),
+                    sum("dohromady")
+                ),
+                ctorRate("dohromady")
+            ),
+            ctorOption("C", 15)
+        )
+    }
+}
+function knizniSerie() {
+    const entity = "stran"
+    const zbyva = cont("zbývá k přečtení", 450, entity)
+    return {
+        deductionTree: deduce(
+            deduce(
+                zbyva,
+                deduce(
+                    cont("přečetl", 1050, entity),
+                    zbyva,
+                    sum("celkem")
+                ),
+                ctorPercent()
+            ),
+            ctorOption("B", 30, { asPercent: true })
+        )
+    }
+}
+
+function procenta() {
+    const entity = { entity: "voda", unit: "litr" }
+    const entityBase = { entity: "čas", unit: "h" }
+    return {
+        neznameCislo: {
+            deductionTree: deduce(
+                deduce(
+                    compRelativePercent("zvětšené neznámé číslo", "neznámé číslo", 4),
+                    counter("zvětšené neznámé číslo", 780)
+                ),
+                ctorOption("D", 750)
+            )
+        },
+        zlomky: {
+            deductionTree: deduce(
+                deduce(
+                    counter("polovina", 1 / 2),
+                    counter("osmina", 1 / 8),
+                    ctorComparePercent()
+                ),
+                ctorOption("A", 300, { asPercent: true })
+            )
+
+        },
+        cerpadla: {
+            //     deductionTree: deduce(
+            //         ratios("výkon", ["méně výkonné čerpadlo", "více výkonné čerpadlo"], [3, 7]),
+            //         rate("méně výkonné čerpadlo", 150, entity, entityBase, 2)
+            //     )
+        },
 
     }
 }

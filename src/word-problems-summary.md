@@ -145,17 +145,16 @@ const uniqueRules = new Map([
   ["Porovnání rozdílem z celku", [`partEqualRule`]],  
   ["Část z celku", ["partToWholeRule", "toPartWholeRatio"]],  
   ["Část ku části", ["partToPartRule", "toRatiosRule"]],
-  ["Doplněk k celku", [`partWholeComplementRule`]],      
+  ["Doplněk k celku", [`partWholeComplementRule`,'convertPartWholeToRatioCompareRule']],      
   ["Propojení porovnání s část–celek", ["partWholeCompareRule","toPartWholeCompareRule"]],    
   ["Propojení porovnání s část-část", ["compRatiosToCompRule"]],
-  ["Převod mezi část-celek a poměr", ["convertPartWholeToRatioCompareRule"]],
   ["Převod mezi část-část a poměr", ["convertRatioCompareToTwoPartRatioRule","convertTwoPartRatioToRatioCompareRule"]],    
   ["Převod mezi poměr a procenta", ["togglePartWholeAsPercentRule", "convertPercentRule"]],
   ["Převod část-část na část-celek", ["convertPartToPartToPartWholeRule"]],
   ["Obrácení poměru", ["invertRatioCompareRule","invertRatiosRule", "reverseRatiosRule"]],
   ["Rozdíl jako poměr", ['toDifferenceAsRatioRule']],  
   ["Rozdíl z absolutního a relativního porovnání", ["ratioCompareToCompareRule"]],
-  ["Řetězení porovnání či poměrů)", [`transitiveRatioCompareRule`, "transitiveCompareRule","transitiveRatioRule"]],
+  ["Řetězení porovnání, poměrů", [`transitiveRatioCompareRule`, "transitiveCompareRule","transitiveRatioRule","transitiveRateRule"]],
   
   ["Spojování", [`sumRule`,`productRule`]],
   ["Rozdělení (rovnoměrně)", [`rateRule`,"toRateRule"]],  
@@ -181,7 +180,7 @@ const uniqueRules = new Map([
 
   ["Posuny", ["toSlideRule"]],
   ["Škálování", ["scaleRule"]],
-  ["Škálování část-část", ["mapRationsByFactorRule", "nthPartFactorByRule"]],
+  ["Škálování část-část", ["mapRationsByFactorRule", "nthPartFactorByRule","nthPartScaleByRule"]],
 
   ["Míšení(aligace)", ["alligationRule"]],
 

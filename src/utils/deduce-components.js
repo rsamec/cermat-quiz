@@ -2,7 +2,7 @@ import { html } from "npm:htl";
 import * as Plot from "npm:@observablehq/plot";
 import Fraction from 'npm:fraction.js';
 import { nthQuadraticElements, primeFactorization, lcdCalc, isNumber, gcdCalc } from "../components/math.js";
-import { isPredicate, formatPredicate, mapNodeChildrenToPredicates } from "../utils/deduce-utils.js";
+import { isPredicate, formatPredicate, mapNodeChildrenToPredicates, last } from "../utils/deduce-utils.js";
 import { deduce } from "./deduce.js";
 import { inferenceRuleWithQuestion } from "../math/math-configure.js";
 import { toEquationExprAsText, toEquationExprAsTex } from "./math-solver.js";
@@ -372,7 +372,7 @@ export function deduceTraverse(node) {
             args.push(relativeTwoParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
           }
           if (newChild?.kind === "gcd" || newChild?.kind === "lcd") {
-            const numbers = node.children.slice(0, -2).map(d => d.quantity);
+            const numbers = node.children.slice(0, -2).map(d => isPredicate(d) ? d : last(d)).map(d => d.quantity);
             args.push(html`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d, i) => html`<div>${numbers[i]} = ${d.join()}</div>`)}</div>`)
           }
           else if (newChild?.kind === "comp-ratio" && newChild?.ratio != null) {
@@ -476,7 +476,7 @@ export function stepsTraverse(node) {
             ], { width: 300, height: 50, marginLeft: 70, formatAsFraction: false, showRelativeValues: false, showSeparate: true }))
           }
           else if (newChild?.kind === "gcd" || newChild?.kind === "lcd") {
-            const numbers = node.children.slice(0, -2).map(d => d.quantity);
+            const numbers = node.children.slice(0, -2).map(d => isPredicate(d) ? d : last(d)).map(d => d.quantity);
             args.push(html`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d, i) => html`<div>${formatNumber(numbers[i])} = ${d.join()}</div>`)}</div>`)
           }
           else if (newChild?.kind === "comp-ratio" && newChild?.ratio != null) {

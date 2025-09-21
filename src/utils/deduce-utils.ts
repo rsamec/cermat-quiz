@@ -62,7 +62,7 @@ export function toAs(context: DeduceContext) {
 export function to(...children: Node[]): TreeNode {
   return { children: children }
 }
-export function toCont(child: TreeNode, { agent, entity }: { agent: string, entity?: { entity: string, unit?: string } }): TreeNode {
+export function toCont(child: TreeNode | Predicate, { agent, entity }: { agent: string, entity?: { entity: string, unit?: string } }): TreeNode {
   return toPredicate(child, mapToCont({ agent, entity }));
 }
 export function toRate(child: RatioComparison, { agent, entity, entityBase }: { agent: string, entity: EntityDef, entityBase: EntityDef }) {
@@ -100,10 +100,10 @@ export function mapToCont({ agent, entity }: { agent: string, entity?: { entity:
     }
   }
 }
-export function toPredicate<T extends Predicate>(node: TreeNode, mapFn: (node: T) => Predicate): TreeNode {
-  const nodeToMap = last(node) as T;
+export function toPredicate<T extends Predicate>(node: TreeNode | T, mapFn: (node: T) => Predicate): TreeNode {
+  const nodeToMap = isPredicate(node) ? node : last(node) as T;
   const newNode = mapFn(nodeToMap);
-  return { children: [...node.children.slice(0, -1), newNode] };
+  return { children: [...(isPredicate(node) ? [node] : node.children.slice(0, -1)), newNode] };
 }
 
 export function connectTo(node: any, input: TreeNode) {

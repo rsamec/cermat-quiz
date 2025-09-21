@@ -341,7 +341,7 @@ for (let code of codes) {
         //   y: cumulativeY,
         //   parentId: newPage.id,
         //   meta: {
-        //     steps: jsonToMarkdownChat(value.deductionTree, mdFormatting).join("")
+        //     steps: jsonToMarkdownChat(value.deductionTree).join("")
         //   }
         // }
 

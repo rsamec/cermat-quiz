@@ -341,6 +341,10 @@ export type NthPartFactor = {
   kind: 'nth-factor'
   agent: string
 }
+export type NthPartScale = {
+  kind: 'nth-scale'
+  agent: string
+}
 
 export type Complement = {
   kind: 'complement',
@@ -402,7 +406,7 @@ export type SingleOperationPredicate = Scale | InvertScale | Slide | InvertSlide
 export type OperationPredicate = SingleOperationPredicate | MultipleOperationPredicate
 
 export type Predicate = QuantityPredicate | RatioPredicate | RatiosPredicate | ExpressionPredicate | MultipleOperationPredicate | CommonSensePredicate | OperationPredicate
-  | Sequence | Pattern | BalancedPartition | Alligation | NthRule | NthPart | NthPartFactor | AngleComparison | TriangleAngle | Tuple | Option | CompareAndPartEqual
+  | Sequence | Pattern | BalancedPartition | Alligation | NthRule | NthPart | NthPartFactor | NthPartScale | AngleComparison | TriangleAngle | Tuple | Option | CompareAndPartEqual
 
 export type PredicateKind = Pick<Predicate, 'kind'>
 // #endregion
@@ -421,8 +425,8 @@ export function sum(wholeAgent: string, wholeEntity?: EntityBase): Sum {
   return { kind: "sum", wholeAgent, wholeEntity: wholeEntity }
 }
 
-export function ctorRate(baseQuantity: number) {
-  return { kind: 'rate', baseQuantity } as Predicate
+export function ctorRate(agent: AgentMatcher, baseQuantity: number = 1) {
+  return { kind: 'rate', agent, baseQuantity } as Predicate
 }
 
 export function counter(agent, quantity: number, { asRatio }: { asRatio?: boolean } = {}): Container {
@@ -694,11 +698,11 @@ export function productCombine(wholeAgent: string, wholeEntity: EntityDef, partA
     wholeEntity: toEntity(wholeEntity)
   }
 }
-export function gcd(agent: string, entity: string): GCD {
-  return { kind: 'gcd', agent, entity }
+export function gcd(agent: string, entity: string, unit?: string): GCD {
+  return { kind: 'gcd', agent, entity, unit }
 }
-export function lcd(agent: string, entity: string): LCD {
-  return { kind: 'lcd', agent, entity }
+export function lcd(agent: string, entity: string, unit?: string): LCD {
+  return { kind: 'lcd', agent, entity, unit }
 }
 export function nth(entity): NthRule {
   return { kind: 'nth', entity }
@@ -710,6 +714,10 @@ export function nthPart(agent): NthPart {
 export function nthPartFactor(agent): NthPartFactor {
   return { kind: 'nth-factor', agent }
 }
+export function nthPartScale(agent): NthPartScale {
+  return { kind: 'nth-scale', agent }
+}
+
 export function rate(agent: string, quantity: number, entity: EntityDef, entityBase: EntityDef, baseQuantity: number = 1): Rate {
   return { kind: 'rate', agent, quantity, baseQuantity, entity: toEntity(entity), entityBase: toEntity(entityBase) }
 }
@@ -1459,7 +1467,7 @@ function inferInvertRatiosRule(a: PartToPartRatio, b: RatiosInvert): Question<Pa
     ] : []
   }
 }
-function inferReverseRatiosRule(a: PartToPartRatio, b: Reverse): Question<PartToPartRatio> { 
+function inferReverseRatiosRule(a: PartToPartRatio, b: Reverse): Question<PartToPartRatio> {
   const result = {
     ...a,
     ratios: a.ratios.toReversed(),
@@ -1745,7 +1753,8 @@ function gcdRule(values: NumberOrExpression[], b: GCD): Container {
   return {
     kind: 'cont', agent: b.agent,
     quantity: areNumbers(values) ? gcdCalc(values) : wrapToQuantity(`gcd(${values.join(',')})`),
-    entity: b.entity
+    entity: b.entity,
+    unit: b.unit
   }
 }
 function inferGcdRule(items: Container[], b: GCD): Question<Container> {
@@ -1765,13 +1774,14 @@ function inferGcdRule(items: Container[], b: GCD): Question<Container> {
 
 function lcdRule(values: NumberOrExpression[], b: LCD): Container {
   return {
-    kind: 'cont', agent: b.agent,
-
-    quantity: areNumbers(values) ? lcdCalc(values) : wrapToQuantity(`gcd(${values.join(',')})`),
-    entity: b.entity
+    kind: 'cont',
+    agent: b.agent,
+    quantity: areNumbers(values) ? lcdCalc(values) : wrapToQuantity(`lcd(${values.join(',')})`),
+    entity: b.entity,
+    unit: b.unit
   }
 }
-function inferLcdRule(items: Container[], b: LCD): Question<Container> {
+function inferLcdRule(items: (Container | Rate)[], b: LCD): Question<Container> {
   const values = items.map(d => d.quantity);
   const result = lcdRule(values, b)
   return {
@@ -1889,7 +1899,7 @@ function convertDeltaToCompareEx(a: Delta, b: Comparison): Comparison {
   return { kind: 'comp', agentA, agentB, quantity: a.quantity, entity, unit }
 }
 
-function inferConvertDeltaToCompareRule(a: Delta, b:Comparison): Question<Comparison> {
+function inferConvertDeltaToCompareRule(a: Delta, b: Comparison): Question<Comparison> {
   const result = convertDeltaToCompareEx(a, b)
   return {
     name: toDeltaRule.name,
@@ -2077,8 +2087,8 @@ function inferToRatioCompareRule(a: Container, b: Container, ctor: RatioComparis
       options: between
         ?
         [
-          { tex: `(${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}) / ${b.quantity}`, result: formatRatio((a.quantity - b.quantity) / b.quantity), ok: result.ratio > 1 },
-          { tex: `(${formatNumber(b.quantity)} - ${formatNumber(a.quantity)}) / ${b.quantity}`, result: formatRatio((b.quantity - a.quantity) / b.quantity), ok: result.ratio <= 1 }
+          { tex: `(${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}) / ${formatNumber(b.quantity)}`, result: formatRatio((a.quantity - b.quantity) / b.quantity), ok: result.ratio > 1 },
+          { tex: `(${formatNumber(b.quantity)} - ${formatNumber(a.quantity)}) / ${formatNumber(b.quantity)}`, result: formatRatio((b.quantity - a.quantity) / b.quantity), ok: result.ratio <= 1 }
         ]
         // [
         //   { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)} - 1`, result: formatRatio(result.ratio - 1), ok: result.ratio > 1 },
@@ -2280,7 +2290,7 @@ function toRateRule(a: Container, b: Container | Quota, rate: Rate): Rate {
   const baseQuantity = rate?.baseQuantity ?? 1;
   return {
     kind: 'rate',
-    agent: a.agent,
+    agent: rate.agent ?? a.agent,
     quantity: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(baseQuantity)
       ? (baseQuantity === 1 ? a.quantity / b.quantity * baseQuantity : a.quantity / b.quantity * baseQuantity)
       : (isNumber(baseQuantity) && baseQuantity === 1) ? wrapToQuantity(`a.quantity / b.quantity`, { a, b }) : wrapToQuantity(`a.quantity / b.quantity * rate.baseQuantity`, { a, b, rate }),
@@ -2290,7 +2300,7 @@ function toRateRule(a: Container, b: Container | Quota, rate: Rate): Rate {
     },
     entityBase: {
       entity: b.kind === "cont" ? b.entity : b.agentQuota,
-      unit: a.unit
+      unit: b.kind === "cont" ? b.unit : EmptyUnit,
     },
     baseQuantity: rate?.baseQuantity ?? 1
   }
@@ -2388,6 +2398,50 @@ function inferToRatiosRule(parts: Container[] | Rate[], last: PartToPartRatio): 
   }
 }
 
+function transitiveRateRule(a: Rate, b: Rate, newAgent: AgentMatcher): Rate {
+  if (a.baseQuantity != b.baseQuantity) {
+    throw `transitive rate uncompatible baseQuantity not supported ${a.baseQuantity}, ${b.baseQuantity}`
+  }
+
+  if (isSameEntity(a.entity, b.entityBase)) {
+    return {
+      kind: 'rate',
+      agent: newAgent,
+      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity * b.quantity : wrapToQuantity(`a.quantity * b.quantity`, { a, b }),
+      entity: b.entity,
+      entityBase: a.entityBase,
+      baseQuantity: a.baseQuantity
+    }
+  }
+  else if (isSameEntity(b.entity, a.entityBase)) {
+    return {
+      kind: 'rate',
+      agent: newAgent,
+      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity * b.quantity : wrapToQuantity(`a.quantity * b.quantity`, { a, b }),
+      entity: b.entity,
+      entityBase: a.entityBase,
+      baseQuantity: a.baseQuantity
+    }
+  }
+  else {
+    throw `transitive rate uncompatible entities ${formatEntity(a.entity)} per ${formatEntity(a.entityBase)} to  ${formatEntity(b.entity)} per ${formatEntity(b.entityBase)}`
+  }
+
+}
+function inferTrasitiveRateRule(a: Rate, b: Rate, last: Rate): Question<Rate> {
+  const result = transitiveRateRule(a, b, last.agent)
+  return {
+    name: transitiveRateRule.name,
+    inputParameters: extractKinds(a, b),
+    question: `Vypočti ${last.agent} ${formatEntity(result.entity)} per ${formatEntity(result.entityBase)}?`,
+    result,
+    options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.quantity) ? [
+      { tex: `${formatNumber(a.quantity)} * ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: true },
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: false },
+    ] : []
+  }
+}
+
 
 function evalToQuantityRule<
   T extends Predicate & { quantity: Quantity },
@@ -2428,7 +2482,7 @@ function inferEvalToQuantityRule<
   const result = evalToQuantityRule(a, b);
   return {
     name: evalToQuantityRule.name,
-    inputParameters: extractKinds(a as any,b as any),
+    inputParameters: extractKinds(a as any, b as any),
     question: `Vypočti výraz ${b.expression}?`,
     result,
     options: []
@@ -2687,6 +2741,40 @@ function inferNthPartFactorByRule(multi: PartToPartRatio, factor: Container | Ra
   }
 }
 
+function nthPartScaleByRule(multi: PartToPartRatio, factor: NumberOrExpression, nthPart: NthPartScale): PartToPartRatio {
+  if (!areNumbers(multi.ratios) || !isNumber(factor)) {
+    throw "ratios are not supported by non quantity types"
+  }
+  if (factor < 1) {
+    throw `Ratios can be only extended by positive quantity ${factor}.`
+  }
+  const partIndex = multi.parts.indexOf(nthPart.agent)
+
+  const multiplePartByFactor = (arr) => arr.map((d, i) => i === partIndex ? d * factor : d)
+
+  return {
+    kind: 'ratios',
+    whole: multi.whole,
+    parts: multi.parts,
+    ratios: multiplePartByFactor(multi.ratios),
+  }
+}
+function inferNthPartScaleByRule(multi: PartToPartRatio, factor: Container | Rate, nthPart: NthPartScale): Question<PartToPartRatio> {
+  if (!areNumbers(multi.ratios) || !isNumber(factor.quantity)) {
+    throw "ratios are not supported by non quantity types"
+  }
+  const result = nthPartScaleByRule(multi, factor.quantity, nthPart)
+
+  return {
+    name: nthPartScaleByRule.name,
+    inputParameters: extractKinds(multi, factor, nthPart),
+    question: `Rozšířit poměr o ${nthPart.agent} ${formatNumber(factor.quantity)} krát ${formatEntity(factor.kind === "rate" ? factor.entity : factor)}`,
+    result,
+    options: []
+
+  }
+}
+
 function matchAgent(d: AgentMatcher, a: { agent: AgentMatcher }) {
   return d === a.agent;
 }
@@ -2908,6 +2996,10 @@ function inferenceRuleEx(...args: Predicate[]): Question<any> {
   else if (a.kind === "rate" && b.kind === "rate" && last?.kind === "linear-equation") {
     return inferSolveEquationRule(a, b, last)
   }
+  else if (a.kind === "rate" && b.kind === "rate" && last?.kind === "rate") {
+    return inferTrasitiveRateRule(a, b, last)
+  }
+
   else if ((a.kind === "cont" || a.kind === "comp") && b.kind === "unit") {
     return inferConvertToUnitRule(a, b);
   }
@@ -3059,14 +3151,27 @@ function inferenceRuleEx(...args: Predicate[]): Question<any> {
     return kind === "ratio" ? inferConvertPartToPartToPartWholeRule(b, a, last) : null;
   }
   else if (a.kind === "rate" && b.kind == "ratios") {
-    return kind === "nth-factor"
-      ? inferNthPartFactorByRule(b, a, last)
-      : inferPartToPartRule(a, b, kind === "nth-part" && last)
+    if (kind === "nth-factor") {
+      return inferNthPartFactorByRule(b, a, last)
+    }
+    else if (kind === "nth-scale") {
+      return inferNthPartScaleByRule(b, a, last)
+    }
+    else {
+      return inferPartToPartRule(a, b, kind === "nth-part" && last)
+    }
+
   }
   else if (a.kind === "ratios" && b.kind == "rate") {
-    return kind === "nth-factor"
-      ? inferNthPartFactorByRule(a, b, last)
-      : inferPartToPartRule(b, a, kind === "nth-part" && last)
+    if (kind === "nth-factor") {
+      return inferNthPartFactorByRule(a, b, last);
+    }
+    else if (kind === "nth-scale") {
+      return inferNthPartScaleByRule(a, b, last);
+    }
+    else {
+      return inferPartToPartRule(b, a, kind === "nth-part" && last)
+    }
   }
   else if (a.kind === "cont" && b.kind == "balanced-partition") {
     return inferBalancedPartitionRule(a, b, kind === "nth-part" && last)
@@ -3462,6 +3567,9 @@ function isEntityBase(value: EntityDef): value is EntityBase {
 }
 function toEntity(entity: EntityDef): EntityBase {
   return isEntityBase(entity) ? entity : { entity }
+}
+function isSameEntity(f: EntityBase, s: EntityBase) {
+  return f.entity == s.entity && f.unit == s.unit
 }
 
 function extractKinds(...args: Predicate[]): PredicateKind[] {
