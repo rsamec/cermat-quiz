@@ -21,7 +21,7 @@ const aiCategories = aiCategoriesData[code]?.questions ?? [];
 
 
 const id = parseInt(number, 10);
-const name = `${id}. ${aiCategories.find(d => d.id == number) ?? 'úloha'}`
+const name = `${id}. ${aiCategories.find(d => d.id == number)?.name ?? 'úloha'}`
 
 const d = parseCode(code);
 const baseUrl = `${baseDomainPublic}/${d.subject}/${d.period}/${code}`
