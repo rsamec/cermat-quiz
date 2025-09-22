@@ -4623,14 +4623,17 @@ function rateRule(a, rate) {
 function inferRateRule(a, rate) {
   const result = rateRule(a, rate);
   const aEntity = a.kind == "cont" ? a.entity : a.agentQuota;
+  const isUnitRate = rate.baseQuantity === 1;
   return {
     name: rateRule.name,
     inputParameters: extractKinds(a, rate),
     question: containerQuestion(result),
     result,
     options: isNumber2(a.quantity) && isNumber2(rate.quantity) && isNumber2(result.quantity) && isNumber2(rate.baseQuantity) ? [
-      { tex: `${formatNumber(a.quantity)} * ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: aEntity !== rate.entity.entity },
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: aEntity === rate.entity.entity }
+      { tex: `${formatNumber(a.quantity)} * ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: isUnitRate && aEntity !== rate.entity.entity },
+      ...!isUnitRate ? [{ tex: `${formatNumber(a.quantity)} * (${formatNumber(rate.quantity)}/${formatNumber(rate.baseQuantity)})`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity !== rate.entity.entity }] : [],
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: aEntity === rate.entity.entity },
+      ...!isUnitRate ? [{ tex: `${formatNumber(a.quantity)} / (${formatNumber(rate.quantity)}/${formatNumber(rate.baseQuantity)})`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity === rate.entity.entity }] : []
     ] : []
   };
 }
@@ -5471,6 +5474,28 @@ function inferSimplifyExprRule(a, b) {
     options: []
   };
 }
+function evalQuotaRemainderExprRule(a, b) {
+  if (!isNumber2(a.restQuantity)) {
+    throw `evalQuotaRemainderExprRule does not support quantity types`;
+  }
+  const matched = helpers2.evalExpression(b.expression, a.restQuantity);
+  return {
+    kind: "eval-option",
+    expression: b.expression,
+    expressionNice: convertToExpression(b.expectedValue, b.compareTo === "closeTo" ? "equal" : b.compareTo, { ...b.expectedValueOptions, asPercent: false }),
+    value: b.optionValue != null ? matched ? b.optionValue : null : matched
+  };
+}
+function inferEvalQuotaRemainderExprRule(a, b) {
+  const result = evalQuotaRemainderExprRule(a, b);
+  return {
+    name: evalToOptionRule.name,
+    inputParameters: extractKinds(a, b),
+    question: b.optionValue != null ? `Vyhodno\u0165 volbu [${b.optionValue}]?` : `Vyhodno\u0165 pravdivost ${b.expressionNice}?`,
+    result,
+    options: []
+  };
+}
 function evalToOptionRule(a, b) {
   let valueToEval = a.quantity ?? a.ratio;
   if (isExpressionNode(valueToEval)) {
@@ -5479,7 +5504,7 @@ function evalToOptionRule(a, b) {
   if (!isNumber2(valueToEval)) {
     throw `evalToQuantity does not support non quantity types. ${JSON.stringify(valueToEval)}`;
   }
-  if (a.kind == "comp-ratio" && valueToEval > 1 / 2 && valueToEval < 2) {
+  if (a.kind == "comp-ratio" && (b.expectedValueOptions.asRelative || valueToEval > 1 / 2 && valueToEval < 2)) {
     valueToEval = valueToEval > 1 ? valueToEval - 1 : 1 - valueToEval;
   }
   const matched = helpers2.evalExpression(b.expression, valueToEval);
@@ -5826,7 +5851,13 @@ function inferenceRuleEx(...args) {
       return inferAlligationRule(arr, last);
     return null;
   } else if (a.kind === "eval-option" || b.kind === "eval-option") {
-    return a.kind === "eval-option" ? inferEvalToOptionRule(b, a) : b.kind === "eval-option" ? inferEvalToOptionRule(a, b) : null;
+    if (a.kind === "eval-option") {
+      return b.kind == "quota" ? inferEvalQuotaRemainderExprRule(b, a) : inferEvalToOptionRule(b, a);
+    } else if (b.kind === "eval-option") {
+      return a.kind == "quota" ? inferEvalQuotaRemainderExprRule(a, b) : inferEvalToOptionRule(a, b);
+    } else {
+      return null;
+    }
   } else if (a.kind === "cont" && b.kind == "cont") {
     if (kind === "comp-diff")
       return inferToCompareDiffRule(a, b);

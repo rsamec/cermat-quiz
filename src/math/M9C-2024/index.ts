@@ -1,20 +1,117 @@
-import { compRatio, cont, ctor, ctorDifference, sum, compRelative, comp, ctorOption, contLength, halfProduct, pythagoras, proportion, percent } from "../../components/math";
-import { createLazyMap, deduce, deduceAs } from "../../utils/deduce-utils";
+import { compRatio, cont, ctor, ctorDifference, sum, compRelative, comp, ctorOption, contLength, halfProduct, pythagoras, proportion, percent, dimensionEntity, evalExprAsCont, triangleAngle, contArea, ratio, ctorUnit, ctorRound, ctorBooleanOption, ctorComplement, nthPart, ctorPercent, productArea } from "../../components/math";
+import { createLazyMap, deduce, deduceAs, last, toPredicate } from "../../utils/deduce-utils";
 import pocetObyvatel from "./pocet-obyvatel";
 import sourozenci from "./sourozenci";
 
 
 export default createLazyMap({
     1: () => pocetObyvatel({ input: { celkem: 86_200, jihlavaPlus: 16_000 } }),
+    2: () => nadoby(),
+    6.1: () => lichobeznik().vyska,
+    6.2: () => lichobeznik().obsah,
+    7.1: () => zahon().obvodKruhoveho,
+    7.2: () => zahon().polomerCtvrtkruhovy,
+    11: () => krychle(),
     12: () => sourozenci({ input: { evaPodil: 40, michalPlus: 24, zbyvaNasporit: 72 } }),
     13: () => divadlo(),
     14: () => triKamaradi(),
+    15.1: () => pruzkum().umelecka,
+    15.2: () => pruzkum().devataTrida,
+    15.3: () => pruzkum().rovnost,
     16.1: () => zednici().pocetDnu,
     16.2: () => zednici().pocetZedniku,
     16.3: () => zednici().pocetDnuPolovinaStavby,
 
 })
 
+function nadoby() {
+    const dim = dimensionEntity();
+    const vyska = contLength("výška nádoby", 20)
+    return {
+        deductionTree: deduce(
+            deduce(
+                deduce(
+                    contLength("průměr nádoba A", 10),
+                    ...halfProduct("poloměr nádoba A")
+                ),
+                vyska,
+                evalExprAsCont("π * r^2 * vyska", { kind: 'cont', agent: "nádoba A", ...dim.volume })
+            ),
+            deduce(
+                deduce(
+                    contLength("průměr nádoba B", 20),
+                    ...halfProduct("poloměr nádoba B")
+                ),
+                evalExprAsCont("π * r^2", { kind: 'cont', agent: "podstava nádoba B", ...dim.area })
+            ),
+            ctor("quota")
+        )
+    }
+}
+
+function lichobeznik() {
+    const dim = dimensionEntity()
+    const triangleABC = "trojúhleník ABC"
+    const triangleACD = "trojúhleník ACD"
+    const lichobeznik = "lichoběžník ABCD"
+
+    const obsahABC = contArea(triangleABC, 64);
+
+    const vyska = deduce(
+        obsahABC,
+        contLength(`stran AB ${triangleABC}`, 16),
+        evalExprAsCont("2*obsah/zakladna", { kind: "cont", agent: `výška ${lichobeznik}`, ...dim.length })
+    )
+    return {
+        vyska: {
+            deductionTree: vyska,
+        },
+        obsah: {
+            deductionTree: deduce(
+                deduce(
+                    contLength(`strana CD ${triangleACD}`, 6),
+                    last(vyska),
+                    evalExprAsCont("1/2*strana*vyska", { kind: "cont", agent: triangleACD, ...dim.area })
+                ),
+                obsahABC,
+                sum(`celkem ${lichobeznik}`)
+            )
+        }
+    }
+}
+
+function zahon() {
+    const dim = dimensionEntity()
+    return {
+        obvodKruhoveho: {
+            deductionTree: deduce(
+                deduce(
+                    deduce(
+                        deduce(
+                            contArea("kruhový záhon", 314, "dm2"),
+                            evalExprAsCont("sqrt(obsah / π)", { kind: 'cont', agent: "poloměr", entity: dim.length.entity, unit: "dm" })
+                        ),
+                        evalExprAsCont("2*π*r", { kind: 'cont', agent: "obvod", entity: dim.length.entity, unit: "dm" })
+                    ),
+                    ctorUnit("m")
+                ),
+                ctorRound()
+            )
+        },
+        polomerCtvrtkruhovy: {
+            deductionTree: deduce(
+                deduce(
+                    deduce(
+                        contArea("čtvrtkruh", 314, "dm2"),
+                        ratio("celý kruh", "čtvrtkruh", 1 / 4)
+                    ),
+                    evalExprAsCont("sqrt(obsah / π)", { kind: 'cont', agent: "poloměr", entity: dim.length.entity, unit: "dm" })
+                ),
+                ctorUnit("m")
+            )
+        }
+    }
+}
 function divadlo() {
     const pocetMista = "míst"
 
@@ -118,26 +215,104 @@ function zednici() {
 
     }
 }
-function zavazi() {
-    const delkaL = "délka"
-    const sirkaL = "šířka"
 
-    const delka = contLength(delkaL, 8);
-    const sirka = contLength(sirkaL, 6);
-    //const vyska = contLength("výška", 10);
+function krychle() {
+    const dim = dimensionEntity();
+    const celaStrana = contLength("strana krychle", 3, "dm")
+    const toArea = agent => ({ kind: "cont" as const, agent, entity: dim.area.entity, unit: "dm2" })
     return {
         deductionTree: deduce(
-            delka,
-            sirka,
             deduce(
                 deduce(
-                    delka,
-                    sirka,
-                    pythagoras("odvěsna", [delkaL, sirkaL]),
+                    deduce(
+                        celaStrana,
+                        evalExprAsCont("1/2*a^2 + a^2", toArea("horní plochy"))
+                    ),
+                    deduce(
+                        celaStrana,
+                        evalExprAsCont("1/2*a^2 + a^2", toArea("dolní plochy"))
+                    ),
+                    deduce(
+                        celaStrana,
+                        evalExprAsCont("a^2 + 1/2*a^2 +  1/2*a^2", toArea("boční plochy"))
+                    ),
+                    deduce(
+                        celaStrana,
+                        evalExprAsCont("1/2*a^2 +  1/2*a^2", toArea("přední plochy"))
+                    ),
+                    deduce(
+                        celaStrana,
+                        evalExprAsCont("1/2*a^2 +  1/2*a^2", toArea("zadní plochy"))
+                    ),
+                    sum("nové těleso")
                 ),
-                ...halfProduct("poloměr")
+                deduce(
+                    celaStrana,
+                    evalExprAsCont("6*a^2", toArea("krychle"))
+                ),
             ),
-            sum("celkem")
+            ctorOption("B", 9)
         )
+    }
+}
+
+function pruzkum() {
+    const entityPercent = "%"
+    const entity = "žák"
+
+    const whole = "všichni žáci"
+
+    const umeleckeZaci = cont("umělecké", 3, entity)
+    const gymZaci = cont("GYM", 12, entity)
+
+    const vsichniZaci = deduce(
+        deduce(
+            toPredicate<any>(deduce(
+                cont("SOŠ", 60, entityPercent),
+                cont("SOU", 16, entityPercent),
+                sum("dohromady SOŠ a SOU")
+            ), d => percent(whole, "dohromady SOŠ a SOU", d.quantity)),
+            ctorComplement("GYM")
+        ),
+        gymZaci
+    )
+
+    return {
+        umelecka: {
+            deductionTree: deduce(
+                deduce(
+                    umeleckeZaci,
+                    vsichniZaci,
+                    ctorPercent()
+                ),
+                ctorBooleanOption(6, "closeTo", { asPercent: true })
+            )
+        },
+        devataTrida: {
+            deductionTree: deduce(
+                last(vsichniZaci),
+                ctorBooleanOption(50, "greater")
+            )
+        },
+        rovnost: {
+            deductionTree: deduce(
+                deduce(
+                    deduce(
+                        deduce(
+                            last(vsichniZaci),
+                            percent(whole, "SOŠ", 60)
+                        ),
+                        deduce(
+                            umeleckeZaci,
+                            cont("technické", 15, entity),
+                            sum("dohromady umělecké a technické")
+                        ),
+                        ctorDifference("humanitní")
+                    ),
+                    gymZaci,
+                ),
+                ctorBooleanOption(0, "closeTo")
+            )
+        }
     }
 }

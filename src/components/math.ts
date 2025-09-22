@@ -392,6 +392,8 @@ export type RateEval = Omit<Rate, 'quantity'>
 export type FormattingOptions = {
   asPercent?: boolean
   asFraction?: boolean
+  asRelative?: boolean
+  expectedValueLabel?: string
 }
 
 export type EntityDef = string | EntityBase
@@ -527,6 +529,10 @@ export function ctorExpressionOption(optionValue: "A" | "B" | "C" | "D" | "E" | 
 }
 
 export type ComparisonType = "equal" | "greater" | "greaterOrEqual" | "smaller" | "smallerOrEqual" | "closeTo";
+
+export function ctorHasNoRemainder() {
+  return ctorBooleanOption(0, "closeTo", { expectedValueLabel: 'zbytek' })
+}
 export function ctorBooleanOption(expectedValue: number, compareTo: ComparisonType = 'closeTo', expectedValueOptions: FormattingOptions = { asPercent: false, asFraction: false }): Option {
   return {
     kind: 'eval-option',
@@ -536,7 +542,7 @@ export function ctorBooleanOption(expectedValue: number, compareTo: ComparisonTy
   }
 }
 function convertToNiceExpression(expectedValue: number, compareTo: ComparisonType, expectedValueOptions: FormattingOptions) {
-  return convertToExpression(expectedValue, compareTo, expectedValueOptions, 'zjištěná hodnota');
+  return convertToExpression(expectedValue, compareTo, expectedValueOptions, expectedValueOptions.expectedValueLabel ?? 'zjištěná hodnota');
 }
 function convertToExpression(expectedValue: number, compareTo: ComparisonType, expectedValueOptions: FormattingOptions, variable = "x") {
   const convertedValue = expectedValueOptions.asFraction
@@ -1548,14 +1554,18 @@ function rateRule(a: Container | Quota, rate: Rate): Container {
 function inferRateRule(a: Container | Quota, rate: Rate): Question<Container> {
   const result = rateRule(a, rate)
   const aEntity = a.kind == "cont" ? a.entity : a.agentQuota
+  const isUnitRate = rate.baseQuantity === 1;
   return {
     name: rateRule.name,
     inputParameters: extractKinds(a, rate),
     question: containerQuestion(result),
     result,
     options: isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(result.quantity) && isNumber(rate.baseQuantity) ? [
-      { tex: `${formatNumber(a.quantity)} * ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: aEntity !== rate.entity.entity },
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: aEntity === rate.entity.entity }]
+      { tex: `${formatNumber(a.quantity)} * ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: isUnitRate && aEntity !== rate.entity.entity },
+      ...(!isUnitRate ? [{ tex: `${formatNumber(a.quantity)} * (${formatNumber(rate.quantity)}/${formatNumber(rate.baseQuantity)})`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity !== rate.entity.entity }] : []),
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: aEntity === rate.entity.entity },
+      ...(!isUnitRate ? [{ tex: `${formatNumber(a.quantity)} / (${formatNumber(rate.quantity)}/${formatNumber(rate.baseQuantity)})`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity === rate.entity.entity }] : []),
+    ]
       : []
   }
 }
@@ -2521,6 +2531,30 @@ function inferSimplifyExprRule(a: RatioComparison | Container, b: SimplifyExpr):
     options: []
   }
 }
+function evalQuotaRemainderExprRule(a: Quota, b: Option): Predicate {
+
+  if (!isNumber(a.restQuantity)) {
+    throw `evalQuotaRemainderExprRule does not support quantity types`
+  }
+
+  const matched = helpers.evalExpression(b.expression, a.restQuantity) as unknown as boolean;
+  return {
+    kind: 'eval-option',
+    expression: b.expression,
+    expressionNice: convertToExpression(b.expectedValue, b.compareTo === "closeTo" ? "equal" : b.compareTo, { ...b.expectedValueOptions, asPercent: false }),
+    value: b.optionValue != null ? matched ? b.optionValue : null : matched
+  }
+}
+function inferEvalQuotaRemainderExprRule(a: Quota, b: Option): Question<Predicate> {
+  const result = evalQuotaRemainderExprRule(a, b);
+  return {
+    name: evalToOptionRule.name,
+    inputParameters: extractKinds(a, b),
+    question: b.optionValue != null ? `Vyhodnoť volbu [${b.optionValue}]?` : `Vyhodnoť pravdivost ${b.expressionNice}?`,
+    result,
+    options: []
+  }
+}
 
 function evalToOptionRule<T extends Predicate & { quantity?: Quantity, ratio?: Quantity }>(a: T, b: Option): Option {
   let valueToEval = a.quantity ?? a.ratio;
@@ -2534,7 +2568,7 @@ function evalToOptionRule<T extends Predicate & { quantity?: Quantity, ratio?: Q
   if (!isNumber(valueToEval)) {
     throw `evalToQuantity does not support non quantity types. ${JSON.stringify(valueToEval)}`
   }
-  if (a.kind == "comp-ratio" && valueToEval > 1 / 2 && valueToEval < 2) {
+  if (a.kind == "comp-ratio" && (b.expectedValueOptions.asRelative || (valueToEval > 1 / 2 && valueToEval < 2))) {
     valueToEval = valueToEval > 1 ? valueToEval - 1 : 1 - valueToEval;
   }
 
@@ -2959,7 +2993,15 @@ function inferenceRuleEx(...args: Predicate[]): Question<any> {
     return null
   }
   else if (a.kind === "eval-option" || b.kind === "eval-option") {
-    return a.kind === "eval-option" ? inferEvalToOptionRule(b, a) : b.kind === "eval-option" ? inferEvalToOptionRule(a, b) : null
+    if (a.kind === "eval-option") {
+      return b.kind == "quota" ? inferEvalQuotaRemainderExprRule(b, a) : inferEvalToOptionRule(b, a)
+    }
+    else if (b.kind === "eval-option") {
+      return a.kind == "quota" ? inferEvalQuotaRemainderExprRule(a, b) : inferEvalToOptionRule(a, b)
+    }
+    else {
+      return null
+    }
   }
   else if (a.kind === "cont" && b.kind == "cont") {
     if (kind === "comp-diff") return inferToCompareDiffRule(a, b)

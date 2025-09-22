@@ -1,14 +1,11 @@
 import { parseArgs } from "node:util";
+import path from 'path';
 import { parseQuiz } from './utils/quiz-parser.js';
-import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, text, formatShortCodeAlt } from './utils/quiz-string-utils.js';
+import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, text } from './utils/quiz-string-utils.js';
 import wordProblems from './math/word-problems.js';
 import { jsonToMarkdownChat } from "./utils/deduce-utils.js";
-//import mdPlus from './utils/md-utils.js';
-import Fraction from 'fraction.js';
+import { readJsonFromFile } from './utils/file.utils.js';
 
-const mdFormatting = {
-  formatRatio: (d,asPercent) => asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%`  : new Fraction(d).toFraction(),  
-}
 
 const {
   values: { code, number }
@@ -19,7 +16,12 @@ const {
   }
 });
 
+const aiCategoriesData = await readJsonFromFile(path.resolve(`./src/data/quiz-categories-gemini-2.5-flash.json`));
+const aiCategories = aiCategoriesData[code]?.questions ?? [];
+
+
 const id = parseInt(number, 10);
+const name = `${i}. ${aiCategories.find(d => d.id == number) ?? 'úloha'}`
 
 const d = parseCode(code);
 const baseUrl = `${baseDomainPublic}/${d.subject}/${d.period}/${code}`
@@ -43,7 +45,7 @@ const values = (wordProblem?.[id] != null)
 
 
 process.stdout.write(`---
-title: ${formatShortCodeAlt(code)} - ${number}
+title: ${name}
 sidebar: false
 footer: false
 pager: false

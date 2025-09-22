@@ -1,4 +1,4 @@
-import { compRatio, cont, ctor, rate, compRelativePercent, comp, contLength, dimensionEntity, ctorUnit, ctorComparePercent, ctorRatios, nthPartFactor, nthPartScale, ctorRate, nthPart, ctorDifference, sum, ctorPercent, ctorOption, lcd, compPercent, ratio, percent, ctorComplement, ctorBooleanOption, ctorExpressionOption, ctorRound, counter, ratios } from "../../components/math";
+import { compRatio, cont, ctor, rate, compRelativePercent, comp, contLength, dimensionEntity, ctorUnit, ctorComparePercent, ctorRatios, nthPartFactor, nthPartScale, ctorRate, nthPart, ctorDifference, sum, ctorPercent, ctorOption, lcd, compPercent, ratio, percent, ctorComplement, ctorBooleanOption, ctorExpressionOption, ctorRound, counter, ratios, quota, ctorHasNoRemainder } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, toCont } from "../../utils/deduce-utils";
 
 
@@ -14,9 +14,12 @@ export default createLazyMap({
     11: () => obchod(),
     12: () => knizniSerie(),
     13: () => brambory(),
+    15.1: () => jablka().stejnaMnozstvi,
+    15.2: () => jablka().jenLevnejsi,
+    15.3: () => jablka().nejviceKilogramu,
     16.1: () => procenta().neznameCislo,
     16.2: () => procenta().zlomky,
-    // 16.3: () => procenta().cerpadla,
+    16.3: () => procenta().cerpadla,
 
 })
 
@@ -334,10 +337,78 @@ function knizniSerie() {
         )
     }
 }
+function jablka() {
+    const levnejsiJablka = "levnější jablka"
+    const drazsiJablka = "dražší jablka"
+    const entity = "korun"
+    const entityBase = { entity: "hmotnost", unit: "kg" }
 
+    const nakup1Rozlozeni = ratios("nákup", [levnejsiJablka, drazsiJablka], [1, 1]);
+    const nakup1 = cont("nákup", 12, entityBase.entity, entityBase.unit);
+    const zaplatila = cont("zaplaceno", 330, entity)
+    return {
+        stejnaMnozstvi: {
+            deductionTree: deduce(
+                deduce(
+                    deduce(
+                        deduce(
+                            nakup1,
+                            nakup1Rozlozeni,
+                            nthPart(levnejsiJablka)
+                        ),
+                        rate(levnejsiJablka, 25, entity, entityBase)
+                    ),
+                    deduce(
+                        deduce(
+                            nakup1,
+                            nakup1Rozlozeni,
+                            nthPart(drazsiJablka)
+                        ),
+                        rate(drazsiJablka, 30, entity, entityBase)
+                    ),
+                    sum("celkem")
+                ),
+                ctorBooleanOption(330)
+            )
+        },
+        jenLevnejsi: {
+            deductionTree: deduce(
+                deduce(
+                    zaplatila,
+                    cont(`skupina po 1 kg ${levnejsiJablka}`, 25, entity),
+                    //rate(levnejsiJablka, 25, entity, entityBase),
+                    ctor("quota")
+                ),
+                ctorHasNoRemainder()
+            )
+        },
+        nejviceKilogramu: {
+            deductionTree: deduce(
+                deduce(
+                    deduce(
+                        zaplatila,
+                        deduce(
+                            rate(drazsiJablka, 30, entity, entityBase),
+                            cont(drazsiJablka, 1, entityBase.entity, entityBase.unit)
+                        ),
+                        ctorDifference(`zbytek na ${levnejsiJablka}`)
+                    ),
+                    cont(`skupina po 1 kg ${levnejsiJablka}`, 25, entity),
+                    //rate(levnejsiJablka, 25, entity, entityBase),
+                    ctor("quota")
+                ),
+                ctorHasNoRemainder()
+            )
+        },
+
+    }
+}
 function procenta() {
     const entity = { entity: "voda", unit: "litr" }
     const entityBase = { entity: "čas", unit: "h" }
+
+    const cerpadloMensiVykon = "méně výkonné čerpadlo"
+    const cerpadloVetsiVykon = "více výkonné čerpadlo"
     return {
         neznameCislo: {
             deductionTree: deduce(
@@ -355,15 +426,21 @@ function procenta() {
                     counter("osmina", 1 / 8),
                     ctorComparePercent()
                 ),
-                ctorOption("A", 300, { asPercent: true })
-            )
-
+                ctorOption("A", 300, { asPercent: true, asRelative: true })
+            ),
         },
         cerpadla: {
-            //     deductionTree: deduce(
-            //         ratios("výkon", ["méně výkonné čerpadlo", "více výkonné čerpadlo"], [3, 7]),
-            //         rate("méně výkonné čerpadlo", 150, entity, entityBase, 2)
-            //     )
+            deductionTree: deduce(
+                deduce(
+                    deduce(
+                        ratios("výkon", [cerpadloMensiVykon, cerpadloVetsiVykon], [3, 7]),
+                        rate(cerpadloMensiVykon, 150, entity, entityBase, 2),
+                        nthPart(cerpadloVetsiVykon)
+                    ),
+                    cont(cerpadloVetsiVykon, 5, entityBase.entity, entityBase.unit)
+                ),
+                ctorOption("E", 875)
+            )
         },
 
     }
