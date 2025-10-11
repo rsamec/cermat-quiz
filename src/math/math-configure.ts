@@ -8,7 +8,7 @@ import time from 'convert-units/definitions/time'
 import { configure, inferenceRuleWithQuestion as IRWQ } from '../components/math.js';
 
 import { solveLinearEquation, evalExpression } from "../utils/math-solver.js";
-
+export { inferenceRule } from '../components/math.js'
 const convert = configureMeasurements<any, any, any>({
   length,
   area,
@@ -27,4 +27,5 @@ configure({
 
 //re export
 export const inferenceRuleWithQuestion = IRWQ;
+
 

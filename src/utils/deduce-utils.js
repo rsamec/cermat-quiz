@@ -221,8 +221,8 @@ function inferConvertRatioCompareToTwoPartRatioRule(b, a, last2) {
     question: `Vyj\xE1d\u0159i pom\u011Brem \u010D\xE1st\xED ${[b.agentA, b.agentB].join(":")}?`,
     result,
     options: areNumbers(result.ratios) ? [
-      { tex: `(${formatRatio(abs(b.ratio))}) ku 1`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: true },
-      { tex: `(1 / ${formatRatio(abs(b.ratio))}) ku 1`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: false }
+      { tex: `(${formatRatio(abs(b.ratio))}) v pom\u011Bru k 1`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: true },
+      { tex: `(1 / ${formatRatio(abs(b.ratio))}) v pom\u011Bru k 1`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: false }
     ] : []
   };
 }
@@ -242,14 +242,15 @@ function inferConvertToUnitRule(a, b) {
   }
   const destination = helpers.unitAnchor(a.unit);
   const origin = helpers.unitAnchor(b.unit);
+  const convertFactor = destination >= origin ? destination / origin : origin / destination;
   return {
     name: convertToUnitRule.name,
     inputParameters: extractKinds(a, b),
     question: `P\u0159eve\u010F ${formatNumber(a.quantity)} ${formatEntity(a)} na ${b.unit}.`,
     result,
     options: [
-      { tex: `${formatNumber(a.quantity)} * ${formatNumber(destination / origin)}`, result: formatNumber(result.quantity), ok: true },
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(destination / origin)}`, result: formatNumber(result.quantity), ok: false }
+      { tex: `${formatNumber(a.quantity)} * ${formatNumber(convertFactor)}`, result: formatNumber(result.quantity), ok: destination >= origin },
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(convertFactor)}`, result: formatNumber(result.quantity), ok: destination < origin }
     ]
   };
 }
@@ -1550,16 +1551,16 @@ function inferTrasitiveRateRule(a, b, last2) {
 function evalToQuantityRule(a, b) {
   const quantities = a.map((d) => d.quantity);
   const variables = extractDistinctWords(b.expression);
-  if (!areNumbers(quantities)) {
-    throw `evalToQuantity does not support non quantity types. ${quantities}`;
-  }
   const context = quantities.reduce((out, d, i) => {
     out[variables[i]] = d;
     return out;
   }, {});
   return {
     ...b.predicate,
-    quantity: helpers.evalExpression(b.expression, context)
+    quantity: areNumbers(quantities) ? helpers.evalExpression(b.expression, context) : wrapToQuantity(`${b.expression}`, variables.reduce((out, d, i) => {
+      out[d] = a[i];
+      return out;
+    }, {}))
   };
 }
 var preservedWords = ["sqrt", "closeTo"];
@@ -5862,10 +5863,10 @@ function recurExpr(node, level, requiredLevel = 0) {
       } else {
         const q = res.quantity ?? res.ratio;
         if (typeof q == "number" || !isNaN(parseFloat(q))) {
+          expr = parser.parse(cleanUpExpression(expr, variable));
           if (level >= requiredLevel) {
-            expr = expr.simplify({ [variable]: res });
+            expr = expr.simplify({ [variable]: q });
           } else {
-            expr = parser.parse(cleanUpExpression(expr, variable));
             expr = expr.substitute(variable, q);
           }
         } else {

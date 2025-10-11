@@ -470,6 +470,12 @@ export function stepsTraverse(node) {
               { agent: `${newChild.entity?.entity}`, value: newChild.quantity, yValue: `${newChild.entityBase?.entity}` },
             ], { width: 300, height: 50, marginLeft: 70, formatAsFraction: false, showRelativeValues: false, showSeparate: true }))
           }
+          else if (newChild?.kind === "unit") {
+            //console.log(inferenceRuleWithQuestion(mapNodeChildrenToPredicates(node)), " -> ", newChild.unit)
+            // args.push(partion([
+            //   { agent: `${newChild.entity?.entity}`, value: newChild.quantity, yValue: `${newChild.entityBase?.entity}` },
+            // ], { width: 300, height: 50, marginLeft: 70, formatAsFraction: false, showRelativeValues: false, showSeparate: true }))
+          }
           else if (newChild?.kind === "quota" && newChild?.quantity && isNumber(newChild?.quantity)) {
             args.push(partion([
               { agent: `${newChild.agentQuota}`, value: newChild.quantity, yValue: `${newChild.agent}` },

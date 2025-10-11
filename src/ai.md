@@ -12,6 +12,7 @@ import {formatSubject, formatShortCode, formatPeriod, formatGrade, formatVersion
 
 const rawData1 = await FileAttachment(`./data/quiz-results-gpt-4o.json`).json();
 const rawData2 = await FileAttachment(`./data/quiz-results-o3-mini.json`).json();
+const rawData3 = await FileAttachment(`./data/quiz-results-gpt-5-mini.json`).json();
 
 function totalP(rawData) {
 
@@ -90,8 +91,16 @@ function totalP(rawData) {
 
 Procento vyjadřuje **počet bodů z maximálního počtu možných bodů**. Vstupem jsou všechny úlohy z databanky.
 
+# model GTP-5-mini
+
+${
+  totalP(rawData3)
+}
+
+[více informací](./ai-results-gpt-5-mini)
 
 # model o3-mini
+
 ${
   totalP(rawData2)
 }

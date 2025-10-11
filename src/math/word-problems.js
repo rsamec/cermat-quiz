@@ -488,8 +488,8 @@ function inferConvertRatioCompareToTwoPartRatioRule(b, a, last3) {
     question: `Vyj\xE1d\u0159i pom\u011Brem \u010D\xE1st\xED ${[b.agentA, b.agentB].join(":")}?`,
     result,
     options: areNumbers(result.ratios) ? [
-      { tex: `(${formatRatio(abs(b.ratio))}) ku 1`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: true },
-      { tex: `(1 / ${formatRatio(abs(b.ratio))}) ku 1`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: false }
+      { tex: `(${formatRatio(abs(b.ratio))}) v pom\u011Bru k 1`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: true },
+      { tex: `(1 / ${formatRatio(abs(b.ratio))}) v pom\u011Bru k 1`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: false }
     ] : []
   };
 }
@@ -509,14 +509,15 @@ function inferConvertToUnitRule(a, b) {
   }
   const destination = helpers.unitAnchor(a.unit);
   const origin = helpers.unitAnchor(b.unit);
+  const convertFactor = destination >= origin ? destination / origin : origin / destination;
   return {
     name: convertToUnitRule.name,
     inputParameters: extractKinds(a, b),
     question: `P\u0159eve\u010F ${formatNumber(a.quantity)} ${formatEntity(a)} na ${b.unit}.`,
     result,
     options: [
-      { tex: `${formatNumber(a.quantity)} * ${formatNumber(destination / origin)}`, result: formatNumber(result.quantity), ok: true },
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(destination / origin)}`, result: formatNumber(result.quantity), ok: false }
+      { tex: `${formatNumber(a.quantity)} * ${formatNumber(convertFactor)}`, result: formatNumber(result.quantity), ok: destination >= origin },
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(convertFactor)}`, result: formatNumber(result.quantity), ok: destination < origin }
     ]
   };
 }
@@ -1817,16 +1818,16 @@ function inferTrasitiveRateRule(a, b, last3) {
 function evalToQuantityRule(a, b) {
   const quantities = a.map((d) => d.quantity);
   const variables = extractDistinctWords(b.expression);
-  if (!areNumbers(quantities)) {
-    throw `evalToQuantity does not support non quantity types. ${quantities}`;
-  }
   const context = quantities.reduce((out, d, i) => {
     out[variables[i]] = d;
     return out;
   }, {});
   return {
     ...b.predicate,
-    quantity: helpers.evalExpression(b.expression, context)
+    quantity: areNumbers(quantities) ? helpers.evalExpression(b.expression, context) : wrapToQuantity(`${b.expression}`, variables.reduce((out, d, i) => {
+      out[d] = a[i];
+      return out;
+    }, {}))
   };
 }
 var preservedWords = ["sqrt", "closeTo"];
@@ -6136,10 +6137,10 @@ function recurExpr(node, level, requiredLevel = 0) {
       } else {
         const q = res.quantity ?? res.ratio;
         if (typeof q == "number" || !isNaN(parseFloat(q))) {
+          expr = parser.parse(cleanUpExpression(expr, variable));
           if (level >= requiredLevel) {
-            expr = expr.simplify({ [variable]: res });
+            expr = expr.simplify({ [variable]: q });
           } else {
-            expr = parser.parse(cleanUpExpression(expr, variable));
             expr = expr.substitute(variable, q);
           }
         } else {
@@ -10434,8 +10435,8 @@ function inferConvertRatioCompareToTwoPartRatioRule2(b, a, last22) {
     question: `Vyj\xE1d\u0159i pom\u011Brem \u010D\xE1st\xED ${[b.agentA, b.agentB].join(":")}?`,
     result,
     options: areNumbers2(result.ratios) ? [
-      { tex: `(${formatRatio2(abs2(b.ratio))}) ku 1`, result: result.ratios.map((d) => formatRatio2(d)).join(":"), ok: true },
-      { tex: `(1 / ${formatRatio2(abs2(b.ratio))}) ku 1`, result: result.ratios.map((d) => formatRatio2(d)).join(":"), ok: false }
+      { tex: `(${formatRatio2(abs2(b.ratio))}) v pom\u011Bru k 1`, result: result.ratios.map((d) => formatRatio2(d)).join(":"), ok: true },
+      { tex: `(1 / ${formatRatio2(abs2(b.ratio))}) v pom\u011Bru k 1`, result: result.ratios.map((d) => formatRatio2(d)).join(":"), ok: false }
     ] : []
   };
 }
@@ -10455,14 +10456,15 @@ function inferConvertToUnitRule2(a, b) {
   }
   const destination = helpers2.unitAnchor(a.unit);
   const origin = helpers2.unitAnchor(b.unit);
+  const convertFactor = destination >= origin ? destination / origin : origin / destination;
   return {
     name: convertToUnitRule2.name,
     inputParameters: extractKinds2(a, b),
     question: `P\u0159eve\u010F ${formatNumber2(a.quantity)} ${formatEntity2(a)} na ${b.unit}.`,
     result,
     options: [
-      { tex: `${formatNumber2(a.quantity)} * ${formatNumber2(destination / origin)}`, result: formatNumber2(result.quantity), ok: true },
-      { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(destination / origin)}`, result: formatNumber2(result.quantity), ok: false }
+      { tex: `${formatNumber2(a.quantity)} * ${formatNumber2(convertFactor)}`, result: formatNumber2(result.quantity), ok: destination >= origin },
+      { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(convertFactor)}`, result: formatNumber2(result.quantity), ok: destination < origin }
     ]
   };
 }
@@ -11763,16 +11765,16 @@ function inferTrasitiveRateRule2(a, b, last22) {
 function evalToQuantityRule2(a, b) {
   const quantities = a.map((d) => d.quantity);
   const variables = extractDistinctWords2(b.expression);
-  if (!areNumbers2(quantities)) {
-    throw `evalToQuantity does not support non quantity types. ${quantities}`;
-  }
   const context = quantities.reduce((out, d, i) => {
     out[variables[i]] = d;
     return out;
   }, {});
   return {
     ...b.predicate,
-    quantity: helpers2.evalExpression(b.expression, context)
+    quantity: areNumbers2(quantities) ? helpers2.evalExpression(b.expression, context) : wrapToQuantity2(`${b.expression}`, variables.reduce((out, d, i) => {
+      out[d] = a[i];
+      return out;
+    }, {}))
   };
 }
 var preservedWords2 = ["sqrt", "closeTo"];
@@ -16038,10 +16040,10 @@ function recurExpr2(node, level, requiredLevel = 0) {
       } else {
         const q = res.quantity ?? res.ratio;
         if (typeof q == "number" || !isNaN(parseFloat(q))) {
+          expr = parser2.parse(cleanUpExpression2(expr, variable));
           if (level >= requiredLevel) {
-            expr = expr.simplify({ [variable]: res });
+            expr = expr.simplify({ [variable]: q });
           } else {
-            expr = parser2.parse(cleanUpExpression2(expr, variable));
             expr = expr.substitute(variable, q);
           }
         } else {
@@ -18900,25 +18902,33 @@ var M9C_2024_default = createLazyMap({
 });
 function nadoby() {
   const dim = dimensionEntity();
-  const vyska = contLength("v\xFD\u0161ka n\xE1doby", 20);
+  const vyskaA = cont("n\xE1doba A", 20, "v\xFD\u0161ka", dim.length.unit);
+  const vyskaB = cont("n\xE1doba B", 20, "v\xFD\u0161ka", dim.length.unit);
   return {
     deductionTree: deduce(
       deduce(
         deduce(
-          contLength("pr\u016Fm\u011Br n\xE1doba A", 10),
-          ...halfProduct("polom\u011Br n\xE1doba A")
+          deduce(
+            deduce(
+              contLength("pr\u016Fm\u011Br n\xE1doba B", 20),
+              ...halfProduct("polom\u011Br n\xE1doba B")
+            ),
+            vyskaB,
+            evalExprAsCont("\u03C0 * r^2 * vyska", { kind: "cont", agent: "n\xE1doba B", ...dim.volume })
+          ),
+          deduce(
+            deduce(
+              contLength("pr\u016Fm\u011Br n\xE1doba A", 10),
+              ...halfProduct("polom\u011Br n\xE1doba A")
+            ),
+            vyskaA,
+            evalExprAsCont("\u03C0 * r^2 * vyska", { kind: "cont", agent: "n\xE1doba A", ...dim.volume })
+          ),
+          ctor("comp-ratio")
         ),
-        vyska,
-        evalExprAsCont("\u03C0 * r^2 * vyska", { kind: "cont", agent: "n\xE1doba A", ...dim.volume })
+        proportion(true, ["zapln\u011Bn\xED objemu n\xE1doby", "dosa\u017Een\xE1 v\xFD\u0161ka v n\xE1dob\u011B"])
       ),
-      deduce(
-        deduce(
-          contLength("pr\u016Fm\u011Br n\xE1doba B", 20),
-          ...halfProduct("polom\u011Br n\xE1doba B")
-        ),
-        evalExprAsCont("\u03C0 * r^2", { kind: "cont", agent: "podstava n\xE1doba B", ...dim.area })
-      ),
-      ctor("quota")
+      vyskaA
     )
   };
 }

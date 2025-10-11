@@ -88,11 +88,11 @@ function recurExpr(node, level, requiredLevel = 0) {
   if (expression) {
     let expr = parser.parse(expression);
     const variables = expr.variables();
-    // console.log(level, expression.toString(), expr.toString(), variables, context)    
+    //console.log(level, node, quantity, expression.toString(), expr.toString(), variables, context)    
     for (let variable of variables) {
       const res = recurExpr(context[variable], level + 1, requiredLevel);
 
-      // console.log(variable, expr.toString(), level)
+      //console.log(variable, expr.toString(), level)
       if (res.substitute != null) {
         expr = parser.parse(cleanUpExpression(expr, variable))
         expr = expr.substitute(variable, res)
@@ -103,15 +103,17 @@ function recurExpr(node, level, requiredLevel = 0) {
       }
       else {
         const q = res.quantity ?? res.ratio;
-        // console.log(":", variable, q, expr.toString())
+        
         if (typeof q == 'number' || !isNaN(parseFloat(q))) {
+          expr = parser.parse(cleanUpExpression(expr, variable))
           if (level >= requiredLevel) {
-            expr = expr.simplify({ [variable]: res })
+            expr = expr.simplify({ [variable]: q })
+            // console.log(":", variable, q, expr.toString())
           }
           else {
-
-            expr = parser.parse(cleanUpExpression(expr, variable))
+            
             expr = expr.substitute(variable, q);
+            // console.log("::", variable, q, expr.toString())
           }
         }
         else {      
@@ -132,9 +134,10 @@ export function toEquation(lastNode) {
 }
 function toEquationExpr(lastExpr, requiredLevel = 0){
   const final = recurExpr({ quantity: lastExpr }, 0, requiredLevel);
+  //console.log("FINAL",final.toString(), lastExpr.toString());
   return parser.parse(cleanUpExpression(final));  
 }
-export function toEquationExprAsText(lastExpr, requiredLevel = 0) {
+export function toEquationExprAsText(lastExpr, requiredLevel = 0) {  
   return expressionToString(toEquationExpr(lastExpr, requiredLevel).tokens, false)
         .replaceAll('"', '');  
 }

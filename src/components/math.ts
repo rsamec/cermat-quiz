@@ -927,8 +927,8 @@ function inferConvertRatioCompareToTwoPartRatioRule(b: RatioComparison, a: { who
     question: `Vyjádři poměrem částí ${[b.agentA, b.agentB].join(":")}?`,
     result,
     options: areNumbers(result.ratios) ? [
-      { tex: `(${formatRatio(abs(b.ratio))}) ku 1`, result: result.ratios.map(d => formatRatio(d)).join(":"), ok: true },
-      { tex: `(1 / ${formatRatio(abs(b.ratio))}) ku 1`, result: result.ratios.map(d => formatRatio(d)).join(":"), ok: false },
+      { tex: `(${formatRatio(abs(b.ratio))}) v poměru k 1`, result: result.ratios.map(d => formatRatio(d)).join(":"), ok: true },
+      { tex: `(1 / ${formatRatio(abs(b.ratio))}) v poměru k 1`, result: result.ratios.map(d => formatRatio(d)).join(":"), ok: false },
     ] : []
   }
 }
@@ -949,14 +949,15 @@ function inferConvertToUnitRule(a: Container | Comparison, b: ConvertUnit): Ques
   }
   const destination = helpers.unitAnchor(a.unit);
   const origin = helpers.unitAnchor(b.unit);
+  const convertFactor = destination >= origin ? destination / origin : origin / destination;
   return {
     name: convertToUnitRule.name,
     inputParameters: extractKinds(a, b),
     question: `Převeď ${formatNumber(a.quantity)} ${formatEntity(a)} na ${b.unit}.`,
     result,
     options: [
-      { tex: `${formatNumber(a.quantity)} * ${formatNumber(destination / origin)}`, result: formatNumber(result.quantity), ok: true },
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(destination / origin)}`, result: formatNumber(result.quantity), ok: false },
+      { tex: `${formatNumber(a.quantity)} * ${formatNumber(convertFactor)}`, result: formatNumber(result.quantity), ok: destination >= origin },
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(convertFactor)}`, result: formatNumber(result.quantity), ok: destination < origin },
     ]
   }
 }
@@ -2461,9 +2462,6 @@ function evalToQuantityRule<
   const quantities = a.map(d => d.quantity);
   const variables = extractDistinctWords(b.expression);
 
-  if (!areNumbers(quantities)) {
-    throw `evalToQuantity does not support non quantity types. ${quantities}`
-  }
   const context = quantities.reduce((out, d, i) => {
     out[variables[i]] = d
     return out;
@@ -2471,7 +2469,10 @@ function evalToQuantityRule<
 
   return {
     ...b.predicate,
-    quantity: helpers.evalExpression(b.expression, context)
+    quantity: areNumbers(quantities) ? helpers.evalExpression(b.expression, context) : wrapToQuantity(`${b.expression}`, variables.reduce((out, d, i) => {
+      out[d] = a[i];
+      return out;
+    }, {}))
   } as K
 }
 

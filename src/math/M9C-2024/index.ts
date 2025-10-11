@@ -1,4 +1,4 @@
-import { compRatio, cont, ctor, ctorDifference, sum, compRelative, comp, ctorOption, contLength, halfProduct, pythagoras, proportion, percent, dimensionEntity, evalExprAsCont, triangleAngle, contArea, ratio, ctorUnit, ctorRound, ctorBooleanOption, ctorComplement, nthPart, ctorPercent, productArea } from "../../components/math";
+import { compRatio, cont, ctor, ctorDifference, sum, compRelative, comp, ctorOption, contLength, halfProduct, pythagoras, proportion, percent, dimensionEntity, evalExprAsCont, triangleAngle, contArea, ratio, ctorUnit, ctorRound, ctorBooleanOption, ctorComplement, nthPart, ctorPercent, productArea, simplifyExpr } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, toPredicate } from "../../utils/deduce-utils";
 import pocetObyvatel from "./pocet-obyvatel";
 import sourozenci from "./sourozenci";
@@ -26,25 +26,33 @@ export default createLazyMap({
 
 function nadoby() {
     const dim = dimensionEntity();
-    const vyska = contLength("výška nádoby", 20)
+    const vyskaA = cont("nádoba A", 20, "výška", dim.length.unit)
+    const vyskaB = cont("nádoba B", 20, "výška", dim.length.unit)
     return {
         deductionTree: deduce(
             deduce(
                 deduce(
-                    contLength("průměr nádoba A", 10),
-                    ...halfProduct("poloměr nádoba A")
+                    deduce(
+                        deduce(
+                            contLength("průměr nádoba B", 20),
+                            ...halfProduct("poloměr nádoba B")
+                        ),
+                        vyskaB,
+                        evalExprAsCont("π * r^2 * vyska", { kind: 'cont', agent: "nádoba B", ...dim.volume })
+                    ),
+                    deduce(
+                        deduce(
+                            contLength("průměr nádoba A", 10),
+                            ...halfProduct("poloměr nádoba A")
+                        ),
+                        vyskaA,
+                        evalExprAsCont("π * r^2 * vyska", { kind: 'cont', agent: "nádoba A", ...dim.volume })
+                    ),
+                    ctor('comp-ratio')
                 ),
-                vyska,
-                evalExprAsCont("π * r^2 * vyska", { kind: 'cont', agent: "nádoba A", ...dim.volume })
+                proportion(true, ["zaplnění objemu nádoby", "dosažená výška v nádobě"])
             ),
-            deduce(
-                deduce(
-                    contLength("průměr nádoba B", 20),
-                    ...halfProduct("poloměr nádoba B")
-                ),
-                evalExprAsCont("π * r^2", { kind: 'cont', agent: "podstava nádoba B", ...dim.area })
-            ),
-            ctor("quota")
+            vyskaA
         )
     }
 }

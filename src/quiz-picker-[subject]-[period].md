@@ -34,7 +34,8 @@ const audios = ['M5A-2024', 'M5A-2023', 'M7A-2024', 'M7A-2023', 'M9A-2025', 'M9B
               <a class="h-stack h-stack--xs" href="./print-${code}"><span>tisk</span><i class="fa-solid fa-print"></i></a>
               ${subject === "math" ? html`<a class="h-stack h-stack--xs" title="Rozbor úloh" href="./solution-${code}"><span>rozbor</span><i class="fa-solid fa-mug-hot"></i></a>`:''}
               ${subject === "math" ? html`<a class="h-stack h-stack--xs" title="Řešení úloh pomocí AI" href="./ai-${code}"><i class="fa fa-brands fa-openai"></i></a>`:''}
-              ${subject === "math" ? html`<a href="word-problems-${code}" title="Řešení slovních úloh (markdown)"><i class="fa fa-brands fa-markdown"></i></a>`:''}
+              <!-- ${subject === "math" ? html`<a href="word-problems-${code}" title="Řešení slovních úloh (markdown)"><i class="fa fa-brands fa-markdown"></i></a>`:''} -->
+              <a class="h-stack h-stack--xs" href="./arch-${code}"><i class="fa-solid fa-key"></i></a>              
               <!-- ${subject === "math" ? html`<a href="word-problems-tldr-${code}"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-comment-nodes"></i></a>`:''}                -->
               <!-- ${subject === "math" && period != "diploma" ? html`<a href="/assets/math/${code}.mp3" title="Řešení slovních úloh (notebook LM)"><i class="fa-solid fa-microphone"></i></a>`:''} -->
           <div>`

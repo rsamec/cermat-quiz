@@ -100,7 +100,8 @@ export class CoreVerifyiers {
 
   static OptionEqualTo<T>(value: T) {
     return (control: Option<T>) => {
-      return control?.value === value || (value === true && control?.value === 'A') || (value === false && control?.value === 'N') ? undefined : { 'expected': value, 'actual': control, errorCount: null }
+      const controlValue = control?.value ?? control;
+      return controlValue === value || (value === true && controlValue === 'A') || (value === false && controlValue === 'N') ? undefined : { 'expected': value, 'actual': control, errorCount: null }
     }
   }
 
@@ -131,7 +132,8 @@ export class CoreVerifyiers {
 
   static SelfEvaluateTo({ options }: { options: Option<number>[] }) {
     return (control: Option<number>) => {
-      return options[options.length - 1].value == control?.value ? null : { expected: options, actual: control, errorCount: null }
+      const controlValue = control?.value ?? control;
+      return options[options.length - 1].value == controlValue ? null : { expected: options, actual: control, errorCount: null }
     }
   }
 

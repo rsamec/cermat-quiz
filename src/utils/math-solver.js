@@ -1699,10 +1699,10 @@ function recurExpr(node, level, requiredLevel = 0) {
       } else {
         const q = res.quantity ?? res.ratio;
         if (typeof q == "number" || !isNaN(parseFloat(q))) {
+          expr = parser.parse(cleanUpExpression(expr, variable));
           if (level >= requiredLevel) {
-            expr = expr.simplify({ [variable]: res });
+            expr = expr.simplify({ [variable]: q });
           } else {
-            expr = parser.parse(cleanUpExpression(expr, variable));
             expr = expr.substitute(variable, q);
           }
         } else {

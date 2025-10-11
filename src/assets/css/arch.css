@@ -1,0 +1,38 @@
+@import url("observablehq:default.css");
+@import url("observablehq:theme-air.css");
+@import url("observablehq:theme-near-midnight.css") screen and (prefers-color-scheme: dark);
+
+@import './common/base.css';
+
+
+@import './common/form.css';
+@import './common//sortablejs.css';
+
+table.arch-report {
+    tr {
+        th {
+            white-space: nowrap;
+        }
+    }
+
+    tr {
+        td {
+            padding: 5px;            
+        }
+    }
+}
+
+.row--warning {
+  background-color: color-mix(in srgb, var(--theme-yellow), var(--theme-background) 90%);
+  color: var(--theme-yellow);
+}
+
+.row--danger {
+  background-color: color-mix(in srgb, var(--theme-red), var(--theme-background) 90%);
+  color: var(--theme-red);
+}
+
+.row--success {
+  background-color: color-mix(in srgb, var(--theme-green), var(--theme-background) 90%);
+  color: var(--theme-green);
+}

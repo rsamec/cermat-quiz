@@ -203,7 +203,7 @@ const calculateTotalPoints = ({ tree, corrections, answers }: { tree?: TreeNode,
 
   const calculateSum = (children: AnswerMetadataTreeNode[]) => children.reduce((out, d) => {
     out += d.node.points == null && d.node.verifyBy.kind == "selfEvaluate"
-      ? (answers[d.id]?.value ?? 0)
+      ? (answers[d.id]?.value ?? answers[d.id] ?? 0)
       : !corrections[d.id] && d.node.verifyBy.kind == "equalStringCollection" || d.node.verifyBy.kind == "equalNumberCollection"
         ? calculatePointsByErrorCount(d, answers)
         : corrections[d.id] ? (d.node.points ?? 0) : 0
