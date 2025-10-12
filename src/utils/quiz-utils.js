@@ -58,8 +58,8 @@ export const categories = ({
 })
 
 
-const generateCode = (code, variants) =>
-  [2023, 2024].flatMap(year => variants.flatMap(v => `${code}${v}-${year}`));
+const generateCode = (code, variants, years=[2023,2024]) =>
+  years.flatMap(year => variants.flatMap(v => `${code}${v}-${year}`));
 
 export const quizes = [
   { subject: 'en', period: 'diploma', codes: ["AJA-2023", "AJB-2023", "AJA-2024", "AJB-2024"] },
@@ -69,7 +69,7 @@ export const quizes = [
   { subject: 'cz', period: '6', codes: generateCode("C7", ["A"]) },
   { subject: 'cz', period: 'diploma', codes: generateCode("CM", ["A", "B"]) },
   { subject: 'math', period: '8', codes: generateCode("M5", ["A"]).concat("M5A-2025", "M5B-2025") },
-  { subject: 'math', period: '4', codes: generateCode("M9", ["A", "B", "C", "D"]).concat("M9I-2025", "M9A-2025", "M9B-2025") },
+  { subject: 'math', period: '4', codes: generateCode("M9", ["A", "B", "C", "D"], [2023, 2024, 2025]).concat("M9I-2025") },
   { subject: 'math', period: '6', codes: generateCode("M7", ["A"]).concat("M7A-2025", "M7B-2025") },
   { subject: 'math', period: 'diploma', codes: ["MMA-2025", "MMA-2023", "MMB-2023"] },
   //{ subject: 'math', period: 'diploma', codes:[]},

@@ -4069,6 +4069,29 @@ function inferTransitiveRatioCompareRule(b, a) {
     options: []
   };
 }
+function convertRatioCompareToRatioRule(b) {
+  if (!isNumber2(b.ratio)) {
+    throw "convertRatioCompareToRatioRule does not non quantity";
+  }
+  const whole = b.ratio > 1 ? b.agentA : b.agentB;
+  return { kind: "ratio", whole, part: whole == b.agentB ? b.agentA : b.agentB, ratio: whole == b.agentA ? abs(b.ratio) : abs(1 / b.ratio) };
+}
+function invertConvertRatioCompareToRatioRule(b) {
+  const result = convertRatioCompareToRatioRule(b);
+  if (!isNumber2(b.ratio) || !isNumber2(result.ratio)) {
+    throw "convertRatioCompareToRatioRule does not support expressions";
+  }
+  return {
+    name: convertRatioCompareToRatioRule.name,
+    inputParameters: extractKinds(b),
+    question: `Vyj\xE1d\u0159i ${result.part} jako \u010D\xE1st z ${result.whole}?`,
+    result,
+    options: isNumber2(result.ratio) ? [
+      { tex: `${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: result.whole == b.agentA },
+      { tex: `1 / ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: result.whole == b.agentB }
+    ] : []
+  };
+}
 function convertRatioCompareToTwoPartRatioRule(b, a) {
   if (!isNumber2(b.ratio)) {
     throw "convertToPartToPartRatios does not non quantity";
@@ -4092,6 +4115,34 @@ function inferConvertRatioCompareToTwoPartRatioRule(b, a, last) {
     options: areNumbers(result.ratios) ? [
       { tex: `(${formatRatio(abs(b.ratio))}) v pom\u011Bru k 1`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: true },
       { tex: `(1 / ${formatRatio(abs(b.ratio))}) v pom\u011Bru k 1`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: false }
+    ] : []
+  };
+}
+function convertRatioCompareToRatiosRule(arr, a) {
+  const numbers = arr.map((d) => d.ratio);
+  if (!areNumbers(numbers)) {
+    throw "convertRatioCompareToRatiosRule does not non quantity";
+  }
+  return { kind: "ratios", whole: a.whole, parts: arr.map((d) => d.agentA).concat(arr[0].agentB), ratios: numbers.map((d) => abs(d)).concat(1) };
+}
+function inferConvertRatioCompareToRatiosRule(arr, a, last) {
+  const numbers = arr.map((d) => d.ratio);
+  const tempResult = convertRatioCompareToRatiosRule(arr, a);
+  if (!areNumbers(numbers) || !areNumbers(tempResult.ratios)) {
+    throw "convertRatioCompareToRatiosRule does not support expressions";
+  }
+  const result = {
+    ...tempResult,
+    ratios: last != null ? ratiosToBaseForm(tempResult.ratios) : tempResult.ratios
+  };
+  return {
+    name: convertRatioCompareToRatiosRule.name,
+    inputParameters: [],
+    question: `Vyj\xE1d\u0159i pom\u011Brem \u010D\xE1st\xED ${tempResult.parts.join(":")}?`,
+    result,
+    options: areNumbers(result.ratios) ? [
+      { tex: `(${numbers.map((d) => formatRatio(abs(d)))}) v pom\u011Bru k 1`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: true },
+      { tex: `(1 / ${numbers.map((d) => formatRatio(abs(d)))}) v pom\u011Bru k 1`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: false }
     ] : []
   };
 }
@@ -5830,7 +5881,7 @@ function inferenceRuleEx(...args) {
   const [a, b, ...rest] = args;
   const last = rest?.length > 0 ? rest[rest.length - 1] : null;
   const kind = last?.kind;
-  if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence", "tuple", "eval-expr", "alligation"].includes(last?.kind) || last?.kind === "ratios" && args.length > 3) {
+  if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence", "tuple", "eval-expr", "alligation"].includes(last?.kind)) {
     const arr = [a, b].concat(rest.slice(0, -1));
     if (last.kind === "sequence")
       return inferToSequenceRule(arr);
@@ -5846,10 +5897,15 @@ function inferenceRuleEx(...args) {
       return inferProductRule(arr, last);
     if (["sum-combine", "sum"].includes(last.kind))
       return inferSumRule(arr, last);
-    if (last.kind === "ratios")
-      return inferToRatiosRule(arr, last);
     if (last.kind === "alligation")
       return inferAlligationRule(arr, last);
+    return null;
+  } else if (last?.kind === "ratios" && args.length > 3) {
+    const arr = [a, b].concat(rest.slice(0, -1));
+    if (arr.every((d) => d.kind === "comp-ratio"))
+      return inferConvertRatioCompareToRatiosRule(arr, last);
+    if (arr.every((d) => d.kind === "cont"))
+      return inferToRatiosRule(arr, last);
     return null;
   } else if (a.kind === "eval-option" || b.kind === "eval-option") {
     if (a.kind === "eval-option") {
@@ -5887,6 +5943,8 @@ function inferenceRuleEx(...args) {
     if (kind === "linear-equation")
       return inferSolveEquationRule(a, b, last);
     return inferToCompareRule(a, b);
+  } else if (a.kind === "comp-ratio" && b.kind === "comp-ratio" && kind === "ratios") {
+    return inferConvertRatioCompareToRatiosRule([a, b], last);
   } else if ((a.kind === "comp-ratio" || a.kind === "cont") && b.kind === "simplify-expr") {
     return inferSimplifyExprRule(a, b);
   } else if (a.kind === "simplify-expr" && (b.kind === "comp-ratio" || b.kind === "cont")) {
@@ -5968,9 +6026,9 @@ function inferenceRuleEx(...args) {
   } else if (a.kind === "ratio" && b.kind === "complement-comp-ratio") {
     return inferConvertPartWholeToRatioCompareRule(a, b);
   } else if (a.kind === "comp-ratio" && b.kind === "ratio") {
-    return inferPartWholeCompareRule(a, b);
+    return b.ratio == null ? invertConvertRatioCompareToRatioRule(a) : inferPartWholeCompareRule(a, b);
   } else if (a.kind === "ratio" && b.kind === "comp-ratio") {
-    return inferPartWholeCompareRule(b, a);
+    return a.ratio == null ? invertConvertRatioCompareToRatioRule(b) : inferPartWholeCompareRule(b, a);
   } else if (a.kind === "comp-ratio" && b.kind === "ratios") {
     return a.ratio == null ? inferConvertTwoPartRatioToRatioCompareRule(b, a) : inferConvertRatioCompareToTwoPartRatioRule(a, b, kind === "ratios-base" && last);
   } else if (a.kind === "ratios" && b.kind === "comp-ratio") {
