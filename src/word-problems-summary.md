@@ -2,6 +2,7 @@
 footer: false
 pager: true
 toc: true
+title: Slovní úlohy
 style: /assets/css/word-problems.css
 ---
 <style>
@@ -236,8 +237,6 @@ function renderMarkdownWithCopy(content, lang){
 }
 
 ```
-
-# Slovní úlohy
 
 <details>
     <summary>

@@ -3889,5 +3889,346 @@
         "summary": "Výpočet pravděpodobnosti vylosování konkrétních kombinací písmen z osudí bez vracení."
       }
     ]
+  },
+  "M9C-2025": {
+    "questions": [
+      {
+        "id": "1",
+        "name": "Poměr hmotností",
+        "summary": "Určení poměru dvou hmotností s různými jednotkami.",
+        "category": "UNIT_CONVERSIONS",
+        "presentationFormat": "Word_Problem",
+        "reasoningType": [
+          "Logical_Arithmetic_Only"
+        ]
+      },
+      {
+        "id": "2",
+        "name": "Prvočísla a jejich vztah",
+        "summary": "Nalezení dvou prvočísel splňujících danou podmínku s jejich druhou mocninou.",
+        "category": "NUMBER_OPERATIONS",
+        "presentationFormat": "Word_Problem",
+        "reasoningType": [
+          "Logical_Arithmetic_Only",
+          "Algebraic_Unknown"
+        ]
+      },
+      {
+        "id": "3",
+        "name": "Výpočet číselných výrazů",
+        "summary": "Zjednodušení a výpočet číselných výrazů se zlomky, mocninami a odmocninami.",
+        "category": "NUM_EXPRESSIONS",
+        "presentationFormat": "Math_Expression",
+        "reasoningType": [
+          "Logical_Arithmetic_Only"
+        ]
+      },
+      {
+        "id": "4",
+        "name": "Úprava výrazů s proměnnou",
+        "summary": "Zjednodušení a umocnění výrazů s proměnnou, odstranění závorek.",
+        "category": "VARIABLE_EXPRESSIONS",
+        "presentationFormat": "Math_Expression",
+        "reasoningType": [
+          "Algebraic_Unknown"
+        ]
+      },
+      {
+        "id": "5",
+        "name": "Řešení lineárních rovnic",
+        "summary": "Řešení lineárních rovnic s jednou neznámou, včetně zlomků.",
+        "category": "LINEAR_EQUATIONS",
+        "presentationFormat": "Math_Expression",
+        "reasoningType": [
+          "Algebraic_Unknown"
+        ]
+      },
+      {
+        "id": "6",
+        "name": "Ceny nábytku",
+        "summary": "Vyjádření cen nábytku pomocí proměnné a výpočet konkrétní ceny na základě celkové částky.",
+        "category": "WORD_PROBLEMS",
+        "presentationFormat": "Word_Problem",
+        "reasoningType": [
+          "Algebraic_Unknown"
+        ]
+      },
+      {
+        "id": "7",
+        "name": "Jízda cyklisty",
+        "summary": "Výpočet rychlosti, délky trasy a času jízdy cyklisty na různých úsecích s danými podmínkami.",
+        "category": "WORD_PROBLEMS",
+        "presentationFormat": "Word_Problem",
+        "reasoningType": [
+          "Logical_Arithmetic_Only",
+          "Algebraic_Unknown"
+        ]
+      },
+      {
+        "id": "8",
+        "name": "Dlaždice s kruhy",
+        "summary": "Výpočet obsahu malého kruhu a určení rozdílu počtu malých a velkých kruhů na podlaze chodby.",
+        "category": "PLANE_GEOMETRY",
+        "presentationFormat": "Plane_Geometry",
+        "reasoningType": [
+          "Logical_Arithmetic_Only"
+        ]
+      },
+      {
+        "id": "9",
+        "name": "Konstrukce trojúhelníku",
+        "summary": "Konstrukce rovnoramenného trojúhelníku s daným vrcholem, výškou a přímkou pro jeden vrchol.",
+        "category": "CONSTRUCTION_PROBLEMS",
+        "presentationFormat": "Plane_Geometry",
+        "reasoningType": [
+          "Geometry_Construction"
+        ]
+      },
+      {
+        "id": "10",
+        "name": "Konstrukce obdélníku",
+        "summary": "Konstrukce obdélníku s daným vrcholem, přímkou pro další vrchol a středem strany.",
+        "category": "CONSTRUCTION_PROBLEMS",
+        "presentationFormat": "Plane_Geometry",
+        "reasoningType": [
+          "Geometry_Construction"
+        ]
+      },
+      {
+        "id": "11",
+        "name": "Návštěvnost rodného domu",
+        "summary": "Interpretace dat z grafu o návštěvnosti a vyhodnocení pravdivosti tvrzení.",
+        "category": "GRAPHS_SCHEMES_TABLES",
+        "presentationFormat": "Graphs_Schemes_Tables",
+        "reasoningType": [
+          "Logical_Arithmetic_Only"
+        ]
+      },
+      {
+        "id": "12",
+        "name": "Délka okruhu v krocích",
+        "summary": "Určení délky posledního úseku okruhu v krocích s využitím informací o kolmých úsecích.",
+        "category": "PYTHAGORAS_THEOREM",
+        "presentationFormat": "Graphs_Schemes_Tables",
+        "reasoningType": [
+          "Logical_Arithmetic_Only",
+          "Geometry_Construction"
+        ]
+      },
+      {
+        "id": "13",
+        "name": "Povrch krychle",
+        "summary": "Výpočet délky hrany krychle na základě celkového obsahu bílých nepolepených ploch na jejím povrchu.",
+        "category": "SOLID_GEOMETRY",
+        "presentationFormat": "Solid_Geometry",
+        "reasoningType": [
+          "Logical_Arithmetic_Only"
+        ]
+      },
+      {
+        "id": "14",
+        "name": "Velikost úhlu v obdélníku",
+        "summary": "Výpočet velikosti neznámého úhlu v obdélníku s danými úhly a osami úhlů.",
+        "category": "PLANE_GEOMETRY",
+        "presentationFormat": "Plane_Geometry",
+        "reasoningType": [
+          "Logical_Arithmetic_Only"
+        ]
+      },
+      {
+        "id": "15",
+        "name": "Slovní úlohy se zlomky a procenty",
+        "summary": "Řešení slovních úloh o množstvích, poměrech a procentech.",
+        "category": "WORD_PROBLEMS",
+        "presentationFormat": "Word_Problem",
+        "reasoningType": [
+          "Logical_Arithmetic_Only",
+          "Algebraic_Unknown"
+        ]
+      },
+      {
+        "id": "16",
+        "name": "Vzor šestiúhelníků z trojúhelníků",
+        "summary": "Analýza a výpočet počtu trojúhelníků (bílých a šedých) v obrazcích tvořených pravidelnými šestiúhelníky s rostoucími pásy.",
+        "category": "GRAPHS_SCHEMES_TABLES",
+        "presentationFormat": "Pattern_Recognition",
+        "reasoningType": [
+          "Logical_Arithmetic_Only",
+          "Algebraic_Unknown"
+        ]
+      }
+    ]
+  },
+  "M9D-2025": {
+    "questions": [
+      {
+        "id": "1",
+        "name": "Délka stuhy na třetí dárek",
+        "summary": "Výpočet délky posledního dílu stuhy po dvou střizích, s využitím zlomků celkové délky a zbytku.",
+        "category": "WORD_PROBLEMS",
+        "presentationFormat": "Word_Problem",
+        "reasoningType": [
+          "Logical_Arithmetic_Only"
+        ]
+      },
+      {
+        "id": "2",
+        "name": "Menší ze dvou čísel",
+        "summary": "Nalezení menšího ze dvou přirozených čísel, jejichž poměr je dán a rozdíl dvojnásobků je znám.",
+        "category": "RATIOS_MAPS",
+        "presentationFormat": "Word_Problem",
+        "reasoningType": [
+          "Algebraic_Unknown",
+          "Logical_Arithmetic_Only"
+        ]
+      },
+      {
+        "id": "3",
+        "name": "Výpočty se zlomky",
+        "summary": "Výpočet hodnot komplexních číselných výrazů obsahujících zlomky, mocniny a odmocniny a zapsání výsledku v základním tvaru.",
+        "category": "NUM_EXPRESSIONS",
+        "presentationFormat": "Math_Expression",
+        "reasoningType": [
+          "Logical_Arithmetic_Only"
+        ]
+      },
+      {
+        "id": "4",
+        "name": "Úprava výrazů s proměnnou",
+        "summary": "Zjednodušování, rozšiřování a rozkládání algebraických výrazů s proměnnou.",
+        "category": "VARIABLE_EXPRESSIONS",
+        "presentationFormat": "Math_Expression",
+        "reasoningType": [
+          "Algebraic_Unknown"
+        ]
+      },
+      {
+        "id": "5",
+        "name": "Řešení rovnic",
+        "summary": "Řešení lineární rovnice s jednou neznámou a soustavy dvou lineárních rovnic se dvěma neznámými.",
+        "category": "LINEAR_EQUATIONS",
+        "presentationFormat": "Math_Expression",
+        "reasoningType": [
+          "Algebraic_Unknown"
+        ]
+      },
+      {
+        "id": "6",
+        "name": "Odvoz beden roboty, poměry a výkon",
+        "summary": "Výpočet výkonu dvou robotů A a B při odvozu beden a vyjádření poměrů jejich výkonů a počtu jízd, včetně kombinovaného výkonu za daný čas.",
+        "category": "RATIOS_MAPS",
+        "presentationFormat": "Word_Problem",
+        "reasoningType": [
+          "Logical_Arithmetic_Only"
+        ]
+      },
+      {
+        "id": "7",
+        "name": "Bodový zisk soutěžících",
+        "summary": "Analýza bodového zisku soutěžících ve dvou kolech na základě daných informací a tabulky, včetně výpočtu průměru a určení počtu soutěžících.",
+        "category": "GRAPHS_SCHEMES_TABLES",
+        "presentationFormat": "Graphs_Schemes_Tables",
+        "reasoningType": [
+          "Logical_Arithmetic_Only",
+          "Algebraic_Unknown"
+        ]
+      },
+      {
+        "id": "8",
+        "name": "Rozdíl obsahů a obvod lichoběžníku",
+        "summary": "Výpočet obsahu čtverce a lichoběžníku vzniklého odstřižením trojúhelníků, určení rozdílu obsahů a obvodu lichoběžníku.",
+        "category": "PLANE_GEOMETRY",
+        "presentationFormat": "Plane_Geometry",
+        "reasoningType": [
+          "Logical_Arithmetic_Only",
+          "Geometry_Construction"
+        ]
+      },
+      {
+        "id": "9",
+        "name": "Konstrukce trojúhelníků a osy souměrnosti",
+        "summary": "Konstrukce rovnostranného trojúhelníku ABC a jeho obrazu A′B′C v osové souměrnosti, a sestrojení osy souměrnosti na základě daných bodů a podmínek.",
+        "category": "CONSTRUCTION_PROBLEMS",
+        "presentationFormat": "Plane_Geometry",
+        "reasoningType": [
+          "Geometry_Construction"
+        ]
+      },
+      {
+        "id": "10",
+        "name": "Konstrukce rovnoběžníku",
+        "summary": "Sestrojení rovnoběžníku KLMN a jeho středu souměrnosti S na základě daných vrcholů L, M, přímky p, na které leží S, a podmínky rovnosti délek strany LM a úhlopříčky LN.",
+        "category": "CONSTRUCTION_PROBLEMS",
+        "presentationFormat": "Plane_Geometry",
+        "reasoningType": [
+          "Geometry_Construction"
+        ]
+      },
+      {
+        "id": "11",
+        "name": "Úhly v kružnici",
+        "summary": "Určení pravdivosti tvrzení o velikostech úhlů v kružnici, kde jsou dány protínající se tětivy procházející středem.",
+        "category": "PLANE_GEOMETRY",
+        "presentationFormat": "Plane_Geometry",
+        "reasoningType": [
+          "Logical_Arithmetic_Only"
+        ]
+      },
+      {
+        "id": "12",
+        "name": "Objem krychlí",
+        "summary": "Výpočet rozdílu objemů dvou krychlí, jejichž povrchy se liší o danou hodnotu a je znám součet délek hran menší krychle.",
+        "category": "SOLID_GEOMETRY",
+        "presentationFormat": "Word_Problem",
+        "reasoningType": [
+          "Algebraic_Unknown",
+          "Logical_Arithmetic_Only"
+        ]
+      },
+      {
+        "id": "13",
+        "name": "Počet vagonů ve vlacích",
+        "summary": "Určení rozdílu počtu vagonů mezi třetím a prvním vlakem na základě popisu vztahů mezi počty vagonů na třech kolejích a celkového počtu vagonů.",
+        "category": "WORD_PROBLEMS",
+        "presentationFormat": "Word_Problem",
+        "reasoningType": [
+          "Algebraic_Unknown",
+          "Logical_Arithmetic_Only"
+        ]
+      },
+      {
+        "id": "14",
+        "name": "Počet ptáků podle druhu",
+        "summary": "Interpretace grafu a textových informací o počtu spatřených ptáků Jonášem a Beátou k určení neznámého počtu jedinců brhlíka lesního zaznamenaných Beátou.",
+        "category": "GRAPHS_SCHEMES_TABLES",
+        "presentationFormat": "Graphs_Schemes_Tables",
+        "reasoningType": [
+          "Algebraic_Unknown",
+          "Logical_Arithmetic_Only"
+        ]
+      },
+      {
+        "id": "15",
+        "name": "Slovní úlohy s procenty, zlomky a poměry",
+        "summary": "Řešení sady slovních úloh zahrnujících výpočty se zlomky, procenty, poměry a věkovými vztahy.",
+        "category": "WORD_PROBLEMS",
+        "presentationFormat": "Word_Problem",
+        "reasoningType": [
+          "Algebraic_Unknown",
+          "Logical_Arithmetic_Only"
+        ]
+      },
+      {
+        "id": "16",
+        "name": "Vlastnosti obdélníkového hřiště a trasy",
+        "summary": "Výpočet délek různých úseků, stran a obvodu obdélníkového hřiště s vnitřními rovnoběžnými úsečkami a čtvercovým obrazcem, na základě daných délek trasy.",
+        "category": "PLANE_GEOMETRY",
+        "presentationFormat": "Plane_Geometry",
+        "reasoningType": [
+          "Logical_Arithmetic_Only",
+          "Algebraic_Unknown"
+        ]
+      }
+    ]
   }
 }
