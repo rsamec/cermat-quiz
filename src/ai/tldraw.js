@@ -4658,7 +4658,7 @@ function inferPartToWholeRule(a, b) {
   };
 }
 function rateRule(a, rate) {
-  const aEntity = a.kind == "cont" ? a.entity : a.agentQuota;
+  const aEntity = a.kind == "cont" ? a.entity : a.kind === "quota" ? a.agentQuota : a.entity.entity;
   if (!(aEntity === rate.entity.entity || aEntity === rate.entityBase.entity)) {
     throw `Mismatch entity ${aEntity} any of ${rate.entity.entity}, ${rate.entityBase.entity}`;
   }
@@ -4674,7 +4674,7 @@ function rateRule(a, rate) {
 }
 function inferRateRule(a, rate) {
   const result = rateRule(a, rate);
-  const aEntity = a.kind == "cont" ? a.entity : a.agentQuota;
+  const aEntity = a.kind == "cont" ? a.entity : a.kind === "quota" ? a.agentQuota : a.entity.entity;
   const isUnitRate = rate.baseQuantity === 1;
   return {
     name: rateRule.name,
@@ -5168,18 +5168,18 @@ function inferToRatioCompareRule(a, b, ctor) {
     return resultAsQuestion(result, { name: toRatioCompareRule.name, inputParamters: extractKinds(a, b, ctor) });
   }
 }
-function compareToRateRule(a, b) {
+function compareToRateRule(a, b, last) {
   return {
     kind: "rate",
-    agent: a.agentA,
+    agent: last?.agent ?? a.agentA,
     quantity: isNumber2(a.quantity) && isNumber2(b.quantity) ? abs(a.quantity) / abs(b.quantity) : wrapToQuantity(`abs(a.quantity) / abs(b.quantity)`, { a, b }),
     entity: { entity: a.entity },
     entityBase: { entity: b.entity },
     baseQuantity: 1
   };
 }
-function inferCompareToRateRule(a, b) {
-  const result = compareToRateRule(a, b);
+function inferCompareToRateRule(a, b, last) {
+  const result = compareToRateRule(a, b, last);
   return {
     name: compareToRateRule.name,
     inputParameters: extractKinds(a, b),
@@ -5981,9 +5981,9 @@ function inferenceRuleEx(...args) {
     return kind === "comp-part-eq" ? inferPartEqualRule(a, b) : inferCompareRule(b, a);
   } else if (a.kind === "cont" && b.kind === "comp") {
     return kind === "comp-part-eq" ? inferPartEqualRule(b, a) : inferCompareRule(a, b);
-  } else if ((a.kind === "cont" || a.kind === "quota") && b.kind == "rate") {
+  } else if ((a.kind === "cont" || a.kind === "quota" || a.kind === "rate") && b.kind == "rate") {
     return inferRateRule(a, b);
-  } else if (a.kind === "rate" && (b.kind == "cont" || b.kind === "quota")) {
+  } else if (a.kind === "rate" && (b.kind == "cont" || b.kind === "quota" || b.kind === "rate")) {
     return inferRateRule(b, a);
   } else if (a.kind === "comp" && b.kind == "comp-ratio") {
     return kind === "comp" ? inferTransitiveCompareRule(a, b) : inferRatioCompareToCompareRule(b, a, kind === "nth-part" && last);
@@ -6100,7 +6100,7 @@ function inferenceRuleEx(...args) {
   } else if (a.kind === "delta" && b.kind === "comp") {
     return inferConvertDeltaToCompareRule(a, b);
   } else if (a.kind === "comp" && b.kind === "comp") {
-    return inferCompareToRateRule(b, a);
+    return inferCompareToRateRule(b, a, kind === "rate" && last);
   } else {
     return null;
   }

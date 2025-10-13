@@ -1,6 +1,5 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, sum, product, counter, triangleAngle, contLength, productArea, dimensionEntity, contArea, productVolume, primeFactors, ctorExpressionOption, compRelativePercent, comp, ctorComplementCompRatio, ctorRatio, ctorComplement, evalExprAsCont, ctorRound, productCombine, EmptyUnit, pythagoras, ctorBooleanOption } from "../../components/math";
-import { createLazyMap, deduce, deduceAs, last, to, toCont } from "../../utils/deduce-utils";
-import { simplify } from "../../utils/math-solver";
+import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, rate, ratio, ctorPercent, percent, ctorOption, sum, product, counter, contLength, dimensionEntity, contArea, ctorExpressionOption, compRelativePercent, comp, ctorComplement, evalExprAsCont, ctorRound, productCombine, pythagoras, ctorBooleanOption } from "../../components/math";
+import { createLazyMap, deduce, deduceAs, last, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   1: () => porovnani(),

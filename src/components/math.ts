@@ -1583,9 +1583,9 @@ function inferPartToWholeRule(a: Container, b: PartWholeRatio): Question<Contain
   }
 }
 
-function rateRule(a: Container | Quota, rate: Rate): Container {
+function rateRule(a: Container | Quota | Rate, rate: Rate): Container {
 
-  const aEntity = a.kind == "cont" ? a.entity : a.agentQuota
+  const aEntity = a.kind == "cont" ? a.entity : a.kind === "quota" ? a.agentQuota: a.entity.entity;
   if (!(aEntity === rate.entity.entity || aEntity === rate.entityBase.entity)) {
     throw `Mismatch entity ${aEntity} any of ${rate.entity.entity}, ${rate.entityBase.entity}`
   }
@@ -1613,9 +1613,9 @@ function rateRule(a: Container | Quota, rate: Rate): Container {
           : wrapToQuantity(`a.quantity * rate.quantity`, { a, rate })
   }
 }
-function inferRateRule(a: Container | Quota, rate: Rate): Question<Container> {
+function inferRateRule(a: Container | Quota | Rate, rate: Rate): Question<Container> {
   const result = rateRule(a, rate)
-  const aEntity = a.kind == "cont" ? a.entity : a.agentQuota
+  const aEntity = a.kind == "cont" ? a.entity : a.kind === "quota" ? a.agentQuota : a.entity.entity
   const isUnitRate = rate.baseQuantity === 1;
   return {
     name: rateRule.name,
@@ -2177,18 +2177,18 @@ function inferToRatioCompareRule(a: Container, b: Container, ctor: RatioComparis
   }
 }
 
-function compareToRateRule(a: Comparison, b: Comparison): Rate {
+function compareToRateRule(a: Comparison, b: Comparison,last?: {agent:AgentMatcher}): Rate {
   return {
     kind: 'rate',
-    agent: a.agentA,
+    agent: last?.agent ?? a.agentA,
     quantity: isNumber(a.quantity) && isNumber(b.quantity) ? abs(a.quantity) / abs(b.quantity) : wrapToQuantity(`abs(a.quantity) / abs(b.quantity)`, { a, b }),
     entity: { entity: a.entity },
     entityBase: { entity: b.entity },
     baseQuantity: 1
   }
 }
-function inferCompareToRateRule(a: Comparison, b: Comparison): Question<Rate> {
-  const result = compareToRateRule(a, b);
+function inferCompareToRateRule(a: Comparison, b: Comparison, last?: {agent:AgentMatcher}): Question<Rate> {
+  const result = compareToRateRule(a, b, last);
 
   return {
     name: compareToRateRule.name,
@@ -3152,10 +3152,10 @@ function inferenceRuleEx(...args: Predicate[]): Question<any> {
 
     return kind === "comp-part-eq" ? inferPartEqualRule(b, a) : inferCompareRule(a, b);
   }
-  else if ((a.kind === "cont" || a.kind === "quota") && b.kind == "rate") {
+  else if ((a.kind === "cont" || a.kind === "quota" || a.kind ==="rate") && b.kind == "rate") {
     return inferRateRule(a, b)
   }
-  else if (a.kind === "rate" && (b.kind == "cont" || b.kind === "quota")) {
+  else if (a.kind === "rate" && (b.kind == "cont" || b.kind === "quota" || b.kind ==="rate")) {
     return inferRateRule(b, a)
   }
   else if (a.kind === "comp" && b.kind == "comp-ratio") {
@@ -3351,7 +3351,7 @@ function inferenceRuleEx(...args: Predicate[]): Question<any> {
     return inferConvertDeltaToCompareRule(a, b)
   }
   else if (a.kind === "comp" && b.kind === "comp") {
-    return inferCompareToRateRule(b, a)
+    return inferCompareToRateRule(b, a, kind === "rate" && last)
   }
   else {
     return null;

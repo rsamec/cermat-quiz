@@ -126,8 +126,7 @@ export default {
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solution-${code}`))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solu-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-${code}`))  
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/raw-${code}`))
-    
+    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/raw-${code}`))    
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-tldr-${code}`))
     //.concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-ai-${code}`))
     .concat(wordProblemsKeyValuePairs.map(([code,id]) => `/word-problem-${code}-n-${id}`))
