@@ -3981,7 +3981,7 @@ function inferToPartWholeCompareRule(a, b) {
   return {
     name: toPartWholeCompareRule.name,
     inputParameters: extractKinds(a, b),
-    question: `Porovnej ${result.agentA} a ${result.agentB}. Kolikr\xE1t ? `,
+    question: `Porovnej ${result.agentA} a ${result.agentB}. Kolikr\xE1t? `,
     result,
     options: isNumber2(a.ratio) && isNumber2(b.ratio) ? [
       {
@@ -4076,7 +4076,7 @@ function convertRatioCompareToRatioRule(b) {
   const whole = b.ratio > 1 ? b.agentA : b.agentB;
   return { kind: "ratio", whole, part: whole == b.agentB ? b.agentA : b.agentB, ratio: whole == b.agentA ? abs(b.ratio) : abs(1 / b.ratio) };
 }
-function invertConvertRatioCompareToRatioRule(b) {
+function inferConvertRatioCompareToRatioRule(b) {
   const result = convertRatioCompareToRatioRule(b);
   if (!isNumber2(b.ratio) || !isNumber2(result.ratio)) {
     throw "convertRatioCompareToRatioRule does not support expressions";
@@ -6026,9 +6026,9 @@ function inferenceRuleEx(...args) {
   } else if (a.kind === "ratio" && b.kind === "complement-comp-ratio") {
     return inferConvertPartWholeToRatioCompareRule(a, b);
   } else if (a.kind === "comp-ratio" && b.kind === "ratio") {
-    return b.ratio == null ? invertConvertRatioCompareToRatioRule(a) : inferPartWholeCompareRule(a, b);
+    return b.ratio == null ? inferConvertRatioCompareToRatioRule(a) : inferPartWholeCompareRule(a, b);
   } else if (a.kind === "ratio" && b.kind === "comp-ratio") {
-    return a.ratio == null ? invertConvertRatioCompareToRatioRule(b) : inferPartWholeCompareRule(b, a);
+    return a.ratio == null ? inferConvertRatioCompareToRatioRule(b) : inferPartWholeCompareRule(b, a);
   } else if (a.kind === "comp-ratio" && b.kind === "ratios") {
     return a.ratio == null ? inferConvertTwoPartRatioToRatioCompareRule(b, a) : inferConvertRatioCompareToTwoPartRatioRule(a, b, kind === "ratios-base" && last);
   } else if (a.kind === "ratios" && b.kind === "comp-ratio") {
@@ -9970,7 +9970,13 @@ function expressionToString22(tokens, toJS) {
         if (f === "[") {
           nstack.push(n1 + "[" + n2 + "]");
         } else {
-          nstack.push(n1 + " " + f + " " + n2);
+          if (f === "+" || f === "-") {
+            nstack.push(n1 + " " + f + " " + n2);
+          } else {
+            const isExprN1 = typeof n1 === "string" && n1.indexOf(" ") !== -1;
+            const isExprN2 = typeof n2 === "string" && n2.indexOf(" ") !== -1;
+            nstack.push(`${isExprN1 ? `(${n1})` : n1} ${f} ${isExprN2 ? `(${n2})` : n2}`);
+          }
         }
       }
     } else if (type === IOP322) {

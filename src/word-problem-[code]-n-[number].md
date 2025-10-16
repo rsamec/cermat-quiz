@@ -31,12 +31,10 @@ const wordProblem = wordProblems[code] ?? {};
 
 const providersConfig = [
   {name:"Open AI ChatGTP",shortName:"ChatGTP",url:"https://chat.openai.com/?q="},
-  {name:"Google AI Gemini",shortName:"Gemini",url:"https://www.google.com/search?udm=50&q="},    
+  {name:"Google AI Mode Gemini",shortName:"Gemini",url:"https://www.google.com/search?udm=50&q="},    
   {name:"Microsoft Copilot", shortName:"Copilot", url:"https://www.bing.com/search?showconv=1&sendquery=1&q="},
   {name:"Anthropic Claude", shortName:"Claude", url:"https://claude.ai/new?q="},  
   {name:"Mistral Le Chat", shortName:"Mistral", url:"https://chat.mistral.ai/chat?q="},  
-  {name:"Google Search",shortName:"Google",url:"https://www.google.com/search?q="}, 
-  
 ]
 
 const providers = new Map(providersConfig.map(d => [d.name, d]));

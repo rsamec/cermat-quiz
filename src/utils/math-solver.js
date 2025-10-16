@@ -2007,7 +2007,13 @@ function expressionToString2(tokens, toJS) {
         if (f === "[") {
           nstack.push(n1 + "[" + n2 + "]");
         } else {
-          nstack.push(n1 + " " + f + " " + n2);
+          if (f === "+" || f === "-") {
+            nstack.push(n1 + " " + f + " " + n2);
+          } else {
+            const isExprN1 = typeof n1 === "string" && n1.indexOf(" ") !== -1;
+            const isExprN2 = typeof n2 === "string" && n2.indexOf(" ") !== -1;
+            nstack.push(`${isExprN1 ? `(${n1})` : n1} ${f} ${isExprN2 ? `(${n2})` : n2}`);
+          }
         }
       }
     } else if (type === IOP32) {

@@ -17,7 +17,11 @@ add to source
 - add some jokes
 - do not use czech language in the podcast
 
-- the most important is to go through all the sources - make it longer if needed
+
+
+
+- the most important is to go through all the question in the source - make it longer if needed
+- follow as much as possible the presented step by step solution
 - add some jokes
 
 Na stránce https://www.cermatdata.cz je dostupná nová neoficiální data banka úloh a jejich řešení.

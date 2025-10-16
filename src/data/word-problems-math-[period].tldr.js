@@ -30,7 +30,7 @@ const {
 });
 
 //load 
-const codes = quizes.filter(d => d.subject === "math" && d.period == period).flatMap(d => d.codes);
+const codes = quizes.filter(d => d.subject === "math" && d.period == period).flatMap(d => d.codes)
 const allRecords = []
 //sort codes
 codes.sort((f, s) => {
@@ -134,6 +134,8 @@ for (let code of codes) {
   const assetsToAdd = [...quizShapes.assets];
   const bindingsToAdd = []
 
+  const addPrompts = false;
+
   //LOOP WORD PROBLEMS
   const resultJson = Object.entries(wordProblem).sort(([f], [s]) => f.localeCompare(s, 'en', { numeric: true }))
     .reduce((out, [key, value], index) => {
@@ -150,49 +152,50 @@ for (let code of codes) {
         cumulativeY += DEFAULT_BREAK_HEIGHT;
 
         // PROMPTS SHAPES
-        const aiPrompts = generateAIMessages({
-          template: quiz.content([id], { ids, render: 'content' }),
-          deductionTrees: wordProblemGroups[id].map(d => d.deductionTrees) ?? []
-        });
+        if (addPrompts) {
+          const aiPrompts = generateAIMessages({
+            template: quiz.content([id], { ids, render: 'content' }),
+            deductionTrees: wordProblemGroups[id].map(d => d.deductionTrees) ?? []
+          });
 
-        const allPrompts = [
-          { title: "Klíčové myšlenky", description: "Hlavní myšlenky řešení", prompt: aiPrompts.generateImportantPoints },
-          { title: "Krok za krokem", description: "Podrobné vysvětlení řešení úlohy krok za krokem", prompt: aiPrompts.steps },
-          { title: "Generalizace", description: "Generalizace úlohy", prompt: aiPrompts.generalization },
-          { title: "Obdobné úlohy", description: "Generuj obdobné úlohy", prompt: aiPrompts.generateMoreQuizes },
-          { title: "Pracovní list", description: "Generuj pracovní list", prompt: aiPrompts.generateSubQuizes }
-        ]
-        const bookmarkFrameId = createShapeId();
-        const bookmarkFrame = {
-          ...
-          createFrame({
-            id: bookmarkFrameId,
-            name: `ChatGPT prompts - úloha ${id}`,
-            color: currentColor,
-            h: 110,
-            w: DEFAULT_BOOKMARK_WIDTH * allPrompts.length + 20,
-          }),
-          x: 1000,
-          y: cumulativeY - 300,
-          parentId: newPage.id
+          const allPrompts = [
+            { title: "Klíčové myšlenky", description: "Hlavní myšlenky řešení", prompt: aiPrompts.generateImportantPoints },
+            { title: "Krok za krokem", description: "Podrobné vysvětlení řešení úlohy krok za krokem", prompt: aiPrompts.steps },
+            { title: "Generalizace", description: "Generalizace úlohy", prompt: aiPrompts.generalization },
+            { title: "Obdobné úlohy", description: "Generuj obdobné úlohy", prompt: aiPrompts.generateMoreQuizes },
+            { title: "Pracovní list", description: "Generuj pracovní list", prompt: aiPrompts.generateSubQuizes }
+          ]
+          const bookmarkFrameId = createShapeId();
+          const bookmarkFrame = {
+            ...
+            createFrame({
+              id: bookmarkFrameId,
+              name: `ChatGPT prompts - úloha ${id}`,
+              color: currentColor,
+              h: 110,
+              w: DEFAULT_BOOKMARK_WIDTH * allPrompts.length + 20,
+            }),
+            x: 1000,
+            y: cumulativeY - 300,
+            parentId: newPage.id
+          }
+          shapesToAdd.push(bookmarkFrame)
+
+          const bookmarksToAdd = createBookmarks(allPrompts.map(({ title, description, prompt }, i) => ({
+            shapeId: createShapeId(),
+            type: "bookmark",
+            x: 5 + (i * DEFAULT_BOOKMARK_WIDTH),
+            y: 5,
+            height: DEFAULT_BOOKMARK_HEIGHT,
+            width: DEFAULT_BOOKMARK_WIDTH,
+            url: `https://chat.openai.com/?q=${encodeURIComponent(prompt)}`,
+            title,
+            description,
+            favicon: "https://cdn.oaistatic.com/assets/favicon-eex17e9e.ico"
+          })));
+          shapesToAdd.push(...bookmarksToAdd.shapes.map(d => ({ ...d, parentId: bookmarkFrameId })))
+          assetsToAdd.push(...bookmarksToAdd.assets);
         }
-        shapesToAdd.push(bookmarkFrame)
-
-        const bookmarksToAdd = createBookmarks(allPrompts.map(({ title, description, prompt }, i) => ({
-          shapeId: createShapeId(),
-          type: "bookmark",
-          x: 5 + (i * DEFAULT_BOOKMARK_WIDTH),
-          y: 5,
-          height: DEFAULT_BOOKMARK_HEIGHT,
-          width: DEFAULT_BOOKMARK_WIDTH,
-          url: `https://chat.openai.com/?q=${encodeURIComponent(prompt)}`,
-          title,
-          description,
-          favicon: "https://cdn.oaistatic.com/assets/favicon-eex17e9e.ico"
-        })));
-        shapesToAdd.push(...bookmarksToAdd.shapes.map(d => ({ ...d, parentId: bookmarkFrameId })))
-        assetsToAdd.push(...bookmarksToAdd.assets);
-
 
         if (aiKeyPoints[id] != null) {
 

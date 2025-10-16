@@ -824,7 +824,7 @@ function inferToPartWholeCompareRule(a: PartWholeRatio, b: PartWholeRatio): Ques
   return {
     name: toPartWholeCompareRule.name,
     inputParameters: extractKinds(a, b),
-    question: `Porovnej ${result.agentA} a ${result.agentB}. Kolikrát ? `,
+    question: `Porovnej ${result.agentA} a ${result.agentB}. Kolikrát? `,
     result,
     options: isNumber(a.ratio) && isNumber(b.ratio) ? [
       {
@@ -915,7 +915,7 @@ function convertRatioCompareToRatioRule(b: RatioComparison): PartWholeRatio {
 
   return { kind: 'ratio', whole, part: whole == b.agentB ? b.agentA : b.agentB, ratio: whole == b.agentA ? abs(b.ratio) : abs(1 / b.ratio) }
 }
-function invertConvertRatioCompareToRatioRule(b: RatioComparison): Question<PartWholeRatio> {
+function inferConvertRatioCompareToRatioRule(b: RatioComparison): Question<PartWholeRatio> {
   const result = convertRatioCompareToRatioRule(b);
 
   if (!isNumber(b.ratio) || !isNumber(result.ratio)) {
@@ -3219,10 +3219,10 @@ function inferenceRuleEx(...args: Predicate[]): Question<any> {
     return inferConvertPartWholeToRatioCompareRule(a, b);
   }
   else if (a.kind === "comp-ratio" && b.kind === "ratio") {
-    return b.ratio == null ? invertConvertRatioCompareToRatioRule(a) : inferPartWholeCompareRule(a, b);
+    return b.ratio == null ? inferConvertRatioCompareToRatioRule(a) : inferPartWholeCompareRule(a, b);
   }
   else if (a.kind === "ratio" && b.kind === "comp-ratio") {
-    return a.ratio == null ? invertConvertRatioCompareToRatioRule(b) : inferPartWholeCompareRule(b, a);
+    return a.ratio == null ? inferConvertRatioCompareToRatioRule(b) : inferPartWholeCompareRule(b, a);
   }
   else if (a.kind === "comp-ratio" && b.kind === "ratios") {
     return a.ratio == null ? inferConvertTwoPartRatioToRatioCompareRule(b, a) : inferConvertRatioCompareToTwoPartRatioRule(a, b, kind === "ratios-base" && last);
