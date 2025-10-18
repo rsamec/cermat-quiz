@@ -5881,7 +5881,7 @@ function inferenceRuleEx(...args) {
   const [a, b, ...rest] = args;
   const last = rest?.length > 0 ? rest[rest.length - 1] : null;
   const kind = last?.kind;
-  if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence", "tuple", "eval-expr", "alligation"].includes(last?.kind)) {
+  if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence", "tuple", "eval-expr", "eval-formula", "alligation"].includes(last?.kind)) {
     const arr = [a, b].concat(rest.slice(0, -1));
     if (last.kind === "sequence")
       return inferToSequenceRule(arr);
@@ -5889,7 +5889,7 @@ function inferenceRuleEx(...args) {
       return inferGcdRule(arr, last);
     if (last.kind === "lcd")
       return inferLcdRule(arr, last);
-    if (last.kind === "eval-expr")
+    if (last.kind === "eval-expr" || last.kind === "eval-formula")
       return inferEvalToQuantityRule(arr, last);
     if (last.kind === "tuple")
       return tupleRule(arr);
@@ -5949,9 +5949,9 @@ function inferenceRuleEx(...args) {
     return inferSimplifyExprRule(a, b);
   } else if (a.kind === "simplify-expr" && (b.kind === "comp-ratio" || b.kind === "cont")) {
     return inferSimplifyExprRule(b, a);
-  } else if (a.kind === "cont" && b.kind === "eval-expr") {
+  } else if (a.kind === "cont" && (b.kind === "eval-expr" || b.kind === "eval-formula")) {
     return inferEvalToQuantityRule([a], b);
-  } else if (a.kind === "eval-expr" && b.kind === "cont") {
+  } else if ((a.kind === "eval-expr" || a.kind === "eval-formula") && b.kind === "cont") {
     return inferEvalToQuantityRule([b], a);
   } else if (a.kind === "rate" && b.kind === "rate" && last?.kind === "ratios") {
     return inferToRatiosRule([a, b], last);

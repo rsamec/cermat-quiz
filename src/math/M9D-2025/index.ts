@@ -1,4 +1,4 @@
-import { commonSense, compRatio, cont, ctor, ctorRatios, ctorUnit, nthPart, rate, ratio, ratios, ctorLinearEquation, ctorOption, sum, contLength, productArea, dimensionEntity, comp, ctorComplement, evalExprAsCont, pythagoras, alligation, compRelativePercent, ctorDifference, compRelative, ctorRate } from "../../components/math";
+import { commonSense, compRatio, cont, ctor, ctorRatios, ctorUnit, nthPart, rate, ratio, ratios, ctorLinearEquation, ctorOption, sum, contLength, productArea, dimensionEntity, comp, ctorComplement, evalExprAsCont, pythagoras, alligation, compRelativePercent, ctorDifference, compRelative, ctorRate, evalFormulaAsCont, formulaRegistry } from "../../components/math";
 import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -143,7 +143,7 @@ function ctverec() {
   const stranaTrojuhelnik = deduce(
     stranaCtverec,
     zakladnaLichobeznik,
-    evalExprAsCont("(stranaCtverce - kratsiZakladna)/2", { kind: 'cont', agent: stranaTrojuhelnikLabel, ...dim.length })
+    evalExprAsCont("(stranaCtverce - kratsiZakladna)/2", stranaTrojuhelnikLabel, dim.length)
   )
   const stranaLichobeznik = deduce(
     last(stranaTrojuhelnik),
@@ -187,18 +187,17 @@ function krychle() {
     deduce(
       deduce(
         last(stranaMala),
-        evalExprAsCont("6 * strana^2", { kind: 'cont', agent: malaLabel, ...dim.area })
+        evalFormulaAsCont(formulaRegistry.surfaceArea.cube, x => x.S, malaLabel, dim.area)
       ),
       obsah),
-    cont(velkaLabel, 6, "stran"),
-    evalExprAsCont("sqrt(obsah / pocetStran)", { kind: "cont", agent: velkaLabel, ...dim.length })
+    evalFormulaAsCont(formulaRegistry.surfaceArea.cube, x => x.a, velkaLabel, dim.length)
   )
 
   return {
     deductionTree: deduce(
       deduce(
-        deduce(stranaVelka, evalExprAsCont("strana^3", { kind: 'cont', agent: velkaLabel, ...dim.volume })),
-        deduce(stranaMala, evalExprAsCont("strana^3", { kind: 'cont', agent: malaLabel, ...dim.volume }))
+        deduce(stranaVelka, evalFormulaAsCont(formulaRegistry.volume.cube, x => x.V, velkaLabel, dim.volume)),
+        deduce(stranaMala, evalFormulaAsCont(formulaRegistry.volume.cube, x => x.V, malaLabel, dim.volume))
       ),
       ctorOption("C", 37)
     )

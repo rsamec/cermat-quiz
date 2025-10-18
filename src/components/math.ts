@@ -98,6 +98,12 @@ export type EvalExpr<T extends Omit<Predicate, 'quantity'>> = {
   expression: Expression
   predicate: T
 }
+export type EvalFormula<T extends Omit<Predicate, 'quantity'>> = {
+  kind: 'eval-formula',
+  expression: Expression
+  formulaName: string,
+  predicate: T
+}
 export type SimplifyExpr = {
   kind: 'simplify-expr',
   context: Record<string, number>
@@ -401,7 +407,7 @@ export type EntityDef = string | EntityBase
 export type QuantityPredicate = Container | Comparison | Transfer | Rate | ComparisonDiff | Transfer | Quota | Delta
 export type RatioPredicate = RatioComparison | PartWholeRatio
 export type RatiosPredicate = PartToPartRatio | TwoPartRatio | ThreePartRatio;
-export type ExpressionPredicate = EvalExpr<ContainerEval | RateEval> | SimplifyExpr | LinearEquation | Phytagoras;
+export type ExpressionPredicate = EvalExpr<ContainerEval | RateEval> | EvalFormula<ContainerEval | RateEval> | SimplifyExpr | LinearEquation | Phytagoras;
 export type CommonSensePredicate = CommonSense | Proportion
 export type MultipleOperationPredicate = Sum | SumCombine | Product | ProductCombine | GCD | LCD
 export type SingleOperationPredicate = Scale | InvertScale | Slide | InvertSlide | Difference | Complement | ConvertUnit | Round | ConvertPercent | InvertCompRatio | Reverse | ComplementCompRatio | RatiosInvert | RatiosBase
@@ -508,11 +514,17 @@ export function cont(agent: string, quantity: NumberOrVariable, entity: string, 
   return { kind: 'cont', agent, quantity: quantity as NumberOrExpression, entity, unit, asRatio: opts?.asFraction };
 }
 
-export function evalExprAsCont(expression: string, predicate: ContainerEval): EvalExpr<ContainerEval> {
-  return { kind: 'eval-expr', expression, predicate }
+export function evalExprAsCont(expression: string, agent: AgentMatcher, entity: EntityBase, opts: { asRatio?: boolean } = {}): EvalExpr<ContainerEval> {
+  return { kind: 'eval-expr', expression, predicate: { kind: 'cont', agent, ...entity, asRatio: opts.asRatio } }
 }
 export function evalExprAsRate(expression: string, predicate: RateEval): EvalExpr<RateEval> {
   return { kind: 'eval-expr', expression, predicate }
+}
+export function evalFormulaAsCont<F>(f: Formula<F>, expression: (context: F) => Expression, agent: AgentMatcher, entity: EntityBase, opts: { asRatio?: boolean } = {}): EvalFormula<ContainerEval> {
+  return { kind: 'eval-formula', expression: expression(f.formula), formulaName: f.name, predicate: { kind: 'cont', agent, ...entity, asRatio: opts.asRatio } }
+}
+export function evalFormulaAsRate<F>(f: Formula<F>, expression: (context: F) => Expression, predicate: RateEval): EvalFormula<RateEval> {
+  return { kind: 'eval-formula', expression: expression(f.formula), formulaName: f.name, predicate }
 }
 
 export function simplifyExpr(context: Record<string, number>): SimplifyExpr {
@@ -1585,7 +1597,7 @@ function inferPartToWholeRule(a: Container, b: PartWholeRatio): Question<Contain
 
 function rateRule(a: Container | Quota | Rate, rate: Rate): Container {
 
-  const aEntity = a.kind == "cont" ? a.entity : a.kind === "quota" ? a.agentQuota: a.entity.entity;
+  const aEntity = a.kind == "cont" ? a.entity : a.kind === "quota" ? a.agentQuota : a.entity.entity;
   if (!(aEntity === rate.entity.entity || aEntity === rate.entityBase.entity)) {
     throw `Mismatch entity ${aEntity} any of ${rate.entity.entity}, ${rate.entityBase.entity}`
   }
@@ -2177,7 +2189,7 @@ function inferToRatioCompareRule(a: Container, b: Container, ctor: RatioComparis
   }
 }
 
-function compareToRateRule(a: Comparison, b: Comparison,last?: {agent:AgentMatcher}): Rate {
+function compareToRateRule(a: Comparison, b: Comparison, last?: { agent: AgentMatcher }): Rate {
   return {
     kind: 'rate',
     agent: last?.agent ?? a.agentA,
@@ -2187,7 +2199,7 @@ function compareToRateRule(a: Comparison, b: Comparison,last?: {agent:AgentMatch
     baseQuantity: 1
   }
 }
-function inferCompareToRateRule(a: Comparison, b: Comparison, last?: {agent:AgentMatcher}): Question<Rate> {
+function inferCompareToRateRule(a: Comparison, b: Comparison, last?: { agent: AgentMatcher }): Question<Rate> {
   const result = compareToRateRule(a, b, last);
 
   return {
@@ -2550,7 +2562,7 @@ function extractDistinctWords(str: string): string[] {
 function inferEvalToQuantityRule<
   T extends Predicate & { quantity: Quantity },
   K extends Omit<Predicate, 'quantity'>
->(a: T[], b: EvalExpr<K>): Question<any> {
+>(a: T[], b: EvalExpr<K> | EvalFormula<K>): Question<any> {
   const result = evalToQuantityRule(a, b);
   return {
     name: evalToQuantityRule.name,
@@ -3040,14 +3052,14 @@ function inferenceRuleEx(...args: Predicate[]): Question<any> {
 
   const kind = last?.kind;
 
-  if (['sum-combine', "sum", 'product-combine', "product", "gcd", "lcd", "sequence", "tuple", "eval-expr", "alligation"].includes(last?.kind)) {
+  if (['sum-combine', "sum", 'product-combine', "product", "gcd", "lcd", "sequence", "tuple", "eval-expr", "eval-formula", "alligation"].includes(last?.kind)) {
 
     const arr = [a, b].concat(rest.slice(0, -1)) as Container[];
 
     if (last.kind === "sequence") return inferToSequenceRule(arr)
     if (last.kind === "gcd") return inferGcdRule(arr, last)
     if (last.kind === "lcd") return inferLcdRule(arr, last)
-    if (last.kind === "eval-expr") return inferEvalToQuantityRule(arr, last)
+    if (last.kind === "eval-expr" || last.kind === "eval-formula") return inferEvalToQuantityRule(arr, last)
     if (last.kind === "tuple") return tupleRule(arr)
     if (['product-combine', "product"].includes(last.kind)) return inferProductRule(arr, last as ProductCombine | Product)
     if (['sum-combine', "sum",].includes(last.kind)) return inferSumRule(arr, last as SumCombine | Sum)
@@ -3097,10 +3109,10 @@ function inferenceRuleEx(...args: Predicate[]): Question<any> {
   else if (a.kind === "simplify-expr" && (b.kind === "comp-ratio" || b.kind === "cont")) {
     return inferSimplifyExprRule(b, a)
   }
-  else if (a.kind === "cont" && b.kind === "eval-expr") {
+  else if (a.kind === "cont" && (b.kind === "eval-expr" || b.kind === "eval-formula")) {
     return inferEvalToQuantityRule([a], b)
   }
-  else if (a.kind === "eval-expr" && b.kind === "cont") {
+  else if ((a.kind === "eval-expr" || a.kind === "eval-formula") && b.kind === "cont") {
     return inferEvalToQuantityRule([b], a)
   }
   else if (a.kind === "rate" && b.kind === "rate" && last?.kind === "ratios") {
@@ -3152,10 +3164,10 @@ function inferenceRuleEx(...args: Predicate[]): Question<any> {
 
     return kind === "comp-part-eq" ? inferPartEqualRule(b, a) : inferCompareRule(a, b);
   }
-  else if ((a.kind === "cont" || a.kind === "quota" || a.kind ==="rate") && b.kind == "rate") {
+  else if ((a.kind === "cont" || a.kind === "quota" || a.kind === "rate") && b.kind == "rate") {
     return inferRateRule(a, b)
   }
-  else if (a.kind === "rate" && (b.kind == "cont" || b.kind === "quota" || b.kind ==="rate")) {
+  else if (a.kind === "rate" && (b.kind == "cont" || b.kind === "quota" || b.kind === "rate")) {
     return inferRateRule(b, a)
   }
   else if (a.kind === "comp" && b.kind == "comp-ratio") {
@@ -3782,4 +3794,194 @@ export function range(size, startAt = 0) {
   return [...Array(size).keys()].map(i => i + startAt);
 }
 const unique = (value, index, array) => array.indexOf(value) === index;
+// #endregion
+
+
+// #region Common formula
+
+export type Formula<T> = {
+  name: string
+  formula: T
+}
+export const formulaRegistry = {
+  circumReference: {
+    square: {
+      name: 'Obvod čtverce',
+      description: 'Vypočítá obvod čtverce ze strany a, nebo stranu z obvodu.',
+      params: ['o', 'a'],
+      formula: {
+        'o': '4 * a',
+        'a': 'o / 4',
+      },
+    },
+    rectangle: {
+      name: 'Obvod obdélníku',
+      description: 'Vypočítá obvod obdélníku ze stran a, b nebo neznámou stranu.',
+      params: ['o', 'a', 'b'],
+      formula: {
+        'o': '2 * (a + b)',
+        'a': '(o / 2) - b',
+        'b': '(o / 2) - a',
+      },
+    },
+    circle: {
+      name: 'Obvod kruhu (délka kružnice)',
+      description: 'Vypočítá obvod kruhu z poloměru nebo průměru.',
+      params: ['o', 'r', 'd'],
+      formula: {
+        'o': '2 * π * r',
+        'r': 'o / (2 * π)',
+        'd': 'o / π',
+      },
+    },
+  },
+  surfaceArea: {
+    cube: {
+      name: 'Povrch krychle',
+      description: 'Vypočítá povrch krychle ze strany a.',
+      params: ['S', 'a'],
+      formula: {
+        'S': '6 * a^2',
+        'a': 'sqrt(S / 6)',
+      },
+    },
+    cuboid: {
+      name: 'Povrch kvádru',
+      description: 'Vypočítá povrch kvádru ze stran a, b a c.',
+      params: ['S', 'a', 'b', 'c'],
+      formula: {
+        'S': '2 * (a * b + a * c + b * c)',
+        // Řešení pro neznámou stranu je složitější, ale lze ho přesto definovat:
+        'a': '(S - 2 * b * c) / (2 * (b + c))',
+        'b': '(S - 2 * a * c) / (2 * (a + c))',
+        'c': '(S - 2 * a * b) / (2 * (a + b))',
+      },
+    },
+    cylinder: {
+      name: 'Povrch válce',
+      description: 'Vypočítá povrch válce z poloměru r a výšky v.',
+      params: ['S', 'r', 'v'],
+      formula: {
+        'S': '2 * π * r * (r + v)',
+        'v': 'S / (2 * π * r) - r',
+        // Výpočet poloměru je kvadratická rovnice, pro jednoduchost zde není explicitní
+      },
+    },
+    circle: {
+      name: 'Kruh',
+      description: 'Vzorce pro obsah kruhu',
+      params: ['S', 'o', 'r', 'd'],
+      formula: {
+        'S': 'π * r^2',
+        'r': 'sqrt(S / π)', // Poloměr z obsahu
+        'd': '2 * sqrt(S / π)',
+      },
+    },
+    square: {
+      name: 'Obsah a strana čtverce',
+      description: 'Vypočítá obsah čtverce ze strany a, nebo stranu z obsahu.',
+      params: ['S', 'a'],
+      formula: {
+        'S': 'a * a', // Alternativně 'a^2'
+        'a': 'sqrt(S)',
+      },
+    },
+    rectangle: {
+      name: 'Obsah a strany obdélníku',
+      description: 'Vypočítá obsah obdélníku ze stran a, b nebo neznámou stranu.',
+      params: ['S', 'a', 'b'],
+      formula: {
+        'S': 'a * b',
+        'a': 'S / b',
+        'b': 'S / a',
+      },
+    },
+    triangle: {
+      name: 'Obsah trojúhelníku (základní)',
+      description: 'Obsah z délky základny a výšky.',
+      params: ['S', 'b', 'h'],
+      formula: {
+        'S': '1/2 * b * h',
+        'b': '2 * S / h',
+        'h': '2 * S / b',
+      },
+    },
+    sphere: {
+      name: 'Povrch koule',
+      description: 'Vypočítá povrch koule z poloměru r.',
+      params: ['S', 'r'],
+      formula: {
+        'S': '4 * r^2 * π',
+        'r': 'sqrt(S / (4 * π))', // Poloměr z povrchu
+      },
+    },
+  },
+  // Kategorie vzorců pro objem
+  volume: {
+    // Formula for a cube
+    cube: {
+      name: 'Objem krychle',
+      formula: {
+        'V': 'a * a * a',
+        'a': 'V / (a * a)',
+      },
+      params: ['V', 'a'],
+      description: 'Vypočítá objem krychle ze strany a nebo stranu z objemu.',
+    },
+    // Vzorec pro kvádr
+    cuboid: {
+      name: 'Objem kvádru',
+      description: 'Vypočítá objem kvádru nebo jednu stranu.',
+      params: ['V', 'a', 'b', 'c'],
+      formula: {
+        'V': 'a * b * c',
+        'a': 'V / (b * c)',
+        'b': 'V / (a * c)',
+        'c': 'V / (a * b)',
+      },
+    },
+    // Vzorec pro válec
+    cylinder: {
+      name: 'Objem válce',
+      description: 'Vypočítá objem válce, poloměr nebo výšku.',
+      params: ['V', 'r', 'h'],
+      formula: {
+        'V': 'π * r^2 * h',
+        'h': 'V / (π * r^2)',
+        'r': 'sqrt(V / (π * h))',
+      },
+    },
+    sphere: {
+      name: 'Objem koule',
+      description: 'Vypočítá objem koule z poloměru r.',
+      params: ['V', 'r'],
+      formula: {
+        'V': '(4/3) * r^3 * π ',
+        'r': 'pow((3 * V) / (4 * π), 1/3)', // Poloměr z objemu (odmocnina třetího stupně)
+      },
+    },
+  },
+  // Vzorce pro výpočty v = s/t
+  speed: {
+    name: 'Rychlost, dráha, čas',
+    description: 'Vztah mezi rychlostí, dráhou a časem.',
+    params: ['v', 's', 't'],
+    formula: {
+      's': 'v * t',
+      'v': 's / t',
+      't': 's / v',
+    },
+  },
+  squareRoot: {
+    name: 'Druhá mocnina a odmocnina',
+    description: 'Vypočítá druhou mocninu nebo odmocninu.',
+    params: ['y', 'x'],
+    formula: {
+      'y': 'x * x', // Alternativně 'x^2'
+      'x': 'sqrt(y)',
+    },
+  }
+
+}
+
 // #endregion

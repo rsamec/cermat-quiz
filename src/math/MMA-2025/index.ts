@@ -1,4 +1,4 @@
-import { commonSense, comp, compRatio, compRelativePercent, cont, ctor, ctorDifference, ctorLinearEquation, product, ctorRatios, sum, ctorUnit, evalExprAsCont, pythagoras, rate, ratio, counter, type Container, ctorOption, double, ctorScaleInvert, simplifyExpr, evalExprAsRate, ctorRound, contLength, dimensionEntity, productArea, EmptyUnit, primeFactors } from "../../components/math";
+import { commonSense, comp, compRatio, compRelativePercent, cont, ctor, ctorDifference, ctorLinearEquation, product, ctorRatios, sum, ctorUnit, evalExprAsCont, pythagoras, rate, ratio, counter, type Container, ctorOption, double, ctorScaleInvert, simplifyExpr, evalExprAsRate, ctorRound, contLength, dimensionEntity, productArea, EmptyUnit, primeFactors, evalFormulaAsCont, formulaRegistry } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "../../utils/deduce-utils";
 
 
@@ -251,7 +251,7 @@ function vzestupHladinyVody() {
   const objemKulicky =
     deduceAs("kulička")(
       contLength("kulička poloměr", 3),
-      evalExprAsCont("4/3*r^3*Pi", { kind: 'cont', agent: 'voda', ...dim.volume })
+      evalExprAsCont("4/3*r^3*Pi", 'voda', dim.volume)
     )
 
   const objemValce =
@@ -297,7 +297,8 @@ function rovnoramennySatek() {
 
   const mensiSatek = deduce(
     mensiSatekOdvesna,
-    evalExprAsCont("1/2*delkaStrany^2", { kind: 'cont', agent: mensiSatekLabel, ...dim.area })
+    mensiSatekOdvesna,
+    evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, x => x.S, mensiSatekLabel, dim.area)
   );
 
   const vetsiStatekOdvesna = deduce(
@@ -305,7 +306,7 @@ function rovnoramennySatek() {
       mensiSatek,
       compRelativePercent(vetsiSatekLabel, mensiSatekLabel, 125)
     ),
-    evalExprAsCont("sqrt(2*obsah)", { kind: 'cont', agent: vetsiSatekLabel, ...dim.length })
+    evalExprAsCont("sqrt(2*obsah)", vetsiSatekLabel, dim.length)
   )
   return {
     deductionTree: deduce(

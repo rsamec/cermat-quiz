@@ -129,6 +129,7 @@ const uniquePredicates = new Map([
   ["Největší společný dělitel", ["gcd"]],
   ["Nejmenší společný násobek", ["lcd"]],
   ["Výrazy", ["eval-expr", "simpl-expr"]],
+  ["Vzorce", ["eval-formula"]],
   ["Pythagorova věta", ["pythagoras"]],
   ["Vztahy úhlů", ["comp-angle", "triangle"]],
   ["Vzory opakování", ["sequence","nth", "pattern","balanced-partition"]],
@@ -187,7 +188,7 @@ const uniqueRules = new Map([
 
   ["Míšení(aligace)", ["alligationRule"]],
 
-  ["Vyhodnocení výrazu", ["evalToQuantityRule"]],
+  ["Vyhodnocení výrazu/vzorce", ["evalToQuantityRule"]],
   ["Zjednodušení výrazu", ["simplifyExprRule"]],
   ["Řešení rovnice", ["solveEquationRule"]],
   

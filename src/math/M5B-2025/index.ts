@@ -1,4 +1,4 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorOption, ctorRatios, nthPart, rate, ratio, ratios, sum, product, counter, ctorScaleInvert, ctorScale, ctorSlide, ctorSlideInvert, evalExprAsCont, comp, ctorBooleanOption, ctorUnit, contLength, contArea } from "../../components/math";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorOption, ctorRatios, nthPart, rate, ratio, ratios, sum, product, counter, ctorScaleInvert, ctorScale, ctorSlide, ctorSlideInvert, evalExprAsCont, comp, ctorBooleanOption, ctorUnit, contLength, contArea, dimensionEntity } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -61,6 +61,7 @@ function prevody() {
   }
 }
 function lepeniCtvercu() {
+  const dim = dimensionEntity();
   return {
     nejdelsiMoznaStrana: {
       deductionTree: deduceAs("obdelník s nejdelší možnou stranu vytvoříme tak, že nalepíme čtverečky do jedná řady za sebou")
@@ -70,7 +71,7 @@ function lepeniCtvercu() {
             contLength("2 kratší strany", 2),
             ctorDifference("zbytek na 2 delší strany")
           ),
-          evalExprAsCont("zbytekKRozdeleni / 2", contLength("nejdelší možná strana"))
+          evalExprAsCont("zbytekKRozdeleni / 2", "nejdelší možná strana", dim.length)
         )
     },
     pocetKombinaci: {
@@ -93,18 +94,15 @@ function hledaneCisla() {
   const entity = ""
 
   const unknownNumberLabel = "neznámé číslo"
-  const prvniL = "první"
-  const druhyL = "druhý"
-
   const soucet = deduce(
     cont("součet", 109, entity),
-    evalExprAsCont("soucet / 2", { kind: 'cont', agent: "polovina součtu", entity }),
+    evalExprAsCont("soucet / 2", "polovina součtu", { entity }),
   )
 
 
   const rozdil = deduce(
     cont("rozdíl", 13, entity),
-    evalExprAsCont("rozdil / 2", { kind: 'cont', agent: "polovina součtu", entity }),
+    evalExprAsCont("rozdil / 2", "polovina součtu", { entity }),
   )
 
   return {

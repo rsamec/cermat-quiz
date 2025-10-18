@@ -1,4 +1,4 @@
-import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, evalExprAsCont, counter, proportion, productCombine, ctorLinearEquation, comp, ctorScale, ctorComplementCompRatio, ctorSlideInvert, ctorScaleInvert, ctorBooleanOption, pythagoras, simplifyExpr, contArea, dimensionEntity, contLength, productArea, productVolume, squareNumbersPattern, nth, halfProduct } from "../../components/math";
+import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, evalExprAsCont, counter, proportion, productCombine, ctorLinearEquation, comp, ctorScale, ctorComplementCompRatio, ctorSlideInvert, ctorScaleInvert, ctorBooleanOption, pythagoras, simplifyExpr, contArea, dimensionEntity, contLength, productArea, productVolume, squareNumbersPattern, nth, halfProduct, formulaRegistry, evalFormulaAsCont } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -158,14 +158,14 @@ function dort() {
             contArea("plocha řezu dortu", 200),
             ...halfProduct("čtverec")
         ),
-        evalExprAsCont("sqrt(x)", { kind: 'cont', agent: "strana čtverce", ...dim.length })
+        evalFormulaAsCont(formulaRegistry.surfaceArea.square, x => x.a, "strana čtverce", dim.length)
     )
     return {
         prumerTacu: {
             deductionTree: deduce(
                 deduce(
                     contArea("π * obsah", 144),
-                    evalExprAsCont("sqrt(x)", { kind: 'cont', agent: "poloměr (r)", ...dim.length })
+                    evalFormulaAsCont(formulaRegistry.squareRoot, d => d.x, "poloměr (r)", dim.length)
                 ),
                 double(),
                 product("průměr")
@@ -179,7 +179,7 @@ function dort() {
                         commonSense("strana čtverce = poloměr dortu"),
                         contLength("poloměr dortu", lastQuantity(stranaCtverce))
                     ),
-                    evalExprAsCont("π * r^2", { kind: 'cont', agent: "podstava dortu", ...dim.area })
+                    evalFormulaAsCont(formulaRegistry.surfaceArea.circle, x => x.S, "podstava dortu", dim.area)
                 ),
                 to(
                     last(stranaCtverce),
@@ -301,7 +301,7 @@ function kosoctverec() {
                         productArea("obdelník = kosočtverec")
                     ),
                     last(stranaKosoctverec),
-                    evalExprAsCont("obsah / strana", { kind: 'cont', agent: 'výška', ...dim.length })
+                    evalFormulaAsCont(formulaRegistry.surfaceArea.rectangle, x => x.b, 'výška', dim.length)
                 ),
                 ctorBooleanOption(4.8)
             )
@@ -356,7 +356,7 @@ function vzorCtverce() {
         pridano: {
             deductionTree: deduceAs("vzor opakování, resp. počet přídaných polí je závislý na pozici = (4 x spodní, horní, levé a pravá okraje) - 4 za rohové prvky")(
                 cont("9. obrazec", 9, position),
-                evalExprAsCont("(4 * n) - 4", { kind: 'cont', agent: "přidaná pole na 9. obrazec", entity })
+                evalExprAsCont("(4 * n) - 4", "přidaná pole na 9. obrazec", { entity })
             )
         },
         rozdil: {

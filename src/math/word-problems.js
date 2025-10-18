@@ -113,11 +113,14 @@ function ctorSlideInvert(agent) {
 function cont(agent, quantity, entity3, unit, opts) {
   return { kind: "cont", agent, quantity, entity: entity3, unit, asRatio: opts?.asFraction };
 }
-function evalExprAsCont(expression, predicate) {
-  return { kind: "eval-expr", expression, predicate };
+function evalExprAsCont(expression, agent, entity3, opts = {}) {
+  return { kind: "eval-expr", expression, predicate: { kind: "cont", agent, ...entity3, asRatio: opts.asRatio } };
 }
 function evalExprAsRate(expression, predicate) {
   return { kind: "eval-expr", expression, predicate };
+}
+function evalFormulaAsCont(f, expression, agent, entity3, opts = {}) {
+  return { kind: "eval-formula", expression: expression(f.formula), formulaName: f.name, predicate: { kind: "cont", agent, ...entity3, asRatio: opts.asRatio } };
 }
 function simplifyExpr(context) {
   return { kind: "simplify-expr", context };
@@ -1055,35 +1058,35 @@ function inferPartToWholeRule(a, b) {
     ] : []
   };
 }
-function rateRule(a, rate3) {
+function rateRule(a, rate2) {
   const aEntity = a.kind == "cont" ? a.entity : a.kind === "quota" ? a.agentQuota : a.entity.entity;
-  if (!(aEntity === rate3.entity.entity || aEntity === rate3.entityBase.entity)) {
-    throw `Mismatch entity ${aEntity} any of ${rate3.entity.entity}, ${rate3.entityBase.entity}`;
+  if (!(aEntity === rate2.entity.entity || aEntity === rate2.entityBase.entity)) {
+    throw `Mismatch entity ${aEntity} any of ${rate2.entity.entity}, ${rate2.entityBase.entity}`;
   }
-  const isEntityBase3 = aEntity == rate3.entity.entity;
-  const isUnitRate = rate3.baseQuantity === 1;
+  const isEntityBase3 = aEntity == rate2.entity.entity;
+  const isUnitRate = rate2.baseQuantity === 1;
   return {
     kind: "cont",
     agent: a.agent,
-    entity: isEntityBase3 ? rate3.entityBase.entity : rate3.entity.entity,
-    unit: isEntityBase3 ? rate3.entityBase.unit : rate3.entity.unit,
-    quantity: aEntity == rate3.entity.entity ? isNumber(a.quantity) && isNumber(rate3.quantity) && isNumber(rate3.baseQuantity) ? a.quantity / (!isUnitRate ? rate3.quantity / rate3.baseQuantity : rate3.quantity) : !isUnitRate ? wrapToQuantity(`a.quantity / (rate.quantity/rate.baseQuantity)`, { a, rate: rate3 }) : wrapToQuantity(`a.quantity / rate.quantity`, { a, rate: rate3 }) : isNumber(a.quantity) && isNumber(rate3.quantity) && isNumber(rate3.baseQuantity) ? a.quantity * (!isUnitRate ? rate3.quantity / rate3.baseQuantity : rate3.quantity) : !isUnitRate ? wrapToQuantity(`a.quantity * (rate.quantity/rate.baseQuantity)`, { a, rate: rate3 }) : wrapToQuantity(`a.quantity * rate.quantity`, { a, rate: rate3 })
+    entity: isEntityBase3 ? rate2.entityBase.entity : rate2.entity.entity,
+    unit: isEntityBase3 ? rate2.entityBase.unit : rate2.entity.unit,
+    quantity: aEntity == rate2.entity.entity ? isNumber(a.quantity) && isNumber(rate2.quantity) && isNumber(rate2.baseQuantity) ? a.quantity / (!isUnitRate ? rate2.quantity / rate2.baseQuantity : rate2.quantity) : !isUnitRate ? wrapToQuantity(`a.quantity / (rate.quantity/rate.baseQuantity)`, { a, rate: rate2 }) : wrapToQuantity(`a.quantity / rate.quantity`, { a, rate: rate2 }) : isNumber(a.quantity) && isNumber(rate2.quantity) && isNumber(rate2.baseQuantity) ? a.quantity * (!isUnitRate ? rate2.quantity / rate2.baseQuantity : rate2.quantity) : !isUnitRate ? wrapToQuantity(`a.quantity * (rate.quantity/rate.baseQuantity)`, { a, rate: rate2 }) : wrapToQuantity(`a.quantity * rate.quantity`, { a, rate: rate2 })
   };
 }
-function inferRateRule(a, rate3) {
-  const result = rateRule(a, rate3);
+function inferRateRule(a, rate2) {
+  const result = rateRule(a, rate2);
   const aEntity = a.kind == "cont" ? a.entity : a.kind === "quota" ? a.agentQuota : a.entity.entity;
-  const isUnitRate = rate3.baseQuantity === 1;
+  const isUnitRate = rate2.baseQuantity === 1;
   return {
     name: rateRule.name,
-    inputParameters: extractKinds(a, rate3),
+    inputParameters: extractKinds(a, rate2),
     question: containerQuestion(result),
     result,
-    options: isNumber(a.quantity) && isNumber(rate3.quantity) && isNumber(result.quantity) && isNumber(rate3.baseQuantity) ? [
-      { tex: `${formatNumber(a.quantity)} * ${formatNumber(rate3.quantity)}`, result: formatNumber(result.quantity), ok: isUnitRate && aEntity !== rate3.entity.entity },
-      ...!isUnitRate ? [{ tex: `${formatNumber(a.quantity)} * (${formatNumber(rate3.quantity)}/${formatNumber(rate3.baseQuantity)})`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity !== rate3.entity.entity }] : [],
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(rate3.quantity)}`, result: formatNumber(result.quantity), ok: aEntity === rate3.entity.entity },
-      ...!isUnitRate ? [{ tex: `${formatNumber(a.quantity)} / (${formatNumber(rate3.quantity)}/${formatNumber(rate3.baseQuantity)})`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity === rate3.entity.entity }] : []
+    options: isNumber(a.quantity) && isNumber(rate2.quantity) && isNumber(result.quantity) && isNumber(rate2.baseQuantity) ? [
+      { tex: `${formatNumber(a.quantity)} * ${formatNumber(rate2.quantity)}`, result: formatNumber(result.quantity), ok: isUnitRate && aEntity !== rate2.entity.entity },
+      ...!isUnitRate ? [{ tex: `${formatNumber(a.quantity)} * (${formatNumber(rate2.quantity)}/${formatNumber(rate2.baseQuantity)})`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity !== rate2.entity.entity }] : [],
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(rate2.quantity)}`, result: formatNumber(result.quantity), ok: aEntity === rate2.entity.entity },
+      ...!isUnitRate ? [{ tex: `${formatNumber(a.quantity)} / (${formatNumber(rate2.quantity)}/${formatNumber(rate2.baseQuantity)})`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity === rate2.entity.entity }] : []
     ] : []
   };
 }
@@ -1529,7 +1532,7 @@ function inferConvertPercentRule(a) {
     ] : []
   };
 }
-function toRatioCompareRule(a, b, ctor3) {
+function toRatioCompareRule(a, b, ctor2) {
   if (b.agent === a.agent && b.entity != a.entity) {
     b = toGenerAgent(b);
     a = toGenerAgent(a);
@@ -1542,16 +1545,16 @@ function toRatioCompareRule(a, b, ctor3) {
     agentB: b.agent,
     agentA: a.agent,
     ratio: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity / b.quantity : wrapToRatio(`a.quantity / b.quantity`, { a, b }),
-    ...ctor3.asPercent && { asPercent: true }
+    ...ctor2.asPercent && { asPercent: true }
   };
 }
-function inferToRatioCompareRule(a, b, ctor3) {
-  const result = toRatioCompareRule(a, b, ctor3);
+function inferToRatioCompareRule(a, b, ctor2) {
+  const result = toRatioCompareRule(a, b, ctor2);
   if (isNumber(result.ratio) && isNumber(a.quantity) && isNumber(b.quantity)) {
     const between = result.ratio > 1 / 2 && result.ratio < 2;
     return {
       name: toRatioCompareRule.name,
-      inputParameters: [a, b, ctor3],
+      inputParameters: [a, b, ctor2],
       question: `Porovnej ${result.agentA} a ${result.agentB}.${between ? `O kolik z ${result.agentB}?` : `Kolikr\xE1t ${result.ratio < 1 ? "men\u0161\xED" : "v\u011Bt\u0161\xED"}?`}`,
       result,
       options: between ? [
@@ -1563,7 +1566,7 @@ function inferToRatioCompareRule(a, b, ctor3) {
       ]
     };
   } else {
-    return resultAsQuestion(result, { name: toRatioCompareRule.name, inputParamters: extractKinds(a, b, ctor3) });
+    return resultAsQuestion(result, { name: toRatioCompareRule.name, inputParamters: extractKinds(a, b, ctor2) });
   }
 }
 function compareToRateRule(a, b, last3) {
@@ -1724,15 +1727,15 @@ function inferTransitiveRatioRule(a, b) {
     ] : []
   };
 }
-function toRateRule(a, b, rate3) {
+function toRateRule(a, b, rate2) {
   if (a.agent !== b.agent) {
     throw `Mismatch angent ${a.agent}, ${b.agent}`;
   }
-  const baseQuantity = rate3?.baseQuantity ?? 1;
+  const baseQuantity = rate2?.baseQuantity ?? 1;
   return {
     kind: "rate",
-    agent: rate3.agent ?? a.agent,
-    quantity: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(baseQuantity) ? baseQuantity === 1 ? a.quantity / b.quantity * baseQuantity : a.quantity / b.quantity * baseQuantity : isNumber(baseQuantity) && baseQuantity === 1 ? wrapToQuantity(`a.quantity / b.quantity`, { a, b }) : wrapToQuantity(`a.quantity / b.quantity * rate.baseQuantity`, { a, b, rate: rate3 }),
+    agent: rate2.agent ?? a.agent,
+    quantity: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(baseQuantity) ? baseQuantity === 1 ? a.quantity / b.quantity * baseQuantity : a.quantity / b.quantity * baseQuantity : isNumber(baseQuantity) && baseQuantity === 1 ? wrapToQuantity(`a.quantity / b.quantity`, { a, b }) : wrapToQuantity(`a.quantity / b.quantity * rate.baseQuantity`, { a, b, rate: rate2 }),
     entity: {
       entity: a.entity,
       unit: a.unit
@@ -1741,25 +1744,25 @@ function toRateRule(a, b, rate3) {
       entity: b.kind === "cont" ? b.entity : b.agentQuota,
       unit: b.kind === "cont" ? b.unit : EmptyUnit
     },
-    baseQuantity: rate3?.baseQuantity ?? 1
+    baseQuantity: rate2?.baseQuantity ?? 1
   };
 }
-function inferToRateRule(a, b, rate3) {
-  const result = toRateRule(a, b, rate3);
+function inferToRateRule(a, b, rate2) {
+  const result = toRateRule(a, b, rate2);
   if (isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.baseQuantity) && isNumber(result.quantity)) {
     return {
       name: toRateRule.name,
-      inputParameters: extractKinds(a, b, rate3),
+      inputParameters: extractKinds(a, b, rate2),
       question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnom\u011Brn\u011B ${formatNumber(b.quantity)} kr\xE1t${result.baseQuantity !== 1 ? ` po ${formatNumber(result.baseQuantity)} ${formatEntity({ entity: b.kind === "cont" ? b.entity : b.agentQuota })}` : ""}`,
       result,
       options: [
-        { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: rate3.baseQuantity === 1 },
-        { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)} * ${formatNumber(result.baseQuantity)}`, result: formatNumber(result.quantity), ok: rate3.baseQuantity !== 1 },
+        { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: rate2.baseQuantity === 1 },
+        { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)} * ${formatNumber(result.baseQuantity)}`, result: formatNumber(result.quantity), ok: rate2.baseQuantity !== 1 },
         { tex: `${formatNumber(b.quantity)} / ${formatNumber(a.quantity)}`, result: formatNumber(b.quantity / a.quantity), ok: false }
       ]
     };
   } else {
-    return resultAsQuestion(result, { name: toRateRule.name, inputParamters: extractKinds(a, b, rate3) });
+    return resultAsQuestion(result, { name: toRateRule.name, inputParamters: extractKinds(a, b, rate2) });
   }
 }
 function solveEquationRule(a, b, last3) {
@@ -2286,7 +2289,7 @@ function inferenceRuleEx(...args) {
   const [a, b, ...rest] = args;
   const last3 = rest?.length > 0 ? rest[rest.length - 1] : null;
   const kind = last3?.kind;
-  if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence", "tuple", "eval-expr", "alligation"].includes(last3?.kind)) {
+  if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence", "tuple", "eval-expr", "eval-formula", "alligation"].includes(last3?.kind)) {
     const arr = [a, b].concat(rest.slice(0, -1));
     if (last3.kind === "sequence")
       return inferToSequenceRule(arr);
@@ -2294,7 +2297,7 @@ function inferenceRuleEx(...args) {
       return inferGcdRule(arr, last3);
     if (last3.kind === "lcd")
       return inferLcdRule(arr, last3);
-    if (last3.kind === "eval-expr")
+    if (last3.kind === "eval-expr" || last3.kind === "eval-formula")
       return inferEvalToQuantityRule(arr, last3);
     if (last3.kind === "tuple")
       return tupleRule(arr);
@@ -2354,9 +2357,9 @@ function inferenceRuleEx(...args) {
     return inferSimplifyExprRule(a, b);
   } else if (a.kind === "simplify-expr" && (b.kind === "comp-ratio" || b.kind === "cont")) {
     return inferSimplifyExprRule(b, a);
-  } else if (a.kind === "cont" && b.kind === "eval-expr") {
+  } else if (a.kind === "cont" && (b.kind === "eval-expr" || b.kind === "eval-formula")) {
     return inferEvalToQuantityRule([a], b);
-  } else if (a.kind === "eval-expr" && b.kind === "cont") {
+  } else if ((a.kind === "eval-expr" || a.kind === "eval-formula") && b.kind === "cont") {
     return inferEvalToQuantityRule([b], a);
   } else if (a.kind === "rate" && b.kind === "rate" && last3?.kind === "ratios") {
     return inferToRatiosRule([a, b], last3);
@@ -2819,6 +2822,190 @@ function range(size, startAt = 0) {
   return [...Array(size).keys()].map((i) => i + startAt);
 }
 var unique = (value, index, array) => array.indexOf(value) === index;
+var formulaRegistry = {
+  circumReference: {
+    square: {
+      name: "Obvod \u010Dtverce",
+      description: "Vypo\u010D\xEDt\xE1 obvod \u010Dtverce ze strany a, nebo stranu z obvodu.",
+      params: ["o", "a"],
+      formula: {
+        "o": "4 * a",
+        "a": "o / 4"
+      }
+    },
+    rectangle: {
+      name: "Obvod obd\xE9ln\xEDku",
+      description: "Vypo\u010D\xEDt\xE1 obvod obd\xE9ln\xEDku ze stran a, b nebo nezn\xE1mou stranu.",
+      params: ["o", "a", "b"],
+      formula: {
+        "o": "2 * (a + b)",
+        "a": "(o / 2) - b",
+        "b": "(o / 2) - a"
+      }
+    },
+    circle: {
+      name: "Obvod kruhu (d\xE9lka kru\u017Enice)",
+      description: "Vypo\u010D\xEDt\xE1 obvod kruhu z polom\u011Bru nebo pr\u016Fm\u011Bru.",
+      params: ["o", "r", "d"],
+      formula: {
+        "o": "2 * \u03C0 * r",
+        "r": "o / (2 * \u03C0)",
+        "d": "o / \u03C0"
+      }
+    }
+  },
+  surfaceArea: {
+    cube: {
+      name: "Povrch krychle",
+      description: "Vypo\u010D\xEDt\xE1 povrch krychle ze strany a.",
+      params: ["S", "a"],
+      formula: {
+        "S": "6 * a^2",
+        "a": "sqrt(S / 6)"
+      }
+    },
+    cuboid: {
+      name: "Povrch kv\xE1dru",
+      description: "Vypo\u010D\xEDt\xE1 povrch kv\xE1dru ze stran a, b a c.",
+      params: ["S", "a", "b", "c"],
+      formula: {
+        "S": "2 * (a * b + a * c + b * c)",
+        // Řešení pro neznámou stranu je složitější, ale lze ho přesto definovat:
+        "a": "(S - 2 * b * c) / (2 * (b + c))",
+        "b": "(S - 2 * a * c) / (2 * (a + c))",
+        "c": "(S - 2 * a * b) / (2 * (a + b))"
+      }
+    },
+    cylinder: {
+      name: "Povrch v\xE1lce",
+      description: "Vypo\u010D\xEDt\xE1 povrch v\xE1lce z polom\u011Bru r a v\xFD\u0161ky v.",
+      params: ["S", "r", "v"],
+      formula: {
+        "S": "2 * \u03C0 * r * (r + v)",
+        "v": "S / (2 * \u03C0 * r) - r"
+        // Výpočet poloměru je kvadratická rovnice, pro jednoduchost zde není explicitní
+      }
+    },
+    circle: {
+      name: "Kruh",
+      description: "Vzorce pro obsah kruhu",
+      params: ["S", "o", "r", "d"],
+      formula: {
+        "S": "\u03C0 * r^2",
+        "r": "sqrt(S / \u03C0)",
+        // Poloměr z obsahu
+        "d": "2 * sqrt(S / \u03C0)"
+      }
+    },
+    square: {
+      name: "Obsah a strana \u010Dtverce",
+      description: "Vypo\u010D\xEDt\xE1 obsah \u010Dtverce ze strany a, nebo stranu z obsahu.",
+      params: ["S", "a"],
+      formula: {
+        "S": "a * a",
+        // Alternativně 'a^2'
+        "a": "sqrt(S)"
+      }
+    },
+    rectangle: {
+      name: "Obsah a strany obd\xE9ln\xEDku",
+      description: "Vypo\u010D\xEDt\xE1 obsah obd\xE9ln\xEDku ze stran a, b nebo nezn\xE1mou stranu.",
+      params: ["S", "a", "b"],
+      formula: {
+        "S": "a * b",
+        "a": "S / b",
+        "b": "S / a"
+      }
+    },
+    triangle: {
+      name: "Obsah troj\xFAheln\xEDku (z\xE1kladn\xED)",
+      description: "Obsah z d\xE9lky z\xE1kladny a v\xFD\u0161ky.",
+      params: ["S", "b", "h"],
+      formula: {
+        "S": "1/2 * b * h",
+        "b": "2 * S / h",
+        "h": "2 * S / b"
+      }
+    },
+    sphere: {
+      name: "Povrch koule",
+      description: "Vypo\u010D\xEDt\xE1 povrch koule z polom\u011Bru r.",
+      params: ["S", "r"],
+      formula: {
+        "S": "4 * r^2 * \u03C0",
+        "r": "sqrt(S / (4 * \u03C0))"
+        // Poloměr z povrchu
+      }
+    }
+  },
+  // Kategorie vzorců pro objem
+  volume: {
+    // Formula for a cube
+    cube: {
+      name: "Objem krychle",
+      formula: {
+        "V": "a * a * a",
+        "a": "V / (a * a)"
+      },
+      params: ["V", "a"],
+      description: "Vypo\u010D\xEDt\xE1 objem krychle ze strany a nebo stranu z objemu."
+    },
+    // Vzorec pro kvádr
+    cuboid: {
+      name: "Objem kv\xE1dru",
+      description: "Vypo\u010D\xEDt\xE1 objem kv\xE1dru nebo jednu stranu.",
+      params: ["V", "a", "b", "c"],
+      formula: {
+        "V": "a * b * c",
+        "a": "V / (b * c)",
+        "b": "V / (a * c)",
+        "c": "V / (a * b)"
+      }
+    },
+    // Vzorec pro válec
+    cylinder: {
+      name: "Objem v\xE1lce",
+      description: "Vypo\u010D\xEDt\xE1 objem v\xE1lce, polom\u011Br nebo v\xFD\u0161ku.",
+      params: ["V", "r", "h"],
+      formula: {
+        "V": "\u03C0 * r^2 * h",
+        "h": "V / (\u03C0 * r^2)",
+        "r": "sqrt(V / (\u03C0 * h))"
+      }
+    },
+    sphere: {
+      name: "Objem koule",
+      description: "Vypo\u010D\xEDt\xE1 objem koule z polom\u011Bru r.",
+      params: ["V", "r"],
+      formula: {
+        "V": "(4/3) * r^3 * \u03C0 ",
+        "r": "pow((3 * V) / (4 * \u03C0), 1/3)"
+        // Poloměr z objemu (odmocnina třetího stupně)
+      }
+    }
+  },
+  // Vzorce pro výpočty v = s/t
+  speed: {
+    name: "Rychlost, dr\xE1ha, \u010Das",
+    description: "Vztah mezi rychlost\xED, dr\xE1hou a \u010Dasem.",
+    params: ["v", "s", "t"],
+    formula: {
+      "s": "v * t",
+      "v": "s / t",
+      "t": "s / v"
+    }
+  },
+  squareRoot: {
+    name: "Druh\xE1 mocnina a odmocnina",
+    description: "Vypo\u010D\xEDt\xE1 druhou mocninu nebo odmocninu.",
+    params: ["y", "x"],
+    formula: {
+      "y": "x * x",
+      // Alternativně 'x^2'
+      "x": "sqrt(y)"
+    }
+  }
+};
 
 // node_modules/fraction.js/dist/fraction.mjs
 if (typeof BigInt === "undefined")
@@ -3566,11 +3753,11 @@ Fraction.prototype = {
   "simplify": function(eps3) {
     const ieps = BigInt(1 / (eps3 || 1e-3) | 0);
     const thisABS = this["abs"]();
-    const cont5 = thisABS["toContinued"]();
-    for (let i = 1; i < cont5.length; i++) {
-      let s = newFraction(cont5[i - 1], C_ONE);
+    const cont4 = thisABS["toContinued"]();
+    for (let i = 1; i < cont4.length; i++) {
+      let s = newFraction(cont4[i - 1], C_ONE);
       for (let k = i - 2; k >= 0; k--) {
-        s = s["inverse"]()["add"](cont5[k]);
+        s = s["inverse"]()["add"](cont4[k]);
       }
       let t = s["sub"](thisABS);
       if (t["n"] * ieps < t["d"]) {
@@ -7293,8 +7480,7 @@ function example_12() {
               last(rectangleWidth),
               compDiff(rectangleWidthLabel, "z\xE1kladna \u0161ed\xE9ho troj\xFAheln\xEDku", 1, dim.length.entity)
             ),
-            half(),
-            productArea("\u0161ed\xFD troj\xFAheln\xEDku")
+            evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, (x) => x.S, "\u0161ed\xFD troj\xFAheln\xEDku", dim.area)
           ),
           counter("po\u010Det \u0161ed\xFDch troj\xFAhlen\xEDk\u016F", 3),
           productArea("t\u0159i \u0161ed\xE9 troj\xFAheln\xEDky")
@@ -8171,7 +8357,7 @@ function asistencniPes() {
     ),
     adamToBara
   );
-  const rate3 = deduce(
+  const rate2 = deduce(
     cont("rozd\xEDl", 300, entity3),
     deduce(
       last(adamDilku),
@@ -8180,8 +8366,8 @@ function asistencniPes() {
     ),
     ctor("rate")
   );
-  const cyril = deduce(rate3, cyrilDilku);
-  const adam = deduce(rate3, last(adamDilku));
+  const cyril = deduce(rate2, cyrilDilku);
+  const adam = deduce(rate2, last(adamDilku));
   return {
     bara: {
       deductionTree: bara
@@ -8701,7 +8887,7 @@ function hranol2() {
         ctorDifference("zbytek z\xE1kladny")
       ),
       podstavaVyska,
-      evalExprAsCont("1/2*zakladna*vyska", { kind: "cont", agent: "lev\xFD a prav\xFD pravo\xFAhl\xFD troj\u016Fheln\xEDk", ...dim.area })
+      evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, (x) => x.S, "lev\xFD a prav\xFD pravo\xFAhl\xFD troj\u016Fheln\xEDk", dim.area)
     ),
     sum("obsah postavy hranolu")
   );
@@ -9851,6 +10037,7 @@ var M5B_2025_default = createLazyMap({
   14.2: () => ctverce().obrazecWidthToLength
 });
 function lepeniCtvercu() {
+  const dim = dimensionEntity();
   return {
     nejdelsiMoznaStrana: {
       deductionTree: deduceAs("obdeln\xEDk s nejdel\u0161\xED mo\u017Enou stranu vytvo\u0159\xEDme tak, \u017Ee nalep\xEDme \u010Dtvere\u010Dky do jedn\xE1 \u0159ady za sebou")(
@@ -9859,7 +10046,7 @@ function lepeniCtvercu() {
           contLength("2 krat\u0161\xED strany", 2),
           ctorDifference("zbytek na 2 del\u0161\xED strany")
         ),
-        evalExprAsCont("zbytekKRozdeleni / 2", contLength("nejdel\u0161\xED mo\u017En\xE1 strana"))
+        evalExprAsCont("zbytekKRozdeleni / 2", "nejdel\u0161\xED mo\u017En\xE1 strana", dim.length)
       )
     },
     pocetKombinaci: {
@@ -9881,15 +10068,13 @@ function lepeniCtvercu() {
 function hledaneCisla() {
   const entity3 = "";
   const unknownNumberLabel = "nezn\xE1m\xE9 \u010D\xEDslo";
-  const prvniL = "prvn\xED";
-  const druhyL = "druh\xFD";
   const soucet = deduce(
     cont("sou\u010Det", 109, entity3),
-    evalExprAsCont("soucet / 2", { kind: "cont", agent: "polovina sou\u010Dtu", entity: entity3 })
+    evalExprAsCont("soucet / 2", "polovina sou\u010Dtu", { entity: entity3 })
   );
   const rozdil = deduce(
     cont("rozd\xEDl", 13, entity3),
-    evalExprAsCont("rozdil / 2", { kind: "cont", agent: "polovina sou\u010Dtu", entity: entity3 })
+    evalExprAsCont("rozdil / 2", "polovina sou\u010Dtu", { entity: entity3 })
   );
   return {
     cislo1: {
@@ -11060,35 +11245,35 @@ function inferPartToWholeRule2(a, b) {
     ] : []
   };
 }
-function rateRule2(a, rate3) {
+function rateRule2(a, rate2) {
   const aEntity = a.kind == "cont" ? a.entity : a.kind === "quota" ? a.agentQuota : a.entity.entity;
-  if (!(aEntity === rate3.entity.entity || aEntity === rate3.entityBase.entity)) {
-    throw `Mismatch entity ${aEntity} any of ${rate3.entity.entity}, ${rate3.entityBase.entity}`;
+  if (!(aEntity === rate2.entity.entity || aEntity === rate2.entityBase.entity)) {
+    throw `Mismatch entity ${aEntity} any of ${rate2.entity.entity}, ${rate2.entityBase.entity}`;
   }
-  const isEntityBase22 = aEntity == rate3.entity.entity;
-  const isUnitRate = rate3.baseQuantity === 1;
+  const isEntityBase22 = aEntity == rate2.entity.entity;
+  const isUnitRate = rate2.baseQuantity === 1;
   return {
     kind: "cont",
     agent: a.agent,
-    entity: isEntityBase22 ? rate3.entityBase.entity : rate3.entity.entity,
-    unit: isEntityBase22 ? rate3.entityBase.unit : rate3.entity.unit,
-    quantity: aEntity == rate3.entity.entity ? isNumber2(a.quantity) && isNumber2(rate3.quantity) && isNumber2(rate3.baseQuantity) ? a.quantity / (!isUnitRate ? rate3.quantity / rate3.baseQuantity : rate3.quantity) : !isUnitRate ? wrapToQuantity2(`a.quantity / (rate.quantity/rate.baseQuantity)`, { a, rate: rate3 }) : wrapToQuantity2(`a.quantity / rate.quantity`, { a, rate: rate3 }) : isNumber2(a.quantity) && isNumber2(rate3.quantity) && isNumber2(rate3.baseQuantity) ? a.quantity * (!isUnitRate ? rate3.quantity / rate3.baseQuantity : rate3.quantity) : !isUnitRate ? wrapToQuantity2(`a.quantity * (rate.quantity/rate.baseQuantity)`, { a, rate: rate3 }) : wrapToQuantity2(`a.quantity * rate.quantity`, { a, rate: rate3 })
+    entity: isEntityBase22 ? rate2.entityBase.entity : rate2.entity.entity,
+    unit: isEntityBase22 ? rate2.entityBase.unit : rate2.entity.unit,
+    quantity: aEntity == rate2.entity.entity ? isNumber2(a.quantity) && isNumber2(rate2.quantity) && isNumber2(rate2.baseQuantity) ? a.quantity / (!isUnitRate ? rate2.quantity / rate2.baseQuantity : rate2.quantity) : !isUnitRate ? wrapToQuantity2(`a.quantity / (rate.quantity/rate.baseQuantity)`, { a, rate: rate2 }) : wrapToQuantity2(`a.quantity / rate.quantity`, { a, rate: rate2 }) : isNumber2(a.quantity) && isNumber2(rate2.quantity) && isNumber2(rate2.baseQuantity) ? a.quantity * (!isUnitRate ? rate2.quantity / rate2.baseQuantity : rate2.quantity) : !isUnitRate ? wrapToQuantity2(`a.quantity * (rate.quantity/rate.baseQuantity)`, { a, rate: rate2 }) : wrapToQuantity2(`a.quantity * rate.quantity`, { a, rate: rate2 })
   };
 }
-function inferRateRule2(a, rate3) {
-  const result = rateRule2(a, rate3);
+function inferRateRule2(a, rate2) {
+  const result = rateRule2(a, rate2);
   const aEntity = a.kind == "cont" ? a.entity : a.kind === "quota" ? a.agentQuota : a.entity.entity;
-  const isUnitRate = rate3.baseQuantity === 1;
+  const isUnitRate = rate2.baseQuantity === 1;
   return {
     name: rateRule2.name,
-    inputParameters: extractKinds2(a, rate3),
+    inputParameters: extractKinds2(a, rate2),
     question: containerQuestion2(result),
     result,
-    options: isNumber2(a.quantity) && isNumber2(rate3.quantity) && isNumber2(result.quantity) && isNumber2(rate3.baseQuantity) ? [
-      { tex: `${formatNumber2(a.quantity)} * ${formatNumber2(rate3.quantity)}`, result: formatNumber2(result.quantity), ok: isUnitRate && aEntity !== rate3.entity.entity },
-      ...!isUnitRate ? [{ tex: `${formatNumber2(a.quantity)} * (${formatNumber2(rate3.quantity)}/${formatNumber2(rate3.baseQuantity)})`, result: formatNumber2(result.quantity), ok: !isUnitRate && aEntity !== rate3.entity.entity }] : [],
-      { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(rate3.quantity)}`, result: formatNumber2(result.quantity), ok: aEntity === rate3.entity.entity },
-      ...!isUnitRate ? [{ tex: `${formatNumber2(a.quantity)} / (${formatNumber2(rate3.quantity)}/${formatNumber2(rate3.baseQuantity)})`, result: formatNumber2(result.quantity), ok: !isUnitRate && aEntity === rate3.entity.entity }] : []
+    options: isNumber2(a.quantity) && isNumber2(rate2.quantity) && isNumber2(result.quantity) && isNumber2(rate2.baseQuantity) ? [
+      { tex: `${formatNumber2(a.quantity)} * ${formatNumber2(rate2.quantity)}`, result: formatNumber2(result.quantity), ok: isUnitRate && aEntity !== rate2.entity.entity },
+      ...!isUnitRate ? [{ tex: `${formatNumber2(a.quantity)} * (${formatNumber2(rate2.quantity)}/${formatNumber2(rate2.baseQuantity)})`, result: formatNumber2(result.quantity), ok: !isUnitRate && aEntity !== rate2.entity.entity }] : [],
+      { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(rate2.quantity)}`, result: formatNumber2(result.quantity), ok: aEntity === rate2.entity.entity },
+      ...!isUnitRate ? [{ tex: `${formatNumber2(a.quantity)} / (${formatNumber2(rate2.quantity)}/${formatNumber2(rate2.baseQuantity)})`, result: formatNumber2(result.quantity), ok: !isUnitRate && aEntity === rate2.entity.entity }] : []
     ] : []
   };
 }
@@ -11534,7 +11719,7 @@ function inferConvertPercentRule2(a) {
     ] : []
   };
 }
-function toRatioCompareRule2(a, b, ctor3) {
+function toRatioCompareRule2(a, b, ctor2) {
   if (b.agent === a.agent && b.entity != a.entity) {
     b = toGenerAgent2(b);
     a = toGenerAgent2(a);
@@ -11547,16 +11732,16 @@ function toRatioCompareRule2(a, b, ctor3) {
     agentB: b.agent,
     agentA: a.agent,
     ratio: isNumber2(a.quantity) && isNumber2(b.quantity) ? a.quantity / b.quantity : wrapToRatio2(`a.quantity / b.quantity`, { a, b }),
-    ...ctor3.asPercent && { asPercent: true }
+    ...ctor2.asPercent && { asPercent: true }
   };
 }
-function inferToRatioCompareRule2(a, b, ctor3) {
-  const result = toRatioCompareRule2(a, b, ctor3);
+function inferToRatioCompareRule2(a, b, ctor2) {
+  const result = toRatioCompareRule2(a, b, ctor2);
   if (isNumber2(result.ratio) && isNumber2(a.quantity) && isNumber2(b.quantity)) {
     const between = result.ratio > 1 / 2 && result.ratio < 2;
     return {
       name: toRatioCompareRule2.name,
-      inputParameters: [a, b, ctor3],
+      inputParameters: [a, b, ctor2],
       question: `Porovnej ${result.agentA} a ${result.agentB}.${between ? `O kolik z ${result.agentB}?` : `Kolikr\xE1t ${result.ratio < 1 ? "men\u0161\xED" : "v\u011Bt\u0161\xED"}?`}`,
       result,
       options: between ? [
@@ -11568,7 +11753,7 @@ function inferToRatioCompareRule2(a, b, ctor3) {
       ]
     };
   } else {
-    return resultAsQuestion2(result, { name: toRatioCompareRule2.name, inputParamters: extractKinds2(a, b, ctor3) });
+    return resultAsQuestion2(result, { name: toRatioCompareRule2.name, inputParamters: extractKinds2(a, b, ctor2) });
   }
 }
 function compareToRateRule2(a, b, last22) {
@@ -11729,15 +11914,15 @@ function inferTransitiveRatioRule2(a, b) {
     ] : []
   };
 }
-function toRateRule2(a, b, rate3) {
+function toRateRule2(a, b, rate2) {
   if (a.agent !== b.agent) {
     throw `Mismatch angent ${a.agent}, ${b.agent}`;
   }
-  const baseQuantity = rate3?.baseQuantity ?? 1;
+  const baseQuantity = rate2?.baseQuantity ?? 1;
   return {
     kind: "rate",
-    agent: rate3.agent ?? a.agent,
-    quantity: isNumber2(a.quantity) && isNumber2(b.quantity) && isNumber2(baseQuantity) ? baseQuantity === 1 ? a.quantity / b.quantity * baseQuantity : a.quantity / b.quantity * baseQuantity : isNumber2(baseQuantity) && baseQuantity === 1 ? wrapToQuantity2(`a.quantity / b.quantity`, { a, b }) : wrapToQuantity2(`a.quantity / b.quantity * rate.baseQuantity`, { a, b, rate: rate3 }),
+    agent: rate2.agent ?? a.agent,
+    quantity: isNumber2(a.quantity) && isNumber2(b.quantity) && isNumber2(baseQuantity) ? baseQuantity === 1 ? a.quantity / b.quantity * baseQuantity : a.quantity / b.quantity * baseQuantity : isNumber2(baseQuantity) && baseQuantity === 1 ? wrapToQuantity2(`a.quantity / b.quantity`, { a, b }) : wrapToQuantity2(`a.quantity / b.quantity * rate.baseQuantity`, { a, b, rate: rate2 }),
     entity: {
       entity: a.entity,
       unit: a.unit
@@ -11746,25 +11931,25 @@ function toRateRule2(a, b, rate3) {
       entity: b.kind === "cont" ? b.entity : b.agentQuota,
       unit: b.kind === "cont" ? b.unit : EmptyUnit2
     },
-    baseQuantity: rate3?.baseQuantity ?? 1
+    baseQuantity: rate2?.baseQuantity ?? 1
   };
 }
-function inferToRateRule2(a, b, rate3) {
-  const result = toRateRule2(a, b, rate3);
+function inferToRateRule2(a, b, rate2) {
+  const result = toRateRule2(a, b, rate2);
   if (isNumber2(a.quantity) && isNumber2(b.quantity) && isNumber2(result.baseQuantity) && isNumber2(result.quantity)) {
     return {
       name: toRateRule2.name,
-      inputParameters: extractKinds2(a, b, rate3),
+      inputParameters: extractKinds2(a, b, rate2),
       question: `Rozd\u011Bl ${formatNumber2(a.quantity)} ${formatEntity2({ entity: a.entity })} rovnom\u011Brn\u011B ${formatNumber2(b.quantity)} kr\xE1t${result.baseQuantity !== 1 ? ` po ${formatNumber2(result.baseQuantity)} ${formatEntity2({ entity: b.kind === "cont" ? b.entity : b.agentQuota })}` : ""}`,
       result,
       options: [
-        { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(b.quantity)}`, result: formatNumber2(result.quantity), ok: rate3.baseQuantity === 1 },
-        { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(b.quantity)} * ${formatNumber2(result.baseQuantity)}`, result: formatNumber2(result.quantity), ok: rate3.baseQuantity !== 1 },
+        { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(b.quantity)}`, result: formatNumber2(result.quantity), ok: rate2.baseQuantity === 1 },
+        { tex: `${formatNumber2(a.quantity)} / ${formatNumber2(b.quantity)} * ${formatNumber2(result.baseQuantity)}`, result: formatNumber2(result.quantity), ok: rate2.baseQuantity !== 1 },
         { tex: `${formatNumber2(b.quantity)} / ${formatNumber2(a.quantity)}`, result: formatNumber2(b.quantity / a.quantity), ok: false }
       ]
     };
   } else {
-    return resultAsQuestion2(result, { name: toRateRule2.name, inputParamters: extractKinds2(a, b, rate3) });
+    return resultAsQuestion2(result, { name: toRateRule2.name, inputParamters: extractKinds2(a, b, rate2) });
   }
 }
 function solveEquationRule2(a, b, last22) {
@@ -12276,7 +12461,7 @@ function inferenceRuleEx2(...args) {
   const [a, b, ...rest] = args;
   const last22 = rest?.length > 0 ? rest[rest.length - 1] : null;
   const kind = last22?.kind;
-  if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence", "tuple", "eval-expr", "alligation"].includes(last22?.kind)) {
+  if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence", "tuple", "eval-expr", "eval-formula", "alligation"].includes(last22?.kind)) {
     const arr = [a, b].concat(rest.slice(0, -1));
     if (last22.kind === "sequence")
       return inferToSequenceRule2(arr);
@@ -12284,7 +12469,7 @@ function inferenceRuleEx2(...args) {
       return inferGcdRule2(arr, last22);
     if (last22.kind === "lcd")
       return inferLcdRule2(arr, last22);
-    if (last22.kind === "eval-expr")
+    if (last22.kind === "eval-expr" || last22.kind === "eval-formula")
       return inferEvalToQuantityRule2(arr, last22);
     if (last22.kind === "tuple")
       return tupleRule2(arr);
@@ -12344,9 +12529,9 @@ function inferenceRuleEx2(...args) {
     return inferSimplifyExprRule2(a, b);
   } else if (a.kind === "simplify-expr" && (b.kind === "comp-ratio" || b.kind === "cont")) {
     return inferSimplifyExprRule2(b, a);
-  } else if (a.kind === "cont" && b.kind === "eval-expr") {
+  } else if (a.kind === "cont" && (b.kind === "eval-expr" || b.kind === "eval-formula")) {
     return inferEvalToQuantityRule2([a], b);
-  } else if (a.kind === "eval-expr" && b.kind === "cont") {
+  } else if ((a.kind === "eval-expr" || a.kind === "eval-formula") && b.kind === "cont") {
     return inferEvalToQuantityRule2([b], a);
   } else if (a.kind === "rate" && b.kind === "rate" && last22?.kind === "ratios") {
     return inferToRatiosRule2([a, b], last22);
@@ -13547,11 +13732,11 @@ Fraction2.prototype = {
   "simplify": function(eps22) {
     const ieps = BigInt(1 / (eps22 || 1e-3) | 0);
     const thisABS = this["abs"]();
-    const cont5 = thisABS["toContinued"]();
-    for (let i = 1; i < cont5.length; i++) {
-      let s = newFraction2(cont5[i - 1], C_ONE2);
+    const cont4 = thisABS["toContinued"]();
+    for (let i = 1; i < cont4.length; i++) {
+      let s = newFraction2(cont4[i - 1], C_ONE2);
       for (let k = i - 2; k >= 0; k--) {
-        s = s["inverse"]()["add"](cont5[k]);
+        s = s["inverse"]()["add"](cont4[k]);
       }
       let t = s["sub"](thisABS);
       if (t["n"] * ieps < t["d"]) {
@@ -17083,14 +17268,14 @@ function dort() {
       contArea("plocha \u0159ezu dortu", 200),
       ...halfProduct("\u010Dtverec")
     ),
-    evalExprAsCont("sqrt(x)", { kind: "cont", agent: "strana \u010Dtverce", ...dim.length })
+    evalFormulaAsCont(formulaRegistry.surfaceArea.square, (x) => x.a, "strana \u010Dtverce", dim.length)
   );
   return {
     prumerTacu: {
       deductionTree: deduce(
         deduce(
           contArea("\u03C0 * obsah", 144),
-          evalExprAsCont("sqrt(x)", { kind: "cont", agent: "polom\u011Br (r)", ...dim.length })
+          evalFormulaAsCont(formulaRegistry.squareRoot, (d) => d.x, "polom\u011Br (r)", dim.length)
         ),
         double(),
         product("pr\u016Fm\u011Br")
@@ -17104,7 +17289,7 @@ function dort() {
             commonSense("strana \u010Dtverce = polom\u011Br dortu"),
             contLength("polom\u011Br dortu", lastQuantity(stranaCtverce))
           ),
-          evalExprAsCont("\u03C0 * r^2", { kind: "cont", agent: "podstava dortu", ...dim.area })
+          evalFormulaAsCont(formulaRegistry.surfaceArea.circle, (x) => x.S, "podstava dortu", dim.area)
         ),
         to(
           last(stranaCtverce),
@@ -17219,7 +17404,7 @@ function kosoctverec() {
             productArea("obdeln\xEDk = koso\u010Dtverec")
           ),
           last(stranaKosoctverec),
-          evalExprAsCont("obsah / strana", { kind: "cont", agent: "v\xFD\u0161ka", ...dim.length })
+          evalFormulaAsCont(formulaRegistry.surfaceArea.rectangle, (x) => x.b, "v\xFD\u0161ka", dim.length)
         ),
         ctorBooleanOption(4.8)
       )
@@ -17270,7 +17455,7 @@ function vzorCtverce() {
     pridano: {
       deductionTree: deduceAs("vzor opakov\xE1n\xED, resp. po\u010Det p\u0159\xEDdan\xFDch pol\xED je z\xE1visl\xFD na pozici = (4 x spodn\xED, horn\xED, lev\xE9 a prav\xE1 okraje) - 4 za rohov\xE9 prvky")(
         cont("9. obrazec", 9, position),
-        evalExprAsCont("(4 * n) - 4", { kind: "cont", agent: "p\u0159idan\xE1 pole na 9. obrazec", entity: entity3 })
+        evalExprAsCont("(4 * n) - 4", "p\u0159idan\xE1 pole na 9. obrazec", { entity: entity3 })
       )
     },
     rozdil: {
@@ -17385,7 +17570,7 @@ function valec() {
         deduce(
           deduce(
             polomer,
-            evalExprAsCont("\u03C0*r^2", { kind: "cont", agent: "podstava", ...dim.area })
+            evalFormulaAsCont(formulaRegistry.surfaceArea.circle, (x) => x.S, "podstava", dim.area)
           ),
           contLength("v\xFD\u0161ka", 12),
           productVolume("v\xE1lec")
@@ -17520,7 +17705,7 @@ function hranol4() {
           ),
           deduce(
             last(podstavaArea),
-            evalExprAsCont("sqrt(x)", { kind: "cont", agent: "strana podstavy", ...dim.length })
+            evalFormulaAsCont(formulaRegistry.surfaceArea.square, (x) => x.a, "strana podstavy", dim.length)
           ),
           ctor("quota")
         ), { agent: "v\xFD\u0161ka", entity: dim.length }),
@@ -17618,7 +17803,7 @@ function obrazce2() {
       deduce(
         deduce(
           last(pocetSloupcu),
-          evalExprAsCont("pocetRadku - 1", { kind: "cont", agent: "lev\xFD sloupec", entity: bilyEntity })
+          evalExprAsCont("pocetRadku - 1", "lev\xFD sloupec", { entity: bilyEntity })
         ),
         sousedniCtverceRate
       ),
@@ -18565,9 +18750,9 @@ function lichobeznik() {
           productArea("obdeln\xEDk")
         ),
         deduce(
-          vyska,
           rozdilZakladen,
-          evalExprAsCont("1/2*vyska*strana", { kind: "cont", agent: "troj\xFAheln\xEDk", ...dim.area })
+          vyska,
+          evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, (c) => c.S, "troj\xFAheln\xEDk", dim.area)
         ),
         sum("lichob\u011B\u017En\xEDk")
       )
@@ -18767,7 +18952,7 @@ function pulkruh() {
             commonSense("vepsan\xFD kruh ve \u010Dtvercov\xE9 s\xEDti"),
             contLength("polom\u011Br (r)", 4)
           ),
-          evalExprAsCont("\u03C0*r^2", { kind: "cont", agent: "vepsan\xFD kruh", ...dim.area })
+          evalFormulaAsCont(formulaRegistry.surfaceArea.circle, (x) => x.S, "vepsan\xFD kruh", dim.area)
         ),
         double(),
         ctorScaleInvert("\u0161ed\xFD p\u016Flkruh")
@@ -18875,7 +19060,7 @@ function kruhy() {
     osmyObrazec: {
       deductionTree: deduceAs("vzor opakov\xE1n\xED, resp. po\u010Det b\xEDl\xFDch kruh\u016F je z\xE1visl\xFD na pozici = n * n, kde n je pozice")(
         cont("8. obrazec", 8, position),
-        evalExprAsCont("n * n", { kind: "cont", agent: "8. obrazec", entity: entity3 })
+        evalExprAsCont("n * n", "8. obrazec", { entity: entity3 })
       )
     },
     tmaveKruhy: {
@@ -19030,7 +19215,7 @@ function nadoby() {
               ...halfProduct("polom\u011Br n\xE1doba B")
             ),
             vyskaB,
-            evalExprAsCont("\u03C0 * r^2 * vyska", { kind: "cont", agent: "n\xE1doba B", ...dim.volume })
+            evalFormulaAsCont(formulaRegistry.volume.cylinder, (x) => x.V, "n\xE1doba B", dim.volume)
           ),
           deduce(
             deduce(
@@ -19038,7 +19223,7 @@ function nadoby() {
               ...halfProduct("polom\u011Br n\xE1doba A")
             ),
             vyskaA,
-            evalExprAsCont("\u03C0 * r^2 * vyska", { kind: "cont", agent: "n\xE1doba A", ...dim.volume })
+            evalFormulaAsCont(formulaRegistry.volume.cylinder, (x) => x.V, "n\xE1doba A", dim.volume)
           ),
           ctor("comp-ratio")
         ),
@@ -19057,7 +19242,7 @@ function lichobeznik2() {
   const vyska = deduce(
     obsahABC,
     contLength(`stran AB ${triangleABC}`, 16),
-    evalExprAsCont("2*obsah/zakladna", { kind: "cont", agent: `v\xFD\u0161ka ${lichobeznik3}`, ...dim.length })
+    evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, (x) => x.h, `v\xFD\u0161ka ${lichobeznik3}`, dim.length)
   );
   return {
     vyska: {
@@ -19068,7 +19253,7 @@ function lichobeznik2() {
         deduce(
           contLength(`strana CD ${triangleACD}`, 6),
           last(vyska),
-          evalExprAsCont("1/2*strana*vyska", { kind: "cont", agent: triangleACD, ...dim.area })
+          evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, (x) => x.S, triangleACD, dim.area)
         ),
         obsahABC,
         sum(`celkem ${lichobeznik3}`)
@@ -19085,9 +19270,9 @@ function zahon2() {
           deduce(
             deduce(
               contArea("kruhov\xFD z\xE1hon", 314, "dm2"),
-              evalExprAsCont("sqrt(obsah / \u03C0)", { kind: "cont", agent: "polom\u011Br", entity: dim.length.entity, unit: "dm" })
+              evalFormulaAsCont(formulaRegistry.surfaceArea.circle, (x) => x.r, "polom\u011Br", { entity: dim.length.entity, unit: "dm" })
             ),
-            evalExprAsCont("2*\u03C0*r", { kind: "cont", agent: "obvod", entity: dim.length.entity, unit: "dm" })
+            evalFormulaAsCont(formulaRegistry.circumReference.circle, (x) => x.o, "obvod", { entity: dim.length.entity, unit: "dm" })
           ),
           ctorUnit("m")
         ),
@@ -19101,7 +19286,7 @@ function zahon2() {
             contArea("\u010Dtvrtkruh", 314, "dm2"),
             ratio("cel\xFD kruh", "\u010Dtvrtkruh", 1 / 4)
           ),
-          evalExprAsCont("sqrt(obsah / \u03C0)", { kind: "cont", agent: "polom\u011Br", entity: dim.length.entity, unit: "dm" })
+          evalFormulaAsCont(formulaRegistry.surfaceArea.circle, (x) => x.r, "polom\u011Br", { entity: dim.length.entity, unit: "dm" })
         ),
         ctorUnit("m")
       )
@@ -19208,36 +19393,36 @@ function zednici() {
 function krychle() {
   const dim = dimensionEntity();
   const celaStrana = contLength("strana krychle", 3, "dm");
-  const toArea = (agent) => ({ kind: "cont", agent, entity: dim.area.entity, unit: "dm2" });
+  const entity3 = { entity: dim.area.entity, unit: "dm2" };
   return {
     deductionTree: deduce(
       deduce(
         deduce(
           deduce(
             celaStrana,
-            evalExprAsCont("1/2*a^2 + a^2", toArea("horn\xED plochy"))
+            evalExprAsCont("1/2*a^2 + a^2", "horn\xED plochy", entity3)
           ),
           deduce(
             celaStrana,
-            evalExprAsCont("1/2*a^2 + a^2", toArea("doln\xED plochy"))
+            evalExprAsCont("1/2*a^2 + a^2", "doln\xED plochy", entity3)
           ),
           deduce(
             celaStrana,
-            evalExprAsCont("a^2 + 1/2*a^2 +  1/2*a^2", toArea("bo\u010Dn\xED plochy"))
+            evalExprAsCont("a^2 + 1/2*a^2 +  1/2*a^2", "bo\u010Dn\xED plochy", entity3)
           ),
           deduce(
             celaStrana,
-            evalExprAsCont("1/2*a^2 +  1/2*a^2", toArea("p\u0159edn\xED plochy"))
+            evalExprAsCont("1/2*a^2 +  1/2*a^2", "p\u0159edn\xED plochy", entity3)
           ),
           deduce(
             celaStrana,
-            evalExprAsCont("1/2*a^2 +  1/2*a^2", toArea("zadn\xED plochy"))
+            evalExprAsCont("1/2*a^2 +  1/2*a^2", "zadn\xED plochy", entity3)
           ),
           sum("nov\xE9 t\u011Bleso")
         ),
         deduce(
           celaStrana,
-          evalExprAsCont("6*a^2", toArea("krychle"))
+          evalFormulaAsCont(formulaRegistry.surfaceArea.cube, (x) => x.S, "krychle", entity3)
         )
       ),
       ctorOption("B", 9)
@@ -20926,7 +21111,7 @@ function cyklista() {
             compRelative(stoupaniLabel, klesaniLabel, -1 / 2),
             last(klesaniRychlost)
           ),
-          evalExprAsCont("draha / rychlost", { kind: "cont", agent: `doba ${klesaniLabel}`, entity: "\u010Das", unit: "h", asRatio: true })
+          evalFormulaAsCont(formulaRegistry.speed, (x) => x.t, `doba ${klesaniLabel}`, { entity: "\u010Das", unit: "h" }, { asRatio: true })
         ),
         ctorUnit("min")
       )
@@ -20965,7 +21150,7 @@ function dlazdice() {
       deductionTree: deduce(
         deduce(
           polomer,
-          evalExprAsCont("\u03C0 * r^2", { kind: "cont", agent: "obsah kruhu", ...dim.area })
+          evalFormulaAsCont(formulaRegistry.surfaceArea.circle, (x) => x.S, "obsah kruhu", dim.area)
         ),
         ctorRound()
       )
@@ -21071,7 +21256,7 @@ function krychle2() {
             ),
             { agent: entity3 }
           ),
-          evalExprAsCont("sqrt(plocha)", { agent: "\u010Dtvere\u010Dek", kind: "cont", ...dim.length })
+          evalFormulaAsCont(formulaRegistry.surfaceArea.square, (x) => x.a, "\u010Dtvere\u010Dek", dim.length)
         ),
         counter("\u010Dtvere\u010Dek", 5),
         product("strana krychle")
@@ -21244,7 +21429,7 @@ function ctverec() {
   const stranaTrojuhelnik = deduce(
     stranaCtverec,
     zakladnaLichobeznik,
-    evalExprAsCont("(stranaCtverce - kratsiZakladna)/2", { kind: "cont", agent: stranaTrojuhelnikLabel, ...dim.length })
+    evalExprAsCont("(stranaCtverce - kratsiZakladna)/2", stranaTrojuhelnikLabel, dim.length)
   );
   const stranaLichobeznik = deduce(
     last(stranaTrojuhelnik),
@@ -21285,18 +21470,17 @@ function krychle3() {
     deduce(
       deduce(
         last(stranaMala),
-        evalExprAsCont("6 * strana^2", { kind: "cont", agent: malaLabel, ...dim.area })
+        evalFormulaAsCont(formulaRegistry.surfaceArea.cube, (x) => x.S, malaLabel, dim.area)
       ),
       obsah
     ),
-    cont(velkaLabel, 6, "stran"),
-    evalExprAsCont("sqrt(obsah / pocetStran)", { kind: "cont", agent: velkaLabel, ...dim.length })
+    evalFormulaAsCont(formulaRegistry.surfaceArea.cube, (x) => x.a, velkaLabel, dim.length)
   );
   return {
     deductionTree: deduce(
       deduce(
-        deduce(stranaVelka, evalExprAsCont("strana^3", { kind: "cont", agent: velkaLabel, ...dim.volume })),
-        deduce(stranaMala, evalExprAsCont("strana^3", { kind: "cont", agent: malaLabel, ...dim.volume }))
+        deduce(stranaVelka, evalFormulaAsCont(formulaRegistry.volume.cube, (x) => x.V, velkaLabel, dim.volume)),
+        deduce(stranaMala, evalFormulaAsCont(formulaRegistry.volume.cube, (x) => x.V, malaLabel, dim.volume))
       ),
       ctorOption("C", 37)
     )
@@ -21641,7 +21825,7 @@ function vzestupHladinyVody() {
   const dim = dimensionEntity();
   const objemKulicky = deduceAs("kuli\u010Dka")(
     contLength("kuli\u010Dka polom\u011Br", 3),
-    evalExprAsCont("4/3*r^3*Pi", { kind: "cont", agent: "voda", ...dim.volume })
+    evalExprAsCont("4/3*r^3*Pi", "voda", dim.volume)
   );
   const objemValce = deduceAs("v\xE1lec")(
     deduce(
@@ -21672,14 +21856,15 @@ function rovnoramennySatek() {
   const mensiSatekOdvesna = contLength(mensiSatekLabel, 50);
   const mensiSatek = deduce(
     mensiSatekOdvesna,
-    evalExprAsCont("1/2*delkaStrany^2", { kind: "cont", agent: mensiSatekLabel, ...dim.area })
+    mensiSatekOdvesna,
+    evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, (x) => x.S, mensiSatekLabel, dim.area)
   );
   const vetsiStatekOdvesna = deduce(
     deduce(
       mensiSatek,
       compRelativePercent(vetsiSatekLabel, mensiSatekLabel, 125)
     ),
-    evalExprAsCont("sqrt(2*obsah)", { kind: "cont", agent: vetsiSatekLabel, ...dim.length })
+    evalExprAsCont("sqrt(2*obsah)", vetsiSatekLabel, dim.length)
   );
   return {
     deductionTree: deduce(

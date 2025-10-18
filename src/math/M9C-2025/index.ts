@@ -1,4 +1,4 @@
-import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, rate, ratio, ctorPercent, percent, ctorOption, sum, product, counter, contLength, dimensionEntity, contArea, ctorExpressionOption, compRelativePercent, comp, ctorComplement, evalExprAsCont, ctorRound, productCombine, pythagoras, ctorBooleanOption } from "../../components/math";
+import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, rate, ratio, ctorPercent, percent, ctorOption, sum, product, counter, contLength, dimensionEntity, contArea, ctorExpressionOption, compRelativePercent, comp, ctorComplement, ctorRound, productCombine, pythagoras, ctorBooleanOption, evalFormulaAsCont, formulaRegistry } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -144,7 +144,7 @@ function cyklista() {
             compRelative(stoupaniLabel, klesaniLabel, -1 / 2),
             last(klesaniRychlost)
           ),
-          evalExprAsCont("draha / rychlost", { kind: 'cont', agent: `doba ${klesaniLabel}`, entity: 'čas', unit: 'h', asRatio: true })
+          evalFormulaAsCont(formulaRegistry.speed, x => x.t, `doba ${klesaniLabel}`, { entity: 'čas', unit: 'h' }, { asRatio: true })
         ),
         ctorUnit("min")
       )
@@ -187,7 +187,7 @@ function dlazdice() {
       deductionTree: deduce(
         deduce(
           polomer,
-          evalExprAsCont("π * r^2", { kind: 'cont', agent: 'obsah kruhu', ...dim.area })
+          evalFormulaAsCont(formulaRegistry.surfaceArea.circle, x => x.S, 'obsah kruhu', dim.area)
         ),
         ctorRound()
       )
@@ -294,7 +294,7 @@ function krychle() {
               cont(agentStena, 20, entity),
               ctor("rate")
             ), { agent: entity }),
-          evalExprAsCont("sqrt(plocha)", { agent: "čtvereček", kind: 'cont', ...dim.length })
+          evalFormulaAsCont(formulaRegistry.surfaceArea.square, x => x.a, "čtvereček", dim.length)
         ),
         counter("čtvereček", 5),
         product("strana krychle")

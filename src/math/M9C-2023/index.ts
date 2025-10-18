@@ -1,4 +1,4 @@
-import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, pythagoras, rate, ratio, sum, product, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorBooleanOption, contLength, dimensionEntity, nthPart, comp, oblongNumbers, nth, productVolume, counter, ctorRound, ratios, alligation, ctorRatiosInvert, percent, ctorExpressionOption, contArea, double, halfProduct } from "../../components/math";
+import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, pythagoras, rate, ratio, sum, product, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorBooleanOption, contLength, dimensionEntity, nthPart, comp, oblongNumbers, nth, productVolume, counter, ctorRound, ratios, alligation, ctorRatiosInvert, percent, ctorExpressionOption, contArea, double, halfProduct, evalFormulaAsCont, formulaRegistry } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate, toRate } from "../../utils/deduce-utils";
 
 
@@ -84,7 +84,7 @@ function valec() {
                 deduce(
                     deduce(
                         polomer,
-                        evalExprAsCont("π*r^2", { kind: 'cont', agent: "podstava", ...dim.area })
+                        evalFormulaAsCont(formulaRegistry.surfaceArea.circle, x => x.S, "podstava", dim.area)
                     ),
                     contLength("výška", 12),
                     productVolume("válec")
@@ -239,7 +239,7 @@ function hranol() {
                     ),
                     deduce(
                         last(podstavaArea),
-                        evalExprAsCont("sqrt(x)", { kind: 'cont', agent: 'strana podstavy', ...dim.length })
+                        evalFormulaAsCont(formulaRegistry.surfaceArea.square, x => x.a, 'strana podstavy', dim.length)
                     ),
                     ctor("quota")
                 ), { agent: "výška", entity: dim.length }),
@@ -339,7 +339,7 @@ function obrazce() {
             deduce(
                 deduce(
                     last(pocetSloupcu),
-                    evalExprAsCont("pocetRadku - 1", { kind: "cont", agent: "levý sloupec", entity: bilyEntity })
+                    evalExprAsCont("pocetRadku - 1", "levý sloupec", { entity: bilyEntity })
                 ),
                 sousedniCtverceRate),
             cont("rohový", 1, sedyEntity),

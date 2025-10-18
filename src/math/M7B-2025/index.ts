@@ -1,4 +1,4 @@
-import { commonSense, compRelative, cont, ctor, sum, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, counter, nthPart, percent, proportion, rate, ratio, product, double, ctorScale, contLength, contArea, productArea, productVolume, dimensionEntity, evalExprAsCont, ratios, ctorRatiosInvert, comp } from "../../components/math"
+import { commonSense, compRelative, cont, ctor, sum, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, counter, nthPart, percent, proportion, rate, ratio, product, double, ctorScale, contLength, contArea, productArea, productVolume, dimensionEntity, ratios, ctorRatiosInvert, comp, evalFormulaAsCont, formulaRegistry } from "../../components/math"
 import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont, type TreeNode } from "../../utils/deduce-utils"
 
 export default createLazyMap({
@@ -292,7 +292,7 @@ function hranol() {
         ctorDifference("zbytek základny")
       ),
       podstavaVyska,
-      evalExprAsCont("1/2*zakladna*vyska", { kind: "cont", agent: "levý a pravý pravoúhlý trojůhelník", ...dim.area })
+      evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, x => x.S, "levý a pravý pravoúhlý trojůhelník", dim.area)
     ),
     sum("obsah postavy hranolu")
   )

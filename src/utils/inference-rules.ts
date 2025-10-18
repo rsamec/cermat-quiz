@@ -1,5 +1,5 @@
 
-import { type Predicate, type Pattern, cont, ratio, comp, rate, ratios, compRatio, compDiff, lcd, gcd, ctor, inferenceRule, nth, quota, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont, counter, sum, product, productVolume, squareNumbersPattern, triangularNumbersPattern, oblongNumbers, halfProduct } from "../components/math.js";
+import { type Predicate, type Pattern, cont, ratio, comp, rate, ratios, compRatio, compDiff, lcd, gcd, ctor, inferenceRule, nth, quota, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont, counter, sum, product, productVolume, squareNumbersPattern, triangularNumbersPattern, oblongNumbers, halfProduct, evalFormulaAsCont, formulaRegistry, dimensionEntity } from "../components/math.js";
 
 export default function rules() {
 
@@ -50,6 +50,7 @@ export default function rules() {
   const tenthTerm = cont("č.10", 10, "pozice");
 
   const alfa = cont("alfa", 50, "stupňů");
+  const dim = dimensionEntity();
 
   return {
     compare: [deduceRule(a, b), deduceRule(a, compareAtoB), deduceRule(b, compareAtoB)],
@@ -101,13 +102,13 @@ export default function rules() {
     aritmeticSequence: [...nthRule(arithmetic, tenthTerm)],
     quadraticSequence: [...nthRule(quadratic, tenthTerm)],
     geometricSequence: [...nthRule(geometric, tenthTerm)],
-    squareNumbers: [...nthPatternRule(squareNumbersPattern({entity: 'čtverec'}),tenthTerm)],
-    triangularNumbers: [...nthPatternRule(triangularNumbersPattern({entity: 'čtverec'}),tenthTerm)],
-    rectangularNumbers: [...nthPatternRule(oblongNumbers({entity: 'čtverec'}),tenthTerm)],
+    squareNumbers: [...nthPatternRule(squareNumbersPattern({ entity: 'čtverec' }), tenthTerm)],
+    triangularNumbers: [...nthPatternRule(triangularNumbersPattern({ entity: 'čtverec' }), tenthTerm)],
+    rectangularNumbers: [...nthPatternRule(oblongNumbers({ entity: 'čtverec' }), tenthTerm)],
     unit: [deduceRule(cont("Honzík", 4, "jablek", "kg"), ctorUnit("g")), deduceRule(cont("Ája", 400, "mléka", "cm3"), ctorUnit("l"))],
     eval: [
-      deduceRule(cont("poloměr", 4, "délka", "cm"), evalExprAsCont("π*r^2", { kind: 'cont', agent: "kruh", entity: "obsah", unit: "cm2" })),
-      deduceRule(cont("průměr", 4, "délka", "cm"), evalExprAsCont("prumer*0.5", { kind: 'cont', agent: "poloměr", entity: "délka", unit: "cm" })),
+      deduceRule(cont("poloměr", 4, "délka", "cm"), evalFormulaAsCont(formulaRegistry.surfaceArea.circle, x => x.S, "kruh", dim.area)),
+      deduceRule(cont("průměr", 4, "délka", "cm"), evalExprAsCont("prumer*0.5", "poloměr", { entity: "délka", unit: "cm" })),
       deduceRule(cont("průměr", "4", "délka", "cm"), ...halfProduct("poloměr"))
     ]
   }

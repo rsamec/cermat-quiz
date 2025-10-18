@@ -1,4 +1,4 @@
-import { compRatio, cont, ctor, ctorDifference, sum, compRelative, comp, ctorOption, contLength, halfProduct, pythagoras, proportion, percent, dimensionEntity, evalExprAsCont, triangleAngle, contArea, ratio, ctorUnit, ctorRound, ctorBooleanOption, ctorComplement, nthPart, ctorPercent, productArea, simplifyExpr } from "../../components/math";
+import { compRatio, cont, ctor, ctorDifference, sum, compRelative, comp, ctorOption, contLength, halfProduct, pythagoras, proportion, percent, dimensionEntity, evalExprAsCont, triangleAngle, contArea, ratio, ctorUnit, ctorRound, ctorBooleanOption, ctorComplement, nthPart, ctorPercent, productArea, simplifyExpr, evalFormulaAsCont, formulaRegistry } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, toPredicate } from "../../utils/deduce-utils";
 import pocetObyvatel from "./pocet-obyvatel";
 import sourozenci from "./sourozenci";
@@ -38,7 +38,7 @@ function nadoby() {
                             ...halfProduct("poloměr nádoba B")
                         ),
                         vyskaB,
-                        evalExprAsCont("π * r^2 * vyska", { kind: 'cont', agent: "nádoba B", ...dim.volume })
+                        evalFormulaAsCont(formulaRegistry.volume.cylinder, x => x.V, "nádoba B", dim.volume)
                     ),
                     deduce(
                         deduce(
@@ -46,7 +46,7 @@ function nadoby() {
                             ...halfProduct("poloměr nádoba A")
                         ),
                         vyskaA,
-                        evalExprAsCont("π * r^2 * vyska", { kind: 'cont', agent: "nádoba A", ...dim.volume })
+                        evalFormulaAsCont(formulaRegistry.volume.cylinder, x => x.V, "nádoba A", dim.volume)
                     ),
                     ctor('comp-ratio')
                 ),
@@ -68,7 +68,7 @@ function lichobeznik() {
     const vyska = deduce(
         obsahABC,
         contLength(`stran AB ${triangleABC}`, 16),
-        evalExprAsCont("2*obsah/zakladna", { kind: "cont", agent: `výška ${lichobeznik}`, ...dim.length })
+        evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, x => x.h, `výška ${lichobeznik}`, dim.length)
     )
     return {
         vyska: {
@@ -79,7 +79,7 @@ function lichobeznik() {
                 deduce(
                     contLength(`strana CD ${triangleACD}`, 6),
                     last(vyska),
-                    evalExprAsCont("1/2*strana*vyska", { kind: "cont", agent: triangleACD, ...dim.area })
+                    evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, x => x.S, triangleACD, dim.area)
                 ),
                 obsahABC,
                 sum(`celkem ${lichobeznik}`)
@@ -97,9 +97,9 @@ function zahon() {
                     deduce(
                         deduce(
                             contArea("kruhový záhon", 314, "dm2"),
-                            evalExprAsCont("sqrt(obsah / π)", { kind: 'cont', agent: "poloměr", entity: dim.length.entity, unit: "dm" })
+                            evalFormulaAsCont(formulaRegistry.surfaceArea.circle, x => x.r, "poloměr", { entity: dim.length.entity, unit: "dm" })
                         ),
-                        evalExprAsCont("2*π*r", { kind: 'cont', agent: "obvod", entity: dim.length.entity, unit: "dm" })
+                        evalFormulaAsCont(formulaRegistry.circumReference.circle, x => x.o, "obvod", { entity: dim.length.entity, unit: "dm" })
                     ),
                     ctorUnit("m")
                 ),
@@ -113,7 +113,7 @@ function zahon() {
                         contArea("čtvrtkruh", 314, "dm2"),
                         ratio("celý kruh", "čtvrtkruh", 1 / 4)
                     ),
-                    evalExprAsCont("sqrt(obsah / π)", { kind: 'cont', agent: "poloměr", entity: dim.length.entity, unit: "dm" })
+                    evalFormulaAsCont(formulaRegistry.surfaceArea.circle, x => x.r, "poloměr", { entity: dim.length.entity, unit: "dm" })
                 ),
                 ctorUnit("m")
             )
@@ -227,36 +227,36 @@ function zednici() {
 function krychle() {
     const dim = dimensionEntity();
     const celaStrana = contLength("strana krychle", 3, "dm")
-    const toArea = agent => ({ kind: "cont" as const, agent, entity: dim.area.entity, unit: "dm2" })
+    const entity = { entity: dim.area.entity, unit: "dm2" }
     return {
         deductionTree: deduce(
             deduce(
                 deduce(
                     deduce(
                         celaStrana,
-                        evalExprAsCont("1/2*a^2 + a^2", toArea("horní plochy"))
+                        evalExprAsCont("1/2*a^2 + a^2", "horní plochy", entity)
                     ),
                     deduce(
                         celaStrana,
-                        evalExprAsCont("1/2*a^2 + a^2", toArea("dolní plochy"))
+                        evalExprAsCont("1/2*a^2 + a^2", "dolní plochy", entity)
                     ),
                     deduce(
                         celaStrana,
-                        evalExprAsCont("a^2 + 1/2*a^2 +  1/2*a^2", toArea("boční plochy"))
+                        evalExprAsCont("a^2 + 1/2*a^2 +  1/2*a^2", "boční plochy", entity)
                     ),
                     deduce(
                         celaStrana,
-                        evalExprAsCont("1/2*a^2 +  1/2*a^2", toArea("přední plochy"))
+                        evalExprAsCont("1/2*a^2 +  1/2*a^2", "přední plochy", entity)
                     ),
                     deduce(
                         celaStrana,
-                        evalExprAsCont("1/2*a^2 +  1/2*a^2", toArea("zadní plochy"))
+                        evalExprAsCont("1/2*a^2 +  1/2*a^2", "zadní plochy", entity)
                     ),
                     sum("nové těleso")
                 ),
                 deduce(
                     celaStrana,
-                    evalExprAsCont("6*a^2", toArea("krychle"))
+                    evalFormulaAsCont(formulaRegistry.surfaceArea.cube, x => x.S, "krychle", entity)
                 ),
             ),
             ctorOption("B", 9)

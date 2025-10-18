@@ -1,4 +1,4 @@
-import { commonSense, compAngle, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorUnit, pythagoras, rate, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorScaleInvert, ctorBooleanOption, triangleAngle, contLength, contArea, dimensionEntity } from "../../components/math";
+import { commonSense, compAngle, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorUnit, pythagoras, rate, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorScaleInvert, ctorBooleanOption, triangleAngle, contLength, contArea, dimensionEntity, evalFormulaAsCont, formulaRegistry } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "../../utils/deduce-utils";
 import { triangleArea } from "../shapes/triangle";
 
@@ -200,7 +200,7 @@ function pulkruh() {
             commonSense("vepsaný kruh ve čtvercové síti"),
             contLength("poloměr (r)", 4)
           ),
-          evalExprAsCont("π*r^2", { kind: 'cont', agent: 'vepsaný kruh', ...dim.area})
+          evalFormulaAsCont(formulaRegistry.surfaceArea.circle, x => x.S, 'vepsaný kruh', dim.area)
         ),
         double(),
         ctorScaleInvert("šedý půlkruh")
@@ -315,7 +315,7 @@ function kruhy() {
     osmyObrazec: {
       deductionTree: deduceAs("vzor opakování, resp. počet bílých kruhů je závislý na pozici = n * n, kde n je pozice")(
         cont("8. obrazec", 8, position),
-        evalExprAsCont("n * n", { kind: 'cont', agent: "8. obrazec", entity })
+        evalExprAsCont("n * n", "8. obrazec", { entity })
       ),
     },
     tmaveKruhy: {
