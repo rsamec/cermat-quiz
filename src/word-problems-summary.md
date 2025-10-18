@@ -23,6 +23,7 @@ import { jsonToMarkdownChat} from './utils/deduce-utils.js';
 import mdPlus from './utils/md-utils.js';
 import { parser } from '@lezer/markdown';
 import { getQuizBuilder } from "./utils/parse-utils.js";
+import * as math from "./components/math.js";
 
 const questionsMaxLimit = 50;
 
@@ -75,8 +76,9 @@ const filteredQuizCategories = Object.entries(quizGeneratedCategories).flatMap((
         subject: parsedCode.subject,
         order: parsedCode.order,
         version: formatVersion(parsedCode),
-        predicates:metrics?.predicates ?? [],
-        rules:metrics?.rules ?? [],
+        predicates: metrics?.predicates ?? [],
+        rules: metrics?.rules ?? [],
+        formulas: metrics?.formulas ?? [],
         hasSolution: metrics != null,
         builder,      
         deductionTrees: wordProblem[d.id] != null 
@@ -205,6 +207,14 @@ const uniqueRules = new Map([
 const selectedRulesInput = Inputs.select(uniqueRules,{ multiple:true, label:"Pravidla"});
 const selectedRules = Generators.input(selectedRulesInput);
 
+const registry = math.formulaRegistry;
+const formulaItems = [].concat(Object.values(registry.circumReference).concat(Object.values(registry.surfaceArea)).concat(Object.values(registry.volume)).concat([registry.speed, registry.squareRoot]))
+const uniqueFormulas =  new Map(formulaItems.map(d => [d.name, [d.name]]));
+
+const selectedFormulasInput = Inputs.select(uniqueFormulas,{ multiple:true, label:"Vzorce"});
+const selectedFormulas = Generators.input(selectedFormulasInput);
+
+
 const controlsInput = Inputs.radio(
     new Map([
       ["Pouze zadání", "A"],
@@ -262,6 +272,9 @@ function renderMarkdownWithCopy(content, lang){
       <div>
         ${selectedRulesInput}
       </div>
+      <div>
+        ${selectedFormulasInput}
+      </div>
     </div>
   </section>
 </details>
@@ -270,7 +283,8 @@ function renderMarkdownWithCopy(content, lang){
   ${toBadge(selectedPeriods, selectedPeriodsInput,"Studium")}
   ${toBadge(selectedVersions, selectedVersionsInput,"Verze")}
   ${toBadge(selectedPredicates, selectedPredicatesInput, "Predikáty")}
-  ${toBadge(selectedRules, selectedRulesInput, "Rules")}
+  ${toBadge(selectedRules, selectedRulesInput, "Pravidla")}
+  ${toBadge(selectedFormulas, selectedFormulasInput, "Vzorce")}
 </div>
 
 
@@ -296,6 +310,9 @@ if (selectedPredicates.length > 0){
 }
 if (selectedRules.length > 0){
   filtered = filtered.filter(d=> selectedRules.flatMap(d => d).some(rule => d.rules.includes(rule)));
+}
+if (selectedFormulas.length > 0){
+  filtered = filtered.filter(d=> selectedFormulas.flatMap(d => d).some(rule => d.formulas.includes(rule)));
 }
 
 const search = view(Inputs.search(filtered,{placeholder: "Vyhledej úlohy…"}));
@@ -350,5 +367,5 @@ ${html`${viewValue != 'links' && selected.length > questionsMaxLimit
 
 ${ html`<div class="card">${renderMarkdownWithCopy(viewValue == 'links' 
 ? selected.map(d => `- [${formatShortCodeAlt(d.code)} ${d.id}. ${d.name}](./n-${d.code}-${d.id})`).join("\n")
-: selectedToRender.map(d => (controls.startsWith("A") ? d.builder.content([parseInt(d.id)], { render: 'content' }) : "") + ' ' + (controls.endsWith("B") ?  (controls.startsWith("A") ? `\n---\n`:'') + d.deductionTrees.map(tree => jsonToMarkdownChat(tree, {rules:selectedRules.flatMap(d => d),predicates:selectedPredicates.flatMap(d => d)}).join("")).join("---\n") : "")).join("\n---\n"), 'md')}</div>`}
+: selectedToRender.map(d => (controls.startsWith("A") ? d.builder.content([parseInt(d.id)], { render: 'content' }) : "") + ' ' + (controls.endsWith("B") ?  (controls.startsWith("A") ? `\n---\n`:'') + d.deductionTrees.map(tree => jsonToMarkdownChat(tree, {rules:selectedRules.flatMap(d => d),predicates:selectedPredicates.flatMap(d => d), formulas: selectedFormulas.flatMap(d => d)}).join("")).join("---\n") : "")).join("\n---\n"), 'md')}</div>`}
 

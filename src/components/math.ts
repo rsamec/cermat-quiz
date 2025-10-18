@@ -3836,6 +3836,45 @@ export const formulaRegistry = {
     },
   },
   surfaceArea: {
+    circle: {
+      name: 'Obsah kruhu',
+      description: 'Vzorce pro obsah kruhu',
+      params: ['S', 'o', 'r', 'd'],
+      formula: {
+        'S': 'π * r^2',
+        'r': 'sqrt(S / π)', // Poloměr z obsahu
+        'd': '2 * sqrt(S / π)',
+      },
+    },
+    square: {
+      name: 'Obsah čtverce',
+      description: 'Vypočítá obsah čtverce ze strany a, nebo stranu z obsahu.',
+      params: ['S', 'a'],
+      formula: {
+        'S': 'a * a', // Alternativně 'a^2'
+        'a': 'sqrt(S)',
+      },
+    },
+    rectangle: {
+      name: 'Obsah obdélníku',
+      description: 'Vypočítá obsah obdélníku ze stran a, b nebo neznámou stranu.',
+      params: ['S', 'a', 'b'],
+      formula: {
+        'S': 'a * b',
+        'a': 'S / b',
+        'b': 'S / a',
+      },
+    },
+    triangle: {
+      name: 'Obsah trojúhelníku',
+      description: 'Obsah z délky základny a výšky.',
+      params: ['S', 'b', 'h'],
+      formula: {
+        'S': '1/2 * b * h',
+        'b': '2 * S / h',
+        'h': '2 * S / b',
+      },
+    },
     cube: {
       name: 'Povrch krychle',
       description: 'Vypočítá povrch krychle ze strany a.',
@@ -3865,45 +3904,6 @@ export const formulaRegistry = {
         'S': '2 * π * r * (r + v)',
         'v': 'S / (2 * π * r) - r',
         // Výpočet poloměru je kvadratická rovnice, pro jednoduchost zde není explicitní
-      },
-    },
-    circle: {
-      name: 'Kruh',
-      description: 'Vzorce pro obsah kruhu',
-      params: ['S', 'o', 'r', 'd'],
-      formula: {
-        'S': 'π * r^2',
-        'r': 'sqrt(S / π)', // Poloměr z obsahu
-        'd': '2 * sqrt(S / π)',
-      },
-    },
-    square: {
-      name: 'Obsah a strana čtverce',
-      description: 'Vypočítá obsah čtverce ze strany a, nebo stranu z obsahu.',
-      params: ['S', 'a'],
-      formula: {
-        'S': 'a * a', // Alternativně 'a^2'
-        'a': 'sqrt(S)',
-      },
-    },
-    rectangle: {
-      name: 'Obsah a strany obdélníku',
-      description: 'Vypočítá obsah obdélníku ze stran a, b nebo neznámou stranu.',
-      params: ['S', 'a', 'b'],
-      formula: {
-        'S': 'a * b',
-        'a': 'S / b',
-        'b': 'S / a',
-      },
-    },
-    triangle: {
-      name: 'Obsah trojúhelníku (základní)',
-      description: 'Obsah z délky základny a výšky.',
-      params: ['S', 'b', 'h'],
-      formula: {
-        'S': '1/2 * b * h',
-        'b': '2 * S / h',
-        'h': '2 * S / b',
       },
     },
     sphere: {

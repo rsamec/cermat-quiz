@@ -2855,6 +2855,47 @@ var formulaRegistry = {
     }
   },
   surfaceArea: {
+    circle: {
+      name: "Obsah kruhu",
+      description: "Vzorce pro obsah kruhu",
+      params: ["S", "o", "r", "d"],
+      formula: {
+        "S": "\u03C0 * r^2",
+        "r": "sqrt(S / \u03C0)",
+        // Poloměr z obsahu
+        "d": "2 * sqrt(S / \u03C0)"
+      }
+    },
+    square: {
+      name: "Obsah \u010Dtverce",
+      description: "Vypo\u010D\xEDt\xE1 obsah \u010Dtverce ze strany a, nebo stranu z obsahu.",
+      params: ["S", "a"],
+      formula: {
+        "S": "a * a",
+        // Alternativně 'a^2'
+        "a": "sqrt(S)"
+      }
+    },
+    rectangle: {
+      name: "Obsah obd\xE9ln\xEDku",
+      description: "Vypo\u010D\xEDt\xE1 obsah obd\xE9ln\xEDku ze stran a, b nebo nezn\xE1mou stranu.",
+      params: ["S", "a", "b"],
+      formula: {
+        "S": "a * b",
+        "a": "S / b",
+        "b": "S / a"
+      }
+    },
+    triangle: {
+      name: "Obsah troj\xFAheln\xEDku",
+      description: "Obsah z d\xE9lky z\xE1kladny a v\xFD\u0161ky.",
+      params: ["S", "b", "h"],
+      formula: {
+        "S": "1/2 * b * h",
+        "b": "2 * S / h",
+        "h": "2 * S / b"
+      }
+    },
     cube: {
       name: "Povrch krychle",
       description: "Vypo\u010D\xEDt\xE1 povrch krychle ze strany a.",
@@ -2884,47 +2925,6 @@ var formulaRegistry = {
         "S": "2 * \u03C0 * r * (r + v)",
         "v": "S / (2 * \u03C0 * r) - r"
         // Výpočet poloměru je kvadratická rovnice, pro jednoduchost zde není explicitní
-      }
-    },
-    circle: {
-      name: "Kruh",
-      description: "Vzorce pro obsah kruhu",
-      params: ["S", "o", "r", "d"],
-      formula: {
-        "S": "\u03C0 * r^2",
-        "r": "sqrt(S / \u03C0)",
-        // Poloměr z obsahu
-        "d": "2 * sqrt(S / \u03C0)"
-      }
-    },
-    square: {
-      name: "Obsah a strana \u010Dtverce",
-      description: "Vypo\u010D\xEDt\xE1 obsah \u010Dtverce ze strany a, nebo stranu z obsahu.",
-      params: ["S", "a"],
-      formula: {
-        "S": "a * a",
-        // Alternativně 'a^2'
-        "a": "sqrt(S)"
-      }
-    },
-    rectangle: {
-      name: "Obsah a strany obd\xE9ln\xEDku",
-      description: "Vypo\u010D\xEDt\xE1 obsah obd\xE9ln\xEDku ze stran a, b nebo nezn\xE1mou stranu.",
-      params: ["S", "a", "b"],
-      formula: {
-        "S": "a * b",
-        "a": "S / b",
-        "b": "S / a"
-      }
-    },
-    triangle: {
-      name: "Obsah troj\xFAheln\xEDku (z\xE1kladn\xED)",
-      description: "Obsah z d\xE9lky z\xE1kladny a v\xFD\u0161ky.",
-      params: ["S", "b", "h"],
-      formula: {
-        "S": "1/2 * b * h",
-        "b": "2 * S / h",
-        "h": "2 * S / b"
       }
     },
     sphere: {
@@ -6896,6 +6896,7 @@ function formatPredicate(d, formatting) {
       result = compose`${formatAngle(d.relationship)}`;
       break;
     case "eval-expr":
+    case "eval-formula":
       const { predicate, expression } = d;
       result = predicate.kind === "cont" ? compose`${formatAgent(predicate.agent)} = [${expression}]${predicate.entity != "" ? " " : ""}${formatEntity3(predicate.entity, predicate.unit)}` : predicate.kind === "rate" ? compose`${formatAgent(predicate.agent)} [${expression}]${predicate.entity.entity != "" ? " " : ""}${formatEntity3(predicate.entity.entity, predicate.entity.unit)} per ${isNumber(predicate.baseQuantity) && predicate.baseQuantity == 1 ? "" : formatQuantity(predicate.baseQuantity)}${predicate.entityBase.entity != "" ? " " : ""}${formatEntity3(predicate.entityBase.entity, predicate.entityBase.unit)}` : compose`${expression}`;
       break;

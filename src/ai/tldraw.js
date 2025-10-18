@@ -3827,6 +3827,7 @@ function formatPredicate(d, formatting) {
       result = compose`${formatAngle(d.relationship)}`;
       break;
     case "eval-expr":
+    case "eval-formula":
       const { predicate, expression } = d;
       result = predicate.kind === "cont" ? compose`${formatAgent(predicate.agent)} = [${expression}]${predicate.entity != "" ? " " : ""}${formatEntity2(predicate.entity, predicate.unit)}` : predicate.kind === "rate" ? compose`${formatAgent(predicate.agent)} [${expression}]${predicate.entity.entity != "" ? " " : ""}${formatEntity2(predicate.entity.entity, predicate.entity.unit)} per ${isNumber(predicate.baseQuantity) && predicate.baseQuantity == 1 ? "" : formatQuantity(predicate.baseQuantity)}${predicate.entityBase.entity != "" ? " " : ""}${formatEntity2(predicate.entityBase.entity, predicate.entityBase.unit)}` : compose`${expression}`;
       break;

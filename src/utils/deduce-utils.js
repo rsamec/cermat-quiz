@@ -6292,10 +6292,19 @@ function connectTo(node, input) {
   };
   return connect(node, input);
 }
-function computeTreeMetrics(node, level = 0, levels = {}, predicates = [], rules = []) {
+function computeTreeMetrics(node, level = 0, levels = {}, predicates = [], rules = [], formulas = []) {
   if (isPredicate(node)) {
     levels[level] = (levels[level] || 0) + 1;
-    return { depth: level + 1, width: Math.max(...Object.values(levels)), predicates: predicates.includes(node.kind) ? predicates : predicates.concat(node.kind), rules };
+    if (node.kind === "eval-formula" && node.formulaName != null && !formulas.includes(node.formulaName)) {
+      formulas.push(node.formulaName);
+    }
+    return {
+      depth: level + 1,
+      width: Math.max(...Object.values(levels)),
+      predicates: predicates.includes(node.kind) ? predicates : predicates.concat(node.kind),
+      rules,
+      formulas
+    };
   }
   if (node.children) {
     levels[level] = (levels[level] || 0) + 1;
@@ -6307,13 +6316,13 @@ function computeTreeMetrics(node, level = 0, levels = {}, predicates = [], rules
         const result = inferenceRuleWithQuestion2(mapNodeChildrenToPredicates(node));
         rules.push(result.name);
       }
-      const metrics = computeTreeMetrics(child, level + 1, levels, predicates, rules);
+      const metrics = computeTreeMetrics(child, level + 1, levels, predicates, rules, formulas);
       predicates = metrics.predicates;
       maxDepth = Math.max(maxDepth, metrics.depth);
     }
-    return { depth: maxDepth, width: Math.max(...Object.values(levels)), predicates, rules };
+    return { depth: maxDepth, width: Math.max(...Object.values(levels)), predicates, rules, formulas };
   }
-  return { depth: level, width: Math.max(...Object.values(levels)), predicates, rules };
+  return { depth: level, width: Math.max(...Object.values(levels)), predicates, rules, formulas };
 }
 function jsonToMarkdownTree(node, level = 0) {
   const indent = "  ".repeat(level);
@@ -6441,7 +6450,7 @@ function jsonToTLDrawEx(node, isConclusion, level = 0) {
   }
   return markdown;
 }
-function jsonToMarkdownChat(node, { predicates, rules } = { predicates: [], rules: [] }) {
+function jsonToMarkdownChat(node, { predicates, rules, formulas } = { predicates: [], rules: [], formulas: [] }) {
   const flatStructure = [];
   function traverseEx(node2) {
     const args = [];
@@ -6472,7 +6481,7 @@ function jsonToMarkdownChat(node, { predicates, rules } = { predicates: [], rule
       const conclusion = arr[arr.length - 1];
       const answer = q?.options?.find((d) => d.ok);
       const formattedPremises = premises.map((d) => {
-        return isPredicate(d) ? predicates.includes(d.kind) ? `==${formatPredicate(d, chatFormattingFunc(0))}==` : formatPredicate(d, chatFormattingFunc(0)) : d;
+        return isPredicate(d) ? predicates.includes(d.kind) || d.kind == "eval-formula" && formulas.includes(d.formulaName) ? `==${formatPredicate(d, chatFormattingFunc(0))}==` : formatPredicate(d, chatFormattingFunc(0)) : d;
       }).filter((d) => !isEmptyOrWhiteSpace(d)).map((d) => `- ${d}`).join("\n");
       flatStructure.push((q != null ? `${rules.includes(q.name) ? `==${q.question.trim()}==` : q.question}
 ${formattedPremises}
@@ -6658,6 +6667,7 @@ function formatPredicate(d, formatting) {
       result = compose`${formatAngle(d.relationship)}`;
       break;
     case "eval-expr":
+    case "eval-formula":
       const { predicate, expression } = d;
       result = predicate.kind === "cont" ? compose`${formatAgent(predicate.agent)} = [${expression}]${predicate.entity != "" ? " " : ""}${formatEntity2(predicate.entity, predicate.unit)}` : predicate.kind === "rate" ? compose`${formatAgent(predicate.agent)} [${expression}]${predicate.entity.entity != "" ? " " : ""}${formatEntity2(predicate.entity.entity, predicate.entity.unit)} per ${isNumber(predicate.baseQuantity) && predicate.baseQuantity == 1 ? "" : formatQuantity(predicate.baseQuantity)}${predicate.entityBase.entity != "" ? " " : ""}${formatEntity2(predicate.entityBase.entity, predicate.entityBase.unit)}` : compose`${expression}`;
       break;

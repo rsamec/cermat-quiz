@@ -22,19 +22,20 @@ function wordProblemGroupById(wordProblem) {
   return Object.groupBy(deductionTrees, ({ key }) => parseInt(key.split(".")[0]));
 }
 
-
-
 const result = Object.entries(wordProblems).reduce((out, [key, value]) => {
 
   out[key] = Object.entries(wordProblemGroupById(value)).reduce((out, [key, values]) => {
     const predicates = values.flatMap(d => d.predicates);
     const rules = values.flatMap(d => d.rules);
+    const formulas = values.flatMap(d => d.formulas);
     const inputParameters = values.flatMap(d => d.inputParameters);
     out[key] = {
       predicates: predicates.filter(unique),
       usages: usages(predicates),
       rules,
       rulesUsages: usages(rules),
+      formulas,
+      formulasUsages: usages(formulas),
       inputParameters,
       maxDepth: Math.max(...values.map(d => d.depth)),
       maxWidth: Math.max(...values.map(d => d.width)),

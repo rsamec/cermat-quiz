@@ -144,6 +144,7 @@ type TreeMetrics = {
   width: number;
   predicates: string[]
   rules: string[]
+  formulas: string[]
 };
 
 export function computeTreeMetrics(
@@ -151,13 +152,22 @@ export function computeTreeMetrics(
   level = 0,
   levels: Record<number, number> = {},
   predicates: string[] = [],
-  rules: string[] = []
+  rules: string[] = [],
+  formulas: string[] = [],
 ): TreeMetrics {
   // Base case: If the node is a leaf
   if (isPredicate(node)) {
     levels[level] = (levels[level] || 0) + 1; // Count nodes at this level
-
-    return { depth: level + 1, width: Math.max(...Object.values(levels)), predicates: predicates.includes(node.kind) ? predicates : predicates.concat(node.kind), rules };
+    if (node.kind === "eval-formula" && node.formulaName != null && !formulas.includes(node.formulaName)){      
+      formulas.push(node.formulaName);
+    }
+    return {
+      depth: level + 1,
+      width: Math.max(...Object.values(levels)),
+      predicates: predicates.includes(node.kind) ? predicates : predicates.concat(node.kind),
+      rules,
+      formulas,
+    };
   }
 
   // Recursive case: Process children and calculate depth
@@ -174,16 +184,16 @@ export function computeTreeMetrics(
         rules.push(result.name);
       }
 
-      const metrics = computeTreeMetrics(child, level + 1, levels, predicates, rules);
+      const metrics = computeTreeMetrics(child, level + 1, levels, predicates, rules, formulas);
       predicates = metrics.predicates;
       maxDepth = Math.max(maxDepth, metrics.depth);
     }
 
-    return { depth: maxDepth, width: Math.max(...Object.values(levels)), predicates, rules };
+    return { depth: maxDepth, width: Math.max(...Object.values(levels)), predicates, rules, formulas };
   }
 
   // Fallback for empty nodes
-  return { depth: level, width: Math.max(...Object.values(levels)), predicates, rules };
+  return { depth: level, width: Math.max(...Object.values(levels)), predicates, rules, formulas };
 }
 
 
@@ -331,7 +341,7 @@ export function jsonToTLDrawEx(node, isConclusion, level = 0) {
 
 
 
-export function jsonToMarkdownChat(node, { predicates, rules }: { predicates: string[], rules: string[] } = { predicates: [], rules: [] }) {
+export function jsonToMarkdownChat(node, { predicates, rules, formulas }: { predicates: string[], rules: string[], formulas:string[] } = { predicates: [], rules: [], formulas: [] }) {
 
   const flatStructure = [];
   function traverseEx(node) {
@@ -378,7 +388,7 @@ export function jsonToMarkdownChat(node, { predicates, rules }: { predicates: st
       const answer = q?.options?.find(d => d.ok)
       const formattedPremises = premises.map(d => {
         return isPredicate(d)
-          ? predicates.includes(d.kind)
+          ? predicates.includes(d.kind) || (d.kind == "eval-formula" && formulas.includes(d.formulaName))
             ? `==${formatPredicate(d, chatFormattingFunc(0))}==`
             : formatPredicate(d, chatFormattingFunc(0))
           : d
@@ -605,6 +615,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = compose`${formatAngle(d.relationship)}`
       break;
     case "eval-expr":
+    case "eval-formula":
       const { predicate, expression } = d;
       result = predicate.kind === "cont"
         ? compose`${formatAgent(predicate.agent)} = [${expression}]${predicate.entity != "" ? " " : ""}${formatEntity(predicate.entity, predicate.unit)}`
@@ -614,6 +625,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
             : formatQuantity(predicate.baseQuantity)}${predicate.entityBase.entity != "" ? " " : ""}${formatEntity(predicate.entityBase.entity, predicate.entityBase.unit)}`
           : compose`${expression}`
       break;
+
     case "simplify-expr":
       result = compose`substituce za ${JSON.stringify(d.context)}`
       break;
