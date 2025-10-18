@@ -1,5 +1,5 @@
-import { compAngle, compPercent, cont, ctor, ctorOption, sum, ctorUnit, nthPart, percent, ratios, type Container, isNumber, rate, ctorSlide, proportion, counter, compRatio, ctorDifference, product, double, contLength, productArea, productVolume, triangleAngle, compDiff } from "../../components/math";
-import { axiomInput, createLazyMap, deduce, last, toPredicate, toCont, deduceAs } from "../../utils/deduce-utils";
+import { compAngle, compPercent, cont, ctor, ctorOption, sum, ctorUnit, nthPart, percent, ratios, type Container, isNumber, rate, ctorSlide, proportion, counter, compRatio, ctorDifference, product, double, contLength, squareArea, rectangleArea, cuboidVolume } from "../../components/math";
+import { axiomInput, createLazyMap, deduce, last, toPredicate, deduceAs } from "../../utils/deduce-utils";
 import { porovnatAaB, najitMensiCislo } from "./1";
 import { porovnatObsahObdelnikACtverec } from "./13";
 import { triCislaNaOse } from "./3";
@@ -304,14 +304,13 @@ function hranol() {
           deduce(
             deduce(
               ctverecStrana,
-              ctverecStrana,
-              productArea("menší hranol")
+              squareArea("menší hranol")
             ),
             deduce(
               deduce(
                 obdelnikStrana1,
                 obdelnikStrana2,
-                productArea("větší hranol")
+                rectangleArea("větší hranol")
               ),
               double(),
               product("2 x větší hranol")
@@ -326,7 +325,7 @@ function hranol() {
             deduce(
               obdelnikStrana1,
               vyska,
-              productArea("část boční plášť odpovídající kratší straně")
+              rectangleArea("část boční plášť odpovídající kratší straně")
             ),
             counter("osmkrát", 8),
             product("8 částí boční plášť odpovídající kratší straně")
@@ -335,7 +334,7 @@ function hranol() {
             deduce(
               obdelnikStrana2,
               vyska,
-              productArea("část boční plášť odpovídající delší straně")
+              rectangleArea("část boční plášť odpovídající delší straně")
             ),
             double(),
             product("2 části boční plášť odpovídající delší straně")
@@ -351,14 +350,14 @@ function hranol() {
           ctverecStrana,
           ctverecStrana,
           vyska,
-          productVolume("menší hranol")
+          cuboidVolume("menší hranol")
         ),
         deduce(
           deduce(
             obdelnikStrana1,
             obdelnikStrana2,
             vyska,
-            productVolume("objem větší hranol")
+            cuboidVolume("objem větší hranol")
           ),
           double(),
           product("2 x větší hranol")

@@ -1,6 +1,5 @@
-import { commonSense, compAngle, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorUnit, pythagoras, rate, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorScaleInvert, ctorBooleanOption, triangleAngle, contLength, contArea, dimensionEntity, evalFormulaAsCont, formulaRegistry } from "../../components/math";
+import { commonSense, compAngle, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorUnit, pythagoras, rate, ratio, sum, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorScaleInvert, ctorBooleanOption, triangleAngle, contLength, contArea, dimensionEntity, doubleProduct, triangleArea, circleArea } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "../../utils/deduce-utils";
-import { triangleArea } from "../shapes/triangle";
 
 export default createLazyMap({
   1: () => delkaKroku(),
@@ -82,8 +81,7 @@ function ctyruhelnik() {
     deduce(
       deduce(
         contArea("trojúhelník BCD", 24),
-        double(),
-        product("obdelník")
+        ...doubleProduct("obdelník")
       ),
       BD,
       ctor('quota')
@@ -93,15 +91,11 @@ function ctyruhelnik() {
   return {
     obsah: {
       deductionTree: deduce(
-        triangleArea({
-          size: AB,
-          height: BD,
-          triangle: {
-            agent: 'ABD',
-            ...dim.area
-
-          }
-        }),
+        deduce(
+          AB,
+          BD,
+          triangleArea('ABD')
+        ),
         contArea("trojúhelník BCD", 24),
         sum("lichoběžníku ABCD")
       )
@@ -200,7 +194,7 @@ function pulkruh() {
             commonSense("vepsaný kruh ve čtvercové síti"),
             contLength("poloměr (r)", 4)
           ),
-          evalFormulaAsCont(formulaRegistry.surfaceArea.circle, x => x.S, 'vepsaný kruh', dim.area)
+          circleArea('vepsaný kruh')
         ),
         double(),
         ctorScaleInvert("šedý půlkruh")

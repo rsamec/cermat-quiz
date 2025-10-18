@@ -1,5 +1,5 @@
 
-import { productCombine, cont, type Container, product, sum, counter } from "../../components/math.js";
+import { productCombine, cont, product, sum, counter, cuboidVolume } from "../../components/math.js";
 import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
 
@@ -7,36 +7,6 @@ interface Params {
   width: number
   length: number
   height: number
-}
-
-export function volume(
-  { width, length, height }: { width: Container, length: Container, height: Container, },
-  options?: {
-    widthLabel?: string
-    lenghtLabbel?: string
-    heightLabel?: string
-    entity?: string,
-    entity3D?: string,
-    volumeLabel?: string,
-  }) {
-  const { heightLabel, widthLabel, lengthLabel, entity3D, volumeLabel } = {
-    ...{
-      widthLabel: "šířka",
-      lengthLabel: "délka",
-      heightLabel: "výška",
-      entity3D: "krychliček",
-      volumeLabel: "objem"
-
-    },
-    ...options ?? {}
-  }
-  return deduce(
-    length,
-    width,
-    height,
-    productCombine(volumeLabel, entity3D, [lengthLabel, widthLabel, heightLabel])
-  )
-
 }
 
 
@@ -65,7 +35,7 @@ export function examples({ input }: {
 
   const dTree1 = dBase;
 
-  const dTree2 = volume({ length, width, height });
+  const dTree2 = deduce(length, width, height, cuboidVolume("objem"));
 
   const protilehlaStana = counter("počet stěn", 2);
 

@@ -10,6 +10,18 @@ var helpers = defaultHelpers;
 function configure(config) {
   helpers = { ...defaultHelpers, ...config };
 }
+var EmptyUnit = "";
+function dimensionEntity(unit = "cm") {
+  return {
+    length: { entity: "d\xE9lka", unit },
+    area: { entity: "obsah", unit: unit === EmptyUnit ? EmptyUnit : `${unit}2` },
+    volume: { entity: "objem", unit: unit === EmptyUnit ? EmptyUnit : `${unit}3` },
+    lengths: ["d\xE9lka", unit],
+    areas: ["obsah", unit === EmptyUnit ? EmptyUnit : `${unit}2`],
+    volumes: ["objem", unit === EmptyUnit ? EmptyUnit : `${unit}3`]
+  };
+}
+var dim = dimensionEntity();
 function isQuantityPredicate(value) {
   return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "quota", "delta"].includes(value.kind);
 }
@@ -3877,6 +3889,18 @@ var helpers2 = defaultHelpers2;
 function configure2(config) {
   helpers2 = { ...defaultHelpers2, ...config };
 }
+var EmptyUnit2 = "";
+function dimensionEntity2(unit = "cm") {
+  return {
+    length: { entity: "d\xE9lka", unit },
+    area: { entity: "obsah", unit: unit === EmptyUnit2 ? EmptyUnit2 : `${unit}2` },
+    volume: { entity: "objem", unit: unit === EmptyUnit2 ? EmptyUnit2 : `${unit}3` },
+    lengths: ["d\xE9lka", unit],
+    areas: ["obsah", unit === EmptyUnit2 ? EmptyUnit2 : `${unit}2`],
+    volumes: ["objem", unit === EmptyUnit2 ? EmptyUnit2 : `${unit}3`]
+  };
+}
+var dim2 = dimensionEntity2();
 function isQuantityPredicate2(value) {
   return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "quota", "delta"].includes(value.kind);
 }
@@ -3892,7 +3916,6 @@ function isOperationPredicate(value) {
 function isRatePredicate(value) {
   return value.kind === "rate";
 }
-var EmptyUnit = "";
 function convertToExpression(expectedValue, compareTo, expectedValueOptions, variable = "x") {
   const convertedValue = expectedValueOptions.asFraction ? helpers2.convertToFraction(expectedValue) : expectedValueOptions.asPercent ? expectedValue / 100 : expectedValue;
   const toCompare = (comp) => `${variable} ${comp} ${convertedValue}`;
@@ -5342,7 +5365,7 @@ function toRateRule(a, b, rate) {
     },
     entityBase: {
       entity: b.kind === "cont" ? b.entity : b.agentQuota,
-      unit: b.kind === "cont" ? b.unit : EmptyUnit
+      unit: b.kind === "cont" ? b.unit : EmptyUnit2
     },
     baseQuantity: rate?.baseQuantity ?? 1
   };

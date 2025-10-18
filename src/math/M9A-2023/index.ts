@@ -1,6 +1,5 @@
-import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pi, pythagoras, rate, ratio, ratios, ctorOption, ctorBooleanOption, counter, product, sum, contLength, productArea, dimensionEntity, pattern, range } from "../../components/math";
+import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pythagoras, rate, ratio, ratios, ctorOption, ctorBooleanOption, counter, product, sum, contLength, dimensionEntity, pattern, range, triangleArea, squareArea, rectangleArea, circleArea } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
-import { triangleArea } from "../shapes/triangle";
 
 export default createLazyMap({
   1: () => dobaFilmu({ input: { celkovaDobaFilmuVHodina: 1 } }),
@@ -39,7 +38,7 @@ function trojuhelnik() {
   const vzor = pattern({
     nthTerm: `3^(n-1)`,
     nthPosition: 'ln(x)/ln(3)',
-    nthTermFormat: n => n == 1 ? "1" : `${range(n,1).map(d => 3).join(" * ")}`
+    nthTermFormat: n => n == 1 ? "1" : `${range(n, 1).map(d => 3).join(" * ")}`
   }, {
     entity: whiteEntity
   })
@@ -190,9 +189,7 @@ export function povrchValce() {
 
   const podstava = deduce(
     polomer,
-    polomer,
-    pi(),
-    productArea("podstava")
+    circleArea("podstava")
   )
 
   return {
@@ -286,13 +283,12 @@ export function pozemekObdelnik() {
       deductionTree: deduce(
         deduce(
           last(stranaCtverce),
-          last(stranaCtverce),
-          productArea("čtverec", "m2")
+          squareArea("čtverec", "m2")
         ),
         deduce(
           deduce(last(stranaCtverce), kratsiStranaComp),
           deduce(last(stranaCtverce), delsiStranaComp),
-          productArea("obdelník", "m2")
+          rectangleArea("obdelník", "m2")
         )
       )
     }
@@ -434,19 +430,13 @@ export function lomanaCaraACFHA() {
 }
 
 export function triangleExample() {
-  const entity = "délka";
-  const unit = "cm";
-  const unit2D = "cm2"
 
-  const height = cont("výška CB", 8, entity, unit);
-  const abd = triangleArea({
-    size: cont("základna AB", 6, entity, unit),
+  const height = contLength("výška CB", 8);
+  const abd = deduce(
+    contLength("základna AB", 6),
     height,
-    triangle: {
-      agent: "trojúhelník ABD",
-      unit: unit2D
-    }
-  });
+    triangleArea("trojúhelník ABD")
+  );
   return {
     obsahABD: {
       deductionTree: abd
@@ -454,14 +444,11 @@ export function triangleExample() {
     obsahABCD: {
       deductionTree: deduce(
         last(abd),
-        triangleArea({
-          size: cont("základna CD", 10, entity, unit),
+        deduce(
+          contLength("základna CD", 10),
           height,
-          triangle: {
-            agent: "trojúhelník BCD",
-            unit: unit2D
-          }
-        }),
+          triangleArea("trojúhelník BCD")
+        ),
         sum("obsah ABCD")
       )
     }

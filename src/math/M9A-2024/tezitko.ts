@@ -1,7 +1,6 @@
 
-import { contLength } from "../../components/math";
+import { contLength, cylinderVolume } from "../../components/math";
 import { axiomInput, deduce } from "../../utils/deduce-utils";
-import { cylinder } from "../shapes/cylinder"
 
 interface BaseParams {
   radius: number,
@@ -26,13 +25,13 @@ export default function build({ input }: {
   const inRadius = axiomInput(contLength(`${agentIn} podstava poloměr`, input.in.radius), 3);
   const inHeight = axiomInput(contLength(`${agentIn} válec výška`, input.in.height), 4);
 
-  const outCylinder = cylinder({ radius: outRadius, height: outHeight }, { surfaceBaseAreaLabel: `${agentOut} obsah`, volumeLabel: `${agentOut} objem` });
-  const inCylinder = cylinder({ radius: inRadius, height: inHeight }, { surfaceBaseAreaLabel: `${agentIn} obsah`, volumeLabel: `${agentIn} objem` });
+  const outCylinder = deduce(outRadius, outHeight, cylinderVolume(`${agentOut} objem`));
+  const inCylinder = deduce(inRadius, inHeight, cylinderVolume(`${agentIn} objem`));
 
 
   const deductionTree = deduce(
-    outCylinder.volume,
-    inCylinder.volume,
+    outCylinder,
+    inCylinder
   )
 
   const template = highlight => highlight`

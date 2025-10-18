@@ -1,4 +1,4 @@
-import { commonSense, compRatio, cont, ctor, ctorRatios, ctorUnit, nthPart, rate, ratio, ratios, ctorLinearEquation, ctorOption, sum, contLength, productArea, dimensionEntity, comp, ctorComplement, evalExprAsCont, pythagoras, alligation, compRelativePercent, ctorDifference, compRelative, ctorRate, evalFormulaAsCont, formulaRegistry } from "../../components/math";
+import { commonSense, compRatio, cont, ctor, ctorRatios, ctorUnit, nthPart, rate, ratio, ratios, ctorLinearEquation, ctorOption, sum, contLength, dimensionEntity, comp, ctorComplement, evalExprAsCont, pythagoras, alligation, compRelativePercent, ctorDifference, compRelative, ctorRate, triangleArea, doubleProduct, cubeArea, cubeVolume, evalFormulaAsCont, formulaRegistry } from "../../components/math";
 import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -153,9 +153,12 @@ function ctverec() {
   return {
     porovnani: {
       deductionTree: deduce(
-        stranaTrojuhelnik,
-        stranaCtverec,
-        productArea("odstřižené části (2 pravoúhlé trojůhelníky)")
+        deduce(
+          stranaTrojuhelnik,
+          stranaCtverec,
+          triangleArea("odstřižené části - pravoúhlý trojůhelník")
+        ),
+        ...doubleProduct("odstřižené části (2 pravoúhlé trojůhelníky)")
       ),
     },
     obvod: {
@@ -175,7 +178,6 @@ function krychle() {
   const malaLabel = "malá krychle";
   const velkaLabel = "velká krychle";
   const obsah = comp(velkaLabel, malaLabel, 42, dim.area)
-  const hrany = comp(velkaLabel, malaLabel, 36, dim.length)
 
   const stranaMala = toCont(deduce(
     cont(malaLabel, 36, dim.length.entity, dim.length.unit),
@@ -187,7 +189,7 @@ function krychle() {
     deduce(
       deduce(
         last(stranaMala),
-        evalFormulaAsCont(formulaRegistry.surfaceArea.cube, x => x.S, malaLabel, dim.area)
+        cubeArea(malaLabel)
       ),
       obsah),
     evalFormulaAsCont(formulaRegistry.surfaceArea.cube, x => x.a, velkaLabel, dim.length)
@@ -196,8 +198,8 @@ function krychle() {
   return {
     deductionTree: deduce(
       deduce(
-        deduce(stranaVelka, evalFormulaAsCont(formulaRegistry.volume.cube, x => x.V, velkaLabel, dim.volume)),
-        deduce(stranaMala, evalFormulaAsCont(formulaRegistry.volume.cube, x => x.V, malaLabel, dim.volume))
+        deduce(stranaVelka, cubeVolume(velkaLabel)),
+        deduce(stranaMala, cubeVolume(malaLabel))
       ),
       ctorOption("C", 37)
     )

@@ -1,4 +1,4 @@
-import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, rate, ratio, ctorPercent, percent, ctorOption, sum, product, counter, contLength, dimensionEntity, contArea, ctorExpressionOption, compRelativePercent, comp, ctorComplement, ctorRound, productCombine, pythagoras, ctorBooleanOption, evalFormulaAsCont, formulaRegistry } from "../../components/math";
+import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, rate, ratio, ctorPercent, percent, ctorOption, sum, product, counter, contLength, dimensionEntity, contArea, ctorExpressionOption, compRelativePercent, comp, ctorComplement, ctorRound, productCombine, pythagoras, ctorBooleanOption, evalFormulaAsCont, formulaRegistry, circleArea } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -187,7 +187,7 @@ function dlazdice() {
       deductionTree: deduce(
         deduce(
           polomer,
-          evalFormulaAsCont(formulaRegistry.surfaceArea.circle, x => x.S, 'obsah kruhu', dim.area)
+          circleArea('obsah kruhu')
         ),
         ctorRound()
       )

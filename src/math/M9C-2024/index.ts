@@ -1,4 +1,4 @@
-import { compRatio, cont, ctor, ctorDifference, sum, compRelative, comp, ctorOption, contLength, halfProduct, pythagoras, proportion, percent, dimensionEntity, evalExprAsCont, triangleAngle, contArea, ratio, ctorUnit, ctorRound, ctorBooleanOption, ctorComplement, nthPart, ctorPercent, productArea, simplifyExpr, evalFormulaAsCont, formulaRegistry } from "../../components/math";
+import { compRatio, cont, ctor, ctorDifference, sum, compRelative, comp, ctorOption, contLength, halfProduct, proportion, percent, dimensionEntity, evalExprAsCont, contArea, ratio, ctorUnit, ctorRound, ctorBooleanOption, ctorComplement, ctorPercent, evalFormulaAsCont, formulaRegistry, cylinderVolume, triangleArea, circleLength, cubeArea } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, toPredicate } from "../../utils/deduce-utils";
 import pocetObyvatel from "./pocet-obyvatel";
 import sourozenci from "./sourozenci";
@@ -38,7 +38,7 @@ function nadoby() {
                             ...halfProduct("poloměr nádoba B")
                         ),
                         vyskaB,
-                        evalFormulaAsCont(formulaRegistry.volume.cylinder, x => x.V, "nádoba B", dim.volume)
+                        cylinderVolume("nádoba B")
                     ),
                     deduce(
                         deduce(
@@ -46,7 +46,7 @@ function nadoby() {
                             ...halfProduct("poloměr nádoba A")
                         ),
                         vyskaA,
-                        evalFormulaAsCont(formulaRegistry.volume.cylinder, x => x.V, "nádoba A", dim.volume)
+                        cylinderVolume("nádoba A")
                     ),
                     ctor('comp-ratio')
                 ),
@@ -79,7 +79,7 @@ function lichobeznik() {
                 deduce(
                     contLength(`strana CD ${triangleACD}`, 6),
                     last(vyska),
-                    evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, x => x.S, triangleACD, dim.area)
+                    triangleArea(triangleACD)
                 ),
                 obsahABC,
                 sum(`celkem ${lichobeznik}`)
@@ -99,7 +99,7 @@ function zahon() {
                             contArea("kruhový záhon", 314, "dm2"),
                             evalFormulaAsCont(formulaRegistry.surfaceArea.circle, x => x.r, "poloměr", { entity: dim.length.entity, unit: "dm" })
                         ),
-                        evalFormulaAsCont(formulaRegistry.circumReference.circle, x => x.o, "obvod", { entity: dim.length.entity, unit: "dm" })
+                        circleLength("obvod", "dm")
                     ),
                     ctorUnit("m")
                 ),
@@ -227,7 +227,8 @@ function zednici() {
 function krychle() {
     const dim = dimensionEntity();
     const celaStrana = contLength("strana krychle", 3, "dm")
-    const entity = { entity: dim.area.entity, unit: "dm2" }
+    const unit = "dm2"
+    const entity = { entity: dim.area.entity, unit }
     return {
         deductionTree: deduce(
             deduce(
@@ -256,7 +257,7 @@ function krychle() {
                 ),
                 deduce(
                     celaStrana,
-                    evalFormulaAsCont(formulaRegistry.surfaceArea.cube, x => x.S, "krychle", entity)
+                    cubeArea("krychle", unit)
                 ),
             ),
             ctorOption("B", 9)

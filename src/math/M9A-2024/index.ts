@@ -1,4 +1,4 @@
-import { comp, compRatio, contLength, counter, ctorDifference, ctorOption, dimensionEntity, evalFormulaAsCont, formulaRegistry, productArea, pythagoras, sum } from "../../components/math";
+import { comp, compRatio, contLength, counter, ctorDifference, ctorOption, dimensionEntity, pythagoras, rectangleArea, sum, triangleArea } from "../../components/math";
 import { createLazyMap, deduce } from "../../utils/deduce-utils";
 import { rozdilUhlu } from "./angle";
 import dumMeritko from "./dum-meritko";
@@ -111,12 +111,12 @@ function lichobeznik() {
         deduce(
           vyska,
           zakladna2,
-          productArea("obdelník")
+          rectangleArea("obdelník")
         ),
         deduce(
           rozdilZakladen,
           vyska,
-          evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, c => c.S, "trojúhelník", dim.area )
+          triangleArea("trojúhelník")
         ),
         sum("lichoběžník")
       )

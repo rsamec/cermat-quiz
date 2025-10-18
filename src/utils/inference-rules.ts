@@ -1,5 +1,5 @@
 
-import { type Predicate, type Pattern, cont, ratio, comp, rate, ratios, compRatio, compDiff, lcd, gcd, ctor, inferenceRule, nth, quota, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont, counter, sum, product, productVolume, squareNumbersPattern, triangularNumbersPattern, oblongNumbers, halfProduct, evalFormulaAsCont, formulaRegistry, dimensionEntity } from "../components/math.js";
+import { type Predicate, type Pattern, cont, ratio, comp, rate, ratios, compRatio, compDiff, lcd, gcd, ctor, inferenceRule, nth, quota, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont, counter, sum, product, squareNumbersPattern, triangularNumbersPattern, oblongNumbers, halfProduct, dimensionEntity, cuboidVolume, circleArea } from "../components/math.js";
 
 export default function rules() {
 
@@ -95,7 +95,7 @@ export default function rules() {
     sum: [
       deduceRule(a, b, cont("Pepa", 4, "sešity"), sum("dohromady")),
       deduceRule(cont("čtverec strana", 2, "metr"), counter("počet stran", 4), product("obvod čtverce")),
-      deduceRule(cont("šířka", 2, "metr"), cont("délka", 3, "metr"), cont("výška", 4, "metr"), productVolume("objem", "m3"))
+      deduceRule(cont("šířka", 2, "metr"), cont("délka", 3, "metr"), cont("výška", 4, "metr"), cuboidVolume("objem", "m3"))
     ],
     gcd: [deduceRule(cont("tyč", 24, "m"), cont("tyč", 16, "m"), gcd("největší možná délka tyče", "m"))],
     lcd: [deduceRule(cont("dvojice", 2, "osob"), cont("trojice", 3, "osob"), lcd("nejmenší možná skupina", "osob"))],
@@ -107,7 +107,7 @@ export default function rules() {
     rectangularNumbers: [...nthPatternRule(oblongNumbers({ entity: 'čtverec' }), tenthTerm)],
     unit: [deduceRule(cont("Honzík", 4, "jablek", "kg"), ctorUnit("g")), deduceRule(cont("Ája", 400, "mléka", "cm3"), ctorUnit("l"))],
     eval: [
-      deduceRule(cont("poloměr", 4, "délka", "cm"), evalFormulaAsCont(formulaRegistry.surfaceArea.circle, x => x.S, "kruh", dim.area)),
+      deduceRule(cont("poloměr", 4, "délka", "cm"), circleArea("kruh")),
       deduceRule(cont("průměr", 4, "délka", "cm"), evalExprAsCont("prumer*0.5", "poloměr", { entity: "délka", unit: "cm" })),
       deduceRule(cont("průměr", "4", "délka", "cm"), ...halfProduct("poloměr"))
     ]

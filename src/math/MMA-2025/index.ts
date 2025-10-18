@@ -1,4 +1,4 @@
-import { commonSense, comp, compRatio, compRelativePercent, cont, ctor, ctorDifference, ctorLinearEquation, product, ctorRatios, sum, ctorUnit, evalExprAsCont, pythagoras, rate, ratio, counter, type Container, ctorOption, double, ctorScaleInvert, simplifyExpr, evalExprAsRate, ctorRound, contLength, dimensionEntity, productArea, EmptyUnit, primeFactors, evalFormulaAsCont, formulaRegistry } from "../../components/math";
+import { commonSense, comp, compRatio, compRelativePercent, cont, ctor, ctorDifference, ctorLinearEquation, product, ctorRatios, sum, ctorUnit, evalExprAsCont, pythagoras, rate, ratio, counter, type Container, ctorOption, double, ctorScaleInvert, simplifyExpr, evalExprAsRate, ctorRound, contLength, dimensionEntity, EmptyUnit, primeFactors, squareArea, rectangleArea, triangleArea } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "../../utils/deduce-utils";
 
 
@@ -298,7 +298,7 @@ function rovnoramennySatek() {
   const mensiSatek = deduce(
     mensiSatekOdvesna,
     mensiSatekOdvesna,
-    evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, x => x.S, mensiSatekLabel, dim.area)
+    triangleArea(mensiSatekLabel)
   );
 
   const vetsiStatekOdvesna = deduce(
@@ -354,8 +354,7 @@ function vyrezKrychle() {
       deduce(
         deduce(
           stranaKrychle,
-          lastStranaKrychle,
-          productArea(`stěna ${krychleLabel}`, EmptyUnit)
+          squareArea(`stěna ${krychleLabel}`, EmptyUnit)
         ),
         counter(`počet stěn ${krychleLabel}`, 6),
         product(`${krychleLabel}`)
@@ -364,8 +363,7 @@ function vyrezKrychle() {
         deduce(
           deduce(
             lastStranaKrychle,
-            lastStranaKrychle,
-            productArea("stěna krychle", EmptyUnit)
+            squareArea("stěna krychle", EmptyUnit)
           ),
           counter("počet čtvercových stěn", 3),
           product(`levá, pravá a spodní stěna - ${telesoLabel}`)
@@ -374,20 +372,18 @@ function vyrezKrychle() {
           deduce(
             deduce(
               lastStranaKrychle,
-              lastStranaKrychle,
-              productArea(`přední stěna - ${telesoLabel}`, EmptyUnit)
+              squareArea(`přední stěna - ${telesoLabel}`, EmptyUnit)
             ),
             deduce(
               lastStranaKrychle,
-              lastStranaKrychle,
-              productArea(`zadní stěna - ${telesoLabel}`, EmptyUnit)
+              squareArea(`zadní stěna - ${telesoLabel}`, EmptyUnit)
             ),
             sum(`přední a zadní stěna - ${telesoLabel}`)
           ),
           deduce(
             delsiOdvesna,
             lastStranaKrychle,
-            productArea("přední a zadní trojúhelníkový výřez", EmptyUnit)
+            rectangleArea("přední a zadní trojúhelníkový výřez", EmptyUnit)
           ),
           ctorDifference(`přední a zadní stěna bez výřezu - ${telesoLabel}`)
         ),
@@ -395,7 +391,7 @@ function vyrezKrychle() {
           deduce(
             lastStranaKrychle,
             last(prepona),
-            productArea(`obdelníková šikmá stěna - ${telesoLabel}`, EmptyUnit)
+            rectangleArea(`obdelníková šikmá stěna - ${telesoLabel}`, EmptyUnit)
           ),
           counter(`počet obdelníkových šikmých stěn - ${telesoLabel}`, 2),
           product(`obě obdelníkové šikmé stěny - ${telesoLabel}`)

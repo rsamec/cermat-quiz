@@ -1,4 +1,4 @@
-import { commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, sum, ctorComplement, ctorOption, counter, percent, rate, ratios, product, triangleAngle, ctorDifference, nthPart, contLength, productArea, dimensionEntity, half, ctorRatios, evalFormulaAsCont, formulaRegistry } from "../../components/math";
+import { commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, sum, ctorComplement, ctorOption, counter, percent, rate, ratios, product, triangleAngle, ctorDifference, nthPart, contLength, dimensionEntity, ctorRatios, rectangleArea, triangleArea } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
@@ -176,7 +176,7 @@ function example_12() {
         deduce(
           axiomInput(contLength(ctverecDelkaLabel, 1), 1),
           counter("počet čtverců", 3),
-          productArea("tři shodné čtverce")
+          product("tři shodné čtverce")
         ),
         deduce(
           rectangleWidth,
@@ -184,7 +184,7 @@ function example_12() {
             last(rectangleWidth),
             compDiff(rectangleWidthLabel, "výška obdelníku", 3, dim.length.entity)
           ),
-          productArea("obdelník")
+          rectangleArea("obdelník")
         ),
         deduce(
           deduce(
@@ -193,10 +193,10 @@ function example_12() {
               last(rectangleWidth),
               compDiff(rectangleWidthLabel, "základna šedého trojúhelníku", 1, dim.length.entity)
             ),
-            evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, x => x.S, "šedý trojúhelníku", dim.area)
+            triangleArea("šedý trojúhelníku")
           ),
           counter("počet šedých trojúhleníků", 3),
-          productArea("tři šedé trojúhelníky")
+          product("tři šedé trojúhelníky")
         ),
         sum("obsah sedmiúhelníku")
       ),

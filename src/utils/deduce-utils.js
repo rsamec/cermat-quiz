@@ -10,6 +10,18 @@ var helpers = defaultHelpers;
 function configure(config) {
   helpers = { ...defaultHelpers, ...config };
 }
+var EmptyUnit = "";
+function dimensionEntity(unit = "cm") {
+  return {
+    length: { entity: "d\xE9lka", unit },
+    area: { entity: "obsah", unit: unit === EmptyUnit ? EmptyUnit : `${unit}2` },
+    volume: { entity: "objem", unit: unit === EmptyUnit ? EmptyUnit : `${unit}3` },
+    lengths: ["d\xE9lka", unit],
+    areas: ["obsah", unit === EmptyUnit ? EmptyUnit : `${unit}2`],
+    volumes: ["objem", unit === EmptyUnit ? EmptyUnit : `${unit}3`]
+  };
+}
+var dim = dimensionEntity();
 function isQuantityPredicate(value) {
   return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "quota", "delta"].includes(value.kind);
 }
@@ -22,7 +34,6 @@ function isRatiosPredicate(value) {
 function isRatePredicate(value) {
   return value.kind === "rate";
 }
-var EmptyUnit = "";
 function convertToExpression(expectedValue, compareTo, expectedValueOptions, variable = "x") {
   const convertedValue = expectedValueOptions.asFraction ? helpers.convertToFraction(expectedValue) : expectedValueOptions.asPercent ? expectedValue / 100 : expectedValue;
   const toCompare = (comp) => `${variable} ${comp} ${convertedValue}`;

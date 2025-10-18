@@ -1,5 +1,5 @@
-import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, pythagoras, rate, ratio, sum, product, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorBooleanOption, contLength, dimensionEntity, nthPart, comp, oblongNumbers, nth, productVolume, counter, ctorRound, ratios, alligation, ctorRatiosInvert, percent, ctorExpressionOption, contArea, double, halfProduct, evalFormulaAsCont, formulaRegistry } from "../../components/math";
-import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate, toRate } from "../../utils/deduce-utils";
+import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, pythagoras, rate, ratio, sum, product, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorBooleanOption, contLength, dimensionEntity, nthPart, comp, oblongNumbers, nth, counter, ctorRound, ratios, alligation, ctorRatiosInvert, percent, ctorExpressionOption, contArea, halfProduct, evalFormulaAsCont, formulaRegistry, baseAreaVolume, circleArea } from "../../components/math";
+import { createLazyMap, deduce, deduceAs, last, to, toCont, toRate } from "../../utils/deduce-utils";
 
 
 export default createLazyMap({
@@ -84,10 +84,10 @@ function valec() {
                 deduce(
                     deduce(
                         polomer,
-                        evalFormulaAsCont(formulaRegistry.surfaceArea.circle, x => x.S, "podstava", dim.area)
+                        circleArea("podstava")
                     ),
                     contLength("výška", 12),
-                    productVolume("válec")
+                    baseAreaVolume("válec")
                 ),
                 ctorRound(10)
             )
@@ -232,7 +232,7 @@ function hranol() {
         deductionTree: deduce(
             deduce(
                 podstavaArea,
-                toCont(deduce(
+                deduce(
                     deduceAs("plášt hranolu (4 schodné boční stěny) je dvakrát větší než obsah podstavy, resp. bocni stena = podstava * 2 / 4 = podstava * 1/2")(
                         last(podstavaArea),
                         ...halfProduct("boční stěna")
@@ -241,9 +241,9 @@ function hranol() {
                         last(podstavaArea),
                         evalFormulaAsCont(formulaRegistry.surfaceArea.square, x => x.a, 'strana podstavy', dim.length)
                     ),
-                    ctor("quota")
-                ), { agent: "výška", entity: dim.length }),
-                productVolume("hranol")
+                    evalFormulaAsCont(formulaRegistry.surfaceArea.rectangle, x => x.b, "výška", dim.length)
+                ),
+                baseAreaVolume("hranol")
             ),
             ctorOption("B", 108)
         )

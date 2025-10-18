@@ -1,21 +1,6 @@
 
-import { cont, ctorPercent, type Container } from "../../components/math.js";
+import { cont, ctorPercent } from "../../components/math.js";
 import { axiomInput, deduce } from "../../utils/deduce-utils.js";
-
-export function percentBase({ part, percentage }: { part: Container, percentage: Container },
-  labels: { baseAgent?: string } = {}) {
-  const { baseAgent } = { ...{ baseAgent: "základ" }, ...labels }
-  const celek = cont(baseAgent, 100, percentage.entity);
-  return deduce(
-    deduce(
-      percentage,
-      celek,
-      ctorPercent()
-    ),
-    part
-  )
-}
-
 
 export function example({ input }: {
   input: {
@@ -30,11 +15,22 @@ export function example({ input }: {
   const percentage = axiomInput(cont(agentPercentPart, input.percentage, entityPercent), 2);
   const part = axiomInput(cont(agentPercentPart, input.part, entity), 1);
 
+  const celek = cont("vypůjčeno", 100, percentage.entity);
 
   const template = highlight => highlight`
     Zaplaceno na úrocích ${input.part} Kč za jeden rok.
     Úrok ${input.percentage} % na jeden rok.
     Kolik bylo půjčeno před rokem v Kč?`;
 
-  return { deductionTree: percentBase({ part, percentage },{baseAgent:'vypůjčeno'}), template }
+  return {
+    deductionTree: deduce(
+      deduce(
+        percentage,
+        celek,
+        ctorPercent()
+      ),
+      part
+    ),
+    template
+  }
 }

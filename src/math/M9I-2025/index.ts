@@ -23,7 +23,7 @@ export default createLazyMap({
   11.3: () => desetiuhelnik({ input: { pocetUhlu: 10 } })[2],
   12: () => kytice({ input: { cenaZaKus: { ruze: 54, chryzantema: 40, statice: 35 } } }),
   13: () => caryNaPapire({ input: { pocetCasti: 40 } }),
-  14: () => domecek({ input: { baseSurfaceArea: 16, quota: 4 } }),
+  14: () => domecek(),
   15.1: () => objemNadoby1({ input: { zbyva: 14, zaplnenoPomer: 3 / 5 } }),
   15.2: () => objemNadoby2({ input: { zaplnenoProcento: 55, odebrano: 12, zaplnenoPoOdebraniRatio: 1 / 4 } }),
   15.3: () => objemNadoby3({ input: { nadoba1Procent: 30, nadoba2Procent: 40, nadoba3: 19, prumerNadobaRatio: 2 / 5 } }),

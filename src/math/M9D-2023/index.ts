@@ -1,4 +1,4 @@
-import { commonSense, compRatio, cont, ctor, ctorDifference, rate, sum, ctorSlide, compRelative, compRelativePercent, triangularNumbersPattern, nthPart, comp, ratios, counter, ctorRatios, nthPartFactor, ctorOption, ctorBooleanOption, ctorExpressionOption, contLength, halfProduct, doubleProduct, dimensionEntity, productVolume, pythagoras, productArea, double, half } from "../../components/math";
+import { commonSense, compRatio, cont, ctor, ctorDifference, rate, sum, ctorSlide, compRelative, compRelativePercent, triangularNumbersPattern, nthPart, comp, ratios, counter, ctorRatios, nthPartFactor, ctorOption, ctorBooleanOption, contLength, halfProduct, doubleProduct, pythagoras, rectangleArea } from "../../components/math";
 import { createLazyMap, deduce, last, lastQuantity, to } from "../../utils/deduce-utils";
 
 
@@ -309,22 +309,28 @@ function kvadr() {
 
     const puvodniKvard = deduce(
         deduce(
-            delka,
-            vyska,
-            double(),
-            productArea("přední a zadní plocha")
+            deduce(
+                delka,
+                vyska,
+                rectangleArea("přední, zadní plocha")
+            ),
+            ...doubleProduct("přední a zadní plocha")
         ),
         deduce(
-            sirka,
-            vyska,
-            double(),
-            productArea("pravá a levá boční plocha")
+            deduce(
+                sirka,
+                vyska,
+                rectangleArea("pravá a levá boční plocha")
+            ),
+            ...doubleProduct("pravá a levá boční plocha")
         ),
         deduce(
-            delka,
-            sirka,
-            double(),
-            productArea("spodní a horní plocha")
+            deduce(
+                delka,
+                sirka,
+                rectangleArea("spodní, horní plocha")
+            ),
+            ...doubleProduct("spodní a horní plocha")
         ),
         sum("původní kvádr")
     )
@@ -339,13 +345,15 @@ function kvadr() {
                             deduce(
                                 delka,
                                 vyska,
-                                productArea("chybějící původní přední plocha")
+                                rectangleArea("chybějící původní přední plocha")
                             ),
                             deduce(
-                                delka,
-                                sirka,
-                                half(),
-                                productArea("chybějící původní horní a spodní plocha výřezu = polovina plochy podstavy")
+                                deduce(
+                                    delka,
+                                    sirka,
+                                    rectangleArea("původní horní, spodní plocha výřezu")
+                                ),
+                                ...halfProduct("chybějící původní horní a spodní plocha výřezu = polovina plochy podstavy")
                             ),
                             sum("chybějící plochy")
                         ),
@@ -353,12 +361,14 @@ function kvadr() {
                     ),
                     deduce(
                         deduce(
-                            uhlopricka,
-                            ...halfProduct("polovina úhlopříčky obdelníku v podstavě")
+                            deduce(
+                                uhlopricka,
+                                ...halfProduct("polovina úhlopříčky obdelníku v podstavě")
+                            ),
+                            vyska,
+                            rectangleArea("obdelníkové plochy v řezu")
                         ),
-                        vyska,
-                        double(),
-                        productArea("2 obdelníkové plochy v řezu")
+                        ...doubleProduct("2 obdelníkové plochy v řezu")
                     ),
                     sum("nový pětiboký kvádr")
                 )

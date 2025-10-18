@@ -1,4 +1,4 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, sum, product, counter, triangleAngle, contLength, productArea, dimensionEntity, contArea, productVolume, primeFactors } from "../../components/math";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, sum, product, counter, triangleAngle, contLength, dimensionEntity, contArea, primeFactors, squareArea, baseAreaVolume, cuboidVolume, formulaRegistry, evalExprAsCont, evalFormulaAsCont } from "../../components/math";
 import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -50,8 +50,7 @@ function pozemek() {
   const pozemek = contLength("c", 30, "m");
   const obsahPozemek = deduce(
     pozemek,
-    pozemek,
-    productArea("pozemek", "m2")
+    squareArea("pozemek", "m2")
   )
   const obsahDum = deduce(
     obsahPozemek,
@@ -92,8 +91,8 @@ function sud() {
   const dnoSudu = contArea("dno sudu", 1500);
   const vzestupHladiny = deduce(
     deduce(cont("přibylo vody", 3, dim.volume.entity, "l"), ctorUnit(dim.volume.unit)),
-    dnoSudu,
-    ctor("quota")
+    dnoSudu,    
+    evalFormulaAsCont(formulaRegistry.volume.baseArea, x => x.h, "vzestup hladiny", dim.length)
   )
   return {
     vzestupObjem: {
@@ -101,16 +100,14 @@ function sud() {
         deduce(
           dnoSudu,
           deduce(cont("vzestup hladiny", 10, dim.length.entity, "mm"), ctorUnit("cm")),
-          productVolume("přibylo vody")
+          baseAreaVolume("přibylo vody")
         ),
         ctorUnit("l")
       )
     },
     vzestupVyska: {
       deductionTree: deduce(
-        toCont(
-          vzestupHladiny,
-          { agent: "vzestup hladiny", entity: dim.length }),
+        vzestupHladiny,
         ctorUnit("mm"))
     }
   }
@@ -226,14 +223,14 @@ function bazen() {
           delka,
           sirka,
           vyska,
-          productVolume(agentLabel, "m3")
+          cuboidVolume(agentLabel, "m3")
         ),
         deduce(
           deduce(
             cont(zonaLabel, 20, "délka", unit),
             cont(zonaLabel, 1, "výška", unit),
             sirka,
-            productVolume(zonaLabel, "m3")
+            cuboidVolume(zonaLabel, "m3")
           ),
           ratio(zonaLabel, dnoLabel, 1 / 2)
         ),

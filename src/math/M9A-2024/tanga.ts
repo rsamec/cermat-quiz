@@ -1,7 +1,6 @@
 
-import { compRatio, ctorRound, sum, product, counter, contLength, productArea, dimensionEntity } from "../../components/math";
+import { compRatio, ctorRound, sum, product, counter, contLength, rectangleArea, circleArea, circleLength } from "../../components/math";
 import { axiomInput, deduce, last, toCont } from "../../utils/deduce-utils";
-import { baseCircumference, surfaceBaseArea } from "../shapes/cylinder"
 
 
 interface Params {
@@ -24,19 +23,14 @@ export default function build({ input }: {
   const dRadius = deduce(width, ratio);
 
 
-  const obsah = surfaceBaseArea({ radius: last(dRadius) }, {
-    surfaceBaseAreaLabel: areaCircleLabel,
-    entity2D: dimensionEntity().area.entity,      
-  });
-
-
+  const obsah = deduce(last(dRadius), circleArea(areaCircleLabel));
 
   const dd1 = deduce(
     deduce(
       widthRectangle,
       //commonSense(`${radiusLabel} = ${reactangleHeight}`),
-      toCont(dRadius, { agent: reactangleHeight }),                    
-      productArea(`${rectangleLabel} obsah`)
+      toCont(dRadius, { agent: reactangleHeight }),
+      rectangleArea(`${rectangleLabel} obsah`)
     ),
     deduce(
       counter(circelPartLabel, 2),
@@ -47,9 +41,7 @@ export default function build({ input }: {
     )
   )
 
-  const obvod = baseCircumference(
-    { radius: last(dRadius) },
-    { baseCircumferenceLabel: baseCircleLabel });
+  const obvod = deduce(last(dRadius), circleLength(baseCircleLabel));
 
   const obvodCvrtkruh = deduce(obvod, compRatio(baseCircleLabel, circelPartLabel, 4));
   const dd2 = deduce(

@@ -1,35 +1,37 @@
-import { sum, ctorOption, quota, ratio, contLength, contArea, EmptyUnit, primeFactors } from "../../components/math";
-import { axiomInput, connectTo, deduce, deduceLbl, last, lastQuantity, to } from "../../utils/deduce-utils";
-import { volume } from "../shapes/rectangle";
+import { sum, ctorOption, quota, ratio, contLength, contArea, EmptyUnit, cuboidVolume, dimensionEntity, evalFormulaAsCont, formulaRegistry } from "../../components/math";
+import { deduce, last, toCont } from "../../utils/deduce-utils";
 
 
-interface InputParameters {
-  baseSurfaceArea: number
-  quota: number
-}
-export function domecek({ input }: { input: InputParameters }) {
+export function domecek() {
+  const dim = dimensionEntity();
 
   const dumLabel = "domeček"
 
-  const area = axiomInput(contArea(`plocha ${dumLabel}`, input.baseSurfaceArea, EmptyUnit), 1);
-  const pasmo = axiomInput(quota(`plocha ${dumLabel}`, "čtverec", 4), 2);
+  const area = contArea(`plocha ${dumLabel}`, 16, EmptyUnit);
+  const pasmo = quota(`plocha ${dumLabel}`, "čtverec", 4);
 
-  const ctverec = deduce(
-    area,
-    pasmo
-  )
+  const ctverec = toCont(
+    deduce(
+      area,
+      pasmo
+    ), { agent: 'čtverec', entity: { entity: dim.area.entity, unit: EmptyUnit } })
 
-  const strana = to(
-    ctverec,
-    primeFactors([lastQuantity(ctverec)]),
-    contLength("šířka", 2)
+  const rectangleVolume = deduce(
+    deduce(
+      ctverec,
+      evalFormulaAsCont(formulaRegistry.surfaceArea.square, x => x.a, "šířka", { entity: dim.length.entity, unit: EmptyUnit })
+    ),
+    contLength("délka", 8),
+    contLength("výška", 2),
+    cuboidVolume("objem přízemí")
   );
-
-  const rectangleVolume = connectTo(volume({ width: last(strana), height: contLength("výška", 2), length: contLength("délka", 8) }, { volumeLabel: "objem přízemí" }), strana);
   const deductionTree = deduce(
     deduce(
       rectangleVolume,
-      deduce({ ...last(rectangleVolume), ...deduceLbl(3) }, ratio("objem přízemí", "objem střecha", 1 / 2)),
+      deduce(
+        last(rectangleVolume),
+        ratio("objem přízemí", "objem střecha", 1 / 2)
+      ),
       sum("objem domeček")
     ),
     ctorOption("B", 48)

@@ -1,14 +1,7 @@
 
-import { cont, ctorPercent, type Container } from "../../components/math.js";
+import { cont, ctorPercent } from "../../components/math.js";
 import { axiomInput, deduce } from "../../utils/deduce-utils.js";
 
-export function percentage({ base, part }: { base: Container, part: Container }) {
-  return deduce(
-      part,
-      base,
-      ctorPercent()
-    )
-}
 export function example({ input }: {
   input: {
     part: number;
@@ -25,5 +18,12 @@ export function example({ input }: {
     Půjčeno ${input.base} Kč.
     Kolik procent činí úrok?`;
 
-  return { deductionTree: percentage({ base, part }), template }
+  return {
+    deductionTree: deduce(
+      part,
+      base,
+      ctorPercent()
+    ),
+    template
+  }
 }

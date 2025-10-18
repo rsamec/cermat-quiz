@@ -1,4 +1,4 @@
-import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, lcd, rate, sum, counter, product, ctorScale, ctorScaleInvert, ratios, ctorDifference, contLength, dimensionEntity, productVolume } from "../../components/math";
+import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, lcd, rate, sum, counter, product, ctorScale, ctorScaleInvert, ratios, ctorDifference, contLength, dimensionEntity, cuboidVolume } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
@@ -243,13 +243,13 @@ function stavebnice() {
             inputCube.length,
             inputCube.width,
             inputCube.height,
-            productVolume("kvádr")
+            cuboidVolume("kvádr")
           ),
           deduce(
             base.length,
             base.width,
             base.height,
-            productVolume("kvádr")
+            cuboidVolume("kvádr")
           ),
           ctor("rate")
         ),
@@ -263,13 +263,13 @@ function stavebnice() {
             minimalSize,
             last(minimalSize),
             last(minimalSize),
-            productVolume("kvádr")
+            cuboidVolume("kvádr")
           ),
           deduce(
             base.length,
             base.width,
             base.height,
-            productVolume("kvádr")
+            cuboidVolume("kvádr")
           ),
           ctor("rate")
         ),

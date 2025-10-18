@@ -38,6 +38,25 @@ type AgentNames = {
   nameAfter?: string
   nameBefore?: string
 }
+// #region Dimension entities
+type EmptyUnitDim = ""
+type LengthDim = "mm" | "cm" | "dm" | "m" | "km" | "mi" | EmptyUnitDim
+type AreaDim = "mm2" | "cm2" | "dm2" | "m2" | "km2" | "mi2" | EmptyUnitDim
+type VolumeDim = "mm3" | "cm3" | "dm3" | "m3" | "km3" | "mi3" | EmptyUnitDim
+export const EmptyUnit: EmptyUnitDim = ""
+export function dimensionEntity(unit: LengthDim = "cm") {
+  return {
+    length: { entity: "délka", unit },
+    area: { entity: "obsah", unit: unit === EmptyUnit ? EmptyUnit : `${unit}2` },
+    volume: { entity: "objem", unit: unit === EmptyUnit ? EmptyUnit : `${unit}3` },
+    lengths: ["délka", unit] as [string, string],
+    areas: ["obsah", unit === EmptyUnit ? EmptyUnit : `${unit}2`] as [string, string],
+    volumes: ["objem", unit === EmptyUnit ? EmptyUnit : `${unit}3`] as [string, string]
+  }
+}
+const dim = dimensionEntity();
+// #endregion
+
 
 // #endregion
 
@@ -64,23 +83,6 @@ function isRatePredicate(value: Predicate): value is Rate {
 }
 // #endregion
 
-// #region Dimension entities
-type EmptyUnitDim = ""
-type LengthDim = "mm" | "cm" | "dm" | "m" | "km" | "mi" | EmptyUnitDim
-type AreaDim = "mm2" | "cm2" | "dm2" | "m2" | "km2" | "mi2" | EmptyUnitDim
-type VolumeDim = "mm3" | "cm3" | "dm3" | "m3" | "km3" | "mi3" | EmptyUnitDim
-export const EmptyUnit: EmptyUnitDim = ""
-export function dimensionEntity(unit: LengthDim = "cm") {
-  return {
-    length: { entity: "délka", unit },
-    area: { entity: "obsah", unit: unit === EmptyUnit ? EmptyUnit : `${unit}2` },
-    volume: { entity: "objem", unit: unit === EmptyUnit ? EmptyUnit : `${unit}3` },
-    lengths: ["délka", unit] as [string, string],
-    areas: ["obsah", unit === EmptyUnit ? EmptyUnit : `${unit}2`] as [string, string],
-    volumes: ["objem", unit === EmptyUnit ? EmptyUnit : `${unit}3`] as [string, string]
-  }
-}
-// #endregion
 
 // #region Predicates
 
@@ -705,11 +707,40 @@ export function contArea(agent: string, quantity: NumberOrVariable, unit: AreaDi
 export function contVolume(agent: string, quantity: NumberOrVariable, unit: VolumeDim = "cm3") {
   return cont(agent, quantity, dimensionEntity().volume.entity, unit)
 }
-export function productArea(wholeAgent: string, unit: AreaDim = "cm2") {
-  return productCombine(wholeAgent, { entity: dimensionEntity().area.entity, unit })
+export function circleLength(wholeAgent: string, unit: LengthDim = "cm") {
+  return evalFormulaAsCont(formulaRegistry.circumReference.circle, x => x.o, wholeAgent, { entity: dim.length.entity, unit });
 }
-export function productVolume(wholeAgent: string, unit: VolumeDim = "cm3") {
-  return productCombine(wholeAgent, { entity: dimensionEntity().volume.entity, unit })
+
+export function squareArea(wholeAgent: string, unit: AreaDim = "cm2") {
+  return evalFormulaAsCont(formulaRegistry.surfaceArea.square, x => x.S, wholeAgent, { entity: dim.area.entity, unit });
+}
+export function rectangleArea(wholeAgent: string, unit: AreaDim = "cm2") {
+  return evalFormulaAsCont(formulaRegistry.surfaceArea.rectangle, x => x.S, wholeAgent, { entity: dim.area.entity, unit });
+}
+export function triangleArea(wholeAgent: string, unit: AreaDim = "cm2") {
+  return evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, x => x.S, wholeAgent, { entity: dim.area.entity, unit });
+}
+export function circleArea(wholeAgent: string, unit: AreaDim = "cm2") {
+  return evalFormulaAsCont(formulaRegistry.surfaceArea.circle, x => x.S, wholeAgent, { entity: dim.area.entity, unit });
+}
+export function cylinderArea(wholeAgent: string, unit: AreaDim = "cm2") {
+  return evalFormulaAsCont(formulaRegistry.surfaceArea.cylinder, x => x.S, wholeAgent, { entity: dim.area.entity, unit });
+}
+export function cubeArea(wholeAgent: string, unit: AreaDim = "cm2") {
+  return evalFormulaAsCont(formulaRegistry.surfaceArea.cube, x => x.S, wholeAgent, { entity: dim.area.entity, unit });
+}
+
+export function cubeVolume(wholeAgent: string, unit: VolumeDim = "cm3") {
+  return evalFormulaAsCont(formulaRegistry.volume.cube, x => x.V, wholeAgent, { entity: dim.volume.entity, unit });
+}
+export function cuboidVolume(wholeAgent: string, unit: VolumeDim = "cm3") {
+  return evalFormulaAsCont(formulaRegistry.volume.cuboid, x => x.V, wholeAgent, { entity: dim.volume.entity, unit });
+}
+export function cylinderVolume(wholeAgent: string, unit: VolumeDim = "cm3") {
+  return evalFormulaAsCont(formulaRegistry.volume.cylinder, x => x.V, wholeAgent, { entity: dim.volume.entity, unit });
+}
+export function baseAreaVolume(wholeAgent: string, unit: VolumeDim = "cm3") {
+  return evalFormulaAsCont(formulaRegistry.volume.baseArea, x => x.V, wholeAgent, { entity: dim.volume.entity, unit });
 }
 export function productCombine(wholeAgent: string, wholeEntity: EntityDef, partAgents?: string[]): ProductCombine {
   return {
@@ -3851,7 +3882,7 @@ export const formulaRegistry = {
       description: 'Vypočítá obsah čtverce ze strany a, nebo stranu z obsahu.',
       params: ['S', 'a'],
       formula: {
-        'S': 'a * a', // Alternativně 'a^2'
+        'S': 'a^2',
         'a': 'sqrt(S)',
       },
     },
@@ -3958,6 +3989,17 @@ export const formulaRegistry = {
       formula: {
         'V': '(4/3) * r^3 * π ',
         'r': 'pow((3 * V) / (4 * π), 1/3)', // Poloměr z objemu (odmocnina třetího stupně)
+      },
+    },
+    // Vzorec pro kvádr
+    baseArea: {
+      name: 'Objem z podstavy',
+      description: 'Vypočítá objem z podstavy.',
+      params: ['V', 'S', 'h'],
+      formula: {
+        'V': 'S * h',
+        'h': 'V / S',
+        'S': 'V / h',
       },
     },
   },

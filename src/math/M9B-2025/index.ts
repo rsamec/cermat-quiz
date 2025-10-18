@@ -1,6 +1,5 @@
-import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, rate, ratio, ratios, ctorPercent, compAngle, ctorComplement, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, ctorLinearEquation, sum, triangleAngle, contLength, productVolume, contArea, dimensionEntity } from "../../components/math";
+import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, rate, ratio, ratios, ctorPercent, compAngle, ctorComplement, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, ctorLinearEquation, sum, triangleAngle, contLength, contArea, dimensionEntity, cuboidVolume, triangleArea } from "../../components/math";
 import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
-import { triangleArea } from "../shapes/triangle";
 
 export default createLazyMap({
   1: () => porovnani(),
@@ -111,13 +110,13 @@ function dort() {
           vetsiKorpus,
           vetsiKorpus,
           height,
-          productVolume("větší korpus")
+          cuboidVolume("větší korpus")
         ),
         deduce(
           mensiKorpus,
           last(mensiKorpus),
           height,
-          productVolume("menší korpus")
+          cuboidVolume("menší korpus")
         ),
         sum("celkem")
       ),
@@ -185,16 +184,16 @@ function pravouhlyLichobeznik() {
   return {
     obsah: {
       deductionTree: deduce(
-        triangleArea({
-          size: spodniZakladna, height, triangle: {
-            agent: agentLabel
-          }
-        }),
-        triangleArea({
-          size: horniZakladna, height, triangle: {
-            agent: agentLabel
-          }
-        }),
+        deduce(
+          spodniZakladna,
+          height,
+          triangleArea(agentLabel)
+        ),
+        deduce(
+          horniZakladna,
+          height,
+          triangleArea(agentLabel)
+        ),
         sum(agentLabel)
       )
     },
@@ -211,7 +210,6 @@ function pravouhlyLichobeznik() {
         sum("rovnoběžník obvod")
       )
     }
-
   }
 }
 

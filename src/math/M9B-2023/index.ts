@@ -1,4 +1,4 @@
-import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, evalExprAsCont, counter, proportion, productCombine, ctorLinearEquation, comp, ctorScale, ctorComplementCompRatio, ctorSlideInvert, ctorScaleInvert, ctorBooleanOption, pythagoras, simplifyExpr, contArea, dimensionEntity, contLength, productArea, productVolume, squareNumbersPattern, nth, halfProduct, formulaRegistry, evalFormulaAsCont } from "../../components/math";
+import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, evalExprAsCont, counter, proportion, productCombine, ctorLinearEquation, comp, ctorScale, ctorComplementCompRatio, ctorSlideInvert, ctorScaleInvert, ctorBooleanOption, pythagoras, contArea, dimensionEntity, contLength, squareNumbersPattern, nth, halfProduct, formulaRegistry, evalFormulaAsCont, rectangleArea, baseAreaVolume, cuboidVolume, doubleProduct, circleArea } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -179,14 +179,14 @@ function dort() {
                         commonSense("strana čtverce = poloměr dortu"),
                         contLength("poloměr dortu", lastQuantity(stranaCtverce))
                     ),
-                    evalFormulaAsCont(formulaRegistry.surfaceArea.circle, x => x.S, "podstava dortu", dim.area)
+                    circleArea("podstava dortu")
                 ),
                 to(
                     last(stranaCtverce),
                     commonSense("strana čtverce = výška dortu"),
                     contLength("výška dortu", lastQuantity(stranaCtverce))
                 ),
-                productVolume("dort")
+                baseAreaVolume("dort")
             )
         }
     }
@@ -281,7 +281,7 @@ function kosoctverec() {
                 deduceAs("samotné přemístěním 4 trojúhelníků sekládaných jako obdelník, resp. kosočtverec nemá vliv na obsah, pouze se změnil tvar obrazce nikoliv však jeho celková plocha")(
                     contLength("obdelník kratší strana", 3),
                     contLength("obdelník delší strana", 8),
-                    productArea("obdelník = kosočtverec")
+                    rectangleArea("obdelník = kosočtverec")
                 ),
                 ctorBooleanOption(24, "greater")
             )
@@ -298,7 +298,7 @@ function kosoctverec() {
                     deduceAs("vztah pro obsah kosočtverce (obsah = strana x výška => výška = obsah / strana)")(
                         contLength("obdelník kratší strana", 3),
                         contLength("obdelník delší strana", 8),
-                        productArea("obdelník = kosočtverec")
+                        rectangleArea("obdelník = kosočtverec")
                     ),
                     last(stranaKosoctverec),
                     evalFormulaAsCont(formulaRegistry.surfaceArea.rectangle, x => x.b, 'výška', dim.length)
@@ -315,8 +315,7 @@ function hranol() {
     const vyska = toCont(deduce(
         deduceAs("doplnění trojúhleník na obdelník, tak že ho složím ze dvou stejných trojúhleníku")(
             contArea("základna", 60),
-            double(),
-            ctorScale("obdelník")
+            ...doubleProduct("obdelník"),
         ),
         stranaZakladna,
         ctor("quota")),
@@ -330,7 +329,7 @@ function hranol() {
                     vyska,
                     stranaZakladna,
                     last(vyska),
-                    productVolume("kvádr")
+                    cuboidVolume("kvádr")
                 ),
                 counter("zmenšení", 2),
                 ctorScaleInvert("hranol")

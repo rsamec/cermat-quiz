@@ -1,4 +1,4 @@
-import { commonSense, comp, cont, ctor, sum, ctorComplement, ctorDifference, ctorOption, ctorUnit, percent, rate, ratio, ratios, transfer, ctorSlide, compRatio, nthPart, counter, double, product, contLength, productArea, dimensionEntity, contArea, productCombine, pattern, balancedPartition, balancedEntityPartition, ctorRatios, range } from "../../components/math"
+import { commonSense, comp, cont, ctor, sum, ctorComplement, ctorDifference, ctorOption, ctorUnit, percent, rate, ratio, ratios, transfer, ctorSlide, compRatio, nthPart, counter, double, product, contLength, dimensionEntity, productCombine, pattern, balancedEntityPartition, ctorRatios, range, squareArea, triangleArea, rectangleArea, doubleProduct } from "../../components/math"
 import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "../../utils/deduce-utils"
 
 export default createLazyMap({
@@ -368,7 +368,12 @@ function domecek() {
     ctor("rate")
   );
 
-  const strana = toCont(stranaRate, { agent: "čtverec" })
+  const strana = toCont(stranaRate, { agent: "čtverec", ...dim.lengths })
+  const zakladna = deduce(
+    last(strana),
+    ...doubleProduct("základna")
+  )
+
   return {
     strana: {
       deductionTree: stranaRate
@@ -378,26 +383,20 @@ function domecek() {
         deduce(
           deduce(
             last(strana),
-            last(strana),
-            productArea("čtverec")
+            squareArea("čtverec")
           ),
-          double(),
-          productArea("základna")
+          ...doubleProduct("základna")
         ),
         deduce(
+          zakladna,
           deduce(
             deduce(
-              deduce(
-                last(strana),
-                double(),
-                product("základna")
-              ),
+              last(zakladna),
               comp("rameno", "základna", 3, dim.length.entity)
             ),
             comp("rameno", "výška", 1, dim.length.entity)
           ),
-          last(strana),
-          productArea("rovnoramenný trojúhleník")
+          triangleArea("rovnoramenný trojúhleník")
         ),
         sum("domeček")
       )
@@ -419,7 +418,7 @@ function schody() {
         deduce(
           contLength("obdelník", 9),
           contLength("obdelník", 9 / 2),
-          productArea("obdelník")
+          rectangleArea("obdelník")
         ),
         productCombine("rozdíl", dim.area)
       ),

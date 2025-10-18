@@ -1,4 +1,4 @@
-import { ctor, ctorOption, contLength, productArea } from "../../components/math";
+import { ctor, ctorOption, contLength, rectangleArea, squareArea } from "../../components/math";
 import { axiomInput, deduce } from "../../utils/deduce-utils";
 
 export function porovnatObsahObdelnikACtverec({ input }: { input: { obdelnik: { a: number, b: number }, ctverec: { a: number } } }) {
@@ -10,12 +10,12 @@ export function porovnatObsahObdelnikACtverec({ input }: { input: { obdelnik: { 
         deduce(
           axiomInput(contLength('obdélník a', input.obdelnik.a), 1),
           axiomInput(contLength('obdélník b', input.obdelnik.b), 2),
-          productArea("obdélník")
+          rectangleArea("obdélník")
         ),
         deduce(
           ctverec,
           ctverec,
-          productArea("čtverec")
+          squareArea("čtverec")
         ),
         ctor('comp-ratio')
       ),

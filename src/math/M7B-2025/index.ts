@@ -1,4 +1,4 @@
-import { commonSense, compRelative, cont, ctor, sum, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, counter, nthPart, percent, proportion, rate, ratio, product, double, ctorScale, contLength, contArea, productArea, productVolume, dimensionEntity, ratios, ctorRatiosInvert, comp, evalFormulaAsCont, formulaRegistry } from "../../components/math"
+import { commonSense, compRelative, cont, ctor, sum, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, counter, nthPart, percent, proportion, rate, ratio, product, double, ctorScale, contLength, contArea, dimensionEntity, ratios, ctorRatiosInvert, comp, evalFormulaAsCont, formulaRegistry, rectangleArea, baseAreaVolume, triangleArea } from "../../components/math"
 import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont, type TreeNode } from "../../utils/deduce-utils"
 
 export default createLazyMap({
@@ -267,11 +267,11 @@ function hranol() {
   const podstavaVyska = contLength("výška podstavy", 4)
 
   const bocniStenaObdelnik = contLength(bocniStenaObdelnikL, 11)
-  const vyskaHranol = toCont(deduce(
+  const vyskaHranol = deduce(
     contArea(bocniStenaObdelnikL, 55),
     bocniStenaObdelnik,
-    ctor("quota")
-  ), { agent: "výška hranolu", entity: dim.length })
+    evalFormulaAsCont(formulaRegistry.surfaceArea.rectangle, x => x.b, "výška hranolu", dim.length)
+  )
 
   const bocniStenaCtverec = to(
     commonSense("boční stěna čtverec => výška hranolu = strana čtverce"),
@@ -282,17 +282,16 @@ function hranol() {
     deduce(
       last(bocniStenaCtverec),
       podstavaVyska,
-      productArea("obdelník")
+      rectangleArea("obdelník")
     ),
     deduce(
-
       deduceAs("podstava hranol - rozdělení na obdelník 4x5 a levý a pravý pravoúhlý trojůhelník, které přiléhají k obdelníku")(
         bocniStenaObdelnik,
         last(bocniStenaCtverec),
         ctorDifference("zbytek základny")
       ),
       podstavaVyska,
-      evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, x => x.S, "levý a pravý pravoúhlý trojůhelník", dim.area)
+      triangleArea("levý a pravý pravoúhlý trojůhelník")
     ),
     sum("obsah postavy hranolu")
   )
@@ -319,7 +318,7 @@ function hranol() {
       deductionTree: deduce(
         last(obsah),
         last(vyskaHranol),
-        productVolume("objem hranolu")
+        baseAreaVolume("objem hranolu")
       )
     }
   }
