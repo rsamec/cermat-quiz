@@ -4,6 +4,7 @@ sidebar: true,
 pager: true
 footer: false
 toc: false
+style: '/assets/css/quiz-picker.css'
 ---
 
 ```js
@@ -29,15 +30,28 @@ const audios = ['M5A-2024', 'M5A-2023', 'M7A-2024', 'M7A-2023', 'M9A-2025', 'M9B
       <div class="v-stack v-stack--l">
         ${codes.map(code => {
           const {order,subject,period,year} = parseCode(code);
-          return html`<div class="h-stack h-stack--m h-stack--wrap">
-              <a class="h-stack h-stack--xs" href="./form-${code}"><span>${formatVersion({order,period})}</span><span>↗︎</span></a>
-              <a class="h-stack h-stack--xs" href="./print-${code}"><span>tisk</span><i class="fa-solid fa-print"></i></a>
-              ${subject === "math" ? html`<a class="h-stack h-stack--xs" title="Rozbor úloh" href="./solution-${code}"><span>rozbor</span><i class="fa-solid fa-mug-hot"></i></a>`:''}
-              ${subject === "math" ? html`<a class="h-stack h-stack--xs" title="Řešení úloh pomocí AI" href="./ai-${code}"><i class="fa fa-brands fa-openai"></i></a>`:''}
-              ${subject === "math" ? html`<a href="word-problems-${code}" title="Řešení slovních úloh (markdown)"><i class="fa fa-brands fa-markdown"></i></a>`:''}
-              <a class="h-stack h-stack--xs" href="./arch-${code}"><i class="fa-solid fa-key"></i></a>              
-              <!-- ${subject === "math" ? html`<a href="word-problems-tldr-${code}"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-comment-nodes"></i></a>`:''}                -->
-              <!-- ${subject === "math" && period != "diploma" ? html`<a href="/assets/math/${code}.mp3" title="Řešení slovních úloh (notebook LM)"><i class="fa-solid fa-microphone"></i></a>`:''} -->
+          return html`<div class="h-stack h-stack--m h-stack-items--center h-stack--wrap">
+              <a class="h-stack h-stack--s" href="./form-${code}"><i class="fas fa-money-check"></i><span>${formatVersion({order,period})}</span></a>
+              <a class="h-stack h-stack--s" href="./print-${code}"><i class="fa-solid fa-print"></i><span>tisk</span></a>
+              <a class="h-stack h-stack--s" href="./arch-${code}"><i class="fa-solid fa-key"></i>klíč</a>                            
+              ${subject === "math" ? html`
+              <button  popovertarget=popover-${code}>Rozbor<i class="fas fa-caret-down"></i></button>
+              <div id=popover-${code} class="menu-items" popover>
+                <div class="v-stack v-stack--m">
+                  <a class="h-stack h-stack--s" title="Rozbor úloh - chat" href="./solution-${code}"><i class="fa-solid fa-mug-hot"></i><span>Rozbor úloh - chat</span></a>
+                  <a class="h-stack h-stack--s" href="word-problems-${code}" title="Řešení slovních úloh (markdown)"><i class="fa fa-brands fa-markdown"></i><span>Rozbor úloh - markdown</span></a>
+                  <a class="h-stack h-stack--s" href="word-problems-tldr-${code}"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-comment-nodes"></i><span>Rozbor úloh - TLDR</span><a>
+                </div>
+              </div>
+              <button  popovertarget=popover-ai-${code}>AI <i class="fas fa-caret-down"></i></button>
+              <div id=popover-ai-${code} class="menu-items" popover>
+                <div class="v-stack v-stack--m">          
+                  <a class="h-stack h-stack--s" title="Řešení úloh pomocí AI" href="./ai-gpt-5-mini-as-${code}"><i class="fa fa-brands fa-openai"></i><span>OpenAI - GTP 5 mini</span></a>
+                  <a class="h-stack h-stack--s" title="Řešení úloh pomocí AI" href="./ai-o1-mini-as-${code}"><i class="fa fa-brands fa-openai"></i><span>OpenAI - o1 mini</span></a>
+                </div>
+              </div>              
+              `:''              
+              }              
           <div>`
         })}
       </div>

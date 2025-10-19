@@ -62,7 +62,7 @@ const dim = dimensionEntity();
 
 // #region Predicates type guards
 export function isQuantityPredicate(value: Predicate): value is QuantityPredicate {
-  return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "quota", "delta"].includes(value.kind);
+  return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "quota", "delta", "frequency"].includes(value.kind);
 }
 
 export function isRatioPredicate(value: Predicate): value is RatioPredicate {
@@ -80,6 +80,9 @@ export function isOperationPredicate(value: Predicate): value is OperationPredic
 
 function isRatePredicate(value: Predicate): value is Rate {
   return value.kind === "rate";
+}
+function isFrequencyPredicate(value: Predicate): value is Frequency {
+  return value.kind === "frequency";
 }
 // #endregion
 
@@ -205,6 +208,14 @@ export type Rate = {
   quantity: Quantity
   baseQuantity: Quantity
   asRatio?: boolean
+}
+export type Frequency = {
+  kind: 'frequency'
+  agent: string,
+  entity: EntityBase,
+  entityBase: EntityBase,
+  quantity: Quantity
+  baseQuantity: Quantity
 }
 
 export type Quota = {
@@ -391,7 +402,8 @@ export type Question<T extends Predicate> = {
 }
 export type Tuple = {
   kind: 'tuple',
-  items: any[]
+  agent: string,
+  items: Predicate[]
 }
 
 export type ContainerEval = Omit<Container, 'quantity'>
@@ -406,7 +418,7 @@ export type FormattingOptions = {
 
 export type EntityDef = string | EntityBase
 
-export type QuantityPredicate = Container | Comparison | Transfer | Rate | ComparisonDiff | Transfer | Quota | Delta
+export type QuantityPredicate = Container | Comparison | Transfer | Rate | ComparisonDiff | Transfer | Quota | Frequency | Delta
 export type RatioPredicate = RatioComparison | PartWholeRatio
 export type RatiosPredicate = PartToPartRatio | TwoPartRatio | ThreePartRatio;
 export type ExpressionPredicate = EvalExpr<ContainerEval | RateEval> | EvalFormula<ContainerEval | RateEval> | SimplifyExpr | LinearEquation | Phytagoras;
@@ -511,11 +523,16 @@ export function ctorSlide(agent: AgentMatcher): Slide {
 export function ctorSlideInvert(agent: AgentMatcher): InvertSlide {
   return { kind: "slide-invert", agent }
 }
+export function ctorTuple(agent: AgentMatcher): Tuple {
+  return { kind: "tuple", agent, items: [] }
+}
 
 export function cont(agent: string, quantity: NumberOrVariable, entity: string, unit?: string, opts?: { asFraction: boolean }): Container {
   return { kind: 'cont', agent, quantity: quantity as NumberOrExpression, entity, unit, asRatio: opts?.asFraction };
 }
-
+export function tuple(agent: string, items: Predicate[]): Tuple {
+  return { kind: 'tuple', agent, items }
+}
 export function evalExprAsCont(expression: string, agent: AgentMatcher, entity: EntityBase, opts: { asRatio?: boolean } = {}): EvalExpr<ContainerEval> {
   return { kind: 'eval-expr', expression, predicate: { kind: 'cont', agent, ...entity, asRatio: opts.asRatio } }
 }
@@ -773,6 +790,10 @@ export function nthPartScale(agent): NthPartScale {
 export function rate(agent: string, quantity: number, entity: EntityDef, entityBase: EntityDef, baseQuantity: number = 1): Rate {
   return { kind: 'rate', agent, quantity, baseQuantity, entity: toEntity(entity), entityBase: toEntity(entityBase) }
 }
+export function frequency(agent: string, quantity: number, entity: EntityDef, entityBase: EntityDef, baseQuantity): Frequency {
+  return { kind: 'frequency', agent, quantity, baseQuantity, entity: toEntity(entity), entityBase: toEntity(entityBase) }
+}
+
 export function quota(agent: string, agentQuota, quantity: number, restQuantity = 0): Quota {
   return { kind: 'quota', agent, agentQuota, quantity, restQuantity }
 }
@@ -1760,7 +1781,7 @@ function inferCompareDiffRule(a: Container, b: ComparisonDiff): Question<Contain
   }
 }
 
-function sumRule(items: Container[] | PartWholeRatio[] | Rate[] | RatioComparison[], b: SumCombine | Sum): Container | PartWholeRatio | Rate | RatioComparison {
+function sumRule(items: Container[] | PartWholeRatio[] | Rate[] | RatioComparison[] | Frequency[], b: SumCombine | Sum): Container | PartWholeRatio | Rate | RatioComparison {
   if (items.every(d => isRatioPredicate(d))) {
 
     const bases = items.every(d => d.kind === "ratio") ? items.map(d => d.whole) : items.map(d => d.agentB);
@@ -1776,31 +1797,43 @@ function sumRule(items: Container[] | PartWholeRatio[] | Rate[] | RatioCompariso
       : { kind: 'comp-ratio', agentA: b.wholeAgent, agentB: bases[0], ratio, asPercent: items[0].asPercent }
   }
   else if (items.every(d => isQuantityPredicate(d))) {
-    const values = items.map(d => d.quantity);
-    const quantity = areNumbers(values) ? values.reduce((out, d) => out += d, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
-    if (items.every(d => isRatePredicate(d))) {
-      const { entity, entityBase } = items[0];
-      return { kind: 'rate', agent: b.wholeAgent, quantity, entity, entityBase, baseQuantity: 1 }
-    }
-    else {
-      if (b.kind !== 'sum-combine') {
-        const itemsEntities = items.map(d => d.entity);
-        if (b.wholeEntity === null && itemsEntities.filter(unique).length !== 1) {
-          throw `All predicates should have the same entity ${itemsEntities.map(d => JSON.stringify(d)).join("")}.`
-        }
-      }
+    if (items.every(d => isFrequencyPredicate(d))) {
+      const values = items.map(d => [d.quantity, d.baseQuantity]);
+      const quantity = areTupleNumbers(values) ? values.reduce((out, [q, baseQ]) => out += q * baseQ, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity * x${i + 1}.baseQuantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
       return {
         kind: 'cont',
         agent: b.wholeAgent,
         quantity,
-        entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entity,
-        unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].unit
+        entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entityBase.entity,
+        unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].entityBase.unit
+      }
+    }
+    else {
+      const values = items.map(d => d.quantity);
+      const quantity = areNumbers(values) ? values.reduce((out, d) => out += d, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
+      if (items.every(d => isRatePredicate(d))) {
+        const { entity, entityBase } = items[0];
+        return { kind: 'rate', agent: b.wholeAgent, quantity, entity, entityBase, baseQuantity: 1 }
+      }
+      else {
+        if (b.kind !== 'sum-combine') {
+          const itemsEntities = items.map(d => d.entity);
+          if (b.wholeEntity === null && itemsEntities.filter(unique).length !== 1) {
+            throw `All predicates should have the same entity ${itemsEntities.map(d => JSON.stringify(d)).join("")}.`
+          }
+        }
+        return {
+          kind: 'cont',
+          agent: b.wholeAgent,
+          quantity,
+          entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entity,
+          unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].unit
+        }
       }
     }
   }
-
 }
-function inferSumRule(items: Container[] | PartWholeRatio[] | Rate[] | RatioComparison[], b: SumCombine | Sum): Question<Container | PartWholeRatio | Rate | RatioComparison> {
+function inferSumRule(items: Container[] | PartWholeRatio[] | Rate[] | RatioComparison[] | Frequency[], b: SumCombine | Sum): Question<Container | PartWholeRatio | Rate | RatioComparison> {
   const result = sumRule(items, b)
   const isQuantity = isQuantityPredicate(result);
   return {
@@ -1814,22 +1847,24 @@ function inferSumRule(items: Container[] | PartWholeRatio[] | Rate[] | RatioComp
           ? `${computeQuestion(result.ratio)} ${result.part} z ${result.whole}?`
           : `${computeQuestion(result.ratio)} kolikrát ${result.agentA} více nebo méně než ${result.agentB}?`,
     result,
-    options: (isQuantity && isNumber(result.quantity)) || (isRatioPredicate(result) && isNumber(result.ratio)) ? [
-      {
-        tex: items.map(d => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio, d.percent)).join(" + "),
-        result: isQuantity
-          ? isNumber(result.quantity) ? formatNumber(result.quantity) : 'N/A'
-          : isNumber(result.ratio) ? formatRatio(result.ratio, result.asPercent) : 'N/A',
-        ok: true
-      },
-      {
-        tex: items.map(d => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio, d.percent)).join(" * "),
-        result: isQuantity
-          ? isNumber(result.quantity) ? formatNumber(result.quantity) : 'N/A'
-          : isNumber(result.ratio) ? formatRatio(result.ratio, result.asPercent) : 'N/A',
-        ok: false
-      },
-    ] : []
+    options: items.every(d => isFrequencyPredicate(d))
+      ? []
+      : (isQuantity && isNumber(result.quantity)) || (isRatioPredicate(result) && isNumber(result.ratio)) ? [
+        {
+          tex: items.map(d => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio, d.percent)).join(" + "),
+          result: isQuantity
+            ? isNumber(result.quantity) ? formatNumber(result.quantity) : 'N/A'
+            : isNumber(result.ratio) ? formatRatio(result.ratio, result.asPercent) : 'N/A',
+          ok: true
+        },
+        {
+          tex: items.map(d => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio, d.percent)).join(" * "),
+          result: isQuantity
+            ? isNumber(result.quantity) ? formatNumber(result.quantity) : 'N/A'
+            : isNumber(result.ratio) ? formatRatio(result.ratio, result.asPercent) : 'N/A',
+          ok: false
+        },
+      ] : []
   }
 }
 
@@ -1911,8 +1946,8 @@ function inferLcdRule(items: (Container | Rate)[], b: LCD): Question<Container> 
   }
 }
 
-function tupleRule(items: Predicate[]): Question<Tuple> {
-  const result: Tuple = { kind: 'tuple', items }
+function tupleRule(items: Predicate[], last: { agent: AgentMatcher }): Question<Tuple> {
+  const result: Tuple = { kind: 'tuple', agent: last.agent, items }
   return {
     name: "tupleRule",
     inputParameters: extractKinds(...items),
@@ -3091,7 +3126,7 @@ function inferenceRuleEx(...args: Predicate[]): Question<any> {
     if (last.kind === "gcd") return inferGcdRule(arr, last)
     if (last.kind === "lcd") return inferLcdRule(arr, last)
     if (last.kind === "eval-expr" || last.kind === "eval-formula") return inferEvalToQuantityRule(arr, last)
-    if (last.kind === "tuple") return tupleRule(arr)
+    if (last.kind === "tuple") return tupleRule(arr, last)
     if (['product-combine', "product"].includes(last.kind)) return inferProductRule(arr, last as ProductCombine | Product)
     if (['sum-combine', "sum",].includes(last.kind)) return inferSumRule(arr, last as SumCombine | Sum)
     if (last.kind === "alligation") return inferAlligationRule(arr, last)
@@ -3740,6 +3775,9 @@ export function isExpressionNode(quantity: NumberOrExpression | NumberOrVariable
 }
 export function areNumbers(ratios: NumberOrExpression[]): ratios is number[] {
   return ratios.every(d => isNumber(d))
+}
+export function areTupleNumbers(ratios: NumberOrExpression[][]): ratios is number[][] {
+  return ratios.every(d => d.every(d => isNumber(d)))
 }
 
 function wrapToQuantity(expression: string, context?: ExpressionContext): Quantity {

@@ -1,5 +1,5 @@
 import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate } from "../components/math.js"
-import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison } from "../components/math.js"
+import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison, Frequency } from "../components/math.js"
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
 import { evaluate, substitute, toEquationExprAsTex } from "./math-solver.js"
 import Fraction from 'fraction.js';
@@ -65,6 +65,9 @@ export function to(...children: Node[]): TreeNode {
 export function toCont(child: TreeNode | Predicate, { agent, entity }: { agent: string, entity?: { entity: string, unit?: string } }): TreeNode {
   return toPredicate(child, mapToCont({ agent, entity }));
 }
+export function toFrequency(child: TreeNode | Predicate, { agent, entityBase, baseQuantity }: { agent: string, entityBase: { entity: string, unit?: string }, baseQuantity: number}): TreeNode {
+  return toPredicate(child, mapToFrequency({ agent, entityBase, baseQuantity }));
+}
 export function toRate(child: RatioComparison, { agent, entity, entityBase }: { agent: string, entity: EntityDef, entityBase: EntityDef }) {
   return to(child, {
     kind: 'rate',
@@ -97,6 +100,21 @@ export function mapToCont({ agent, entity }: { agent: string, entity?: { entity:
           : typeNode.kind == "quota"
             ? undefined
             : typeNode.unit
+    }
+  }
+}
+export function mapToFrequency({ agent, entityBase, baseQuantity }: { agent: string, entityBase: { entity: string, unit?: string }, baseQuantity: number}) {
+  return (node: Container): Frequency => {
+    return {
+      kind:'frequency',
+      agent,
+      quantity: node.quantity,
+      baseQuantity,        
+      entity: {
+        entity:node.entity,
+        unit:node.unit,      
+      },
+      entityBase
     }
   }
 }
@@ -522,7 +540,11 @@ export function formatPredicate(d: Predicate, formatting: any) {
     case "cont":
       result = compose`${formatAgent(d.agent)}=${d.asRatio ? formatRatio(d.quantity) : formatQuantity(d.quantity)}${d.entity != "" ? " " : ""}${formatEntity(d.entity, d.unit)}`;
       break;
-    case "comp":
+    case "frequency":
+      result = compose`${formatAgent(d.agent)}=${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} po ${formatQuantity(d.baseQuantity)}${d.entityBase.entity != "" ? " " : ""}${formatEntity(d.entityBase.entity, d.entityBase.unit)}`;
+      break;
+
+   case "comp":
       if (isNumber(d.quantity)) {
         result = d.quantity === 0
           ? compose`${formatAgent(d.agentA)} je rovno ${formatAgent(d.agentB)}`

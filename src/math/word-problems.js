@@ -23,7 +23,7 @@ function dimensionEntity(unit = "cm") {
 }
 var dim = dimensionEntity();
 function isQuantityPredicate(value) {
-  return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "quota", "delta"].includes(value.kind);
+  return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "quota", "delta", "frequency"].includes(value.kind);
 }
 function isRatioPredicate(value) {
   return ["ratio", "comp-ratio"].includes(value.kind);
@@ -33,6 +33,9 @@ function isRatiosPredicate(value) {
 }
 function isRatePredicate(value) {
   return value.kind === "rate";
+}
+function isFrequencyPredicate(value) {
+  return value.kind === "frequency";
 }
 function ctor(kind) {
   return { kind };
@@ -113,6 +116,9 @@ function ctorSlideInvert(agent) {
 }
 function cont(agent, quantity, entity3, unit, opts) {
   return { kind: "cont", agent, quantity, entity: entity3, unit, asRatio: opts?.asFraction };
+}
+function tuple(agent, items) {
+  return { kind: "tuple", agent, items };
 }
 function evalExprAsCont(expression, agent, entity3, opts = {}) {
   return { kind: "eval-expr", expression, predicate: { kind: "cont", agent, ...entity3, asRatio: opts.asRatio } };
@@ -1195,25 +1201,37 @@ function sumRule(items, b) {
     const ratio2 = areNumbers(ratios3) ? ratios3.reduce((out, d) => out += d, 0) : wrapToRatio(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
     return items.every((d) => d.kind === "ratio") ? { kind: "ratio", whole: bases[0], ratio: ratio2, part: b.wholeAgent, asPercent: items[0].asPercent } : { kind: "comp-ratio", agentA: b.wholeAgent, agentB: bases[0], ratio: ratio2, asPercent: items[0].asPercent };
   } else if (items.every((d) => isQuantityPredicate(d))) {
-    const values = items.map((d) => d.quantity);
-    const quantity = areNumbers(values) ? values.reduce((out, d) => out += d, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
-    if (items.every((d) => isRatePredicate(d))) {
-      const { entity: entity3, entityBase } = items[0];
-      return { kind: "rate", agent: b.wholeAgent, quantity, entity: entity3, entityBase, baseQuantity: 1 };
-    } else {
-      if (b.kind !== "sum-combine") {
-        const itemsEntities = items.map((d) => d.entity);
-        if (b.wholeEntity === null && itemsEntities.filter(unique).length !== 1) {
-          throw `All predicates should have the same entity ${itemsEntities.map((d) => JSON.stringify(d)).join("")}.`;
-        }
-      }
+    if (items.every((d) => isFrequencyPredicate(d))) {
+      const values = items.map((d) => [d.quantity, d.baseQuantity]);
+      const quantity = areTupleNumbers(values) ? values.reduce((out, [q, baseQ]) => out += q * baseQ, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity * x${i + 1}.baseQuantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
       return {
         kind: "cont",
         agent: b.wholeAgent,
         quantity,
-        entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entity,
-        unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].unit
+        entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entityBase.entity,
+        unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].entityBase.unit
       };
+    } else {
+      const values = items.map((d) => d.quantity);
+      const quantity = areNumbers(values) ? values.reduce((out, d) => out += d, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
+      if (items.every((d) => isRatePredicate(d))) {
+        const { entity: entity3, entityBase } = items[0];
+        return { kind: "rate", agent: b.wholeAgent, quantity, entity: entity3, entityBase, baseQuantity: 1 };
+      } else {
+        if (b.kind !== "sum-combine") {
+          const itemsEntities = items.map((d) => d.entity);
+          if (b.wholeEntity === null && itemsEntities.filter(unique).length !== 1) {
+            throw `All predicates should have the same entity ${itemsEntities.map((d) => JSON.stringify(d)).join("")}.`;
+          }
+        }
+        return {
+          kind: "cont",
+          agent: b.wholeAgent,
+          quantity,
+          entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entity,
+          unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].unit
+        };
+      }
     }
   }
 }
@@ -1225,7 +1243,7 @@ function inferSumRule(items, b) {
     inputParameters: extractKinds(...items, b),
     question: result.kind === "cont" ? containerQuestion(result) : result.kind === "rate" ? `${computeQuestion(result.quantity)} ${result.agent}?` : result.kind === "ratio" ? `${computeQuestion(result.ratio)} ${result.part} z ${result.whole}?` : `${computeQuestion(result.ratio)} kolikr\xE1t ${result.agentA} v\xEDce nebo m\xE9n\u011B ne\u017E ${result.agentB}?`,
     result,
-    options: isQuantity && isNumber(result.quantity) || isRatioPredicate(result) && isNumber(result.ratio) ? [
+    options: items.every((d) => isFrequencyPredicate(d)) ? [] : isQuantity && isNumber(result.quantity) || isRatioPredicate(result) && isNumber(result.ratio) ? [
       {
         tex: items.map((d) => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio, d.percent)).join(" + "),
         result: isQuantity ? isNumber(result.quantity) ? formatNumber(result.quantity) : "N/A" : isNumber(result.ratio) ? formatRatio(result.ratio, result.asPercent) : "N/A",
@@ -1311,8 +1329,8 @@ function inferLcdRule(items, b) {
     ] : []
   };
 }
-function tupleRule(items) {
-  const result = { kind: "tuple", items };
+function tupleRule(items, last2) {
+  const result = { kind: "tuple", agent: last2.agent, items };
   return {
     name: "tupleRule",
     inputParameters: extractKinds(...items),
@@ -2319,7 +2337,7 @@ function inferenceRuleEx(...args) {
     if (last2.kind === "eval-expr" || last2.kind === "eval-formula")
       return inferEvalToQuantityRule(arr, last2);
     if (last2.kind === "tuple")
-      return tupleRule(arr);
+      return tupleRule(arr, last2);
     if (["product-combine", "product"].includes(last2.kind))
       return inferProductRule(arr, last2);
     if (["sum-combine", "sum"].includes(last2.kind))
@@ -2772,6 +2790,9 @@ function isExpressionNode(quantity) {
 }
 function areNumbers(ratios3) {
   return ratios3.every((d) => isNumber(d));
+}
+function areTupleNumbers(ratios3) {
+  return ratios3.every((d) => d.every((d2) => isNumber(d2)));
 }
 function wrapToQuantity(expression, context) {
   return { expression, context: convertContext(context) };
@@ -6722,6 +6743,9 @@ function to(...children) {
 function toCont(child, { agent, entity: entity3 }) {
   return toPredicate(child, mapToCont({ agent, entity: entity3 }));
 }
+function toFrequency(child, { agent, entityBase, baseQuantity }) {
+  return toPredicate(child, mapToFrequency({ agent, entityBase, baseQuantity }));
+}
 function toRate(child, { agent, entity: entity3, entityBase }) {
   return to(child, {
     kind: "rate",
@@ -6742,6 +6766,21 @@ function mapToCont({ agent, entity: entity3 }) {
       quantity: typeNode.quantity,
       entity: entity3 != null ? entity3.entity : typeNode.kind == "quota" ? typeNode.agentQuota : typeNode.kind == "rate" ? typeNode.entity.entity : typeNode.entity,
       unit: entity3 != null ? entity3.unit : typeNode.kind == "rate" ? typeNode.entity.unit : typeNode.kind == "quota" ? void 0 : typeNode.unit
+    };
+  };
+}
+function mapToFrequency({ agent, entityBase, baseQuantity }) {
+  return (node) => {
+    return {
+      kind: "frequency",
+      agent,
+      quantity: node.quantity,
+      baseQuantity,
+      entity: {
+        entity: node.entity,
+        unit: node.unit
+      },
+      entityBase
     };
   };
 }
@@ -6846,6 +6885,9 @@ function formatPredicate(d, formatting) {
   switch (d.kind) {
     case "cont":
       result = compose`${formatAgent(d.agent)}=${d.asRatio ? formatRatio2(d.quantity) : formatQuantity(d.quantity)}${d.entity != "" ? " " : ""}${formatEntity2(d.entity, d.unit)}`;
+      break;
+    case "frequency":
+      result = compose`${formatAgent(d.agent)}=${formatQuantity(d.quantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} po ${formatQuantity(d.baseQuantity)}${d.entityBase.entity != "" ? " " : ""}${formatEntity2(d.entityBase.entity, d.entityBase.unit)}`;
       break;
     case "comp":
       if (isNumber(d.quantity)) {
@@ -15009,6 +15051,8 @@ var M9D_2025_default = createLazyMap({
   6.3: () => roboti().doba,
   8.1: () => ctverec().porovnani,
   8.2: () => ctverec().obvod,
+  7.1: () => soutez2().prvniKolo,
+  7.2: () => soutez2().druheKolo,
   12: () => krychle3(),
   13: () => vlak(),
   14: () => brhlikLesni(),
@@ -15098,6 +15142,56 @@ function roboti() {
           last(odvezenoB)
         ),
         sum("dohromady")
+      )
+    }
+  };
+}
+function soutez2() {
+  const entityBase = { entity: "body" };
+  const entity3 = "sout\u011B\u017E\xEDc\xED";
+  const agent = "sout\u011B\u017E";
+  const celkem = cont(agent, 10, entity3);
+  const _8vs10 = comp("8-bodov\xFDch", "10-bodov\xFDch", -1, entity3);
+  const _9 = cont("9-bodov\xFDch", 5, entity3);
+  const _8 = deduce(
+    deduce(
+      celkem,
+      _9,
+      ctorDifference("8-bodov\xFDch a 10-bodov\xFDch dohromady")
+    ),
+    _8vs10,
+    ctor("comp-part-eq")
+  );
+  const _10 = deduce(
+    last(_8),
+    _8vs10
+  );
+  return {
+    prvniKolo: {
+      deductionTree: deduce(
+        deduce(
+          toFrequency(_8, { agent, entityBase, baseQuantity: 8 }),
+          toFrequency(_9, { agent, entityBase, baseQuantity: 9 }),
+          toFrequency(_10, { agent, entityBase, baseQuantity: 10 }),
+          sum("celkem")
+        ),
+        deduce(
+          last(_8),
+          _9,
+          last(_10),
+          sum("celkem")
+        ),
+        ctorRate(agent)
+      )
+    },
+    druheKolo: {
+      deductionTree: to(
+        commonSense("nejmen\u0161\xED po\u010Det 10-bodov\xFDch plat\xED pro po\u010Dty (0,5,5) v po\u0159ad\xED (8-bodov\xFDch, 9-bodov\xFDch, 10-bodov\xFDch)"),
+        commonSense("ostatn\xED \u0159e\u0161en\xED z\xEDsk\xE1me zvy\u0161ov\xE1n\xEDm po\u010Dtu 10-bodov\xFDch a p\u0159esunem po\u010Dtu z 9-bodov\xFDch k 8-bodov\xFDm"),
+        commonSense("(0,5,5)"),
+        commonSense("(1,3,6)"),
+        commonSense("(2,1,7)"),
+        tuple("po\u010Dty 9-bodov\xFDch", [5, 3, 1].map((d) => cont("9-bodov\xFDch", d, entity3)))
       )
     }
   };

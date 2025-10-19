@@ -25,11 +25,14 @@ K zobrazení strukturovaného řešení slovních úloh si stáhněte *.tldr sou
 ```js
 view(download(async () => {  
   return new Blob([JSON.stringify(data)], { type: "application/tldr" });
-}, `${observable.params.code}.tldr`, "Dedukční stromy"));
+}, `${observable.params.code}.tldr`, "Pouze dedukční stromy"));
 
+```
+
+```js
 view(download(async () => {  
   return new Blob([JSON.stringify(extendedData)], { type: "application/tldr" });
-}, `${observable.params.code}.tldr`, "Zadaní, dedukční stromy, ChatGTP prompts."));
+}, `${observable.params.code}.tldr`, "Zadaní a dedukční stromy."));
 ```
 
 2. Otevři [tldraw.com](https://www.tldraw.com)

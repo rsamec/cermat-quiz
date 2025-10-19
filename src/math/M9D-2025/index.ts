@@ -1,5 +1,5 @@
-import { commonSense, compRatio, cont, ctor, ctorRatios, ctorUnit, nthPart, rate, ratio, ratios, ctorLinearEquation, ctorOption, sum, contLength, dimensionEntity, comp, ctorComplement, evalExprAsCont, pythagoras, alligation, compRelativePercent, ctorDifference, compRelative, ctorRate, triangleArea, doubleProduct, cubeArea, cubeVolume, evalFormulaAsCont, formulaRegistry } from "../../components/math";
-import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
+import { commonSense, compRatio, cont, ctor, ctorRatios, ctorUnit, nthPart, rate, ratio, ratios, ctorLinearEquation, ctorOption, sum, contLength, dimensionEntity, comp, ctorComplement, evalExprAsCont, pythagoras, compRelativePercent, ctorDifference, compRelative, ctorRate, triangleArea, doubleProduct, cubeArea, cubeVolume, evalFormulaAsCont, formulaRegistry, tuple } from "../../components/math";
+import { createLazyMap, deduce, last, to, toCont, toFrequency } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   1: () => stuha(),
@@ -9,6 +9,8 @@ export default createLazyMap({
   6.3: () => roboti().doba,
   8.1: () => ctverec().porovnani,
   8.2: () => ctverec().obvod,
+  7.1: () => soutez().prvniKolo,
+  7.2: () => soutez().druheKolo,
   12: () => krychle(),
   13: () => vlak(),
   14: () => brhlikLesni(),
@@ -117,19 +119,58 @@ function roboti() {
   }
 }
 function soutez() {
+  const entityBase = { entity: "body" }
   const entity = "soutěžící"
   const agent = "soutěž"
+
+
   const celkem = cont(agent, 10, entity);
+  const _8vs10 = comp("8-bodových", "10-bodových", - 1, entity)
+
+  const _9 = cont("9-bodových", 5, entity);
+  const _8 = deduce(
+    deduce(
+      celkem,
+      _9,
+      ctorDifference("8-bodových a 10-bodových dohromady")
+    ),
+    _8vs10,
+    ctor("comp-part-eq")
+  );
+
+  const _10 = deduce(
+    last(_8),
+    _8vs10
+  )
   return {
-    deductionTree:
-
-      deduce(
-        cont("průměr", 9.5, "body"),
-        cont("8 bodů", 8, "body"),
-        cont("10 bodů", 10, "body"),
-        alligation("poměr")
-
+    prvniKolo: {
+      deductionTree: deduce(
+        deduce(
+          toFrequency(_8, { agent, entityBase, baseQuantity: 8 }),
+          toFrequency(_9, { agent, entityBase, baseQuantity: 9 }),
+          toFrequency(_10, { agent, entityBase, baseQuantity: 10 }),
+          sum("celkem")
+        ),
+        deduce(
+          last(_8),
+          _9,
+          last(_10),
+          sum("celkem")
+        ),
+        ctorRate(agent)
       )
+    },
+    druheKolo: {
+      deductionTree: to(
+        commonSense("nejmenší počet 10-bodových platí pro počty (0,5,5) v pořadí (8-bodových, 9-bodových, 10-bodových)"),
+        commonSense("ostatní řešení získáme zvyšováním počtu 10-bodových a přesunem počtu z 9-bodových k 8-bodovým"),
+        commonSense("(0,5,5)"),
+        commonSense("(1,3,6)"),
+        commonSense("(2,1,7)"),
+        tuple("počty 9-bodových", [5,3,1].map(d => cont('9-bodových', d, entity)))
+        
+      )
+    }
   }
 }
 

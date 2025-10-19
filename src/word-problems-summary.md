@@ -25,7 +25,7 @@ import { parser } from '@lezer/markdown';
 import { getQuizBuilder } from "./utils/parse-utils.js";
 import * as math from "./components/math.js";
 
-const questionsMaxLimit = 50;
+const questionsMaxLimit = 25;
 
 const quizQuestionsMap4 = await FileAttachment(`./data/quiz-math-4.json`).json();
 const quizQuestionsMap6 = await FileAttachment(`./data/quiz-math-6.json`).json();
@@ -121,7 +121,7 @@ const uniquePredicates = new Map([
   ["Část z celku", ["ratio"]],
   ["Část ku části", ["ratios"]],
   ["Stav a změna stavu", ["delta","transfer"]],
-  ["Rozdělování", ["rate","quota"]],
+  ["Rozdělování", ["rate","quota","frequency"]],
   ["Seskupování", ["sum","sum-combine", "product", "product-combine"]],
   ["Úměrnosti", ["proportion"]],
   ["Škálování", ["scale","slace-invert","nth-factor"]],
@@ -359,8 +359,8 @@ const selectedToRender = selected.length > questionsMaxLimit ? selected.filter((
 </div>
 
 ${html`${viewValue != 'links' && selected.length > questionsMaxLimit
-            ? html`<div class="caution" label="Limit - maximální počet otázek">
-              <div>Zobrazeno <b>${selectedToRender.length}</b> z <b>${selected.length} otázek</b></div>
+            ? html`<div class="caution" label="Limit - maximální počet úloh">
+              <div>Zobrazeno <b>${selectedToRender.length}</b> z <b>${selected.length} úloh</b></div>
             <div>`
           :''}`}
 

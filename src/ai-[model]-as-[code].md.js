@@ -5,9 +5,14 @@ import { parseQuiz } from './utils/quiz-parser.js';
 import {readJsonFromFile} from './utils/file.utils.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, normalizeLatex } from './utils/quiz-string-utils.js';
 const {
-  values: { code }
+  values: { 
+    code, model
+ }
 } = parseArgs({
-  options: { code: { type: "string" } }
+  options: { 
+    code: { type: "string"},
+    model: {type: "string"}
+  }
 });
 
 const d = parseCode(code);
@@ -18,7 +23,7 @@ const content = await text(`${baseUrl}/index.md`);
 const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [baseUrl])
 const quiz = parseQuiz(rawContent);
 
-const filePath = path.resolve('./src/data/quiz-answers-detail-gpt-5-mini.json');
+const filePath = path.resolve(`./src/data/quiz-answers-detail-${model}.json`);
 const data = await readJsonFromFile(filePath);
 const answers = data[code];
 const ids = quiz.questions.map(d => d.id);
@@ -64,7 +69,7 @@ details.solutions > summary > h1, h2 {
 </style>
 <div class="caution" label="Řešení může obsahovat chyby">
   Generováno pomocí AI. Doporučujeme kontrolovat důležité informace.
-  <div class="h-stack h-stack--end"><small>gpt-5-mini, poslední aktualizace: 14.09.2025</small></div>
+  <div class="h-stack h-stack--end"><small>${model}</small></div>
 </div>
 
 ${answers == null ? ` <div class="warning" label="Upozornění">
