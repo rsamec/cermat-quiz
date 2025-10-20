@@ -1,25 +1,71 @@
 ---
-title: Rozšířitelnost
+title: Intergrace
 footer: false
 pager: true
 toc: true
+---
+
+
+## Integrace na úrovni dat
+
+Příklady aplikací, která využívají data z banky úloh
+- [Notebook LM](https://notebooklm.google.com/) - vytvaření výukových video, audio a textových materiálů - [více informací](/derived-data/#vyuziti-v-notebook-lm)
+
+Zdroje vloženy jako celé testy
+![alt text](image-1.png)
+Zdroje vloženy za jednotlivé úlohy
+![alt text](image-2.png)
+
+- interaktivní plocha [TLDR Canvas](https://www.tldraw.com/) - umožnuje práci více uživatelů najednou - [více informací](/derived-data/#vyuziti-v-tldr-canvasu)
+
+![alt text](image-3.png)
+![alt text](image-4.png)
+
+---
+
+Příklady aplikace, která využívají přímo [surová data](/inputs) z banky úloh.
+
+- trénovací PWA aplikace [eforms](https://www.eforms.cz)
+
+![alt text](image.png)
+
+- playground [ObservableHQ](https://observablehq.com)
+
+<iframe width="100%" height="300" frameborder="0"
+  src="https://observablehq.com/embed/@rsamec/c9a-2024@428?cells=q6%2Cq15%2Cq18%2Cq25%2Cstyles"></iframe>
+
+<iframe width="100%" height="300" frameborder="0"
+  src="https://observablehq.com/embed/@rsamec/m9c-2024?cells=q9%2Csteps9%2Cq10%2Csteps10"></iframe>
+
 ---
 
 ## iframe vložení
 
 vložit do www stránek lze pomocí elementu iframe.
 
----
 <iframe width="100%" height="200" frameborder="0" src="https://www.cermatdata.cz/form-M9A-2024"></iframe>
 
 ```html run=false
 <iframe width="100%" height="200" frameborder="0" src="https://www.cermatdata.cz/form-M9A-2024"></iframe>
 ```
-
+---
 ## javascript module
 
-vložit do www stránek pomocí javascript module
+vložit do www stránek pomocí javascript module a renderování jednotlivých úloh
 
+- vratí html celého testu (metoda **renderQuiz**)
+- umožňuje vracet základní informace o úlohách a vracet html pro jednotlivé úlohy (metody **loadQuiz**, **parseQuiz**)
+
+<div class="tip" label="Přístupnost">
+
+  Výsledné html je **„čisté HTML“**, resp. používá pouze HTML, bez přímého vkládání CSS nebo JavaScriptu.
+
+  Je **přehledné, validní se správnou sémantikou**, resp. používá vhodné HTML prvky podle jejich významu. 
+</div>
+
+
+
+### Html celého testu (renderQuiz metoda)
 
 <script type="module">
 import {renderQuiz} from "https://www.cermatdata.cz/components/quiz-html.js";
@@ -27,7 +73,7 @@ const fragment = await renderQuiz('M9A-2024',[1,2,7]);
 document.querySelector("#quiz").append(fragment);
 </script>
 
----
+
 <div id="quiz" class="quiz-placeholder"></div>
 
 ```html run=false
@@ -45,10 +91,8 @@ document.querySelector("#quiz").append(fragment);
 ```
 ---
 
-## API
+### Základní informace o úlohách a html jednotlivých úloh
 
-Tvořte vlastní aplikace a využijte API na načtení úloh z data banky.
-- @TODO - add api description
 
 ```html run=false
 <script type="module">
@@ -86,17 +130,11 @@ const secondQuestionContent = quizProvider.content([2]) // second question conte
 ```
 ---
 
-## příklady aplikací
-
-Jednoduchá aplikace na vyplnění testu
-<iframe width="100%" height="300" frameborder="0" src="https://stackblitz.com/edit/vitejs-vite-jaf9wowd?embed=1&file=src%2Fquiz.jsx"></iframe>
-
-
-Databanku úloh využívá např. trénovací PWA aplikace [eforms](https://www.eforms.cz).
-
----
-
 ## vlastní styly
+
+<div class="tip" label="Vlastní vzhled">
+Výsledné html lze upravit pomocí vlastních stylů.
+</div>
 
 ```js
 const theme = view(Inputs.button([
@@ -301,16 +339,3 @@ document.querySelector("#quiz-with-custom-style").append(fragment);
   }
 </style>
 ```
----
-
-## playground
-
-Příklady využití databanky úloh v prostředí [ObservableHQ](https://observablehq.com).
-
-<iframe width="100%" height="300" frameborder="0"
-  src="https://observablehq.com/embed/@rsamec/c9a-2024@428?cells=q6%2Cq15%2Cq18%2Cq25%2Cstyles"></iframe>
-
-<iframe width="100%" height="300" frameborder="0"
-  src="https://observablehq.com/embed/@rsamec/m9c-2024?cells=q9%2Csteps9%2Cq10%2Csteps10"></iframe>
-
-

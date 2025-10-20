@@ -104,3 +104,11 @@ const filteredData = pdfsData.filter(d =>  parseFileKey(d.key).pageSize === page
 </details>
 
 
+<details>
+  <summary>
+    Postupy řešení slovních úloh
+  </summary>
+  <ul>
+    ${quizesByYear.flatMap(([year,codes]) => codes.filter(d => parseCode(d).subject == "math")).map(code => html`<li><a href=raw-${code}>${formatShortCode(code)}</a></li>`)}
+  </ul>
+</details>

@@ -9,35 +9,37 @@ import { baseDomain, baseDomainPublic, formatSubject, formatPeriod, formatShortC
 import { quizes } from "./utils/quiz-utils.js";
 ```
 
-# Datové formáty
+# Základní zdrojová data
 
-Databanka úloh výchází z oficiálních cermat úloh. Použité formáty dat k testovým úlohám.
-- markdown - testové zadání
-- json - meta data - klíč správných řešení, body, ...
+Banka úloh výchází z oficiálních cermat úloh. Použité formáty dat k testovým úlohám.
+- **markdown** - testové zadání
+- **json** - meta data - klíč správných řešení, body, ...
+
 
 <div class="caution" label="Upozornění">
   Využití dat je limitováno dodržením pravidel <a href="https://prijimacky.cermat.cz/files/files/CZVV_pravidla-vyuziti-webstrankyn.pdf">CERMAT licence</a>.
 </div>
-<!-- 
-Pro postupy řešení matematických úloh (ve formátu json)
-- slovní úlohy - dedukční stromy - *připravováno*
-- výrazy a rovnice - kroky z úpravami výrazů a rovnic
-- konstruční úlohy - kroky z konstrukcí - *připravováno* -->
+
+Navíc jsou k dispozici postupy řešení matematických úloh (vše ve formátu **json**)
+- **slovní úlohy** - dedukční stromy
+- **výrazy a rovnice** - kroky s úpravami výrazů a rovnic
+- **konstruční úlohy** - kroky konstrukce geometrických útvarů
 
 
-## Seznam dat v bance úloh
+## Další formáty dat
 
-${quizes.map(({subject, period, codes}) => html`<h3>${formatSubject(subject)} ${formatPeriod(period)}</h3> <ul>${
-  codes.map(code => html`<li>${formatShortCode(code)}<ul><li><a class="h-stack h-stack--s h-stack-items--center" href="${baseDomainPublic}/${subject}/${period}/${code}/index.md"><i class="fa-brands fa-markdown"></i>testové zadání</a></li><li><a class="h-stack h-stack--s h-stack-items--center" href="${baseDomain}/generated/${code}.json"><i class="fa-brands fa-js"></i>metadata</a></li>${false ? html`<li><a download class="h-stack h-stack--s h-stack-items--center" href="/data/math-answers-${code}.json"><i class="fa-brands fa-js"></i>výrazy a rovnice</a></li>`:''}</ul></li>`
-)}</ul>`)}
+Na základě zdrojových dat jsou generovány další možné formáty dat
+- **schema.json** - generovaná struktura očekávaných odpovědí na základě meta dat - vhodné pro generování formuláře k vyplnění odpovědí, případně jako struktura pro vrácení odpovědi AI
+- kompaktní zadání pro tisk v PDF
+  - **pdf** v různých velikostech - [více informací](/print)
+- jednotlivé úlohy pro zobrazení v prohlížeči
+  - **html** - [více informací](/embedding#javascript-module)
+- postupy řešení slovních úloh
+  - **markdown** - heslovité řešení vhodné pro LLM modely umělé inteligence - [více informací](/derived-data/#vyuziti-v-notebook-lm)
+  - **tldr** - kolaborativní interaktivní canvas - [více informací](/derived-data/#vyuziti-v-tldr-canvasu)
 
 
-<div class="tip" label="Hlášení chyb">
-  Databanka je spravována na <a href="https://github.com/rsamec/cermat"><i class="fa-brands fa-github"></i> github</a>.
-  V případě že narazíte na chybu v úloze, opravte chybu svépomocí <a href="https://github.com/rsamec/cermat/pulls" target="_blank">PR</a> nebo nahlaste <a href="https://github.com/rsamec/cermat/issues">chybu</>.
-</div>
-
-## Příklad zadání (markdown)
+## Příklad zadání
 
 ```md
 
@@ -62,8 +64,7 @@ VÝCHOZÍ TEXT K ÚLOZE 4
 
 ```
 
-
-## Příklad metadata (json)
+## Příklad metadata
 
 ```ts run = false
   group({
@@ -89,4 +90,288 @@ VÝCHOZÍ TEXT K ÚLOZE 4
   })
 ```
 
-[Více podrobnosti k datovým formátům](https://github.com/rsamec/cermat)
+## Příklad struktura odpovědí
+
+```json
+{
+  
+      "type": "object",
+      "properties": {
+        "1": {
+          "type": "number"
+        },
+        "2": {
+          "type": "number"
+        },
+        "10": {
+          "type": "string",
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        "12": {
+          "type": "string",
+          "enum": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ]
+        },
+        "13": {
+          "$ref": "#/definitions/M9D-2025_properties_12"
+        },
+        "14": {
+          "$ref": "#/definitions/M9D-2025_properties_12"
+        },
+        "3.1": {
+          "type": "string",
+          "description": "do not use latex formating, use simple math string, for fraction use slash symbol, for powers use caret symbol"
+        },
+        "3.2": {
+          "type": "string",
+          "description": "do not use latex formating, use simple math string, for fraction use slash symbol, for powers use caret symbol"
+        },    
+        "6.1": {
+          "type": "string",
+          "description": "use format {number}:{number}"
+        },
+        "6.2": {
+          "type": "string",
+          "description": "use format {number}:{number}"
+        },
+        "6.3": {
+          "type": "number"
+        },
+        "7.1": {
+          "type": "number"
+        },
+        "7.2": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 3
+        },
+        "8.1": {
+          "type": "number"
+        },
+        "8.2": {
+          "type": "number"
+        },
+        "9.1": {
+          "type": "string",
+          "enum": [
+            0,
+            1
+          ]
+        },
+}
+```
+
+## Příklad dedukční strom
+
+```json
+{
+ "1": {
+    "deductionTree": {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "kind": "cont",
+                  "agent": "trasa",
+                  "quantity": 2.7,
+                  "entity": "délka",
+                  "unit": "km"
+                },
+                {
+                  "kind": "unit",
+                  "unit": "cm"
+                },
+                {
+                  "kind": "cont",
+                  "agent": "trasa",
+                  "quantity": 270000,
+                  "entity": "délka",
+                  "unit": "cm"
+                }
+              ]
+            },
+            {
+              "kind": "rate",
+              "agent": "Naďa",
+              "quantity": 60,
+              "baseQuantity": 1,
+              "entity": {
+                "entity": "délka",
+                "unit": "cm"
+              },
+              "entityBase": {
+                "entity": "krok"
+              }
+            },
+            {
+              "kind": "cont",
+              "agent": "Naďa",
+              "quantity": 4500,
+              "entity": "krok"
+            }
+          ]
+        },
+        {
+          "children": [
+            {
+              "kind": "rate",
+              "agent": "Adam",
+              "quantity": 75,
+              "baseQuantity": 1,
+              "entity": {
+                "entity": "délka",
+                "unit": "cm"
+              },
+              "entityBase": {
+                "entity": "krok"
+              }
+            },
+            {
+              "kind": "cont",
+              "agent": "trasa",
+              "quantity": 270000,
+              "entity": "délka",
+              "unit": "cm"
+            },
+            {
+              "kind": "cont",
+              "agent": "Adam",
+              "quantity": 3600,
+              "entity": "krok"
+            }
+          ]
+        },
+        {
+          "kind": "comp"
+        },
+        {
+          "kind": "comp",
+          "agentB": "Adam",
+          "agentA": "Naďa",
+          "quantity": 900,
+          "entity": "krok"
+        }
+      ]
+    }
+  },
+}
+```
+
+### Příklad výrazy a rovnice
+
+```json
+{
+  "1": {
+    "header": "1 Vypočtěte:",
+    "mathContent": "\\sqrt{\\left({-5}\\right)^{2}}-3^2= \n",
+    "results": [
+      {
+        "Name": "Vyhodnotit",
+        "Answer": "$-4$",
+        "TemplateSteps": [
+          {
+            "Name": "Postup řešení",
+            "Steps": [
+              {
+                "Hint": "Proveďte výpočet.",
+                "Step": "Výpočtem $-5$ na $2$ získáte $25$.",
+                "Expression": "$$\\sqrt{25}-3^{2}$$ "
+              },
+              {
+                "Hint": null,
+                "Step": "Vypočítejte druhou odmocninu z $25$ a dostanete $5$.",
+                "Expression": "$$5-3^{2}$$ "
+              },
+              {
+                "Hint": "Proveďte výpočet.",
+                "Step": "Výpočtem $3$ na $2$ získáte $9$.",
+                "Expression": "$$5-9$$ "
+              },
+              {
+                "Hint": "Odečtěte jeden člen od druhého.",
+                "Step": "Odečtěte $9$ od $5$ a dostanete $-4$.",
+                "Expression": "$$-4$$ "
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+}
+```
+## Příklad konstrukční úlohy
+
+```json
+{
+    "9": {
+    "header": "9 Sestrojte zbývající vrcholy B, C a D lichoběžníku ABCD, označte je písmeny a lichoběžník narýsujte.",
+    "results": [
+      {
+        "Name": "Sestrojit",
+        "TemplateSteps": [
+          {
+            "Name": "Postup řešení",
+            "Steps": [
+              {
+                "Step": "Sestroj přímku AS",
+                "Expression": "$ \\mapsto AS $"
+              },
+              {
+                "Step": "Označ bod C jako průsečík kružnice k a přímky AS",
+                "Expression": "$ C;C\\in k \\cap \\mapsto AS $"
+              },
+              {
+                "Step": "",
+                "Expression": "$ \\mapsto CE $"
+              },
+              {
+                "Step": "",
+                "Expression": "$ B;B\\in \\mapsto CE; |CE|=|BE| $"
+              },
+              {
+                "Step": "",
+                "Expression": "$ \\mapsto BA $"
+              },
+              {
+                "Step": "",
+                "Expression": "$ \\mapsto A; \\mapsto A \\perp \\mapsto BA $"
+              },
+              {
+                "Step": "",
+                "Expression": "$ D;D \\in k  \\cap \\mapsto A $"
+              },
+              {
+                "Step": "",
+                "Expression": "$ \\square ABCD $"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+}
+```
+
+## Seznam dat v bance úloh
+
+
+${quizes.map(({subject, period, codes}) => html`<h3>${formatSubject(subject)} ${formatPeriod(period)}</h3> <ul>${
+  codes.map(code => html`<li>${formatShortCode(code)}<ul><li><a class="h-stack h-stack--s h-stack-items--center" href="${baseDomainPublic}/${subject}/${period}/${code}/index.md"><i class="fa-brands fa-markdown"></i>testové zadání</a></li><li><a class="h-stack h-stack--s h-stack-items--center" href="${baseDomain}/generated/${code}.json"><i class="fa-brands fa-js"></i>metadata</a></li><li><a class="h-stack h-stack--s h-stack-items--center"  href="/data/arch-${code}.schema.json"><i class="fa-brands fa-js"></i>schéma</a></li>${subject =='math' ? html`<li><a download class="h-stack h-stack--s h-stack-items--center" href="/data/word-problems-${code}.json"><i class="fa-brands fa-js"></i>dedukční strom</a></li><li><a download class="h-stack h-stack--s h-stack-items--center" href="/data/math-answers-${code}.json"><i class="fa-brands fa-js"></i>výrazy a rovnice</a></li><li><a download class="h-stack h-stack--s h-stack-items--center" href="/data/math-geometry-${code}.json"><i class="fa-brands fa-js"></i>konstruční úlohye</a></li>`:''}</ul></li>`
+)}</ul>`)}
