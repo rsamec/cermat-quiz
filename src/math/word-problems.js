@@ -10527,66 +10527,6 @@ function ctverce() {
   };
 }
 
-// src/math/M9I-2017/index.ts
-var M9I_2017_default = createLazyMap({
-  11.1: () => kone().a,
-  11.2: () => kone().b,
-  11.3: () => kone().c
-});
-function kone() {
-  const kone2 = "kon\u011B";
-  const zasoby = "z\xE1soby ovsa";
-  const dny = "doba, po kterou vydr\u017E\xED z\xE1soby";
-  const dnyEntity = "dny";
-  const nase = "na\u0161e";
-  const sousedovy = "sousedovy";
-  const zasobyPomer = compRelative(sousedovy, nase, 1 / 2);
-  const konePomer = compRatio(sousedovy, nase, 2);
-  const naseZasoby = cont(nase, 12, dnyEntity);
-  return {
-    a: {
-      deductionTree: deduce(
-        deduce(
-          deduce(
-            zasobyPomer,
-            proportion(false, [zasoby, dny])
-          ),
-          naseZasoby
-        ),
-        ctorBooleanOption(24)
-      )
-    },
-    b: {
-      deductionTree: deduce(
-        deduce(
-          deduce(
-            konePomer,
-            proportion(true, [dny, kone2])
-          ),
-          naseZasoby
-        ),
-        ctorBooleanOption(6)
-      )
-    },
-    c: {
-      deductionTree: deduce(
-        deduce(
-          deduce(
-            deduce(
-              zasobyPomer,
-              proportion(false, [zasoby, dny])
-            ),
-            naseZasoby
-          ),
-          konePomer,
-          proportion(true, [dny, kone2])
-        ),
-        ctorBooleanOption(9)
-      )
-    }
-  };
-}
-
 // src/math/M9A-2023/index.ts
 var M9A_2023_default = createLazyMap({
   1: () => dobaFilmu({ input: { celkovaDobaFilmuVHodina: 1 } }),
@@ -15824,7 +15764,7 @@ var word_problems_default = createLazyMap({
   "M7A-2024": () => M7A_2024_default,
   "M7A-2025": () => M7A_2025_default,
   "M7B-2025": () => M7B_2025_default,
-  "M9I-2017": () => M9I_2017_default,
+  // "M9I-2017": () => M9I_2017,
   "M9A-2023": () => M9A_2023_default,
   "M9B-2023": () => M9B_2023_default,
   "M9C-2023": () => M9C_2023_default,

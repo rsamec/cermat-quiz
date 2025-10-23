@@ -12,7 +12,7 @@ import M5A_2024 from './M5A-2024/index';
 import M5A_2025 from './M5A-2025/index';
 import M5B_2025 from './M5B-2025/index';
 
-import M9I_2017 from './M9I-2017/index';
+// import M9I_2017 from './M9I-2017/index';
 
 import M9A_2023 from './M9A-2023/index';
 import M9B_2023 from './M9B-2023/index';
@@ -51,7 +51,7 @@ export default createLazyMap({
   "M7A-2025": () => M7A_2025,
   "M7B-2025": () => M7B_2025,
 
-  "M9I-2017": () => M9I_2017,
+  // "M9I-2017": () => M9I_2017,
 
   "M9A-2023": () => M9A_2023,
   "M9B-2023": () => M9B_2023,

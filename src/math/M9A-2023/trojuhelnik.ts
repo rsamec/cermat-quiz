@@ -1,5 +1,5 @@
 
-import { commonSense, comp, cont, ctor, sum, productCombine, pattern } from "../../components/math";
+import { commonSense, comp, cont, ctor, sum, productCombine } from "../../components/math";
 import { deduce, last, to } from "../../utils/deduce-utils";
 
 
