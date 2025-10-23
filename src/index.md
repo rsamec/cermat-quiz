@@ -1,5 +1,6 @@
 ---
 toc: false
+style: /assets/css/carousel.css
 ---
 <div class="hero">
   <h1>Cermat úlohy</h1>
@@ -12,7 +13,7 @@ toc: false
 
 ```js
 import { categories} from './utils/quiz-utils.js';
-import { formatShortCode, formatSubject, formatPeriod, parseCode } from './utils/quiz-string-utils.js';
+import { formatShortCode, formatSubject, formatPeriod, parseCode, baseMediaPublic } from './utils/quiz-string-utils.js';
 const quizLangCategories = await FileAttachment("./data/quiz-lang-categories.json").json();
 const quizGeneratedCategories = await FileAttachment("./data/quiz-categories.json").json();
 const quizCategories = ({
@@ -48,8 +49,19 @@ const subjectWithPeriods = {
 function codesBy({subject, period}){
   return Object.keys(Object.groupBy(quizQuestions.filter((d) => (subject == null || d.subject === subject) && (period == null || d.period === period)).sort((f,s) => s.year - f.year), ({code}) => code))
 }
-```
+const code = "M9D-2025";
+const notebookVideosData = await FileAttachment("./data/notebook-videos.json").json();
+const notebookVideos = notebookVideosData[code] ?? [];
 
+
+const videos = notebookVideos.map(d => {  
+  return {
+    video: `${baseMediaPublic}/${code}/${d.fileName}`,
+    name: `Úloha ${d.id}`,
+    id: d.id,
+  }
+})
+```
 
 <!-- Cards with big numbers -->
 
@@ -77,8 +89,32 @@ function codesBy({subject, period}){
 
 ---
 
+## Příklad - přijímačky matika 2025 - 2. náhradní termín
+<div class="carousel carousel--scroll-markers carousel--inert">
+${videos.map(({ video, name, id }, i) => html`<div class="carousel__slide" data-label=a${i}>
+    <figure class="parallax-item" role="tabpanel">      
+      <video src=${video} muted loop controls></video>
+     <figcaption>
+     <h2>${name}</h2>     
+     </figcaption> </figure>
+  </div>`)}
+</div>
+
+
+<div style="height:40px"></div>
+
+<div class="tip" label="Vlastní výukové materiály (videa, audia, pracovní listy)">
+  Videa výše jsou vytvořena pomocí aplikace <a href="https://notebooklm.google.com/" target="_blank">NotebookLM</a> na základě <a href="/word-problems-M9D-2025">těchto dat</a> z banky úloh. 
+
+  Založeno na myšlence, že se AI předává se zadáním i řešení úlohy, resp. **heslovitý strukturovaný postup** i s potřebnou aritmetikou, což vede k **miminalizaci chyb**.
+  
+  Pokud chcete vytvořit obdobné **vyukové materiály na míru** na pár kliků či prozkoumat další možnosti integrace <a href="/embedding">více informací</a>.
+</div>
+
+---
+
 <div class="grid grid-cols-4" style="grid-auto-rows: auto;"> 
-  <div class="card">
+  <div class="card grow">
     <h1><strong>Strukturovná data</strong></h1>
     <div class="v-stack v-stack--m">
       <span>Databanka úloh výchází z oficiálních cermat úloh. Strukturovaná data zadání a řešení.</span>
@@ -100,6 +136,13 @@ function codesBy({subject, period}){
     </div>
   </div> 
   <div class="card grow">
+    <h1><strong>Integrace</strong></h1>
+    <div class="v-stack v-stack--m">
+      <span>Možnost vložit do vlastních školních stránek. Vytvořit si vlastní grafickou podobu testu. Stavět vlastní aplikace.</span>
+      <a href="/embedding">Více informací</a>
+    </div>
+  </div>
+  <!-- <div class="card grow">
     <h1><strong>AI a automatizace</strong></h1>
      <div class="v-stack v-stack--m">
       <span>AI jako nástroj né jako řešení. V případě nouze použij ChatGTP tlačítko. Automatické řešení úloh pomocí AI.</span>
@@ -112,16 +155,7 @@ function codesBy({subject, period}){
       <span>Naklikej si vlastní porci úloh. Výsledek si vytiskni nebo využij na online trénování.</span>
       <a href="/builder">Více informací</a>
     </div>
-  </div>
-  <!-- <div class="card">
-    <h1><strong>Přepoužitelnost</strong></h1>
-    <div class="v-stack v-stack--m">
-      <span>Možnost vložit do vlastních školních stránek. Vytvořit si vlastní grafickou podobu testu. Stavět vlastní aplikace.</span>
-      <a href="/embedding">Více informací</a>
-    </div>
   </div> -->
-
-
 </div>
 
 

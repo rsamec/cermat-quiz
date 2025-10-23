@@ -1,6 +1,7 @@
 export const baseDomain = "https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main";
 //export const baseDomain = 'https://www.eforms.cz';
 export const baseDomainPublic = `${baseDomain}/public`;
+export const baseMediaPublic = 'https://media.cermatdata.cz'
 
 export function formatPdfFileName({ pageSize, columnsCount, orientation }) {
   return `${pageSize}-sloupce-${columnsCount}${orientation == 'landscape' ? '-landscape' : ''}`

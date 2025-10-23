@@ -1,0 +1,115 @@
+
+.carousel {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(250px,auto);    
+    
+    gap: 10px;
+    
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    anchor-name: --carousel;
+    webkit-scrollbar-width: none;/* scrollbar-width: none; */
+
+    >.carousel__slide {
+        scroll-snap-align: center;
+    }
+}
+
+/* Tablet: side navigation */
+@media (min-width: 768px) {
+  .carousel {
+    grid-auto-columns: minmax(350px,auto);    
+  }
+}
+/* Desktop: dedicated widget sidebar */
+@media (min-width: 1024px) {
+  .carousel {
+    grid-auto-columns: minmax(450px,auto);    
+  }
+}
+
+
+.carousel--scroll-buttons {
+  &::scroll-button(*) {
+    position: fixed;
+    position-anchor: --carousel;
+    position-visibility: always;    
+    font-family: "FontAwesome";
+    /* border-radius: 1e5px; */
+    border: 1px solid var(--theme-foreground-muted);
+    /* background-color: var(--theme-foreground); */
+    padding: 5px;
+    inline-size: 44px;
+  }
+
+  &::scroll-button(right) {
+    /* position-area: inline-end center; */
+    position-area: block-end span-inline-start;
+    content: '\f061' / 'Next';
+        
+  }
+
+  &::scroll-button(left) {
+    /* position-area: inline-start center; */
+    position-area: block-end span-inline-end;
+    content: '\f060' / 'Previous';
+  }
+}
+
+.carousel--scroll-markers {
+  scroll-marker-group: after;
+
+  &::scroll-marker-group {
+    position: fixed;
+    position-anchor: --carousel;
+    position-area: block-end;
+    position-visibility: always;
+    margin: 10px;
+
+    display: grid;
+    grid-auto-columns: 20px;
+    grid-auto-flow: column;
+    gap: 20px;
+  }
+
+  > .carousel__slide {
+    &::scroll-marker {
+      content: '' / attr(data-label);
+    }
+
+    &::scroll-marker:target-current {
+      background: var(--accent);
+    }
+  }
+}
+
+.carousel--scroll-markers {
+ 
+    >.carousel__slide {
+        &::scroll-marker {
+            cursor: pointer;
+            aspect-ratio: 1;
+            border-radius: 10px;
+            border: 1px solid var(--theme-foreground);
+        }
+
+        &::scroll-marker:target-current {
+            background: var(--theme-foreground);
+        }
+    }
+}
+
+.carousel--inert {
+  > .carousel__slide {
+    container-type: scroll-state;
+
+    > figure {
+      @container not scroll-state(snapped) {
+        interactivity: inert;
+        opacity: .25;
+      }
+    }
+  }
+}

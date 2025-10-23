@@ -32,6 +32,27 @@ title: ${formatCodeAlt(code)}
 source: české statní zkoušky
 toc: false
 ---
+
+
+Heslovitý strukturovaný postup řešení úlohy je instrukcí pro AI, jak přeformulovat postup řešení do vhodné srozumitelnější podoby.
+
+Proč nestačí poslat jen zadání úlohy? 
+- přesnější instrukce, bohatší context -> kvalitnější výstup
+- AI = **statistické rozpoznávání vzorů** - využijeme této silné stránky AI, a nepředstíráme, že **AI vymýšlí řešení** - to v principu neumí
+
+
+<div class="tip" label="Didaktika">
+Specifikujte ve vybraném nástroji jaký výsledek očekáváte
+
+- **dle obsahu** - stručné, do hloubky, začátečník, pokročilý, atd.
+- **dle formy** - video, audio, text, atd.
+
+Doporučujeme sestavovat prompt podle následujích doporučení. <a href="https://cloud.google.com/solutions/learnlm?hl=en" target="_blank">Prompt guide</a>
+</div>
+
+<a download class="h-stack h-stack--s" href="/data/raw-${code}.md"  title="Řešení slovních úloh"><i class="fa fa-download"></i><span>stáhnout</span><a>
+
+## Náhled
 \`\`\`md
 ${ids.map(id => {
   const values = (wordProblem?.[id] != null)

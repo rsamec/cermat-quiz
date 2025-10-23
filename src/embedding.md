@@ -1,5 +1,5 @@
 ---
-title: Intergrace
+title: Integrace
 footer: false
 pager: true
 toc: true

@@ -33,14 +33,14 @@ const audios = ['M5A-2024', 'M5A-2023', 'M7A-2024', 'M7A-2023', 'M9A-2025', 'M9B
           return html`<div class="h-stack h-stack--m h-stack-items--center h-stack--wrap">
               <a class="h-stack h-stack--s" href="./form-${code}"><i class="fas fa-money-check"></i><span>${formatVersion({order,period})}</span></a>
               <a class="h-stack h-stack--s" href="./print-${code}"><i class="fa-solid fa-print"></i><span>tisk</span></a>
-              <a class="h-stack h-stack--s" href="./arch-${code}"><i class="fa-solid fa-key"></i>klíč</a>                            
+              <a class="h-stack h-stack--s" href="./arch-${code}"><i class="fa-solid fa-key"></i>klíč</a>
+              ${subject === "math" ? html`<a class="h-stack h-stack--s" href="./solution-${code}"><i class="fa-solid fa-mug-hot"></i>rozbor</a>`:''}
               ${subject === "math" ? html`
-              <button  popovertarget=popover-${code}>Rozbor<i class="fas fa-caret-down"></i></button>
+              <button  popovertarget=popover-${code}>Data<i class="fas fa-caret-down"></i></button>
               <div id=popover-${code} class="menu-items" popover>
                 <div class="v-stack v-stack--m">
-                  <a class="h-stack h-stack--s" title="Rozbor úloh - chat" href="./solution-${code}"><i class="fa-solid fa-mug-hot"></i><span>Rozbor úloh - chat</span></a>
                   <a class="h-stack h-stack--s" href="word-problems-${code}" title="Řešení slovních úloh (markdown)"><i class="fa fa-brands fa-markdown"></i><span>Rozbor úloh - markdown</span></a>
-                  <a class="h-stack h-stack--s" href="word-problems-tldr-${code}"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-comment-nodes"></i><span>Rozbor úloh - TLDR</span><a>
+                  <a download class="h-stack h-stack--s" href="/data/word-problems-${code}.tldr"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-comment-nodes"></i><span>Rozbor úloh - TLDR</span><a>
                 </div>
               </div>
               <button  popovertarget=popover-ai-${code}>AI <i class="fas fa-caret-down"></i></button>
