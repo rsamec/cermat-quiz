@@ -148,7 +148,7 @@ const videos = notebookVideos.map(d => {
           <span>kroků řešení</span>
         </div>
       </div>
-      <a class="h-stack h-stack--xs" href="./math">Výrazi a rovnice<span><span></a>
+      <a class="h-stack h-stack--xs" href="./math">Výrazy a rovnice<span><span></a>
     </div>
   </div>
 
