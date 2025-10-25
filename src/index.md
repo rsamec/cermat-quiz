@@ -1,5 +1,5 @@
 ---
-toc: false
+toc: true
 style: /assets/css/carousel.css
 ---
 <div class="hero">
@@ -16,6 +16,19 @@ import { categories} from './utils/quiz-utils.js';
 import { formatShortCode, formatSubject, formatPeriod, parseCode, baseMediaPublic } from './utils/quiz-string-utils.js';
 const quizLangCategories = await FileAttachment("./data/quiz-lang-categories.json").json();
 const quizGeneratedCategories = await FileAttachment("./data/quiz-categories.json").json();
+const mathMetricsData = await FileAttachment("./data/math-metrics.json").json();
+
+const mathMetricsCount = mathMetricsData.reduce((out,d) => {
+  out.wordProblem.count+= d.wordProblem?.count ?? 0
+  out.wordProblem.steps+= d.wordProblem?.steps ?? 0
+  out.geometry.count+= d.geometry?.count ?? 0
+  out.geometry.steps+= d.geometry?.steps ?? 0
+  out.expression.count+= d.expression?.count ?? 0
+  out.expression.steps+= d.expression?.steps ?? 0
+  return out;
+},{wordProblem:{count: 0, steps:0}, geometry:{count:0, steps:0}, expression:{count:0, steps:0}});
+
+
 const quizCategories = ({
   ...quizLangCategories,
   ...quizGeneratedCategories
@@ -63,7 +76,7 @@ const videos = notebookVideos.map(d => {
 })
 ```
 
-<!-- Cards with big numbers -->
+## Zadání úloh
 
 <div class="grid grid-cols-4" style="grid-auto-rows: auto;">
  ${subjects.map(subject => html`<div class="card">
@@ -87,9 +100,66 @@ const videos = notebookVideos.map(d => {
   </div>`)}
 </div>
 
----
+## Řešení úloh
 
-## Příklad - přijímačky matika 2025 - 2. náhradní termín
+<div class="grid grid-cols-4" style="grid-auto-rows: auto;">
+  <div class="card">
+    <h2><strong>Vyřešené slovní úlohy</strong></h2>
+    <div class="v-stack v-stack--s">
+      <div class="h-stack h-stack--l">
+        <div>
+          <span class="big">${mathMetricsCount.wordProblem.count}</span>
+          <span>úloh</span>
+        </div>
+        <div>
+          <span class="big">${mathMetricsCount.wordProblem.steps}</span>
+          <span>kroků řešení</span>
+        </div>
+      </div>
+      <a class="h-stack h-stack--xs" href="./word-problems-summary">Slovní úlohy<span><span></a>
+    </div>
+  </div>
+  <div class="card">
+    <h2><strong>Vyřešené konstrukční úlohy</strong></h2>
+    <div class="v-stack v-stack--s">
+      <div class="h-stack h-stack--l">
+        <div>
+          <span class="big">${mathMetricsCount.geometry.count}</span>
+          <span>úloh</span>
+        </div>
+        <div>
+          <span class="big">${mathMetricsCount.geometry.steps}</span>
+          <span>kroků řešení</span>
+        </div>
+      </div>
+      <a class="h-stack h-stack--xs" href="./math">Konstrukční úlohy<span><span></a>
+    </div>
+  </div>
+  <div class="card">
+    <h2><strong>Vyřešené výrazy a rovnice</strong></h2>
+    <div class="v-stack v-stack--s">
+    <div class="h-stack h-stack--l">
+        <div>
+          <span class="big">${mathMetricsCount.expression.count}</span>
+          <span>úloh</span>
+        </div>
+        <div>
+          <span class="big">${mathMetricsCount.expression.steps}</span>
+          <span>kroků řešení</span>
+        </div>
+      </div>
+      <a class="h-stack h-stack--xs" href="./math">Výrazi a rovnice<span><span></a>
+    </div>
+  </div>
+
+</div>
+
+## Tvorba vlastních výukových materiálů
+
+**Hlavním cílem** projektu je **zdarma** poskytnout **kvalitní data pro tvorbu výukových materiálů** (videa, audia, pracovní listy, kvízů, kartiček, aplikací...)
+
+### Příklad - přijímačky matika 2025 - 2. náhradní termín
+
 <div class="carousel carousel--scroll-markers carousel--inert">
 ${videos.map(({ video, name, id }, i) => html`<div class="carousel__slide" data-label=a${i}>
     <figure class="parallax-item" role="tabpanel">      
@@ -103,10 +173,10 @@ ${videos.map(({ video, name, id }, i) => html`<div class="carousel__slide" data-
 
 <div style="height:40px"></div>
 
-<div class="tip" label="Vlastní výukové materiály (videa, audia, pracovní listy)">
-  Videa výše jsou vytvořena pomocí aplikace <a href="https://notebooklm.google.com/" target="_blank">NotebookLM</a> na základě <a href="/word-problems-M9D-2025">těchto dat</a> z banky úloh. 
+<div class="tip" label="Notebook LM">
+  Videa výše jsou vytvořena pomocí aplikace <a href="https://notebooklm.google.com/" target="_blank">NotebookLM</a> na základě <a href="/word-problems-M9D-2025"> dat</a> z banky úloh. 
 
-  Založeno na myšlence, že se AI předává se zadáním i řešení úlohy, resp. **heslovitý strukturovaný postup** i s potřebnou aritmetikou, což vede k **miminalizaci chyb**.
+  Založeno na myšlence, že se AI předává se zadáním i řešení úlohy, resp. **heslovitý strukturovaný postup**, což vede k **miminalizaci chyb**.
   
   Pokud chcete vytvořit obdobné **vyukové materiály na míru** na pár kliků či prozkoumat další možnosti integrace <a href="/embedding">více informací</a>.
 </div>

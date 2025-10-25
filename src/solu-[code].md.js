@@ -3,7 +3,7 @@ import path from 'path';
 import mdPlus from './utils/md-utils.js';
 import { parseQuiz } from './utils/quiz-parser.js';
 import { readJsonFromFile } from './utils/file.utils.js';
-import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, isEmptyOrWhiteSpace } from './utils/quiz-string-utils.js';
+import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, isEmptyOrWhiteSpace, uniqueQuestionCount } from './utils/quiz-string-utils.js';
 import wordProblems, { inferenceRuleWithQuestion, formatPredicate, formatSequencePattern } from './math/word-problems.js';
 import Fraction from 'fraction.js';
 import { toEquationExprAsTex } from "./utils/math-solver.js"
@@ -73,7 +73,7 @@ const ids = quiz.questions.map(d => d.id);
 
 const wordProblem = wordProblems[code];
 
-const solutionsCount = uniqueQuestion(answers) + uniqueQuestion(wordProblem)
+const solutionsCount = uniqueQuestionCount(answers) + uniqueQuestionCount(wordProblem)
 const solutionRate = solutionsCount / quiz.questions.length;
 process.stdout.write(`---
 title: ${formatCode(code)}
@@ -278,13 +278,4 @@ function isPredicate(node) {
 }
 function mapNodeChildrenToPredicates(node) {
   return node.children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]);
-}
-
-
-function uniqueQuestion(obj) {
-  if (obj == null) {
-    return 0;
-  }
-  const keys = Object.keys(obj);
-  return keys.map(d => d.split('.')[0]).filter((d, i, arr) => arr.indexOf(d) === i).length
 }

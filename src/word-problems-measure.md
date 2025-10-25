@@ -1,5 +1,5 @@
 ---
-title: Kategorie úloh
+title: Měření obtížnosti slovních úloh
 footer: false
 pager: true
 toc: true

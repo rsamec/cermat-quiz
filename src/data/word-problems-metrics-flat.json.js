@@ -1,12 +1,6 @@
 import wordProblems from '../math/word-problems.js';
 import { computeTreeMetrics } from "../utils/deduce-utils.js";
 
-function usages(strings) {
-  return strings.reduce((acc, str) => {
-    acc[str] = (acc[str] || 0) + 1;
-    return acc;
-  }, {});
-}
 function sum(strings){
   return strings.reduce((acc) => acc = acc + 1,0);
 }

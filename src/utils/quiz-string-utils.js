@@ -190,3 +190,12 @@ export function normalizeLatex(result) {
 export function isEmptyOrWhiteSpace(value) {
   return value == null || (typeof value === 'string' && value.trim() === '');
 };
+
+
+export function uniqueQuestionCount(obj) {
+  if (obj == null) {
+    return 0;
+  }
+  const keys = Object.keys(obj);
+  return keys.map(d => d.split('.')[0]).filter((d, i, arr) => arr.indexOf(d) === i).length
+}
