@@ -22,7 +22,7 @@ V postupech řešení se používají matematické koncepty - možnost zvýrazn�
  - odvozovacích pravidel
  - běžných vzorců
 
-<video src="/assets/filtering.mp4" playsinline muted controls></video>
+<video src="/assets/filtering.mp4" playsinline muted controls preload="metadata"></video>
 
 
 ## Využití v Notebook LM
