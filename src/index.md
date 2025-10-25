@@ -1,6 +1,6 @@
 ---
 toc: true
-style: /assets/css/carousel.css
+style: /assets/css/main.css
 ---
 <div class="hero">
   <h1>Cermat úlohy</h1>
@@ -158,7 +158,7 @@ const videos = notebookVideos.map(d => {
 
 **Hlavním cílem** projektu je **zdarma** poskytnout **kvalitní data pro tvorbu výukových materiálů** (videa, audia, pracovní listy, kvízů, kartiček, aplikací...)
 
-### Příklad - přijímačky matika 2025 - 2. náhradní termín
+### Příklad - matika 2025 - 2. náhradní termín
 
 <div class="carousel carousel--scroll-markers carousel--inert">
 ${videos.map(({ video, name, id }, i) => html`<div class="carousel__slide" data-label=a${i}>
@@ -175,8 +175,6 @@ ${videos.map(({ video, name, id }, i) => html`<div class="carousel__slide" data-
 
 <div class="tip" label="Notebook LM">
   Videa výše jsou vytvořena pomocí aplikace <a href="https://notebooklm.google.com/" target="_blank">NotebookLM</a> na základě <a href="/word-problems-M9D-2025"> dat</a> z banky úloh. 
-
-  Založeno na myšlence, že se AI předává se zadáním i řešení úlohy, resp. **heslovitý strukturovaný postup**, což vede k **miminalizaci chyb**.
   
   Pokud chcete vytvořit obdobné **vyukové materiály na míru** na pár kliků či prozkoumat další možnosti integrace <a href="/embedding">více informací</a>.
 </div>
