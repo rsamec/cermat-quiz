@@ -86,9 +86,10 @@ export default {
       name: "Matematika",
       pages: [        
         { name: "Slovní úlohy", path: "/word-problems-summary" },
-        { name: "Slovní úlohy - matematizace", path: "/math-deduction" },
-        { name: "Slovní úlohy - možnosti", path: "/derived-data/index" },
         { name: "Výrazy, konstrukční úlohy", path: "/math" },
+        { name: "Matematizace", path: "/math-deduction" },
+        { name: "Měření obtížnosti", path: "/word-problems-measure" },
+        { name: "Využití dat", path: "/derived-data/index" },                        
         // { name: "Prostředí", path:"math-environments"},
       ]
     },

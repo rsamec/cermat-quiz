@@ -20,12 +20,22 @@ import Fraction from 'fraction.js';
 const code = observable.params.code;
 const id = parseInt(observable.params.number, 10);
 const d = parseCode(code);
-const baseUrl = `${baseDomainPublic}/${d.subject}/${d.period}/${code}`
-const content = await text(`${baseUrl}/index.md`);
+
+let quiz = {
+  content: () => ``
+};
+
+try {
+  const baseUrl = `${baseDomainPublic}/${d.subject}/${d.period}/${code}`
+  const content = await text(`${baseUrl}/index.md`);
 
 
-const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [baseUrl])
-const quiz = parseQuiz(rawContent);
+  const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [baseUrl])
+  quiz = parseQuiz(rawContent);
+}
+catch(ex){
+
+}
 
 const wordProblem = wordProblems[code] ?? {};
 

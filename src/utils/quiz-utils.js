@@ -90,3 +90,90 @@ export const printedPages =  [2, 3, 4].map(columnsCount => ({ pageSize: 'A4', co
 .concat([1, 2, 3].map(columnsCount => ({ pageSize: 'A4', columnsCount, orientation: 'portrait' })))
 .concat([4, 5, 6, 7, 8].map(columnsCount => ({ pageSize: 'A3', columnsCount, orientation: 'landscape' })))
 .concat([3, 4, 5, 6].map(columnsCount => ({ pageSize: 'A3', columnsCount, orientation: 'portrait' })));
+
+
+
+export const predicatesCategories = new Map([
+  ["Porovnání rozdílem",["comp", "comp-diff", "diff"]],
+  ["Porovnání podílem (poměr)",["comp-ratio"]],
+  ["Část z celku", ["ratio"]],
+  ["Část ku části", ["ratios"]],
+  ["Stav a změna stavu", ["delta","transfer"]],
+  ["Rozdělování", ["rate","quota","frequency"]],
+  ["Seskupování", ["sum","sum-combine", "product", "product-combine"]],
+  ["Úměrnosti", ["proportion"]],
+  ["Škálování", ["scale","slace-invert","nth-factor"]],
+  ["Posuny",["slide","slide-invert"]],
+  ["Převod jednotek", ["unit"]],  
+  ["Zaokrouhlování", ["round"]],
+  ["Největší společný dělitel", ["gcd"]],
+  ["Nejmenší společný násobek", ["lcd"]],
+  ["Výrazy", ["eval-expr", "simpl-expr"]],
+  ["Vzorce", ["eval-formula"]],
+  ["Pythagorova věta", ["pythagoras"]],
+  ["Vztahy úhlů", ["comp-angle", "triangle"]],
+  ["Vzory opakování", ["sequence","nth", "pattern","balanced-partition"]],
+  ["Zdravý rozum", ["common-sense"]],
+])
+
+export const rulesCategories = new Map([
+  ["Porovnání rozdílem", [`compareRule`,'toCompareRule', `compareDiffRule`,'toCompareDiffRule', 'toDifferenceRule']],
+  ["Porovnání poměrem", [`ratioCompareRule`,'toRatioCompareRule']],  
+  ["Porovnání rozdílem z celku", [`partEqualRule`]],  
+  ["Část z celku", ["partToWholeRule", "toPartWholeRatio"]],  
+  ["Část ku části", ["partToPartRule", "toRatiosRule"]],
+  ["Doplněk k celku", [`partWholeComplementRule`]],  
+  ["Propojení poměru s část–celek", ["partWholeCompareRule","toPartWholeCompareRule"]],    
+  ["Propojení poměru s část-část", ["compRatiosToCompRule","convertRatioCompareToRatiosRule"]],
+  ["Převod mezi část-celek a poměrem",['convertPartWholeToRatioCompareRule','convertRatioCompareToRatioRule']],
+  ["Převod mezi část-část a poměrem", ["convertRatioCompareToTwoPartRatioRule","convertTwoPartRatioToRatioCompareRule"]],    
+  ["Převod část-část na část-celek", ["convertPartToPartToPartWholeRule"]],
+  ["Převod mezi poměrem a procentem", ["togglePartWholeAsPercentRule", "convertPercentRule"]],
+  ["Obrácení poměru", ["invertRatioCompareRule"]],
+  ["Obrácení poměrů část-část",["invertRatiosRule", "reverseRatiosRule"]],
+  ["Rozdíl jako poměr", ['toDifferenceAsRatioRule']],  
+  ["Rozdíl z absolutního a relativního porovnání", ["ratioCompareToCompareRule"]],
+  ["Řetězení poměrů", [`transitiveRatioCompareRule`, "transitiveCompareRule","transitiveRatioRule","transitiveRateRule"]],
+  
+  ["Spojování", [`sumRule`,`productRule`]],
+  ["Rozdělení (rovnoměrně)", [`rateRule`,"toRateRule"]],  
+  ["Rozdělení dle kvóty", [`quotaRule`,"toQuotaRule"]],  
+  ["Rozdělení dle rate", ["compareToRateRule"]],
+
+  ["Úměrnosti", [`proportionRule`]],
+  ["Úměrnost pro část-část", ["proportionTwoPartRatioRule"]],
+
+  ["Změny stavu", [`deltaRule`, "toDeltaRule"]],
+  ["Transfer", [`transferRule`]],
+    
+  ["NSD (největší společný dělitel)", [`gcdRule`]],
+  ["NSN (nejmenší společný násobek)", [`lcdRule`]],
+  
+
+  ["Převod jednotek", [`convertToUnitRule`]],
+  ["Zaokrouhlení", [`roundToRule`]],
+
+  ["Pythagorovy věta", [`pythagorasRule`]],
+  ["Pravidla úhlu v trojúhelníku", ["triangleAngleRule"]],
+  ["Vztahy úhlů", [`angleCompareRule`]],  
+
+  ["Posuny", ["toSlideRule"]],
+  ["Škálování", ["scaleRule"]],
+  ["Škálování část-část", ["mapRationsByFactorRule", "nthPartFactorByRule","nthPartScaleByRule"]],
+
+  ["Míšení(aligace)", ["alligationRule"]],
+
+  ["Vyhodnocení výrazu/vzorce", ["evalToQuantityRule"]],
+  ["Zjednodušení výrazu", ["simplifyExprRule"]],
+  ["Řešení rovnice", ["solveEquationRule"]],
+  
+  ["Vzor opakování", ["sequenceRule"]],
+  ["n-tého členu", ["nthTermRule"]],
+  ["n-té pozice", ["nthPositionRule"]],
+  ["Uspořádané n-tice", ["tupleRule"]],
+  ["Vyvážené rozdělování", ["balancedPartitionRule"]],
+  
+  ["Volba z možností", ["evalToOptionRule"]],  
+  
+])
+

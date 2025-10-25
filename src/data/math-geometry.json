@@ -67,15 +67,38 @@
             {
               "Name": "Postup řešení",
               "Steps": [
-                
-  {"Step":"Sestroj přímku AS","Expression":"$ \\mapsto AS $"},
-  {"Step":"Označ bod C jako průsečík kružnice k a přímky AS","Expression":"$ C;C\\in k \\cap \\mapsto AS $"},
-  {"Step":"","Expression":"$ \\mapsto CE $"},
-  {"Step":"","Expression":"$ B;B\\in \\mapsto CE; |CE|=|BE| $"},
-  {"Step":"","Expression":"$ \\mapsto BA $"},
-  {"Step":"","Expression":"$ \\mapsto A; \\mapsto A \\perp \\mapsto BA $"},
-  {"Step":"","Expression":"$ D;D \\in k  \\cap \\mapsto A $"},
-  {"Step":"","Expression":"$ \\square ABCD $"}
+                {
+                  "Step": "Sestroj přímku AS",
+                  "Expression": "$ \\mapsto AS $"
+                },
+                {
+                  "Step": "Označ bod C jako průsečík kružnice k a přímky AS",
+                  "Expression": "$ C;C\\in k \\cap \\mapsto AS $"
+                },
+                {
+                  "Step": "Sestroj přímku CE",
+                  "Expression": "$ \\mapsto CE $"
+                },
+                {
+                  "Step": "Sestroj bod B na přímce CE tak, aby platilo |CE| = |BE|",
+                  "Expression": "$ B;B\\in \\mapsto CE; |CE|=|BE| $"
+                },
+                {
+                  "Step": "Sestroj přímku BA",
+                  "Expression": "$ \\mapsto BA $"
+                },
+                {
+                  "Step": "Sestroj přímku procházející bodem A kolmo na BA",
+                  "Expression": "$ \\mapsto A; \\mapsto A \\perp \\mapsto BA $"
+                },
+                {
+                  "Step": "Označ bod D jako průsečík kružnice k a přímky procházející bodem A",
+                  "Expression": "$ D;D \\in k  \\cap \\mapsto A $"
+                },
+                {
+                  "Step": "Sestroj čtyřúhelník ABCD",
+                  "Expression": "$ \\square ABCD $"
+                }
               ]
             }
           ]
