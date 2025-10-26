@@ -29,6 +29,13 @@ Hlavní přidanou hodnotou je krokové vysvětlení řešení, které pomáhá u
 1. Vyhledání matematických výrazů v testech
 2. Zavolání Microsoft Math API
 
+<div class="warning" label="Již nefunční API">
+
+Microsoft Math Solver ukončeno v July 7, 2025.
+
+[https://x.com/MicrosoftMath/status/1931103750753599946]()
+
+</div>
 ### 1. Vyhledání matematických výrazů v testech
 
 ```js run=false

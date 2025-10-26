@@ -2,27 +2,93 @@
   "M9A-2024": {
     "9": {
       "header": "9 Sestrojte vrcholy A,B rovnostranného trojúhelníku ABC a trojúhleník narýsujte.",
-      "results":[{
-        "Name": "Sestrojit",
-        "TemplateSteps": [
-          {
-            "Name": "Postup řešení",
-            "Steps": []
-          }
-        ]
-      }]
+      "results": [
+        {
+          "Name": "Sestrojit",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": [
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto CS $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ p;p \\perp CS \\wedge S \\in p $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\measuredangle SCX1;|\\measuredangle SCX|=30\\degree $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\measuredangle SCX2;|\\measuredangle SCX|=30\\degree $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ B;\\mapsto CX2 \\cap  \\mapsto p $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ A;\\mapsto CX1 \\cap \\mapsto p $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\triangle ABC $"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     "10": {
       "header": "10 Sestrojte vrcholy B,C,D obdelníku ABCD, označte je písmeny a obdelník narýsujte.",
-      "results":[{
-        "Name": "Sestrojit",
-        "TemplateSteps": [
-          {
-            "Name": "Postup řešení",
-            "Steps": []
-          }
-        ]
-      }]
+      "results": [
+        {
+          "Name": "Sestrojit",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": [
+                {
+                  "Step": "",
+                  "Expression": "$ k;k(A;|AE|) $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ C;p \\cap k = {C} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ q;q \\perp \\mapsto AE \\wedge C \\in q $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ B;\\mapsto AE \\cap q = {B} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ s;s \\perp q \\wedge C \\in s $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ r;s \\perp \\mapsto AE \\wedge A \\in r $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ D;r \\cap s = {D} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\square ABCD $"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   },
   "M5A-2023": {},
@@ -34,27 +100,89 @@
   "M9B-2024": {
     "9": {
       "header": "9 Sestrojte kosočtverec ABCD.",
-      "results":[{
-        "Name": "Sestrojit",
-        "TemplateSteps": [
-          {
-            "Name": "Postup řešení",
-            "Steps": []
-          }
-        ]
-      }]
+      "results": [
+        {
+          "Name": "Sestrojit",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": [
+                {
+                  "Step": "",
+                  "Expression": "$ AB $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto OA $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ S_1;S_1 \\in AB \\wedge |AS_1|=|BS_1| $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ k;k(S_1;|S_1A|) $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ S;\\mapsto OA \\cap k = {S} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ C;C \\in \\mapsto AS \\wedge |AS|=|CS| $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ D;D \\in \\mapsto BS \\wedge |BS|=|DS| $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\square ABCD $"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     "10": {
       "header": "10 Sestrojte rovnoramenný trojúhelník KLM, leží-li bod M na kružnici k.",
-      "results":[{
-        "Name": "Sestrojit",
-        "TemplateSteps": [
-          {
-            "Name": "Postup řešení",
-            "Steps": []
-          }
-        ]
-      }]
+      "results": [
+        {
+          "Name": "Sestrojit",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": [
+                {
+                  "Step": "",
+                  "Expression": "$ KL $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ m;m(K;|KL|) $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ M_1;k \\cap m = {M_1;} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ M_2;k \\cap m = {;M_2} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\square KLM_1 $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\square KLM_2 $"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   },
   "M9C-2024": {
@@ -113,7 +241,44 @@
           "TemplateSteps": [
             {
               "Name": "Postup řešení",
-              "Steps": []
+              "Steps": [
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto A; \\mapsto A \\perp o $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ S1;S1\\in o \\cap \\mapsto A $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ B;B\\in \\mapsto AS; |AS1|=|BS1| $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto BS $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ C;C\\in \\mapsto BS; |BS|=|CS| $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto C; \\mapsto C \\| \\mapsto AB $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ S2;S2\\in o \\cap \\mapsto C $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ D;D\\in \\mapsto C; |CS2|=|BS2| $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\square ABCD $"
+                }
+              ]
             }
           ]
         }
@@ -129,7 +294,52 @@
           "TemplateSteps": [
             {
               "Name": "Postup řešení",
-              "Steps": []
+              "Steps": [
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto AS $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ k;k(S;|SA|) $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ C;\\mapsto AS \\in k = {C} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ D_1;p \\cap k = {D_1} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto D_1S $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ B_1;B_1 \\in \\mapsto D_1S \\wedge |B_1S|=|D_1S| $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ D_2;p \\cap k = {D_2} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto D_2S $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ B_2;B_2 \\in \\mapsto D_2S \\wedge |B_2S|=|D_2S| $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\square AB_1CD_1 $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\square AB_2CD_2 $"
+                }
+              ]
             }
           ]
         }
@@ -143,7 +353,48 @@
           "TemplateSteps": [
             {
               "Name": "Postup řešení",
-              "Steps": []
+              "Steps": [
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto CS $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ k;k(S;|CS|) $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ B;\\mapsto CS \\cap k = {B} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ p2;p2 \\| p \\wedge B \\in p2 $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ r;r \\perp p2 \\wedge C \\in r $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ A_1;r \\cap p2 = {A_1} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ m;m \\perp \\mapsto CS \\wedge C \\in m $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ A_2;m \\cap p2 = {A_2} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\square A_1BC $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\square A_2BC $"
+                }
+              ]
             }
           ]
         }
@@ -156,28 +407,126 @@
   "MMB-2023": {},
   "M9I-2025": {
     "9": {
-      "header": "9 Bod A' je vrchol trojúhelníku A'B'C', který je obrazem trojúhelníku ABC ve středové souměrnosti se středem S.",
+      "header": "Sestrojte a označte písmenem střed souměrnosti S. Sestrojte vrcholy B' a C' trojúhleníku A'B'C', označte je písmeny a trojúhelník narýsujte.",
       "results": [
         {
           "Name": "Sestrojit",
           "TemplateSteps": [
             {
               "Name": "Postup řešení",
-              "Steps": []
+              "Steps": [
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto AA' $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ S;S \\in \\mapsto AA \\wedge |AS|=|AS| $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ S;\\mapsto AA'; |AS| = |A'S| $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto BS $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto CS $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ k_1;k_1(S;|SB|) $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ k_2;k_2(S;|SC|) $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ B';\\mapsto SB' \\cap k_1 = {B'} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ C';\\mapsto SC' \\cap k_2 = {C'} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\triangle A'B'C' $"
+                }
+              ]
             }
           ]
         }
       ]
     },
     "10": {
-      "header": "10",
+      "header": "Sestrojte vrcholy B,D pravoúhlého lichoběžníku ABCD, označte je písmeny a lichoběžník narýsujte.",
       "results": [
         {
           "Name": "Sestrojit",
           "TemplateSteps": [
             {
               "Name": "Postup řešení",
-              "Steps": []
+              "Steps": [
+                {
+                  "Step": "",
+                  "Expression": "$ S; S \\in \\mapsto AC; |AS| = |CS| $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ k;k(S;|AS|) $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ D_1;p \\cap k = {D_1} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ D_2;p \\cap k = {D_2} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto AD_1 $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto CD_1 $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto AD_2 $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto CD_2 $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ r_1;r \\perp AD_1 $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ r_2;r \\perp AD_2 $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ B_1;r_1 \\cap p = {B_1} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ B_2;r_2 \\cap p = {B_2} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\square AB_1CD_1 $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\square AB_2CD_2 $"
+                }
+              ]
             }
           ]
         }
@@ -186,33 +535,90 @@
   },
   "M9A-2025": {
     "9": {
-      "header": "9",
+      "header": "Sestrojte vrcholy obdélníku KLMN, označte je písmeny a obdélník narýsujte.",
       "results": [
         {
           "Name": "Sestrojit",
           "TemplateSteps": [
             {
               "Name": "Postup řešení",
-              "Steps": []
+              "Steps": [
+                {
+                  "Step": "",
+                  "Expression": "$ C $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ o; osa $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto NM; R \\in \\mapsto NM \\wedge \\mapsto NM \\perp o $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ M;\\mapsto NM \\cap \\mapsto p $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ N;\\mapsto NM \\cap \\mapsto q $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto NK; N \\in \\mapsto NM \\wedge \\mapsto NK; \\perp NM $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ K;\\mapsto NK \\cap \\mapsto p $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto ML; M \\in \\mapsto ML \\wedge \\mapsto ML; \\perp NM $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ L;\\mapsto ML \\cap \\mapsto q $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\square KLMN $"
+                }
+              ]
             }
           ]
         }
       ]
     },
     "10": {
-      "header": "10",
+      "header": "Sestrojte vrchol A trojúhelníku ABC, označte ho písmenem a trojúhelník narýsujte.",
       "results": [
         {
           "Name": "Sestrojit",
           "TemplateSteps": [
             {
               "Name": "Postup řešení",
-              "Steps": []
+              "Steps": [
+                {
+                  "Step": "",
+                  "Expression": "$ \\mapsto BA; B \\in \\mapsto BA \\wedge \\mapsto BA \\perp p $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ S;\\mapsto BA \\cap \\mapsto q $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ A;A \\in \\mapsto BA \\wedge |BS| = |AS| $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\triangle ABC $"
+                }
+              ]
             }
           ]
         }
       ]
     }
   }
-
 }

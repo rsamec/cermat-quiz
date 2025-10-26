@@ -1,7 +1,9 @@
-import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, rate, ratio, ratios, sum, counter, double, product, ctorScale, lcd, lcdCalc, type Container, ctorComparePercent, compRelative, ctor, ctorBooleanOption, contLength } from "../../components/math";
+import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, rate, ratio, ratios, sum, counter, double, product, ctorScale, lcd, lcdCalc, type Container, ctorComparePercent, compRelative, ctor, ctorBooleanOption, contLength, evalExprAsCont, EmptyUnit, ctorRate, tuple, ctorTuple, dimensionEntity, evalFormulaAsCont, formulaRegistry, squareArea, triangleArea, rectangleArea } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, mapToCont, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
+  2.1: () => ramecek(),
+  2.2: () => kolecka(),
   3.1: () => jizdniKolo().a,
   3.2: () => jizdniKolo().b,
   4.1: () => kulicka().pocet,
@@ -16,10 +18,168 @@ export default createLazyMap({
   8.3: () => turistickyOdil().pocetZen,
   9: () => farmar(),
   10: () => penize(),
+  11: () => ctvercovaSit(),
+  12: () => ctvercovaSit2(),
+  13.1: () => kostky().a,
+  13.2: () => kostky().b,
+  13.3: () => kostky().c,
   14.1: () => poutnik().prvniKouzlo,
   14.2: () => poutnik().druheKouzlo,
   14.3: () => poutnik().maximumKouzel,
 })
+
+function ramecek() {
+  return {
+    deductionTree: to(
+      deduce(
+        deduce(
+          evalExprAsCont("0+1+2+3+4+5+6+7+8", "velký čtverec", { entity: "hodnota" })
+        ),
+        cont("velký čtverec", 3, "řádek"),
+        ctor("rate")
+      ),
+      commonSense("postupně dopočítáváme čísla, tam kde známe 2 čísla"),
+      cont("hledaného čísla", 6, "hodnota")
+    )
+  }
+}
+
+function kolecka() {
+  const rozdil = comp("pravý kroužek", "levý koužek", 90, "hodnota")
+  const prvniKrouzek = deduce(
+    compRatio("pravý kroužek", "levý koužek", 3),
+    rozdil
+  )
+  return {
+    deductionTree: deduce(
+      deduce(
+        compRatio("pravý kroužek", "levý koužek", 3),
+        rozdil
+      ),
+      deduce(
+        last(prvniKrouzek),
+        rozdil
+      ),
+      ctorTuple("obě čísla")
+    )
+  }
+}
+
+function ctvercovaSit() {
+  const dim = dimensionEntity();
+  return {
+    deductionTree: deduce(
+      to(
+        commonSense("pokud přiložíme 2 strany čtverce ABC za sebou, získáme délku ramena trohúhelníku ABC"),
+        commonSense("celý obvod čtverce ABC je roven délce obou ramen trohúhelníku ABC"),
+        comp("trohúhelníku ABC", "čtverec ABC", 4, dim.length)
+      ),
+      ctorOption("D", 4)
+    )
+  }
+}
+function ctvercovaSit2() {
+  const dim = dimensionEntity();
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduceAs("doplníme trojúhelník ABC na čtverec, pak vidíme, že platí")(
+          ratio("trojúhelník ABC", "dokreslený čtverec", 1 / 2),
+          deduce(
+            contLength("strana dokreslený čtverec", 4),
+            squareArea("trojúhelník ABC")
+          )
+        ),
+        deduceAs("doplníme trojúhelník KLM na obdelník, pak vzniknou 3 pravoúhlé trojúhelníky jako doplněk k původnímu trojúhelník KLM")(
+          deduce(
+            contLength("kratší strana", 3),
+            contLength("delší strana", 4),
+            rectangleArea("dokreslený obdelník")
+          ),
+          deduce(
+            deduce(
+              contLength("pravoúhlý trojúhelník", 3),
+              contLength("pravoúhlý trojúhelník", 1),
+              triangleArea("pravoúhlý trojúhelník")
+            ),
+            deduce(
+              contLength("pravoúhlý trojúhelník", 3),
+              contLength("pravoúhlý trojúhelník", 1),
+              triangleArea("pravoúhlý trojúhelník")
+            ),
+            deduce(
+              contLength("pravoúhlý trojúhelník", 4),
+              contLength("pravoúhlý trojúhelník", 2),
+              triangleArea("pravoúhlý trojúhelník")
+            ),
+            sum("dohromady 3 pravoúhlý trojúhelník")
+          ),
+          ctorDifference("trojúhelník KLM")
+        ),
+      ),
+      ctorOption("C", 3)
+    )
+  }
+}
+
+function kostky() {
+  const entityBase = "kostka";
+  const entity = "tečky";
+
+  const agent = "těleso"
+  const telesoPovrch = "těleso na povrchu"
+
+  const teckaPerKostka = rate(agent, 12, entity, entityBase)
+  return {
+    a: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            cont(agent, 2, entityBase),
+            teckaPerKostka
+          ),
+          deduceAs("maximalizujeme počet teček na tělese tak, že stěny slepené k sobě budou mít na sobě 1 tečku")(
+            evalExprAsCont("2*1", "celkem schované tečky", { entity })
+          ),
+          ctorDifference(telesoPovrch)
+        ),
+        ctorOption("C", 22)
+      )
+    },
+    b: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            cont(agent, 3, entityBase),
+            teckaPerKostka
+          ),
+          deduceAs("minimalizujeme počet teček na tělese tak, že se snažíme slepit stěny se 3 tečkami k sobě, to nelze u prostřední kostky, lze pouze u jedné strany, protože na protější straně se 3 tečkami je vždy strana s 1 tečkou")(
+            evalExprAsCont("3*3 + 1*1", "celkem schované tečky", { entity })
+          ),
+          ctorDifference(telesoPovrch)
+        ),
+        ctorOption("E", 26)
+      )
+    },
+    c: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            cont(agent, 3, entityBase),
+            teckaPerKostka
+          ),
+          deduceAs("minimalizujeme počet teček na tělese tak, že stěny slepené k sobě budou mít na sobě 3 tečky")(
+            evalExprAsCont("4*3", "celkem schované tečky", { entity })
+          ),
+          ctorDifference(telesoPovrch)
+        ),
+        ctorOption("D", 24)
+      )
+    },
+  }
+}
+
+
 function turistickyOdil() {
 
   const muzLabel = "muži"

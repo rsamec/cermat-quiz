@@ -5697,10 +5697,11 @@ function inferToScaleRule(target, factor, last) {
     agent: last.agent ?? target.agent,
     quantity
   };
+  const moreOrLess = (quantity2) => inverse ? quantity2 <= 1 : quantity2 > 1;
   return {
     name: "scaleRule",
     inputParameters: extractKinds(target, factor, last),
-    question: isNumber2(factor.quantity) ? `${factor.quantity > 1 ? "Zv\u011Bt\u0161i" : "Zmen\u0161i"} ${factor.quantity} kr\xE1t ${target.agent}.` : `${computeQuestion(result.quantity)}`,
+    question: isNumber2(factor.quantity) ? `${moreOrLess(factor.quantity) ? "Zv\u011Bt\u0161i" : "Zmen\u0161i"} ${factor.quantity} kr\xE1t ${target.agent}.` : `${computeQuestion(result.quantity)}`,
     result,
     options: isNumber2(target.quantity) && isNumber2(factor.quantity) && isNumber2(result.quantity) ? [
       {
@@ -5923,6 +5924,9 @@ function inferenceRuleEx(...args) {
   const [a, b, ...rest] = args;
   const last = rest?.length > 0 ? rest[rest.length - 1] : null;
   const kind = last?.kind;
+  if (last == null && a.kind == "eval-expr") {
+    return inferEvalToQuantityRule([], a);
+  }
   if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence", "tuple", "eval-expr", "eval-formula", "alligation"].includes(last?.kind)) {
     const arr = [a, b].concat(rest.slice(0, -1));
     if (last.kind === "sequence")

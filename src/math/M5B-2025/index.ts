@@ -5,9 +5,9 @@ export default createLazyMap({
   1.1: () => hledaneCisla().cislo1,
   1.2: () => hledaneCisla().cislo2,
   1.3: () => hledaneCisla().cisla3,
-  // 2.1: () => prevody().delka,
-  // 2.2: () => prevody().hmotnost,
-  // 2.3: () => prevody().cas,
+  2.1: () => prevody().delka,
+  2.2: () => prevody().hmotnost,
+  2.3: () => prevody().cas,
   3.1: () => koralky().celkem,
   3.2: () => koralky().porovnani4To2,
   3.3: () => koralky().cerneKoralky,
@@ -46,16 +46,48 @@ function prevody() {
               ctorUnit("dm")
             ),
             cont("15dm", 15, entityDelka, "dm"),
-            ctorDifference("levá strana")
+            ctorDifference("rozdíl")
           ),
-          ctorDifference("rozdíl v dm")
+          ctorDifference("hledané číslo")
         ),
         ctorUnit("cm")
       )
     },
     hmotnost: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            cont("3 kg", 3, entityHmotnost, "kg"),
+            ctorUnit("g")
+          ),
+          deduce(
+            deduce(
+              cont("kilogram", 1, entityHmotnost, "kg"),
+              ctorUnit("g")
+            ),
+            ratio("kilogram", "1/5", 1 / 5)
+          ),
+          sum("rozdíl")
+        ),
+        counter("4 krát", 4),
+        ctorScaleInvert("hledané číslo")
+      )
     },
     cas: {
+      deductionTree: deduce(
+        deduce(
+          cont("20 minut", 20, entityCas, "min"),
+          deduce(
+            deduce(
+              cont("hodina", 1, entityCas, "h"),
+              ctorUnit("min")
+            ),
+            ratio("hodina", "1/4", 1 / 4)
+          ),
+          ctorDifference("hledané číslo")
+        ),
+        ctorUnit("s")
+      )
     },
 
   }

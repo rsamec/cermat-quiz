@@ -114,6 +114,9 @@ function ctorSlide(agent) {
 function ctorSlideInvert(agent) {
   return { kind: "slide-invert", agent };
 }
+function ctorTuple(agent) {
+  return { kind: "tuple", agent, items: [] };
+}
 function cont(agent, quantity, entity3, unit, opts) {
   return { kind: "cont", agent, quantity, entity: entity3, unit, asRatio: opts?.asFraction };
 }
@@ -141,6 +144,14 @@ function ctorOption(optionValue, expectedValue, expectedValueOptions = { asPerce
     expectedValueOptions,
     optionValue,
     compareTo: "closeTo"
+  };
+}
+function option(optionValue) {
+  return {
+    kind: "eval-option",
+    expression: "",
+    expressionNice: "",
+    value: optionValue
   };
 }
 function ctorExpressionOption(optionValue, expression) {
@@ -2093,10 +2104,11 @@ function inferToScaleRule(target, factor, last2) {
     agent: last2.agent ?? target.agent,
     quantity
   };
+  const moreOrLess = (quantity2) => inverse ? quantity2 <= 1 : quantity2 > 1;
   return {
     name: "scaleRule",
     inputParameters: extractKinds(target, factor, last2),
-    question: isNumber(factor.quantity) ? `${factor.quantity > 1 ? "Zv\u011Bt\u0161i" : "Zmen\u0161i"} ${factor.quantity} kr\xE1t ${target.agent}.` : `${computeQuestion(result.quantity)}`,
+    question: isNumber(factor.quantity) ? `${moreOrLess(factor.quantity) ? "Zv\u011Bt\u0161i" : "Zmen\u0161i"} ${factor.quantity} kr\xE1t ${target.agent}.` : `${computeQuestion(result.quantity)}`,
     result,
     options: isNumber(target.quantity) && isNumber(factor.quantity) && isNumber(result.quantity) ? [
       {
@@ -2326,6 +2338,9 @@ function inferenceRuleEx(...args) {
   const [a, b, ...rest] = args;
   const last2 = rest?.length > 0 ? rest[rest.length - 1] : null;
   const kind = last2?.kind;
+  if (last2 == null && a.kind == "eval-expr") {
+    return inferEvalToQuantityRule([], a);
+  }
   if (["sum-combine", "sum", "product-combine", "product", "gcd", "lcd", "sequence", "tuple", "eval-expr", "eval-formula", "alligation"].includes(last2?.kind)) {
     const arr = [a, b].concat(rest.slice(0, -1));
     if (last2.kind === "sequence")
@@ -9367,6 +9382,7 @@ var M5A_2024_default = createLazyMap({
   8.2: () => ctvercovaSit().obsah,
   8.3: () => ctvercovaSit().obvod,
   9: () => novorocniPrani(),
+  10: () => hledaniObrazku(),
   11: () => sestiuhelnik(),
   12.1: () => vyvojObyvatel().panov,
   12.2: () => vyvojObyvatel().lidov,
@@ -9378,6 +9394,14 @@ var M5A_2024_default = createLazyMap({
   14.2: () => pyramida().floor7,
   14.3: () => pyramida().stairs
 });
+function hledaniObrazku() {
+  return {
+    deductionTree: to(
+      commonSense("Ot\xE1\u010Den\xEDm ka\u017Ed\xE9ho obrazce lze z\xEDskat ostatn\xED obrazce. Vyjimkou z tohoto pravidla je obrazec C."),
+      option("C")
+    )
+  };
+}
 function souctovyTrojuhelnik() {
   const zbytekKRozdeleni = "zbytek k rozd\u011Blen\xED";
   return {
@@ -9726,6 +9750,8 @@ function pyramida() {
 
 // src/math/M5A-2025/index.ts
 var M5A_2025_default = createLazyMap({
+  2.1: () => ramecek(),
+  2.2: () => kolecka(),
   3.1: () => jizdniKolo().a,
   3.2: () => jizdniKolo().b,
   4.1: () => kulicka().pocet,
@@ -9740,10 +9766,160 @@ var M5A_2025_default = createLazyMap({
   8.3: () => turistickyOdil().pocetZen,
   9: () => farmar(),
   10: () => penize(),
+  11: () => ctvercovaSit2(),
+  12: () => ctvercovaSit22(),
+  13.1: () => kostky().a,
+  13.2: () => kostky().b,
+  13.3: () => kostky().c,
   14.1: () => poutnik().prvniKouzlo,
   14.2: () => poutnik().druheKouzlo,
   14.3: () => poutnik().maximumKouzel
 });
+function ramecek() {
+  return {
+    deductionTree: to(
+      deduce(
+        deduce(
+          evalExprAsCont("0+1+2+3+4+5+6+7+8", "velk\xFD \u010Dtverec", { entity: "hodnota" })
+        ),
+        cont("velk\xFD \u010Dtverec", 3, "\u0159\xE1dek"),
+        ctor("rate")
+      ),
+      commonSense("postupn\u011B dopo\u010D\xEDt\xE1v\xE1me \u010D\xEDsla, tam kde zn\xE1me 2 \u010D\xEDsla"),
+      cont("hledan\xE9ho \u010D\xEDsla", 6, "hodnota")
+    )
+  };
+}
+function kolecka() {
+  const rozdil = comp("prav\xFD krou\u017Eek", "lev\xFD kou\u017Eek", 90, "hodnota");
+  const prvniKrouzek = deduce(
+    compRatio("prav\xFD krou\u017Eek", "lev\xFD kou\u017Eek", 3),
+    rozdil
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        compRatio("prav\xFD krou\u017Eek", "lev\xFD kou\u017Eek", 3),
+        rozdil
+      ),
+      deduce(
+        last(prvniKrouzek),
+        rozdil
+      ),
+      ctorTuple("ob\u011B \u010D\xEDsla")
+    )
+  };
+}
+function ctvercovaSit2() {
+  const dim2 = dimensionEntity();
+  return {
+    deductionTree: deduce(
+      to(
+        commonSense("pokud p\u0159ilo\u017E\xEDme 2 strany \u010Dtverce ABC za sebou, z\xEDsk\xE1me d\xE9lku ramena troh\xFAheln\xEDku ABC"),
+        commonSense("cel\xFD obvod \u010Dtverce ABC je roven d\xE9lce obou ramen troh\xFAheln\xEDku ABC"),
+        comp("troh\xFAheln\xEDku ABC", "\u010Dtverec ABC", 4, dim2.length)
+      ),
+      ctorOption("D", 4)
+    )
+  };
+}
+function ctvercovaSit22() {
+  const dim2 = dimensionEntity();
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduceAs("dopln\xEDme troj\xFAheln\xEDk ABC na \u010Dtverec, pak vid\xEDme, \u017Ee plat\xED")(
+          ratio("troj\xFAheln\xEDk ABC", "dokreslen\xFD \u010Dtverec", 1 / 2),
+          deduce(
+            contLength("strana dokreslen\xFD \u010Dtverec", 4),
+            squareArea("troj\xFAheln\xEDk ABC")
+          )
+        ),
+        deduceAs("dopln\xEDme troj\xFAheln\xEDk KLM na obdeln\xEDk, pak vzniknou 3 pravo\xFAhl\xE9 troj\xFAheln\xEDky jako dopln\u011Bk k p\u016Fvodn\xEDmu troj\xFAheln\xEDk KLM")(
+          deduce(
+            contLength("krat\u0161\xED strana", 3),
+            contLength("del\u0161\xED strana", 4),
+            rectangleArea("dokreslen\xFD obdeln\xEDk")
+          ),
+          deduce(
+            deduce(
+              contLength("pravo\xFAhl\xFD troj\xFAheln\xEDk", 3),
+              contLength("pravo\xFAhl\xFD troj\xFAheln\xEDk", 1),
+              triangleArea("pravo\xFAhl\xFD troj\xFAheln\xEDk")
+            ),
+            deduce(
+              contLength("pravo\xFAhl\xFD troj\xFAheln\xEDk", 3),
+              contLength("pravo\xFAhl\xFD troj\xFAheln\xEDk", 1),
+              triangleArea("pravo\xFAhl\xFD troj\xFAheln\xEDk")
+            ),
+            deduce(
+              contLength("pravo\xFAhl\xFD troj\xFAheln\xEDk", 4),
+              contLength("pravo\xFAhl\xFD troj\xFAheln\xEDk", 2),
+              triangleArea("pravo\xFAhl\xFD troj\xFAheln\xEDk")
+            ),
+            sum("dohromady 3 pravo\xFAhl\xFD troj\xFAheln\xEDk")
+          ),
+          ctorDifference("troj\xFAheln\xEDk KLM")
+        )
+      ),
+      ctorOption("C", 3)
+    )
+  };
+}
+function kostky() {
+  const entityBase = "kostka";
+  const entity3 = "te\u010Dky";
+  const agent = "t\u011Bleso";
+  const telesoPovrch = "t\u011Bleso na povrchu";
+  const teckaPerKostka = rate(agent, 12, entity3, entityBase);
+  return {
+    a: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            cont(agent, 2, entityBase),
+            teckaPerKostka
+          ),
+          deduceAs("maximalizujeme po\u010Det te\u010Dek na t\u011Blese tak, \u017Ee st\u011Bny slepen\xE9 k sob\u011B budou m\xEDt na sob\u011B 1 te\u010Dku")(
+            evalExprAsCont("2*1", "celkem schovan\xE9 te\u010Dky", { entity: entity3 })
+          ),
+          ctorDifference(telesoPovrch)
+        ),
+        ctorOption("C", 22)
+      )
+    },
+    b: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            cont(agent, 3, entityBase),
+            teckaPerKostka
+          ),
+          deduceAs("minimalizujeme po\u010Det te\u010Dek na t\u011Blese tak, \u017Ee se sna\u017E\xEDme slepit st\u011Bny se 3 te\u010Dkami k sob\u011B, to nelze u prost\u0159edn\xED kostky, lze pouze u jedn\xE9 strany, proto\u017Ee na prot\u011Bj\u0161\xED stran\u011B se 3 te\u010Dkami je v\u017Edy strana s 1 te\u010Dkou")(
+            evalExprAsCont("3*3 + 1*1", "celkem schovan\xE9 te\u010Dky", { entity: entity3 })
+          ),
+          ctorDifference(telesoPovrch)
+        ),
+        ctorOption("E", 26)
+      )
+    },
+    c: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            cont(agent, 3, entityBase),
+            teckaPerKostka
+          ),
+          deduceAs("minimalizujeme po\u010Det te\u010Dek na t\u011Blese tak, \u017Ee st\u011Bny slepen\xE9 k sob\u011B budou m\xEDt na sob\u011B 3 te\u010Dky")(
+            evalExprAsCont("4*3", "celkem schovan\xE9 te\u010Dky", { entity: entity3 })
+          ),
+          ctorDifference(telesoPovrch)
+        ),
+        ctorOption("D", 24)
+      )
+    }
+  };
+}
 function turistickyOdil() {
   const muzLabel = "mu\u017Ei";
   const zenyLabel = "\u017Eeny";
@@ -10084,9 +10260,9 @@ var M5B_2025_default = createLazyMap({
   1.1: () => hledaneCisla().cislo1,
   1.2: () => hledaneCisla().cislo2,
   1.3: () => hledaneCisla().cisla3,
-  // 2.1: () => prevody().delka,
-  // 2.2: () => prevody().hmotnost,
-  // 2.3: () => prevody().cas,
+  2.1: () => prevody().delka,
+  2.2: () => prevody().hmotnost,
+  2.3: () => prevody().cas,
   3.1: () => koralky().celkem,
   3.2: () => koralky().porovnani4To2,
   3.3: () => koralky().cerneKoralky,
@@ -10105,6 +10281,69 @@ var M5B_2025_default = createLazyMap({
   14.1: () => ctverce().obvodObrazec2,
   14.2: () => ctverce().obrazecWidthToLength
 });
+function prevody() {
+  const entityDelka = "d\xE9lka";
+  const entityHmotnost = "hmotnost";
+  const entityCas = "\u010Das";
+  return {
+    delka: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            cont("20m", 20, entityDelka, "m"),
+            ctorUnit("dm")
+          ),
+          deduce(
+            deduce(
+              cont("18m", 18, entityDelka, "m"),
+              ctorUnit("dm")
+            ),
+            cont("15dm", 15, entityDelka, "dm"),
+            ctorDifference("rozd\xEDl")
+          ),
+          ctorDifference("hledan\xE9 \u010D\xEDslo")
+        ),
+        ctorUnit("cm")
+      )
+    },
+    hmotnost: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            cont("3 kg", 3, entityHmotnost, "kg"),
+            ctorUnit("g")
+          ),
+          deduce(
+            deduce(
+              cont("kilogram", 1, entityHmotnost, "kg"),
+              ctorUnit("g")
+            ),
+            ratio("kilogram", "1/5", 1 / 5)
+          ),
+          sum("rozd\xEDl")
+        ),
+        counter("4 kr\xE1t", 4),
+        ctorScaleInvert("hledan\xE9 \u010D\xEDslo")
+      )
+    },
+    cas: {
+      deductionTree: deduce(
+        deduce(
+          cont("20 minut", 20, entityCas, "min"),
+          deduce(
+            deduce(
+              cont("hodina", 1, entityCas, "h"),
+              ctorUnit("min")
+            ),
+            ratio("hodina", "1/4", 1 / 4)
+          ),
+          ctorDifference("hledan\xE9 \u010D\xEDslo")
+        ),
+        ctorUnit("s")
+      )
+    }
+  };
+}
 function lepeniCtvercu() {
   const dim2 = dimensionEntity();
   return {

@@ -1,4 +1,4 @@
-import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, rate, ratio, transfer, sum, ctorSlide, counter, ctorScaleInvert, ctorBooleanOption, product, dimensionEntity, contLength, contArea, primeFactors } from "../../components/math";
+import { commonSense, comp, cont, ctor, ctorComplement, ctorDifference, ctorOption, ctorUnit, rate, ratio, transfer, sum, ctorSlide, counter, ctorScaleInvert, ctorBooleanOption, product, dimensionEntity, contLength, contArea, primeFactors, option } from "../../components/math";
 import { axiomInput, deduce, last, to, createLazyMap, deduceAs, toPredicate } from "../../utils/deduce-utils";
 import { cislaNaOse } from "../cislaNaOse";
 const dveCislaNaOseParams = {
@@ -25,6 +25,7 @@ export default createLazyMap({
   8.2: () => ctvercovaSit().obsah,
   8.3: () => ctvercovaSit().obvod,
   9: () => novorocniPrani(),
+  10: () => hledaniObrazku(),
   11: () => sestiuhelnik(),
   12.1: () => vyvojObyvatel().panov,
   12.2: () => vyvojObyvatel().lidov,
@@ -36,6 +37,15 @@ export default createLazyMap({
   14.2: () => pyramida().floor7,
   14.3: () => pyramida().stairs,
 })
+
+function hledaniObrazku() {
+  return {
+    deductionTree: to(
+      commonSense("Otáčením každého obrazce lze získat ostatní obrazce. Vyjimkou z tohoto pravidla je obrazec C."),
+      option("C")
+    )
+  }
+}
 function souctovyTrojuhelnik() {
   const zbytekKRozdeleni = "zbytek k rozdělení"
   return {

@@ -558,6 +558,14 @@ export function ctorOption(optionValue: "A" | "B" | "C" | "D" | "E" | "F", expec
     expectedValue, expectedValueOptions, optionValue, compareTo: "closeTo"
   }
 }
+export function option(optionValue: "A" | "B" | "C" | "D" | "E" | "F"): Option {
+  return {
+    kind: 'eval-option',
+    expression: '',
+    expressionNice: '',
+    value: optionValue
+  }
+}
 export function ctorExpressionOption(optionValue: "A" | "B" | "C" | "D" | "E" | "F", expression: string): Option {
   return { kind: 'eval-option', expression, expressionNice: expression, optionValue }
 }
@@ -2836,11 +2844,14 @@ function inferToScaleRule(target: Container, factor: Container, last: Scale | In
     agent: last.agent ?? target.agent,
     quantity
   }
+  const moreOrLess = (quantity: number) => inverse
+    ? quantity <= 1
+    : quantity > 1;
 
   return {
     name: "scaleRule",
     inputParameters: extractKinds(target, factor, last),
-    question: isNumber(factor.quantity) ? `${factor.quantity > 1 ? "Zvětši" : "Zmenši"} ${factor.quantity} krát ${target.agent}.` : `${computeQuestion(result.quantity)}`,
+    question: isNumber(factor.quantity) ? `${moreOrLess(factor.quantity) ? "Zvětši" : "Zmenši"} ${factor.quantity} krát ${target.agent}.` : `${computeQuestion(result.quantity)}`,
     result,
     options: isNumber(target.quantity) && isNumber(factor.quantity) && isNumber(result.quantity) ? [
       {
@@ -3115,9 +3126,11 @@ export function inferenceRuleWithQuestion(children: Predicate[]) {
 function inferenceRuleEx(...args: Predicate[]): Question<any> {
   const [a, b, ...rest] = args;
   const last = rest?.length > 0 ? rest[rest.length - 1] : null;
-
   const kind = last?.kind;
 
+  if (last == null && a.kind == "eval-expr") {
+    return inferEvalToQuantityRule([], a)
+  }
   if (['sum-combine', "sum", 'product-combine', "product", "gcd", "lcd", "sequence", "tuple", "eval-expr", "eval-formula", "alligation"].includes(last?.kind)) {
 
     const arr = [a, b].concat(rest.slice(0, -1)) as Container[];
