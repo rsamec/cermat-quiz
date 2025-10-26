@@ -6,24 +6,31 @@ import { computeTreeMetrics } from "../utils/deduce-utils.js";
 
 const expressions = await readJsonFromFile(path.resolve('./src/data/math-answers.json'));
 const geometry = await readJsonFromFile(path.resolve('./src/data/math-geometry.json'));
-const isPlainObject = v => v && typeof v === 'object' && !Array.isArray(v);
 
-const mergeShallowImmutable = (...sources) =>
-  sources.reduce((acc, src) => {
-    if (!src) return acc;
-    return Object.keys(src).reduce((next, key) => {
-      const val = src[key];
-      const existing = next[key];
 
-      // If both are plain objects, shallow-merge their first level into a new object
-      if (isPlainObject(val) && isPlainObject(existing)) {
-        return { ...next, [key]: { ...existing, ...val } };
+function mergeShallow(target, ...sources) {
+  for (const source of sources) {
+    if (!source) continue;
+    for (const i in source) {
+      const value = source[i];
+      const key = value.key;
+      if (
+        typeof value === 'object' &&
+        value !== null &&
+        !Array.isArray(value) &&
+        typeof target[key] === 'object' &&
+        target[key] !== null &&
+        !Array.isArray(target[key])
+      ) {
+        // Merge one level deep
+        target[key] = { ...target[key], ...value };
+      } else {
+        target[key] = value;
       }
-
-      // Otherwise overwrite with src's value (arrays and primitives are overwritten)
-      return { ...next, [key]: val };
-    }, acc);
-  }, {});
+    }
+  }
+  return target;
+}
 
 function uniqueStepsCount(value) {
   return sum(Object.entries(value).map(([_,value]) => sum(value.results?.flatMap(d => d.TemplateSteps.flatMap(s => s.Steps.length)) ?? [])));
@@ -71,7 +78,7 @@ const expressionObject = toKeys(expressions,"expression")
 const geometryObject = toKeys(geometry, "geometry")
 const wordProblemObject = toWordProblemsKeys(wordProblems)
 
-const result = Object.values(mergeShallowImmutable(wordProblemObject, expressionObject, geometryObject))
+const result = Object.values(mergeShallow({},wordProblemObject, expressionObject, geometryObject))
 
 process.stdout.write(JSON.stringify(result))
 

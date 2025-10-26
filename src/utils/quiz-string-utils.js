@@ -199,3 +199,7 @@ export function uniqueQuestionCount(obj) {
   const keys = Object.keys(obj);
   return keys.map(d => d.split('.')[0]).filter((d, i, arr) => arr.indexOf(d) === i).length
 }
+
+export function formatNumber(d) {
+  return d.toLocaleString("cs-CZ", { maximumFractionDigits: 2, minimumFractionDigits: 0 })
+}

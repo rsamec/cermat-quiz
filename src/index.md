@@ -12,11 +12,18 @@ style: /assets/css/main.css
 </div>
 
 ```js
-import { categories} from './utils/quiz-utils.js';
-import { formatShortCode, formatSubject, formatPeriod, parseCode, baseMediaPublic } from './utils/quiz-string-utils.js';
-const quizLangCategories = await FileAttachment("./data/quiz-lang-categories.json").json();
-const quizGeneratedCategories = await FileAttachment("./data/quiz-categories.json").json();
+import { quizes } from './utils/quiz-utils.js';
+import { formatShortCode,formatShortCodeAlt, formatSubject, formatPeriod, parseCode, baseMediaPublic, formatNumber } from './utils/quiz-string-utils.js';
+
 const mathMetricsData = await FileAttachment("./data/math-metrics.json").json();
+const mathMetricsFlatData = mathMetricsData.flatMap(d => {
+  const category = parseCode(d.key).period
+  return [
+  { key: d.key, type: "Výrazy a rovnice", value: d.expression?.count ?? 0, category},
+  { key: d.key, type: "Konstrukční úlohy", value: d.geometry?.count ?? 0, category},
+  { key: d.key, type: "Slovní úlohy", value: d.wordProblem?.count ?? 0, category },
+]}
+);
 
 const mathMetricsCount = mathMetricsData.reduce((out,d) => {
   out.wordProblem.count+= d.wordProblem?.count ?? 0
@@ -29,39 +36,12 @@ const mathMetricsCount = mathMetricsData.reduce((out,d) => {
 },{wordProblem:{count: 0, steps:0}, geometry:{count:0, steps:0}, expression:{count:0, steps:0}});
 
 
-const quizCategories = ({
-  ...quizLangCategories,
-  ...quizGeneratedCategories
-})
 
-const quizQuestions = Object.entries(quizCategories).flatMap(([code, value]) =>
-  value.questions.map((d) => {
-    const parsedCode = parseCode(code);
-    return {
-      ...d,
-      code,
-      period: parsedCode.period,
-      subject: parsedCode.subject,
-      year: parsedCode.year,
-      Category: categories[parsedCode.subject][d.category],
-    };
-  })
-)
-
+const subjectWithPeriods = Object.fromEntries(d3.rollup(quizes, v => ({total: d3.sum(v, d => d.codes.length), tasks: d3.sum(v, d => d.codes.length * d.tasksRate), periods: v.map(d => d.period)}), d => d.subject))
 
 const subjects = ["math","cz","en","de"];
 const periods = ["4","6","8", "diploma"];
 
-const subjectWithPeriods = {
-  math:{periods, codes: codesBy({subject:'math'})},
-  cz:{periods, codes: codesBy({subject:'cz'})},
-  en:{periods:["diploma"],codes: codesBy({subject:'en'})},
-  de:{periods:["diploma"],codes: codesBy({subject:'de'})},
-}
-
-function codesBy({subject, period}){
-  return Object.keys(Object.groupBy(quizQuestions.filter((d) => (subject == null || d.subject === subject) && (period == null || d.period === period)).sort((f,s) => s.year - f.year), ({code}) => code))
-}
 const code = "M9D-2025";
 const notebookVideosData = await FileAttachment("./data/notebook-videos.json").json();
 const notebookVideos = notebookVideosData[code] ?? [];
@@ -74,6 +54,79 @@ const videos = notebookVideos.map(d => {
     id: d.id,
   }
 })
+
+function plotWaffle(rawData) {
+
+  const data = rawData.map((d) => ({code:d.key,period: parseCode(d.key).period,...d}));
+  const tasksPerPeriod = quizes.filter(d => d.subject == "math")
+    .reduce((out,d) => {
+      out[d.period] = d.tasksRate;
+      return out;
+    },{})
+
+  
+  const groupedData = [...d3.rollup(data, v => ({totalPoints:d3.sum(v, d => d.value), maxTasks: v.map(d => d.code).filter((value, index, array) => array.indexOf(value) === index).length}), d => d.period)].map(([period,value]) => ({...value, maxTotalPoints: value.maxTasks * tasksPerPeriod[period], period})).sort((f,s) => f.maxTotalPoints - s.maxTotalPoints);
+  return Plot.plot({
+    grid: true,
+    axis: null,
+    label: null,
+    width,
+    height: 260,
+    marginTop: 50,
+    marginBottom: 70,
+    marks: [
+      Plot.axisFx({
+        lineWidth: 10,
+        anchor: "bottom",
+        dy: 30,
+        fontSize: 16,
+        text: (d) => formatPeriod(d),
+      }),
+      Plot.waffleY(groupedData, { y: "maxTotalPoints", fx:"period", fillOpacity: 0.4, rx: "100%" }),
+      Plot.waffleY(groupedData, {
+        fx: "period",
+        y: "totalPoints",
+        rx: "100%",
+        fill: "orange",
+        sort: { fx: "y", reverse: true }
+      }),
+      Plot.text(groupedData, {
+        fx: "period",
+        text: (d) =>
+          (d.totalPoints / d.maxTotalPoints).toLocaleString("en-US", {
+            style: "percent"
+          }),
+        frameAnchor: "bottom",
+        lineAnchor: "top",
+        dy: 6,
+        fill: "orange",
+        fontSize: 30,
+        fontWeight: "bold"
+      }),
+      Plot.text(groupedData, {
+        fx: "period",
+        text: (d) => `${d.totalPoints}`,
+        frameAnchor: "top",
+        lineAnchor: "bottom",
+        dy: -25,
+        fill: "orange",
+        fontSize: 30,
+        fontWeight: "bold"
+      }),
+      Plot.text(groupedData, {
+        fx: "period",
+        text: (d) => `(${d.maxTotalPoints})`,
+        frameAnchor: "top",
+        lineAnchor: "bottom",
+        dy: -5,
+        fontSize: 16,
+        fontWeight: "bold"
+      }),
+      
+    ]
+  })
+}
+
 ```
 
 ## Zadání úloh
@@ -84,11 +137,11 @@ const videos = notebookVideos.map(d => {
     <div class="v-stack v-stack--s">
       <div class="h-stack h-stack--l">
         <div>
-          <span class="big">${quizQuestions.filter((d) => d.subject === subject).length.toLocaleString("en-US")}</span>
+          <span class="big">${subjectWithPeriods[subject].tasks}</span>
           <span>úloh</span>
         </div>
         <div>
-          <span class="big">${subjectWithPeriods[subject].codes.length.toLocaleString("en-US")}</span>
+          <span class="big">${subjectWithPeriods[subject].total}</span>
           <span>testů</span>
         </div>
       </div>
@@ -102,6 +155,42 @@ const videos = notebookVideos.map(d => {
 
 ## Řešení úloh
 
+Matika - % vyřešených úloh
+${
+  plotWaffle(mathMetricsFlatData)
+}
+
+<details>
+<summary>Přehled za jednotlivé testy</summary>
+${
+  Plot.plot({
+  marginLeft: 120,
+  grid:true,
+  color: { legend: true },
+  x:{
+    label:'Úlohy'    
+  },
+  y:{
+    label: null,
+    tickFormat: d => formatShortCodeAlt(d)
+  },
+  marks: [
+    Plot.waffleX(
+      mathMetricsFlatData,
+      Plot.groupY(
+        { x: "sum" },
+        {
+          fill: "type",
+          y: "key",
+          x: "value",
+        }
+      )
+    )
+  ]
+})
+}
+</details>
+
 <div class="grid grid-cols-4" style="grid-auto-rows: auto;">
   <div class="card">
     <h2><strong>Vyřešené slovní úlohy</strong></h2>
@@ -112,7 +201,7 @@ const videos = notebookVideos.map(d => {
           <span>úloh</span>
         </div>
         <div>
-          <span class="big">${mathMetricsCount.wordProblem.steps}</span>
+          <span class="big">${formatNumber(mathMetricsCount.wordProblem.steps)}</span>
           <span>kroků řešení</span>
         </div>
       </div>
@@ -128,7 +217,7 @@ const videos = notebookVideos.map(d => {
           <span>úloh</span>
         </div>
         <div>
-          <span class="big">${mathMetricsCount.geometry.steps}</span>
+          <span class="big">${formatNumber(mathMetricsCount.geometry.steps)}</span>
           <span>kroků řešení</span>
         </div>
       </div>
@@ -144,7 +233,7 @@ const videos = notebookVideos.map(d => {
           <span>úloh</span>
         </div>
         <div>
-          <span class="big">${mathMetricsCount.expression.steps}</span>
+          <span class="big">${formatNumber(mathMetricsCount.expression.steps)}</span>
           <span>kroků řešení</span>
         </div>
       </div>

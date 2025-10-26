@@ -79,6 +79,7 @@ export default {
         { name: "Tisk", path: "/print" },
         { name: "Integrace", path: "/embedding" },
         { name: "AI", path: "/ai" },
+        // { name: "Kategoie", path:"/categories"}
       ]
     },
     {

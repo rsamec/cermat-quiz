@@ -58,22 +58,23 @@ export const categories = ({
 })
 
 
-const generateCode = (code, variants, years=[2023,2024]) =>
+const generateCode = (code, variants, years = [2023, 2024]) =>
   years.flatMap(year => variants.flatMap(v => `${code}${v}-${year}`));
 
 export const quizes = [
-  { subject: 'en', period: 'diploma', codes: ["AJA-2023", "AJB-2023", "AJA-2024", "AJB-2024"] },
-  { subject: 'de', period: 'diploma', codes: ["DEA-2023"] },
-  { subject: 'cz', period: '8', codes: generateCode("C5", ["A"]).concat("C5B-2023") },
-  { subject: 'cz', period: '4', codes: generateCode("C9", ["A", "B", "C", "D"]).concat("C9I-2025", "C9A-2025")},
-  { subject: 'cz', period: '6', codes: generateCode("C7", ["A"]) },
-  { subject: 'cz', period: 'diploma', codes: generateCode("CM", ["A", "B"]) },
-  { subject: 'math', period: '8', codes: generateCode("M5", ["A"]).concat("M5A-2025", "M5B-2025") },
-  { subject: 'math', period: '4', codes: generateCode("M9", ["A", "B", "C", "D"], [2023, 2024, 2025]).concat("M9I-2025") },
-  { subject: 'math', period: '6', codes: generateCode("M7", ["A"]).concat("M7A-2025", "M7B-2025") },
-  { subject: 'math', period: 'diploma', codes: ["MMA-2025", "MMA-2023", "MMB-2023"] },
+  { subject: 'en', period: 'diploma', tasksRate: 64, codes: ["AJA-2023", "AJB-2023", "AJA-2024", "AJB-2024"] },
+  { subject: 'de', period: 'diploma', tasksRate: 64, codes: ["DEA-2023"] },
+  { subject: 'cz', period: '8', tasksRate: 28, codes: generateCode("C5", ["A"]).concat("C5B-2023") },
+  { subject: 'cz', period: '4', tasksRate: 30, codes: generateCode("C9", ["A", "B", "C", "D"]).concat("C9I-2025", "C9A-2025") },
+  { subject: 'cz', period: '6', tasksRate: 28, codes: generateCode("C7", ["A"]) },
+  { subject: 'cz', period: 'diploma', tasksRate: 32, codes: generateCode("CM", ["A", "B"]) },
+  { subject: 'math', period: '8', tasksRate: 14, codes: generateCode("M5", ["A"]).concat("M5A-2025", "M5B-2025") },
+  { subject: 'math', period: '4', tasksRate: 16, codes: generateCode("M9", ["A", "B", "C", "D"], [2023, 2024, 2025]).concat("M9I-2025") },
+  { subject: 'math', period: '6', tasksRate: 16, codes: generateCode("M7", ["A"]).concat("M7A-2025", "M7B-2025") },
+  { subject: 'math', period: 'diploma', tasksRate: 25, codes: ["MMA-2025", "MMA-2023", "MMB-2023"] },
   //{ subject: 'math', period: 'diploma', codes:[]},
 ]
+
 // export const quizes = [
 //   { subject: 'en', period: 'diploma', codes: ["AJA-2023", "AJB-2023", "AJA-2024", "AJB-2024"] },
 //   { subject: 'de', period: 'diploma', codes: ["DEA-2023"] },
@@ -86,25 +87,25 @@ export const quizes = [
 //   { subject: 'math', period: '6', codes: generateCode("M7", ["A", "B"]) },
 //   { subject: 'math', period: 'diploma', codes: [] },
 // ]
-export const printedPages =  [2, 3, 4].map(columnsCount => ({ pageSize: 'A4', columnsCount, orientation: 'landscape' }))
-.concat([1, 2, 3].map(columnsCount => ({ pageSize: 'A4', columnsCount, orientation: 'portrait' })))
-.concat([4, 5, 6, 7, 8].map(columnsCount => ({ pageSize: 'A3', columnsCount, orientation: 'landscape' })))
-.concat([3, 4, 5, 6].map(columnsCount => ({ pageSize: 'A3', columnsCount, orientation: 'portrait' })));
+export const printedPages = [2, 3, 4].map(columnsCount => ({ pageSize: 'A4', columnsCount, orientation: 'landscape' }))
+  .concat([1, 2, 3].map(columnsCount => ({ pageSize: 'A4', columnsCount, orientation: 'portrait' })))
+  .concat([4, 5, 6, 7, 8].map(columnsCount => ({ pageSize: 'A3', columnsCount, orientation: 'landscape' })))
+  .concat([3, 4, 5, 6].map(columnsCount => ({ pageSize: 'A3', columnsCount, orientation: 'portrait' })));
 
 
 
 export const predicatesCategories = new Map([
-  ["Porovnání rozdílem",["comp", "comp-diff", "diff"]],
-  ["Porovnání podílem (poměr)",["comp-ratio"]],
+  ["Porovnání rozdílem", ["comp", "comp-diff", "diff"]],
+  ["Porovnání podílem (poměr)", ["comp-ratio"]],
   ["Část z celku", ["ratio"]],
   ["Část ku části", ["ratios"]],
-  ["Stav a změna stavu", ["delta","transfer"]],
-  ["Rozdělování", ["rate","quota","frequency"]],
-  ["Seskupování", ["sum","sum-combine", "product", "product-combine"]],
+  ["Stav a změna stavu", ["delta", "transfer"]],
+  ["Rozdělování", ["rate", "quota", "frequency"]],
+  ["Seskupování", ["sum", "sum-combine", "product", "product-combine"]],
   ["Úměrnosti", ["proportion"]],
-  ["Škálování", ["scale","slace-invert","nth-factor"]],
-  ["Posuny",["slide","slide-invert"]],
-  ["Převod jednotek", ["unit"]],  
+  ["Škálování", ["scale", "slace-invert", "nth-factor"]],
+  ["Posuny", ["slide", "slide-invert"]],
+  ["Převod jednotek", ["unit"]],
   ["Zaokrouhlování", ["round"]],
   ["Největší společný dělitel", ["gcd"]],
   ["Nejmenší společný násobek", ["lcd"]],
@@ -112,32 +113,32 @@ export const predicatesCategories = new Map([
   ["Vzorce", ["eval-formula"]],
   ["Pythagorova věta", ["pythagoras"]],
   ["Vztahy úhlů", ["comp-angle", "triangle"]],
-  ["Vzory opakování", ["sequence","nth", "pattern","balanced-partition"]],
+  ["Vzory opakování", ["sequence", "nth", "pattern", "balanced-partition"]],
   ["Zdravý rozum", ["common-sense"]],
 ])
 
 export const rulesCategories = new Map([
-  ["Porovnání rozdílem", [`compareRule`,'toCompareRule', `compareDiffRule`,'toCompareDiffRule', 'toDifferenceRule']],
-  ["Porovnání poměrem", [`ratioCompareRule`,'toRatioCompareRule']],  
-  ["Porovnání rozdílem z celku", [`partEqualRule`]],  
-  ["Část z celku", ["partToWholeRule", "toPartWholeRatio"]],  
+  ["Porovnání rozdílem", [`compareRule`, 'toCompareRule', `compareDiffRule`, 'toCompareDiffRule', 'toDifferenceRule']],
+  ["Porovnání poměrem", [`ratioCompareRule`, 'toRatioCompareRule']],
+  ["Porovnání rozdílem z celku", [`partEqualRule`]],
+  ["Část z celku", ["partToWholeRule", "toPartWholeRatio"]],
   ["Část ku části", ["partToPartRule", "toRatiosRule"]],
-  ["Doplněk k celku", [`partWholeComplementRule`]],  
-  ["Propojení poměru s část–celek", ["partWholeCompareRule","toPartWholeCompareRule"]],    
-  ["Propojení poměru s část-část", ["compRatiosToCompRule","convertRatioCompareToRatiosRule"]],
-  ["Převod mezi část-celek a poměrem",['convertPartWholeToRatioCompareRule','convertRatioCompareToRatioRule']],
-  ["Převod mezi část-část a poměrem", ["convertRatioCompareToTwoPartRatioRule","convertTwoPartRatioToRatioCompareRule"]],    
+  ["Doplněk k celku", [`partWholeComplementRule`]],
+  ["Propojení poměru s část–celek", ["partWholeCompareRule", "toPartWholeCompareRule"]],
+  ["Propojení poměru s část-část", ["compRatiosToCompRule", "convertRatioCompareToRatiosRule"]],
+  ["Převod mezi část-celek a poměrem", ['convertPartWholeToRatioCompareRule', 'convertRatioCompareToRatioRule']],
+  ["Převod mezi část-část a poměrem", ["convertRatioCompareToTwoPartRatioRule", "convertTwoPartRatioToRatioCompareRule"]],
   ["Převod část-část na část-celek", ["convertPartToPartToPartWholeRule"]],
   ["Převod mezi poměrem a procentem", ["togglePartWholeAsPercentRule", "convertPercentRule"]],
   ["Obrácení poměru", ["invertRatioCompareRule"]],
-  ["Obrácení poměrů část-část",["invertRatiosRule", "reverseRatiosRule"]],
-  ["Rozdíl jako poměr", ['toDifferenceAsRatioRule']],  
+  ["Obrácení poměrů část-část", ["invertRatiosRule", "reverseRatiosRule"]],
+  ["Rozdíl jako poměr", ['toDifferenceAsRatioRule']],
   ["Rozdíl z absolutního a relativního porovnání", ["ratioCompareToCompareRule"]],
-  ["Řetězení poměrů", [`transitiveRatioCompareRule`, "transitiveCompareRule","transitiveRatioRule","transitiveRateRule"]],
-  
-  ["Spojování", [`sumRule`,`productRule`]],
-  ["Rozdělení (rovnoměrně)", [`rateRule`,"toRateRule"]],  
-  ["Rozdělení dle kvóty", [`quotaRule`,"toQuotaRule"]],  
+  ["Řetězení poměrů", [`transitiveRatioCompareRule`, "transitiveCompareRule", "transitiveRatioRule", "transitiveRateRule"]],
+
+  ["Spojování", [`sumRule`, `productRule`]],
+  ["Rozdělení (rovnoměrně)", [`rateRule`, "toRateRule"]],
+  ["Rozdělení dle kvóty", [`quotaRule`, "toQuotaRule"]],
   ["Rozdělení dle rate", ["compareToRateRule"]],
 
   ["Úměrnosti", [`proportionRule`]],
@@ -145,35 +146,35 @@ export const rulesCategories = new Map([
 
   ["Změny stavu", [`deltaRule`, "toDeltaRule"]],
   ["Transfer", [`transferRule`]],
-    
+
   ["NSD (největší společný dělitel)", [`gcdRule`]],
   ["NSN (nejmenší společný násobek)", [`lcdRule`]],
-  
+
 
   ["Převod jednotek", [`convertToUnitRule`]],
   ["Zaokrouhlení", [`roundToRule`]],
 
   ["Pythagorovy věta", [`pythagorasRule`]],
   ["Pravidla úhlu v trojúhelníku", ["triangleAngleRule"]],
-  ["Vztahy úhlů", [`angleCompareRule`]],  
+  ["Vztahy úhlů", [`angleCompareRule`]],
 
   ["Posuny", ["toSlideRule"]],
   ["Škálování", ["scaleRule"]],
-  ["Škálování část-část", ["mapRationsByFactorRule", "nthPartFactorByRule","nthPartScaleByRule"]],
+  ["Škálování část-část", ["mapRationsByFactorRule", "nthPartFactorByRule", "nthPartScaleByRule"]],
 
   ["Míšení(aligace)", ["alligationRule"]],
 
   ["Vyhodnocení výrazu/vzorce", ["evalToQuantityRule"]],
   ["Zjednodušení výrazu", ["simplifyExprRule"]],
   ["Řešení rovnice", ["solveEquationRule"]],
-  
+
   ["Vzor opakování", ["sequenceRule"]],
   ["n-tého členu", ["nthTermRule"]],
   ["n-té pozice", ["nthPositionRule"]],
   ["Uspořádané n-tice", ["tupleRule"]],
   ["Vyvážené rozdělování", ["balancedPartitionRule"]],
-  
-  ["Volba z možností", ["evalToOptionRule"]],  
-  
+
+  ["Volba z možností", ["evalToOptionRule"]],
+
 ])
 
