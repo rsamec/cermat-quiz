@@ -1,5 +1,5 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorOption, ctorRatios, nthPart, rate, ratio, ratios, sum, product, counter, ctorScaleInvert, ctorScale, ctorSlide, ctorSlideInvert, evalExprAsCont, comp, ctorBooleanOption, ctorUnit, contLength, contArea, dimensionEntity } from "../../components/math";
-import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorOption, ctorRatios, nthPart, rate, ratio, sum, product, counter, ctorScaleInvert, ctorScale, ctorSlide, ctorSlideInvert, evalExprAsCont, ctorBooleanOption, ctorUnit, contLength, contArea, dimensionEntity, type Container } from "../../components/math";
+import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont, toPredicate } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   1.1: () => hledaneCisla().cislo1,
@@ -60,16 +60,18 @@ function prevody() {
             cont("3 kg", 3, entityHmotnost, "kg"),
             ctorUnit("g")
           ),
-          deduce(
+          toPredicate<Container>(
             deduce(
-              cont("kilogram", 1, entityHmotnost, "kg"),
-              ctorUnit("g")
+              deduce(
+                cont("kilogram", 1, entityHmotnost, "kg"),
+                ctorUnit("g")
+              ),
+              ratio("kilogram", "1/5 kilogramu", 1 / 5)
             ),
-            ratio("kilogram", "1/5", 1 / 5)
-          ),
-          sum("rozdíl")
+            node => ({ kind: 'comp-diff', quantity: node.quantity, agentMinuend: "hledané číslo", agentSubtrahend: "3 kg", entity: entityHmotnost, unit: "g" })
+          )
         ),
-        counter("4 krát", 4),
+        counter("zmenšení", 4),
         ctorScaleInvert("hledané číslo")
       )
     },
@@ -143,13 +145,13 @@ function hledaneCisla() {
         deduce(
           deduce(
             cont("známý výsledek", 20, entity),
-            counter("zdojnásobení", 2),
+            counter("zmenšení", 2),
             ctorScaleInvert("číslo bez násobení")
           ),
           cont("opak přičtené číslo", 3, entity),
           ctorDifference("číslo bez přičteného čísla")
         ),
-        counter("dělení 7", 7),
+        counter("zvětšení", 7),
         ctorScale("neznáné číslo bez dělení")
       )
     },

@@ -88,9 +88,9 @@ export default function rules() {
     ],
 
     substract: [
-      deduceRule(cont("Ája a Honzík", 8, "sešity"), b, ctor('comp-diff')),
-      deduceRule(cont("Ája a Honzík", 8, "sešity"), compDiff("Ája a Honzík", "Honzík", 2, "sešity")),
-      deduceRule(b, compDiff("Ája a Honzík", "Honzík", 2, "sešity"))
+      deduceRule(cont("dohromady", 8, "sešity"), b, ctor('comp-diff')),
+      deduceRule(cont("dohromady", 8, "sešity"), compDiff("dohromady", "Honzík", 2, "sešity")),
+      deduceRule(b, compDiff("dohromady", "Honzík", 2, "sešity"))
     ],
     sum: [
       deduceRule(a, b, cont("Pepa", 4, "sešity"), sum("dohromady")),

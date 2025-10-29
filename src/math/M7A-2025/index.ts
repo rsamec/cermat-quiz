@@ -34,12 +34,14 @@ function obrazec() {
 
   const vzorCtverce = pattern({
     nthTerm: '(n % 2)==0 ? 0: n',
+    nthTermDescription: 'pro sudá je 0, pro lichá je n',
     nthPosition: '',
     nthTermFormat: n => n % 2 == 0 ? "0" : [1].concat(range((n - 1) / 2, 1).map(_ => 2)).join(" + ")
   }, { entity: "čtverec" })
 
   const vzorObdelnik = pattern({
     nthTerm: '(n % 2)==0 ? 1/2*n: 0',
+    nthTermDescription: 'pro lichá je 0, pro sudá je polovina n',
     nthPosition: '',
     nthTermFormat: n => n % 2 == 0 ? range(n / 2, 1).map(_ => 1).join(" + ") : "0"
   }, { entity: "obdelník" })

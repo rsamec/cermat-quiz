@@ -74,3 +74,15 @@ export function download(value, name = "untitled", label = "Save") {
 
   return a;
 }
+
+export function partionArray(array, predicate){
+  return array.reduce((acc, d) => {
+    if (predicate(d)){
+      acc[0].push(d)
+    }
+    else {
+      acc[1].push(d)
+    }
+    return acc    
+  }, [[],[]])
+}

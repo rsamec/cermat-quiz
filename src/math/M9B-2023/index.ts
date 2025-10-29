@@ -1,4 +1,4 @@
-import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, evalExprAsCont, counter, proportion, productCombine, ctorLinearEquation, comp, ctorScale, ctorComplementCompRatio, ctorSlideInvert, ctorScaleInvert, ctorBooleanOption, pythagoras, contArea, dimensionEntity, contLength, squareNumbersPattern, nth, halfProduct, formulaRegistry, evalFormulaAsCont, rectangleArea, baseAreaVolume, cuboidVolume, doubleProduct, circleArea } from "../../components/math";
+import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, evalExprAsCont, counter, proportion, productCombine, ctorLinearEquation, comp, ctorComplementCompRatio, ctorSlideInvert, ctorScaleInvert, ctorBooleanOption, pythagoras, contArea, dimensionEntity, contLength, squareNumbersPattern, nth, halfProduct, formulaRegistry, evalFormulaAsCont, rectangleArea, baseAreaVolume, cuboidVolume, doubleProduct, circleArea, half, ctorScale } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -331,8 +331,8 @@ function hranol() {
                     last(vyska),
                     cuboidVolume("kvádr")
                 ),
-                counter("zmenšení", 2),
-                ctorScaleInvert("hranol")
+                half(),
+                ctorScale("hranol")
             ),
             ctorOption("C", 300)
         )

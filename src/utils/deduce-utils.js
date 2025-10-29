@@ -1978,7 +1978,7 @@ function inferNthTermRule(a, b) {
     question: `Vypo\u010Dti ${result.entity}?`,
     result,
     options: isNumber(a.quantity) && isNumber(result.quantity) ? [
-      { tex: b.kind === "pattern" ? b.nthTerm : formatSequence(b.type, a.quantity), result: formatNumber(result.quantity), ok: true }
+      { tex: b.kind === "pattern" ? b.nthTermDescription ?? b.nthTerm : formatSequence(b.type, a.quantity), result: formatNumber(result.quantity), ok: true }
     ] : []
   };
 }
@@ -2578,6 +2578,18 @@ function getAgentName(agent, transferOrder) {
   return name ?? agent.name;
 }
 var unique = (value, index, array) => array.indexOf(value) === index;
+
+// src/utils/common-utils.js
+function partionArray(array, predicate) {
+  return array.reduce((acc, d) => {
+    if (predicate(d)) {
+      acc[0].push(d);
+    } else {
+      acc[1].push(d);
+    }
+    return acc;
+  }, [[], []]);
+}
 
 // node_modules/fraction.js/dist/fraction.mjs
 if (typeof BigInt === "undefined")
@@ -6388,7 +6400,7 @@ function jsonToMarkdownTree(node, level = 0) {
       const child = node.children[i];
       const isConclusion = i === node.children.length - 1;
       if (isConclusion && node.context)
-        markdown.push(`${indent}- ${node.context}
+        markdown.push(`${indent}- *${node.context}*
 `);
       markdown = markdown.concat(jsonToMarkdownTree(child, level + (isConclusion ? 0 : 1)));
     }
@@ -6531,15 +6543,19 @@ function jsonToMarkdownChat(node, { predicates, rules, formulas } = { predicates
       const premises = arr.slice(0, -1);
       const conclusion = arr[arr.length - 1];
       const answer = q?.options?.find((d) => d.ok);
-      const formattedPremises = premises.map((d) => {
-        return isPredicate(d) ? predicates.includes(d.kind) || d.kind == "eval-formula" && formulas.includes(d.formulaName) ? `==${formatPredicate(d, chatFormattingFunc(0))}==` : formatPredicate(d, chatFormattingFunc(0)) : d;
+      const [predicates2, other] = partionArray(premises, (d) => isPredicate(d));
+      const body = predicates2.map((d) => {
+        return predicates2.includes(d.kind) || d.kind == "eval-formula" && formulas.includes(d.formulaName) ? `==${formatPredicate(d, chatFormattingFunc(0))}==` : formatPredicate(d, chatFormattingFunc(0));
       }).filter((d) => !isEmptyOrWhiteSpace(d)).map((d) => `- ${d}`).join("\n");
-      flatStructure.push((q != null ? `${rules.includes(q.name) ? `==${q.question.trim()}==` : q.question}
-${formattedPremises}
+      const context = other.length == 0 ? "" : `Kontext: *${other.join("\n")}*
 
-` + (answer != null ? `${rules.includes(q.name) ? "==V\xFDpo\u010Det==" : "V\xFDpo\u010Det"}: ${answer.tex} = ${answer.result}` : "") : `${formattedPremises}`) + `
+`;
+      flatStructure.push((q != null ? `${context}${rules.includes(q.name) ? `==${q.question.trim()}==` : q.question}
+${body}
 
-${rules.includes(q?.name) ? "==Z\xE1v\u011Br==" : "Z\xE1v\u011Br"}:${predicates.includes(conclusion.kind) ? `==${formatPredicate(conclusion, chatFormattingFunc(1))}==` : formatPredicate(conclusion, chatFormattingFunc(1))}
+` + (answer != null ? `${rules.includes(q.name) ? "==V\xFDpo\u010Det==" : "V\xFDpo\u010Det"}: ${answer.tex} = ${answer.result}` : "") : `${context}${body}`) + `
+
+${rules.includes(q?.name) ? "==Z\xE1v\u011Br==" : "Z\xE1v\u011Br"}:${predicates2.includes(conclusion.kind) ? `==${formatPredicate(conclusion, chatFormattingFunc(1))}==` : formatPredicate(conclusion, chatFormattingFunc(1))}
 
 `);
     }

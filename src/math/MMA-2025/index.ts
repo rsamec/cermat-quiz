@@ -1,4 +1,4 @@
-import { commonSense, comp, compRatio, compRelativePercent, cont, ctor, ctorDifference, ctorLinearEquation, product, ctorRatios, sum, ctorUnit, evalExprAsCont, pythagoras, rate, ratio, counter, type Container, ctorOption, double, ctorScaleInvert, simplifyExpr, evalExprAsRate, ctorRound, contLength, dimensionEntity, EmptyUnit, primeFactors, squareArea, rectangleArea, triangleArea } from "../../components/math";
+import { commonSense, comp, compRatio, compRelativePercent, cont, ctor, ctorDifference, ctorLinearEquation, product, ctorRatios, sum, ctorUnit, evalExprAsCont, pythagoras, rate, ratio, counter, type Container, ctorOption, double, ctorScaleInvert, simplifyExpr, evalExprAsRate, ctorRound, contLength, dimensionEntity, EmptyUnit, primeFactors, squareArea, rectangleArea, triangleArea, half } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "../../utils/deduce-utils";
 
 
@@ -258,8 +258,8 @@ function vzestupHladinyVody() {
     deduceAs("válec")(
       deduce(
         contLength("válec průměr", 12),
-        double(),
-        ctorScaleInvert("válec poloměr")
+        half(),
+        ctorScale("válec poloměr")
       ),
       evalExprAsRate("r^2*Pi", { kind: 'rate', agent: 'voda', entity: dim.volume, entityBase: dim.length, baseQuantity: 1 })
     )

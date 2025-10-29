@@ -75,7 +75,7 @@ const opacity = 0.3;
 Slovní úlohy jsou řešeny rozložením na podproblémy, které jsou řešitelné pomocí jednoduchých početních operacích.
 
 <div class="tip" label="Řešení logickou úvahou">
-  Žádné zavádění proměných. Žádné sestavování rovnic. Žádné složité výpočty.
+  Žádné sestavování rovnic. Žádné výpočty.
 </div>
 
 Zápis řešení je ve formě dedukčního stromu a slouží jako __strukturovaná reprezentace řešení__ úlohy.

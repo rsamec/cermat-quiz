@@ -55,7 +55,7 @@ function souctovyTrojuhelnik() {
         counter("zadaná hodnota", 7),
         ctorDifference(zbytekKRozdeleni)
       ),
-      counter("trojnásobek", 3),
+      counter("zmenšení", 3),
       ctorScaleInvert("hodnota v šedém poli")
     )
   }

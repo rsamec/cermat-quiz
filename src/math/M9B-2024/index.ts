@@ -1,4 +1,4 @@
-import { commonSense, compAngle, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorUnit, pythagoras, rate, ratio, sum, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorScaleInvert, ctorBooleanOption, triangleAngle, contLength, contArea, dimensionEntity, doubleProduct, triangleArea, circleArea } from "../../components/math";
+import { commonSense, compAngle, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorUnit, pythagoras, rate, ratio, sum, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorScaleInvert, ctorBooleanOption, triangleAngle, contLength, contArea, dimensionEntity, doubleProduct, triangleArea, circleArea, counter, half, ctorScale } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -196,8 +196,8 @@ function pulkruh() {
           ),
           circleArea('vepsaný kruh')
         ),
-        double(),
-        ctorScaleInvert("šedý půlkruh")
+        half(),
+        ctorScale("šedý půlkruh")
       ),
       ctorOption("D", 25.12)
     )

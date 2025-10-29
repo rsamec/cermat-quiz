@@ -1,5 +1,6 @@
 import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate } from "../components/math.js"
 import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison, Frequency } from "../components/math.js"
+import { partionArray } from '../utils/common-utils.js';
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
 import { evaluate, substitute, toEquationExprAsTex } from "./math-solver.js"
 import Fraction from 'fraction.js';
@@ -232,7 +233,7 @@ export function jsonToMarkdownTree(node, level = 0) {
     for (let i = node.children.length - 1; i >= 0; i--) {
       const child = node.children[i];
       const isConclusion = i === node.children.length - 1;
-      if (isConclusion && node.context) markdown.push(`${indent}- ${node.context}\n`)
+      if (isConclusion && node.context) markdown.push(`${indent}- *${node.context}*\n`)
       markdown = markdown.concat(jsonToMarkdownTree(child, level + (isConclusion ? 0 : 1)))
     }
   }
@@ -404,19 +405,23 @@ export function jsonToMarkdownChat(node, { predicates, rules, formulas }: { pred
       const conclusion = arr[arr.length - 1];
 
       const answer = q?.options?.find(d => d.ok)
-      const formattedPremises = premises.map(d => {
-        return isPredicate(d)
-          ? predicates.includes(d.kind) || (d.kind == "eval-formula" && formulas.includes(d.formulaName))
+      const [predicates, other] = partionArray(premises, d => isPredicate(d));
+      const body = predicates.map(d => {
+        return predicates.includes(d.kind) || (d.kind == "eval-formula" && formulas.includes(d.formulaName))
             ? `==${formatPredicate(d, chatFormattingFunc(0))}==`
-            : formatPredicate(d, chatFormattingFunc(0))
-          : d
+            : formatPredicate(d, chatFormattingFunc(0))          
       }).filter(d => !isEmptyOrWhiteSpace(d)).map(d => `- ${d}`).join("\n");
 
+      const context = other.length == 0
+        ? ''
+        : `Kontext: *${other.join("\n")}*\n\n`
+      
+
       flatStructure.push((q != null
-        ? `${rules.includes(q.name) ? `==${q.question.trim()}==` : q.question}\n${formattedPremises}\n\n` + (answer != null
+        ? `${context}${rules.includes(q.name) ? `==${q.question.trim()}==` : q.question}\n${body}\n\n` + (answer != null
           ? `${rules.includes(q.name) ? '==Výpočet==' : 'Výpočet'}: ${answer.tex} = ${answer.result}`
           : '')
-        : `${formattedPremises}`) + '\n\n' + `${rules.includes(q?.name) ? '==Závěr==' : 'Závěr'}:${predicates.includes(conclusion.kind)
+        : `${context}${body}`) + '\n\n' + `${rules.includes(q?.name) ? '==Závěr==' : 'Závěr'}:${predicates.includes(conclusion.kind)
           ? `==${formatPredicate(conclusion, chatFormattingFunc(1))}==`
           : formatPredicate(conclusion, chatFormattingFunc(1))}` + "\n\n");
     }

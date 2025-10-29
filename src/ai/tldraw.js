@@ -5863,7 +5863,7 @@ function inferNthTermRule(a, b) {
     question: `Vypo\u010Dti ${result.entity}?`,
     result,
     options: isNumber2(a.quantity) && isNumber2(result.quantity) ? [
-      { tex: b.kind === "pattern" ? b.nthTerm : formatSequence(b.type, a.quantity), result: formatNumber(result.quantity), ok: true }
+      { tex: b.kind === "pattern" ? b.nthTermDescription ?? b.nthTerm : formatSequence(b.type, a.quantity), result: formatNumber(result.quantity), ok: true }
     ] : []
   };
 }

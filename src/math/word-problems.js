@@ -175,7 +175,7 @@ function convertToNiceExpression(expectedValue, compareTo, expectedValueOptions)
 }
 function convertToExpression(expectedValue, compareTo, expectedValueOptions, variable = "x") {
   const convertedValue = expectedValueOptions.asFraction ? helpers.convertToFraction(expectedValue) : expectedValueOptions.asPercent ? expectedValue / 100 : expectedValue;
-  const toCompare = (comp3) => `${variable} ${comp3} ${convertedValue}`;
+  const toCompare = (comp2) => `${variable} ${comp2} ${convertedValue}`;
   switch (compareTo) {
     case "equal":
       return toCompare("==");
@@ -236,15 +236,16 @@ function ratio(whole, part, ratio2) {
 function percent(whole, part, percent2) {
   return { kind: "ratio", whole, part, ratio: percent2 / 100, asPercent: true };
 }
-function ratios(whole, parts, ratios3) {
-  return { kind: "ratios", parts, whole, ratios: ratios3 };
+function ratios(whole, parts, ratios2) {
+  return { kind: "ratios", parts, whole, ratios: ratios2 };
 }
-function pattern({ nthTerm, nthPosition, nthTermFormat }, { entity: entity3, unit }) {
+function pattern({ nthTerm, nthPosition, nthTermFormat, nthTermDescription }, { entity: entity3, unit }) {
   return {
     kind: "pattern",
     entity: entity3,
     unit,
     nthTerm,
+    nthTermDescription,
     nthTermFormat,
     nthPosition
   };
@@ -1208,8 +1209,8 @@ function sumRule(items, b) {
       throw `Sum only part to whole ratio with the same whole ${bases}`;
     }
     ;
-    const ratios3 = items.map((d) => d.ratio);
-    const ratio2 = areNumbers(ratios3) ? ratios3.reduce((out, d) => out += d, 0) : wrapToRatio(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
+    const ratios2 = items.map((d) => d.ratio);
+    const ratio2 = areNumbers(ratios2) ? ratios2.reduce((out, d) => out += d, 0) : wrapToRatio(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
     return items.every((d) => d.kind === "ratio") ? { kind: "ratio", whole: bases[0], ratio: ratio2, part: b.wholeAgent, asPercent: items[0].asPercent } : { kind: "comp-ratio", agentA: b.wholeAgent, agentB: bases[0], ratio: ratio2, asPercent: items[0].asPercent };
   } else if (items.every((d) => isQuantityPredicate(d))) {
     if (items.every((d) => isFrequencyPredicate(d))) {
@@ -1858,11 +1859,11 @@ function inferToQuotaRule(a, quota3) {
   }
 }
 function toRatiosRule(parts, last2) {
-  const ratios3 = parts.map((d) => d.quantity);
+  const ratios2 = parts.map((d) => d.quantity);
   return {
     kind: "ratios",
     parts: parts.map((d) => d.agent),
-    ratios: last2.useBase ? ratiosToBaseForm(ratios3) : ratios3,
+    ratios: last2.useBase ? ratiosToBaseForm(ratios2) : ratios2,
     whole: last2.whole
   };
 }
@@ -2270,7 +2271,7 @@ function inferNthTermRule(a, b) {
     question: `Vypo\u010Dti ${result.entity}?`,
     result,
     options: isNumber(a.quantity) && isNumber(result.quantity) ? [
-      { tex: b.kind === "pattern" ? b.nthTerm : formatSequence(b.type, a.quantity), result: formatNumber(result.quantity), ok: true }
+      { tex: b.kind === "pattern" ? b.nthTermDescription ?? b.nthTerm : formatSequence(b.type, a.quantity), result: formatNumber(result.quantity), ok: true }
     ] : []
   };
 }
@@ -2706,9 +2707,9 @@ function lcdFromPrimeFactors(primeFactors2) {
   };
   return primeFactors2.reduce((acc, curr) => union(acc, curr), []);
 }
-function ratiosToBaseForm(ratios3) {
+function ratiosToBaseForm(ratios2) {
   let precision = 1e6;
-  let nums = ratios3.map((r) => Math.round(r * precision));
+  let nums = ratios2.map((r) => Math.round(r * precision));
   function gcd2(a, b) {
     return b === 0 ? a : gcd2(b, a % b);
   }
@@ -2803,11 +2804,11 @@ function isNumber(quantity) {
 function isExpressionNode(quantity) {
   return quantity?.expression != null;
 }
-function areNumbers(ratios3) {
-  return ratios3.every((d) => isNumber(d));
+function areNumbers(ratios2) {
+  return ratios2.every((d) => isNumber(d));
 }
-function areTupleNumbers(ratios3) {
-  return ratios3.every((d) => d.every((d2) => isNumber(d2)));
+function areTupleNumbers(ratios2) {
+  return ratios2.every((d) => d.every((d2) => isNumber(d2)));
 }
 function wrapToQuantity(expression, context) {
   return { expression, context: convertContext(context) };
@@ -8217,11 +8218,13 @@ function obrazec() {
   const nthPosition = "pozice";
   const vzorCtverce2 = pattern({
     nthTerm: "(n % 2)==0 ? 0: n",
+    nthTermDescription: "pro sud\xE1 je 0, pro lich\xE1 je n",
     nthPosition: "",
     nthTermFormat: (n) => n % 2 == 0 ? "0" : [1].concat(range((n - 1) / 2, 1).map((_) => 2)).join(" + ")
   }, { entity: "\u010Dtverec" });
   const vzorObdelnik = pattern({
     nthTerm: "(n % 2)==0 ? 1/2*n: 0",
+    nthTermDescription: "pro lich\xE1 je 0, pro sud\xE1 je polovina n",
     nthPosition: "",
     nthTermFormat: (n) => n % 2 == 0 ? range(n / 2, 1).map((_) => 1).join(" + ") : "0"
   }, { entity: "obdeln\xEDk" });
@@ -9411,7 +9414,7 @@ function souctovyTrojuhelnik() {
         counter("zadan\xE1 hodnota", 7),
         ctorDifference(zbytekKRozdeleni)
       ),
-      counter("trojn\xE1sobek", 3),
+      counter("zmen\u0161en\xED", 3),
       ctorScaleInvert("hodnota v \u0161ed\xE9m poli")
     )
   };
@@ -9824,7 +9827,7 @@ function ctvercovaSit2() {
   };
 }
 function ctvercovaSit22() {
-  const dim2 = dimensionEntity();
+  const trojuhlenikL = "pravo\xFAhl\xFD troj\xFAheln\xEDk";
   return {
     deductionTree: deduce(
       deduce(
@@ -9843,19 +9846,19 @@ function ctvercovaSit22() {
           ),
           deduce(
             deduce(
-              contLength("pravo\xFAhl\xFD troj\xFAheln\xEDk", 3),
-              contLength("pravo\xFAhl\xFD troj\xFAheln\xEDk", 1),
-              triangleArea("pravo\xFAhl\xFD troj\xFAheln\xEDk")
+              contLength(trojuhlenikL, 3),
+              contLength(trojuhlenikL, 1),
+              triangleArea(trojuhlenikL)
             ),
             deduce(
-              contLength("pravo\xFAhl\xFD troj\xFAheln\xEDk", 3),
-              contLength("pravo\xFAhl\xFD troj\xFAheln\xEDk", 1),
-              triangleArea("pravo\xFAhl\xFD troj\xFAheln\xEDk")
+              contLength(trojuhlenikL, 3),
+              contLength(trojuhlenikL, 1),
+              triangleArea(trojuhlenikL)
             ),
             deduce(
-              contLength("pravo\xFAhl\xFD troj\xFAheln\xEDk", 4),
-              contLength("pravo\xFAhl\xFD troj\xFAheln\xEDk", 2),
-              triangleArea("pravo\xFAhl\xFD troj\xFAheln\xEDk")
+              contLength(trojuhlenikL, 4),
+              contLength(trojuhlenikL, 2),
+              triangleArea(trojuhlenikL)
             ),
             sum("dohromady 3 pravo\xFAhl\xFD troj\xFAheln\xEDk")
           ),
@@ -10313,16 +10316,18 @@ function prevody() {
             cont("3 kg", 3, entityHmotnost, "kg"),
             ctorUnit("g")
           ),
-          deduce(
+          toPredicate(
             deduce(
-              cont("kilogram", 1, entityHmotnost, "kg"),
-              ctorUnit("g")
+              deduce(
+                cont("kilogram", 1, entityHmotnost, "kg"),
+                ctorUnit("g")
+              ),
+              ratio("kilogram", "1/5 kilogramu", 1 / 5)
             ),
-            ratio("kilogram", "1/5", 1 / 5)
-          ),
-          sum("rozd\xEDl")
+            (node) => ({ kind: "comp-diff", quantity: node.quantity, agentMinuend: "hledan\xE9 \u010D\xEDslo", agentSubtrahend: "3 kg", entity: entityHmotnost, unit: "g" })
+          )
         ),
-        counter("4 kr\xE1t", 4),
+        counter("zmen\u0161en\xED", 4),
         ctorScaleInvert("hledan\xE9 \u010D\xEDslo")
       )
     },
@@ -10390,13 +10395,13 @@ function hledaneCisla() {
         deduce(
           deduce(
             cont("zn\xE1m\xFD v\xFDsledek", 20, entity3),
-            counter("zdojn\xE1soben\xED", 2),
+            counter("zmen\u0161en\xED", 2),
             ctorScaleInvert("\u010D\xEDslo bez n\xE1soben\xED")
           ),
           cont("opak p\u0159i\u010Dten\xE9 \u010D\xEDslo", 3, entity3),
           ctorDifference("\u010D\xEDslo bez p\u0159i\u010Dten\xE9ho \u010D\xEDsla")
         ),
-        counter("d\u011Blen\xED 7", 7),
+        counter("zv\u011Bt\u0161en\xED", 7),
         ctorScale("nezn\xE1n\xE9 \u010D\xEDslo bez d\u011Blen\xED")
       )
     },
@@ -11489,8 +11494,8 @@ function hranol3() {
           last(vyska),
           cuboidVolume("kv\xE1dr")
         ),
-        counter("zmen\u0161en\xED", 2),
-        ctorScaleInvert("hranol")
+        half(),
+        ctorScale("hranol")
       ),
       ctorOption("C", 300)
     )
@@ -12499,7 +12504,7 @@ function build7({ input }) {
   const aPrevious = axiomInput(cont(agentPrevious, input.previousWorker, entityA), 1);
   const aCurrent = axiomInput(cont(agentCurrent, input.currentWorker, entityA), 3);
   const bPrevious = axiomInput(cont(agentPrevious, input.previousHours, entityB), 2);
-  const comp3 = compRatio(agentNew, agentCurrent, 3 / 2);
+  const comp2 = compRatio(agentNew, agentCurrent, 3 / 2);
   const deductionTree = deduce(
     deduce(
       deduce(
@@ -12513,7 +12518,7 @@ function build7({ input }) {
       bPrevious
     ),
     deduce(
-      comp3,
+      comp2,
       proportion(false, [`mno\u017Estv\xED`, `hodin`])
     )
   );
@@ -12934,7 +12939,7 @@ function pulkruh() {
           ),
           circleArea("vepsan\xFD kruh")
         ),
-        double(),
+        counter("zmen\u0161en\xED", 2),
         ctorScaleInvert("\u0161ed\xFD p\u016Flkruh")
       ),
       ctorOption("D", 25.12)
@@ -15847,7 +15852,7 @@ function vzestupHladinyVody() {
   const objemValce = deduceAs("v\xE1lec")(
     deduce(
       contLength("v\xE1lec pr\u016Fm\u011Br", 12),
-      double(),
+      counter("zmen\u0161en\xED", 2),
       ctorScaleInvert("v\xE1lec polom\u011Br")
     ),
     evalExprAsRate("r^2*Pi", { kind: "rate", agent: "voda", entity: dim2.volume, entityBase: dim2.length, baseQuantity: 1 })

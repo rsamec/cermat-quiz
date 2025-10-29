@@ -284,6 +284,7 @@ export type Pattern = EntityBase & {
   nthTerm: Expression
   nthTermFormat?: (n: number) => string
   nthPosition: Expression
+  nthTermDescription?: string
 }
 
 export type PartToPartRatio = {
@@ -674,14 +675,15 @@ export function sumCombine(wholeAgent: string, wholeEntity: EntityDef, partAgent
 
 
 
-export function pattern({ nthTerm, nthPosition, nthTermFormat }:
-  { nthTerm: Expression, nthPosition: Expression, nthTermFormat?: (n: number) => string }, { entity, unit }:
+export function pattern({ nthTerm, nthPosition, nthTermFormat, nthTermDescription }:
+  { nthTerm: Expression, nthPosition: Expression, nthTermFormat?: (n: number) => string, nthTermDescription?: string }, { entity, unit }:
     EntityBase): Pattern {
   return {
     kind: 'pattern',
     entity,
     unit,
     nthTerm,
+    nthTermDescription,
     nthTermFormat,
     nthPosition,
   }
@@ -3022,7 +3024,7 @@ function nthTermExpressionRuleEx(a: Container, b: Pattern): Container {
     predicate: {
       kind: 'cont', agent: a.agent, entity: b.entity,
     },
-    expression: b.nthTerm
+    expression: b.nthTerm,    
   }) as Container
 
 }
@@ -3035,7 +3037,7 @@ function inferNthTermRule(a: Container, b: Sequence | Pattern): Question<Contain
     question: `Vypočti ${result.entity}?`,
     result,
     options: isNumber(a.quantity) && isNumber(result.quantity) ? [
-      { tex: b.kind === "pattern" ? b.nthTerm : formatSequence(b.type, a.quantity), result: formatNumber(result.quantity), ok: true },
+      { tex: b.kind === "pattern" ? (b.nthTermDescription ?? b.nthTerm) : formatSequence(b.type, a.quantity), result: formatNumber(result.quantity), ok: true },
     ] : []
   }
 }

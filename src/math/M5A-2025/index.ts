@@ -1,4 +1,4 @@
-import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, rate, ratio, ratios, sum, counter, double, product, ctorScale, lcd, lcdCalc, type Container, ctorComparePercent, compRelative, ctor, ctorBooleanOption, contLength, evalExprAsCont, EmptyUnit, ctorRate, tuple, ctorTuple, dimensionEntity, evalFormulaAsCont, formulaRegistry, squareArea, triangleArea, rectangleArea } from "../../components/math";
+import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, rate, ratio, ratios, sum, counter, double, product, ctor, ctorBooleanOption, contLength, evalExprAsCont, ctorTuple, dimensionEntity, squareArea, triangleArea, rectangleArea } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, mapToCont, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -67,6 +67,9 @@ function kolecka() {
 
 function ctvercovaSit() {
   const dim = dimensionEntity();
+  // const ctverecL = "čtverec ABC";
+  // const trojuhelnikL = "trohúhelníku ABC";
+  // const porovnaniStran = ratios("porovnání stran", [`${trojuhelnikL} rameno`, `${ctverecL} strana`], [2, 1])
   return {
     deductionTree: deduce(
       to(
@@ -79,7 +82,7 @@ function ctvercovaSit() {
   }
 }
 function ctvercovaSit2() {
-  const dim = dimensionEntity();
+  const trojuhlenikL = "pravoúhlý trojúhelník"
   return {
     deductionTree: deduce(
       deduce(
@@ -98,19 +101,19 @@ function ctvercovaSit2() {
           ),
           deduce(
             deduce(
-              contLength("pravoúhlý trojúhelník", 3),
-              contLength("pravoúhlý trojúhelník", 1),
-              triangleArea("pravoúhlý trojúhelník")
+              contLength(trojuhlenikL, 3),
+              contLength(trojuhlenikL, 1),
+              triangleArea(trojuhlenikL)
             ),
             deduce(
-              contLength("pravoúhlý trojúhelník", 3),
-              contLength("pravoúhlý trojúhelník", 1),
-              triangleArea("pravoúhlý trojúhelník")
+              contLength(trojuhlenikL, 3),
+              contLength(trojuhlenikL, 1),
+              triangleArea(trojuhlenikL)
             ),
             deduce(
-              contLength("pravoúhlý trojúhelník", 4),
-              contLength("pravoúhlý trojúhelník", 2),
-              triangleArea("pravoúhlý trojúhelník")
+              contLength(trojuhlenikL, 4),
+              contLength(trojuhlenikL, 2),
+              triangleArea(trojuhlenikL)
             ),
             sum("dohromady 3 pravoúhlý trojúhelník")
           ),
