@@ -5,7 +5,7 @@ import sup from 'markdown-it-sup';
 import sub from 'markdown-it-sub';
 import mark from 'markdown-it-mark';
 import color from 'markdown-it-color-plus';
-
+const colorPlugin = color.default ?? color;
 import html5Media from 'markdown-it-html5-embed';
 let counter = 1;
 const ATXRenderer = function () {
@@ -95,7 +95,7 @@ const MarkdownWithKatex = new markdownit({ html: false, })
   })
   .use(sup)
   .use(sub)
-  .use(color.default)
+  .use(colorPlugin)
   .use(mark)
   .use(MarkdownItFootnote)
   // .use(textBgColor.default, { inline: false, isMultiLine: true })
@@ -111,7 +111,7 @@ const Markdown = new markdownit({ html: false, })
   .use(underline)
   .use(sup)
   .use(sub)
-  .use(color.default)
+  .use(colorPlugin)
   .use(mark)
   .use(MarkdownItFootnote)
   // .use(textBgColor.default, { inline: false, isMultiLine: true })
