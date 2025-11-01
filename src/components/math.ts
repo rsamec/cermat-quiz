@@ -3785,9 +3785,9 @@ export function formatAngle(relationship: AngleRelationship) {
     case "axially-symmetric":
       return "osově souměrný";
     case "isosceles-triangle-at-the-base":
-      return "rovnoramenný trojúhelník - shodnost úhlů při základně";
+      return "schodnost úhlů při zákadně rovnoramenného trojúhelníku";
     case "equilateral-triangle":
-      return "rovnostranný trojúhelník - všechny úhly jsou shodné";
+      return "schodnost všech úhlů v rovnostranném trojúhelníku";
     default:
       throw "Neznámý vztah";
 

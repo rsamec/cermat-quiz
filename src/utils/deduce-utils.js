@@ -2489,9 +2489,9 @@ function formatAngle(relationship) {
     case "axially-symmetric":
       return "osov\u011B soum\u011Brn\xFD";
     case "isosceles-triangle-at-the-base":
-      return "rovnoramenn\xFD troj\xFAheln\xEDk - shodnost \xFAhl\u016F p\u0159i z\xE1kladn\u011B";
+      return "schodnost \xFAhl\u016F p\u0159i z\xE1kadn\u011B rovnoramenn\xE9ho troj\xFAheln\xEDku";
     case "equilateral-triangle":
-      return "rovnostrann\xFD troj\xFAheln\xEDk - v\u0161echny \xFAhly jsou shodn\xE9";
+      return "schodnost v\u0161ech \xFAhl\u016F v rovnostrann\xE9m troj\xFAheln\xEDku";
     default:
       throw "Nezn\xE1m\xFD vztah";
   }
@@ -6650,9 +6650,9 @@ function jsonToMarkdownChat(node, { predicates, rules, formulas } = { predicates
       const premises = arr.slice(0, -1);
       const conclusion = arr[arr.length - 1];
       const answer = q?.options?.find((d) => d.ok);
-      const [predicates2, other] = partionArray(premises, (d) => isPredicate(d));
-      const body = predicates2.map((d) => {
-        return predicates2.includes(d.kind) || d.kind == "eval-formula" && formulas.includes(d.formulaName) ? `==${formatPredicate(d, chatFormattingFunc(0))}==` : formatPredicate(d, chatFormattingFunc(0));
+      const [predicatesArr, other] = partionArray(premises, (d) => isPredicate(d));
+      const body = predicatesArr.map((d) => {
+        return predicates.includes(d.kind) || d.kind == "eval-formula" && formulas.includes(d.formulaName) ? `==${formatPredicate(d, chatFormattingFunc(0))}==` : formatPredicate(d, chatFormattingFunc(0));
       }).filter((d) => !isEmptyOrWhiteSpace(d)).map((d) => `- ${d}`).join("\n");
       const stepContext = "";
       flatStructure.push((q != null ? `${stepContext}${rules.includes(q.name) ? `==${q.question.trim()}==` : q.question}
@@ -6660,7 +6660,7 @@ ${body}
 
 ` + (answer != null ? `${rules.includes(q.name) ? "==V\xFDpo\u010Det==" : "V\xFDpo\u010Det"}: ${answer.tex} = ${answer.result}` : "") : `${stepContext}${body}`) + `
 
-${rules.includes(q?.name) ? "==Z\xE1v\u011Br==" : "Z\xE1v\u011Br"}:${predicates2.includes(conclusion.kind) ? `==${formatPredicate(conclusion, chatFormattingFunc(1))}==` : formatPredicate(conclusion, chatFormattingFunc(1))}
+${rules.includes(q?.name) ? "==Z\xE1v\u011Br==" : "Z\xE1v\u011Br"}:${predicates.includes(conclusion.kind) ? `==${formatPredicate(conclusion, chatFormattingFunc(1))}==` : formatPredicate(conclusion, chatFormattingFunc(1))}
 
 `);
     }

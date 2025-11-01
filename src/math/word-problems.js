@@ -2797,9 +2797,9 @@ function formatAngle(relationship) {
     case "axially-symmetric":
       return "osov\u011B soum\u011Brn\xFD";
     case "isosceles-triangle-at-the-base":
-      return "rovnoramenn\xFD troj\xFAheln\xEDk - shodnost \xFAhl\u016F p\u0159i z\xE1kladn\u011B";
+      return "schodnost \xFAhl\u016F p\u0159i z\xE1kadn\u011B rovnoramenn\xE9ho troj\xFAheln\xEDku";
     case "equilateral-triangle":
-      return "rovnostrann\xFD troj\xFAheln\xEDk - v\u0161echny \xFAhly jsou shodn\xE9";
+      return "schodnost v\u0161ech \xFAhl\u016F v rovnostrann\xE9m troj\xFAheln\xEDku";
     default:
       throw "Nezn\xE1m\xFD vztah";
   }
@@ -9331,9 +9331,9 @@ function uhly() {
       deduce(
         deduceAs(`2 troj\xFAheln\xEDky - ${pravouhlyLabel}, ${rovnoramennyLabel}`)(
           vrchol,
-          to(
+          deduce(
             last(vrchol),
-            contAngle("vrchol K", lastQuantity(vrchol))
+            compAngle("vrchol K", "vrchol C", "isosceles-triangle-at-the-base")
           ),
           triangleAngle("vrchol S")
         ),

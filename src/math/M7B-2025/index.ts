@@ -530,9 +530,9 @@ function uhly() {
       deduce(
         deduceAs(`2 trojúhelníky - ${pravouhlyLabel}, ${rovnoramennyLabel}`)(
           vrchol,
-          to(
+          deduce(
             last(vrchol),
-            contAngle("vrchol K", lastQuantity(vrchol))
+            compAngle("vrchol K", "vrchol C", "isosceles-triangle-at-the-base")
           ),
           triangleAngle("vrchol S")
         ),

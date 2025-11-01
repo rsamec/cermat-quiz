@@ -414,8 +414,8 @@ export function jsonToMarkdownChat(node, { predicates, rules, formulas }: { pred
       const conclusion = arr[arr.length - 1];
 
       const answer = q?.options?.find(d => d.ok)
-      const [predicates, other] = partionArray(premises, d => isPredicate(d));
-      const body = predicates.map(d => {
+      const [predicatesArr, other] = partionArray(premises, d => isPredicate(d));
+      const body = predicatesArr.map(d => {
         return predicates.includes(d.kind) || (d.kind == "eval-formula" && formulas.includes(d.formulaName))
           ? `==${formatPredicate(d, chatFormattingFunc(0))}==`
           : formatPredicate(d, chatFormattingFunc(0))

@@ -153,6 +153,8 @@ export const rulesCategories = new Map([
 
   ["Převod jednotek", [`convertToUnitRule`]],
   ["Zaokrouhlení", [`roundToRule`]],
+  // ["Rozklad čísla na prvočinitele", ["primeFactorizationRule"]],
+  ["Rozklad čísla na celočíselnou a desetinnou část", ["splitDecimalAndFractionPartsRule"]],
 
   ["Pythagorovy věta", [`pythagorasRule`]],
   ["Pravidla úhlu v trojúhelníku", ["triangleAngleRule"]],

@@ -245,7 +245,7 @@ ${
 
 ## Tvorba vlastních výukových materiálů
 
-**Hlavním cílem** projektu je **zdarma** poskytnout **kvalitní data pro tvorbu výukových materiálů** (videa, audia, pracovní listy, kvízů, kartiček, aplikací...)
+**Hlavním cílem** projektu je **zdarma** poskytnout **data pro tvorbu výukových materiálů** (videa, audia, pracovní listy, kvízů, kartiček, aplikací...)
 
 ### Příklad - matika 2025 - 2. náhradní termín
 
