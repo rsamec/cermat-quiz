@@ -6,8 +6,6 @@ import sub from 'markdown-it-sub';
 import mark from 'markdown-it-mark';
 import color from 'markdown-it-color-plus';
 
-//const inlineTextColor = import('https://cdn.skypack.dev/@gerhobbelt/markdown-it-inline-text-color@1.0.1-1?min');
-//import textBgColor from 'https://cdn.jsdelivr.net/npm/markdown-it-color-plus/+esm';
 import html5Media from 'markdown-it-html5-embed';
 let counter = 1;
 const ATXRenderer = function () {
@@ -97,7 +95,7 @@ const MarkdownWithKatex = new markdownit({ html: false, })
   })
   .use(sup)
   .use(sub)
-  .use(color)
+  .use(color.default)
   .use(mark)
   .use(MarkdownItFootnote)
   // .use(textBgColor.default, { inline: false, isMultiLine: true })
@@ -113,7 +111,7 @@ const Markdown = new markdownit({ html: false, })
   .use(underline)
   .use(sup)
   .use(sub)
-  .use(color)
+  .use(color.default)
   .use(mark)
   .use(MarkdownItFootnote)
   // .use(textBgColor.default, { inline: false, isMultiLine: true })
