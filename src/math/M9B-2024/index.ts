@@ -1,5 +1,5 @@
-import { commonSense, compAngle, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorUnit, pythagoras, rate, ratio, sum, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorScaleInvert, ctorBooleanOption, triangleAngle, contLength, contArea, dimensionEntity, doubleProduct, triangleArea, circleArea, counter, half, ctorScale } from "../../components/math";
-import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "../../utils/deduce-utils";
+import { commonSense, compAngle, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorUnit, pythagoras, rate, ratio, sum, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorScaleInvert, ctorBooleanOption, triangleAngle, contLength, contArea, dimensionEntity, doubleProduct, triangleArea, circleArea, counter, half, ctorScale, contAngle } from "../../components/math";
+import { anglesNames, createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   1: () => delkaKroku(),
@@ -277,23 +277,22 @@ function graf() {
   }
 }
 function uhlyTrojuhelniku() {
-  const entity = "stupňů"
-  const uhelUVrcholu = (vrchol: string, typUhel: string) => `${typUhel} úhel u vrcholu ${vrchol}`
+  const uhelUVrcholu = (vrchol: string, typUhel: string) => `vrchol ${vrchol} - ${typUhel}`;
   return {
     deductionTree: deduce(
       deduce(
         deduce(
           deduce(
-            cont(uhelUVrcholu("A", "známý vnější"), 105, entity),
+            contAngle(uhelUVrcholu("A", "známý vnější"), 105),
             compAngle(uhelUVrcholu("A", "dopočtený"), uhelUVrcholu("A", "známý"), "supplementary")
           ),
           deduce(
-            cont(uhelUVrcholu("C", "známý vnější"), 125, entity),
+            contAngle(uhelUVrcholu("C", "známý vnější"), 125),
             compAngle(uhelUVrcholu("C", "dopočtený vnitřní"), uhelUVrcholu("C", "známý"), "supplementary")
           ),
           triangleAngle(uhelUVrcholu("B", "dopočtený vnitřní"))
         ),
-        compAngle(uhelUVrcholu("B", "dopočtený vnitřní"), uhelUVrcholu("C", "alfa"), "complementary")
+        compAngle(uhelUVrcholu("B", "dopočtený vnitřní"), uhelUVrcholu("C", anglesNames.alpha), "complementary")
       ),
       ctorOption("D", 40)
     )

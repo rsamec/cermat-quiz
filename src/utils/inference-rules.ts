@@ -1,5 +1,6 @@
 
-import { type Predicate, type Pattern, cont, ratio, comp, rate, ratios, compRatio, compDiff, lcd, gcd, ctor, inferenceRule, nth, quota, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont, counter, sum, product, squareNumbersPattern, triangularNumbersPattern, oblongNumbers, halfProduct, dimensionEntity, cuboidVolume, circleArea } from "../components/math.js";
+import { type Predicate, type Pattern, cont, ratio, comp, rate, ratios, compRatio, compDiff, lcd, gcd, ctor, inferenceRule, nth, quota, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont, counter, sum, product, squareNumbersPattern, triangularNumbersPattern, oblongNumbers, halfProduct, dimensionEntity, cuboidVolume, circleArea, contAngle } from "../components/math.js";
+import { anglesNames } from "./deduce-utils.js";
 
 export default function rules() {
 
@@ -49,7 +50,7 @@ export default function rules() {
   const quadratic = [1, 4, 9, 16, 25].map((d, i) => cont(`č. ${i + 1}`, d, "čtverec"));
   const tenthTerm = cont("č.10", 10, "pozice");
 
-  const alfa = cont("alfa", 50, "stupňů");
+  const alfa = contAngle(anglesNames.alpha, 50);
   const dim = dimensionEntity();
 
   return {
@@ -61,7 +62,7 @@ export default function rules() {
       deduceRule(transferAtoB, a), deduceRule(transferAtoB, b),
     ],
     ratioCompare: [deduceRule(a, b, ctor('comp-ratio')), deduceRule(a, compareRatioAtoB), deduceRule(b, compareRatioAtoB)],
-    angleCompare: [deduceRule(alfa, compAngle("beta", "alfa", "supplementary")), deduceRule(alfa, compAngle("beta", "alfa", "complementary")), deduceRule(alfa, compAngle("beta", "alfa", "corresponding"))],
+    angleCompare: [deduceRule(alfa, compAngle(anglesNames.beta, anglesNames.alpha, "supplementary")), deduceRule(alfa, compAngle(anglesNames.beta, anglesNames.alpha, "complementary")), deduceRule(alfa, compAngle(anglesNames.beta, anglesNames.alpha, "corresponding"))],
     partToWholeRatio: [deduceRule(cont("třída", 120, ""), partToWholeRatio), deduceRule(cont("chlapci", 30, ""), partToWholeRatio), deduceRule(partToWholeRatio, ctorComplement("dívky"))],
     partToPartRatio: [
       deduceRule(cont("třída", 120, ""), partToPartRatios), deduceRule(cont("dívky", 90, ""), partToPartRatios),

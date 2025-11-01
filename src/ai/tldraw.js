@@ -58,8 +58,10 @@ function formatAngle(relationship) {
       return "st\u0159\xEDdav\xFD vn\u011Bj\u0161\xED";
     case "axially-symmetric":
       return "osov\u011B soum\u011Brn\xFD";
-    case "congruence-at-the-base-equilateral-triangle":
-      return "shodnost \xFAhl\u016F p\u0159i z\xE1kladn\u011B u rovnostrann\xE9ho troj\xFAheln\xEDku";
+    case "isosceles-triangle-at-the-base":
+      return "rovnoramenn\xFD troj\xFAheln\xEDk - shodnost \xFAhl\u016F p\u0159i z\xE1kladn\u011B";
+    case "equilateral-triangle":
+      return "rovnostrann\xFD troj\xFAheln\xEDk - v\u0161echny \xFAhly jsou shodn\xE9";
     default:
       throw "Nezn\xE1m\xFD vztah";
   }
@@ -6414,7 +6416,8 @@ function computeOtherAngle(angle1, relationship) {
     case "alternate-interior":
     case "alternate-exterior":
     case "axially-symmetric":
-    case "congruence-at-the-base-equilateral-triangle":
+    case "isosceles-triangle-at-the-base":
+    case "equilateral-triangle":
       return angle1;
     default:
       throw "Unknown Angle Relationship";
@@ -6440,8 +6443,10 @@ function formatAngle2(relationship) {
       return "st\u0159\xEDdav\xFD vn\u011Bj\u0161\xED";
     case "axially-symmetric":
       return "osov\u011B soum\u011Brn\xFD";
-    case "congruence-at-the-base-equilateral-triangle":
-      return "shodnost \xFAhl\u016F p\u0159i z\xE1kladn\u011B u rovnostrann\xE9ho troj\xFAheln\xEDku";
+    case "isosceles-triangle-at-the-base":
+      return "rovnoramenn\xFD troj\xFAheln\xEDk - shodnost \xFAhl\u016F p\u0159i z\xE1kladn\u011B";
+    case "equilateral-triangle":
+      return "rovnostrann\xFD troj\xFAheln\xEDk - v\u0161echny \xFAhly jsou shodn\xE9";
     default:
       throw "Nezn\xE1m\xFD vztah";
   }

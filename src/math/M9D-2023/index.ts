@@ -1,4 +1,4 @@
-import { commonSense, compRatio, cont, ctor, ctorDifference, rate, sum, ctorSlide, compRelative, compRelativePercent, triangularNumbersPattern, nthPart, comp, ratios, counter, ctorRatios, nthPartFactor, ctorOption, ctorBooleanOption, contLength, halfProduct, doubleProduct, pythagoras, rectangleArea } from "../../components/math";
+import { commonSense, compRatio, cont, ctor, ctorDifference, rate, sum, ctorSlide, compRelative, compRelativePercent, triangularNumbersPattern, nthPart, comp, ratios, counter, ctorRatios, nthPartFactor, ctorOption, ctorBooleanOption, contLength, halfProduct, doubleProduct, pythagoras, rectangleArea, contAngle } from "../../components/math";
 import { anglesNames, createLazyMap, deduce, last, lastQuantity, to } from "../../utils/deduce-utils";
 
 
@@ -25,14 +25,14 @@ export default createLazyMap({
     16.3: () => obrazce().pocetUsecekPro300Puntiku,
 })
 
-function uhly(){
+function uhly() {
     return {
         deductionTree: deduce(
-            cont(anglesNames.gamma, 30, "°"),
-            compRatio("y^' úhel A", "úhel B", 2)
+            contAngle(anglesNames.gamma, 30),
+            compRatio("vrchol A", "vrchol B", 2)
         )
     }
-    
+
 }
 
 function zavazi() {

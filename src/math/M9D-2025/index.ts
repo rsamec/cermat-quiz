@@ -28,7 +28,7 @@ function uhly() {
   const zadany = contAngle("zadaný", 64)
   const alpha = deduceAs("trojúhelník KAS je rovnoramenný")(
     zadany,
-    compAngle("zadaný", anglesNames.alpha, "congruence-at-the-base-equilateral-triangle")
+    compAngle("zadaný", anglesNames.alpha, "isosceles-triangle-at-the-base")
   )
   const alfaABetaLabel = [anglesNames.alpha, anglesNames.beta].join(" a ")
 
@@ -40,7 +40,7 @@ function uhly() {
     SKB,
     deduceAs(`trojúhelník SBK je rovnoramenný`)(
       last(SKB),
-      compAngle(anglesNames.beta, "SKB", "congruence-at-the-base-equilateral-triangle")
+      compAngle(anglesNames.beta, "SKB", "isosceles-triangle-at-the-base")
     ),
     triangleAngle(anglesNames.gamma)
   )

@@ -1,5 +1,5 @@
-import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, sum, product, counter, triangleAngle, contLength, dimensionEntity, contArea, primeFactors, squareArea, baseAreaVolume, cuboidVolume, formulaRegistry, evalExprAsCont, evalFormulaAsCont } from "../../components/math";
-import { createLazyMap, deduce, deduceAs, last, to, toCont } from "../../utils/deduce-utils";
+import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, sum, product, counter, triangleAngle, contLength, dimensionEntity, contArea, primeFactors, squareArea, baseAreaVolume, cuboidVolume, formulaRegistry, evalExprAsCont, evalFormulaAsCont, contAngle, contRightAngle } from "../../components/math";
+import { anglesNames, createLazyMap, deduce, deduceAs, last, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   //1:() => porovnani(),
@@ -91,7 +91,7 @@ function sud() {
   const dnoSudu = contArea("dno sudu", 1500);
   const vzestupHladiny = deduce(
     deduce(cont("přibylo vody", 3, dim.volume.entity, "l"), ctorUnit(dim.volume.unit)),
-    dnoSudu,    
+    dnoSudu,
     evalFormulaAsCont(formulaRegistry.volume.baseArea, x => x.h, "vzestup hladiny", dim.length)
   )
   return {
@@ -114,32 +114,30 @@ function sud() {
 }
 
 function uhly() {
-  const entity = "úhel"
-  const unit = "stupňů"
-  const angleLabel = "zadaná hodnota"
-  const angle1 = cont(angleLabel, 30, entity, unit)
-  const angle2 = cont(angleLabel, 130, entity, unit)
+  const angleLabel = "zadaný"
+  const angle1 = contAngle(angleLabel, 30)
+  const angle2 = contAngle(angleLabel, 130)
   return {
     alfa: {
       deductionTree: deduce(
         angle1,
-        compAngle(angleLabel, "alfa", "alternate-interior")
+        compAngle(angleLabel, anglesNames.alpha, "alternate-interior")
       )
     },
     beta: {
       deductionTree: deduce(
-        deduce(angle2, compAngle(angleLabel, "vedlejší", "supplementary")),
-        compAngle("vedlejší", "beta", "corresponding")
+        deduce(angle2, compAngle(angleLabel, "vedle k zadanému", "supplementary")),
+        compAngle("vedle k zadanému", anglesNames.beta, "corresponding")
       )
     },
     gamma: {
-      deductionTree: deduceAs("úhly v pravoúhlém trojúhelníku, vytvořený mezi přímkami r,t,q, kde r a t jsou kolmé")(
+      deductionTree: deduceAs("pravoúhlý trojúhelník, vytvořený mezi přímkami r,t,q, kde r a t jsou kolmé")(
         deduce(
-          deduce(angle2, compAngle(angleLabel, "úhel u bodu R", "supplementary")),
-          cont("pravý úhel", 90, entity, unit),
-          triangleAngle("vrchol")
+          deduce(angle2, compAngle(angleLabel, "bod R", "supplementary")),
+          contRightAngle(),
+          triangleAngle("zbývající vrchol")
         ),
-        compAngle("vrchol", "gamma", "supplementary")
+        compAngle("zbývající vrchol", anglesNames.gamma, "supplementary")
       )
     }
   }

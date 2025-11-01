@@ -747,11 +747,11 @@ export function balancedEntityPartition(parts: AgentMatcher[], entity: EntityBas
 export function contAngle(agent: string, quantity: NumberOrVariable, unit: AngleUnitDim = "deg", { asExpression }: { asExpression?: boolean } = {}) {
   return cont(agent, quantity, angleEntity().angle.entity, unit, { asExpression })
 }
-export function contRightAngle() {
-  return contAngle("pravý úhel", 90, "deg")
+export function contRightAngle(agent?:string) {
+  return contAngle(agent ?? "pravý úhel", 90, "deg")
 }
-export function contTringleAngleSum() {
-  return contAngle("součet úhlů v trojúhelníku", 180, "deg")
+export function contTringleAngleSum(agent?:string) {
+  return contAngle(agent ?? "součet úhlů v trojúhelníku", 180, "deg")
 }
 export function contLength(agent: string, quantity: NumberOrVariable, unit: LengthDim = "cm") {
   return cont(agent, quantity, dimensionEntity().length.entity, unit)
@@ -3741,7 +3741,8 @@ function ratiosToBaseForm(ratios) {
 // #endregion
 
 // #region Angle utils
-export type AngleRelationship = "complementary" | "supplementary" | "opposite" | "corresponding" | "sameSide" | "alternate" | "alternate-interior" | "alternate-exterior" | "axially-symmetric" | "congruence-at-the-base-equilateral-triangle";
+export type AngleRelationship = "complementary" | "supplementary" | "opposite" | "corresponding" | "sameSide" | "alternate" | "alternate-interior" | "alternate-exterior" | "axially-symmetric" 
+| "isosceles-triangle-at-the-base" | "equilateral-triangle";
 function computeOtherAngle(angle1, relationship: AngleRelationship) {
   switch (relationship) {
     case "complementary":
@@ -3755,7 +3756,8 @@ function computeOtherAngle(angle1, relationship: AngleRelationship) {
     case "alternate-interior":
     case "alternate-exterior":
     case "axially-symmetric":
-    case "congruence-at-the-base-equilateral-triangle":
+    case "isosceles-triangle-at-the-base":
+    case "equilateral-triangle":
       return angle1; // Equal angles
     default:
       throw "Unknown Angle Relationship";
@@ -3782,8 +3784,10 @@ export function formatAngle(relationship: AngleRelationship) {
       return "střídavý vnější";
     case "axially-symmetric":
       return "osově souměrný";
-    case "congruence-at-the-base-equilateral-triangle":
-      return "shodnost úhlů při základně u rovnostranného trojúhelníku";
+    case "isosceles-triangle-at-the-base":
+      return "rovnoramenný trojúhelník - shodnost úhlů při základně";
+    case "equilateral-triangle":
+      return "rovnostranný trojúhelník - všechny úhly jsou shodné";
     default:
       throw "Neznámý vztah";
 

@@ -1,5 +1,5 @@
-import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, rate, ratio, ratios, ctorPercent, compAngle, ctorComplement, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, ctorLinearEquation, sum, triangleAngle, contLength, contArea, dimensionEntity, cuboidVolume, triangleArea } from "../../components/math";
-import { createLazyMap, deduce, deduceAs, last, to, toCont } from "../../utils/deduce-utils";
+import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, rate, ratio, ratios, ctorPercent, compAngle, ctorComplement, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, ctorLinearEquation, sum, triangleAngle, contLength, contArea, dimensionEntity, cuboidVolume, triangleArea, contTringleAngleSum } from "../../components/math";
+import { anglesNames, createLazyMap, deduce, deduceAs, last, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   1: () => porovnani(),
@@ -127,13 +127,10 @@ function dort() {
 
 
 function uhelAlfa() {
-  const entity = "úhel"
-  const unit = "stupňů"
-  const triangleSumLabel = 'součet úhlů v trojúhelníku'
 
-  const soucetUhluVTrojuhelniku = cont(triangleSumLabel, 180, entity, unit)
+  const soucetUhluVTrojuhelniku = contTringleAngleSum()
   const praveRameho = deduce(
-    ratios(triangleSumLabel, ["vrcholový úhel", "levé rameno", "pravé rameno"], [40, 70, 70]),
+    ratios(soucetUhluVTrojuhelniku.agent, ["vrcholový úhel", "levé rameno", "pravé rameno"], [40, 70, 70]),
     soucetUhluVTrojuhelniku,
   );
 
@@ -144,14 +141,14 @@ function uhelAlfa() {
           deduce(
             deduce(
               praveRameho,
-              compAngle("pravé rameno", "úhel přímka p", "corresponding")
+              compAngle("pravé rameno", "přímka p", "corresponding")
             ),
-            compAngle("úhel přímka p", "trojúhelník bod A", "alternate-exterior")
+            compAngle("přímka p", "vrchol A", "alternate-exterior")
           ),
           last(praveRameho),
-          triangleAngle("trojúhelník bod C")
+          triangleAngle("vrchol C")
         ),
-        compAngle("trojúhelník bod C", "alfa", "supplementary")
+        compAngle("vrchol C", anglesNames.alpha, "supplementary")
       ),
       ctorOption("B", 140)
     )

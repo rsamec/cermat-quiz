@@ -1,5 +1,5 @@
-import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pythagoras, rate, ratio, ratios, ctorOption, ctorBooleanOption, counter, product, sum, contLength, dimensionEntity, pattern, range, triangleArea, squareArea, rectangleArea, circleArea } from "../../components/math";
-import { axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
+import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pythagoras, rate, ratio, ratios, ctorOption, ctorBooleanOption, counter, product, sum, contLength, dimensionEntity, pattern, range, triangleArea, squareArea, rectangleArea, circleArea, contTringleAngleSum } from "../../components/math";
+import { anglesNames, axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   1: () => dobaFilmu({ input: { celkovaDobaFilmuVHodina: 1 } }),
@@ -297,36 +297,34 @@ export function pozemekObdelnik() {
 
 
 function angleBeta() {
-  const entity = "stupňů";
-  const alfaEntity = "alfa";
 
-  const triangleSumLabel = 'součet úhlů v trojúhelníku';
-  const triangleSum = cont(triangleSumLabel, 180, entity)
+  const alfaEntity = anglesNames.alpha;
+  const triangleSum = contTringleAngleSum();
   const triangle = "trojúhelníku";
 
   const alfaA = cont(`vnitřní ${triangle}`, 4, alfaEntity);
+  const vedleKBetaLabel = `vrchol vedle k ${anglesNames.beta} u vnitřního ${triangle}`
   return {
-    title: 'Velikost úhlu β',
     deductionTree: deduce(
       deduce(
         deduce(
           triangleSum,
           deduce(
             deduce(
-              cont(`zadaný úhel u vnějšího ${triangle}`, 4, alfaEntity),
-              compAngle(`zadaný úhel u vnějšího ${triangle}`, `vedlejší k hledanému úhlu β u vnitřního ${triangle}`, 'corresponding'),
+              cont(`zadaný u vnějšího ${triangle}`, 4, alfaEntity),
+              compAngle(`zadaný u vnějšího ${triangle}`, vedleKBetaLabel, 'corresponding'),
             ),
-            cont(`zadaný úhel u vnitřního ${triangle}`, 4, alfaEntity),
+            cont(`zadaný u vnitřního ${triangle}`, 4, alfaEntity),
             deduce(
-              cont(`zadaný úhel`, 2, alfaEntity),
-              compAngle(`zadaný úhel`, `dopočítaný u vnitřního ${triangle}`, 'opposite'),              
+              cont(`zadaný`, 2, alfaEntity),
+              compAngle(`zadaný`, `vrchol u vnitřního ${triangle}`, 'opposite'),
             ),
-            ctorRatios(triangleSumLabel)
+            ctorRatios(triangleSum.agent)
           ),
           alfaA,
-          nthPart(`vedlejší k hledanému úhlu β u vnitřního ${triangle}`)
+          nthPart(vedleKBetaLabel)
         ),
-        compAngle(`vedlejší k hledanému úhlu β u vnitřního ${triangle}`, 'beta', 'supplementary')
+        compAngle(vedleKBetaLabel, anglesNames.beta, 'supplementary')
       ),
       ctorOption("B", 108)
     )

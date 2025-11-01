@@ -1,5 +1,5 @@
-import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, evalExprAsCont, counter, proportion, productCombine, ctorLinearEquation, comp, ctorComplementCompRatio, ctorSlideInvert, ctorScaleInvert, ctorBooleanOption, pythagoras, contArea, dimensionEntity, contLength, squareNumbersPattern, nth, halfProduct, formulaRegistry, evalFormulaAsCont, rectangleArea, baseAreaVolume, cuboidVolume, doubleProduct, circleArea, half, ctorScale, triangleAngle, compAngle } from "../../components/math";
-import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
+import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, evalExprAsCont, counter, proportion, productCombine, ctorLinearEquation, comp, ctorComplementCompRatio, ctorSlideInvert, ctorScaleInvert, ctorBooleanOption, pythagoras, contArea, dimensionEntity, contLength, squareNumbersPattern, nth, halfProduct, formulaRegistry, evalFormulaAsCont, rectangleArea, baseAreaVolume, cuboidVolume, doubleProduct, circleArea, half, ctorScale, triangleAngle, compAngle, contAngle } from "../../components/math";
+import { anglesNames, createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
     2.1: () => lyzarskaPermice().porovnani,
@@ -311,34 +311,34 @@ function kosoctverec() {
 }
 
 function uhly() {
-    const entity = "stupňů"
+    const zadanyVrcholB = contAngle("zadaný vrchol B", 80)
     const uhelC = deduce(
-        cont("zadaný úhel B", 80, entity),
-        to(
-            commonSense("rovnoramenný trojúhelník má shodné úhly u základny"),
-            cont("úhel A", 80, entity)
+        zadanyVrcholB,
+        deduce(
+            zadanyVrcholB,
+            compAngle("vrchol A", "zadaný vrchol B", "isosceles-triangle-at-the-base")
         ),
-        triangleAngle("úhel C")
+        triangleAngle("vrchol C")
     )
     return {
         deductionTree: deduce(
-            deduce(
+            deduceAs("rovnoramenný trojúhelník ABC")(
                 deduce(
                     deduce(
                         uhelC,
-                        compAngle("vedlejší úhel k C", "úhel C", "supplementary")
+                        compAngle("vedle u vrcholu C", "vrchol C", "supplementary")
                     ),
-                    compAngle("úhel ω", "vedlejší úhel k C", "corresponding")
+                    compAngle(anglesNames.omega, "vedle u vrcholu C", "corresponding")
                 ),
                 deduce(
                     deduce(
                         last(uhelC),
                         half(),
-                        ctorScale("polovina úhel C")
+                        ctorScale("polovina")
                     ),
-                    compAngle("úhel φ", "polovina úhel C", "alternate-interior")
+                    compAngle(anglesNames.phi, "polovina", "alternate-interior")
                 ),
-                sum("úhel ω + úhel φ")
+                sum([anglesNames.omega, anglesNames.phi].join(" a "))
             ),
             ctorOption("E", 170)
         )

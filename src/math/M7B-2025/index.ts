@@ -1,5 +1,5 @@
-import { commonSense, compRelative, cont, ctor, sum, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, counter, nthPart, percent, proportion, rate, ratio, product, double, ctorScale, contLength, contArea, dimensionEntity, ratios, ctorRatiosInvert, comp, evalFormulaAsCont, formulaRegistry, rectangleArea, baseAreaVolume, triangleArea, triangleAngle, compAngle, ctorBooleanOption, evalExprAsCont } from "../../components/math"
-import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont, type TreeNode } from "../../utils/deduce-utils"
+import { commonSense, compRelative, cont, ctor, sum, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, counter, nthPart, percent, proportion, rate, ratio, product, double, ctorScale, contLength, contArea, dimensionEntity, ratios, ctorRatiosInvert, comp, evalFormulaAsCont, formulaRegistry, rectangleArea, baseAreaVolume, triangleArea, triangleAngle, compAngle, ctorBooleanOption, evalExprAsCont, contRightAngle, contAngle } from "../../components/math"
+import { anglesNames, createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont, type TreeNode } from "../../utils/deduce-utils"
 
 export default createLazyMap({
   1: () => hledaneCislo(),
@@ -419,7 +419,7 @@ function predstaveni() {
 
 export function operaceM() {
   const entity = ""
-  
+
   return {
     a: {
       deductionTree: deduce(
@@ -448,14 +448,14 @@ export function operaceM() {
       )
     },
     c: {
-      deductionTree:  to(
+      deductionTree: to(
         commonSense("nejmenší možné číslo s různými číslicemi"),
         deduce(
           evalExprAsCont(`1-0+2-3`, "M(1 023)", { entity })
-        ),       
+        ),
         commonSense("dále jen zvýšení jednotek o 1"),
         deduce(
-           evalExprAsCont(`1-0+2-4`, "M(1 024)", { entity })
+          evalExprAsCont(`1-0+2-4`, "M(1 024)", { entity })
         ),
         cont("M(1 024)", 1024, entity)
       )
@@ -521,22 +521,22 @@ function uhly() {
   const pravouhlyLabel = "pravouhlý trojúhelník ABC";
   const rovnoramennyLabel = "rovnoramenný trojúhelník KCS";
   const vrchol = deduce(
-    cont("pravý úhel u vrcholu A", 90, "stupeň"),
-    cont("úhel u vrcholu B", 56, "stupeň"),
-    triangleAngle("úhel u vrcholu C")
+    contRightAngle("vrchol A"),
+    contAngle("vrchol B", 56),
+    triangleAngle("vrchol C")
   );
   return {
     deductionTree: deduce(
       deduce(
-        deduceAs(`2 trojúhlníky - ${pravouhlyLabel} a ${rovnoramennyLabel}`)(
+        deduceAs(`2 trojúhelníky - ${pravouhlyLabel}, ${rovnoramennyLabel}`)(
           vrchol,
           to(
             last(vrchol),
-            cont("úhel u vrcholu K", lastQuantity(vrchol), "stupeň")
+            contAngle("vrchol K", lastQuantity(vrchol))
           ),
-          triangleAngle("úhel u vrcholu S")
+          triangleAngle("vrchol S")
         ),
-        compAngle("úhel 𝜔", "úhel u vrcholu S", "supplementary")
+        compAngle(anglesNames.omega, "vrchol S", "supplementary")
       ),
       ctorOption("D", 68)
     )

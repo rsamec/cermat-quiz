@@ -287,11 +287,11 @@ function balancedEntityPartition(parts, entity3) {
 function contAngle(agent, quantity, unit = "deg", { asExpression } = {}) {
   return cont(agent, quantity, angleEntity().angle.entity, unit, { asExpression });
 }
-function contRightAngle() {
-  return contAngle("prav\xFD \xFAhel", 90, "deg");
+function contRightAngle(agent) {
+  return contAngle(agent ?? "prav\xFD \xFAhel", 90, "deg");
 }
-function contTringleAngleSum() {
-  return contAngle("sou\u010Det \xFAhl\u016F v troj\xFAheln\xEDku", 180, "deg");
+function contTringleAngleSum(agent) {
+  return contAngle(agent ?? "sou\u010Det \xFAhl\u016F v troj\xFAheln\xEDku", 180, "deg");
 }
 function contLength(agent, quantity, unit = "cm") {
   return cont(agent, quantity, dimensionEntity().length.entity, unit);
@@ -2769,7 +2769,8 @@ function computeOtherAngle(angle1, relationship) {
     case "alternate-interior":
     case "alternate-exterior":
     case "axially-symmetric":
-    case "congruence-at-the-base-equilateral-triangle":
+    case "isosceles-triangle-at-the-base":
+    case "equilateral-triangle":
       return angle1;
     default:
       throw "Unknown Angle Relationship";
@@ -2795,8 +2796,10 @@ function formatAngle(relationship) {
       return "st\u0159\xEDdav\xFD vn\u011Bj\u0161\xED";
     case "axially-symmetric":
       return "osov\u011B soum\u011Brn\xFD";
-    case "congruence-at-the-base-equilateral-triangle":
-      return "shodnost \xFAhl\u016F p\u0159i z\xE1kladn\u011B u rovnostrann\xE9ho troj\xFAheln\xEDku";
+    case "isosceles-triangle-at-the-base":
+      return "rovnoramenn\xFD troj\xFAheln\xEDk - shodnost \xFAhl\u016F p\u0159i z\xE1kladn\u011B";
+    case "equilateral-triangle":
+      return "rovnostrann\xFD troj\xFAheln\xEDk - v\u0161echny \xFAhly jsou shodn\xE9";
     default:
       throw "Nezn\xE1m\xFD vztah";
   }
@@ -7164,7 +7167,10 @@ var anglesNames = {
   beta: "\u{1D6FD}",
   gamma: "\u{1D6FE}",
   delta: "\u{1D6FF}",
-  theta: "\u{1D703}"
+  theta: "\u{1D703}",
+  lambda: "\u{1D706}",
+  omega: "\u{1D714}",
+  phi: "\u{1D711}"
 };
 function isObjectContext(context) {
   return context != null && typeof context === "object";
@@ -7648,21 +7654,23 @@ function minceVKasicce() {
   };
 }
 function example_11() {
-  const entity3 = "stup\u0148\u016F";
-  const inputAngleLabel = `zadan\xFD \xFAhel`;
-  const triangle = "\xFAhel troj\xFAheln\xEDku ABD";
+  const inputAngleLabel = `zadan\xFD`;
+  const triangle = "troj\xFAheln\xEDk ABD";
   return {
     deductionTree: deduce(
-      deduce(
+      deduceAs(triangle)(
         deduce(
-          deduce(axiomInput(cont(inputAngleLabel, 40, entity3), 2), compAngle(inputAngleLabel, `${triangle} u vrcholu B`, "alternate")),
           deduce(
-            axiomInput(cont(inputAngleLabel, 70, entity3), 1),
-            compAngle(inputAngleLabel, `${triangle} u vrcholu A`, "supplementary")
+            axiomInput(contAngle(inputAngleLabel, 40), 2),
+            compAngle(inputAngleLabel, `vrchol B`, "alternate")
           ),
-          triangleAngle(`${triangle} u vrcholu D`)
+          deduce(
+            axiomInput(contAngle(inputAngleLabel, 70), 1),
+            compAngle(inputAngleLabel, `vrchol A`, "supplementary")
+          ),
+          triangleAngle(`vrchol D`)
         ),
-        compAngle(`${triangle} u vrcholu D`, "\u03C6", "supplementary")
+        compAngle(`vrchol D`, anglesNames.phi, "supplementary")
       ),
       ctorOption("D", 150)
     )
@@ -8208,31 +8216,27 @@ function charitativniZavod() {
   };
 }
 function angle() {
-  const entity3 = "stup\u0148\u016F";
-  const betaEntity = "beta \xFAhel";
-  const inputAngleLabel = `zadan\xFD \xFAhel`;
-  const triangleSumLabel = "sou\u010Det \xFAhl\u016F v troj\xFAheln\xEDku";
-  const triangleSum = cont(triangleSumLabel, 180, entity3);
+  const inputAngleLabel = `zadan\xFD \xFAhel mezi p\u0159\xEDmkami n a r`;
   const triangle = "troj\xFAheln\xEDk";
-  const sousedniUhel = `sousedn\xED k hledan\xE9mu alfa`;
+  const sousedniUhel = `vrchol mezi p\u0159\xEDmkami r a m`;
   const doubleBeta = deduce(
-    cont(inputAngleLabel, 2, betaEntity),
+    cont(inputAngleLabel, 2, anglesNames.beta),
     compAngle(inputAngleLabel, sousedniUhel, "alternate-interior")
   );
   return {
     deductionTree: deduce(
       deduce(
-        deduceAs("troj\xFAheln\xEDk, kde je zadan\xFD \xFAhel beta")(
+        deduceAs("troj\xFAheln\xEDk vznikl\xFD z p\u0159\xEDmek p,r,m")(
           deduce(
             doubleBeta,
-            cont(`zadan\xFD beta v ${triangle}`, 1, betaEntity),
+            cont(anglesNames.beta, 1, anglesNames.beta),
             ctorRatios(`dvojice \xFAhl\u016F v ${triangle}`)
           ),
           deduce(
-            triangleSum,
+            contTringleAngleSum(),
             deduce(
-              axiomInput(cont(inputAngleLabel, 105, entity3), 1),
-              compAngle(inputAngleLabel, `dopo\u010D\xEDtan\xFD v ${triangle}`, "supplementary")
+              contAngle("zadan\xFD", 105),
+              compAngle(inputAngleLabel, `vrchol mezi p\u0159\xEDmkami p a r`, "supplementary")
             ),
             ctorDifference(`dvojice \xFAhl\u016F v ${triangle}`)
           ),
@@ -9318,22 +9322,22 @@ function uhly() {
   const pravouhlyLabel = "pravouhl\xFD troj\xFAheln\xEDk ABC";
   const rovnoramennyLabel = "rovnoramenn\xFD troj\xFAheln\xEDk KCS";
   const vrchol = deduce(
-    cont("prav\xFD \xFAhel u vrcholu A", 90, "stupe\u0148"),
-    cont("\xFAhel u vrcholu B", 56, "stupe\u0148"),
-    triangleAngle("\xFAhel u vrcholu C")
+    contRightAngle("vrchol A"),
+    contAngle("vrchol B", 56),
+    triangleAngle("vrchol C")
   );
   return {
     deductionTree: deduce(
       deduce(
-        deduceAs(`2 troj\xFAhln\xEDky - ${pravouhlyLabel} a ${rovnoramennyLabel}`)(
+        deduceAs(`2 troj\xFAheln\xEDky - ${pravouhlyLabel}, ${rovnoramennyLabel}`)(
           vrchol,
           to(
             last(vrchol),
-            cont("\xFAhel u vrcholu K", lastQuantity(vrchol), "stupe\u0148")
+            contAngle("vrchol K", lastQuantity(vrchol))
           ),
-          triangleAngle("\xFAhel u vrcholu S")
+          triangleAngle("vrchol S")
         ),
-        compAngle("\xFAhel \u{1D714}", "\xFAhel u vrcholu S", "supplementary")
+        compAngle(anglesNames.omega, "vrchol S", "supplementary")
       ),
       ctorOption("D", 68)
     )
@@ -11320,34 +11324,32 @@ function pozemekObdelnik() {
   };
 }
 function angleBeta() {
-  const entity3 = "stup\u0148\u016F";
-  const alfaEntity = "alfa";
-  const triangleSumLabel = "sou\u010Det \xFAhl\u016F v troj\xFAheln\xEDku";
-  const triangleSum = cont(triangleSumLabel, 180, entity3);
+  const alfaEntity = anglesNames.alpha;
+  const triangleSum = contTringleAngleSum();
   const triangle = "troj\xFAheln\xEDku";
   const alfaA = cont(`vnit\u0159n\xED ${triangle}`, 4, alfaEntity);
+  const vedleKBetaLabel = `vrchol vedle k ${anglesNames.beta} u vnit\u0159n\xEDho ${triangle}`;
   return {
-    title: "Velikost \xFAhlu \u03B2",
     deductionTree: deduce(
       deduce(
         deduce(
           triangleSum,
           deduce(
             deduce(
-              cont(`zadan\xFD \xFAhel u vn\u011Bj\u0161\xEDho ${triangle}`, 4, alfaEntity),
-              compAngle(`zadan\xFD \xFAhel u vn\u011Bj\u0161\xEDho ${triangle}`, `vedlej\u0161\xED k hledan\xE9mu \xFAhlu \u03B2 u vnit\u0159n\xEDho ${triangle}`, "corresponding")
+              cont(`zadan\xFD u vn\u011Bj\u0161\xEDho ${triangle}`, 4, alfaEntity),
+              compAngle(`zadan\xFD u vn\u011Bj\u0161\xEDho ${triangle}`, vedleKBetaLabel, "corresponding")
             ),
-            cont(`zadan\xFD \xFAhel u vnit\u0159n\xEDho ${triangle}`, 4, alfaEntity),
+            cont(`zadan\xFD u vnit\u0159n\xEDho ${triangle}`, 4, alfaEntity),
             deduce(
-              cont(`zadan\xFD \xFAhel`, 2, alfaEntity),
-              compAngle(`zadan\xFD \xFAhel`, `dopo\u010D\xEDtan\xFD u vnit\u0159n\xEDho ${triangle}`, "opposite")
+              cont(`zadan\xFD`, 2, alfaEntity),
+              compAngle(`zadan\xFD`, `vrchol u vnit\u0159n\xEDho ${triangle}`, "opposite")
             ),
-            ctorRatios(triangleSumLabel)
+            ctorRatios(triangleSum.agent)
           ),
           alfaA,
-          nthPart(`vedlej\u0161\xED k hledan\xE9mu \xFAhlu \u03B2 u vnit\u0159n\xEDho ${triangle}`)
+          nthPart(vedleKBetaLabel)
         ),
-        compAngle(`vedlej\u0161\xED k hledan\xE9mu \xFAhlu \u03B2 u vnit\u0159n\xEDho ${triangle}`, "beta", "supplementary")
+        compAngle(vedleKBetaLabel, anglesNames.beta, "supplementary")
       ),
       ctorOption("B", 108)
     )
@@ -11761,34 +11763,34 @@ function kosoctverec() {
   };
 }
 function uhly2() {
-  const entity3 = "stup\u0148\u016F";
+  const zadanyVrcholB = contAngle("zadan\xFD vrchol B", 80);
   const uhelC = deduce(
-    cont("zadan\xFD \xFAhel B", 80, entity3),
-    to(
-      commonSense("rovnoramenn\xFD troj\xFAheln\xEDk m\xE1 shodn\xE9 \xFAhly u z\xE1kladny"),
-      cont("\xFAhel A", 80, entity3)
+    zadanyVrcholB,
+    deduce(
+      zadanyVrcholB,
+      compAngle("vrchol A", "zadan\xFD vrchol B", "isosceles-triangle-at-the-base")
     ),
-    triangleAngle("\xFAhel C")
+    triangleAngle("vrchol C")
   );
   return {
     deductionTree: deduce(
-      deduce(
+      deduceAs("rovnoramenn\xFD troj\xFAheln\xEDk ABC")(
         deduce(
           deduce(
             uhelC,
-            compAngle("vedlej\u0161\xED \xFAhel k C", "\xFAhel C", "supplementary")
+            compAngle("vedle u vrcholu C", "vrchol C", "supplementary")
           ),
-          compAngle("\xFAhel \u03C9", "vedlej\u0161\xED \xFAhel k C", "corresponding")
+          compAngle(anglesNames.omega, "vedle u vrcholu C", "corresponding")
         ),
         deduce(
           deduce(
             last(uhelC),
             half(),
-            ctorScale("polovina \xFAhel C")
+            ctorScale("polovina")
           ),
-          compAngle("\xFAhel \u03C6", "polovina \xFAhel C", "alternate-interior")
+          compAngle(anglesNames.phi, "polovina", "alternate-interior")
         ),
-        sum("\xFAhel \u03C9 + \xFAhel \u03C6")
+        sum([anglesNames.omega, anglesNames.phi].join(" a "))
       ),
       ctorOption("E", 170)
     )
@@ -11899,18 +11901,18 @@ var M9C_2023_default = createLazyMap({
   16.3: () => obrazce2().sedeCtverecPosledniObrazec
 });
 function uhly3() {
-  const entity3 = "stup\u0148\u016F";
+  const zadanyVrcholA = contAngle("zadan\xFD vrchol A", 55);
   const uhelE = deduce(
-    cont("zadan\xFD \xFAhel u A", 55, entity3),
-    to(
-      commonSense("rovnoramenn\xFD troj\xFAheln\xEDk m\xE1 shodn\xE9 \xFAhly u z\xE1kladny"),
-      cont("\xFAhel u B v rovnoramenn\xE9m troj\xFAheln\xEDku", 55, entity3)
+    zadanyVrcholA,
+    deduce(
+      zadanyVrcholA,
+      compAngle("vrchol B", zadanyVrcholA.agent, "isosceles-triangle-at-the-base")
     ),
-    triangleAngle("\xFAhel E")
+    triangleAngle("vrchol E")
   );
   const uhelB = to(
     commonSense("v\u0161echny \xFAhly v rovnostrann\xE9m troj\xFAheln\xEDku jsou stejn\xE9"),
-    cont("\xFAhel B v rovnostrann\xE9m troj\xFAheln\xEDku", 60, entity3)
+    contAngle("EBD", 60)
   );
   return {
     deductionTree: deduce(
@@ -11918,13 +11920,13 @@ function uhly3() {
         deduce(
           deduce(
             uhelE,
-            compAngle("\xFAhel B (spole\u010Dn\u011B rovnostrann\xFD a pravo\xFAhl\xFD troj\xFAheln\xEDk)", "\xFAhel E", "alternate-interior")
+            compAngle("EBC", "vrchol E", "alternate-interior")
           ),
           uhelB,
-          ctorDifference("\xFAhel B v pravo\xFAhl\xE9m troj\xFAheln\xEDku")
+          ctorDifference("DBC")
         ),
-        cont("prav\xFD \xFAhel", 90, entity3),
-        triangleAngle("\xFAhel \u{1D714}")
+        contRightAngle(),
+        triangleAngle(anglesNames.omega)
       ),
       ctorOption("D", 80)
     )
@@ -12638,16 +12640,15 @@ function kvadr() {
 
 // src/math/M9A-2024/angle.ts
 function rozdilUhlu({ input }) {
-  const entity3 = "";
-  const beta = axiomInput(cont("beta", input.beta, entity3), 1);
-  const delta2 = axiomInput(cont("delta", input.delta, entity3), 2);
-  const alfa = deduce(delta2, compAngle("delta", "alfa", "supplementary"));
+  const beta = contAngle(anglesNames.beta, input.beta);
+  const delta2 = contAngle(anglesNames.delta, input.delta);
+  const alfa = deduce(delta2, compAngle(anglesNames.delta, anglesNames.alpha, "supplementary"));
   const deductionTree = deduce(
     deduce(
       deduce(
         beta,
         alfa,
-        triangleAngle("gama")
+        triangleAngle(anglesNames.gamma)
       ),
       last(alfa),
       ctor("comp-diff")
@@ -13372,23 +13373,22 @@ function graf() {
   };
 }
 function uhlyTrojuhelniku() {
-  const entity3 = "stup\u0148\u016F";
-  const uhelUVrcholu = (vrchol, typUhel) => `${typUhel} \xFAhel u vrcholu ${vrchol}`;
+  const uhelUVrcholu = (vrchol, typUhel) => `vrchol ${vrchol} - ${typUhel}`;
   return {
     deductionTree: deduce(
       deduce(
         deduce(
           deduce(
-            cont(uhelUVrcholu("A", "zn\xE1m\xFD vn\u011Bj\u0161\xED"), 105, entity3),
+            contAngle(uhelUVrcholu("A", "zn\xE1m\xFD vn\u011Bj\u0161\xED"), 105),
             compAngle(uhelUVrcholu("A", "dopo\u010Dten\xFD"), uhelUVrcholu("A", "zn\xE1m\xFD"), "supplementary")
           ),
           deduce(
-            cont(uhelUVrcholu("C", "zn\xE1m\xFD vn\u011Bj\u0161\xED"), 125, entity3),
+            contAngle(uhelUVrcholu("C", "zn\xE1m\xFD vn\u011Bj\u0161\xED"), 125),
             compAngle(uhelUVrcholu("C", "dopo\u010Dten\xFD vnit\u0159n\xED"), uhelUVrcholu("C", "zn\xE1m\xFD"), "supplementary")
           ),
           triangleAngle(uhelUVrcholu("B", "dopo\u010Dten\xFD vnit\u0159n\xED"))
         ),
-        compAngle(uhelUVrcholu("B", "dopo\u010Dten\xFD vnit\u0159n\xED"), uhelUVrcholu("C", "alfa"), "complementary")
+        compAngle(uhelUVrcholu("B", "dopo\u010Dten\xFD vnit\u0159n\xED"), uhelUVrcholu("C", anglesNames.alpha), "complementary")
       ),
       ctorOption("D", 40)
     )
@@ -14278,15 +14278,14 @@ function procenta5() {
 
 // src/math/M9I-2025/angle.ts
 function desetiuhelnik({ input }) {
-  const entity3 = "stup\u0148\u016F";
   const pocetUhlu = "\xFAhl\u016F";
   const rovnoramennyTrojLabel = "rovnoramenn\xFD troj\xFAheln\xEDk";
   const vrcholovyUhelLabel = "vrcholov\xFD \xFAhel";
-  const celkem = cont("desiti\xFAheln\xEDk", 360, entity3);
-  const pocet = axiomInput(cont("desiti\xFAheln\xEDk", input.pocetUhlu, pocetUhlu), 1);
+  const celkem = contAngle("desiti\xFAheln\xEDk", 360);
+  const pocet = cont("desiti\xFAheln\xEDk", input.pocetUhlu, pocetUhlu);
   const minUhel = deduce(celkem, pocet, ctor("rate"));
   const alfa = deduce(minUhel, cont("alfa", 2, pocetUhlu));
-  const triangleSum = cont(rovnoramennyTrojLabel, 180, entity3);
+  const triangleSum = contTringleAngleSum(rovnoramennyTrojLabel);
   const uhelRamenaRovnoramennehoTrojuhelniku = ({ vrcholovyUhel: vrcholovyUhel2 }, { uhelRamenoLabel }) => toCont(
     deduce(
       deduce(
@@ -14307,15 +14306,15 @@ function desetiuhelnik({ input }) {
     {
       vrcholovyUhel: last(vrcholovyUhel)
     },
-    { uhelRamenoLabel: "beta" }
+    { uhelRamenoLabel: anglesNames.beta }
   ), vrcholovyUhel);
   const gama = deduce(
     last(alfa),
     uhelRamenaRovnoramennehoTrojuhelniku(
       {
-        vrcholovyUhel: cont(vrcholovyUhelLabel, lastQuantity(minUhel), entity3)
+        vrcholovyUhel: contAngle(vrcholovyUhelLabel, lastQuantity(minUhel))
       },
-      { uhelRamenoLabel: "gama" }
+      { uhelRamenoLabel: anglesNames.gamma }
     )
   );
   return [
@@ -14722,32 +14721,30 @@ function sud2() {
   };
 }
 function uhly5() {
-  const entity3 = "\xFAhel";
-  const unit = "stup\u0148\u016F";
-  const angleLabel = "zadan\xE1 hodnota";
-  const angle1 = cont(angleLabel, 30, entity3, unit);
-  const angle2 = cont(angleLabel, 130, entity3, unit);
+  const angleLabel = "zadan\xFD";
+  const angle1 = contAngle(angleLabel, 30);
+  const angle2 = contAngle(angleLabel, 130);
   return {
     alfa: {
       deductionTree: deduce(
         angle1,
-        compAngle(angleLabel, "alfa", "alternate-interior")
+        compAngle(angleLabel, anglesNames.alpha, "alternate-interior")
       )
     },
     beta: {
       deductionTree: deduce(
-        deduce(angle2, compAngle(angleLabel, "vedlej\u0161\xED", "supplementary")),
-        compAngle("vedlej\u0161\xED", "beta", "corresponding")
+        deduce(angle2, compAngle(angleLabel, "vedle k zadan\xE9mu", "supplementary")),
+        compAngle("vedle k zadan\xE9mu", anglesNames.beta, "corresponding")
       )
     },
     gamma: {
-      deductionTree: deduceAs("\xFAhly v pravo\xFAhl\xE9m troj\xFAheln\xEDku, vytvo\u0159en\xFD mezi p\u0159\xEDmkami r,t,q, kde r a t jsou kolm\xE9")(
+      deductionTree: deduceAs("pravo\xFAhl\xFD troj\xFAheln\xEDk, vytvo\u0159en\xFD mezi p\u0159\xEDmkami r,t,q, kde r a t jsou kolm\xE9")(
         deduce(
-          deduce(angle2, compAngle(angleLabel, "\xFAhel u bodu R", "supplementary")),
-          cont("prav\xFD \xFAhel", 90, entity3, unit),
-          triangleAngle("vrchol")
+          deduce(angle2, compAngle(angleLabel, "bod R", "supplementary")),
+          contRightAngle(),
+          triangleAngle("zb\xFDvaj\xEDc\xED vrchol")
         ),
-        compAngle("vrchol", "gamma", "supplementary")
+        compAngle("zb\xFDvaj\xEDc\xED vrchol", anglesNames.gamma, "supplementary")
       )
     }
   };
@@ -15106,12 +15103,9 @@ function dort2() {
   };
 }
 function uhelAlfa() {
-  const entity3 = "\xFAhel";
-  const unit = "stup\u0148\u016F";
-  const triangleSumLabel = "sou\u010Det \xFAhl\u016F v troj\xFAheln\xEDku";
-  const soucetUhluVTrojuhelniku = cont(triangleSumLabel, 180, entity3, unit);
+  const soucetUhluVTrojuhelniku = contTringleAngleSum();
   const praveRameho = deduce(
-    ratios(triangleSumLabel, ["vrcholov\xFD \xFAhel", "lev\xE9 rameno", "prav\xE9 rameno"], [40, 70, 70]),
+    ratios(soucetUhluVTrojuhelniku.agent, ["vrcholov\xFD \xFAhel", "lev\xE9 rameno", "prav\xE9 rameno"], [40, 70, 70]),
     soucetUhluVTrojuhelniku
   );
   return {
@@ -15121,14 +15115,14 @@ function uhelAlfa() {
           deduce(
             deduce(
               praveRameho,
-              compAngle("prav\xE9 rameno", "\xFAhel p\u0159\xEDmka p", "corresponding")
+              compAngle("prav\xE9 rameno", "p\u0159\xEDmka p", "corresponding")
             ),
-            compAngle("\xFAhel p\u0159\xEDmka p", "troj\xFAheln\xEDk bod A", "alternate-exterior")
+            compAngle("p\u0159\xEDmka p", "vrchol A", "alternate-exterior")
           ),
           last(praveRameho),
-          triangleAngle("troj\xFAheln\xEDk bod C")
+          triangleAngle("vrchol C")
         ),
-        compAngle("troj\xFAheln\xEDk bod C", "alfa", "supplementary")
+        compAngle("vrchol C", anglesNames.alpha, "supplementary")
       ),
       ctorOption("B", 140)
     )
@@ -15751,7 +15745,7 @@ function uhly7() {
   const zadany = contAngle("zadan\xFD", 64);
   const alpha = deduceAs("troj\xFAheln\xEDk KAS je rovnoramenn\xFD")(
     zadany,
-    compAngle("zadan\xFD", anglesNames.alpha, "congruence-at-the-base-equilateral-triangle")
+    compAngle("zadan\xFD", anglesNames.alpha, "isosceles-triangle-at-the-base")
   );
   const alfaABetaLabel = [anglesNames.alpha, anglesNames.beta].join(" a ");
   const SKB = deduce(
@@ -15762,7 +15756,7 @@ function uhly7() {
     SKB,
     deduceAs(`troj\xFAheln\xEDk SBK je rovnoramenn\xFD`)(
       last(SKB),
-      compAngle(anglesNames.beta, "SKB", "congruence-at-the-base-equilateral-triangle")
+      compAngle(anglesNames.beta, "SKB", "isosceles-triangle-at-the-base")
     ),
     triangleAngle(anglesNames.gamma)
   );

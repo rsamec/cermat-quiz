@@ -1,5 +1,5 @@
-import { commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, sum, ctorComplement, ctorOption, counter, percent, rate, ratios, product, triangleAngle, ctorDifference, nthPart, contLength, dimensionEntity, ctorRatios, rectangleArea, triangleArea } from "../../components/math";
-import { axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
+import { commonSense, comp, compAngle, compDiff, compPercent, compRatio, cont, ctor, sum, ctorComplement, ctorOption, counter, percent, rate, ratios, product, triangleAngle, ctorDifference, nthPart, contLength, dimensionEntity, ctorRatios, rectangleArea, triangleArea, contAngle } from "../../components/math";
+import { anglesNames, axiomInput, createLazyMap, deduce, deduceAs, last, to } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
 import { obrazce } from "../obrazce";
@@ -127,24 +127,25 @@ function minceVKasicce() {
 }
 
 function example_11() {
-  const entity = "stupňů";
 
-  const inputAngleLabel = `zadaný úhel`;
-
-  const triangle = "úhel trojúhelníku ABD";
+  const inputAngleLabel = `zadaný`;
+  const triangle = "trojúhelník ABD";
 
   return {
     deductionTree: deduce(
-      deduce(
+      deduceAs(triangle)(
         deduce(
-          deduce(axiomInput(cont(inputAngleLabel, 40, entity), 2), compAngle(inputAngleLabel, `${triangle} u vrcholu B`, 'alternate')),
           deduce(
-            axiomInput(cont(inputAngleLabel, 70, entity), 1),
-            compAngle(inputAngleLabel, `${triangle} u vrcholu A`, "supplementary")
+            axiomInput(contAngle(inputAngleLabel, 40), 2), 
+            compAngle(inputAngleLabel, `vrchol B`, 'alternate')
           ),
-          triangleAngle(`${triangle} u vrcholu D`)
+          deduce(
+            axiomInput(contAngle(inputAngleLabel, 70), 1),
+            compAngle(inputAngleLabel, `vrchol A`, "supplementary")
+          ),
+          triangleAngle(`vrchol D`)
         ),
-        compAngle(`${triangle} u vrcholu D`, "φ", 'supplementary')
+        compAngle(`vrchol D`, anglesNames.phi, 'supplementary')
       ),
       ctorOption("D", 150)
     )

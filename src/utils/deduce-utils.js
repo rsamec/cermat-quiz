@@ -2461,7 +2461,8 @@ function computeOtherAngle(angle1, relationship) {
     case "alternate-interior":
     case "alternate-exterior":
     case "axially-symmetric":
-    case "congruence-at-the-base-equilateral-triangle":
+    case "isosceles-triangle-at-the-base":
+    case "equilateral-triangle":
       return angle1;
     default:
       throw "Unknown Angle Relationship";
@@ -2487,8 +2488,10 @@ function formatAngle(relationship) {
       return "st\u0159\xEDdav\xFD vn\u011Bj\u0161\xED";
     case "axially-symmetric":
       return "osov\u011B soum\u011Brn\xFD";
-    case "congruence-at-the-base-equilateral-triangle":
-      return "shodnost \xFAhl\u016F p\u0159i z\xE1kladn\u011B u rovnostrann\xE9ho troj\xFAheln\xEDku";
+    case "isosceles-triangle-at-the-base":
+      return "rovnoramenn\xFD troj\xFAheln\xEDk - shodnost \xFAhl\u016F p\u0159i z\xE1kladn\u011B";
+    case "equilateral-triangle":
+      return "rovnostrann\xFD troj\xFAheln\xEDk - v\u0161echny \xFAhly jsou shodn\xE9";
     default:
       throw "Nezn\xE1m\xFD vztah";
   }
@@ -6987,7 +6990,10 @@ var anglesNames = {
   beta: "\u{1D6FD}",
   gamma: "\u{1D6FE}",
   delta: "\u{1D6FF}",
-  theta: "\u{1D703}"
+  theta: "\u{1D703}",
+  lambda: "\u{1D706}",
+  omega: "\u{1D714}",
+  phi: "\u{1D711}"
 };
 function isStringContext(context) {
   return typeof context === "string";

@@ -846,6 +846,9 @@ export const anglesNames = {
   gamma: '𝛾',
   delta: '𝛿',
   theta: '𝜃',
+  lambda: '𝜆',
+  omega: '𝜔',
+  phi: '𝜑',
 }
 
 function isStringContext(context: DeduceContext): context is string {

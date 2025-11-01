@@ -1,5 +1,5 @@
-import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, pythagoras, rate, ratio, sum, product, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorBooleanOption, contLength, dimensionEntity, nthPart, comp, oblongNumbers, nth, counter, ctorRound, ratios, alligation, ctorRatiosInvert, percent, ctorExpressionOption, contArea, halfProduct, evalFormulaAsCont, formulaRegistry, baseAreaVolume, circleArea, triangleAngle, compAngle } from "../../components/math";
-import { createLazyMap, deduce, deduceAs, last, to, toCont, toRate } from "../../utils/deduce-utils";
+import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, pythagoras, rate, ratio, sum, product, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorBooleanOption, contLength, dimensionEntity, nthPart, comp, oblongNumbers, nth, counter, ctorRound, ratios, alligation, ctorRatiosInvert, percent, ctorExpressionOption, contArea, halfProduct, evalFormulaAsCont, formulaRegistry, baseAreaVolume, circleArea, triangleAngle, compAngle, contAngle, contRightAngle } from "../../components/math";
+import { anglesNames, createLazyMap, deduce, deduceAs, last, to, toCont, toRate } from "../../utils/deduce-utils";
 
 
 export default createLazyMap({
@@ -24,19 +24,19 @@ export default createLazyMap({
 })
 
 function uhly() {
-    const entity = "stupňů"
+    const zadanyVrcholA = contAngle("zadaný vrchol A", 55)
     const uhelE = deduce(
-        cont("zadaný úhel u A", 55, entity),
-        to(
-            commonSense("rovnoramenný trojúhelník má shodné úhly u základny"),
-            cont("úhel u B v rovnoramenném trojúhelníku", 55, entity)
+        zadanyVrcholA,
+        deduce(
+            zadanyVrcholA,
+            compAngle("vrchol B", zadanyVrcholA.agent, "isosceles-triangle-at-the-base")
         ),
-        triangleAngle("úhel E")
+        triangleAngle("vrchol E")
     )
 
     const uhelB = to(
         commonSense("všechny úhly v rovnostranném trojúhelníku jsou stejné"),
-        cont("úhel B v rovnostranném trojúhelníku", 60, entity)
+        contAngle("EBD", 60)
     )
 
     return {
@@ -45,13 +45,13 @@ function uhly() {
                 deduce(
                     deduce(
                         uhelE,
-                        compAngle("úhel B (společně rovnostranný a pravoúhlý trojúhelník)", "úhel E", "alternate-interior")
+                        compAngle("EBC", "vrchol E", "alternate-interior")
                     ),
                     uhelB,
-                    ctorDifference("úhel B v pravoúhlém trojúhelníku")
+                    ctorDifference("DBC")
                 ),
-                cont("pravý úhel", 90, entity),
-                triangleAngle("úhel 𝜔")
+                contRightAngle(),
+                triangleAngle(anglesNames.omega)
             ),
             ctorOption("D", 80)
         )

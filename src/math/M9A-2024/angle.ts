@@ -1,5 +1,5 @@
-import { cont, ctor, compAngle, ctorOption, triangleAngle } from "../../components/math";
-import { axiomInput, deduce, last } from "../../utils/deduce-utils";
+import { ctor, compAngle, ctorOption, triangleAngle, contAngle } from "../../components/math";
+import { anglesNames, deduce, last } from "../../utils/deduce-utils";
 
 
 
@@ -10,19 +10,17 @@ export function rozdilUhlu({ input }: {
   }
 }) {
 
+  const beta = contAngle(anglesNames.beta, input.beta);
+  const delta = contAngle(anglesNames.delta, input.delta)
 
-  const entity = ""
-  const beta = axiomInput(cont("beta", input.beta, entity), 1);
-  const delta = axiomInput(cont("delta", input.delta, entity), 2)
-
-  const alfa = deduce(delta, compAngle("delta", "alfa", "supplementary"))
+  const alfa = deduce(delta, compAngle(anglesNames.delta, anglesNames.alpha, "supplementary"))
 
   const deductionTree = deduce(
     deduce(
       deduce(
         beta,
         alfa,
-        triangleAngle("gama")
+        triangleAngle(anglesNames.gamma)
       ),
       last(alfa),
       ctor("comp-diff")

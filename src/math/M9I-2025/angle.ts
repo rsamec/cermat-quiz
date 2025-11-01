@@ -1,5 +1,5 @@
-import { cont, ctor, ctorBooleanOption, ctorDifference } from "../../components/math";
-import { axiomInput, connectTo, deduce, last, lastQuantity, toCont } from "../../utils/deduce-utils";
+import { cont, contAngle, contTringleAngleSum, ctor, ctorBooleanOption, ctorDifference } from "../../components/math";
+import { anglesNames, connectTo, deduce, last, lastQuantity, toCont } from "../../utils/deduce-utils";
 
 
 
@@ -8,17 +8,16 @@ export function desetiuhelnik({ input }: {
 }) {
 
 
-  const entity = "stupňů"
   const pocetUhlu = "úhlů"
   const rovnoramennyTrojLabel = "rovnoramenný trojúhelník";
   const vrcholovyUhelLabel = "vrcholový úhel"
-  const celkem = cont("desitiúhelník", 360, entity);
-  const pocet = axiomInput(cont("desitiúhelník", input.pocetUhlu, pocetUhlu), 1)
+  const celkem = contAngle("desitiúhelník", 360);
+  const pocet = cont("desitiúhelník", input.pocetUhlu, pocetUhlu);
 
   const minUhel = deduce(celkem, pocet, ctor('rate'))
   const alfa = deduce(minUhel, cont("alfa", 2, pocetUhlu));
 
-  const triangleSum = cont(rovnoramennyTrojLabel, 180, entity)
+  const triangleSum = contTringleAngleSum(rovnoramennyTrojLabel);
   const uhelRamenaRovnoramennehoTrojuhelniku = (
     { vrcholovyUhel }: { vrcholovyUhel: any },
     { uhelRamenoLabel }: { uhelRamenoLabel?: string }) => toCont(deduce(
@@ -38,16 +37,16 @@ export function desetiuhelnik({ input }: {
   const beta = connectTo(uhelRamenaRovnoramennehoTrojuhelniku({
     vrcholovyUhel: last(vrcholovyUhel)
   },
-    { uhelRamenoLabel: 'beta' }), vrcholovyUhel)
+    { uhelRamenoLabel: anglesNames.beta }), vrcholovyUhel)
 
 
 
   const gama = deduce(
     last(alfa),
     uhelRamenaRovnoramennehoTrojuhelniku({
-      vrcholovyUhel: cont(vrcholovyUhelLabel, lastQuantity(minUhel), entity)
+      vrcholovyUhel: contAngle(vrcholovyUhelLabel, lastQuantity(minUhel))
     },
-      { uhelRamenoLabel: 'gama' }),
+      { uhelRamenoLabel: anglesNames.gamma }),
   )
 
   return [
