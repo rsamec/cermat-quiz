@@ -1,5 +1,5 @@
-import { compRatio, cont, ctor, rate, compRelativePercent, comp, contLength, dimensionEntity, ctorUnit, ctorComparePercent, ctorRatios, nthPartFactor, nthPartScale, ctorRate, nthPart, ctorDifference, sum, ctorPercent, ctorOption, lcd, compPercent, ratio, percent, ctorComplement, ctorBooleanOption, ctorExpressionOption, ctorRound, counter, ratios, quota, ctorHasNoRemainder } from "../../components/math";
-import { createLazyMap, deduce, deduceAs, last, toCont } from "../../utils/deduce-utils";
+import { compRatio, cont, ctor, rate, compRelativePercent, comp, contLength, dimensionEntity, ctorUnit, ctorComparePercent, ctorRatios, nthPartFactor, nthPartScale, ctorRate, nthPart, ctorDifference, sum, ctorPercent, ctorOption, lcd, compPercent, ratio, percent, ctorComplement, ctorBooleanOption, ctorExpressionOption, ctorRound, counter, ratios, quota, ctorHasNoRemainder, contAngle, compAngle, contRightAngle, ctorTuple } from "../../components/math";
+import { anglesNames, createLazyMap, deduce, deduceAs, last, toCont } from "../../utils/deduce-utils";
 
 
 export default createLazyMap({
@@ -14,6 +14,7 @@ export default createLazyMap({
     11: () => obchod(),
     12: () => knizniSerie(),
     13: () => brambory(),
+    // 14: () => uhly(),
     15.1: () => jablka().stejnaMnozstvi,
     15.2: () => jablka().jenLevnejsi,
     15.3: () => jablka().nejviceKilogramu,
@@ -22,7 +23,40 @@ export default createLazyMap({
     16.3: () => procenta().cerpadla,
 
 })
+function uhly() {
+    const pravyUhly = contRightAngle();
+    const suma = deduce(
+        deduce(
+            contAngle("zadaný", 126.5),
+            compAngle("zadaný", anglesNames.gamma, "supplementary"),
+        ),
+        deduce(
+            pravyUhly,
+            compAngle(pravyUhly.agent, [anglesNames.alpha, anglesNames.beta].join(" a "), "supplementary")
+        ),
+        sum("celkem")
+    );
 
+    return {
+        deductionTree: //deduce(
+            deduce(
+                deduce(
+                    suma,
+                    ctor('number-decimal-part')
+                ),
+                deduce(
+                    deduce(
+                        last(suma),
+                        ctor('number-fraction-part')
+                    ),
+                    ctorUnit("arcmin")
+                ),
+                ctor('tuple')
+            ),
+        //     ctorOption("C", [143, 30])
+        // )
+    }
+}
 function trasa() {
     const dim = dimensionEntity();
 

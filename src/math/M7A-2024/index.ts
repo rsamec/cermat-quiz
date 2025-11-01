@@ -1,4 +1,4 @@
-import { compAngle, compPercent, cont, ctor, ctorOption, sum, ctorUnit, nthPart, percent, ratios, type Container, isNumber, rate, ctorSlide, proportion, counter, compRatio, ctorDifference, product, double, contLength, squareArea, rectangleArea, cuboidVolume } from "../../components/math";
+import { compAngle, compPercent, cont, ctor, ctorOption, sum, ctorUnit, nthPart, percent, ratios, type Container, isNumber, rate, ctorSlide, proportion, counter, compRatio, ctorDifference, product, double, contLength, squareArea, rectangleArea, cuboidVolume, ctorRatios } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, toPredicate, deduceAs } from "../../utils/deduce-utils";
 import { porovnatAaB, najitMensiCislo } from "./1";
 import { porovnatObsahObdelnikACtverec } from "./13";
@@ -253,36 +253,37 @@ function angle() {
 
   const inputAngleLabel = `zadaný úhel`;
   const triangleSumLabel = 'součet úhlů v trojúhelníku';
+
   const triangleSum = cont(triangleSumLabel, 180, entity)
-  const triangle = "úhel trojúhelníku ABC";
+  const triangle = "trojúhelník";
+
+  const sousedniUhel = `sousední k hledanému alfa`
 
   const doubleBeta = deduce(
     cont(inputAngleLabel, 2, betaEntity),
-    compAngle(inputAngleLabel, `${triangle} u vrcholu A`, 'alternate')
+    compAngle(inputAngleLabel, sousedniUhel, 'alternate-interior')
   )
 
   return {
     deductionTree: deduce(
       deduce(
-        deduce(
+        deduceAs("trojúhelník, kde je zadaný úhel beta")(
           deduce(
+            doubleBeta,
+            cont(`zadaný beta v ${triangle}`, 1, betaEntity),
+            ctorRatios(`dvojice úhlů v ${triangle}`)
+          ),
+          deduce(
+            triangleSum,
             deduce(
-              triangleSum,
-              deduce(
-                axiomInput(cont(inputAngleLabel, 105, entity), 1),
-                compAngle(inputAngleLabel, `${triangle} u vrcholu C`, 'supplementary')
-              ),
-              ctorDifference("beta")
+              axiomInput(cont(inputAngleLabel, 105, entity), 1),
+              compAngle(inputAngleLabel, `dopočítaný v ${triangle}`, 'supplementary')
             ),
-            deduce(
-              doubleBeta,
-              cont(`${triangle} u vrcholu B`, 1, betaEntity),
-              sum("beta")
-            ),
-            ctor('rate')),
-          last(doubleBeta)
+            ctorDifference(`dvojice úhlů v ${triangle}`)
+          ),
+          nthPart(sousedniUhel)
         ),
-        compAngle(`${triangle} u vrcholu A`, 'alfa', 'supplementary')
+        compAngle(sousedniUhel, 'alfa', 'supplementary')
       ),
       ctorOption("B", 110)
     )

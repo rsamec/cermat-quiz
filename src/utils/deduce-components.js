@@ -5,7 +5,7 @@ import { nthQuadraticElements, primeFactorization, lcdCalc, isNumber, gcdCalc } 
 import { isPredicate, formatPredicate, mapNodeChildrenToPredicates, last } from "../utils/deduce-utils.js";
 import { deduce } from "./deduce.js";
 import { inferenceRuleWithQuestion } from "../math/math-configure.js";
-import { toEquationExprAsText, toEquationExprAsTex } from "./math-solver.js";
+import { toEquationExprAsText } from "./math-solver.js";
 
 export function partion(items, options) {
   const total = items.reduce((out, d) => out += d.value, 0);

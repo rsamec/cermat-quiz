@@ -22,7 +22,7 @@ export function rozdilUhlu({ input }: {
       deduce(
         beta,
         alfa,
-        triangleAngle("game")
+        triangleAngle("gama")
       ),
       last(alfa),
       ctor("comp-diff")

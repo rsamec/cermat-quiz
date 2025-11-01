@@ -1,4 +1,4 @@
-import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, pythagoras, rate, ratio, sum, product, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorBooleanOption, contLength, dimensionEntity, nthPart, comp, oblongNumbers, nth, counter, ctorRound, ratios, alligation, ctorRatiosInvert, percent, ctorExpressionOption, contArea, halfProduct, evalFormulaAsCont, formulaRegistry, baseAreaVolume, circleArea } from "../../components/math";
+import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, pythagoras, rate, ratio, sum, product, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorBooleanOption, contLength, dimensionEntity, nthPart, comp, oblongNumbers, nth, counter, ctorRound, ratios, alligation, ctorRatiosInvert, percent, ctorExpressionOption, contArea, halfProduct, evalFormulaAsCont, formulaRegistry, baseAreaVolume, circleArea, triangleAngle, compAngle } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, to, toCont, toRate } from "../../utils/deduce-utils";
 
 
@@ -13,6 +13,7 @@ export default createLazyMap({
     11.2: () => tabor().oddilB,
     11.3: () => tabor().pocet,
     12: () => vagony(),
+    13: () => uhly(),
     14: () => hranol(),
     15.1: () => procenta().encyklopediePocetStran,
     15.2: () => procenta().rozaPocetStran,
@@ -21,6 +22,43 @@ export default createLazyMap({
     16.2: () => obrazce().sedeCtverce,
     16.3: () => obrazce().sedeCtverecPosledniObrazec,
 })
+
+function uhly() {
+    const entity = "stupňů"
+    const uhelE = deduce(
+        cont("zadaný úhel u A", 55, entity),
+        to(
+            commonSense("rovnoramenný trojúhelník má shodné úhly u základny"),
+            cont("úhel u B v rovnoramenném trojúhelníku", 55, entity)
+        ),
+        triangleAngle("úhel E")
+    )
+
+    const uhelB = to(
+        commonSense("všechny úhly v rovnostranném trojúhelníku jsou stejné"),
+        cont("úhel B v rovnostranném trojúhelníku", 60, entity)
+    )
+
+    return {
+        deductionTree: deduce(
+            deduce(
+                deduce(
+                    deduce(
+                        uhelE,
+                        compAngle("úhel B (společně rovnostranný a pravoúhlý trojúhelník)", "úhel E", "alternate-interior")
+                    ),
+                    uhelB,
+                    ctorDifference("úhel B v pravoúhlém trojúhelníku")
+                ),
+                cont("pravý úhel", 90, entity),
+                triangleAngle("úhel 𝜔")
+            ),
+            ctorOption("D", 80)
+        )
+
+    }
+}
+
 
 function trasaCesta() {
     const entity = "délka"

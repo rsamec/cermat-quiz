@@ -5,13 +5,15 @@ export type Helpers = {
   unitAnchor?: (unit: UnitType) => number;
   solveLinearEquation?: (first: Quantity, second: Quantity, variable: string) => number
   evalExpression?: (expression: Expression | ExpressionNode, quantityOrContext: number | Record<string, number>) => number
+  evalNodeToNumber?: (expression: ExpressionNode) => number
 }
 const defaultHelpers: Helpers = {
   convertToFraction: d => d,
   convertToUnit: d => d,
   unitAnchor: () => 1,
   solveLinearEquation: (fist, second, variable) => NaN,
-  evalExpression: (expression, context) => NaN
+  evalExpression: (expression, context) => NaN,
+  evalNodeToNumber: (expression) => NaN
 
 }
 
@@ -55,6 +57,13 @@ export function dimensionEntity(unit: LengthDim = "cm") {
   }
 }
 const dim = dimensionEntity();
+type AngleUnitDim = "deg" | "rad" | "arcmin" | "arcsec"
+export function angleEntity(unit: AngleUnitDim = "deg") {
+  return {
+    angle: { entity: "úhel", unit },
+    angles: ["úhel", unit] as [string, string]
+  }
+}
 // #endregion
 
 
@@ -120,7 +129,7 @@ export type Option = {
 
   value?: true | false | "A" | "B" | "C" | "D" | "E" | "F"
 
-  expectedValue?: number
+  expectedValue?: number | number[]
   compareTo?: ComparisonType
   expectedValueOptions?: FormattingOptions
   optionValue?: "A" | "B" | "C" | "D" | "E" | "F"
@@ -342,6 +351,14 @@ export type Scale = {
   kind: 'scale'
   agent?: string
 }
+export type NumberFractionPart = {
+  kind: 'number-fraction-part',
+  agent?: string
+}
+export type NumberDecimalPart = {
+  kind: 'number-decimal-part',
+  agent?: string
+}
 
 export type InvertScale = {
   kind: "scale-invert"
@@ -425,7 +442,7 @@ export type RatiosPredicate = PartToPartRatio | TwoPartRatio | ThreePartRatio;
 export type ExpressionPredicate = EvalExpr<ContainerEval | RateEval> | EvalFormula<ContainerEval | RateEval> | SimplifyExpr | LinearEquation | Phytagoras;
 export type CommonSensePredicate = CommonSense | Proportion
 export type MultipleOperationPredicate = Sum | SumCombine | Product | ProductCombine | GCD | LCD
-export type SingleOperationPredicate = Scale | InvertScale | Slide | InvertSlide | Difference | Complement | ConvertUnit | Round | ConvertPercent | InvertCompRatio | Reverse | ComplementCompRatio | RatiosInvert | RatiosBase
+export type SingleOperationPredicate = Scale | InvertScale | Slide | InvertSlide | Difference | Complement | ConvertUnit | Round | ConvertPercent | InvertCompRatio | Reverse | ComplementCompRatio | RatiosInvert | RatiosBase | NumberDecimalPart | NumberFractionPart
 export type OperationPredicate = SingleOperationPredicate | MultipleOperationPredicate
 
 export type Predicate = QuantityPredicate | RatioPredicate | RatiosPredicate | ExpressionPredicate | MultipleOperationPredicate | CommonSensePredicate | OperationPredicate
@@ -437,7 +454,7 @@ export type PredicateKind = Pick<Predicate, 'kind'>
 // #region Predicate constructors
 export function ctor(kind: 'ratio' | 'comp-ratio' | 'comp' | 'rate' | 'quota' | "comp-diff"
   | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'scale' | 'scale-invert' | 'slide' | 'slide-invert'
-  | 'complement' | 'delta' | 'tuple' | 'simplify-expr' | 'convert-percent' | 'invert-comp-ratio' | 'reverse' | 'ratios-base') {
+  | 'complement' | 'delta' | 'tuple' | 'number-decimal-part' | 'number-fraction-part' | 'simplify-expr' | 'convert-percent' | 'invert-comp-ratio' | 'reverse' | 'ratios-base') {
   return { kind } as Predicate
 }
 
@@ -528,8 +545,8 @@ export function ctorTuple(agent: AgentMatcher): Tuple {
   return { kind: "tuple", agent, items: [] }
 }
 
-export function cont(agent: string, quantity: NumberOrVariable, entity: string, unit?: string, opts?: { asFraction: boolean }): Container {
-  return { kind: 'cont', agent, quantity: quantity as NumberOrExpression, entity, unit, asRatio: opts?.asFraction };
+export function cont(agent: string, quantity: NumberOrVariable, entity: string, unit?: string, opts?: { asFraction?: boolean, asExpression?: boolean }): Container {
+  return { kind: 'cont', agent, quantity: (opts?.asExpression ? quantity.toString() : quantity) as NumberOrExpression, entity, unit, asRatio: opts?.asFraction };
 }
 export function tuple(agent: string, items: Predicate[]): Tuple {
   return { kind: 'tuple', agent, items }
@@ -551,7 +568,7 @@ export function simplifyExpr(context: Record<string, number>): SimplifyExpr {
   return { kind: 'simplify-expr', context }
 }
 
-export function ctorOption(optionValue: "A" | "B" | "C" | "D" | "E" | "F", expectedValue: number, expectedValueOptions: FormattingOptions = { asPercent: false, asFraction: false }): Option {
+export function ctorOption(optionValue: "A" | "B" | "C" | "D" | "E" | "F", expectedValue: number | number[], expectedValueOptions: FormattingOptions = { asPercent: false, asFraction: false }): Option {
   return {
     kind: 'eval-option',
     expression: convertToExpression(expectedValue, "closeTo", expectedValueOptions),
@@ -576,6 +593,7 @@ export type ComparisonType = "equal" | "greater" | "greaterOrEqual" | "smaller" 
 export function ctorHasNoRemainder() {
   return ctorBooleanOption(0, "closeTo", { expectedValueLabel: 'zbytek' })
 }
+
 export function ctorBooleanOption(expectedValue: number, compareTo: ComparisonType = 'closeTo', expectedValueOptions: FormattingOptions = { asPercent: false, asFraction: false }): Option {
   return {
     kind: 'eval-option',
@@ -584,15 +602,17 @@ export function ctorBooleanOption(expectedValue: number, compareTo: ComparisonTy
     expectedValue, expectedValueOptions, compareTo
   }
 }
-function convertToNiceExpression(expectedValue: number, compareTo: ComparisonType, expectedValueOptions: FormattingOptions) {
+function convertToNiceExpression(expectedValue: number | number[], compareTo: ComparisonType, expectedValueOptions: FormattingOptions) {
   return convertToExpression(expectedValue, compareTo, expectedValueOptions, expectedValueOptions.expectedValueLabel ?? 'zjištěná hodnota');
 }
-function convertToExpression(expectedValue: number, compareTo: ComparisonType, expectedValueOptions: FormattingOptions, variable = "x") {
-  const convertedValue = expectedValueOptions.asFraction
-    ? helpers.convertToFraction(expectedValue)
-    : expectedValueOptions.asPercent
-      ? expectedValue / 100
-      : expectedValue;
+function convertToExpression(expectedValue: number | number[], compareTo: ComparisonType, expectedValueOptions: FormattingOptions, variable = "x") {
+  const convertedValue = Array.isArray(expectedValue)
+    ? expectedValue
+    : expectedValueOptions.asFraction
+      ? helpers.convertToFraction(expectedValue)
+      : expectedValueOptions.asPercent
+        ? expectedValue / 100
+        : expectedValue;
   const toCompare = (comp) => `${variable} ${comp} ${convertedValue}`
   switch (compareTo) {
     case "equal": return toCompare("==")
@@ -724,7 +744,15 @@ export function balancedEntityPartition(parts: AgentMatcher[], entity: EntityBas
     entity
   }
 }
-
+export function contAngle(agent: string, quantity: NumberOrVariable, unit: AngleUnitDim = "deg", { asExpression }: { asExpression?: boolean } = {}) {
+  return cont(agent, quantity, angleEntity().angle.entity, unit, { asExpression })
+}
+export function contRightAngle() {
+  return contAngle("pravý úhel", 90, "deg")
+}
+export function contTringleAngleSum() {
+  return contAngle("součet úhlů v trojúhelníku", 180, "deg")
+}
 export function contLength(agent: string, quantity: NumberOrVariable, unit: LengthDim = "cm") {
   return cont(agent, quantity, dimensionEntity().length.entity, unit)
 }
@@ -878,7 +906,7 @@ function inferAngleCompareRule(a: Container, b: AngleComparison): Question<Conta
       ? [
         { tex: `90 - ${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship == "complementary" },
         { tex: `180 - ${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship == "supplementary" || b.relationship == "sameSide" },
-        { tex: `${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship != "supplementary" && b.relationship != "complementary" && b.relationship != "sameSide" },
+        { tex: `${a.quantity}`, result: formatNumber(result.quantity), ok: b.relationship != "supplementary" && b.relationship != "complementary" && b.relationship != "sameSide" },
       ]
       : []
   }
@@ -1967,6 +1995,31 @@ function tupleRule(items: Predicate[], last: { agent: AgentMatcher }): Question<
   }
 }
 
+function splitDecimalAndFractionPartsRule(value: number) {
+  const decimal = Math.floor(value);
+  const fraction = value - decimal;
+  return [decimal, fraction];
+}
+
+function inferSplitDecimalAndFractionPartsRule(a: Container, b: NumberDecimalPart | NumberFractionPart): Question<Container> {
+  const quantity = isNumber(a.quantity)
+    ? b.kind === "number-decimal-part" ? splitDecimalAndFractionPartsRule(a.quantity)[0] : splitDecimalAndFractionPartsRule(a.quantity)[1]
+    : b.kind === "number-decimal-part" ? wrapToQuantity(`floor(${a.quantity})`, { a }) : wrapToQuantity(`(${a.quantity}) - floor(${a.quantity})`, { a });
+
+  const result: Container = {
+    ...a,
+    agent: b?.agent ?? a.agent,
+    quantity
+  }
+  return {
+    name: "splitDecimalAndFractionPartsRule",
+    inputParameters: extractKinds(a),
+    question: `Rozděl číslo na celočíselnou a desetinnou část. Vrať ${b.kind === "number-decimal-part" ? 'celočíselnou' : 'desetinnou'} část.`,
+    result,
+    options: []
+  }
+}
+
 function toSequenceRule(items: Container[]): Sequence {
   const values = items.map(d => d.quantity);
   if (!areNumbers(values)) {
@@ -2710,13 +2763,11 @@ function evalToOptionRule<T extends Predicate & { quantity?: Quantity, ratio?: Q
   let valueToEval = a.quantity ?? a.ratio;
 
   if (isExpressionNode(valueToEval)) {
-
-    valueToEval = helpers.evalExpression(valueToEval.expression, valueToEval.context)
-    //console.log(a.quantity ?? a.ratio, valueToEval)
+    valueToEval = helpers.evalNodeToNumber(valueToEval)
   }
 
-  if (!isNumber(valueToEval)) {
-    throw `evalToQuantity does not support non quantity types. ${JSON.stringify(valueToEval)}`
+  if (!isNumber(valueToEval) || isNaN(valueToEval)) {
+    throw `evalToOptionRule does not support non quantity types. ${JSON.stringify(a)}`
   }
   if (a.kind == "comp-ratio" && (b.expectedValueOptions.asRelative || (valueToEval > 1 / 2 && valueToEval < 2))) {
     valueToEval = valueToEval > 1 ? valueToEval - 1 : 1 - valueToEval;
@@ -3024,7 +3075,7 @@ function nthTermExpressionRuleEx(a: Container, b: Pattern): Container {
     predicate: {
       kind: 'cont', agent: a.agent, entity: b.entity,
     },
-    expression: b.nthTerm,    
+    expression: b.nthTerm,
   }) as Container
 
 }
@@ -3108,7 +3159,7 @@ export function inferenceRuleWithQuestion(children: Predicate[]) {
   const predicates = children.slice(0, -1);
 
   const result = predicates.length > 1 ? inferenceRuleEx(...predicates) : null;
-  //if result == null not possible to evaluate -> it has no derived computation
+  //if result == null not possible to evaluate -> it has no derived computation  
   return result == null
     ? {
       name: predicates.find(d => d.kind == "common-sense") != null ? "commonSense" : "unknownRule",
@@ -3217,6 +3268,12 @@ function inferenceRuleEx(...args: Predicate[]): Question<any> {
   }
   else if (a.kind === "round" && (b.kind === "cont")) {
     return inferRoundToRule(b, a);
+  }
+  else if ((a.kind === "cont") && (b.kind === "number-fraction-part" || b.kind === "number-decimal-part")) {
+    return inferSplitDecimalAndFractionPartsRule(a, b);
+  }
+  else if ((a.kind === "number-fraction-part" || a.kind === "number-decimal-part") && (b.kind === "cont")) {
+    return inferSplitDecimalAndFractionPartsRule(b, a);
   }
   else if (a.kind === "cont" && b.kind === "comp-angle") {
     return inferAngleCompareRule(a, b);
@@ -3684,7 +3741,7 @@ function ratiosToBaseForm(ratios) {
 // #endregion
 
 // #region Angle utils
-export type AngleRelationship = "complementary" | "supplementary" | "opposite" | "corresponding" | "sameSide" | "alternate" | "alternate-interior" | "alternate-exterior"
+export type AngleRelationship = "complementary" | "supplementary" | "opposite" | "corresponding" | "sameSide" | "alternate" | "alternate-interior" | "alternate-exterior" | "axially-symmetric" | "congruence-at-the-base-equilateral-triangle";
 function computeOtherAngle(angle1, relationship: AngleRelationship) {
   switch (relationship) {
     case "complementary":
@@ -3697,6 +3754,8 @@ function computeOtherAngle(angle1, relationship: AngleRelationship) {
     case "alternate":
     case "alternate-interior":
     case "alternate-exterior":
+    case "axially-symmetric":
+    case "congruence-at-the-base-equilateral-triangle":
       return angle1; // Equal angles
     default:
       throw "Unknown Angle Relationship";
@@ -3721,6 +3780,10 @@ export function formatAngle(relationship: AngleRelationship) {
       return "střídavý vnitřní";
     case "alternate-exterior":
       return "střídavý vnější";
+    case "axially-symmetric":
+      return "osově souměrný";
+    case "congruence-at-the-base-equilateral-triangle":
+      return "shodnost úhlů při základně u rovnostranného trojúhelníku";
     default:
       throw "Neznámý vztah";
 
@@ -3916,6 +3979,17 @@ export const formulaRegistry = {
         'o': '2 * π * r',
         'r': 'o / (2 * π)',
         'd': 'o / π',
+      },
+    },
+    triangle: {
+      name: 'Obvod trojúhelníku',
+      description: 'Vypočítá obvod trojúhelníku z délek stran.',
+      params: ['o', 'a', 'b', 'c'],
+      formula: {
+        'o': 'a + b + c',
+        'a': 'o - (b + c)',
+        'b': 'o - (a + c)',
+        'c': 'o - (a + b)',
       },
     },
   },

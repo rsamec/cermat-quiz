@@ -1,5 +1,5 @@
-import { commonSense, compRatio, cont, ctor, ctorRatios, ctorUnit, nthPart, rate, ratio, ratios, ctorLinearEquation, ctorOption, sum, contLength, dimensionEntity, comp, ctorComplement, evalExprAsCont, pythagoras, compRelativePercent, ctorDifference, compRelative, ctorRate, triangleArea, doubleProduct, cubeArea, cubeVolume, evalFormulaAsCont, formulaRegistry, tuple } from "../../components/math";
-import { createLazyMap, deduce, last, to, toCont, toFrequency } from "../../utils/deduce-utils";
+import { commonSense, compRatio, cont, ctor, ctorRatios, ctorUnit, nthPart, rate, ratio, ratios, ctorLinearEquation, ctorOption, sum, contLength, dimensionEntity, comp, ctorComplement, evalExprAsCont, pythagoras, compRelativePercent, ctorDifference, compRelative, ctorRate, triangleArea, doubleProduct, cubeArea, cubeVolume, evalFormulaAsCont, formulaRegistry, tuple, contAngle, compAngle, ctorBooleanOption, contRightAngle, triangleAngle } from "../../components/math";
+import { anglesNames, createLazyMap, deduce, deduceAs, last, to, toCont, toFrequency } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   1: () => stuha(),
@@ -11,6 +11,9 @@ export default createLazyMap({
   8.2: () => ctverec().obvod,
   7.1: () => soutez().prvniKolo,
   7.2: () => soutez().druheKolo,
+  11.1: () => uhly().a,
+  11.2: () => uhly().b,
+  11.3: () => uhly().c,
   12: () => krychle(),
   13: () => vlak(),
   14: () => brhlikLesni(),
@@ -19,6 +22,67 @@ export default createLazyMap({
   15.3: () => procenta().c,
 
 })
+
+function uhly() {
+  const pravyUhel = contRightAngle();
+  const zadany = contAngle("zadaný", 64)
+  const alpha = deduceAs("trojúhelník KAS je rovnoramenný")(
+    zadany,
+    compAngle("zadaný", anglesNames.alpha, "congruence-at-the-base-equilateral-triangle")
+  )
+  const alfaABetaLabel = [anglesNames.alpha, anglesNames.beta].join(" a ")
+
+  const SKB = deduce(
+    zadany,
+    compAngle("zadaný", "SKB", "complementary"),
+  )
+  const gamma = deduce(
+    SKB,
+    deduceAs(`trojúhelník SBK je rovnoramenný`)(
+      last(SKB),
+      compAngle(anglesNames.beta, "SKB", "congruence-at-the-base-equilateral-triangle")
+    ),
+    triangleAngle(anglesNames.gamma)
+  )
+  return {
+    a: {
+      deductionTree: deduce(
+        alpha,
+        ctorBooleanOption(64, "greater")
+      )
+    },
+    b: {
+      deductionTree: deduce(
+        deduceAs(`thaletovo pravidlo -> trojúhelník ABK je pravoúhlý -> ${alfaABetaLabel} = 90`)(
+          last(alpha),
+          deduce(
+            last(alpha),
+            pravyUhel,
+            triangleAngle(anglesNames.beta)
+          ),
+          sum(alfaABetaLabel)
+        ),
+        ctorBooleanOption(90, "greater")
+      )
+    },
+    c: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            gamma,
+            last(alpha),            
+            ctorDifference(`${anglesNames.gamma} - ${anglesNames.alpha}`)
+          ),
+          deduce(
+            last(gamma),
+            compAngle(anglesNames.delta, anglesNames.gamma, "supplementary")
+          )
+        ),
+        ctorBooleanOption(0, "greater")
+      )
+    },
+  }
+}
 
 function porovnani() {
   const vetsiLabel = "větší číslo";
@@ -167,8 +231,8 @@ function soutez() {
         commonSense("(0,5,5)"),
         commonSense("(1,3,6)"),
         commonSense("(2,1,7)"),
-        tuple("počty 9-bodových", [5,3,1].map(d => cont('9-bodových', d, entity)))
-        
+        tuple("počty 9-bodových", [5, 3, 1].map(d => cont('9-bodových', d, entity)))
+
       )
     }
   }

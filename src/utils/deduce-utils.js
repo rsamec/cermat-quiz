@@ -4,7 +4,8 @@ var defaultHelpers = {
   convertToUnit: (d) => d,
   unitAnchor: () => 1,
   solveLinearEquation: (fist, second, variable) => NaN,
-  evalExpression: (expression, context) => NaN
+  evalExpression: (expression, context) => NaN,
+  evalNodeToNumber: (expression) => NaN
 };
 var helpers = defaultHelpers;
 function configure(config) {
@@ -38,7 +39,7 @@ function isFrequencyPredicate(value) {
   return value.kind === "frequency";
 }
 function convertToExpression(expectedValue, compareTo, expectedValueOptions, variable = "x") {
-  const convertedValue = expectedValueOptions.asFraction ? helpers.convertToFraction(expectedValue) : expectedValueOptions.asPercent ? expectedValue / 100 : expectedValue;
+  const convertedValue = Array.isArray(expectedValue) ? expectedValue : expectedValueOptions.asFraction ? helpers.convertToFraction(expectedValue) : expectedValueOptions.asPercent ? expectedValue / 100 : expectedValue;
   const toCompare = (comp) => `${variable} ${comp} ${convertedValue}`;
   switch (compareTo) {
     case "equal":
@@ -106,7 +107,7 @@ function inferAngleCompareRule(a, b) {
     options: isNumber(result.quantity) ? [
       { tex: `90 - ${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship == "complementary" },
       { tex: `180 - ${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship == "supplementary" || b.relationship == "sameSide" },
-      { tex: `${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship != "supplementary" && b.relationship != "complementary" && b.relationship != "sameSide" }
+      { tex: `${a.quantity}`, result: formatNumber(result.quantity), ok: b.relationship != "supplementary" && b.relationship != "complementary" && b.relationship != "sameSide" }
     ] : []
   };
 }
@@ -1058,6 +1059,26 @@ function tupleRule(items, last2) {
     options: []
   };
 }
+function splitDecimalAndFractionPartsRule(value) {
+  const decimal = Math.floor(value);
+  const fraction = value - decimal;
+  return [decimal, fraction];
+}
+function inferSplitDecimalAndFractionPartsRule(a, b) {
+  const quantity = isNumber(a.quantity) ? b.kind === "number-decimal-part" ? splitDecimalAndFractionPartsRule(a.quantity)[0] : splitDecimalAndFractionPartsRule(a.quantity)[1] : b.kind === "number-decimal-part" ? wrapToQuantity(`floor(${a.quantity})`, { a }) : wrapToQuantity(`(${a.quantity}) - floor(${a.quantity})`, { a });
+  const result = {
+    ...a,
+    agent: b?.agent ?? a.agent,
+    quantity
+  };
+  return {
+    name: "splitDecimalAndFractionPartsRule",
+    inputParameters: extractKinds(a),
+    question: `Rozd\u011Bl \u010D\xEDslo na celo\u010D\xEDselnou a desetinnou \u010D\xE1st. Vra\u0165 ${b.kind === "number-decimal-part" ? "celo\u010D\xEDselnou" : "desetinnou"} \u010D\xE1st.`,
+    result,
+    options: []
+  };
+}
 function toSequenceRule(items) {
   const values = items.map((d) => d.quantity);
   if (!areNumbers(values)) {
@@ -1708,10 +1729,10 @@ function inferEvalQuotaRemainderExprRule(a, b) {
 function evalToOptionRule(a, b) {
   let valueToEval = a.quantity ?? a.ratio;
   if (isExpressionNode(valueToEval)) {
-    valueToEval = helpers.evalExpression(valueToEval.expression, valueToEval.context);
+    valueToEval = helpers.evalNodeToNumber(valueToEval);
   }
-  if (!isNumber(valueToEval)) {
-    throw `evalToQuantity does not support non quantity types. ${JSON.stringify(valueToEval)}`;
+  if (!isNumber(valueToEval) || isNaN(valueToEval)) {
+    throw `evalToOptionRule does not support non quantity types. ${JSON.stringify(a)}`;
   }
   if (a.kind == "comp-ratio" && (b.expectedValueOptions.asRelative || valueToEval > 1 / 2 && valueToEval < 2)) {
     valueToEval = valueToEval > 1 ? valueToEval - 1 : 1 - valueToEval;
@@ -2135,6 +2156,10 @@ function inferenceRuleEx(...args) {
     return inferRoundToRule(a, b);
   } else if (a.kind === "round" && b.kind === "cont") {
     return inferRoundToRule(b, a);
+  } else if (a.kind === "cont" && (b.kind === "number-fraction-part" || b.kind === "number-decimal-part")) {
+    return inferSplitDecimalAndFractionPartsRule(a, b);
+  } else if ((a.kind === "number-fraction-part" || a.kind === "number-decimal-part") && b.kind === "cont") {
+    return inferSplitDecimalAndFractionPartsRule(b, a);
   } else if (a.kind === "cont" && b.kind === "comp-angle") {
     return inferAngleCompareRule(a, b);
   } else if (a.kind === "comp-angle" && b.kind === "cont") {
@@ -2351,12 +2376,12 @@ function findPositionInQuadraticSequence(nthTermValue, first, second, secondDiff
   const A = secondDifference / 2;
   const B = second - first - 3 * A;
   const C = first - A - B;
-  const delta = B ** 2 - 4 * A * (C - nthTermValue);
-  if (delta < 0) {
+  const delta2 = B ** 2 - 4 * A * (C - nthTermValue);
+  if (delta2 < 0) {
     throw new Error("No valid position exists for the given values.");
   }
-  const n1 = (-B + Math.sqrt(delta)) / (2 * A);
-  const n2 = (-B - Math.sqrt(delta)) / (2 * A);
+  const n1 = (-B + Math.sqrt(delta2)) / (2 * A);
+  const n2 = (-B - Math.sqrt(delta2)) / (2 * A);
   if (Number.isInteger(n1) && n1 > 0)
     return n1;
   if (Number.isInteger(n2) && n2 > 0)
@@ -2435,6 +2460,8 @@ function computeOtherAngle(angle1, relationship) {
     case "alternate":
     case "alternate-interior":
     case "alternate-exterior":
+    case "axially-symmetric":
+    case "congruence-at-the-base-equilateral-triangle":
       return angle1;
     default:
       throw "Unknown Angle Relationship";
@@ -2458,6 +2485,10 @@ function formatAngle(relationship) {
       return "st\u0159\xEDdav\xFD vnit\u0159n\xED";
     case "alternate-exterior":
       return "st\u0159\xEDdav\xFD vn\u011Bj\u0161\xED";
+    case "axially-symmetric":
+      return "osov\u011B soum\u011Brn\xFD";
+    case "congruence-at-the-base-equilateral-triangle":
+      return "shodnost \xFAhl\u016F p\u0159i z\xE1kladn\u011B u rovnostrann\xE9ho troj\xFAheln\xEDku";
     default:
       throw "Nezn\xE1m\xFD vztah";
   }
@@ -3414,8 +3445,8 @@ var Converter = class {
       result -= origin.unit.anchor_shift;
     }
     if (origin.system != destination.system) {
-      const measure6 = this.measureData[origin.measure];
-      const anchors = measure6.anchors;
+      const measure7 = this.measureData[origin.measure];
+      const anchors = measure7.anchors;
       if (anchors == null) {
         throw new MeasureStructureError(`Unable to convert units. Anchors are missing for "${origin.measure}" and "${destination.measure}" measures.`);
       }
@@ -3528,8 +3559,8 @@ var Converter = class {
   list(measureName) {
     const list = [];
     if (measureName == null) {
-      for (const [name, measure6] of Object.entries(this.measureData)) {
-        for (const [systemName, units] of Object.entries(measure6.systems)) {
+      for (const [name, measure7] of Object.entries(this.measureData)) {
+        for (const [systemName, units] of Object.entries(measure7.systems)) {
           for (const [abbr, unit] of Object.entries(units)) {
             list.push(this.describeUnit({
               abbr,
@@ -3543,8 +3574,8 @@ var Converter = class {
     } else {
       if (!this.isMeasure(measureName))
         throw new UnknownMeasureError(`Meausure "${measureName}" not found.`);
-      const measure6 = this.measureData[measureName];
-      for (const [systemName, units] of Object.entries(measure6.systems)) {
+      const measure7 = this.measureData[measureName];
+      for (const [systemName, units] of Object.entries(measure7.systems)) {
         for (const [abbr, unit] of Object.entries(units)) {
           list.push(this.describeUnit({
             abbr,
@@ -3562,8 +3593,8 @@ var Converter = class {
   }
   throwUnsupportedUnitError(what) {
     let validUnits = [];
-    for (const measure6 of Object.values(this.measureData)) {
-      for (const systems of Object.values(measure6.systems)) {
+    for (const measure7 of Object.values(this.measureData)) {
+      for (const systems of Object.values(measure7.systems)) {
         validUnits = validUnits.concat(Object.keys(systems));
       }
     }
@@ -3583,8 +3614,8 @@ var Converter = class {
     } else {
       list_measures = Object.keys(this.measureData);
     }
-    for (const measure6 of list_measures) {
-      const systems = this.measureData[measure6].systems;
+    for (const measure7 of list_measures) {
+      const systems = this.measureData[measure7].systems;
       for (const system of Object.values(systems)) {
         possibilities = [
           ...possibilities,
@@ -3604,8 +3635,8 @@ var Converter = class {
 };
 function buildUnitCache(measures) {
   const unitCache = /* @__PURE__ */ new Map();
-  for (const [measureName, measure6] of Object.entries(measures)) {
-    for (const [systemName, system] of Object.entries(measure6.systems)) {
+  for (const [measureName, measure7] of Object.entries(measures)) {
+    for (const [systemName, system] of Object.entries(measure7.systems)) {
       for (const [testAbbr, unit] of Object.entries(system)) {
         unitCache.set(testAbbr, {
           measure: measureName,
@@ -4269,6 +4300,51 @@ var measure5 = {
   }
 };
 var time_default = measure5;
+
+// node_modules/convert-units/lib/esm/definitions/angle.js
+var SI2 = {
+  rad: {
+    name: {
+      singular: "radian",
+      plural: "radians"
+    },
+    to_anchor: 180 / Math.PI
+  },
+  deg: {
+    name: {
+      singular: "degree",
+      plural: "degrees"
+    },
+    to_anchor: 1
+  },
+  grad: {
+    name: {
+      singular: "gradian",
+      plural: "gradians"
+    },
+    to_anchor: 9 / 10
+  },
+  arcmin: {
+    name: {
+      singular: "arcminute",
+      plural: "arcminutes"
+    },
+    to_anchor: 1 / 60
+  },
+  arcsec: {
+    name: {
+      singular: "arcsecond",
+      plural: "arcseconds"
+    },
+    to_anchor: 1 / 3600
+  }
+};
+var measure6 = {
+  systems: {
+    SI: SI2
+  }
+};
+var angle_default = measure6;
 
 // src/utils/math-solver.js
 var INUMBER = "INUMBER";
@@ -5914,6 +5990,9 @@ parser.functions.red = function(value) {
 parser.functions.blue = function(value) {
   return value;
 };
+parser.functions.green = function(value) {
+  return value;
+};
 parser.functions.color = function(color, value) {
   return value;
 };
@@ -5949,16 +6028,24 @@ function evalExpression(expression, quantityOrContext) {
   const res = expr.simplify(context);
   return res.toString();
 }
-function recurExpr(node, level, requiredLevel = 0) {
+function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
   const quantity = node.quantity ?? node.ratio ?? {};
   const { context, expression } = quantity;
+  const colors2 = parentContext?.colors ?? {};
   if (expression) {
     let expr = parser.parse(expression);
     const variables = expr.variables();
     for (let variable of variables) {
-      const res = recurExpr(context[variable], level + 1, requiredLevel);
+      const res = recurExpr(context[variable], level + 1, requiredLevel, parentContext);
       if (res.substitute != null) {
         expr = parser.parse(cleanUpExpression(expr, variable));
+        if (level < requiredLevel) {
+          for (let [key, values] of Object.entries(colors2)) {
+            if (values.includes(context[variable]?.agent)) {
+              expr = expr.substitute(variable, parser.parse(`${key}(${variable})`));
+            }
+          }
+        }
         expr = expr.substitute(variable, res);
         if (level >= requiredLevel) {
           expr = expr.simplify();
@@ -5970,6 +6057,11 @@ function recurExpr(node, level, requiredLevel = 0) {
           if (level >= requiredLevel) {
             expr = expr.simplify({ [variable]: q });
           } else {
+            for (let [key, values] of Object.entries(colors2)) {
+              if (values.includes(context[variable]?.agent)) {
+                expr = expr.substitute(variable, parser.parse(`${key}(${variable})`));
+              }
+            }
             expr = expr.substitute(variable, q);
           }
         } else {
@@ -5982,12 +6074,16 @@ function recurExpr(node, level, requiredLevel = 0) {
     return node;
   }
 }
-function toEquationExpr(lastExpr, requiredLevel = 0) {
-  const final = recurExpr({ quantity: lastExpr }, 0, requiredLevel);
+function toEquationExpr(lastExpr, requiredLevel = 0, context = {}) {
+  const final = recurExpr({ quantity: lastExpr }, 0, requiredLevel, context);
   return parser.parse(cleanUpExpression(final));
 }
-function toEquationExprAsTex(lastExpr, requiredLevel = 0) {
-  return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel).tokens)} $`;
+function evaluateNodeToNumber(lastNode) {
+  const final = toEquationExpr(lastNode);
+  return parseFloat(final.toString());
+}
+function toEquationExprAsTex(lastExpr, requiredLevel = 0, context = {}) {
+  return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel, context).tokens)} $`;
 }
 function cleanUpExpression(exp, variable = "") {
   const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, variable);
@@ -6176,7 +6272,7 @@ function tokensToTex(tokens, opts = {}) {
           stack.push(`${a}${sym} ${b}`);
         } else {
           const texOps = { "==": "=", "!=": "\\ne", "<=": "\\le", ">=": "\\ge" };
-          stack.push(`${a} ${texOps[tok.value] || tok.value} ${b}`);
+          stack.push(`(${a} ${texOps[tok.value] || tok.value} ${b})`);
         }
         break;
       }
@@ -6221,14 +6317,16 @@ var convert = configureMeasurements({
   area: area_default,
   volume: volume_default,
   mass: mass_default,
-  time: time_default
+  time: time_default,
+  angle: angle_default
 });
 configure({
   convertToFraction: (d) => new Fraction(d).toFraction(),
   convertToUnit: (d, from, to2) => convert(d).from(from).to(to2),
   unitAnchor: (unit) => convert().getUnit(unit)?.unit?.to_anchor,
   solveLinearEquation: (first, second, variable) => solveLinearEquation(first, second, variable),
-  evalExpression: (expression, quantity) => evalExpression(expression, quantity)
+  evalExpression: (expression, quantity) => evalExpression(expression, quantity),
+  evalNodeToNumber: (expression) => evaluateNodeToNumber(expression)
 });
 var inferenceRuleWithQuestion2 = inferenceRuleWithQuestion;
 
@@ -6387,11 +6485,12 @@ function computeTreeMetrics(node, level = 0, levels = {}, predicates = [], rules
   }
   return { depth: level, width: Math.max(...Object.values(levels)), predicates, rules, formulas };
 }
-function jsonToMarkdownTree(node, level = 0) {
+function jsonToMarkdownTree(node, level = 0, parentContext) {
   const indent = "  ".repeat(level);
   let markdown = [];
   if (isPredicate(node)) {
-    markdown.push(`${indent}- ${formatPredicate(node, mdFormatting)}
+    const color = isObjectContext(parentContext) ? Object.entries(parentContext.colors ?? {}).find(([color2, arr]) => arr.includes(node.agent))?.[0] : null;
+    markdown.push(`${indent}- ${formatPredicate(node, color != null ? colorFormattingFunc(0, color, parentContext) : mdFormattingFunc(0, parentContext))}
 `);
     return markdown;
   }
@@ -6399,10 +6498,10 @@ function jsonToMarkdownTree(node, level = 0) {
     for (let i = node.children.length - 1; i >= 0; i--) {
       const child = node.children[i];
       const isConclusion = i === node.children.length - 1;
-      if (isConclusion && node.context)
+      if (isConclusion && isStringContext(node.context))
         markdown.push(`${indent}- *${node.context}*
 `);
-      markdown = markdown.concat(jsonToMarkdownTree(child, level + (isConclusion ? 0 : 1)));
+      markdown = markdown.concat(jsonToMarkdownTree(child, level + (isConclusion ? 0 : 1), mergeWithParent(node.context, parentContext)));
     }
   }
   return markdown;
@@ -6456,7 +6555,7 @@ function jsonToMermaidMindMapEx(node, isConclusion, level = 0) {
     for (let i = node.children.length - 1; i >= 0; i--) {
       const child = node.children[i];
       const isConclusion2 = i === node.children.length - 1;
-      if (isConclusion2 && node.context)
+      if (isConclusion2 && isStringContext(node.context))
         markdown.push(`${indent} id${++nextId}["${node.context}"]
 `);
       markdown = markdown.concat(jsonToMermaidMindMapEx(child, isConclusion2, level + (isConclusion2 ? 0 : 1)));
@@ -6505,7 +6604,7 @@ function jsonToTLDrawEx(node, isConclusion, level = 0) {
     for (let i = node.children.length - 1; i >= 0; i--) {
       const child = node.children[i];
       const isConclusion2 = i === node.children.length - 1;
-      if (isConclusion2 && node.context)
+      if (isConclusion2 && isStringContext(node.context))
         markdown.push(`${indent} id${++nextId}["${node.context}"]
 `);
       markdown = markdown.concat(jsonToMermaidMindMapEx(child, isConclusion2, level + (isConclusion2 ? 0 : 1)));
@@ -6522,15 +6621,20 @@ function jsonToMarkdownChat(node, { predicates, rules, formulas } = { predicates
     }
     let q = null;
     if (node2.children && Array.isArray(node2.children)) {
+      if (node2.context != null) {
+        if (isStringContext(node2.context)) {
+          flatStructure.push("\n");
+          flatStructure.push(`Kontext: *${node2.context}*
+
+`);
+        }
+      }
       for (let i = 0; i != node2.children.length; i++) {
         const child = node2.children[i];
         const isConclusion = i === node2.children.length - 1;
         if (isConclusion) {
           const result = inferenceRuleWithQuestion2(mapNodeChildrenToPredicates(node2));
           q = result;
-          if (node2.context) {
-            args.push(node2.context);
-          }
         } else {
           q = null;
         }
@@ -6547,13 +6651,11 @@ function jsonToMarkdownChat(node, { predicates, rules, formulas } = { predicates
       const body = predicates2.map((d) => {
         return predicates2.includes(d.kind) || d.kind == "eval-formula" && formulas.includes(d.formulaName) ? `==${formatPredicate(d, chatFormattingFunc(0))}==` : formatPredicate(d, chatFormattingFunc(0));
       }).filter((d) => !isEmptyOrWhiteSpace(d)).map((d) => `- ${d}`).join("\n");
-      const context = other.length == 0 ? "" : `Kontext: *${other.join("\n")}*
-
-`;
-      flatStructure.push((q != null ? `${context}${rules.includes(q.name) ? `==${q.question.trim()}==` : q.question}
+      const stepContext = "";
+      flatStructure.push((q != null ? `${stepContext}${rules.includes(q.name) ? `==${q.question.trim()}==` : q.question}
 ${body}
 
-` + (answer != null ? `${rules.includes(q.name) ? "==V\xFDpo\u010Det==" : "V\xFDpo\u010Det"}: ${answer.tex} = ${answer.result}` : "") : `${context}${body}`) + `
+` + (answer != null ? `${rules.includes(q.name) ? "==V\xFDpo\u010Det==" : "V\xFDpo\u010Det"}: ${answer.tex} = ${answer.result}` : "") : `${stepContext}${body}`) + `
 
 ${rules.includes(q?.name) ? "==Z\xE1v\u011Br==" : "Z\xE1v\u011Br"}:${predicates2.includes(conclusion.kind) ? `==${formatPredicate(conclusion, chatFormattingFunc(1))}==` : formatPredicate(conclusion, chatFormattingFunc(1))}
 
@@ -6570,14 +6672,14 @@ function isEmptyOrWhiteSpace(value) {
 function mapNodeChildrenToPredicates(node) {
   return node.children.map((d) => isPredicate(d) ? d : d.children.slice(-1)[0]);
 }
-var mdFormattingFunc = (requiredLevel) => ({
+var mdFormattingFunc = (defaultExpressionDepth, context = null) => ({
   compose: (strings, ...args) => concatString(strings, ...args),
   formatKind: (d) => `[${d.kind.toUpperCase()}]`,
   formatQuantity: (d) => {
     if (typeof d === "number") {
       return d.toLocaleString("cs-CZ");
     } else if (d?.expression != null) {
-      return toEquationExprAsTex(d, requiredLevel);
+      return toEquationExprAsTex(d, isObjectContext(context) ? context.depth ?? defaultExpressionDepth : defaultExpressionDepth, isObjectContext(context) ? context : null);
     } else if (typeof d === "string") {
       return d;
     } else {
@@ -6588,7 +6690,9 @@ var mdFormattingFunc = (requiredLevel) => ({
     if (typeof d === "number") {
       return asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : new Fraction(d).toFraction();
     } else if (d?.expression != null) {
-      return asPercent ? toEquationExprAsTex({ ...d, expression: `(${d.expression}) * 100` }, requiredLevel) : toEquationExprAsTex(d, requiredLevel);
+      const colorContext = isObjectContext(context) ? context : null;
+      const requiredLevel = isObjectContext(context) ? context.depth ?? defaultExpressionDepth : defaultExpressionDepth;
+      return asPercent ? toEquationExprAsTex({ ...d, expression: `(${d.expression}) * 100` }, requiredLevel, colorContext) : toEquationExprAsTex(d, requiredLevel, colorContext);
     } else if (typeof d === "string") {
       return d;
     } else {
@@ -6604,11 +6708,15 @@ var mdFormattingFunc = (requiredLevel) => ({
   formatTable: (data) => `vzor opakov\xE1n\xED ${data.map((d) => d[1]).join()}`
 });
 var mdFormatting = mdFormattingFunc(0);
-var chatFormattingFunc = (requiredLevel) => ({
-  ...mdFormattingFunc(requiredLevel),
+var chatFormattingFunc = (defaultExpressionDepth) => ({
+  ...mdFormattingFunc(defaultExpressionDepth),
   formatTable: (d) => `vzor opakov\xE1n\xED 
 
 ${mdFormatTable(d)}`
+});
+var colorFormattingFunc = (defaultExpressionDepth, color, context) => ({
+  ...mdFormattingFunc(defaultExpressionDepth, context),
+  formatAgent: (d) => `{${color}}(**${d}**)`
 });
 function mdFormatTable(data) {
   if (!Array.isArray(data) || data.length === 0)
@@ -6874,7 +6982,28 @@ function createLazyMap(thunks) {
   }
   return lazyMap;
 }
+var anglesNames = {
+  alpha: "\u{1D6FC}",
+  beta: "\u{1D6FD}",
+  gamma: "\u{1D6FE}",
+  delta: "\u{1D6FF}",
+  theta: "\u{1D703}"
+};
+function isStringContext(context) {
+  return typeof context === "string";
+}
+function isObjectContext(context) {
+  return context != null && typeof context === "object";
+}
+function mergeWithParent(context, parentContext) {
+  if (context == null)
+    return parentContext;
+  if (isObjectContext(context) && isObjectContext(parentContext))
+    return { ...context, ...parentContext };
+  return context;
+}
 export {
+  anglesNames,
   axiomInput,
   computeTreeMetrics,
   concatString,

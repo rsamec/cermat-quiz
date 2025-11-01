@@ -4,7 +4,8 @@ var defaultHelpers = {
   convertToUnit: (d) => d,
   unitAnchor: () => 1,
   solveLinearEquation: (fist, second, variable) => NaN,
-  evalExpression: (expression, context) => NaN
+  evalExpression: (expression, context) => NaN,
+  evalNodeToNumber: (expression) => NaN
 };
 var helpers = defaultHelpers;
 function configure(config) {
@@ -55,6 +56,10 @@ function formatAngle(relationship) {
       return "st\u0159\xEDdav\xFD vnit\u0159n\xED";
     case "alternate-exterior":
       return "st\u0159\xEDdav\xFD vn\u011Bj\u0161\xED";
+    case "axially-symmetric":
+      return "osov\u011B soum\u011Brn\xFD";
+    case "congruence-at-the-base-equilateral-triangle":
+      return "shodnost \xFAhl\u016F p\u0159i z\xE1kladn\u011B u rovnostrann\xE9ho troj\xFAheln\xEDku";
     default:
       throw "Nezn\xE1m\xFD vztah";
   }
@@ -882,8 +887,8 @@ var Converter = class {
       result -= origin.unit.anchor_shift;
     }
     if (origin.system != destination.system) {
-      const measure62 = this.measureData[origin.measure];
-      const anchors = measure62.anchors;
+      const measure72 = this.measureData[origin.measure];
+      const anchors = measure72.anchors;
       if (anchors == null) {
         throw new MeasureStructureError(`Unable to convert units. Anchors are missing for "${origin.measure}" and "${destination.measure}" measures.`);
       }
@@ -996,8 +1001,8 @@ var Converter = class {
   list(measureName) {
     const list = [];
     if (measureName == null) {
-      for (const [name, measure62] of Object.entries(this.measureData)) {
-        for (const [systemName, units] of Object.entries(measure62.systems)) {
+      for (const [name, measure72] of Object.entries(this.measureData)) {
+        for (const [systemName, units] of Object.entries(measure72.systems)) {
           for (const [abbr, unit] of Object.entries(units)) {
             list.push(this.describeUnit({
               abbr,
@@ -1011,8 +1016,8 @@ var Converter = class {
     } else {
       if (!this.isMeasure(measureName))
         throw new UnknownMeasureError(`Meausure "${measureName}" not found.`);
-      const measure62 = this.measureData[measureName];
-      for (const [systemName, units] of Object.entries(measure62.systems)) {
+      const measure72 = this.measureData[measureName];
+      for (const [systemName, units] of Object.entries(measure72.systems)) {
         for (const [abbr, unit] of Object.entries(units)) {
           list.push(this.describeUnit({
             abbr,
@@ -1030,8 +1035,8 @@ var Converter = class {
   }
   throwUnsupportedUnitError(what) {
     let validUnits = [];
-    for (const measure62 of Object.values(this.measureData)) {
-      for (const systems of Object.values(measure62.systems)) {
+    for (const measure72 of Object.values(this.measureData)) {
+      for (const systems of Object.values(measure72.systems)) {
         validUnits = validUnits.concat(Object.keys(systems));
       }
     }
@@ -1051,8 +1056,8 @@ var Converter = class {
     } else {
       list_measures = Object.keys(this.measureData);
     }
-    for (const measure62 of list_measures) {
-      const systems = this.measureData[measure62].systems;
+    for (const measure72 of list_measures) {
+      const systems = this.measureData[measure72].systems;
       for (const system of Object.values(systems)) {
         possibilities = [
           ...possibilities,
@@ -1072,8 +1077,8 @@ var Converter = class {
 };
 function buildUnitCache(measures) {
   const unitCache = /* @__PURE__ */ new Map();
-  for (const [measureName, measure62] of Object.entries(measures)) {
-    for (const [systemName, system] of Object.entries(measure62.systems)) {
+  for (const [measureName, measure72] of Object.entries(measures)) {
+    for (const [systemName, system] of Object.entries(measure72.systems)) {
       for (const [testAbbr, unit] of Object.entries(system)) {
         unitCache.set(testAbbr, {
           measure: measureName,
@@ -1727,6 +1732,49 @@ var measure5 = {
   }
 };
 var time_default = measure5;
+var SI2 = {
+  rad: {
+    name: {
+      singular: "radian",
+      plural: "radians"
+    },
+    to_anchor: 180 / Math.PI
+  },
+  deg: {
+    name: {
+      singular: "degree",
+      plural: "degrees"
+    },
+    to_anchor: 1
+  },
+  grad: {
+    name: {
+      singular: "gradian",
+      plural: "gradians"
+    },
+    to_anchor: 9 / 10
+  },
+  arcmin: {
+    name: {
+      singular: "arcminute",
+      plural: "arcminutes"
+    },
+    to_anchor: 1 / 60
+  },
+  arcsec: {
+    name: {
+      singular: "arcsecond",
+      plural: "arcseconds"
+    },
+    to_anchor: 1 / 3600
+  }
+};
+var measure6 = {
+  systems: {
+    SI: SI2
+  }
+};
+var angle_default = measure6;
 var INUMBER = "INUMBER";
 var IOP1 = "IOP1";
 var IOP2 = "IOP2";
@@ -3370,6 +3418,9 @@ parser.functions.red = function(value) {
 parser.functions.blue = function(value) {
   return value;
 };
+parser.functions.green = function(value) {
+  return value;
+};
 parser.functions.color = function(color, value) {
   return value;
 };
@@ -3405,16 +3456,24 @@ function evalExpression(expression, quantityOrContext) {
   const res = expr.simplify(context);
   return res.toString();
 }
-function recurExpr(node, level, requiredLevel = 0) {
+function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
   const quantity = node.quantity ?? node.ratio ?? {};
   const { context, expression } = quantity;
+  const colors2 = parentContext?.colors ?? {};
   if (expression) {
     let expr = parser.parse(expression);
     const variables = expr.variables();
     for (let variable of variables) {
-      const res = recurExpr(context[variable], level + 1, requiredLevel);
+      const res = recurExpr(context[variable], level + 1, requiredLevel, parentContext);
       if (res.substitute != null) {
         expr = parser.parse(cleanUpExpression(expr, variable));
+        if (level < requiredLevel) {
+          for (let [key, values] of Object.entries(colors2)) {
+            if (values.includes(context[variable]?.agent)) {
+              expr = expr.substitute(variable, parser.parse(`${key}(${variable})`));
+            }
+          }
+        }
         expr = expr.substitute(variable, res);
         if (level >= requiredLevel) {
           expr = expr.simplify();
@@ -3426,6 +3485,11 @@ function recurExpr(node, level, requiredLevel = 0) {
           if (level >= requiredLevel) {
             expr = expr.simplify({ [variable]: q });
           } else {
+            for (let [key, values] of Object.entries(colors2)) {
+              if (values.includes(context[variable]?.agent)) {
+                expr = expr.substitute(variable, parser.parse(`${key}(${variable})`));
+              }
+            }
             expr = expr.substitute(variable, q);
           }
         } else {
@@ -3438,12 +3502,16 @@ function recurExpr(node, level, requiredLevel = 0) {
     return node;
   }
 }
-function toEquationExpr(lastExpr, requiredLevel = 0) {
-  const final = recurExpr({ quantity: lastExpr }, 0, requiredLevel);
+function toEquationExpr(lastExpr, requiredLevel = 0, context = {}) {
+  const final = recurExpr({ quantity: lastExpr }, 0, requiredLevel, context);
   return parser.parse(cleanUpExpression(final));
 }
-function toEquationExprAsTex(lastExpr, requiredLevel = 0) {
-  return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel).tokens)} $`;
+function evaluateNodeToNumber(lastNode) {
+  const final = toEquationExpr(lastNode);
+  return parseFloat(final.toString());
+}
+function toEquationExprAsTex(lastExpr, requiredLevel = 0, context = {}) {
+  return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel, context).tokens)} $`;
 }
 function cleanUpExpression(exp, variable = "") {
   const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, variable);
@@ -3632,7 +3700,7 @@ function tokensToTex(tokens, opts = {}) {
           stack.push(`${a}${sym} ${b}`);
         } else {
           const texOps = { "==": "=", "!=": "\\ne", "<=": "\\le", ">=": "\\ge" };
-          stack.push(`${a} ${texOps[tok.value] || tok.value} ${b}`);
+          stack.push(`(${a} ${texOps[tok.value] || tok.value} ${b})`);
         }
         break;
       }
@@ -3675,14 +3743,16 @@ var convert = configureMeasurements({
   area: area_default,
   volume: volume_default,
   mass: mass_default,
-  time: time_default
+  time: time_default,
+  angle: angle_default
 });
 configure({
   convertToFraction: (d) => new Fraction(d).toFraction(),
   convertToUnit: (d, from, to2) => convert(d).from(from).to(to2),
   unitAnchor: (unit) => convert().getUnit(unit)?.unit?.to_anchor,
   solveLinearEquation: (first, second, variable) => solveLinearEquation(first, second, variable),
-  evalExpression: (expression, quantity) => evalExpression(expression, quantity)
+  evalExpression: (expression, quantity) => evalExpression(expression, quantity),
+  evalNodeToNumber: (expression) => evaluateNodeToNumber(expression)
 });
 function isPredicate(node) {
   return node.kind != null;
@@ -3693,14 +3763,14 @@ function isEmptyOrWhiteSpace(value) {
 function mapNodeChildrenToPredicates(node) {
   return node.children.map((d) => isPredicate(d) ? d : d.children.slice(-1)[0]);
 }
-var mdFormattingFunc = (requiredLevel) => ({
+var mdFormattingFunc = (defaultExpressionDepth, context = null) => ({
   compose: (strings, ...args) => concatString(strings, ...args),
   formatKind: (d) => `[${d.kind.toUpperCase()}]`,
   formatQuantity: (d) => {
     if (typeof d === "number") {
       return d.toLocaleString("cs-CZ");
     } else if (d?.expression != null) {
-      return toEquationExprAsTex(d, requiredLevel);
+      return toEquationExprAsTex(d, isObjectContext(context) ? context.depth ?? defaultExpressionDepth : defaultExpressionDepth, isObjectContext(context) ? context : null);
     } else if (typeof d === "string") {
       return d;
     } else {
@@ -3711,7 +3781,9 @@ var mdFormattingFunc = (requiredLevel) => ({
     if (typeof d === "number") {
       return asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : new Fraction(d).toFraction();
     } else if (d?.expression != null) {
-      return asPercent ? toEquationExprAsTex({ ...d, expression: `(${d.expression}) * 100` }, requiredLevel) : toEquationExprAsTex(d, requiredLevel);
+      const colorContext = isObjectContext(context) ? context : null;
+      const requiredLevel = isObjectContext(context) ? context.depth ?? defaultExpressionDepth : defaultExpressionDepth;
+      return asPercent ? toEquationExprAsTex({ ...d, expression: `(${d.expression}) * 100` }, requiredLevel, colorContext) : toEquationExprAsTex(d, requiredLevel, colorContext);
     } else if (typeof d === "string") {
       return d;
     } else {
@@ -3874,6 +3946,9 @@ function concatString(strings, ...substitutions) {
   }, "");
   return formattedString;
 }
+function isObjectContext(context) {
+  return context != null && typeof context === "object";
+}
 
 // src/utils/string-utils.ts
 function isEmptyOrWhiteSpace2(value) {
@@ -3886,7 +3961,8 @@ var defaultHelpers2 = {
   convertToUnit: (d) => d,
   unitAnchor: () => 1,
   solveLinearEquation: (fist, second, variable) => NaN,
-  evalExpression: (expression, context) => NaN
+  evalExpression: (expression, context) => NaN,
+  evalNodeToNumber: (expression) => NaN
 };
 var helpers2 = defaultHelpers2;
 function configure2(config) {
@@ -3923,7 +3999,7 @@ function isFrequencyPredicate(value) {
   return value.kind === "frequency";
 }
 function convertToExpression(expectedValue, compareTo, expectedValueOptions, variable = "x") {
-  const convertedValue = expectedValueOptions.asFraction ? helpers2.convertToFraction(expectedValue) : expectedValueOptions.asPercent ? expectedValue / 100 : expectedValue;
+  const convertedValue = Array.isArray(expectedValue) ? expectedValue : expectedValueOptions.asFraction ? helpers2.convertToFraction(expectedValue) : expectedValueOptions.asPercent ? expectedValue / 100 : expectedValue;
   const toCompare = (comp) => `${variable} ${comp} ${convertedValue}`;
   switch (compareTo) {
     case "equal":
@@ -3991,7 +4067,7 @@ function inferAngleCompareRule(a, b) {
     options: isNumber2(result.quantity) ? [
       { tex: `90 - ${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship == "complementary" },
       { tex: `180 - ${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship == "supplementary" || b.relationship == "sameSide" },
-      { tex: `${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship != "supplementary" && b.relationship != "complementary" && b.relationship != "sameSide" }
+      { tex: `${a.quantity}`, result: formatNumber(result.quantity), ok: b.relationship != "supplementary" && b.relationship != "complementary" && b.relationship != "sameSide" }
     ] : []
   };
 }
@@ -4943,6 +5019,26 @@ function tupleRule(items, last) {
     options: []
   };
 }
+function splitDecimalAndFractionPartsRule(value) {
+  const decimal = Math.floor(value);
+  const fraction = value - decimal;
+  return [decimal, fraction];
+}
+function inferSplitDecimalAndFractionPartsRule(a, b) {
+  const quantity = isNumber2(a.quantity) ? b.kind === "number-decimal-part" ? splitDecimalAndFractionPartsRule(a.quantity)[0] : splitDecimalAndFractionPartsRule(a.quantity)[1] : b.kind === "number-decimal-part" ? wrapToQuantity(`floor(${a.quantity})`, { a }) : wrapToQuantity(`(${a.quantity}) - floor(${a.quantity})`, { a });
+  const result = {
+    ...a,
+    agent: b?.agent ?? a.agent,
+    quantity
+  };
+  return {
+    name: "splitDecimalAndFractionPartsRule",
+    inputParameters: extractKinds(a),
+    question: `Rozd\u011Bl \u010D\xEDslo na celo\u010D\xEDselnou a desetinnou \u010D\xE1st. Vra\u0165 ${b.kind === "number-decimal-part" ? "celo\u010D\xEDselnou" : "desetinnou"} \u010D\xE1st.`,
+    result,
+    options: []
+  };
+}
 function toSequenceRule(items) {
   const values = items.map((d) => d.quantity);
   if (!areNumbers(values)) {
@@ -5593,10 +5689,10 @@ function inferEvalQuotaRemainderExprRule(a, b) {
 function evalToOptionRule(a, b) {
   let valueToEval = a.quantity ?? a.ratio;
   if (isExpressionNode(valueToEval)) {
-    valueToEval = helpers2.evalExpression(valueToEval.expression, valueToEval.context);
+    valueToEval = helpers2.evalNodeToNumber(valueToEval);
   }
-  if (!isNumber2(valueToEval)) {
-    throw `evalToQuantity does not support non quantity types. ${JSON.stringify(valueToEval)}`;
+  if (!isNumber2(valueToEval) || isNaN(valueToEval)) {
+    throw `evalToOptionRule does not support non quantity types. ${JSON.stringify(a)}`;
   }
   if (a.kind == "comp-ratio" && (b.expectedValueOptions.asRelative || valueToEval > 1 / 2 && valueToEval < 2)) {
     valueToEval = valueToEval > 1 ? valueToEval - 1 : 1 - valueToEval;
@@ -6013,6 +6109,10 @@ function inferenceRuleEx(...args) {
     return inferRoundToRule(a, b);
   } else if (a.kind === "round" && b.kind === "cont") {
     return inferRoundToRule(b, a);
+  } else if (a.kind === "cont" && (b.kind === "number-fraction-part" || b.kind === "number-decimal-part")) {
+    return inferSplitDecimalAndFractionPartsRule(a, b);
+  } else if ((a.kind === "number-fraction-part" || a.kind === "number-decimal-part") && b.kind === "cont") {
+    return inferSplitDecimalAndFractionPartsRule(b, a);
   } else if (a.kind === "cont" && b.kind === "comp-angle") {
     return inferAngleCompareRule(a, b);
   } else if (a.kind === "comp-angle" && b.kind === "cont") {
@@ -6313,6 +6413,8 @@ function computeOtherAngle(angle1, relationship) {
     case "alternate":
     case "alternate-interior":
     case "alternate-exterior":
+    case "axially-symmetric":
+    case "congruence-at-the-base-equilateral-triangle":
       return angle1;
     default:
       throw "Unknown Angle Relationship";
@@ -6336,6 +6438,10 @@ function formatAngle2(relationship) {
       return "st\u0159\xEDdav\xFD vnit\u0159n\xED";
     case "alternate-exterior":
       return "st\u0159\xEDdav\xFD vn\u011Bj\u0161\xED";
+    case "axially-symmetric":
+      return "osov\u011B soum\u011Brn\xFD";
+    case "congruence-at-the-base-equilateral-triangle":
+      return "shodnost \xFAhl\u016F p\u0159i z\xE1kladn\u011B u rovnostrann\xE9ho troj\xFAheln\xEDku";
     default:
       throw "Nezn\xE1m\xFD vztah";
   }
@@ -7280,8 +7386,8 @@ var Converter2 = class {
       result -= origin.unit.anchor_shift;
     }
     if (origin.system != destination.system) {
-      const measure11 = this.measureData[origin.measure];
-      const anchors = measure11.anchors;
+      const measure13 = this.measureData[origin.measure];
+      const anchors = measure13.anchors;
       if (anchors == null) {
         throw new MeasureStructureError2(`Unable to convert units. Anchors are missing for "${origin.measure}" and "${destination.measure}" measures.`);
       }
@@ -7394,8 +7500,8 @@ var Converter2 = class {
   list(measureName) {
     const list = [];
     if (measureName == null) {
-      for (const [name, measure11] of Object.entries(this.measureData)) {
-        for (const [systemName, units] of Object.entries(measure11.systems)) {
+      for (const [name, measure13] of Object.entries(this.measureData)) {
+        for (const [systemName, units] of Object.entries(measure13.systems)) {
           for (const [abbr, unit] of Object.entries(units)) {
             list.push(this.describeUnit({
               abbr,
@@ -7409,8 +7515,8 @@ var Converter2 = class {
     } else {
       if (!this.isMeasure(measureName))
         throw new UnknownMeasureError2(`Meausure "${measureName}" not found.`);
-      const measure11 = this.measureData[measureName];
-      for (const [systemName, units] of Object.entries(measure11.systems)) {
+      const measure13 = this.measureData[measureName];
+      for (const [systemName, units] of Object.entries(measure13.systems)) {
         for (const [abbr, unit] of Object.entries(units)) {
           list.push(this.describeUnit({
             abbr,
@@ -7428,8 +7534,8 @@ var Converter2 = class {
   }
   throwUnsupportedUnitError(what) {
     let validUnits = [];
-    for (const measure11 of Object.values(this.measureData)) {
-      for (const systems of Object.values(measure11.systems)) {
+    for (const measure13 of Object.values(this.measureData)) {
+      for (const systems of Object.values(measure13.systems)) {
         validUnits = validUnits.concat(Object.keys(systems));
       }
     }
@@ -7449,8 +7555,8 @@ var Converter2 = class {
     } else {
       list_measures = Object.keys(this.measureData);
     }
-    for (const measure11 of list_measures) {
-      const systems = this.measureData[measure11].systems;
+    for (const measure13 of list_measures) {
+      const systems = this.measureData[measure13].systems;
       for (const system of Object.values(systems)) {
         possibilities = [
           ...possibilities,
@@ -7470,8 +7576,8 @@ var Converter2 = class {
 };
 function buildUnitCache2(measures) {
   const unitCache = /* @__PURE__ */ new Map();
-  for (const [measureName, measure11] of Object.entries(measures)) {
-    for (const [systemName, system] of Object.entries(measure11.systems)) {
+  for (const [measureName, measure13] of Object.entries(measures)) {
+    for (const [systemName, system] of Object.entries(measure13.systems)) {
       for (const [testAbbr, unit] of Object.entries(system)) {
         unitCache.set(testAbbr, {
           measure: measureName,
@@ -7602,7 +7708,7 @@ var imperial5 = {
     to_anchor: 6076.12
   }
 };
-var measure6 = {
+var measure7 = {
   systems: {
     metric: metric5,
     imperial: imperial5
@@ -7620,7 +7726,7 @@ var measure6 = {
     }
   }
 };
-var length_default2 = measure6;
+var length_default2 = measure7;
 
 // node_modules/convert-units/lib/esm/definitions/area.js
 var metric6 = {
@@ -7725,7 +7831,7 @@ var imperial6 = {
     to_anchor: 27878400
   }
 };
-var measure7 = {
+var measure8 = {
   systems: {
     metric: metric6,
     imperial: imperial6
@@ -7743,7 +7849,7 @@ var measure7 = {
     }
   }
 };
-var area_default2 = measure7;
+var area_default2 = measure8;
 
 // node_modules/convert-units/lib/esm/definitions/mass.js
 var metric7 = {
@@ -7813,7 +7919,7 @@ var imperial7 = {
     to_anchor: 2e3
   }
 };
-var measure8 = {
+var measure9 = {
   systems: {
     metric: metric7,
     imperial: imperial7
@@ -7831,7 +7937,7 @@ var measure8 = {
     }
   }
 };
-var mass_default2 = measure8;
+var mass_default2 = measure9;
 
 // node_modules/convert-units/lib/esm/definitions/volume.js
 var metric8 = {
@@ -8035,7 +8141,7 @@ var imperial8 = {
     to_anchor: 25852.7
   }
 };
-var measure9 = {
+var measure10 = {
   systems: {
     metric: metric8,
     imperial: imperial8
@@ -8053,11 +8159,11 @@ var measure9 = {
     }
   }
 };
-var volume_default2 = measure9;
+var volume_default2 = measure10;
 
 // node_modules/convert-units/lib/esm/definitions/time.js
 var daysInYear2 = 365.25;
-var SI2 = {
+var SI3 = {
   ns: {
     name: {
       singular: "Nanosecond",
@@ -8129,12 +8235,57 @@ var SI2 = {
     to_anchor: 60 * 60 * 24 * daysInYear2
   }
 };
-var measure10 = {
+var measure11 = {
   systems: {
-    SI: SI2
+    SI: SI3
   }
 };
-var time_default2 = measure10;
+var time_default2 = measure11;
+
+// node_modules/convert-units/lib/esm/definitions/angle.js
+var SI4 = {
+  rad: {
+    name: {
+      singular: "radian",
+      plural: "radians"
+    },
+    to_anchor: 180 / Math.PI
+  },
+  deg: {
+    name: {
+      singular: "degree",
+      plural: "degrees"
+    },
+    to_anchor: 1
+  },
+  grad: {
+    name: {
+      singular: "gradian",
+      plural: "gradians"
+    },
+    to_anchor: 9 / 10
+  },
+  arcmin: {
+    name: {
+      singular: "arcminute",
+      plural: "arcminutes"
+    },
+    to_anchor: 1 / 60
+  },
+  arcsec: {
+    name: {
+      singular: "arcsecond",
+      plural: "arcseconds"
+    },
+    to_anchor: 1 / 3600
+  }
+};
+var measure12 = {
+  systems: {
+    SI: SI4
+  }
+};
+var angle_default2 = measure12;
 
 // src/utils/math-solver.js
 var INUMBER2 = "INUMBER";
@@ -9780,6 +9931,9 @@ parser2.functions.red = function(value) {
 parser2.functions.blue = function(value) {
   return value;
 };
+parser2.functions.green = function(value) {
+  return value;
+};
 parser2.functions.color = function(color, value) {
   return value;
 };
@@ -9809,16 +9963,24 @@ function evalExpression2(expression, quantityOrContext) {
   const res = expr.simplify(context);
   return res.toString();
 }
-function recurExpr2(node, level, requiredLevel = 0) {
+function recurExpr2(node, level, requiredLevel = 0, parentContext = {}) {
   const quantity = node.quantity ?? node.ratio ?? {};
   const { context, expression } = quantity;
+  const colors2 = parentContext?.colors ?? {};
   if (expression) {
     let expr = parser2.parse(expression);
     const variables = expr.variables();
     for (let variable of variables) {
-      const res = recurExpr2(context[variable], level + 1, requiredLevel);
+      const res = recurExpr2(context[variable], level + 1, requiredLevel, parentContext);
       if (res.substitute != null) {
         expr = parser2.parse(cleanUpExpression2(expr, variable));
+        if (level < requiredLevel) {
+          for (let [key, values] of Object.entries(colors2)) {
+            if (values.includes(context[variable]?.agent)) {
+              expr = expr.substitute(variable, parser2.parse(`${key}(${variable})`));
+            }
+          }
+        }
         expr = expr.substitute(variable, res);
         if (level >= requiredLevel) {
           expr = expr.simplify();
@@ -9830,6 +9992,11 @@ function recurExpr2(node, level, requiredLevel = 0) {
           if (level >= requiredLevel) {
             expr = expr.simplify({ [variable]: q });
           } else {
+            for (let [key, values] of Object.entries(colors2)) {
+              if (values.includes(context[variable]?.agent)) {
+                expr = expr.substitute(variable, parser2.parse(`${key}(${variable})`));
+              }
+            }
             expr = expr.substitute(variable, q);
           }
         } else {
@@ -9842,12 +10009,16 @@ function recurExpr2(node, level, requiredLevel = 0) {
     return node;
   }
 }
-function toEquationExpr2(lastExpr, requiredLevel = 0) {
-  const final = recurExpr2({ quantity: lastExpr }, 0, requiredLevel);
+function toEquationExpr2(lastExpr, requiredLevel = 0, context = {}) {
+  const final = recurExpr2({ quantity: lastExpr }, 0, requiredLevel, context);
   return parser2.parse(cleanUpExpression2(final));
 }
-function toEquationExprAsText(lastExpr, requiredLevel = 0) {
-  return expressionToString22(toEquationExpr2(lastExpr, requiredLevel).tokens, false).replaceAll('"', "");
+function evaluateNodeToNumber2(lastNode) {
+  const final = toEquationExpr2(lastNode);
+  return parseFloat(final.toString());
+}
+function toEquationExprAsText(lastExpr, requiredLevel = 0, context = {}) {
+  return expressionToString22(toEquationExpr2(lastExpr, requiredLevel, context).tokens, false).replaceAll('"', "");
 }
 function cleanUpExpression2(exp, variable = "") {
   const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, variable);
@@ -10019,7 +10190,7 @@ function expressionToString22(tokens, toJS) {
         if (f === "[") {
           nstack.push(n1 + "[" + n2 + "]");
         } else {
-          if (f === "+" || f === "-") {
+          if (f === "+") {
             nstack.push(n1 + " " + f + " " + n2);
           } else {
             const isExprN1 = typeof n1 === "string" && n1.indexOf(" ") !== -1;
@@ -10118,14 +10289,16 @@ var convert2 = configureMeasurements2({
   area: area_default2,
   volume: volume_default2,
   mass: mass_default2,
-  time: time_default2
+  time: time_default2,
+  angle: angle_default2
 });
 configure2({
   convertToFraction: (d) => new Fraction2(d).toFraction(),
   convertToUnit: (d, from, to) => convert2(d).from(from).to(to),
   unitAnchor: (unit) => convert2().getUnit(unit)?.unit?.to_anchor,
   solveLinearEquation: (first, second, variable) => solveLinearEquation2(first, second, variable),
-  evalExpression: (expression, quantity) => evalExpression2(expression, quantity)
+  evalExpression: (expression, quantity) => evalExpression2(expression, quantity),
+  evalNodeToNumber: (expression) => evaluateNodeToNumber2(expression)
 });
 var inferenceRuleWithQuestion2 = inferenceRuleWithQuestion;
 

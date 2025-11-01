@@ -1,4 +1,4 @@
-import { commonSense, compRelative, cont, ctor, sum, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, counter, nthPart, percent, proportion, rate, ratio, product, double, ctorScale, contLength, contArea, dimensionEntity, ratios, ctorRatiosInvert, comp, evalFormulaAsCont, formulaRegistry, rectangleArea, baseAreaVolume, triangleArea } from "../../components/math"
+import { commonSense, compRelative, cont, ctor, sum, ctorComparePercent, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorPercent, ctorRatios, counter, nthPart, percent, proportion, rate, ratio, product, double, ctorScale, contLength, contArea, dimensionEntity, ratios, ctorRatiosInvert, comp, evalFormulaAsCont, formulaRegistry, rectangleArea, baseAreaVolume, triangleArea, triangleAngle, compAngle, ctorBooleanOption, evalExprAsCont } from "../../components/math"
 import { createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont, type TreeNode } from "../../utils/deduce-utils"
 
 export default createLazyMap({
@@ -9,10 +9,18 @@ export default createLazyMap({
   4.3: () => vodniNadrz().pocetHodin,
   5.1: () => zaciSkupiny().dvojic,
   5.2: () => zaciSkupiny().zaku,
+  6.1: () => operaceM().a,
+  6.2: () => operaceM().b,
+  6.3: () => operaceM().c,
   7.1: () => hranol().vyskaHranol,
   7.2: () => hranol().obvodPodstava,
   7.3: () => hranol().obsahPodstava,
   7.4: () => hranol().objem,
+  10.1: () => deleniObrazce().a,
+  10.2: () => deleniObrazce().b,
+  10.3: () => deleniObrazce().c,
+  11: () => uhly(),
+  12: () => ctvercovaSit(),
   13: () => kapesne().utratila,
   14: () => kapesne().usetrila,
   15.1: () => cislo(),
@@ -405,6 +413,167 @@ function predstaveni() {
         ctorPercent()
       ),
       ctorOption("C", 36, { asPercent: true })
+    )
+  }
+}
+
+export function operaceM() {
+  const entity = ""
+  
+  return {
+    a: {
+      deductionTree: deduce(
+        evalExprAsCont(`1-8+0-5+9`, "M(18 059)", { entity })
+      )
+    },
+    b: {
+      deductionTree: to(
+        commonSense("největší možné s různými číslicemi"),
+        deduce(
+          evalExprAsCont(`9-8+7-6+5`, "M(98 765)", { entity })
+        ),
+        commonSense("snížení jednotek nestačí, snižujeme o 1 desítku"),
+        deduce(
+          evalExprAsCont(`9-8+7-5+6`, "M(98 756)", { entity })
+        ),
+        commonSense("snížení jednotek ani desítek nestačí, snižujeme o 1 stovku"),
+        deduce(
+          evalExprAsCont(`9-8+6-7+5`, "M(98 675)", { entity })
+        ),
+        commonSense("dále jen snížení jednotek o 4"),
+        deduce(
+          evalExprAsCont(`9-8+6-7+1`, "M(98 671)", { entity })
+        ),
+        cont("M(98 671)", 98671, entity)
+      )
+    },
+    c: {
+      deductionTree:  to(
+        commonSense("nejmenší možné číslo s různými číslicemi"),
+        deduce(
+          evalExprAsCont(`1-0+2-3`, "M(1 023)", { entity })
+        ),       
+        commonSense("dále jen zvýšení jednotek o 1"),
+        deduce(
+           evalExprAsCont(`1-0+2-4`, "M(1 024)", { entity })
+        ),
+        cont("M(1 024)", 1024, entity)
+      )
+    }
+  }
+}
+
+export function deleniObrazce() {
+
+  const dim = dimensionEntity()
+  const bigL = "velký rovnostranný trojúhelník";
+  const smallL = "strana malý rovnostranný trojúhelník";
+
+  const strana = deduce(
+    contLength(bigL, 60),
+    cont(bigL, 3, "strana"),
+    ctor('rate')
+  )
+
+  const zakladna = deduce(
+    toCont(strana, { agent: `strana ${bigL}` }),
+    to(
+      commonSense("základna malého rovnostranného trojúhelníku se rovná 3 zkrácením, resp. o kolik byly jednotlivé strany zkráceny"),
+      compRelative(`strana ${bigL}`, smallL, 1 / 3)
+    )
+  );
+
+  return {
+    a: {
+      deductionTree: deduce(
+        deduce(
+          zakladna,
+          last(zakladna),
+          last(zakladna),
+          evalFormulaAsCont(formulaRegistry.circumReference.triangle, x => x.o, smallL, dim.length)
+        ),
+        ctorBooleanOption(30)
+      )
+    },
+    b: {
+      deductionTree: deduce(
+        deduce(
+          toCont(last(strana), { agent: `rameno ${bigL}` }),
+          last(zakladna),
+          ctor('comp-ratio')
+        ),
+        ctorBooleanOption(2)
+      )
+    },
+    c: {
+      deductionTree: deduce(
+        toCont(last(zakladna), { agent: `kratší základna lichoběžníku` }),
+        toCont(last(strana), { agent: `delší základna lichoběžníku` }),
+        ctorRatios("poměr", { useBase: true })
+      ),
+      convertToTestedValue: value => value.ratios.join(":")
+    }
+  }
+}
+
+
+function uhly() {
+  const pravouhlyLabel = "pravouhlý trojúhelník ABC";
+  const rovnoramennyLabel = "rovnoramenný trojúhelník KCS";
+  const vrchol = deduce(
+    cont("pravý úhel u vrcholu A", 90, "stupeň"),
+    cont("úhel u vrcholu B", 56, "stupeň"),
+    triangleAngle("úhel u vrcholu C")
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduceAs(`2 trojúhlníky - ${pravouhlyLabel} a ${rovnoramennyLabel}`)(
+          vrchol,
+          to(
+            last(vrchol),
+            cont("úhel u vrcholu K", lastQuantity(vrchol), "stupeň")
+          ),
+          triangleAngle("úhel u vrcholu S")
+        ),
+        compAngle("úhel 𝜔", "úhel u vrcholu S", "supplementary")
+      ),
+      ctorOption("D", 68)
+    )
+  }
+}
+
+function ctvercovaSit() {
+  const celekL = "čtvercové pole"
+  const polovinaL = "polovina čtvercového pole";
+  const ctvrtinaL = "čtvrtina čtvercového pole";
+
+  const osmiL = "osmiúhelník navíc"
+  const celek = contArea(celekL, 25);
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          deduce(
+            celek,
+            ratio(celekL, polovinaL, 1 / 2),
+          ),
+          counter(polovinaL, 4),
+          ctorScale(osmiL)
+        ),
+        deduce(
+
+
+          deduce(
+            celek,
+            ratio(celekL, ctvrtinaL, 1 / 4),
+          ),
+          counter(ctvrtinaL, 4),
+          ctorScale(osmiL)
+        ),
+        sum(`celkem ${osmiL}`)
+      ),
+      ctorOption("C", 75)
     )
   }
 }

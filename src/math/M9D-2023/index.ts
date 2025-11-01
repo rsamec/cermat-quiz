@@ -1,5 +1,5 @@
 import { commonSense, compRatio, cont, ctor, ctorDifference, rate, sum, ctorSlide, compRelative, compRelativePercent, triangularNumbersPattern, nthPart, comp, ratios, counter, ctorRatios, nthPartFactor, ctorOption, ctorBooleanOption, contLength, halfProduct, doubleProduct, pythagoras, rectangleArea } from "../../components/math";
-import { createLazyMap, deduce, last, lastQuantity, to } from "../../utils/deduce-utils";
+import { anglesNames, createLazyMap, deduce, last, lastQuantity, to } from "../../utils/deduce-utils";
 
 
 export default createLazyMap({
@@ -24,6 +24,16 @@ export default createLazyMap({
     16.2: () => obrazce().rozdilPuntiku,
     16.3: () => obrazce().pocetUsecekPro300Puntiku,
 })
+
+function uhly(){
+    return {
+        deductionTree: deduce(
+            cont(anglesNames.gamma, 30, "°"),
+            compRatio("y^' úhel A", "úhel B", 2)
+        )
+    }
+    
+}
 
 function zavazi() {
     const small = "lehčí"

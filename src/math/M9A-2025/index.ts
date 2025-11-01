@@ -1,5 +1,5 @@
 import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, sum, product, counter, triangleAngle, contLength, dimensionEntity, contArea, primeFactors, squareArea, baseAreaVolume, cuboidVolume, formulaRegistry, evalExprAsCont, evalFormulaAsCont } from "../../components/math";
-import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
+import { createLazyMap, deduce, deduceAs, last, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   //1:() => porovnani(),
@@ -133,13 +133,13 @@ function uhly() {
       )
     },
     gamma: {
-      deductionTree: deduce(
+      deductionTree: deduceAs("úhly v pravoúhlém trojúhelníku, vytvořený mezi přímkami r,t,q, kde r a t jsou kolmé")(
         deduce(
-          deduce(angle2, compAngle(angleLabel, "bod R v pravoúhlém trojúhelníku", "supplementary")),
+          deduce(angle2, compAngle(angleLabel, "úhel u bodu R", "supplementary")),
           cont("pravý úhel", 90, entity, unit),
-          triangleAngle("vrchol v pravoúhlém trojúhelníku")
+          triangleAngle("vrchol")
         ),
-        compAngle("vrchol v pravoúhlém trojúhelníku", "gamma", "supplementary")
+        compAngle("vrchol", "gamma", "supplementary")
       )
     }
   }

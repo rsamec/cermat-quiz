@@ -1,4 +1,4 @@
-import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate } from "../components/math.js"
+import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate, delta } from "../components/math.js"
 import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison, Frequency } from "../components/math.js"
 import { partionArray } from '../utils/common-utils.js';
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
@@ -36,7 +36,9 @@ export type Node = TreeNode | Predicate
 export type TreeNode = {
   children?: Node[]
 }
-export type DeduceContext = string
+export type ColorContext = { colors?: Record<string, string[]> }
+export type ExpressionContext = { depth?: number }
+export type DeduceContext = string | (ColorContext & ExpressionContext)
 export function isPredicate(node: Node): node is Predicate {
   return (node as any).kind != null
 }
@@ -66,7 +68,7 @@ export function to(...children: Node[]): TreeNode {
 export function toCont(child: TreeNode | Predicate, { agent, entity }: { agent: string, entity?: { entity: string, unit?: string } }): TreeNode {
   return toPredicate(child, mapToCont({ agent, entity }));
 }
-export function toFrequency(child: TreeNode | Predicate, { agent, entityBase, baseQuantity }: { agent: string, entityBase: { entity: string, unit?: string }, baseQuantity: number}): TreeNode {
+export function toFrequency(child: TreeNode | Predicate, { agent, entityBase, baseQuantity }: { agent: string, entityBase: { entity: string, unit?: string }, baseQuantity: number }): TreeNode {
   return toPredicate(child, mapToFrequency({ agent, entityBase, baseQuantity }));
 }
 export function toRate(child: RatioComparison, { agent, entity, entityBase }: { agent: string, entity: EntityDef, entityBase: EntityDef }) {
@@ -104,16 +106,16 @@ export function mapToCont({ agent, entity }: { agent: string, entity?: { entity:
     }
   }
 }
-export function mapToFrequency({ agent, entityBase, baseQuantity }: { agent: string, entityBase: { entity: string, unit?: string }, baseQuantity: number}) {
+export function mapToFrequency({ agent, entityBase, baseQuantity }: { agent: string, entityBase: { entity: string, unit?: string }, baseQuantity: number }) {
   return (node: Container): Frequency => {
     return {
-      kind:'frequency',
+      kind: 'frequency',
       agent,
       quantity: node.quantity,
-      baseQuantity,        
+      baseQuantity,
       entity: {
-        entity:node.entity,
-        unit:node.unit,      
+        entity: node.entity,
+        unit: node.unit,
       },
       entityBase
     }
@@ -177,7 +179,7 @@ export function computeTreeMetrics(
   // Base case: If the node is a leaf
   if (isPredicate(node)) {
     levels[level] = (levels[level] || 0) + 1; // Count nodes at this level
-    if (node.kind === "eval-formula" && node.formulaName != null && !formulas.includes(node.formulaName)){      
+    if (node.kind === "eval-formula" && node.formulaName != null && !formulas.includes(node.formulaName)) {
       formulas.push(node.formulaName);
     }
     return {
@@ -216,13 +218,16 @@ export function computeTreeMetrics(
 }
 
 
-export function jsonToMarkdownTree(node, level = 0) {
+export function jsonToMarkdownTree(node, level = 0, parentContext: DeduceContext) {
   const indent = "  ".repeat(level); // Two spaces for each level
   let markdown = [];
 
   // Add node details if they exist
   if (isPredicate(node)) {
-    markdown.push(`${indent}- ${formatPredicate(node, mdFormatting)}\n`);
+
+    const color = isObjectContext(parentContext) ? Object.entries(parentContext.colors ?? {}).find(([color, arr]) => arr.includes((node as any).agent))?.[0] : null;
+
+    markdown.push(`${indent}- ${formatPredicate(node, color != null ? colorFormattingFunc(0, color, parentContext) : mdFormattingFunc(0, parentContext))}\n`);
     return markdown;
   }
 
@@ -233,8 +238,8 @@ export function jsonToMarkdownTree(node, level = 0) {
     for (let i = node.children.length - 1; i >= 0; i--) {
       const child = node.children[i];
       const isConclusion = i === node.children.length - 1;
-      if (isConclusion && node.context) markdown.push(`${indent}- *${node.context}*\n`)
-      markdown = markdown.concat(jsonToMarkdownTree(child, level + (isConclusion ? 0 : 1)))
+      if (isConclusion && isStringContext(node.context)) markdown.push(`${indent}- *${node.context}*\n`)
+      markdown = markdown.concat(jsonToMarkdownTree(child, level + (isConclusion ? 0 : 1), mergeWithParent(node.context, parentContext)))
     }
   }
 
@@ -296,7 +301,7 @@ export function jsonToMermaidMindMapEx(node, isConclusion, level = 0) {
     for (let i = node.children.length - 1; i >= 0; i--) {
       const child = node.children[i];
       const isConclusion = i === node.children.length - 1;
-      if (isConclusion && node.context) markdown.push(`${indent} id${++nextId}["${node.context}"]\n`)
+      if (isConclusion && isStringContext(node.context)) markdown.push(`${indent} id${++nextId}["${node.context}"]\n`)
       markdown = markdown.concat(jsonToMermaidMindMapEx(child, isConclusion, level + (isConclusion ? 0 : 1)))
     }
   }
@@ -351,7 +356,7 @@ export function jsonToTLDrawEx(node, isConclusion, level = 0) {
     for (let i = node.children.length - 1; i >= 0; i--) {
       const child = node.children[i];
       const isConclusion = i === node.children.length - 1;
-      if (isConclusion && node.context) markdown.push(`${indent} id${++nextId}["${node.context}"]\n`)
+      if (isConclusion && isStringContext(node.context)) markdown.push(`${indent} id${++nextId}["${node.context}"]\n`)
       markdown = markdown.concat(jsonToMermaidMindMapEx(child, isConclusion, level + (isConclusion ? 0 : 1)))
     }
   }
@@ -360,7 +365,7 @@ export function jsonToTLDrawEx(node, isConclusion, level = 0) {
 
 
 
-export function jsonToMarkdownChat(node, { predicates, rules, formulas }: { predicates: string[], rules: string[], formulas:string[] } = { predicates: [], rules: [], formulas: [] }) {
+export function jsonToMarkdownChat(node, { predicates, rules, formulas }: { predicates: string[], rules: string[], formulas: string[] } = { predicates: [], rules: [], formulas: [] }) {
 
   const flatStructure = [];
   function traverseEx(node) {
@@ -375,6 +380,13 @@ export function jsonToMarkdownChat(node, { predicates, rules, formulas }: { pred
     // Process children recursively
     if (node.children && Array.isArray(node.children)) {
 
+      if (node.context != null) {
+        if (isStringContext(node.context)) {
+          flatStructure.push('\n');
+          flatStructure.push(`Kontext: *${node.context}*\n\n`)
+        }
+      }
+
       for (let i = 0; i != node.children.length; i++) {
         const child = node.children[i];
         const isConclusion = i === node.children.length - 1;
@@ -382,9 +394,6 @@ export function jsonToMarkdownChat(node, { predicates, rules, formulas }: { pred
         if (isConclusion) {
           const result = inferenceRuleWithQuestion(mapNodeChildrenToPredicates(node));
           q = result;
-          if (node.context) {
-            args.push(node.context)
-          }
         }
         else {
           q = null;
@@ -408,20 +417,17 @@ export function jsonToMarkdownChat(node, { predicates, rules, formulas }: { pred
       const [predicates, other] = partionArray(premises, d => isPredicate(d));
       const body = predicates.map(d => {
         return predicates.includes(d.kind) || (d.kind == "eval-formula" && formulas.includes(d.formulaName))
-            ? `==${formatPredicate(d, chatFormattingFunc(0))}==`
-            : formatPredicate(d, chatFormattingFunc(0))          
+          ? `==${formatPredicate(d, chatFormattingFunc(0))}==`
+          : formatPredicate(d, chatFormattingFunc(0))
       }).filter(d => !isEmptyOrWhiteSpace(d)).map(d => `- ${d}`).join("\n");
 
-      const context = other.length == 0
-        ? ''
-        : `Kontext: *${other.join("\n")}*\n\n`
-      
+      const stepContext = '';
 
       flatStructure.push((q != null
-        ? `${context}${rules.includes(q.name) ? `==${q.question.trim()}==` : q.question}\n${body}\n\n` + (answer != null
+        ? `${stepContext}${rules.includes(q.name) ? `==${q.question.trim()}==` : q.question}\n${body}\n\n` + (answer != null
           ? `${rules.includes(q.name) ? '==Výpočet==' : 'Výpočet'}: ${answer.tex} = ${answer.result}`
           : '')
-        : `${context}${body}`) + '\n\n' + `${rules.includes(q?.name) ? '==Závěr==' : 'Závěr'}:${predicates.includes(conclusion.kind)
+        : `${stepContext}${body}`) + '\n\n' + `${rules.includes(q?.name) ? '==Závěr==' : 'Závěr'}:${predicates.includes(conclusion.kind)
           ? `==${formatPredicate(conclusion, chatFormattingFunc(1))}==`
           : formatPredicate(conclusion, chatFormattingFunc(1))}` + "\n\n");
     }
@@ -441,7 +447,7 @@ export function mapNodeChildrenToPredicates(node: TreeNode): Predicate[] {
 }
 
 
-const mdFormattingFunc = (requiredLevel: number) => ({
+const mdFormattingFunc = (defaultExpressionDepth: number, context: DeduceContext = null) => ({
   compose: (strings: TemplateStringsArray, ...args) => concatString(strings, ...args),
   formatKind: d => `[${d.kind.toUpperCase()}]`,
   formatQuantity: d => {
@@ -449,7 +455,7 @@ const mdFormattingFunc = (requiredLevel: number) => ({
       return d.toLocaleString("cs-CZ");
     }
     else if (d?.expression != null) {
-      return toEquationExprAsTex(d, requiredLevel);
+      return toEquationExprAsTex(d, isObjectContext(context) ? (context.depth ?? defaultExpressionDepth) : defaultExpressionDepth, isObjectContext(context) ? context : null);
     }
     else if (typeof d === "string") {
       return d;
@@ -463,7 +469,11 @@ const mdFormattingFunc = (requiredLevel: number) => ({
       return asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : new Fraction(d).toFraction();
     }
     else if (d?.expression != null) {
-      return asPercent ? toEquationExprAsTex({ ...d, expression: `(${d.expression}) * 100` }, requiredLevel) : toEquationExprAsTex(d, requiredLevel)
+      const colorContext = isObjectContext(context) ? context : null;
+      const requiredLevel = isObjectContext(context) ? (context.depth ?? defaultExpressionDepth) : defaultExpressionDepth;
+      return asPercent
+        ? toEquationExprAsTex({ ...d, expression: `(${d.expression}) * 100` }, requiredLevel, colorContext)
+        : toEquationExprAsTex(d, requiredLevel, colorContext)
     }
     else if (typeof d === "string") {
       return d;
@@ -481,9 +491,13 @@ const mdFormattingFunc = (requiredLevel: number) => ({
   formatTable: (data: (string | number)[][]) => `vzor opakování ${data.map(d => d[1]).join()}`
 })
 const mdFormatting = mdFormattingFunc(0)
-const chatFormattingFunc = (requiredLevel: number) => ({
-  ...mdFormattingFunc(requiredLevel),
+const chatFormattingFunc = (defaultExpressionDepth: number) => ({
+  ...mdFormattingFunc(defaultExpressionDepth),
   formatTable: d => `vzor opakování \n\n${mdFormatTable(d)}`
+})
+const colorFormattingFunc = (defaultExpressionDepth: number, color: string, context: DeduceContext) => ({
+  ...mdFormattingFunc(defaultExpressionDepth, context),
+  formatAgent: (d) => `{${color}}(**${d}**)`,
 })
 export function mdFormatTable(data: (string | number)[][]) {
   if (!Array.isArray(data) || data.length === 0) return "";
@@ -549,7 +563,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = compose`${formatAgent(d.agent)}=${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} po ${formatQuantity(d.baseQuantity)}${d.entityBase.entity != "" ? " " : ""}${formatEntity(d.entityBase.entity, d.entityBase.unit)}`;
       break;
 
-   case "comp":
+    case "comp":
       if (isNumber(d.quantity)) {
         result = d.quantity === 0
           ? compose`${formatAgent(d.agentA)} je rovno ${formatAgent(d.agentB)}`
@@ -824,4 +838,24 @@ export function createLazyMap<T>(thunks: ThunkMap<T>): T {
   }
 
   return lazyMap;
+}
+
+export const anglesNames = {
+  alpha: '𝛼',
+  beta: '𝛽',
+  gamma: '𝛾',
+  delta: '𝛿',
+  theta: '𝜃',
+}
+
+function isStringContext(context: DeduceContext): context is string {
+  return typeof context === "string";
+}
+function isObjectContext(context: DeduceContext): context is (ColorContext & ExpressionContext) {
+  return context != null && typeof context === "object";
+}
+function mergeWithParent(context: DeduceContext, parentContext: DeduceContext): DeduceContext {
+  if (context == null) return parentContext;
+  if (isObjectContext(context) && isObjectContext(parentContext)) return { ...context, ...parentContext };
+  return context
 }

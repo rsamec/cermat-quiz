@@ -142,7 +142,7 @@ function renderValues (values) {
     </div>
   </div>
 
-  <details open>
+  <details>
     <summary>Rozhodovačka</summary>
     <div class="card">
       ${renderChatStepper(value.deductionTree)}
@@ -171,7 +171,7 @@ function renderValues (values) {
     </div>
   </details>
 
-  <details>
+  <details open>
     <summary>Strom - textově</summary>
     <div class="card">
       ${renderMarkdownWithCopy(jsonToMarkdownTree(value.deductionTree).join(''), "md")}

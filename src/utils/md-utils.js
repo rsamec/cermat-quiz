@@ -2,7 +2,9 @@ import markdownit from "markdown-it";
 import katex from '@vscode/markdown-it-katex';
 import MarkdownItFootnote from "markdown-it-footnote";
 import sup from 'markdown-it-sup';
+import sub from 'markdown-it-sub';
 import mark from 'markdown-it-mark';
+import color from 'markdown-it-color-plus';
 
 //const inlineTextColor = import('https://cdn.skypack.dev/@gerhobbelt/markdown-it-inline-text-color@1.0.1-1?min');
 //import textBgColor from 'https://cdn.jsdelivr.net/npm/markdown-it-color-plus/+esm';
@@ -94,6 +96,8 @@ const MarkdownWithKatex = new markdownit({ html: false, })
   .use(katex.default ?? katex, {
   })
   .use(sup)
+  .use(sub)
+  .use(color)
   .use(mark)
   .use(MarkdownItFootnote)
   // .use(textBgColor.default, { inline: false, isMultiLine: true })
@@ -108,6 +112,8 @@ const MarkdownWithKatex = new markdownit({ html: false, })
 const Markdown = new markdownit({ html: false, })
   .use(underline)
   .use(sup)
+  .use(sub)
+  .use(color)
   .use(mark)
   .use(MarkdownItFootnote)
   // .use(textBgColor.default, { inline: false, isMultiLine: true })

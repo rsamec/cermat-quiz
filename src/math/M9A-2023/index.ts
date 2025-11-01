@@ -302,9 +302,9 @@ function angleBeta() {
 
   const triangleSumLabel = 'součet úhlů v trojúhelníku';
   const triangleSum = cont(triangleSumLabel, 180, entity)
-  const triangle = "úhel trojúhelníku ABC";
+  const triangle = "trojúhelníku";
 
-  const alfaA = cont(`vnitřní ${triangle} u vrcholu A`, 4, alfaEntity);
+  const alfaA = cont(`vnitřní ${triangle}`, 4, alfaEntity);
   return {
     title: 'Velikost úhlu β',
     deductionTree: deduce(
@@ -312,23 +312,21 @@ function angleBeta() {
         deduce(
           triangleSum,
           deduce(
-            to(
-              cont(`zadaný úhel u vnějšího ${triangle} u vrcholu A`, 4, alfaEntity),
-              compAngle(`zadaný úhel u vnějšího ${triangle} u vrcholu A`, `vnitřní ${triangle} u vrcholu A`, 'corresponding'),
-              alfaA,
+            deduce(
+              cont(`zadaný úhel u vnějšího ${triangle}`, 4, alfaEntity),
+              compAngle(`zadaný úhel u vnějšího ${triangle}`, `vedlejší k hledanému úhlu β u vnitřního ${triangle}`, 'corresponding'),
             ),
-            cont(`zadaný úhel vnitřní ${triangle} u vrcholu B`, 4, alfaEntity),
-            to(
-              cont(`zadaný úhel u ${triangle} u vrcholu C`, 2, alfaEntity),
-              compAngle(`zadaný úhel u ${triangle} u vrcholu C`, `vnitřní ${triangle} u vrcholu A`, 'opposite'),
-              cont(`vnitřní ${triangle} u vrcholu C`, 2, alfaEntity),
+            cont(`zadaný úhel u vnitřního ${triangle}`, 4, alfaEntity),
+            deduce(
+              cont(`zadaný úhel`, 2, alfaEntity),
+              compAngle(`zadaný úhel`, `dopočítaný u vnitřního ${triangle}`, 'opposite'),              
             ),
             ctorRatios(triangleSumLabel)
           ),
           alfaA,
-          nthPart(`vnitřní ${triangle} u vrcholu A`)
+          nthPart(`vedlejší k hledanému úhlu β u vnitřního ${triangle}`)
         ),
-        compAngle(`vnitřní ${triangle} u vrcholu A`, 'beta', 'supplementary')
+        compAngle(`vedlejší k hledanému úhlu β u vnitřního ${triangle}`, 'beta', 'supplementary')
       ),
       ctorOption("B", 108)
     )

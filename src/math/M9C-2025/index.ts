@@ -1,5 +1,5 @@
-import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, rate, ratio, ctorPercent, percent, ctorOption, sum, product, counter, contLength, dimensionEntity, contArea, ctorExpressionOption, compRelativePercent, comp, ctorComplement, ctorRound, productCombine, pythagoras, ctorBooleanOption, evalFormulaAsCont, formulaRegistry, circleArea } from "../../components/math";
-import { createLazyMap, deduce, deduceAs, last, toCont } from "../../utils/deduce-utils";
+import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, rate, ratio, ctorPercent, percent, ctorOption, sum, product, counter, contLength, dimensionEntity, contArea, ctorExpressionOption, compRelativePercent, comp, ctorComplement, ctorRound, productCombine, pythagoras, ctorBooleanOption, evalFormulaAsCont, formulaRegistry, circleArea, compAngle, triangleAngle, contAngle, contRightAngle } from "../../components/math";
+import { anglesNames, createLazyMap, deduce, deduceAs, last, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   1: () => porovnani(),
@@ -16,11 +16,58 @@ export default createLazyMap({
   11.3: () => rodinnyDum().c,
   12: () => hriste(),
   13: () => krychle(),
+  14: () => uhly(),
   15.1: () => kbelik(),
   15.2: () => hrnciri(),
   15.3: () => rybiz(),
 })
-
+function uhly() {
+  const asExpression = false
+  const zadanyUhel = contAngle("XAo~1~", 22, "deg", { asExpression });
+  const zadanyUhelStred = contAngle("ASo~2~", 62, "deg", { asExpression});
+  const osoveSymetrnyUhel = deduce(
+    zadanyUhel,
+    compAngle("BAo~1~", "XAo~1~", "axially-symmetric")
+  )
+  return {
+    deductionTree: deduceAs({
+      depth: 1,
+      colors: {
+        "red": ["BXC", "o~2~X"],
+        "blue": ["ASX", "o~2~XB", "AXo~2~"],
+        "green": ["BAo~1~", "Ao~2~X", "o~2~XC"]
+      }
+    })(
+      deduce(
+        deduce(
+          deduce(
+            deduce(
+              osoveSymetrnyUhel,
+              zadanyUhelStred,
+              triangleAngle("Ao~2~X")
+            ),
+            compAngle("o~2~XC", "Ao~2~X", "alternate-interior")
+          ),
+          deduce(
+            deduce(
+              deduce(
+                zadanyUhelStred,
+                compAngle("ASX", "ASo~2~", "supplementary")
+              ),
+              zadanyUhel,
+              triangleAngle("AXo~2~")
+            ),
+            compAngle("o~2~XB", "AXo~2~", "axially-symmetric")
+          ),
+          ctorDifference("BXC")
+        ),
+        contRightAngle(),
+        triangleAngle(anglesNames.alpha)
+      ),
+      ctorOption("C", 34)
+    )
+  }
+}
 function porovnani() {
   const entity = "hmotnost";
   const zadane1 = cont("zadané množství", 5, entity, "kg");

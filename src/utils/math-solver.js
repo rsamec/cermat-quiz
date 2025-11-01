@@ -1644,6 +1644,9 @@ parser.functions.red = function(value) {
 parser.functions.blue = function(value) {
   return value;
 };
+parser.functions.green = function(value) {
+  return value;
+};
 parser.functions.color = function(color, value) {
   return value;
 };
@@ -1682,16 +1685,24 @@ function evalExpression(expression, quantityOrContext) {
   const res = expr.simplify(context);
   return res.toString();
 }
-function recurExpr(node, level, requiredLevel = 0) {
+function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
   const quantity = node.quantity ?? node.ratio ?? {};
   const { context, expression } = quantity;
+  const colors2 = parentContext?.colors ?? {};
   if (expression) {
     let expr = parser.parse(expression);
     const variables = expr.variables();
     for (let variable of variables) {
-      const res = recurExpr(context[variable], level + 1, requiredLevel);
+      const res = recurExpr(context[variable], level + 1, requiredLevel, parentContext);
       if (res.substitute != null) {
         expr = parser.parse(cleanUpExpression(expr, variable));
+        if (level < requiredLevel) {
+          for (let [key, values] of Object.entries(colors2)) {
+            if (values.includes(context[variable]?.agent)) {
+              expr = expr.substitute(variable, parser.parse(`${key}(${variable})`));
+            }
+          }
+        }
         expr = expr.substitute(variable, res);
         if (level >= requiredLevel) {
           expr = expr.simplify();
@@ -1703,6 +1714,11 @@ function recurExpr(node, level, requiredLevel = 0) {
           if (level >= requiredLevel) {
             expr = expr.simplify({ [variable]: q });
           } else {
+            for (let [key, values] of Object.entries(colors2)) {
+              if (values.includes(context[variable]?.agent)) {
+                expr = expr.substitute(variable, parser.parse(`${key}(${variable})`));
+              }
+            }
             expr = expr.substitute(variable, q);
           }
         } else {
@@ -1719,15 +1735,19 @@ function toEquation(lastNode) {
   const final = recurExpr(lastNode, 0);
   return parser.parse(cleanUpExpression(final));
 }
-function toEquationExpr(lastExpr, requiredLevel = 0) {
-  const final = recurExpr({ quantity: lastExpr }, 0, requiredLevel);
+function toEquationExpr(lastExpr, requiredLevel = 0, context = {}) {
+  const final = recurExpr({ quantity: lastExpr }, 0, requiredLevel, context);
   return parser.parse(cleanUpExpression(final));
 }
-function toEquationExprAsText(lastExpr, requiredLevel = 0) {
-  return expressionToString2(toEquationExpr(lastExpr, requiredLevel).tokens, false).replaceAll('"', "");
+function evaluateNodeToNumber(lastNode) {
+  const final = toEquationExpr(lastNode);
+  return parseFloat(final.toString());
 }
-function toEquationExprAsTex(lastExpr, requiredLevel = 0) {
-  return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel).tokens)} $`;
+function toEquationExprAsText(lastExpr, requiredLevel = 0, context = {}) {
+  return expressionToString2(toEquationExpr(lastExpr, requiredLevel, context).tokens, false).replaceAll('"', "");
+}
+function toEquationExprAsTex(lastExpr, requiredLevel = 0, context = {}) {
+  return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel, context).tokens)} $`;
 }
 function cleanUpExpression(exp, variable = "") {
   const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, variable);
@@ -1916,7 +1936,7 @@ function tokensToTex(tokens, opts = {}) {
           stack.push(`${a}${sym} ${b}`);
         } else {
           const texOps = { "==": "=", "!=": "\\ne", "<=": "\\le", ">=": "\\ge" };
-          stack.push(`${a} ${texOps[tok.value] || tok.value} ${b}`);
+          stack.push(`(${a} ${texOps[tok.value] || tok.value} ${b})`);
         }
         break;
       }
@@ -2007,7 +2027,7 @@ function expressionToString2(tokens, toJS) {
         if (f === "[") {
           nstack.push(n1 + "[" + n2 + "]");
         } else {
-          if (f === "+" || f === "-") {
+          if (f === "+") {
             nstack.push(n1 + " " + f + " " + n2);
           } else {
             const isExprN1 = typeof n1 === "string" && n1.indexOf(" ") !== -1;
@@ -2102,6 +2122,7 @@ function escapeValue2(v) {
 export {
   evalExpression,
   evaluate2 as evaluate,
+  evaluateNodeToNumber,
   simplify2 as simplify,
   solveLinearEquation,
   substitute2 as substitute,

@@ -1,5 +1,5 @@
-import { compRatio, cont, ctor, ctorDifference, sum, compRelative, comp, ctorOption, contLength, halfProduct, proportion, percent, dimensionEntity, evalExprAsCont, contArea, ratio, ctorUnit, ctorRound, ctorBooleanOption, ctorComplement, ctorPercent, evalFormulaAsCont, formulaRegistry, cylinderVolume, triangleArea, circleLength, cubeArea } from "../../components/math";
-import { createLazyMap, deduce, deduceAs, last, toPredicate } from "../../utils/deduce-utils";
+import { compRatio, cont, ctor, ctorDifference, sum, compRelative, comp, ctorOption, contLength, halfProduct, proportion, percent, dimensionEntity, evalExprAsCont, contArea, ratio, ctorUnit, ctorRound, ctorBooleanOption, ctorComplement, ctorPercent, evalFormulaAsCont, formulaRegistry, cylinderVolume, triangleArea, circleLength, cubeArea, contAngle, compAngle, ratios, contTringleAngleSum, nthPart } from "../../components/math";
+import { anglesNames, createLazyMap, deduce, deduceAs, last, toPredicate } from "../../utils/deduce-utils";
 import pocetObyvatel from "./pocet-obyvatel";
 import sourozenci from "./sourozenci";
 
@@ -9,6 +9,8 @@ export default createLazyMap({
     2: () => nadoby(),
     6.1: () => lichobeznik().vyska,
     6.2: () => lichobeznik().obsah,
+    8.1: () => uhly().a,
+    8.2: () => uhly().b,
     7.1: () => zahon().obvodKruhoveho,
     7.2: () => zahon().polomerCtvrtkruhovy,
     11: () => krychle(),
@@ -23,6 +25,40 @@ export default createLazyMap({
     16.3: () => zednici().pocetDnuPolovinaStavby,
 
 })
+
+function uhly() {
+
+    const dvojiceUhlu = [anglesNames.alpha, anglesNames.gamma];
+    const beta = deduce(
+        contAngle("zadaný u vrcholu B", 130),
+        compAngle("zadaný u vrcholu B", anglesNames.beta, "supplementary"),
+    )
+    const sumDvojiceUhlu = deduce(
+        contTringleAngleSum(),
+        beta,
+        ctorDifference(dvojiceUhlu.join(" a "))
+    )
+    const gamma = deduce(
+        sumDvojiceUhlu,
+        ratios(dvojiceUhlu.join(" a "), dvojiceUhlu, [2, 3]),
+        nthPart(anglesNames.gamma)
+    )
+    return {
+        a: {
+            deductionTree: gamma,
+        },
+        b: {
+            deductionTree: deduce(
+                deduce(
+                    last(sumDvojiceUhlu),
+                    last(gamma),
+                    ctorDifference(anglesNames.alpha)
+                ),
+                last(beta)
+            )
+        }
+    }
+}
 
 function nadoby() {
     const dim = dimensionEntity();
