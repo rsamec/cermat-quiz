@@ -2,7 +2,7 @@ import { parseArgs } from "node:util";
 import fs from 'fs/promises';
 import path from 'path';
 import { PDFDocument, rgb, StandardFonts, degrees } from 'pdf-lib';
-import { readJsonFromFile, fileExists, saveJsonToFile } from './utils/file.utils.js';
+import { readJsonFromFile, fileExists, saveJsonToFile } from '../utils/file.utils.js';
 
 const {
   values: { subject, period }

@@ -1,6 +1,6 @@
 import { parseArgs } from "node:util";
 import path from 'path';
-import { readJsonFromFile } from './utils/file.utils.js';
+import { readJsonFromFile } from '../utils/file.utils.js';
 
 const {
   values: { code }

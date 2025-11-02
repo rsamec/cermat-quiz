@@ -5,7 +5,7 @@ import markdownit from "markdown-it";
 import * as katex from 'markdown-it-katex';
 import { toArray, from, concatMap, catchError, of } from 'rxjs';
 import { baseDomainPublic, parseCode, json, text } from "../utils/quiz-string-utils.js";
-import { readJsonFromFile, fileExists } from './utils/file.utils.js';
+import { readJsonFromFile, fileExists } from '../utils/file.utils.js';
 
 const {
   values: { code }

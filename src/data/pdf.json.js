@@ -1,6 +1,6 @@
 import path from 'path';
 import { quizes } from "../utils/quiz-utils.js";
-import { readJsonFromFile, fileExists } from './utils/file.utils.js';
+import { readJsonFromFile, fileExists } from '../utils/file.utils.js';
 
 async function getOutput(subDir) {
   const outputDir = path.resolve('./src/assets/pdf', subDir);
