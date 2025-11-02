@@ -3,11 +3,6 @@ import { parseQuiz } from './utils/quiz-parser.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCodeAlt, text } from './utils/quiz-string-utils.js';
 import wordProblems, { } from './math/word-problems.js';
 import { jsonToMarkdownChat } from "./utils/deduce-utils.js";
-//import mdPlus from './utils/md-utils.js';
-import Fraction from 'fraction.js';
-const mdFormatting = {
-  formatRatio: (d, asPercent) => asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : new Fraction(d).toFraction(),
-}
 
 const {
   values: { code }
