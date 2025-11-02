@@ -1,25 +1,12 @@
 import { parseArgs } from "node:util";
-import fs from 'fs/promises';
 import path from 'path';
+import { readJsonFromFile } from './utils/file.utils.js';
 
 const {
   values: { code }
 } = parseArgs({
   options: { code: { type: "string" } }
 });
-
-async function readJsonFromFile(filePath) {
-  try {
-    // Read the file content
-    const data = await fs.readFile(filePath, 'utf8');
-
-    // Parse JSON string into an object
-    const jsonData = JSON.parse(data);
-    return jsonData;
-  } catch (error) {
-    throw error;
-  }
-}
 
 const fileLocation = path.resolve('./src/data/math-geometry.json');
 

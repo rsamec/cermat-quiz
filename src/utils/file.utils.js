@@ -21,3 +21,19 @@ export async function fileExists(filePath) {
     return false;
   }
 }
+
+
+export async function saveJsonToFile(filePath, jsonData) {
+  try {
+      // Convert JSON data to a string
+      const data = JSON.stringify(jsonData, null, 2);
+
+      // Ensure the directory exists
+      await fs.mkdir(path.dirname(filePath), { recursive: true });
+
+      // Write JSON string to file
+      await fs.writeFile(filePath, data, 'utf8');
+  } catch (error) {
+      throw error;
+  }
+}

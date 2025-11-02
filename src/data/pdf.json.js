@@ -1,28 +1,6 @@
-import fs from 'fs/promises';
 import path from 'path';
 import { quizes } from "../utils/quiz-utils.js";
-
-async function readJsonFromFile(filePath) {
-  try {
-    // Read the file content
-    const data = await fs.readFile(filePath, 'utf8');
-
-    // Parse JSON string into an object
-    const jsonData = JSON.parse(data);
-    return jsonData;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function fileExists(filePath) {
-  try {
-    await fs.access(filePath);
-    return true;
-  } catch {
-    return false;
-  }
-}
+import { readJsonFromFile, fileExists } from './utils/file.utils.js';
 
 async function getOutput(subDir) {
   const outputDir = path.resolve('./src/assets/pdf', subDir);

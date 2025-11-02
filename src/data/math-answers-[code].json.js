@@ -5,6 +5,7 @@ import markdownit from "markdown-it";
 import * as katex from 'markdown-it-katex';
 import { toArray, from, concatMap, catchError, of } from 'rxjs';
 import { baseDomainPublic, parseCode, json, text } from "../utils/quiz-string-utils.js";
+import { readJsonFromFile, fileExists } from './utils/file.utils.js';
 
 const {
   values: { code }
@@ -68,28 +69,6 @@ function parseResults(input) {
 
 const d = parseCode(code);
 
-
-async function readJsonFromFile(filePath) {
-  try {
-    // Read the file content
-    const data = await fs.readFile(filePath, 'utf8');
-
-    // Parse JSON string into an object
-    const jsonData = JSON.parse(data);
-    return jsonData;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function fileExists(filePath) {
-  try {
-    await fs.access(filePath);
-    return true;
-  } catch {
-    return false;
-  }
-}
 const fileLocation = path.resolve('./src/data/math-answers.json');
 
 if (await fileExists(fileLocation)) {

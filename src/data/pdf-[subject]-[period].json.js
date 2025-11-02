@@ -2,7 +2,7 @@ import { parseArgs } from "node:util";
 import fs from 'fs/promises';
 import path from 'path';
 import { PDFDocument, rgb, StandardFonts, degrees } from 'pdf-lib';
-
+import { readJsonFromFile, fileExists, saveJsonToFile } from './utils/file.utils.js';
 
 const {
   values: { subject, period }
@@ -109,41 +109,6 @@ async function mergePDFsFromDirectoryWithLabels(directoryPath, outputFilePath, f
   return pagesCount;
 }
 
-async function saveJsonToFile(filePath, jsonData) {
-  try {
-      // Convert JSON data to a string
-      const data = JSON.stringify(jsonData, null, 2);
-
-      // Ensure the directory exists
-      await fs.mkdir(path.dirname(filePath), { recursive: true });
-
-      // Write JSON string to file
-      await fs.writeFile(filePath, data, 'utf8');
-  } catch (error) {
-      throw error;
-  }
-}
-async function readJsonFromFile(filePath) {
-  try {
-      // Read the file content
-      const data = await fs.readFile(filePath, 'utf8');
-
-      // Parse JSON string into an object
-      const jsonData = JSON.parse(data);
-      return jsonData;
-  } catch (error) {
-      throw error;
-  }
-}
-
-async function fileExists(filePath) {
-  try {
-      await fs.access(filePath);
-      return true;
-  } catch {
-      return false;
-  }
-}
 
 const subDir = `${subject}-${period}`
 const outputDir = path.resolve('./src/assets/pdf', subDir);

@@ -2,7 +2,6 @@ import { parseArgs } from "node:util";
 import path from 'path';
 import { parseQuiz } from './utils/quiz-parser.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCodeAlt, text, normalizeLatex } from './utils/quiz-string-utils.js';
-import mdPlus from './utils/md-utils.js';
 import { readJsonFromFile } from './utils/file.utils.js';
 
 const {
