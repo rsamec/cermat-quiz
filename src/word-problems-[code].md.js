@@ -35,20 +35,19 @@ Heslovitý **strukturovaný postup** řešení úlohy je **instrukcí** pro AI, 
 
 <div class="tip" label="Upravit na míru požadavkům">
 
-Markdown je textový formát, který umožňuje snadnou úpravu.
+- Markdown je textový formát, který umožňuje snadnou úpravu.
 
-Specifikujte ve vybraném nástroji jaký výsledek očekáváte
-
-- **dle obsahu** - stručné, do hloubky, začátečník, pokročilý, atd.
-- **dle formy** - video, audio, text, atd.
-- **dle stylu** - formální, neformální, přátelský, odborný, atd.
-- **dle délky** - krátký, střední, dlouhý, atd.
-- **dle jazyka** - český, anglický, atd.
+- Specifikujte ve vybraném nástroji jaký výsledek očekáváte
+  - **dle obsahu** - stručné, do hloubky, začátečník, pokročilý, atd.
+  - **dle formy** - video, audio, text, atd.
+  - **dle stylu** - formální, neformální, přátelský, odborný, atd.
+  - **dle délky** - krátký, střední, dlouhý, atd.
+  - **dle jazyka** - český, anglický, atd.
 
 Doporučení pro vytvoření efektivního promptu pro AI. <a href="https://cloud.google.com/solutions/learnlm?hl=en" target="_blank">Prompt guide</a>
 </div>
 
-<a download class="h-stack h-stack--s" href="/data/${code}.md"  title="Řešení slovních úloh"><i class="fa fa-download"></i><span>stáhnout</span><a>
+<a download class="h-stack h-stack--s" href="/data/word-problems-${code}.md"  title="Řešení slovních úloh"><i class="fa fa-download"></i><span>stáhnout</span><a>
 
 ## Náhled
 \`\`\`md

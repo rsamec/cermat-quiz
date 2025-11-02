@@ -124,7 +124,7 @@ export default {
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.tldr`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/math-answers-${code}.json`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/math-geometry-${code}.json`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).filter(code => code == "M9D-2025").map(code => `/notebook-${code}`))
+    // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).filter(code => code == "M9D-2025").map(code => `/notebook-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/ai-gpt-5-mini-as-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/ai-o1-mini-as-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-answers-${code}`))
