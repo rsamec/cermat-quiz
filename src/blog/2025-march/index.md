@@ -5,17 +5,6 @@ pager: true
 toc: true
 ---
 
-## AI Podcasty - řešení slovních úloh
-
-V přehledu testů nově odkaz na podcast v angličtině, kde jsou řešeny slovní úlohy z testu.
-
-![alt text](image-3.png)
-
-Podcast je generován pomocí <a href="https://notebooklm.google.com/"><i class="fa-brands fa-google"></i> NotebookLM</a>
-
-Seznam všech podcastu je k dispozici na stránce [přehledu všech slovních úloh se strukturovaným řešením](/word-problems).
-
-
 
 ## Nová AI tlačítka
 

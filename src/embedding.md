@@ -9,14 +9,14 @@ toc: true
 ## Integrace na úrovni dat
 
 Příklady aplikací, která využívají data z banky úloh
-- [Notebook LM](https://notebooklm.google.com/) - vytvaření výukových video, audio a textových materiálů - [více informací](/derived-data/#vyuziti-v-notebook-lm)
+- [Notebook LM](https://notebooklm.google.com/) - vytvaření výukových video, audio a textových materiálů - [více informací](/blog/2025-october/#vyuziti-v-notebook-lm)
 
 Zdroje vloženy jako celé testy
 ![alt text](image-1.png)
 Zdroje vloženy za jednotlivé úlohy
 ![alt text](image-2.png)
 
-- interaktivní plocha [TLDR Canvas](https://www.tldraw.com/) - umožnuje práci více uživatelů najednou - [více informací](/derived-data/#vyuziti-v-tldr-canvasu)
+- interaktivní plocha [TLDR Canvas](https://www.tldraw.com/) - umožnuje práci více uživatelů najednou - [více informací](/blog/2025-october/#vyuziti-v-tldr-canvasu)
 
 ![alt text](image-3.png)
 ![alt text](image-4.png)

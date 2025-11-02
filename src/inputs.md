@@ -35,8 +35,8 @@ Na základě zdrojových dat jsou generovány další možné formáty dat
 - jednotlivé úlohy pro zobrazení v prohlížeči
   - **html** - [více informací](/embedding#javascript-module)
 - postupy řešení slovních úloh
-  - **markdown** - heslovité řešení vhodné pro LLM modely umělé inteligence - [více informací](/derived-data/#vyuziti-v-notebook-lm)
-  - **tldr** - kolaborativní interaktivní canvas - [více informací](/derived-data/#vyuziti-v-tldr-canvasu)
+  - **markdown** - heslovité řešení vhodné pro LLM modely umělé inteligence - [více informací](/blog/2025-october/#vyuziti-v-notebook-lm)
+  - **tldr** - kolaborativní interaktivní canvas - [více informací](/blog/2025-october/#vyuziti-v-tldr-canvasu)
 
 
 ## Příklad zadání

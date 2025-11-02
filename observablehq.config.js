@@ -41,7 +41,7 @@ const range = (start, end) => Array.from(
   (_, i) => start + i
 );
 const assetsFiles = getFilesRecursive(`./src/assets/math`).map(d => d.replace("src", ""))
-const wordProblemsKeyValuePairs = Object.entries(wordProblems).flatMap(([key,value]) => Object.keys(value).map(d => d.split('.')[0]).filter(unique).map(d => [key,d]));
+const wordProblemsKeyValuePairs = Object.entries(wordProblems).flatMap(([key, value]) => Object.keys(value).map(d => d.split('.')[0]).filter(unique).map(d => [key, d]));
 
 
 // See https://observablehq.com/framework/config for documentation.
@@ -75,7 +75,7 @@ export default {
       open: false,
       name: "Návody",
       pages: [
-        { name: "Data", path: "/inputs" },        
+        { name: "Data", path: "/inputs" },
         { name: "Tisk", path: "/print" },
         { name: "Integrace", path: "/embedding" },
         { name: "AI", path: "/ai" },
@@ -85,13 +85,20 @@ export default {
     {
       open: false,
       name: "Matematika",
-      pages: [        
+      pages: [
         { name: "Slovní úlohy", path: "/word-problems-summary" },
         { name: "Výrazy, konstrukční úlohy", path: "/math" },
         { name: "Matematizace", path: "/math-deduction" },
-        { name: "Měření obtížnosti", path: "/word-problems-measure" },
-        { name: "Využití dat", path: "/derived-data/index" },                        
+        { name: "Měření obtížnosti", path: "/word-problems-measure" },        
         // { name: "Prostředí", path:"math-environments"},
+      ]
+    },
+    {
+      open: false,
+      name: "Aktuality",
+      pages: [
+        { name: "Říjen 2025", path: "/blog/2025-october/index" },
+        { name: "Březen 2025", path: "/blog/2025-march/index" },
       ]
     },
     { name: "Podmínky používání", path: "/app-usage" },
@@ -113,7 +120,7 @@ export default {
     .concat(['/components/quiz.js'])
     .concat(['/components/quiz-store.js'])
     .concat(['/components/math.js'])
-    .concat(['gpt-4o','o3-mini', 'gpt-5-mini'].map(model => `/ai-results-${model}`))
+    .concat(['gpt-4o', 'o3-mini', 'gpt-5-mini'].map(model => `/ai-results-${model}`))
     //.concat('/blog/20250330')
     .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))
@@ -124,18 +131,18 @@ export default {
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.tldr`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/math-answers-${code}.json`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/math-geometry-${code}.json`))
-    // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).filter(code => code == "M9D-2025").map(code => `/notebook-${code}`))
+    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).filter(code => code == "M9D-2025").map(code => `/notebook-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/ai-gpt-5-mini-as-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/ai-o1-mini-as-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-answers-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-geometry-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solution-${code}`))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solu-${code}`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-${code}`))  
+    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-${code}`))
     //.concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-raw-${code}`))    
     //.concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-ai-${code}`))
-    .concat(wordProblemsKeyValuePairs.map(([code,id]) => `/word-problem-${code}-n-${id}`))
-    .concat(wordProblemsKeyValuePairs.map(([code,id]) => `/word-problem-raw-${code}-n-${id}`))
+    .concat(wordProblemsKeyValuePairs.map(([code, id]) => `/word-problem-${code}-n-${id}`))
+    .concat(wordProblemsKeyValuePairs.map(([code, id]) => `/word-problem-raw-${code}-n-${id}`))
     .concat(quizes.map(d => `/quiz-${d.subject}-${d.period}`))
     .concat(quizes.map(d => `/quiz-print-${d.subject}-${d.period}`))
     .concat(quizes.map(d => `/quiz-picker-${d.subject}-${d.period}`))
