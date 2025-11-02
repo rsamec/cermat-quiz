@@ -30,8 +30,8 @@ K nahrání strukturovaného řešení slovních úloh si stáhněte *.md soubor
 ![alt text](image-1.png)
 
 
-2. Otevři [Notebook LM](https://notebooklm.google.com/)
-3. Vložit jako source
+3. Otevři [Notebook LM](https://notebooklm.google.com/)
+4. Vložit jako source
 
 <div class="tip" label="Jednotlivé úlohy jako samostatné zdroje">
   Vložení jednotlivých úloh jako samostatné zdroje v Notebook LM
@@ -100,6 +100,7 @@ Na základě parameterů dedukčního stromu lze vizualizovat rozdíly v obtíž
 ![alt text](image-9.png)
 
 ## Přidán formulář se záznamovým archem s klíčem řešení
+Ke každému testu v bance úloh je k dispozici formulář ke kontrole správnosti a výpočtu bodů v testu.
 
 ![alt text](image-11.png)
 
