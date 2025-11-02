@@ -6,5 +6,5 @@
 @import './common/carousel.css';
 
 main > .hero {
-    margin: 0px
+    margin: 10px 0px;
 }

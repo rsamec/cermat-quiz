@@ -313,7 +313,7 @@ ${mdPlus.unsafe("$$ D=func(k,p,h,w,f), kde $$")}
 
 </div>
 
-## Vizualice rozdílů v jednotlivých testech
+## Vizualizace rozdílů v jednotlivých testech
 
 Jednoduchý přehled o rozdílech v jednotlivých testech. Použité parametry
 - k - počet kroků (celkem za test)

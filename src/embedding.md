@@ -5,32 +5,33 @@ pager: true
 toc: true
 ---
 
+# Integrace na úrovni dat
 
-## Integrace na úrovni dat
+Příklady aplikací, kde lze využít [data](/inputs) z banky úloh
 
-Příklady aplikací, která využívají data z banky úloh
-- [Notebook LM](https://notebooklm.google.com/) - vytvaření výukových video, audio a textových materiálů - [více informací](/blog/2025-october/#vyuziti-v-notebook-lm)
+- [Notebook LM](https://notebooklm.google.com/) - vytvaření výukových video, audio a textových materiálů - [návod](/blog/2025-october/#vyuziti-v-notebook-lm)
+- interaktivní plocha [TLDR Canvas](https://www.tldraw.com/) - umožnuje práci více uživatelů najednou - [návod](/blog/2025-october/#vyuziti-v-tldr-canvasu)
+
+Příklady aplikace, která využívají [data](/inputs) z banky úloh.
+- trénovací PWA aplikace [eforms](https://www.eforms.cz) - podpora pro práci offline
+- playground [ObservableHQ](https://observablehq.com)
+
+## NotebookLM
 
 Zdroje vloženy jako celé testy
 ![alt text](image-1.png)
 Zdroje vloženy za jednotlivé úlohy
 ![alt text](image-2.png)
 
-- interaktivní plocha [TLDR Canvas](https://www.tldraw.com/) - umožnuje práci více uživatelů najednou - [více informací](/blog/2025-october/#vyuziti-v-tldr-canvasu)
-
+## TLDR
 ![alt text](image-3.png)
 ![alt text](image-4.png)
 
----
 
-Příklady aplikace, která využívají přímo [surová data](/inputs) z banky úloh.
-
-- trénovací PWA aplikace [eforms](https://www.eforms.cz)
-
+## PWA trénovací aplikace
 ![alt text](image.png)
 
-- playground [ObservableHQ](https://observablehq.com)
-
+## ObservableHQ
 <iframe width="100%" height="300" frameborder="0"
   src="https://observablehq.com/embed/@rsamec/c9a-2024@428?cells=q6%2Cq15%2Cq18%2Cq25%2Cstyles"></iframe>
 
@@ -39,7 +40,7 @@ Příklady aplikace, která využívají přímo [surová data](/inputs) z banky
 
 ---
 
-## iframe vložení
+# iframe vložení
 
 vložit do www stránek lze pomocí elementu iframe.
 
@@ -49,7 +50,7 @@ vložit do www stránek lze pomocí elementu iframe.
 <iframe width="100%" height="200" frameborder="0" src="https://www.cermatdata.cz/form-M9A-2024"></iframe>
 ```
 ---
-## javascript module
+# javascript module
 
 vložit do www stránek pomocí javascript module a renderování jednotlivých úloh
 
@@ -65,7 +66,7 @@ vložit do www stránek pomocí javascript module a renderování jednotlivých 
 
 
 
-### Html celého testu (renderQuiz metoda)
+## Html celého testu (renderQuiz metoda)
 
 <script type="module">
 import {renderQuiz} from "https://www.cermatdata.cz/components/quiz-html.js";
@@ -91,7 +92,7 @@ document.querySelector("#quiz").append(fragment);
 ```
 ---
 
-### Základní informace o úlohách a html jednotlivých úloh
+## Základní informace o úlohách a html jednotlivých úloh
 
 
 ```html run=false

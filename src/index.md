@@ -153,43 +153,7 @@ function plotWaffle(rawData) {
   </div>`)}
 </div>
 
-## Řešení úloh
-
-Matika - % vyřešených úloh
-${
-  plotWaffle(mathMetricsFlatData)
-}
-
-<details>
-<summary>Přehled za jednotlivé testy</summary>
-${
-  Plot.plot({
-  marginLeft: 120,
-  grid:true,
-  color: { legend: true },
-  x:{
-    label:'Úlohy'    
-  },
-  y:{
-    label: null,
-    tickFormat: d => formatShortCodeAlt(d)
-  },
-  marks: [
-    Plot.waffleX(
-      mathMetricsFlatData,
-      Plot.groupY(
-        { x: "sum" },
-        {
-          fill: "type",
-          y: "key",
-          x: "value",
-        }
-      )
-    )
-  ]
-})
-}
-</details>
+## Řešení úloh - matika
 
 <div class="grid grid-cols-4" style="grid-auto-rows: auto;">
   <div class="card">
@@ -243,9 +207,46 @@ ${
 
 </div>
 
+${
+  plotWaffle(mathMetricsFlatData)
+}
+
+<details>
+<summary>Přehled za jednotlivé testy</summary>
+${
+  Plot.plot({
+  marginLeft: 120,
+  grid:true,
+  color: { legend: true },
+  x:{
+    label:'Úlohy'    
+  },
+  y:{
+    label: null,
+    tickFormat: d => formatShortCodeAlt(d)
+  },
+  marks: [
+    Plot.waffleX(
+      mathMetricsFlatData,
+      Plot.groupY(
+        { x: "sum" },
+        {
+          fill: "type",
+          y: "key",
+          x: "value",
+        }
+      )
+    )
+  ]
+})
+}
+</details>
+
+---
+
 ## Tvorba vlastních výukových materiálů
 
-**Hlavním cílem** projektu je **zdarma** poskytnout **data pro tvorbu výukových materiálů** (videa, audia, pracovní listy, kvízů, kartiček, aplikací...)
+**Smyslem** tohoto projektu je **zdarma** poskytnout **[data](/inputs) pro tvorbu výukových materiálů** (videa, audia, pracovní listy, kvízů, kartiček, aplikací...)
 
 ### Příklad - matika 2025 - 2. náhradní termín
 
@@ -265,7 +266,7 @@ ${videos.map(({ video, name, id }, i) => html`<div class="carousel__slide" data-
 <div class="tip" label="Notebook LM">
   Videa výše jsou vytvořena pomocí aplikace <a href="https://notebooklm.google.com/" target="_blank">NotebookLM</a> na základě <a href="/word-problems-M9D-2025"> dat</a> z banky úloh. 
   
-  Pokud chcete vytvořit obdobné **vyukové materiály na míru** na pár kliků či prozkoumat další možnosti integrace <a href="/embedding">více informací</a>.
+  Vytvořte si obdobné **vyukové materiály na míru** na pár kliků <a href="/blog/2025-october/#vyuziti-v-notebook-lm">zde</a>. Prozkoumejte další možnosti integrace <a href="/embedding">více informací</a>.
 </div>
 
 ---

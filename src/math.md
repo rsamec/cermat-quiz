@@ -10,11 +10,16 @@ toc: true
 import { baseDomain, baseDomainPublic, formatSubject, formatPeriod, formatShortCode} from './utils/quiz-string-utils.js';
 import { quizes } from "./utils/quiz-utils.js";
 import mdPlus from './utils/md-utils.js';
+const mathMetricsData = await FileAttachment("./data/math-metrics.json").json();
 ```
 
 ${quizes.filter(d => d.subject == 'math').map(({subject, period, codes}) => html`<h3>${formatSubject(subject)} ${formatPeriod(period)}</h3> <ul>${
-  codes.map(code => html`<li>${formatShortCode(code)}<ul><li><a class="h-stack h-stack--s h-stack-items--center" href="./math-answers-${code}"><i class="fa-solid fa-square-root-variable"></i>výrazy, rovnice</a></li><li><a class="h-stack h-stack--s h-stack-items--center" href="./math-geometry-${code}"><i class="fa-solid fa-drafting-compass"></i>konstruční úlohy</a></li></ul></li>`
-)}</ul>`)}
+  codes.map(code => {
+    const metrics = mathMetricsData.find(d => d.key == code);
+    const anyExpression = metrics?.expression?.count > 0;
+    const anyGeometry = metrics?.geometry?.count > 0;
+return (anyExpression || anyGeometry) ? html`<li>${formatShortCode(code)}<ul>${anyExpression ? html`<li><a class="h-stack h-stack--s h-stack-items--center" href="./math-answers-${code}"><i class="fa-solid fa-square-root-variable"></i>výrazy, rovnice</a></li>`:''}${anyGeometry ? html`<li><a class="h-stack h-stack--s h-stack-items--center" href="./math-geometry-${code}"><i class="fa-solid fa-drafting-compass"></i>konstruční úlohy</a></li></ul></li>`:''}`:''
+})}</ul>`)}
 
 
 ## Řešení matematických výrazů a rovnic

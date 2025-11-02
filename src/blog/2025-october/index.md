@@ -6,11 +6,11 @@ toc: true
 ---
 
 
-# Jednodušší integrace s novými formáty
+# Snadnější integrace
 
-Postupy řešení slovních úloh nově k dispozici
+Postupy řešení slovních úloh nově k dispozici ve formátech
 - **markdown** - heslovité řešení vhodné pro LLM modely umělé inteligence - [příklad vygenerovaných videí](/notebook-M9D-2025)
-- **tldr** - dedukční strom řešení v kolaborativní interaktivní ploše - vhodné na vzdálenou výuku
+- **tldr** - dedukční strom řešení na kolaborativní interaktivní ploše - vhodné na vzdálenou výuku
 
 [více informací](/embedding#integrace-na-urovni-dat)
 
@@ -19,13 +19,13 @@ Postupy řešení slovních úloh nově k dispozici
 
 
 ## Využití v Notebook LM
-
+K nahrání strukturovaného řešení slovních úloh si stáhněte *.md soubor nebo zkopírujete obsah pomocí Copy tlačítka. 
 
 1. Klikněte na tlačítko Data - Rozbor úloh - markdown
 
 ![alt text](image-12.png)
 
-2. Klikněte na Copy tlačítko a stáhnout soubor *.md
+2. Klikněte na **Copy** tlačítko nebo stáhněte soubor *.md.
 
 ![alt text](image-1.png)
 
@@ -40,8 +40,8 @@ Postupy řešení slovních úloh nově k dispozici
 1. Otevřete [slovní úlohy](/word-problems-summary).
 ![výběr slovních úloh](image-4.png)
 
-2. Zaškrtněte požadované úlohy a použite tlačítko **Copy**.
-
+2. Zaškrtněte požadované úlohy a použijte tlačítko **Copy**.
+3. Vložit jako source
 
 
 ## Využití v TLDR canvasu
@@ -89,10 +89,11 @@ V postupech řešení se používají matematické koncepty - možnost zvýrazn�
  - odvozovacích pravidel
  - běžných vzorců
 
-<video src="/assets/filtering.mp4" playsinline muted controls preload="metadata"></video>
+
+<video src="/assets/filtering.mp4" playsinline muted controls preload="metadata" style="max-width: 100%"></video>
 
 
-## Vizualice rozdílů v testech z matematiky
+## Vizualizace rozdílů v testech z matematiky
 
 Na základě parameterů dedukčního stromu lze vizualizovat rozdíly v obtížnosti slovních úloh. [více informací](/word-problems-measure)
 
