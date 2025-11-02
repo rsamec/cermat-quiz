@@ -12,7 +12,15 @@ export async function readJsonFromFile(filePath) {
     throw error;
   }
 }
-
+export async function readTextFromFile(filePath) {
+  try {
+    // Read the file content
+    const data = await fs.readFile(filePath, 'utf8');
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
 export async function fileExists(filePath) {
   try {
     await fs.access(filePath);

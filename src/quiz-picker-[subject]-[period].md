@@ -8,13 +8,23 @@ style: '/assets/css/quiz-picker.css'
 ---
 
 ```js
-import { formatShortCode, formatSubject, formatPeriod, formatVersion, parseCode } from './utils/quiz-string-utils.js';
+import { formatShortCode, formatCode, formatSubject, formatPeriod, formatVersion, parseCode ,baseMediaPublic} from './utils/quiz-string-utils.js';
 import { quizes } from './utils/quiz-utils.js';
 const filteredQuizes = quizes.filter(d => d.subject === observable.params.subject && d.period === observable.params.period).flatMap(d => d.codes)
 const quizesByYear = Object.entries(Object.groupBy(filteredQuizes, (d) => parseCode(d).year));
 
 const pdfs = await FileAttachment(`./data/pdf-${observable.params.subject}-${observable.params.period}.json`).json();
-const audios = ['M5A-2024', 'M5A-2023', 'M7A-2024', 'M7A-2023', 'M9A-2025', 'M9B-2025', 'M9I-2025', 'M9A-2024','M9A-2023']
+
+// const assetsData = await FileAttachment("./data/word-problems-assets.json").json();
+// const videos = assetsData.filter((({code}) => parseCode(code).period == observable.params.period)).map(({code, explainer}) => {  
+//   const {period} = parseCode(code);
+//   return {
+//     video: `${baseMediaPublic}/${period}/${explainer}`,
+//     name: `${formatCode(code)}`,
+//     id: code,
+//   }
+// })
+
 ```
 
 <!-- Cards with big numbers -->
@@ -59,6 +69,17 @@ const audios = ['M5A-2024', 'M5A-2023', 'M7A-2024', 'M7A-2023', 'M9A-2025', 'M9B
   </div>`
   )}
 </div>
+
+<!-- <div class="carousel carousel--scroll-markers carousel--inert">
+${videos.map(({ video, name, id }, i) => html`<div class="carousel__slide" data-label=a${i}>
+    <figure class="parallax-item" role="tabpanel">      
+      <video src=${video} muted loop controls></video>
+     <figcaption>
+     <h2>${name}</h2>     
+     </figcaption> </figure>
+  </div>`)}
+</div> -->
+
 
 ## Balíčky testů pro tisk ke stažení - PDF
 

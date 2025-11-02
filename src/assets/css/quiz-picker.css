@@ -4,6 +4,7 @@
 
 @import './common/base.css';
 @import './common/button.css';
+@import './common/carousel.css';
 
 
 [popover] {
