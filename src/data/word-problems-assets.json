@@ -1,18 +1,108 @@
 [
     {
         "explainer": "Zápisník_detektiva.mp4",
+        "deepDive": "Analýza a Strategie: Řešíme Oficiální Test z Matematiky pro Páťáky (2023).m4a",
         "code": "M5A-2023"
     },
     {
         "explainer": "Nástroje_mat.mp4",
+        "deepDive": "Od Detektiva k Rovnici: Jak Přemýšlet o Úlohách pro Páťáky (Test 2024).m4a",
         "code": "M5A-2024"
     },
     {
         "explainer": "Váš_osobní_trenér_matematiky.mp4",
+        "deepDive": "Páťácké Hádanky Pod Lupou: Od Kouzelných Dukátů po Geometrickou Logiku – Analýza Matematických Postupů.m4a",
         "code": "M5A-2025"
     },
     {
         "explainer": "Matematická_posilovna.mp4",
+        "deepDive": "Odhalení logiky: Rozbor maturitních úloh z roku 2025 – Zpětný chod, poměry a chytáky pro páťáky.m4a",
         "code": "M5B-2025"
+    },
+    {
+        "explainer": "Matematické Hádanky.mp4",
+        "deepDive": "Sedmácká Matematika 2023: Detailní Rozbor A Cesta K Logickému Řešení Úloh (Poměry, Procenta, Geometrie).m4a",
+        "code": "M7A-2023"
+    },
+    {
+        "explainer": "Váš osobní trenér matematiky.mp4",
+        "deepDive": "Mistrovský Rozbor: Jak Se Dostat K Výsledku – Matematika pro Sedmáky Krok za Krokem (Procenta, Poměry a Geometrie).m4a",
+        "code": "M7A-2024"
+    },
+    {
+        "explainer": "Matematický kouč: Hádanky pro 7. třídu.mp4",
+        "deepDive": "Případové Studie Matematiky 7. Třídy: Hledání Strategií a Alternativních Cest k Řešení (Dílky, Poměry, Geometrie).m4a",
+        "code": "M7A-2025"
+    },
+    {
+        "explainer": "Trénink matematického detektiva.mp4",
+        "deepDive": "Strategie a Logika v Matematice: Podrobná Analýza Úloh pro Sedmáky (Rovnice, Geometrie, Procenta).m4a",
+        "code": "M7B-2025"
+    },
+    {
+        "explainer": ".mp4",
+        "deepDive": "Jak Myslet jako Matematický Kouč: Detailní Rozbor Přijímaček na Střední Školu 2023 (Poměry, Geometrie a Fraktály).m4a",
+        "code": "M9A-2023"
+    },
+    {
+        "explainer": ".mp4",
+        "deepDive": "Jak Zvládnout Přijímačky: Hluboký Ponor do Logiky a Strategií Matematických Úloh (Procenta, Úměry a Geometrie).m4a",
+        "code": "M9B-2023"
+    },
+    {
+        "explainer": ".mp4",
+        "deepDive": "Přijímačky 2023: Detailní Analýza Úloh CZVV (Vlak, Směsi, Geometrie a Síla Vzorců).m4a",
+        "code": "M9C-2023"
+    },
+    {
+        "explainer": ".mp4",
+        "deepDive": "Detektivní Rozbor Závěrečného Testu 2023: Poměry, Procenta a Geometrie – Klíče k Porozumění, Ne Jen Výsledkům.m4a",
+        "code": "M9D-2023"
+    },
+    {
+        "explainer": ".mp4",
+        "deepDive": "Pitvání matiky pro deváťáky: Logika, úskalí a alternativní cesty k výsledkům z testu 2024.m4a",
+        "code": "M9A-2024"
+    },
+    {
+        "explainer": ".mp4",
+        "deepDive": "Jak Uspět u Přijímaček z Matiky: Detailní Rozbor Úloh 2024 a Logika Řešení (Jednotky, Procenta, Geometrie).m4a",
+        "code": "M9B-2024"
+    },
+    {
+        "explainer": ".mp4",
+        "deepDive": "Velký rozbor: Matematika 9. třídy – Jak pochopit logiku testu 2024 (Poměry, Rovnice, Geometrie a Zedníci).m4a",
+        "code": "M9C-2024"
+    },
+    {
+        "explainer": ".mp4",
+        "deepDive": "Kompletní rozbor testu z matematiky: Od převodů jednotek a slev po rovnice a společnou práci.m4a",
+        "code": "M9D-2024"
+    },
+    {
+        "explainer": ".mp4",
+        "deepDive": "PRŮVODCE ŘEŠENÍM PŘIJÍMAČEK Z MATEMATIKY: Geometrické Detektivky, Záludná Procenta a Síla Algebry.m4a",
+        "code": "M9A-2025"
+    },
+    {
+        "explainer": ".mp4",
+        "deepDive": "Trénink matematických úloh: Od poměrů přes dort až po záludnou geometrii deváťáků.m4a",
+        "code": "M9B-2025"
+    },
+    {
+        "explainer": ".mp4",
+        "deepDive": "Jak Přemýšlet jako Matematik: Podrobný Rozbor Strategií k Řešení Úloh pro Deváťáky (Jednotky, Poměry, Geometrie).m4a",
+        "code": "M9C-2025"
+    },
+    {
+        "explainer": ".mp4",
+        "deepDive": "Hloubková Analýza Matematických Úloh: Strategie, Poměry a Logika Řešení – Od Stuhy Po Krychle.m4a",
+        "code": "M9D-2025"
+    },
+    {
+        "explainer": ".mp4",
+        "deepDive": "Jak Uspět u Zkoušek: Analýza Záludných Úloh z Matematiky pro Deváťáky – Převody, Rovnice a Geometrické Fígle.m4a",
+        "code": "M9I-2025"
     }
+    
 ]

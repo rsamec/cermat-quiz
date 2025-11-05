@@ -203,3 +203,11 @@ export function uniqueQuestionCount(obj) {
 export function formatNumber(d) {
   return d.toLocaleString("cs-CZ", { maximumFractionDigits: 2, minimumFractionDigits: 0 })
 }
+const maxFileNameLength = 63;
+export function normalizeAssetFileName(fileName) {
+  const parts = fileName.split(".")
+  const name = parts[0];
+  const ext = parts[parts.length - 1]
+  const normalized = name.length > maxFileNameLength ? name.substring(0, maxFileNameLength) : name;
+  return `${normalized.replaceAll(" ", "_").replaceAll(":", "_")}.${ext}`;
+}

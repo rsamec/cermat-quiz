@@ -8,22 +8,24 @@ style: '/assets/css/quiz-picker.css'
 ---
 
 ```js
-import { formatShortCode, formatCode, formatSubject, formatPeriod, formatVersion, parseCode ,baseMediaPublic} from './utils/quiz-string-utils.js';
+import { formatShortCode, formatCode, formatSubject, formatPeriod, formatVersion, parseCode ,baseMediaPublic, normalizeAssetFileName} from './utils/quiz-string-utils.js';
 import { quizes } from './utils/quiz-utils.js';
 const filteredQuizes = quizes.filter(d => d.subject === observable.params.subject && d.period === observable.params.period).flatMap(d => d.codes)
 const quizesByYear = Object.entries(Object.groupBy(filteredQuizes, (d) => parseCode(d).year));
 
 const pdfs = await FileAttachment(`./data/pdf-${observable.params.subject}-${observable.params.period}.json`).json();
 
-// const assetsData = await FileAttachment("./data/word-problems-assets.json").json();
-// const videos = assetsData.filter((({code}) => parseCode(code).period == observable.params.period)).map(({code, explainer}) => {  
-//   const {period} = parseCode(code);
-//   return {
-//     video: `${baseMediaPublic}/${period}/${explainer}`,
-//     name: `${formatCode(code)}`,
-//     id: code,
-//   }
-// })
+const assetsData = await FileAttachment("./data/word-problems-assets.json").json();
+const assets = assetsData.filter((({code}) => parseCode(code).period == observable.params.period)).map(({code, explainer, deepDive}) => {  
+  const {period} = parseCode(code);
+  return {
+    video: `${baseMediaPublic}/${period}/${explainer}`,
+    audio: `${baseMediaPublic}/${period}/${normalizeAssetFileName(deepDive)}`,
+    name: `${formatCode(code)}`,
+    description: deepDive.slice(0,-4),
+    id: code,
+  }
+})
 
 ```
 
@@ -70,15 +72,23 @@ const pdfs = await FileAttachment(`./data/pdf-${observable.params.subject}-${obs
   )}
 </div>
 
-<!-- <div class="carousel carousel--scroll-markers carousel--inert">
-${videos.map(({ video, name, id }, i) => html`<div class="carousel__slide" data-label=a${i}>
-    <figure class="parallax-item" role="tabpanel">      
-      <video src=${video} muted loop controls></video>
-     <figcaption>
-     <h2>${name}</h2>     
-     </figcaption> </figure>
+## Podcasts
+
+<div class="warning" label="Vygenerovány pomocí NotebookLM">  
+  Minimalizace chyb je dosaženo tak, že se vedle zadání úlohy vždy předává i řešení úlohy ve formě heslovitého rozboru řešení úlohy.
+</div>
+
+<div class="grid grid-cols-4">
+${assets.map(({ video, name, id, audio, description }, i) => html`<div class="carousel__slide" data-label=a${i}>
+    <figure class="parallax-item" role="tabpanel">
+    <figcaption style="padding:10px 0px">    
+      <h2>${name}</h2>
+      <span>${description}</span>
+     </figcaption> 
+       <audio src=${audio} playsinline controls style="min-width: 100px;" preload="metadata"></audio>     
+    </figure>
   </div>`)}
-</div> -->
+</div>
 
 
 ## Balíčky testů pro tisk ke stažení - PDF

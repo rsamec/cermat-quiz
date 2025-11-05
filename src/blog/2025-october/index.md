@@ -59,6 +59,11 @@ K zobrazení strukturovaného řešení slovních úloh si stáhněte *.tldr sou
 
 Více informací [https://tldraw.dev/](https://tldraw.dev/).
 
+## Podcasts
+
+Všechny testy nově obsahují generované podcasty, kde se diskutuje řešení slovních úloh.
+
+![alt text](image-15.png)
 
 ## Rozšíření AI tlačítek
 
