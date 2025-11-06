@@ -11,19 +11,15 @@ style: /assets/css/print-solution.css
 
 import mdPlus from './utils/md-utils.js';
 import { parseQuiz } from './utils/quiz-parser.js';
-import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, isEmptyOrWhiteSpace } from './utils/quiz-string-utils.js';
+import { parseCode, formatCode, isEmptyOrWhiteSpace } from './utils/quiz-string-utils.js';
 import wordProblems from './math/word-problems.js';
 import { isPredicate, generateAIMessages } from "./utils/deduce-utils.js";
 import { deduceTraverse, highlightLabel, renderChat } from './utils/deduce-components.js';
 import Fraction from 'fraction.js';
 
 const code = observable.params.code;
-const d = parseCode(code);
-const baseUrl = `${baseDomainPublic}/${d.subject}/${d.period}/${code}`
-const content = await text(`${baseUrl}/index.md`);
+const rawContent = await FileAttachment(`./data/form-${observable.params.code}.md`).text();
 
-
-const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [baseUrl])
 const quiz = parseQuiz(rawContent);
 
 
@@ -93,7 +89,7 @@ function renderResult(key, { Name, Answer, TemplateSteps }) {
   </div>`: ''}
 <div class="v-stack v-stack--m">${TemplateSteps.map((d, i) =>
     html`<div class="v-stack v-stack--l">
-      <video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>
+      <video src="/assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>
       ${d.Steps?.length > 0 ? renderTemplateSteps(d) : ''}
   </div>`)}
 </div>`

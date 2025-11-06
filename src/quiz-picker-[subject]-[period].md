@@ -75,7 +75,9 @@ const assets = assetsData.filter((({code}) => parseCode(code).period == observab
 ## Podcasts
 
 <div class="warning" label="Vygenerovány pomocí NotebookLM">  
-  Minimalizace chyb je dosaženo tak, že se vedle zadání úlohy vždy předává i řešení úlohy ve formě heslovitého rozboru řešení úlohy.
+
+  **Minimalizace chyb** je dosaženo tak, že se vedle zadání úlohy vždy předává i **řešení úlohy** ve formě heslovitého rozboru řešení úlohy.
+
 </div>
 
 <div class="grid grid-cols-4">

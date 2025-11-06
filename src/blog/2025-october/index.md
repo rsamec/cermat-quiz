@@ -63,7 +63,7 @@ Více informací [https://tldraw.dev/](https://tldraw.dev/).
 
 Všechny testy nově obsahují generované podcasty, kde se diskutuje řešení slovních úloh.
 
-![alt text](image-15.png)
+![alt text](image-14.png)
 
 ## Rozšíření AI tlačítek
 
