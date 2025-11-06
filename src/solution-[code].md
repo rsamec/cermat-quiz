@@ -19,6 +19,8 @@ import Fraction from 'fraction.js';
 
 const code = observable.params.code;
 const rawContent = await FileAttachment(`./data/form-${observable.params.code}.md`).text();
+const videoExlusions = await FileAttachment('./data/math-answers-video-exclude.json').json();
+const videoExclude = videoExlusions[observable.params.code] ?? {};
 
 const quiz = parseQuiz(rawContent);
 
@@ -89,7 +91,7 @@ function renderResult(key, { Name, Answer, TemplateSteps }) {
   </div>`: ''}
 <div class="v-stack v-stack--m">${TemplateSteps.map((d, i) =>
     html`<div class="v-stack v-stack--l">
-      <video src="/assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>
+      ${videoExclude[key]?.includes(i) ? '':html`<video src="./assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`}
       ${d.Steps?.length > 0 ? renderTemplateSteps(d) : ''}
   </div>`)}
 </div>`
