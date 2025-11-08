@@ -107,6 +107,8 @@ const slepiceInput = Generators.input(slepiceForms);
 
 <div class="tip" label="Hloubka a šířka stromu">
 Parametry dedukčního stromu může sloužit jako míra složitosti úlohy.
+
+<a href="/word-problems-measure">více informací</a>
 </div>
 
 # Predikáty

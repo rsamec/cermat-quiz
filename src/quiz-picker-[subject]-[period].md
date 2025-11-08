@@ -72,13 +72,11 @@ const assets = assetsData.filter((({code}) => parseCode(code).period == observab
   )}
 </div>
 
-## Podcasts
 
-<div class="warning" label="Vygenerovány pomocí NotebookLM">  
+${assets.length > 0 ? html`<h2>Podcasts</h2><div class="warning" label="Vygenerovány pomocí NotebookLM"><b>Minimalizace chyb</b> je dosaženo tak, že se vedle zadání úlohy vždy předává i <b>řešení úlohy</b> ve formě heslovitého rozboru řešení úlohy.</div>`:''}
 
-  **Minimalizace chyb** je dosaženo tak, že se vedle zadání úlohy vždy předává i **řešení úlohy** ve formě heslovitého rozboru řešení úlohy.
 
-</div>
+
 
 <div class="grid grid-cols-4">
 ${assets.map(({ video, name, id, audio, description }, i) => html`<div class="carousel__slide" data-label=a${i}>
