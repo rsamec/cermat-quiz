@@ -89,8 +89,7 @@ export default {
         { name: "Slovní úlohy", path: "/word-problems-summary" },
         { name: "Výrazy, konstrukční úlohy", path: "/math" },
         { name: "Matematizace", path: "/math-deduction" },
-        { name: "Měření obtížnosti", path: "/word-problems-measure" },        
-        { name: "Kalkulačka", path: "/calc/calculator" },        
+        { name: "Měření obtížnosti", path: "/word-problems-measure" },
         // { name: "Prostředí", path:"math-environments"},
       ]
     },
