@@ -862,3 +862,58 @@ function mergeWithParent(context: DeduceContext, parentContext: DeduceContext): 
   if (isObjectContext(context) && isObjectContext(parentContext)) return { ...context, ...parentContext };
   return context
 }
+
+export function extractAxiomsFromTree(node, deduceMap = new Map()) {
+  let result = [];
+
+  // Add node details if they exist
+  if (isPredicate(node) && !deduceMap.has(node)) {
+    deduceMap.set(node, node)
+    return [node]
+  }
+
+  // Process children recursively
+  if (node.children && Array.isArray(node.children)) {
+    for (let i = 0; i != node.children.length; i++) {
+      const child = node.children[i];
+      const isConclusion = i === node.children.length - 1;
+      if (isConclusion && isPredicate(child) && !deduceMap.has(child)) {
+        deduceMap.set(child, child)
+      }
+
+      result = result.concat(extractAxiomsFromTree(child, deduceMap))
+
+    }
+  }
+
+  return result;
+}
+
+export function getStepsFromTree(tree) {
+  const result = [];
+
+  function traverse(node) {
+
+    if (!node.children || node.children.length === 0) {
+      return isPredicate(node) ? [node] : [];
+    }
+    else {
+      // Node has children, continue traversal
+      let items = [];
+      for (let i = 0; i != node.children.length; i++) {
+        const child = node.children[i];
+        const isConclusion = i === node.children.length - 1;
+        // if (isConclusion && isPredicate(child)) {
+        //   // Skip conclusion predicates
+        //   continue;
+        // }
+        items = items.concat(traverse(child));
+      }
+      const [premises, conclusion] = [items.slice(0, -1), items.slice(-1)[0]];
+      result.push(premises)
+      return conclusion;
+    }
+  }
+  traverse(tree);
+  return result;
+}

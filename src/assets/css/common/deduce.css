@@ -6,20 +6,15 @@
 }
 
 .node {
-  padding-left: 20px;
+  /* padding-left: 20px; */
+  display: flex;
 }
 
 .node.leaf {
-  padding-left: 5px;
+  /* padding-left: 5px; */
 }
 .node >.opacity {
   opacity: 0.3;
-}
-
-@container (min-width: 1200px) {
-  .flexible .node {
-    padding-left: 0px;
-  }
 }
 
 .premises {
@@ -28,8 +23,64 @@
   flex-wrap: nowrap;
   align-items: flex-start;
   justify-content: center;
-  border-left: 1px solid var(--theme-foreground);
+  gap: 2px;
+  /* border-left: 1px solid var(--theme-foreground); */
 }
+
+.proof {
+  border-radius: 2em 0.6em 0.6em 0.6em;
+  padding: 8px 8px 8px 14px;
+  border: 1px solid var(--theme-foreground-faint);
+
+}
+
+.flexible:hover > .proof {
+ /* transform: perspective(800px) rotateX(50deg) rotateY(20deg) rotateZ(-25deg); */
+}
+
+@container (min-width: 900px) {
+  .flexible .proof {
+    border-radius: 0.6em 2em 0.6em 0.6em;
+  }
+}
+
+.proof.even {
+    background-color: var(--theme-background);
+}
+.proof.odd {
+    background-color: var(--theme-background-alt);
+}
+
+
+
+/* .proof.selected::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    0deg, 
+    transparent, 
+    transparent 30%, 
+    rgba(0,255,255,0.3)
+  );
+  transform: rotate(-45deg);
+  transition: all 0.5s ease;
+  opacity: 0;
+}
+
+.proof.selected:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px var(--theme-foreground-focus);
+} */
+
+/* .proof.selected:hover::before {
+  opacity: 1;
+  transform: rotate(-45deg) translateY(100%);
+} */
+
 .proof.hidden > .premises {
   display:none;
 }
@@ -39,7 +90,7 @@
 .proof.hidden > .conclusion button::before {
   content: '+';
 }
-@container (min-width: 1200px) {
+@container (min-width: 900px) {
   .flexible .premises {
     flex-direction: row;
     align-items: flex-end;
@@ -49,22 +100,19 @@
 }
 
 .conclusion {
-  border: 1px solid var(--theme-foreground);
-  padding-left: 5px;
+  /* border: 1px solid var(--theme-foreground); */
+  /* padding-left: 5px; */
   display: inline-flex;
-}
-@container (min-width: 1200px) {
-  .flexible .conclusion {
-    border: none;
-    border-top: 1px solid var(--theme-foreground);
-  }
+  border-top: 1px solid var(--theme-foreground-faint);
 }
 
 .ri {
   flex-grow: 1;
+  display: flex;
+  justify-content: flex-end;
 }
 
-@container (min-width: 1200px) {
+@container (min-width: 900px) {
   .flexible .le {
       flex-grow: 1;
   }

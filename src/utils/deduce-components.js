@@ -3,7 +3,6 @@ import * as Plot from "npm:@observablehq/plot";
 import Fraction from 'npm:fraction.js';
 import { nthQuadraticElements, primeFactorization, lcdCalc, isNumber, gcdCalc } from "../components/math.js";
 import { isPredicate, formatPredicate, mapNodeChildrenToPredicates, last } from "../utils/deduce-utils.js";
-import { deduce } from "./deduce.js";
 import { inferenceRuleWithQuestion } from "../math/math-configure.js";
 import { toEquationExprAsText } from "./math-solver.js";
 
@@ -332,7 +331,7 @@ function concatHtml(strings, ...substitutions) {
 export function deduceTraverse(node) {
   let counter = 1;
   const deduceMap = new Map();
-  function deduceTraverseEx(node) {
+  function deduceTraverseEx(node, level) {
 
     // Base case: if the node is a leaf, add it to the result  
     if (isPredicate(node)) {
@@ -361,7 +360,7 @@ export function deduceTraverse(node) {
           newChild = deduceMap.has(child) ? deduceMap.get(child) : child;
         }
 
-        const res = deduceTraverseEx(newChild);
+        const res = deduceTraverseEx(newChild, level + 1);
         args.push(res)
 
         if (!isLast) {
@@ -385,10 +384,10 @@ export function deduceTraverse(node) {
     // You can process the current node itself here if needed
     // For example, add something from the node to `result`.
 
-    const res = deduce(...args)
+    const res = renderDeduceTreeNode(args, node, level)
     return res;
   }
-  return deduceTraverseEx(node)
+  return deduceTraverseEx(node, 0)
 }
 
 export function stepsTraverse(node) {
@@ -539,4 +538,39 @@ export function renderChat(deductionTree) {
       </div>
     </div>`
   })}`
+}
+
+export function renderDeduceTreeNode(args, node, level) {
+  const collapsible = false;
+  let ts = args;
+  const onmouseenter = (popover, button) => {
+    setTimeout(() => {
+      popover.showPopover({ source: button });
+    }, 500);
+  }
+
+  const onmouseleave = (popover) => {
+    setTimeout(() => {
+      popover.hidePopover();
+    }, 500);
+  }
+  let [premises, conclusion] = [ts.slice(0, -1), ts[ts.length - 1]];
+  const result = inferenceRuleWithQuestion(mapNodeChildrenToPredicates(node))
+  const option = result?.options?.find(d => d.ok);
+  const proof = html`<div class="proof ${level % 2 == 0 ? 'even': 'odd'}${collapsible && collapsible.collapsed === true ? ' hidden':''}" data-level=${level}>	  
+    <div class="premises">    
+      ${premises.map(d => html`<div class="node">${html.fragment`${d}`}</div>`)}
+	  </div>
+	  <div class="conclusion">
+      <div class="le">${collapsible ? html`<button onclick=${(e) => proof.classList.toggle('hidden')}></button>`:''}</div>
+      <div class="ct">${html.fragment`${conclusion}`}</div>      
+      <div class="ri">${result?.question != null && result.question != "" ? html`<i class="fa-solid fa-circle-question" onmouseenter=${(e) => onmouseenter(e.target.parentElement.querySelector('[popover]'),e.target)} onmouseleave=${(e) => onmouseleave(e.target.parentElement.querySelector('[popover]'))}></i>
+        <div popover="hint">
+          ${html`<div>${result?.question}</div>`}          
+          ${option != null ? html`<div>${option.tex} = ${option.result}</div>` : ''}
+        </div>` : ''}
+      </div>
+	  </div>
+	</div>`;
+  return proof;
 }

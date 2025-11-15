@@ -86,3 +86,8 @@ export function partionArray(array, predicate){
     return acc    
   }, [[],[]])
 }
+
+export function removeItemWithSlice(items, index) {
+   console.log(items, index);
+  return [...items.slice(0, index), ...items.slice(index + 1)]
+}

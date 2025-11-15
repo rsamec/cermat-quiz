@@ -1,0 +1,36 @@
+@import url("observablehq:default.css");
+@import url("observablehq:theme-air.css");
+@import url("observablehq:theme-near-midnight.css") screen and (prefers-color-scheme: dark);
+@import url("observablehq:theme-wide.css"); 
+@import './common/base.css';
+@import './common/badge.css';
+@import './common/deduce.css';
+@import './common/button.css';
+@import './common/chat.css';
+@import './common/layout.css';
+
+.parallax-item {
+  
+  border: 1px solid var(--theme-foreground-fainter);
+  border-radius: 5px;
+  padding: 10px;
+
+  & > figcaption {
+    color: var(--theme-foreground);
+  }
+}
+
+/* .deduce-trees > .proof:hover {
+  transform: perspective(500px) rotateX(10deg);
+}
+
+.proof:hover {
+  transform: perspective(500px) rotateX(5deg) translateX(10px) scale(1.05);
+} */
+
+
+[popover] {
+  margin: 0;
+  inset: auto;
+  position-area: bottom left;
+}

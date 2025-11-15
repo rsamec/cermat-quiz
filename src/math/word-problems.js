@@ -14420,9 +14420,9 @@ function kytice({ input }) {
   const rozdilRuze = axiomInput(comp(ruzeAgent, staticAgent, 2, kusEntity), 1);
   const RtoS = axiomInput(compRatio(ruzeAgent, staticAgent, 5 / 4), 2);
   const CHxS = axiomInput(ratios(kyticeAgent, [chryzatemaAgent, staticAgent], [3, 2]), 3);
-  const ruzeRate = axiomInput(rate(chryzatemaAgent, input.cenaZaKus.ruze, entity3, kusEntity), 4);
+  const ruzeRate = axiomInput(rate(ruzeAgent, input.cenaZaKus.ruze, entity3, kusEntity), 4);
   const chryzantemaRate = axiomInput(rate(chryzatemaAgent, input.cenaZaKus.chryzantema, entity3, kusEntity), 5);
-  const staticeRate = axiomInput(rate(chryzatemaAgent, input.cenaZaKus.statice, entity3, kusEntity), 6);
+  const staticeRate = axiomInput(rate(staticAgent, input.cenaZaKus.statice, entity3, kusEntity), 6);
   const statice = deduce(
     rozdilRuze,
     RtoS
@@ -14436,8 +14436,20 @@ function kytice({ input }) {
     statice,
     rozdilRuze
   );
+  const empty = " ";
   return {
-    audio: true,
+    template: (highlight) => highlight`Kytice byla svázána ze tří druhů květin: růží, chryzantém a static.
+
+Růží a chryzantém dohromady je v kytici o ${empty} 2 více než chryzantém a static dohromady. Počet růží ku počtu static je v poměru ${empty} 5 : 4, počet static ku počtu chryzantémm v poměru ${empty} 2 : 3.
+
+V tabulce je u každého druhu květin uvedena cena za jeden kus. Cena celé kytice se získá jako součet cen jednotlivých květin, z nichž byla kytice svázána.
+
+Druh květiny	Cena za kus	Počet kusů v kytici
+Růže ${input.cenaZaKus.ruze} korun	
+Chryzantéma	${input.cenaZaKus.chryzantema} korun	
+Statice	${input.cenaZaKus.statice} korun	
+
+Kolik korun bude stát celá kytice?`,
     deductionTree: deduce(
       deduce(
         deduce(ruze, ruzeRate),
@@ -14496,7 +14508,10 @@ function objemNadoby1({ input }) {
     ),
     ctorOption("C", 35)
   );
-  return { deductionTree };
+  const template = (highlight) => highlight`
+     ${input.zaplnenoPomer} objemu nádoby jsou zaplněny vodou. Celou nádobu zaplníme po dolití dalších ${input.zbyva} litrů vody. (Nádoba nepřeteče.)
+    Jaký je objem nádoby?`;
+  return { deductionTree, template };
 }
 function objemNadoby2({ input }) {
   const percentage = axiomInput(cont("p\u016Fvodn\u011B zapln\u011Bno", input.zaplnenoProcento, entityPercent), 1);
@@ -14552,7 +14567,7 @@ function okurkyASalaty({ input }) {
   const salatyAndOkurkyCompare = axiomInput(comp(salatLabel, okurkaLabel, input.salatyNavic, entity3), 1);
   const ujaloSalataRatio = axiomInput(ratio(salatLabel, ujaloSalatLabel, 3 / 4), 2);
   const ujaloOkurekRatio = axiomInput(ratio(okurkaLabel, ujaloOkurekLabel, 5 / 6), 3);
-  const okurka = axiomInput(cont(okurkaLabel, variableName, entity3), 1);
+  const okurka = cont(okurkaLabel, variableName, entity3);
   const sazenicSalatu = deduce(
     okurka,
     salatyAndOkurkyCompare
@@ -14566,9 +14581,12 @@ function okurkyASalaty({ input }) {
     ujaloOkurekRatio
   );
   const sazenicOkurek = deduce(ujaloSalatu, ujaloOkurek, ctorLinearEquation(okurkaLabel, { entity: entity3 }, variableName));
+  const mark = " ";
   return [
-    { deductionTree: deduce(sazenicOkurek, salatyAndOkurkyCompare), template: () => "" },
-    { deductionTree: deduce(last(sazenicOkurek), ujaloOkurekRatio), template: () => "" }
+    { deductionTree: deduce(sazenicOkurek, salatyAndOkurkyCompare), template: (highlight) => highlight`Zahradník sázel na záhon sazenice. Sazenice salátů zasadil o ${mark} 4 více než sazenic okurek.
+Na záhoně ${mark} čtvrtinu sazenic salátů zlikvidovali slimáci a ${mark} šestina sazenic okurek uschla.\ Všechny ostatní sazenice se ujaly. Na záhoně se tak ujal stejný počet sazenic salátů a okurek.
+Kolik sazenic salátů zahradník zasadil?` },
+    { deductionTree: deduce(last(sazenicOkurek), ujaloOkurekRatio), template: (highlight) => "" }
   ];
 }
 

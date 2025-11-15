@@ -1,7 +1,6 @@
 import { cont, ratio, ctorComplement, comp, transfer, percent, ctorPercent, commonSense, ctorOption, ctor } from "../../components/math";
 import { deduce, axiomInput, to } from "../../utils/deduce-utils";
 
-
 const entity = "litrů";
 const entityPercent = "%";
 
@@ -22,8 +21,10 @@ export function objemNadoby1({ input }: {
     ),
     ctorOption("C", 35)
   )
-
-  return { deductionTree }
+  const template = highlight => highlight`
+     ${input.zaplnenoPomer} objemu nádoby jsou zaplněny vodou. Celou nádobu zaplníme po dolití dalších ${input.zbyva} litrů vody. (Nádoba nepřeteče.)
+    Jaký je objem nádoby?`;
+  return { deductionTree, template  }
 }
 
 export function objemNadoby2({ input }: {

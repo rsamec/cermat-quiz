@@ -164,14 +164,14 @@ function renderValues (values) {
     </div>
   </details>
 
-  <details>
+  <details open>
     <summary>Strom</summary>
-    <div class="card">
+    <div>
       ${deduceTraverse(value.deductionTree)}
     </div>
   </details>
 
-  <details open>
+  <details>
     <summary>Strom - textově</summary>
     <div class="card">
       ${renderMarkdownWithCopy(jsonToMarkdownTree(value.deductionTree).join(''), "md")}
