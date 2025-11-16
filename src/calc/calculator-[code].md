@@ -58,7 +58,7 @@ function createAndBindSignals({metadata}){
     });
     return {context$, currentState$, nextEvents$, actor}
 }
-html`<h1>${formatCodeAlt(code)}</h1>`
+display(html`<h1>${formatCodeAlt(code)}</h1>`)
 ```
 
 ```js
@@ -86,7 +86,7 @@ display(html`<div>
       </summary>
       <div style="padding: 5px">${mdPlus.unsafe(quiz.content([id], { ids, render: 'content' }))}</div>
      </details>
-     <div class="v-stack v-stack--m deduce-trees">${values.map(([key, value]) => {
+     <div class="v-stack v-stack--m ">${values.map(([key, value]) => {
         const metadata = metadataMap.get(key.toString());
         const bindings = createAndBindSignals({metadata})
         

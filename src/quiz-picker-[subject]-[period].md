@@ -45,21 +45,23 @@ const assets = assetsData.filter((({code}) => parseCode(code).period == observab
           return html`<div class="h-stack h-stack--m h-stack-items--center h-stack--wrap">
               <a class="h-stack h-stack--s" href="./form-${code}"><i class="fas fa-money-check"></i><span>${formatVersion({order,period})}</span></a>
               <a class="h-stack h-stack--s" href="./print-${code}"><i class="fa-solid fa-print"></i><span>tisk</span></a>
-              <a class="h-stack h-stack--s" href="./arch-${code}"><i class="fa-solid fa-key"></i>klíč</a>
-              ${subject === "math" ? html`<a class="h-stack h-stack--s" href="./solution-${code}"><i class="fa-solid fa-mug-hot"></i>rozbor</a>`:''}
+              <a class="h-stack h-stack--s" href="./arch-${code}"><i class="fa-solid fa-key"></i>klíč</a>              
               ${subject === "math" ? html`
-              <button  popovertarget=popover-${code}>Data<i class="fas fa-caret-down"></i></button>
+              <button  popovertarget=popover-${code}>Rozbor<i class="fas fa-caret-down"></i></button>
               <div id=popover-${code} class="menu-items" popover>
                 <div class="v-stack v-stack--m">
-                  <a class="h-stack h-stack--s" href="word-problems-${code}" title="Řešení slovních úloh (markdown)"><i class="fa fa-brands fa-markdown"></i><span>Rozbor úloh - markdown</span></a>
-                  <a download class="h-stack h-stack--s" href="/data/word-problems-${code}.tldr"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-comment-nodes"></i><span>Rozbor úloh - TLDR</span><a>
+                  <a class="h-stack h-stack--s" href="solution-${code}"><i class="fa fa-comment-nodes"></i>Chat rozbor</a>
+                  <a class="h-stack h-stack--s" href="word-problems-tree-${code}" title="Rozbor stromem"><i class="fa fa-folder-tree"></i><span>Slovní úlohy - strom</span></a>
+                  <a class="h-stack h-stack--s" href="word-problems-${code}" title="Řešení slovních úloh (markdown)"><i class="fa fa-brands fa-markdown"></i><span>Slovní úlohy - markdown</span></a>
+                  <a download class="h-stack h-stack--s" href="/data/word-problems-${code}.tldr"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-chart-diagram"></i><span>Slovní úlohy - tldraw</span><a>
                 </div>
               </div>
               <button  popovertarget=popover-apps-${code}>Trénuj<i class="fas fa-caret-down"></i></button>
               <div id=popover-apps-${code} class="menu-items" popover>
                 <div class="v-stack v-stack--m">
                   <a class="h-stack h-stack--s" href="calc/calculator-${code}" title="Kalkulačka"><i class="fa fa-calculator"></i><span>Kalkulátor</span></a>
-                  <a class="h-stack h-stack--s" href="word-problems-tree-${code}" title="Rozbor stromem"><i class="fa fa-chart-diagram"></i><span>Rozbor stromem</span></a>                  
+                  <a class="h-stack h-stack--s" href="chat-stepper-${code}" title="Rozhodovačka"><i class="fa fa-diagram-project"></i><span>Rozhodovačka</span></a>
+                  <a class="h-stack h-stack--s" href="form-${code}" title="Vyplnění odpovědí"><i class="fa fa-file-waveform"></i><span>Vyplň test</span></a>
                 </div>
               </div>              
               <button  popovertarget=popover-ai-${code}>AI <i class="fas fa-caret-down"></i></button>

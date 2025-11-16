@@ -38,7 +38,7 @@ export function renderCalc({ context$, currentState$, nextEvents$, axioms, actor
     }
     
 
-    return rhtml`<div class="grid grid-cols-2 calc">
+    return rhtml`<div class="grid grid-cols-2 calc" style="grid-auto-rows: auto;">
 <div class="v-stack v-stack--s">
     <div class="h-stack"><span class=${computed(() => currentState$.value == "Error state" ? 'badge badge--danger' : currentState$.value == "Success state" ? 'badge badge--success' : 'badge')}>${computed(() => currentState$.value)}</span></div>
     <div class="calc-display">
