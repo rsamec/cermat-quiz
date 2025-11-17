@@ -79,22 +79,23 @@ const valuesMap = ids.map(id => {
 
 
 display(html`<div>
-  ${valuesMap.map(({id,values}, i) => html`<div class="group-${i+1} parallax-item" role="tabpanel">
-     <details>
+  ${valuesMap.map(({id,values}, i) => html`<div class="group-${i+1}" >
+     <details open>
       <summary>
         <span style="font-size: 1.6em; font-weight: 600">${id}. ${aiCategories[id]?.name ?? 'N/A'}</span>
       </summary>
       <div style="padding: 5px">${mdPlus.unsafe(quiz.content([id], { ids, render: 'content' }))}</div>
      </details>
-     <div class="v-stack v-stack--m ">${values.map(([key, value]) => {
+     <div class="v-stack v-stack--m">${values.map(([key, value]) => {
         const metadata = metadataMap.get(key.toString());
         const bindings = createAndBindSignals({metadata})
         
-        return html`${renderCalc({
+        return html`<div class="calc-view">${renderCalc({
             ...bindings,
             axioms: extractAxiomsFromTree(value.deductionTree),    
-            steps:getStepsFromTree(value.deductionTree)
-        })}`
+            steps:getStepsFromTree(value.deductionTree),
+            key,
+        })}</div>`
     })}</div>
      </div>`)}
 </div>`)

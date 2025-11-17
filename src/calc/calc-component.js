@@ -1,5 +1,5 @@
-import { html as rhtml, forEach } from '../utils/reactive-htl.js';
-import { signal, computed } from '@preact/signals-core';
+import { html as rhtml } from '../utils/reactive-htl.js';
+import { computed } from '@preact/signals-core';
 import mdPlus from "../utils/md-utils.js";
 import { formatPredicate } from "../utils/deduce-utils.js";
 
@@ -7,7 +7,7 @@ import { inferenceRuleWithQuestion } from "../math/math-configure.js";
 
 
 
-export function renderCalc({ context$, currentState$, nextEvents$, axioms, actor, steps }) {
+export function renderCalc({ context$, currentState$, nextEvents$, axioms, actor, steps, key }) {
 
     const insertSeparators = (arr, sep = () => rhtml`<i class="fa-solid fa-link yellow"></i>`) => arr.flatMap((v, i, a) => i < a.length - 1 ? [v, sep()] : [v])
     const wrapWithBadge = ({ predicate, badge }) => badge != null ? rhtml`<div class="h-stack" style="justify-content:space-between"><div class="badge badge--${badge.type}">${badge.text}</div><div class="badge">${predicate.kind}</div></div>` : rhtml`<div class="badge" style="align-self:flex-end;">${predicate.kind}</div>`
@@ -40,7 +40,7 @@ export function renderCalc({ context$, currentState$, nextEvents$, axioms, actor
 
     return rhtml`<div class="grid grid-cols-2 calc" style="grid-auto-rows: auto;">
 <div class="v-stack v-stack--s">
-    <div class="h-stack"><span class=${computed(() => currentState$.value == "Error state" ? 'badge badge--danger' : currentState$.value == "Success state" ? 'badge badge--success' : 'badge')}>${computed(() => currentState$.value)}</span></div>
+    <div class="h-stack h-stack--m"><div style="flex:1;"><span class="badge">Úloha ${key}</span></div><span class=${computed(() => currentState$.value == "Error state" ? 'badge badge--danger' : currentState$.value == "Success state" ? 'badge badge--success' : 'badge')}>${computed(() => currentState$.value)}</span></div>
     <div class="calc-display">
         <div class="calc-display__input">${computed(() => insertSeparators(context$.value.predicates.map(d => rhtml`${mdPlus.unsafe(formatPredicate(d))}`)))}</div>
         <div class="calc-display__output">${computed(() => context$.value.predicates.length > 1 ? inferToMessage(context$.value.predicates) : '')}</div>
@@ -53,7 +53,7 @@ export function renderCalc({ context$, currentState$, nextEvents$, axioms, actor
         </div>
         <div class="calc-buttons__common--end">
             <button class="btn--calc" disabled=${computed(() => !nextEvents$.value.includes('deduce'))} onclick=${() => actor.send({ type: 'deduce' })} title="Vyhodnotit"><i class="fa-solid fa-equals  font-large"></i></button>
-            <button class="btn--calc" disabled=${computed(() => !nextEvents$.value.includes('delete'))} onclick=${() => actor.send({ type: 'delete' })} title="Smazat poslední krok"><i class="fa-solid fa-delete-left  font-large"></i></button>            
+            <button class="btn--calc" disabled=${computed(() => !nextEvents$.value.includes('delete'))} onclick=${() => actor.send({ type: 'delete' })} title="Smazat poslední zadaný"><i class="fa-solid fa-delete-left  font-large"></i></button>            
         </div>
     </div>
 

@@ -5,12 +5,11 @@ sidebar: true
 pager: true
 footer: false
 toc: false
-style: /assets/css/math-deduce.css
+style: /assets/css/chat-stepper.css
 ---
 
 ```js
 
-import { createMachine , createActor} from 'xstate';
 import mdPlus from "./utils/md-utils.js";
 import { parseQuiz } from './utils/quiz-parser.js';
 import { parseCode, formatCodeAlt } from './utils/quiz-string-utils.js';
@@ -18,7 +17,8 @@ import { extractAxiomsFromTree, getStepsFromTree } from "./utils/deduce-utils.js
 import wordProblems from './math/word-problems.js';
 import { convertTree, getAllLeafsWithAncestors } from './utils/parse-utils.js';
 import {renderChatStepper} from './utils/deduce-chat.js';
-import { signal } from '@preact/signals-core';
+import { signal, computed } from '@preact/signals-core';
+import { html as rhtml } from './utils/reactive-htl.js';
 
 const metadata = await FileAttachment(`./data/form-${observable.params.code}.json`).json();
 const code = observable.params.code;
@@ -51,15 +51,16 @@ display(html`<h1>${formatCodeAlt(code)}</h1>`)
 
 ```js
 display(html`<div>
-  ${valuesMap.map(({id,values}, i) => html`<div class="group-${i+1} parallax-item" role="tabpanel">
-     <details>
+  ${valuesMap.map(({id,values}, i) => html`<div class="group-${i+1}" role="tabpanel">
+     <details open>
       <summary>
         <span style="font-size: 1.6em; font-weight: 600">${id}. ${aiCategories[id]?.name ?? 'N/A'}</span>
       </summary>
       <div style="padding: 5px">${mdPlus.unsafe(quiz.content([id], { ids, render: 'content' }))}</div>
      </details>
      <div class="v-stack v-stack--m">${values.map(([key, value]) => {
-          return html`<div>${renderChatStepper(value.deductionTree)}</div><hr/>`
+          const toggle = signal(false)
+          return rhtml`<details class="chat-stepper" open><summary><div class="h-stack h-stack--m h-stack-items--center" style="display:inline-flex"><span class="badge">Řešení úloha ${key}</span><button onclick=${() =>toggle.value = !toggle.value} }><i class="fa-solid fa-arrows-rotate"></i></button></div></summary><div>${computed(() => toggle.value ? renderChatStepper(value.deductionTree):renderChatStepper(value.deductionTree))}</div></details>`
     })}</div>
      </div>`)}
 </div>`)

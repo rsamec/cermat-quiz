@@ -7,11 +7,11 @@ import * as Inputs from 'npm:@observablehq/inputs';
 export function renderChatStepper(deductionTree){
   const steps = stepsTraverse(deductionTree).map((d,i) => ({...d, index:i}));
   const answers$ = signal([]);
-  const steps$ = signal([]);
+  const steps$ = signal(steps.slice(0, 1));
   const addStep = () => {
     steps$.value = steps$.value.length <= steps.length ? steps.slice(0, steps$.value.length + 1): steps;
   }
-  addStep();
+  //addStep();
 
   return rhtml`<div class="chat">
       ${forEach(computed(() => steps$.value),(row,i) => {

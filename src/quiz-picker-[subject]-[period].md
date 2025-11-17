@@ -59,9 +59,9 @@ const assets = assetsData.filter((({code}) => parseCode(code).period == observab
               <button  popovertarget=popover-apps-${code}>Trénuj<i class="fas fa-caret-down"></i></button>
               <div id=popover-apps-${code} class="menu-items" popover>
                 <div class="v-stack v-stack--m">
-                  <a class="h-stack h-stack--s" href="calc/calculator-${code}" title="Kalkulačka"><i class="fa fa-calculator"></i><span>Kalkulátor</span></a>
+                  <a class="h-stack h-stack--s" href="calc/calculator-${code}" title="Kalkulačka"><i class="fa fa-calculator"></i><span>Kalkulačka</span></a>
                   <a class="h-stack h-stack--s" href="chat-stepper-${code}" title="Rozhodovačka"><i class="fa fa-diagram-project"></i><span>Rozhodovačka</span></a>
-                  <a class="h-stack h-stack--s" href="form-${code}" title="Vyplnění odpovědí"><i class="fa fa-file-waveform"></i><span>Vyplň test</span></a>
+                  <a class="h-stack h-stack--s" href="form-${code}" title="Vyplnění odpovědí"><i class="fa fa-file-waveform"></i><span>Vyplňovačka</span></a>
                 </div>
               </div>              
               <button  popovertarget=popover-ai-${code}>AI <i class="fas fa-caret-down"></i></button>

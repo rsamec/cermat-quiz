@@ -6,12 +6,20 @@
 @import './common/button.css';
 
 
+.calc-view
+{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-radius: 10px;
+  background-color: var(--theme-background-alt);
+  padding: 0px 10px;
+}
 
 .calc {
   /* background: var(--theme-background-alt); */
-  padding: 8px;
+  
 
- 
   p {
     margin: 0px 0px;
     max-width: none;
@@ -20,7 +28,7 @@
 }
 
 .calc-display {
-  display: flex;
+  display: flex;  
   flex-direction: column;
   border: 1px solid var(--theme-foreground-alt);
   border-radius: 8px;
@@ -76,8 +84,7 @@
   font-size: 34px;
 }
 
-.calc-buttons__axioms {
-  border-top: 1px solid var(--theme-foreground-alt);
+.calc-buttons__axioms {  
   
   padding: 5px 0px;
   
@@ -89,8 +96,7 @@
 
 }
 
-.calc-buttons__deductions {
-  border-top: 1px solid var(--theme-foreground-alt);
+.calc-buttons__deductions {  
   padding: 5px 0px;
   display: flex;
   flex-direction: row;
