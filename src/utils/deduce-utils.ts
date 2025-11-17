@@ -910,7 +910,7 @@ export function getStepsFromTree(tree) {
         items = items.concat(traverse(child));
       }
       const [premises, conclusion] = [items.slice(0, -1), items.slice(-1)[0]];
-      result.push(premises)
+      result.push([premises, conclusion])
       return conclusion;
     }
   }

@@ -13,7 +13,6 @@ style: /assets/css/chat-stepper.css
 import mdPlus from "./utils/md-utils.js";
 import { parseQuiz } from './utils/quiz-parser.js';
 import { parseCode, formatCodeAlt } from './utils/quiz-string-utils.js';
-import { extractAxiomsFromTree, getStepsFromTree } from "./utils/deduce-utils.js";
 import wordProblems from './math/word-problems.js';
 import { convertTree, getAllLeafsWithAncestors } from './utils/parse-utils.js';
 import {renderChatStepper} from './utils/deduce-chat.js';

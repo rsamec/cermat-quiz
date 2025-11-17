@@ -14,7 +14,7 @@ import { createMachine , createActor} from 'xstate';
 import mdPlus from "../utils/md-utils.js";
 import { parseQuiz } from '../utils/quiz-parser.js';
 import { parseCode, formatCodeAlt } from '../utils/quiz-string-utils.js';
-import { calcMachine, getNextEvents, getStateValueString } from './calculator.js';
+import { calcMachine, getNextEvents, getStateValueString, ArraySetMap } from './calculator.js';
 import { extractAxiomsFromTree, getStepsFromTree } from "../utils/deduce-utils.js";
 import wordProblems from '../math/word-problems.js';
 import { convertTree, getAllLeafsWithAncestors } from '../utils/parse-utils.js';
@@ -36,12 +36,12 @@ const quiz = parseQuiz(rawContent);
 
 const ids = quiz.questions.map(d => d.id);
 
-function createAndBindSignals({metadata}){    
+function createAndBindSignals({metadata, inferenceMap}){    
     const {verifyBy} = metadata;
     
     // Create an actor that you can send events to.
-    // Note: the actor is not started yet!
-    const actor = createActor(calcMachine, {input: {verifyBy}});
+    // Note: the actor is not started yet!    
+    const actor = createActor(calcMachine, {input: {verifyBy, inferenceMap}});
     actor.start();    
     
     const snapshot = actor.getSnapshot();
@@ -88,12 +88,14 @@ display(html`<div>
      </details>
      <div class="v-stack v-stack--m">${values.map(([key, value]) => {
         const metadata = metadataMap.get(key.toString());
-        const bindings = createAndBindSignals({metadata})
+        const steps = getStepsFromTree(value.deductionTree);
+        const inferenceMap = new ArraySetMap(steps);
+        const bindings = createAndBindSignals({metadata, inferenceMap})
         
         return html`<div class="calc-view">${renderCalc({
             ...bindings,
             axioms: extractAxiomsFromTree(value.deductionTree),    
-            steps:getStepsFromTree(value.deductionTree),
+            steps:steps.map(([premises, _conclusion]) => premises),
             key,
         })}</div>`
     })}</div>

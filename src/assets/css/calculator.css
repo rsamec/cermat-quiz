@@ -104,3 +104,8 @@
   gap: 5px;
 
 }
+.calc-history {
+  ul {
+    margin: 0px; 
+  }
+}

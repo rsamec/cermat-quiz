@@ -64,17 +64,17 @@ export function renderCalc({ context$, currentState$, nextEvents$, axioms, actor
         <button class="btn--calc" style="min-width:auto" disabled=${computed(() => !nextEvents$.value.includes('remove'))} onclick=${() => actor.send({ type: 'remove', value: d })}><i class="fa-solid fa-trash" style="align-self:center"></i></button></div>`))}        
     </div>
 </div>
-<div class="v-stack v-stack--m">
-${computed(() => context$.value.history.map(h => {
-        return [h,inferenceRuleWithQuestion(h.concat({}))]
+<div class="v-stack v-stack--m calc-history">
+${computed(() => context$.value.history.map((h,i) => {
+        return [h,inferenceRuleWithQuestion(h.concat(context$.value.steps[i]))];
     }).map(([h,d], i) => {
-        const promises = rhtml`<details><summary>Predikáty ${h.length}</summary><div class="v-stack v-stack--s">${h.map(d => mdPlus.unsafe(formatPredicate(d)))}</div></details>`;
+        const promises = rhtml`<details><summary>Použité predikáty ${h.length}</summary><ul>${h.map(d => rhtml`<li>${mdPlus.unsafe(formatPredicate(d))}</li>`)}</ul></details>`;
         const counter = i + 1;
         const option = d.options?.find(opt => opt.ok);
         const message = option == null
             ? rhtml`<div class="v-stack"><div class="h-stack h-stack--s"><span class="badge badge--deduce">${counter}</span>${mdPlus.unsafe(formatPredicate(d.result))}</div>${promises}</div>`
             : rhtml`<div class="v-stack"><div class="h-stack h-stack--s"><span class="badge badge--deduce">${counter}</span>${mdPlus.unsafe(formatPredicate(d.result))}</div>
-    <div>Dotaz: <span>${d.question}</span></div>    
+    <div>Akce: <span>${d.question}</span></div>
     <div>Výpočet: <span>${option.tex} = ${option.result}</span></div>
     ${promises}
     </div>`

@@ -6,6 +6,7 @@ export function getNextEvents(snapshotValue) {
   return [...new Set([...snapshotValue._nodes.flatMap((sn) => sn.ownEvents)])];
 }
 
+
 export function getStateValueString(snapshotValue) {
   const stateValueString = snapshotValue._nodes
     .filter((s) => s.type === 'atomic' || s.type === 'final')
@@ -134,7 +135,9 @@ export const calcMachine = createMachine({
     },
     deduce: ({ context, event }) => {
       // Add your action code here
-      const result = inferenceRule(...context.predicates);
+      const inferenceMap = context.input.inferenceMap;
+
+      const result = (inferenceMap != null && inferenceMap.has(context.predicates)) ? inferenceMap.get(context.predicates) : inferenceRule(...context.predicates);
       context.steps.push(result);
       context.history.push(context.predicates);
       context.predicates = [];
@@ -162,12 +165,18 @@ export const calcMachine = createMachine({
       context.predicates = [];
       context.steps = [];
       context.history = [];
-    },  
+    },
   },
   guards: {
     hasError: ({ context, event }) => {
       if (context.predicates.length < 2) return true;
       let result = true;
+      const inferenceMap = context.input.inferenceMap;
+
+      if (inferenceMap != null && inferenceMap.has(context.predicates)) {
+        return false;
+      }
+
       try {
         const result = inferenceRule(...context.predicates);
         return result == null;
@@ -180,6 +189,8 @@ export const calcMachine = createMachine({
     isCorrect: ({ context, event }) => {
       if (context.predicates.length < 2) return false;
       let result = false
+
+
       try {
         const result = inferenceRule(...context.predicates);
         if (result == null) {
@@ -213,3 +224,66 @@ export const calcMachine = createMachine({
 
   },
 });
+
+
+export function ArraySetMap(entries) {
+  this._store = {};
+  if (entries && entries.length) {
+    for (var i = 0; i < entries.length; i++) {
+      var pair = entries[i];
+      this.set(pair[0], pair[1]);
+    }
+  }
+}
+
+var _nextId = 1;
+
+function getId(x) {
+  // primitive
+  if (x !== Object(x)) return x;
+
+  // assign an internal id once
+  if (!x._id_) {
+    Object.defineProperty(x, "_id_", {
+      value: _nextId++,
+      enumerable: false
+    });
+  }
+  return x._id_;
+}
+
+ArraySetMap.prototype._hash = function (arr) {
+  var ids = [];
+
+  // collect unique IDs
+  for (var i = 0; i < arr.length; i++) {
+    var id = getId(arr[i]);
+    if (ids.indexOf(id) === -1) ids.push(id);
+  }
+
+  // now we can sort IDs (numbers)
+  ids.sort();
+
+  return ids.join("|");
+};
+
+ArraySetMap.prototype.set = function (arr, value) {
+  this._store[this._hash(arr)] = value;
+};
+
+ArraySetMap.prototype.get = function (arr) {
+  return this._store[this._hash(arr)];
+};
+
+ArraySetMap.prototype.has = function (arr) {
+  return this._store.hasOwnProperty(this._hash(arr));
+};
+
+ArraySetMap.prototype.delete = function (arr) {
+  var h = this._hash(arr);
+  if (this._store.hasOwnProperty(h)) {
+    delete this._store[h];
+    return true;
+  }
+  return false;
+};
