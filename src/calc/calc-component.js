@@ -76,7 +76,7 @@ ${computed(() => context$.value.history.map((h,i) => {
         const message = option == null
             ? rhtml`<div class="v-stack"><div class="h-stack h-stack--s"><span class="badge badge--deduce">${counter}</span>${mdPlus.unsafe(formatPredicate(d.result))}</div>${promises}</div>`
             : rhtml`<div class="v-stack"><div class="h-stack h-stack--s"><span class="badge badge--deduce">${counter}</span>${mdPlus.unsafe(formatPredicate(d.result))}</div>
-    <div>Akce: <span>${d.question}</span></div>
+    <div>Akce: <span>${mdPlus.unsafe(d.question)}</span></div>
     <div>Výpočet: <span>${option.tex} = ${option.result}</span></div>
     ${promises}
     </div>`
