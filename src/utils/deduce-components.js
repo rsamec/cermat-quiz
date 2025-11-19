@@ -37,7 +37,7 @@ export function partion(items, options) {
     ...(height && { height }),
     marginBottom: 0,
     marginTop: showRelativeValues ? 20 : 0,
-    ...(marginLeft && {marginLeft}),
+    ...(marginLeft && { marginLeft }),
     marks: [
       Plot.waffleX(data, {
         x: 'value',
@@ -83,8 +83,15 @@ export function partion(items, options) {
   })
 };
 
-function proportionPlot({ data, columns }) {
+function proportionPlot({ data, columns, options = {} }) {
   const stack = (options) => Plot.stackY({}, { x: "type", y: "value", z: "scaleFactor", ...options });
+  const { width, height, marginLeft, marginRight } = {
+    ...{
+      marginLeft: 50,
+      marginRight: 60
+    },
+    ...options
+  }
   return Plot.plot({
     x: {
       domain: columns,
@@ -106,8 +113,10 @@ function proportionPlot({ data, columns }) {
     style: {
       fontSize: 20,
     },
-    marginLeft: 50,
-    marginRight: 60,
+    ...(width && { width }),
+    ...(height && { height }),
+    ...(marginLeft && { marginLeft }),
+    ...(marginRight && { marginRight }),
     marks: [
       Plot.areaY(
         data,
@@ -224,10 +233,10 @@ export const formatting = {
   },
   formatRatio: (d, asPercent) => {
     if (typeof d === "number") {
-      return  asPercent ? `${(d * 100).toLocaleString('cs-CZ')}%` : new Fraction(d).toFraction()
+      return asPercent ? `${(d * 100).toLocaleString('cs-CZ')}%` : new Fraction(d).toFraction()
     }
     else if (d?.expression != null) {
-        html`<div class="badge badge--warning">${ asPercent ? toEquationExprAsText({...d,expression: `(${d.expression}) * 100`}) : toEquationExprAsText(d)}</div>`
+      html`<div class="badge badge--warning">${asPercent ? toEquationExprAsText({ ...d, expression: `(${d.expression}) * 100` }) : toEquationExprAsText(d)}</div>`
     }
     else if (typeof d === "string") {
       return html`<div class="badge badge--warning">${d}</div>`;
@@ -368,7 +377,36 @@ export function deduceTraverse(node) {
             args.push(relativeTwoPartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole), asPercent: newChild.asPercent }))
           }
           else if (newChild?.kind === "ratios" && newChild?.ratios?.length === 2) {
-            args.push(relativeTwoParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
+            if (newChild?.parts?.length == 2) {
+              const gcdValue = gcdCalc([newChild.ratios[0], newChild.ratios[1]]);
+              console.log(gcdValue, newChild.ratios);
+              if (gcdValue > 1 && gcdValue <= 10) {
+                const baseRatios = [newChild.ratios[0] / gcdValue, newChild.ratios[1] / gcdValue];
+
+                args.push(proportionPlot({
+                  data: [...Array(gcdValue).keys()].flatMap(d => [
+                    { scaleFactor: d + 1, value: baseRatios[0], type: toAgent(newChild.parts[0]) },
+                    { scaleFactor: d + 1, value: baseRatios[1], type: toAgent(newChild.parts[1]) }
+                  ]),
+                  columns: [toAgent(newChild.parts[0]), toAgent(newChild.parts[1])],
+                  label: toAgent(newChild.whole),
+                  options: { height: gcdValue * 20 + 50 }
+                }))
+              }
+              else {
+                args.push(relativeParts(newChild.ratios, { parts: newChild.parts }))
+              }
+            }
+            else {
+              args.push(relativeParts(newChild.ratios, { parts: newChild.parts }))
+            }
+
+            //args.push(relativeTwoParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
+          }
+          else if (newChild?.kind === "rate" && newChild?.quantity && isNumber(newChild?.quantity)) {
+            args.push(partion([
+            { agent: `${newChild.entity?.entity}`, value: newChild.quantity, yValue: isNumber(newChild.baseQuantity) && newChild.baseQuantity != 1 ? `${newChild.baseQuantity} ${newChild.entityBase?.unit ?? newChild.entityBase?.entity}` : `${newChild.entityBase?.unit ?? newChild.entityBase?.entity}` },
+            ], { width: 300, height: 50, marginLeft: 70, formatAsFraction: false, showRelativeValues: false, showSeparate: true }))
           }
           if (newChild?.kind === "gcd" || newChild?.kind === "lcd") {
             const numbers = node.children.slice(0, -2).map(d => isPredicate(d) ? d : last(d)).map(d => d.quantity);
@@ -453,7 +491,6 @@ export function stepsTraverse(node) {
                   ]),
                   columns: [toAgent(newChild.parts[0]), toAgent(newChild.parts[1])],
                   label: toAgent(newChild.whole)
-
                 }))
               }
               else {
@@ -557,14 +594,14 @@ export function renderDeduceTreeNode(args, node, level) {
   let [premises, conclusion] = [ts.slice(0, -1), ts[ts.length - 1]];
   const result = inferenceRuleWithQuestion(mapNodeChildrenToPredicates(node))
   const option = result?.options?.find(d => d.ok);
-  const proof = html`<div class="proof ${level % 2 == 0 ? 'even': 'odd'}${collapsible && collapsible.collapsed === true ? ' hidden':''}" data-level=${level}>	  
+  const proof = html`<div class="proof ${level % 2 == 0 ? 'even' : 'odd'}${collapsible && collapsible.collapsed === true ? ' hidden' : ''}" data-level=${level}>	  
     <div class="premises">    
       ${premises.map(d => html`<div class="node">${html.fragment`${d}`}</div>`)}
 	  </div>
 	  <div class="conclusion">
-      <div class="le">${collapsible ? html`<button onclick=${(e) => proof.classList.toggle('hidden')}></button>`:''}</div>
+      <div class="le">${collapsible ? html`<button onclick=${(e) => proof.classList.toggle('hidden')}></button>` : ''}</div>
       <div class="ct">${html.fragment`${conclusion}`}</div>      
-      <div class="ri">${result?.question != null && result.question != "" ? html`<i class="fa-solid fa-circle-question" onmouseenter=${(e) => onmouseenter(e.target.parentElement.querySelector('[popover]'),e.target)} onmouseleave=${(e) => onmouseleave(e.target.parentElement.querySelector('[popover]'))}></i>
+      <div class="ri">${result?.question != null && result.question != "" ? html`<i class="fa-solid fa-circle-question" onmouseenter=${(e) => onmouseenter(e.target.parentElement.querySelector('[popover]'), e.target)} onmouseleave=${(e) => onmouseleave(e.target.parentElement.querySelector('[popover]'))}></i>
         <div popover="hint">
           ${html`<div>${result?.question}</div>`}          
           ${option != null ? html`<div>${option.tex} = ${option.result}</div>` : ''}

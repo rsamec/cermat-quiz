@@ -16246,7 +16246,7 @@ function spotrebaPaliva() {
   const standard = "b\u011B\u017En\xE9 palivo";
   const power = "power";
   const entityPrice = "korun";
-  const entity3 = "";
+  const entity3 = "objem";
   const entityLength = "vzd\xE1lenost";
   const unitLength = "km";
   const unit = "l";

@@ -40,7 +40,7 @@ catch(ex){
 const wordProblem = wordProblems[code] ?? {};
 
 const providersConfig = [
-  {name:"Open AI ChatGTP",shortName:"ChatGTP",url:"https://chat.openai.com/?q="},
+  {name:"Open AI ChatGTP",shortName:"ChatGTP",url:"https://chat.openai.com/?temporary-chat=true&q="},
   {name:"Google AI Mode Gemini",shortName:"Gemini",url:"https://www.google.com/search?udm=50&q="},    
   {name:"Microsoft Copilot", shortName:"Copilot", url:"https://www.bing.com/search?showconv=1&sendquery=1&q="},
   {name:"Anthropic Claude", shortName:"Claude", url:"https://claude.ai/new?q="},  
@@ -215,6 +215,7 @@ ${renderChatButton("Hlavní myšlenky",  selectedProvider, aiPromts.generateImpo
 ${renderChatButton("Obdobné úlohy",  selectedProvider, aiPromts.generateMoreQuizes)}
 ${renderChatButton("Pracovní list", selectedProvider, aiPromts.generateSubQuizes)}
 ${renderChatButton("Generalizace", selectedProvider, aiPromts.generalization)}
+${renderChatButton("Smyslupnost", selectedProvider, aiPromts.realWorldExamples)}
 </div>
 
 ---

@@ -801,6 +801,10 @@ Dle složitosti úlohy vymysli 1 až maximálně 3 nejdůležitější myšlenky
 Vizualizuj vhodně tyto myšlenky do obrázku pomocí infografiky s vhodnými grafickými prvky.
 `
 
+const realWorldExamples = `${alternateMessage}
+Vysvětli studentovi, proč dáva smysl řešit výše uvedenou konkrétní úloha. Smyslem je zde hlavně propojení teorie s reálným světem a ukázání, proč je smysluplné se je učit.
+Uveď 2 až 3 konkrétní příklady z reálného světa, kde se tento koncept běžně uplatňuje nebo vyskytuje.`
+
   return {
     vizualizeSolution,
     generateMoreQuizes,
@@ -808,6 +812,7 @@ Vizualizuj vhodně tyto myšlenky do obrázku pomocí infografiky s vhodnými gr
     generalization,
     generateImportantPoints,
     vizualizeImportantPoints,
+    realWorldExamples,
     "key-points": generateImportantPoints,
     "working-sheet": generateSubQuizes,
     "more-quizes": generateMoreQuizes,

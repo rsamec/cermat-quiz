@@ -118,7 +118,7 @@ function spotrebaPaliva() {
   const standard = "běžné palivo"
   const power = "power"
   const entityPrice = "korun"
-  const entity = "";
+  const entity = "objem";
 
   const entityLength = "vzdálenost"
   const unitLength = "km"

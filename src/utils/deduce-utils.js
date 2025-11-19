@@ -6954,6 +6954,9 @@ M\u016F\u017Ee\u0161 analyzovat \xFAlohu a \u0159e\u0161en\xED \xFAlohy a naj\xE
 Dle slo\u017Eitosti \xFAlohy vymysli 1 a\u017E maxim\xE1ln\u011B 3 nejd\u016Fle\u017Eit\u011Bj\u0161\xED my\u0161lenky, triky d\u016Fle\u017Eit\xE9 k pochopen\xED \u0159e\u0161en\xED \xFAlohy.
 Vizualizuj vhodn\u011B tyto my\u0161lenky do obr\xE1zku pomoc\xED infografiky s vhodn\xFDmi grafick\xFDmi prvky.
 `;
+  const realWorldExamples = `${alternateMessage}
+Vysv\u011Btli studentovi, pro\u010D d\xE1va smysl \u0159e\u0161it v\xFD\u0161e uvedenou konkr\xE9tn\xED \xFAloha. Smyslem je zde hlavn\u011B propojen\xED teorie s re\xE1ln\xFDm sv\u011Btem a uk\xE1z\xE1n\xED, pro\u010D je smyslupln\xE9 se je u\u010Dit.
+Uve\u010F 2 a\u017E 3 konkr\xE9tn\xED p\u0159\xEDklady z re\xE1ln\xE9ho sv\u011Bta, kde se tento koncept b\u011B\u017En\u011B uplat\u0148uje nebo vyskytuje.`;
   return {
     vizualizeSolution,
     generateMoreQuizes,
@@ -6961,6 +6964,7 @@ Vizualizuj vhodn\u011B tyto my\u0161lenky do obr\xE1zku pomoc\xED infografiky s 
     generalization,
     generateImportantPoints,
     vizualizeImportantPoints,
+    realWorldExamples,
     "key-points": generateImportantPoints,
     "working-sheet": generateSubQuizes,
     "more-quizes": generateMoreQuizes,
