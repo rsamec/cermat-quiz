@@ -57,10 +57,12 @@ export function renderCalc({ context$, currentState$, nextEvents$, axioms, actor
         </div>
     </div>
 
-    <div class="calc-buttons__axioms">${axioms.map(d => rhtml`<button class="btn--calc v-stack v-stack--s" disabled=${computed(() => !nextEvents$.value.includes('next'))} onclick=${() => actor.send({ type: 'next', value: d })}>${wrapWithBadge({ predicate: d, ...(d.label && { badge: { type: 'input', text: d.label } }) })}<div style="flex:1;align-content:center">${mdPlus.unsafe(formatPredicate(d))}</div></button>`)}</div>
+    <div class="calc-buttons__axioms">
+        ${axioms.map(d => rhtml`<button class="btn--calc" disabled=${computed(() => !nextEvents$.value.includes('next'))} onclick=${() => actor.send({ type: 'next', value: d })}><div class="calc-predicate-button">${wrapWithBadge({ predicate: d, ...(d.label && { badge: { type: 'input', text: d.label } }) })}<div style="flex:1;align-content:center">${mdPlus.unsafe(formatPredicate(d))}</div></div></button>`)}
+    </div>
     <div class="calc-buttons__deductions">
       ${computed(() => context$.value.steps.map((d, i) => rhtml`<div class="h-stack">
-        <button class="btn--calc v-stack v-stack--s" disabled=${computed(() => !nextEvents$.value.includes('next'))} onclick=${() => actor.send({ type: 'next', value: d })}>${wrapWithBadge({ predicate: d, badge: { type: 'deduce', text: i + 1 } })}<div style="flex:1;align-content:center">${mdPlus.unsafe(formatPredicate(d))}</div></button>
+        <button class="btn--calc" disabled=${computed(() => !nextEvents$.value.includes('next'))} onclick=${() => actor.send({ type: 'next', value: d })}><div class="calc-predicate-button">${wrapWithBadge({ predicate: d, badge: { type: 'deduce', text: i + 1 } })}<div style="flex:1;align-content:center">${mdPlus.unsafe(formatPredicate(d))}</div></div></button>
         <button class="btn--calc" style="min-width:auto" disabled=${computed(() => !nextEvents$.value.includes('remove'))} onclick=${() => actor.send({ type: 'remove', value: d })}><i class="fa-solid fa-trash" style="align-self:center"></i></button></div>`))}        
     </div>
 </div>

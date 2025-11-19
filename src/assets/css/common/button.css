@@ -67,13 +67,3 @@
     background-color: brightness(1.75);
   }
 }
-
-.btn--calc {  
-  padding: 5px 10px;
-  min-width: 70px;
-  max-width: 200px;
-  flex:1 1 auto;
-}
-
-
-                

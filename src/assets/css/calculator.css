@@ -3,7 +3,6 @@
 @import url("observablehq:theme-near-midnight.css") screen and (prefers-color-scheme: dark);
 @import './common/base.css';
 @import './common/badge.css';
-@import './common/button.css';
 
 
 .calc-view
@@ -109,3 +108,20 @@
     margin: 0px; 
   }
 }
+
+.calc-predicate-button {
+  display: flex;
+  flex-direction: column;
+  gap:10px;
+  flex: 1 1 auto;  
+}
+
+.btn--calc {  
+  padding: 5px 10px;
+  min-width: 70px;
+  max-width: 200px;
+  display: flex;
+}
+
+
+                
