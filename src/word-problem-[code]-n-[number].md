@@ -8,16 +8,28 @@ style: /assets/css/math-deduce.css
 
 ```js
 import mdPlus from './utils/md-utils.js';
-import pako from 'pako';
+import { createMachine , createActor} from 'xstate';
 import { parseQuiz } from './utils/quiz-parser.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, isEmptyOrWhiteSpace } from './utils/quiz-string-utils.js';
 import wordProblems from './math/word-problems.js';
 import {partion, relativeTowParts, relativeTwoPartsDiff, deduceTraverse, highlightLabel, renderChat } from './utils/deduce-components.js';
 import { renderChatStepper, useInput } from './utils/deduce-chat.js';
 import {isPredicate, computeTreeMetrics, jsonToMarkdownTree, jsonToMermaidMindMap, jsonToMarkdownChat, highlight, generateAIMessages, deductionTreeToHierarchy, formatPredicate} from './utils/deduce-utils.js';
+
+import { convertTree, getAllLeafsWithAncestors } from './utils/parse-utils.js';
+import { signal } from '@preact/signals-core';
+import { extractAxiomsFromTree, getStepsFromTree } from "./utils/deduce-utils.js";
+import { renderCalc } from "./calc/calc-component.js";
+import { calcMachine, getNextEvents, getStateValueString, ArraySetMap } from './calc/calculator.js';
+
 import Fraction from 'fraction.js';
 
+const metadata = await FileAttachment(`./data/form-${observable.params.code}.json`).json();
 const code = observable.params.code;
+const leafs = getAllLeafsWithAncestors(convertTree(metadata));
+const metadataMap = new Map(leafs.map(d => [d.leaf.data.id, d.leaf.data.node]));
+
+
 const id = parseInt(observable.params.number, 10);
 const d = parseCode(code);
 
@@ -56,6 +68,30 @@ const selectedProvider = Generators.input(selectedProviderInput);
 
 ```js
 
+function createAndBindSignals({metadata, inferenceMap}){    
+    const {verifyBy} = metadata;
+    
+    // Create an actor that you can send events to.
+    // Note: the actor is not started yet!    
+    const actor = createActor(calcMachine, {input: {verifyBy, inferenceMap}});
+    actor.start();    
+    
+    const snapshot = actor.getSnapshot();
+    const context$ = signal(snapshot.context);
+    const currentState$ = signal(getStateValueString(snapshot));
+    const nextEvents$ = signal(getNextEvents(snapshot));
+
+    actor.subscribe({
+        next: state => {
+            context$.value = {...state.context};
+            currentState$.value = getStateValueString(state);
+            nextEvents$.value = getNextEvents(state);     
+        }
+    });
+    return {context$, currentState$, nextEvents$, actor}
+}
+
+
 function renderChatButton(label, provider, query){
   return html`<a href="${provider.url}${encodeURIComponent(query)}" target="_blank"><button class="btn btn--dual h-stack"><div class="btn__left-part">${label}</div><div class="btn__right-part">${provider.shortName}<div/></button></a>`
 }
@@ -87,30 +123,7 @@ function toBase64Url(bytes) {
       .replace(/=+$/, '');
   }
 
-  function createMermaidEditorUrl(mermaidCode, mode = 'edit') {
-    const state = {
-      code: mermaidCode,
-      mermaid: { theme: "default" },
-      autoSync: true,
-      updateDiagram: true
-    };
 
-    const json = JSON.stringify(state);
-    const compressed = pako.deflate(json, { level: 9 });
-    const encoded = toBase64Url(compressed);
-
-    return `https://mermaid.live/${mode}#pako:${encoded}`;
-  }
-
-
-// function renderMermaid(content, lang){
-//   const promise = mermaidPlus.unsafe(`${content}`);
-//   return Generators.observe((notify) => {
-//       promise.then((value) => notify(value));
-//       notify('Diagraming...');
-//     return () => {};
-//   });  
-// }
 const values = (wordProblem[id] != null)
    ? [[id, wordProblem[id]]] 
    : [1, 2, 3, 4]
@@ -127,6 +140,11 @@ const aiPromts = generateAIMessages({
 function renderValues (values) {
   return values.map(([key, value], i) => {
     const {depth, width, predicates} = computeTreeMetrics(value.deductionTree);
+    const metadata = metadataMap.get(key.toString());
+    const steps = getStepsFromTree(value.deductionTree);
+    const inferenceMap = new ArraySetMap(steps);
+    const bindings = createAndBindSignals({metadata, inferenceMap})
+        
     return html.fragment`  
   <h3>Řešení ${key}</h3>
   <div class="h-stack h-stack--l h-stack--wrap">
@@ -141,6 +159,19 @@ function renderValues (values) {
       </div>
     </div>
   </div>
+
+
+  <details open>
+    <summary>Kalkulačka</summary>
+    <div class="card">
+      ${html`<div class="calc-view">${renderCalc({
+            ...bindings,
+            axioms: extractAxiomsFromTree(value.deductionTree),    
+            steps:steps.map(([premises, _conclusion]) => premises),
+            key,
+        })}`}
+    </div>  
+  </details>
 
   <details>
     <summary>Rozhodovačka</summary>
@@ -164,7 +195,7 @@ function renderValues (values) {
     </div>
   </details>
 
-  <details open>
+  <details>
     <summary>Strom</summary>
     <div>
       ${deduceTraverse(value.deductionTree)}
@@ -178,14 +209,6 @@ function renderValues (values) {
     </div>
   </details>
   ${false ? html`
-  <details>
-    <summary>MermSaid mind map</summary>
-    <a href="${createMermaidEditorUrl(jsonToMermaidMindMap(value.deductionTree).join(''),'edit')}" target="_blank">Open</a>
-    <div class="card">
-      ${renderAsCodeBlock(jsonToMermaidMindMap(value.deductionTree).join(''), "mermaid")}
-    </div>    
-  </details>`: ''}
-  ${true ? html`
   <details>
     <summary>Strom - json</summary>
     <div class="card">
@@ -209,17 +232,18 @@ ${renderQuestion(id)}
 
 ${selectedProviderInput}
 <div class="h-stack h-stack--m h-stack--wrap">
+${renderChatButton("Smyslupnost zadání", selectedProvider, aiPromts.realWorldExamples)}
 ${renderChatButton("Základní řešení",selectedProvider, template)}
 ${renderChatButton("Krokové řešení", selectedProvider, aiPromts.steps)}
 ${renderChatButton("Hlavní myšlenky",  selectedProvider, aiPromts.generateImportantPoints)}
 ${renderChatButton("Obdobné úlohy",  selectedProvider, aiPromts.generateMoreQuizes)}
 ${renderChatButton("Pracovní list", selectedProvider, aiPromts.generateSubQuizes)}
 ${renderChatButton("Generalizace", selectedProvider, aiPromts.generalization)}
-${renderChatButton("Smyslupnost", selectedProvider, aiPromts.realWorldExamples)}
 </div>
 
 ---
 
 ## Strukturované řešení úlohy
-
-${renderValues(values)}
+```js
+display(html`${renderValues(values)}`)
+```

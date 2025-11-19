@@ -6,8 +6,11 @@
 @import './common/deduce.css';
 @import './common/button.css';
 @import './common/chat.css';
+@import './common/calc.css';
 
-
+.observablehq-pre-container {
+  max-width: inherit;
+}
 .viz--text-tree,
 .viz--text-chat,
 .viz--deduce-tree,
