@@ -26,7 +26,7 @@ function getFilesRecursive(dir) {
         // If file, add to results
         results.push(filePath);
       }
-    });
+  });
   } catch (err) {
     console.error(`Error reading directory: ${err.message}`);
   }
@@ -145,7 +145,7 @@ export default {
     //.concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-raw-${code}`))    
     //.concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-ai-${code}`))
     .concat(wordProblemsKeyValuePairs.map(([code, id]) => `/word-problem-${code}-n-${id}`))
-    .concat(wordProblemsKeyValuePairs.map(([code, id]) => `/word-problem-raw-${code}-n-${id}`))
+    .concat(wordProblemsKeyValuePairs.map(([code, id]) => `/wordproblemraw-${code}-n-${id}`))
     .concat(quizes.map(d => `/quiz-${d.subject}-${d.period}`))
     .concat(quizes.map(d => `/quiz-print-${d.subject}-${d.period}`))
     .concat(quizes.map(d => `/quiz-picker-${d.subject}-${d.period}`))

@@ -286,6 +286,6 @@ ${html`${viewValue != 'links' && selected.length > questionsMaxLimit
 
 
 ${ html`<div class="card">${renderMarkdownWithCopy(viewValue == 'links' 
-? selected.map(d => `- [${formatShortCodeAlt(d.code)} ${d.id}. ${d.name}](./word-problem-raw-${d.code}-n-${d.id})`).join("\n")
+? selected.map(d => `- [${formatShortCodeAlt(d.code)} ${d.id}. ${d.name}](./wordproblemraw-${d.code}-n-${d.id})`).join("\n")
 : selectedToRender.map(d => (controls.startsWith("A") ? d.builder.content([parseInt(d.id)], { render: 'content' }) : "") + ' ' + (controls.endsWith("B") ?  (controls.startsWith("A") ? `\n---\n`:'') + d.deductionTrees.map(tree => jsonToMarkdownChat(tree, {rules:selectedRules.flatMap(d => d),predicates:selectedPredicates.flatMap(d => d), formulas: selectedFormulas.flatMap(d => d)}).join("")).join("---\n") : "")).join("\n---\n"), 'md')}</div>`}
 
