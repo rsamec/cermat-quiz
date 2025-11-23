@@ -1,0 +1,79 @@
+@import url("observablehq:default.css");
+@import url("observablehq:theme-air.css");
+@import url("observablehq:theme-near-midnight.css") screen and (prefers-color-scheme: dark);
+@import './common/base.css';
+@import './common/badge.css';
+@import './common/deduce.css';
+
+.katex {
+  .katex-html {
+    display: inline-block;
+  }
+}
+ul {
+  max-width: inherit;
+}
+.katex .fcolorbox {
+    border-width: 2px !important;
+}
+
+.md-colorify.darkred {
+    color: #e7040f;
+}
+.md-colorify.red {
+    color: #ff4136;
+}
+.md-colorify.lightred {
+    color: #ff725c;
+}
+.md-colorify.orange {
+    color: #ff6300;
+}
+.md-colorify.gold {
+    color: #ffb700;
+}
+.md-colorify.yellow {
+    color: #ffd700;
+}
+.md-colorify.lightyellow {
+    color: #fbf1a9;
+}
+.md-colorify.purple {
+    color: #5e2ca5;
+}
+.md-colorify.lightpurple {
+    color: #a463f2;
+}
+.md-colorify.darkpink {
+    color: #d5008f;
+}
+.md-colorify.hotpink {
+    color: #ff41b4;
+}
+.md-colorify.pink {
+    color: #ff80cc;
+}
+.md-colorify.lightpink {
+    color: #ffa3d7;
+}
+.md-colorify.darkgreen {
+    color: #137752;
+}
+.md-colorify.green {
+    color: #19a974;
+}
+.md-colorify.lightgreen {
+    color: #9eebcf;
+}
+.md-colorify.navy {
+    color: #001b44;
+}
+.md-colorify.darkblue {
+    color: #1b4b98;
+}
+.md-colorify.blue {
+    color: #266bd9;
+}
+.md-colorify.lightblue {
+    color: #96ccff;
+}     

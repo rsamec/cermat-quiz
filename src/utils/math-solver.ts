@@ -1,6 +1,8 @@
 import { Parser } from '../assets/lib/expr-eval/index.js';
 interface DeduceContext {
-  colors?: Record<string, string[]>
+  colors?: Record<string, any[]>
+  bgColors?: Record<string, any[]>
+  depth?: number
 }
 const parser = new Parser({
   operators: {
@@ -31,17 +33,11 @@ parser.functions.closeTo = function (value: number, center: number) {
   const end = center + eps;
   return start <= value && value <= end;
 }
-parser.functions.red = function (value: number) {
-  return value;
-}
-parser.functions.blue = function (value: number) {
-  return value;
-}
-parser.functions.green = function (value: number) {
-  return value;
-}
 
-parser.functions.color = function (color: 'blue' | 'red' | 'green', value: number) {
+parser.functions.color = function (color: string, value: number) {
+  return value;
+}
+parser.functions.bgColor = function (bgColor: string, value: number) {
   return value;
 }
 function gcdCalc(numbers: number[]) {
@@ -90,6 +86,7 @@ function recurExpr(node, level, requiredLevel = 0, parentContext: DeduceContext 
   const quantity = node.quantity ?? node.ratio ?? {};
   const { context, expression } = quantity;
   const colors = parentContext?.colors ?? {};
+  const bgColors = parentContext?.bgColors ?? {};
   if (expression) {
     let expr = parser.parse(expression);
     const variables = expr.variables();
@@ -97,15 +94,20 @@ function recurExpr(node, level, requiredLevel = 0, parentContext: DeduceContext 
     for (let variable of variables) {
       const res = recurExpr(context[variable], level + 1, requiredLevel, parentContext);
 
-      //console.log(variable, expr.toString(), level)
       if (res.substitute != null) {
         expr = parser.parse(cleanUpExpression(expr, variable))
         if (level < requiredLevel) {
-          for (let [key, values] of Object.entries(colors)) {
-            if (values.includes(context[variable]?.agent)) {
-              expr = expr.substitute(variable, parser.parse(`${key}(${variable})`))
+          for (let [key, values] of Object.entries(colors)) {            
+            if (values.includes(context[variable])) {          
+              expr = expr.substitute(variable, parser.parse(`color(${key},${variable})`))
             }
           }
+          for (let [key, values] of Object.entries(bgColors)) {            
+            if (values.includes(context[variable])) {
+              expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable})`))
+            }
+          }
+
         }
         expr = expr.substitute(variable, res)
         if (level >= requiredLevel) {
@@ -124,14 +126,18 @@ function recurExpr(node, level, requiredLevel = 0, parentContext: DeduceContext 
           else {
             //console.log(":", variable, context[variable], expr.toString())
             for (let [key, values] of Object.entries(colors)) {
-              if (values.includes(context[variable]?.agent)) {
-                //console.log(variable, key, context[variable]?.agent)
-                expr = expr.substitute(variable, parser.parse(`${key}(${variable})`))
+              if (values.includes(context[variable])) {
+                expr = expr.substitute(variable, parser.parse(`color(${key},${variable})`))
+              }
+            }
+            for (let [key, values] of Object.entries(bgColors)) {
+              if (values.includes(context[variable])) {
+                expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable})`))
               }
             }
 
             expr = expr.substitute(variable, q);
-            //console.log("::", variable, q, expr.toString())
+            
           }
         }
         else {
@@ -307,27 +313,28 @@ function applyOp(a, b, op, variable) {
     };
   }
 }
-const colors = ({
+export const colors = ({
   darkred: "#e7040f",
-  red: "#ff4136",
-  lightred: "#ff725c",
-  orange: "#ff6300",
-  gold: "#ffb700",
+  // red: "#ff4136",
+  //lightred: "#ff725c",
+  orange: "#ff6300",  
   yellow: "#ffd700",
-  lightyellow: "#fbf1a9",
+  // lightyellow: "#fbf1a9",
   purple: "#5e2ca5",
-  lightpurple: "#a463f2",
+  // lightpurple: "#a463f2",
   darkpink: "#d5008f",
-  hotpink: "#ff41b4",
+  // hotpink: "#ff41b4",
   pink: "#ff80cc",
-  lightpink: "#ffa3d7",
-  darkgreen: "#137752",
+  // lightpink: "#ffa3d7",
+  // darkgreen: "#137752",
   green: "#19a974",
-  lightgreen: "#9eebcf",
-  navy: "#001b44",
-  darkblue: "#1b4b98",
+  // lightgreen: "#9eebcf",
+  // navy: "#001b44",
+  // darkblue: "#1b4b98",
   blue: "#266bd9",
-  lightblue: "#96ccff"
+  lightblue: "#96ccff",
+
+  gold: "#ffb700",
 })
 
 function tokensToTex(tokens, opts = {}) {
@@ -345,7 +352,6 @@ function tokensToTex(tokens, opts = {}) {
     return options.stretchyParens ? `\\left(${str}\\right)` : `(${str})`;
   }
   for (const tok of tokens) {
-
     switch (tok.type) {
       case "INUMBER":
         stack.push(String(tok.value));
@@ -379,7 +385,7 @@ function tokensToTex(tokens, opts = {}) {
           stack.push(`${parens(a)}^{${b}}`);
         } else if (tok.value === "*") {
           const sym = options.implicitMul ? "" : options.mulSymbol;
-          stack.push(`${a}${sym} ${b}`);
+          stack.push(`${a}${sym}${b}`);
         } else {
           const texOps = { "==": "=", "!=": "\\ne", "<=": "\\le", ">=": "\\ge" };
           stack.push(`(${a} ${(texOps[tok.value] || tok.value)} ${b})`);
@@ -409,8 +415,10 @@ function tokensToTex(tokens, opts = {}) {
           stack.push(`\\left|${args[0]}\\right|`);
         } else if (["sin", "cos", "tan", "log", "ln"].includes(tok.value)) {
           stack.push(`\\${tok.value}\\left(${args.join(", ")}\\right)`);
-        } else if (["red", "blue", "green"].includes(f)) {
-          stack.push(`\\textcolor{${colors[f]}}{${args.join(", ")}}`);
+        } else if (f == "color" && args.length === 2) {        
+          stack.push(`\\textcolor{${colors[args[0]]}}{${args[1]}}`);
+        } else if (f == "bgColor" && args.length === 2) {        
+          stack.push(`\\fcolorbox{${colors[args[0]]}}{none}{\\(${args[1]}\\)}`);
         } else {
           stack.push(`${tok.value}\\left(${args.join(", ")}\\right)`);
         }

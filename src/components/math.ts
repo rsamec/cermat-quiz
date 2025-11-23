@@ -545,8 +545,8 @@ export function ctorTuple(agent: AgentMatcher): Tuple {
   return { kind: "tuple", agent, items: [] }
 }
 
-export function cont(agent: string, quantity: NumberOrVariable, entity: string, unit?: string, opts?: { asFraction?: boolean, asExpression?: boolean }): Container {
-  return { kind: 'cont', agent, quantity: (opts?.asExpression ? quantity.toString() : quantity) as NumberOrExpression, entity, unit, asRatio: opts?.asFraction };
+export function cont(agent: string, quantity: NumberOrVariable, entity: string, unit?: string, opts?: { asFraction?: boolean }): Container {
+  return { kind: 'cont', agent, quantity: quantity as NumberOrExpression, entity, unit, asRatio: opts?.asFraction };
 }
 export function tuple(agent: string, items: Predicate[]): Tuple {
   return { kind: 'tuple', agent, items }
@@ -744,13 +744,13 @@ export function balancedEntityPartition(parts: AgentMatcher[], entity: EntityBas
     entity
   }
 }
-export function contAngle(agent: string, quantity: NumberOrVariable, unit: AngleUnitDim = "deg", { asExpression }: { asExpression?: boolean } = {}) {
-  return cont(agent, quantity, angleEntity().angle.entity, unit, { asExpression })
+export function contAngle(agent: string, quantity: NumberOrVariable, unit: AngleUnitDim = "deg") {
+  return cont(agent, quantity, angleEntity().angle.entity, unit)
 }
-export function contRightAngle(agent?:string) {
+export function contRightAngle(agent?: string) {
   return contAngle(agent ?? "pravý úhel", 90, "deg")
 }
-export function contTringleAngleSum(agent?:string) {
+export function contTringleAngleSum(agent?: string) {
   return contAngle(agent ?? "součet úhlů v trojúhelníku", 180, "deg")
 }
 export function contLength(agent: string, quantity: NumberOrVariable, unit: LengthDim = "cm") {
@@ -893,7 +893,7 @@ function inferCompareRule(a: Container, b: Comparison): Question<Container> {
 
 function angleCompareRule(a: Container, b: AngleComparison): Container {
   //check
-  return { kind: 'cont', agent: a.agent == b.agentB ? b.agentA : b.agentB, quantity: computeOtherAngle(a.quantity, b.relationship), entity: a.entity, unit: a.unit }
+  return { kind: 'cont', agent: a.agent == b.agentB ? b.agentA : b.agentB, quantity: computeOtherAngle(a, b.relationship), entity: a.entity, unit: a.unit }
 }
 function inferAngleCompareRule(a: Container, b: AngleComparison): Question<Container> {
   const result = angleCompareRule(a, b)
@@ -1156,7 +1156,7 @@ function computeQuantityByRatioBase<T extends Predicate & { quantity: NumberOrEx
     ? b.ratio >= 0 ? a.quantity * b.ratio : a.quantity / abs(b.ratio)
     : isNumber(b.ratio)
       ? b.ratio >= 0 ? wrapToQuantity(`a.quantity * b.ratio`, { a, b }) : wrapToQuantity(`a.quantity / abs(b.ratio)`, { a, b })
-      : wrapToQuantity(`b.ratio >= 0 ? a.quantity * b.ratio : a.quantity / abs(b.ratio)`, { a, b })
+      : wrapToQuantity(`a.quantity * b.ratio`, { a, b })
 }
 function computeQuantityByRatioPart<T extends Predicate & { quantity: NumberOrExpression }, K extends Predicate & { ratio: NumberOrExpression }>(a: T, b: K) {
   return isNumber(a.quantity) && isNumber(b.ratio)
@@ -2751,7 +2751,7 @@ function evalQuotaRemainderExprRule(a: Quota, b: Option): Predicate {
 function inferEvalQuotaRemainderExprRule(a: Quota, b: Option): Question<Predicate> {
   const result = evalQuotaRemainderExprRule(a, b);
   return {
-    name: evalToOptionRule.name,
+    name: evalQuotaRemainderExprRule.name,
     inputParameters: extractKinds(a, b),
     question: b.optionValue != null ? `Vyhodnoť volbu [${b.optionValue}]?` : `Vyhodnoť pravdivost ${b.expressionNice}?`,
     result,
@@ -3741,15 +3741,16 @@ function ratiosToBaseForm(ratios) {
 // #endregion
 
 // #region Angle utils
-export type AngleRelationship = "complementary" | "supplementary" | "opposite" | "corresponding" | "sameSide" | "alternate" | "alternate-interior" | "alternate-exterior" | "axially-symmetric" 
-| "isosceles-triangle-at-the-base" | "equilateral-triangle";
-function computeOtherAngle(angle1, relationship: AngleRelationship) {
+export type AngleRelationship = "complementary" | "supplementary" | "opposite" | "corresponding" | "sameSide" | "alternate" | "alternate-interior" | "alternate-exterior" | "axially-symmetric"
+  | "isosceles-triangle-at-the-base" | "equilateral-triangle";
+function computeOtherAngle(a: Container, relationship: AngleRelationship) {
+  const quantity = a.quantity
   switch (relationship) {
     case "complementary":
-      return 90 - angle1; // Sum must be 90°
+      return isNumber(quantity) ? 90 - quantity : wrapToQuantity(`90 - a.quantity`, {a}); // Sum must be 90°
     case "supplementary":
     case "sameSide":
-      return 180 - angle1; // Sum must be 180°
+      return isNumber(quantity) ? 180 - quantity : wrapToQuantity(`180 - a.quantity`, {a}); // Sum must be 18°      
     case "opposite":
     case "corresponding":
     case "alternate":
@@ -3758,7 +3759,7 @@ function computeOtherAngle(angle1, relationship: AngleRelationship) {
     case "axially-symmetric":
     case "isosceles-triangle-at-the-base":
     case "equilateral-triangle":
-      return angle1; // Equal angles
+      return isNumber(quantity) ? quantity : wrapToQuantity(`a.quantity`, {a}); // Equal angles
     default:
       throw "Unknown Angle Relationship";
   }
@@ -3871,8 +3872,14 @@ function wrapToRatio(expression: string, context?: ExpressionContext): Ratio {
   return { expression, context: convertContext(context) };
 }
 function convertContext(context: ExpressionContext) {
-  //return context;
-  return Object.fromEntries(Object.entries(context).map(([key, value]) => [key, convertRatioKeysToFractions(value)])) as ExpressionContext;
+  return Object.entries(context).reduce((out, [key, value]) => {
+    out[key] = isRatioPredicate(value) && isNumber(value.ratio) ? {
+      ...value,
+      ratio: helpers.convertToFraction(value.ratio)
+    } : value;
+    return out;
+  }, {});
+  //return Object.fromEntries(Object.entries(context).map(([key, value]) => [key, convertRatioKeysToFractions(value)])) as ExpressionContext;
 }
 function convertRatioKeysToFractions(obj: any) {
   return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, key === "ratio" ? helpers.convertToFraction(value as number) : value]))

@@ -125,7 +125,7 @@ function ctorTuple(agent) {
   return { kind: "tuple", agent, items: [] };
 }
 function cont(agent, quantity, entity3, unit, opts) {
-  return { kind: "cont", agent, quantity: opts?.asExpression ? quantity.toString() : quantity, entity: entity3, unit, asRatio: opts?.asFraction };
+  return { kind: "cont", agent, quantity, entity: entity3, unit, asRatio: opts?.asFraction };
 }
 function tuple(agent, items) {
   return { kind: "tuple", agent, items };
@@ -284,8 +284,8 @@ function balancedEntityPartition(parts, entity3) {
     entity: entity3
   };
 }
-function contAngle(agent, quantity, unit = "deg", { asExpression } = {}) {
-  return cont(agent, quantity, angleEntity().angle.entity, unit, { asExpression });
+function contAngle(agent, quantity, unit = "deg") {
+  return cont(agent, quantity, angleEntity().angle.entity, unit);
 }
 function contRightAngle(agent) {
   return contAngle(agent ?? "prav\xFD \xFAhel", 90, "deg");
@@ -403,7 +403,7 @@ function inferCompareRule(a, b) {
   };
 }
 function angleCompareRule(a, b) {
-  return { kind: "cont", agent: a.agent == b.agentB ? b.agentA : b.agentB, quantity: computeOtherAngle(a.quantity, b.relationship), entity: a.entity, unit: a.unit };
+  return { kind: "cont", agent: a.agent == b.agentB ? b.agentA : b.agentB, quantity: computeOtherAngle(a, b.relationship), entity: a.entity, unit: a.unit };
 }
 function inferAngleCompareRule(a, b) {
   const result = angleCompareRule(a, b);
@@ -652,7 +652,7 @@ function inferRoundToRule(a, b) {
   };
 }
 function computeQuantityByRatioBase(a, b) {
-  return isNumber(a.quantity) && isNumber(b.ratio) ? b.ratio >= 0 ? a.quantity * b.ratio : a.quantity / abs(b.ratio) : isNumber(b.ratio) ? b.ratio >= 0 ? wrapToQuantity(`a.quantity * b.ratio`, { a, b }) : wrapToQuantity(`a.quantity / abs(b.ratio)`, { a, b }) : wrapToQuantity(`b.ratio >= 0 ? a.quantity * b.ratio : a.quantity / abs(b.ratio)`, { a, b });
+  return isNumber(a.quantity) && isNumber(b.ratio) ? b.ratio >= 0 ? a.quantity * b.ratio : a.quantity / abs(b.ratio) : isNumber(b.ratio) ? b.ratio >= 0 ? wrapToQuantity(`a.quantity * b.ratio`, { a, b }) : wrapToQuantity(`a.quantity / abs(b.ratio)`, { a, b }) : wrapToQuantity(`a.quantity * b.ratio`, { a, b });
 }
 function computeQuantityByRatioPart(a, b) {
   return isNumber(a.quantity) && isNumber(b.ratio) ? b.ratio > 0 ? a.quantity / b.ratio : a.quantity * abs(b.ratio) : isNumber(b.ratio) ? b.ratio > 0 ? wrapToQuantity(`a.quantity / b.ratio`, { a, b }) : wrapToQuantity(`a.quantity * abs(b.ratio)`, { a, b }) : wrapToQuantity(`b.ratio > 0 ? a.quantity / b.ratio : a.quantity * abs(b.ratio)`, { a, b });
@@ -2027,7 +2027,7 @@ function evalQuotaRemainderExprRule(a, b) {
 function inferEvalQuotaRemainderExprRule(a, b) {
   const result = evalQuotaRemainderExprRule(a, b);
   return {
-    name: evalToOptionRule.name,
+    name: evalQuotaRemainderExprRule.name,
     inputParameters: extractKinds(a, b),
     question: b.optionValue != null ? `Vyhodno\u0165 volbu [${b.optionValue}]?` : `Vyhodno\u0165 pravdivost ${b.expressionNice}?`,
     result,
@@ -2684,12 +2684,12 @@ function findPositionInQuadraticSequence(nthTermValue, first, second, secondDiff
   const A = secondDifference / 2;
   const B = second - first - 3 * A;
   const C = first - A - B;
-  const delta2 = B ** 2 - 4 * A * (C - nthTermValue);
-  if (delta2 < 0) {
+  const delta = B ** 2 - 4 * A * (C - nthTermValue);
+  if (delta < 0) {
     throw new Error("No valid position exists for the given values.");
   }
-  const n1 = (-B + Math.sqrt(delta2)) / (2 * A);
-  const n2 = (-B - Math.sqrt(delta2)) / (2 * A);
+  const n1 = (-B + Math.sqrt(delta)) / (2 * A);
+  const n2 = (-B - Math.sqrt(delta)) / (2 * A);
   if (Number.isInteger(n1) && n1 > 0)
     return n1;
   if (Number.isInteger(n2) && n2 > 0)
@@ -2756,13 +2756,14 @@ function ratiosToBaseForm(ratios2) {
   let overallGCD = nums.reduce((a, b) => gcd2(a, b));
   return nums.map((v) => v / overallGCD);
 }
-function computeOtherAngle(angle1, relationship) {
+function computeOtherAngle(a, relationship) {
+  const quantity = a.quantity;
   switch (relationship) {
     case "complementary":
-      return 90 - angle1;
+      return isNumber(quantity) ? 90 - quantity : wrapToQuantity(`90 - a.quantity`, { a });
     case "supplementary":
     case "sameSide":
-      return 180 - angle1;
+      return isNumber(quantity) ? 180 - quantity : wrapToQuantity(`180 - a.quantity`, { a });
     case "opposite":
     case "corresponding":
     case "alternate":
@@ -2771,7 +2772,7 @@ function computeOtherAngle(angle1, relationship) {
     case "axially-symmetric":
     case "isosceles-triangle-at-the-base":
     case "equilateral-triangle":
-      return angle1;
+      return isNumber(quantity) ? quantity : wrapToQuantity(`a.quantity`, { a });
     default:
       throw "Unknown Angle Relationship";
   }
@@ -2866,10 +2867,13 @@ function wrapToRatio(expression, context) {
   return { expression, context: convertContext(context) };
 }
 function convertContext(context) {
-  return Object.fromEntries(Object.entries(context).map(([key, value]) => [key, convertRatioKeysToFractions(value)]));
-}
-function convertRatioKeysToFractions(obj) {
-  return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, key === "ratio" ? helpers.convertToFraction(value) : value]));
+  return Object.entries(context).reduce((out, [key, value]) => {
+    out[key] = isRatioPredicate(value) && isNumber(value.ratio) ? {
+      ...value,
+      ratio: helpers.convertToFraction(value.ratio)
+    } : value;
+    return out;
+  }, {});
 }
 function formatNumber(d) {
   return d.toLocaleString("cs-CZ", { maximumFractionDigits: 6, minimumFractionDigits: 0 });
@@ -6495,16 +6499,10 @@ parser.functions.closeTo = function(value, center) {
   const end = center + eps;
   return start <= value && value <= end;
 };
-parser.functions.red = function(value) {
-  return value;
-};
-parser.functions.blue = function(value) {
-  return value;
-};
-parser.functions.green = function(value) {
-  return value;
-};
 parser.functions.color = function(color, value) {
+  return value;
+};
+parser.functions.bgColor = function(bgColor, value) {
   return value;
 };
 function gcdCalc2(numbers) {
@@ -6543,6 +6541,7 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
   const quantity = node.quantity ?? node.ratio ?? {};
   const { context, expression } = quantity;
   const colors2 = parentContext?.colors ?? {};
+  const bgColors = parentContext?.bgColors ?? {};
   if (expression) {
     let expr = parser.parse(expression);
     const variables = expr.variables();
@@ -6552,8 +6551,13 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
         expr = parser.parse(cleanUpExpression(expr, variable));
         if (level < requiredLevel) {
           for (let [key, values] of Object.entries(colors2)) {
-            if (values.includes(context[variable]?.agent)) {
-              expr = expr.substitute(variable, parser.parse(`${key}(${variable})`));
+            if (values.includes(context[variable])) {
+              expr = expr.substitute(variable, parser.parse(`color(${key},${variable})`));
+            }
+          }
+          for (let [key, values] of Object.entries(bgColors)) {
+            if (values.includes(context[variable])) {
+              expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable})`));
             }
           }
         }
@@ -6569,8 +6573,13 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
             expr = expr.simplify({ [variable]: q });
           } else {
             for (let [key, values] of Object.entries(colors2)) {
-              if (values.includes(context[variable]?.agent)) {
-                expr = expr.substitute(variable, parser.parse(`${key}(${variable})`));
+              if (values.includes(context[variable])) {
+                expr = expr.substitute(variable, parser.parse(`color(${key},${variable})`));
+              }
+            }
+            for (let [key, values] of Object.entries(bgColors)) {
+              if (values.includes(context[variable])) {
+                expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable})`));
               }
             }
             expr = expr.substitute(variable, q);
@@ -6715,25 +6724,25 @@ function applyOp(a, b, op, variable) {
 }
 var colors = {
   darkred: "#e7040f",
-  red: "#ff4136",
-  lightred: "#ff725c",
+  // red: "#ff4136",
+  //lightred: "#ff725c",
   orange: "#ff6300",
-  gold: "#ffb700",
   yellow: "#ffd700",
-  lightyellow: "#fbf1a9",
+  // lightyellow: "#fbf1a9",
   purple: "#5e2ca5",
-  lightpurple: "#a463f2",
+  // lightpurple: "#a463f2",
   darkpink: "#d5008f",
-  hotpink: "#ff41b4",
+  // hotpink: "#ff41b4",
   pink: "#ff80cc",
-  lightpink: "#ffa3d7",
-  darkgreen: "#137752",
+  // lightpink: "#ffa3d7",
+  // darkgreen: "#137752",
   green: "#19a974",
-  lightgreen: "#9eebcf",
-  navy: "#001b44",
-  darkblue: "#1b4b98",
+  // lightgreen: "#9eebcf",
+  // navy: "#001b44",
+  // darkblue: "#1b4b98",
   blue: "#266bd9",
-  lightblue: "#96ccff"
+  lightblue: "#96ccff",
+  gold: "#ffb700"
 };
 function tokensToTex(tokens, opts = {}) {
   const options = {
@@ -6780,7 +6789,7 @@ function tokensToTex(tokens, opts = {}) {
           stack.push(`${parens(a)}^{${b}}`);
         } else if (tok.value === "*") {
           const sym = options.implicitMul ? "" : options.mulSymbol;
-          stack.push(`${a}${sym} ${b}`);
+          stack.push(`${a}${sym}${b}`);
         } else {
           const texOps = { "==": "=", "!=": "\\ne", "<=": "\\le", ">=": "\\ge" };
           stack.push(`(${a} ${texOps[tok.value] || tok.value} ${b})`);
@@ -6808,8 +6817,10 @@ function tokensToTex(tokens, opts = {}) {
           stack.push(`\\left|${args[0]}\\right|`);
         } else if (["sin", "cos", "tan", "log", "ln"].includes(tok.value)) {
           stack.push(`\\${tok.value}\\left(${args.join(", ")}\\right)`);
-        } else if (["red", "blue", "green"].includes(f)) {
-          stack.push(`\\textcolor{${colors[f]}}{${args.join(", ")}}`);
+        } else if (f == "color" && args.length === 2) {
+          stack.push(`\\textcolor{${colors[args[0]]}}{${args[1]}}`);
+        } else if (f == "bgColor" && args.length === 2) {
+          stack.push(`\\fcolorbox{${colors[args[0]]}}{none}{\\(${args[1]}\\)}`);
         } else {
           stack.push(`${tok.value}\\left(${args.join(", ")}\\right)`);
         }
@@ -8255,7 +8266,9 @@ function hranol() {
   const vyska = contLength("v\xFD\u0161ka", 15);
   return {
     povrh: {
-      deductionTree: deduce(
+      deductionTree: deduceAs({
+        autoColors: true
+      })(
         deduce(
           deduce(
             deduce(
@@ -8301,7 +8314,7 @@ function hranol() {
       )
     },
     objem: {
-      deductionTree: deduce(
+      deductionTree: deduceAs({ autoColors: true })(
         deduce(
           ctverecStrana,
           ctverecStrana,
@@ -10457,8 +10470,18 @@ function farmar() {
   const prodano = cont("prod\xE1no", 5, entityBase);
   const puvodneMlekoPerKrava = rate(farmaPuvodneLabel, 15, { entity: entity3, unit }, entityBase);
   const noveMlekoPerKrava = rate(farmaNove, 20, { entity: entity3, unit }, entityBase);
+  const farmaNovePuvodniKravy = deduce(
+    deduce(
+      farmaPuvodne,
+      prodano,
+      ctorDifference(farmaPuvodneLabel)
+    ),
+    puvodneMlekoPerKrava
+  );
   return {
-    deductionTree: deduce(
+    deductionTree: deduceAs({
+      autoColors: true
+    })(
       deduce(
         deduce(
           deduce(
@@ -10466,17 +10489,10 @@ function farmar() {
               farmaPuvodne,
               puvodneMlekoPerKrava
             ),
-            counter(farmaPuvodneLabel, 2),
-            product("2 dny")
+            cont(farmaPuvodneLabel, 2, "doba dojen\xED", "den"),
+            product(`${farmaPuvodneLabel} za 2 dny`)
           ),
-          deduce(
-            deduce(
-              farmaPuvodne,
-              prodano,
-              ctorDifference(farmaPuvodneLabel)
-            ),
-            puvodneMlekoPerKrava
-          ),
+          farmaNovePuvodniKravy,
           ctorDifference(farmaNove)
         ),
         noveMlekoPerKrava
@@ -12641,8 +12657,8 @@ function kvadr() {
 // src/math/M9A-2024/angle.ts
 function rozdilUhlu({ input }) {
   const beta = contAngle(anglesNames.beta, input.beta);
-  const delta2 = contAngle(anglesNames.delta, input.delta);
-  const alfa = deduce(delta2, compAngle(anglesNames.delta, anglesNames.alpha, "supplementary"));
+  const delta = contAngle(anglesNames.delta, input.delta);
+  const alfa = deduce(delta, compAngle(anglesNames.delta, anglesNames.alpha, "supplementary"));
   const deductionTree = deduce(
     deduce(
       deduce(
@@ -15370,21 +15386,15 @@ var M9C_2025_default = createLazyMap({
   15.3: () => rybiz()
 });
 function uhly6() {
-  const asExpression = false;
-  const zadanyUhel = contAngle("XAo~1~", 22, "deg", { asExpression });
-  const zadanyUhelStred = contAngle("ASo~2~", 62, "deg", { asExpression });
+  const zadanyUhel = contAngle("XAo~1~", 22, "deg");
+  const zadanyUhelStred = contAngle("ASo~2~", 62, "deg");
   const osoveSymetrnyUhel = deduce(
     zadanyUhel,
     compAngle("BAo~1~", "XAo~1~", "axially-symmetric")
   );
   return {
     deductionTree: deduceAs({
-      depth: 1,
-      colors: {
-        "red": ["BXC", "o~2~X"],
-        "blue": ["ASX", "o~2~XB", "AXo~2~"],
-        "green": ["BAo~1~", "Ao~2~X", "o~2~XC"]
-      }
+      autoColors: true
     })(
       deduce(
         deduce(

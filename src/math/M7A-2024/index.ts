@@ -248,7 +248,7 @@ function charitativniZavod() {
 }
 
 function angle() {
-  
+
   const inputAngleLabel = `zadaný úhel mezi přímkami n a r`;
   const triangle = "trojúhelník";
   const sousedniUhel = `vrchol mezi přímkami r a m`;
@@ -269,7 +269,7 @@ function angle() {
           ),
           deduce(
             contTringleAngleSum(),
-            deduce(              
+            deduce(
               contAngle("zadaný", 105),
               compAngle(inputAngleLabel, `vrchol mezi přímkami p a r`, 'supplementary')
             ),
@@ -294,7 +294,9 @@ function hranol() {
   const vyska = contLength("výška", 15)
   return {
     povrh: {
-      deductionTree: deduce(
+      deductionTree: deduceAs({
+        autoColors: true
+      })(
         deduce(
           deduce(
             deduce(
@@ -340,7 +342,7 @@ function hranol() {
       )
     },
     objem: {
-      deductionTree: deduce(
+      deductionTree: deduceAs({ autoColors: true })(
         deduce(
           ctverecStrana,
           ctverecStrana,

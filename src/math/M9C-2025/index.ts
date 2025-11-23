@@ -22,21 +22,15 @@ export default createLazyMap({
   15.3: () => rybiz(),
 })
 function uhly() {
-  const asExpression = false
-  const zadanyUhel = contAngle("XAo~1~", 22, "deg", { asExpression });
-  const zadanyUhelStred = contAngle("ASo~2~", 62, "deg", { asExpression});
+  const zadanyUhel = contAngle("XAo~1~", 22, "deg");
+  const zadanyUhelStred = contAngle("ASo~2~", 62, "deg");
   const osoveSymetrnyUhel = deduce(
     zadanyUhel,
     compAngle("BAo~1~", "XAo~1~", "axially-symmetric")
   )
   return {
     deductionTree: deduceAs({
-      depth: 1,
-      colors: {
-        "red": ["BXC", "o~2~X"],
-        "blue": ["ASX", "o~2~XB", "AXo~2~"],
-        "green": ["BAo~1~", "Ao~2~X", "o~2~XC"]
-      }
+      autoColors: true,
     })(
       deduce(
         deduce(

@@ -1,8 +1,8 @@
-import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate, delta } from "../components/math.js"
+import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate } from "../components/math.js"
 import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison, Frequency } from "../components/math.js"
 import { partionArray } from '../utils/common-utils.js';
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
-import { evaluate, substitute, toEquationExprAsTex } from "./math-solver.js"
+import { evaluate, substitute, toEquationExprAsTex, colors } from "./math-solver.js"
 import Fraction from 'fraction.js';
 
 type PredicateLabel = { labelKind?: 'input' | 'deduce', label?: number }
@@ -36,7 +36,9 @@ export type Node = TreeNode | Predicate
 export type TreeNode = {
   children?: Node[]
 }
-export type ColorContext = { colors?: Record<string, string[]> }
+
+export type TreeNodeWithContext = { children: TreeNode, context: DeduceContext };
+export type ColorContext = { colors?: Record<string, Predicate[]>, bgColors?: Record<string, Predicate[]>, autoColors?: boolean }
 export type ExpressionContext = { depth?: number }
 export type DeduceContext = string | (ColorContext & ExpressionContext)
 export function isPredicate(node: Node): node is Predicate {
@@ -222,10 +224,15 @@ export function jsonToMarkdownTree(node, level = 0, parentContext: DeduceContext
   const indent = "  ".repeat(level); // Two spaces for each level
   let markdown = [];
 
+  const colorsMap = Object.entries(isObjectContext(parentContext) ? parentContext.colors ?? {} : {});
+  const bgColorsMap = Object.entries(isObjectContext(parentContext) ? parentContext.bgColors ?? {} : {});
+
   // Add node details if they exist
   if (isPredicate(node)) {
 
-    const color = isObjectContext(parentContext) ? Object.entries(parentContext.colors ?? {}).find(([color, arr]) => arr.includes((node as any).agent))?.[0] : null;
+    const textColor = isObjectContext(parentContext) ? colorsMap.find(([color, arr]) => arr.includes(node))?.[0] : null;
+    const bgColor = isObjectContext(parentContext) ? bgColorsMap.find(([color, arr]) => arr.includes(node))?.[0] : null;
+    const color = textColor ?? bgColor;
 
     markdown.push(`${indent}- ${formatPredicate(node, color != null ? colorFormattingFunc(0, color, parentContext) : mdFormattingFunc(0, parentContext))}\n`);
     return markdown;
@@ -801,7 +808,7 @@ Dle složitosti úlohy vymysli 1 až maximálně 3 nejdůležitější myšlenky
 Vizualizuj vhodně tyto myšlenky do obrázku pomocí infografiky s vhodnými grafickými prvky.
 `
 
-const realWorldExamples = `${alternateMessage}
+  const realWorldExamples = `${alternateMessage}
 Vysvětli studentovi, proč dáva smysl řešit výše uvedenou konkrétní úloha. Smyslem je zde hlavně propojení teorie s reálným světem a ukázání, proč je smysluplné se je učit.
 Uveď 2 až 3 konkrétní příklady z reálného světa, kde se tento koncept běžně uplatňuje nebo vyskytuje.`
 
@@ -921,4 +928,74 @@ export function getStepsFromTree(tree) {
   }
   traverse(tree);
   return result;
+}
+
+function isColorifyPredicate(d) {
+  return isQuantityPredicate(d) || isRatioPredicate(d) || isRatiosPredicate(d);
+}
+export function colorifyDeduceTree(originalTree, { maxDepth, axioms, deductions }: { maxDepth?: number, axioms?: boolean, deductions?: boolean } = { maxDepth: 2, axioms: true, deductions: false }) {
+  let counter = 0;
+  //const tree = JSON.parse(JSON.stringify(originalTree));
+  const tree = originalTree;
+  const colorKeys = Object.keys(colors);
+  const colorsMap = new Map();
+  function traverse(node) {
+
+    if (!node.children || node.children.length === 0) {
+      if (isPredicate(node)) {
+        const newPredicate = isQuantityPredicate(node) && isNumber(node.quantity)
+          ? Object.assign(node, { quantity: node.quantity.toString() })
+          // : isRatioPredicate(node) && isNumber(node.ratio)
+          //   ? Object.assign(node, { ratio: node.ratio.toString() })
+          : node;
+        return [newPredicate];
+      }
+      else {
+        return [];
+      }
+    }
+    // Node has children, continue traversal
+    let items = [];
+    for (let i = 0; i != node.children.length; i++) {
+      const child = node.children[i];
+      const isConclusion = i === node.children.length - 1;
+      if (isConclusion) continue;
+      items = items.concat(traverse(child));
+    }
+    const premises = items;
+
+
+    const conclusion = node.context != null ? deduceAs(node.context)(...premises) : deduce(...premises)
+    const lastPredicate = last(conclusion);
+
+    if (!colorsMap.has(lastPredicate)) {
+      colorsMap.set(lastPredicate, { bgColor: colorKeys[(counter++) % colorKeys.length] });
+    }
+    for (let i = 0; i != premises.length; i++) {
+      if (!colorsMap.has(premises[i]) && isPredicate(premises[i]) && isColorifyPredicate(premises[i])) {
+        colorsMap.set(premises[i], { color: colorKeys[(counter++) % colorKeys.length] });
+      }
+    }
+    return conclusion;
+
+  }
+  const result = traverse(tree) as unknown as TreeNodeWithContext;
+  result.context = {
+    depth: maxDepth ?? tree.context?.depth ?? 2,
+    ...(axioms ? tree.context.colors ?? (tree.context?.autoColors ? {
+      colors: [...colorsMap.entries()].reduce((out, [predicate, d], index) => {
+        if (d.color == null) return out;
+        out[d.color] = out[d.color] ? out[d.color].concat([predicate]) : [predicate];
+        return out;
+      }, {})
+    } : {}) : {}),
+    ...(deductions ? tree.context.bgColors ?? (tree.context?.autoColors ? {
+      bgColors: [...colorsMap.entries()].reduce((out, [predicate, d], index) => {
+        if (d.bgColor == null) return out;
+        out[d.bgColor] = out[d.bgColor] ? out[d.bgColor].concat([predicate]) : [predicate];
+        return out;
+      }, {})
+    } : {}): {}),
+  }
+  return { deductionTree: result, colorsMap }
 }

@@ -450,8 +450,20 @@ function farmar() {
 
   const puvodneMlekoPerKrava = rate(farmaPuvodneLabel, 15, { entity, unit }, entityBase)
   const noveMlekoPerKrava = rate(farmaNove, 20, { entity, unit }, entityBase)
+
+
+  const farmaNovePuvodniKravy = deduce(
+    deduce(
+      farmaPuvodne,
+      prodano,
+      ctorDifference(farmaPuvodneLabel)
+    ),
+    puvodneMlekoPerKrava
+  );
   return {
-    deductionTree: deduce(
+    deductionTree: deduceAs({
+      autoColors: true,
+    })(
       deduce(
         deduce(
           deduce(
@@ -459,17 +471,10 @@ function farmar() {
               farmaPuvodne,
               puvodneMlekoPerKrava
             ),
-            counter(farmaPuvodneLabel, 2),
-            product("2 dny")
+            cont(farmaPuvodneLabel, 2, "doba dojení", "den"),
+            product(`${farmaPuvodneLabel} za 2 dny`)
           ),
-          deduce(
-            deduce(
-              farmaPuvodne,
-              prodano,
-              ctorDifference(farmaPuvodneLabel)
-            ),
-            puvodneMlekoPerKrava
-          ),
+          farmaNovePuvodniKravy,
           ctorDifference(farmaNove)
         ),
         noveMlekoPerKrava
