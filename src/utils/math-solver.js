@@ -1632,6 +1632,9 @@ parser.functions.gcd = function(...args) {
 parser.functions.lcd = function(...args) {
   return lcdCalc(args);
 };
+parser.functions.abs = function(arg) {
+  return Math.abs(arg);
+};
 var eps = 1e-3;
 parser.functions.closeTo = function(value, center) {
   const start = center - eps;
@@ -1708,11 +1711,16 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
           expr = expr.simplify();
         }
       } else {
-        const q = res.quantity ?? res.ratio;
-        if (typeof q == "number" || !isNaN(parseFloat(q))) {
+        const q = res.quantity ?? res.ratio ?? res.ratios;
+        if (typeof q == "number" || !isNaN(parseFloat(q)) || Array.isArray(q) || checkFraction(q)) {
           expr = parser.parse(cleanUpExpression(expr, variable));
-          if (level >= requiredLevel) {
-            expr = expr.simplify({ [variable]: q });
+          if (level >= requiredLevel || Array.isArray(q)) {
+            if (checkFraction(q)) {
+              const [numerator, denominator] = parseFraction(q);
+              expr = expr.simplify({ [variable]: numerator / denominator });
+            } else {
+              expr = expr.simplify({ [variable]: q });
+            }
           } else {
             for (let [key, values] of Object.entries(colors2)) {
               if (values.includes(context[variable])) {
@@ -1736,6 +1744,16 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
     return node;
   }
 }
+var fractionRegex = /^(-?[0-9]+)\/(-?[0-9]+)$/;
+function checkFraction(str) {
+  return fractionRegex.test(str);
+}
+function parseFraction(str) {
+  const match = fractionRegex.exec(str);
+  if (!match)
+    return null;
+  return [Number(match[1]), Number(match[2])];
+}
 function toEquation(lastNode) {
   const final = recurExpr(lastNode, 0);
   return parser.parse(cleanUpExpression(final));
@@ -1755,7 +1773,7 @@ function toEquationExprAsTex(lastExpr, requiredLevel = 0, context = {}) {
   return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel, context).tokens)} $`;
 }
 function cleanUpExpression(exp, variable = "") {
-  const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, variable);
+  const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratios`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, variable);
   return formatNumbersInExpression(replaced);
 }
 function formatNumbersInExpression(expr) {
@@ -1920,6 +1938,10 @@ function tokensToTex(tokens, opts = {}) {
         const a = stack.pop();
         if (tok.value === "sqrt") {
           stack.push(`\\sqrt{${a}}`);
+        } else if (["abs"].includes(tok.value)) {
+          stack.push(`\\left|${a}\\right|`);
+        } else if (["floor"].includes(tok.value)) {
+          stack.push(`\\lfloor${a}\\rfloor`);
         } else {
           stack.push(`${tok.value}${parens(a)}`);
         }
@@ -1938,7 +1960,7 @@ function tokensToTex(tokens, opts = {}) {
           stack.push(`${parens(a)}^{${b}}`);
         } else if (tok.value === "*") {
           const sym = options.implicitMul ? "" : options.mulSymbol;
-          stack.push(`${a}${sym}${b}`);
+          stack.push(`${a}${sym} ${b}`);
         } else {
           const texOps = { "==": "=", "!=": "\\ne", "<=": "\\le", ">=": "\\ge" };
           stack.push(`(${a} ${texOps[tok.value] || tok.value} ${b})`);
@@ -1960,10 +1982,10 @@ function tokensToTex(tokens, opts = {}) {
           args.unshift(stack.pop());
         }
         const f = stack.pop();
+        if (f != null && f != "color" && f != "bgColor") {
+        }
         if (tok.value === "sqrt" && args.length === 1) {
           stack.push(`\\sqrt{${args[0]}}`);
-        } else if (tok.value === "abs" && args.length === 1) {
-          stack.push(`\\left|${args[0]}\\right|`);
         } else if (["sin", "cos", "tan", "log", "ln"].includes(tok.value)) {
           stack.push(`\\${tok.value}\\left(${args.join(", ")}\\right)`);
         } else if (f == "color" && args.length === 2) {

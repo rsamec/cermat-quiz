@@ -62,6 +62,7 @@ const assets = assetsData.filter((({code}) => parseCode(code).period == observab
                   <a class="h-stack h-stack--s" href="calc/calculator-${code}" title="Kalkulačka"><i class="fa fa-calculator"></i><span>Kalkulačka</span></a>
                   <a class="h-stack h-stack--s" href="chat-stepper-${code}" title="Rozhodovačka"><i class="fa fa-diagram-project"></i><span>Rozhodovačka</span></a>
                   <a class="h-stack h-stack--s" href="form-${code}" title="Vyplnění odpovědí"><i class="fa fa-file-waveform"></i><span>Vyplňovačka</span></a>
+                  <a class="h-stack h-stack--s" href="calc/color-expression-${code}" title="Barevné řešení"><i class="fa fa-file-waveform"></i><span>Obarvovačka</span></a>
                 </div>
               </div>              
               <button  popovertarget=popover-ai-${code}>AI <i class="fas fa-caret-down"></i></button>

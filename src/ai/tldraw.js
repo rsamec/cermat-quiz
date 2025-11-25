@@ -814,11 +814,11 @@ Fraction.prototype = {
   "simplify": function(eps22) {
     const ieps = BigInt(1 / (eps22 || 1e-3) | 0);
     const thisABS = this["abs"]();
-    const cont = thisABS["toContinued"]();
-    for (let i = 1; i < cont.length; i++) {
-      let s = newFraction(cont[i - 1], C_ONE);
+    const cont2 = thisABS["toContinued"]();
+    for (let i = 1; i < cont2.length; i++) {
+      let s = newFraction(cont2[i - 1], C_ONE);
       for (let k = i - 2; k >= 0; k--) {
-        s = s["inverse"]()["add"](cont[k]);
+        s = s["inverse"]()["add"](cont2[k]);
       }
       let t = s["sub"](thisABS);
       if (t["n"] * ieps < t["d"]) {
@@ -3408,6 +3408,9 @@ parser.functions.gcd = function(...args) {
 parser.functions.lcd = function(...args) {
   return lcdCalc2(args);
 };
+parser.functions.abs = function(arg) {
+  return Math.abs(arg);
+};
 var eps = 1e-3;
 parser.functions.closeTo = function(value, center) {
   const start = center - eps;
@@ -3481,11 +3484,16 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
           expr = expr.simplify();
         }
       } else {
-        const q = res.quantity ?? res.ratio;
-        if (typeof q == "number" || !isNaN(parseFloat(q))) {
+        const q = res.quantity ?? res.ratio ?? res.ratios;
+        if (typeof q == "number" || !isNaN(parseFloat(q)) || Array.isArray(q) || checkFraction(q)) {
           expr = parser.parse(cleanUpExpression(expr, variable));
-          if (level >= requiredLevel) {
-            expr = expr.simplify({ [variable]: q });
+          if (level >= requiredLevel || Array.isArray(q)) {
+            if (checkFraction(q)) {
+              const [numerator, denominator] = parseFraction(q);
+              expr = expr.simplify({ [variable]: numerator / denominator });
+            } else {
+              expr = expr.simplify({ [variable]: q });
+            }
           } else {
             for (let [key, values] of Object.entries(colors2)) {
               if (values.includes(context[variable])) {
@@ -3509,6 +3517,16 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
     return node;
   }
 }
+var fractionRegex = /^(-?[0-9]+)\/(-?[0-9]+)$/;
+function checkFraction(str) {
+  return fractionRegex.test(str);
+}
+function parseFraction(str) {
+  const match = fractionRegex.exec(str);
+  if (!match)
+    return null;
+  return [Number(match[1]), Number(match[2])];
+}
 function toEquationExpr(lastExpr, requiredLevel = 0, context = {}) {
   const final = recurExpr({ quantity: lastExpr }, 0, requiredLevel, context);
   return parser.parse(cleanUpExpression(final));
@@ -3521,7 +3539,7 @@ function toEquationExprAsTex(lastExpr, requiredLevel = 0, context = {}) {
   return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel, context).tokens)} $`;
 }
 function cleanUpExpression(exp, variable = "") {
-  const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, variable);
+  const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratios`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, variable);
   return formatNumbersInExpression(replaced);
 }
 function formatNumbersInExpression(expr) {
@@ -3686,6 +3704,10 @@ function tokensToTex(tokens, opts = {}) {
         const a = stack.pop();
         if (tok.value === "sqrt") {
           stack.push(`\\sqrt{${a}}`);
+        } else if (["abs"].includes(tok.value)) {
+          stack.push(`\\left|${a}\\right|`);
+        } else if (["floor"].includes(tok.value)) {
+          stack.push(`\\lfloor${a}\\rfloor`);
         } else {
           stack.push(`${tok.value}${parens(a)}`);
         }
@@ -3704,7 +3726,7 @@ function tokensToTex(tokens, opts = {}) {
           stack.push(`${parens(a)}^{${b}}`);
         } else if (tok.value === "*") {
           const sym = options.implicitMul ? "" : options.mulSymbol;
-          stack.push(`${a}${sym}${b}`);
+          stack.push(`${a}${sym} ${b}`);
         } else {
           const texOps = { "==": "=", "!=": "\\ne", "<=": "\\le", ">=": "\\ge" };
           stack.push(`(${a} ${texOps[tok.value] || tok.value} ${b})`);
@@ -3726,10 +3748,10 @@ function tokensToTex(tokens, opts = {}) {
           args.unshift(stack.pop());
         }
         const f = stack.pop();
+        if (f != null && f != "color" && f != "bgColor") {
+        }
         if (tok.value === "sqrt" && args.length === 1) {
           stack.push(`\\sqrt{${args[0]}}`);
-        } else if (tok.value === "abs" && args.length === 1) {
-          stack.push(`\\left|${args[0]}\\right|`);
         } else if (["sin", "cos", "tan", "log", "ln"].includes(tok.value)) {
           stack.push(`\\${tok.value}\\left(${args.join(", ")}\\right)`);
         } else if (f == "color" && args.length === 2) {
@@ -4261,32 +4283,35 @@ function inferConvertRatioCompareToRatiosRule(arr, a, last) {
     ] : []
   };
 }
+function unitConvertFactors(a, b) {
+  const destination = helpers2.unitAnchor(a.unit);
+  const origin = helpers2.unitAnchor(b.unit);
+  const convertFactor = destination >= origin ? destination / origin : origin / destination;
+  return { destination, origin, convertFactor };
+}
 function convertToUnitRule(a, b) {
   if (a.unit == null) {
     throw `Missing unit ${a.kind === "cont" ? a.agent : `${a.agentA} to ${a.agentB}`} a ${a.entity}`;
   }
-  if (!isNumber2(a.quantity)) {
-    throw "convertToUnit does not support expressions";
-  }
-  return { ...a, quantity: helpers2.convertToUnit(a.quantity, a.unit, b.unit), unit: b.unit };
+  const { destination, origin, convertFactor } = unitConvertFactors(a, b);
+  return {
+    ...a,
+    quantity: isNumber2(a.quantity) ? helpers2.convertToUnit(a.quantity, a.unit, b.unit) : destination >= origin ? wrapToQuantity(`a.quantity * ${convertFactor}`, { a }) : wrapToQuantity(`a.quantity / ${convertFactor}`, { a }),
+    unit: b.unit
+  };
 }
 function inferConvertToUnitRule(a, b) {
   const result = convertToUnitRule(a, b);
-  if (!isNumber2(a.quantity) || !isNumber2(result.quantity)) {
-    throw "convertToUnit does not support expressions";
-  }
-  const destination = helpers2.unitAnchor(a.unit);
-  const origin = helpers2.unitAnchor(b.unit);
-  const convertFactor = destination >= origin ? destination / origin : origin / destination;
+  const { destination, origin, convertFactor } = unitConvertFactors(a, b);
   return {
     name: convertToUnitRule.name,
     inputParameters: extractKinds(a, b),
-    question: `P\u0159eve\u010F ${formatNumber(a.quantity)} ${formatEntity(a)} na ${b.unit}.`,
+    question: isNumber2(a.quantity) ? `P\u0159eve\u010F ${formatNumber(a.quantity)} ${formatEntity(a)} na ${b.unit}.` : `P\u0159eve\u010F na ${b.unit}.`,
     result,
-    options: [
+    options: isNumber2(a.quantity) && isNumber2(result.quantity) ? [
       { tex: `${formatNumber(a.quantity)} * ${formatNumber(convertFactor)}`, result: formatNumber(result.quantity), ok: destination >= origin },
       { tex: `${formatNumber(a.quantity)} / ${formatNumber(convertFactor)}`, result: formatNumber(result.quantity), ok: destination < origin }
-    ]
+    ] : []
   };
 }
 function roundToRule(a, b) {
@@ -4316,7 +4341,7 @@ function computeQuantityByRatioBase(a, b) {
   return isNumber2(a.quantity) && isNumber2(b.ratio) ? b.ratio >= 0 ? a.quantity * b.ratio : a.quantity / abs(b.ratio) : isNumber2(b.ratio) ? b.ratio >= 0 ? wrapToQuantity(`a.quantity * b.ratio`, { a, b }) : wrapToQuantity(`a.quantity / abs(b.ratio)`, { a, b }) : wrapToQuantity(`a.quantity * b.ratio`, { a, b });
 }
 function computeQuantityByRatioPart(a, b) {
-  return isNumber2(a.quantity) && isNumber2(b.ratio) ? b.ratio > 0 ? a.quantity / b.ratio : a.quantity * abs(b.ratio) : isNumber2(b.ratio) ? b.ratio > 0 ? wrapToQuantity(`a.quantity / b.ratio`, { a, b }) : wrapToQuantity(`a.quantity * abs(b.ratio)`, { a, b }) : wrapToQuantity(`b.ratio > 0 ? a.quantity / b.ratio : a.quantity * abs(b.ratio)`, { a, b });
+  return isNumber2(a.quantity) && isNumber2(b.ratio) ? b.ratio > 0 ? a.quantity / b.ratio : a.quantity * abs(b.ratio) : isNumber2(b.ratio) ? b.ratio > 0 ? wrapToQuantity(`a.quantity / b.ratio`, { a, b }) : wrapToQuantity(`a.quantity * abs(b.ratio)`, { a, b }) : wrapToQuantity(`a.quantity / b.ratio`, { a, b });
 }
 function ratioCompareRule(a, b, nthPart) {
   let result;
@@ -4433,10 +4458,6 @@ function inferPartWholeComplementRule(a, b) {
   };
 }
 function convertTwoPartRatioToRatioCompareRule(b, { agent, asPercent }) {
-  if (!areNumbers(b.ratios)) {
-    throw "ratios does not support non quantity type";
-  }
-  const bRatios = b.ratios;
   if (!(b.ratios.length === 2 && b.parts.length === 2)) {
     throw `Part to part ratio has to have exactly two parts.`;
   }
@@ -4449,7 +4470,7 @@ function convertTwoPartRatioToRatioCompareRule(b, { agent, asPercent }) {
     kind: "comp-ratio",
     agentA: b.parts[agentAIndex],
     agentB: b.parts[agentBaseIndex],
-    ratio: bRatios[agentAIndex] / bRatios[agentBaseIndex],
+    ratio: areNumbers(b.ratios) ? b.ratios[agentAIndex] / b.ratios[agentBaseIndex] : wrapToRatio(`b.ratios[${agentAIndex}] / b.ratios[${agentBaseIndex}]`, { b }),
     asPercent
   };
 }
@@ -4530,9 +4551,6 @@ function inferInvertRatioCompareRule(b) {
   };
 }
 function convertPartToPartToPartWholeRule(a, b, asPercent) {
-  if (!areNumbers(b.ratios)) {
-    throw "ratios does not support non quantity type";
-  }
   if (!b.parts.includes(a.agent)) {
     throw `Missing part ${a.agent} , ${b.parts.join()}.`;
   }
@@ -4540,27 +4558,23 @@ function convertPartToPartToPartWholeRule(a, b, asPercent) {
   return {
     kind: "ratio",
     whole: b.whole,
-    ratio: b.ratios[index] / b.ratios.reduce((out, d) => out += d, 0),
+    ratio: areNumbers(b.ratios) ? b.ratios[index] / b.ratios.reduce((out, d) => out += d, 0) : wrapToRatio(`b.ratios[${index}] / (${b.ratios.map((d, i) => `x${i + 1}`).join(" + ")})`, { b, ...Object.fromEntries(b.ratios.map((d, i) => [`x${i + 1}`, d])) }),
     part: b.parts[index],
     asPercent
   };
 }
 function inferConvertPartToPartToPartWholeRule(a, b, last) {
   const result = convertPartToPartToPartWholeRule(a, b, last.asPercent);
-  if (!areNumbers(b.ratios) || !isNumber2(result.ratio)) {
-    throw "ratios does not support non quantity type";
-  }
   const index = b.parts.indexOf(a.agent);
-  const value = b.ratios[index];
   return {
     name: convertPartToPartToPartWholeRule.name,
     inputParameters: extractKinds(a, b, last),
     question: `Vyj\xE1d\u0159i ${last.asPercent ? "procentem" : "pom\u011Brem"} ${result.part} z ${result.whole}?`,
     result,
-    options: [
-      { tex: `${formatNumber(value)} / (${b.ratios.map((d) => formatNumber(d)).join(" + ")})`, result: formatRatio(result.ratio, result.asPercent), ok: true },
-      { tex: `${formatNumber(value)} * (${b.ratios.map((d) => formatNumber(d)).join(" + ")})`, result: formatRatio(result.ratio, result.asPercent), ok: false }
-    ]
+    options: areNumbers(b.ratios) && isNumber2(result.ratio) ? [
+      { tex: `${formatNumber(b.ratios[index])} / (${b.ratios.map((d) => formatNumber(d)).join(" + ")})`, result: formatRatio(result.ratio, result.asPercent), ok: true },
+      { tex: `${formatNumber(b.ratios[index])} * (${b.ratios.map((d) => formatNumber(d)).join(" + ")})`, result: formatRatio(result.ratio, result.asPercent), ok: false }
+    ] : []
   };
 }
 function ratioCompareToCompareRule(a, b) {
@@ -4619,17 +4633,16 @@ function inferTransitiveCompareRule(a, b) {
   };
 }
 function compRatiosToCompRule(a, b, nthPart) {
-  if (!areNumbers(a.ratios) || !isNumber2(b.quantity)) {
-    throw "ratios does not support non quantity type";
-  }
   const aIndex = a.parts.indexOf(b.agentA);
   const bIndex = a.parts.indexOf(b.agentB);
   if (aIndex === -1 || bIndex === -1) {
     throw `Missing parts to compare ${a.parts.join(",")}, required parts ${b.agentA, b.agentB}`;
   }
-  const diff = a.ratios[aIndex] - a.ratios[bIndex];
-  if (!(diff > 0 && b.quantity > 0 || diff < 0 && b.quantity < 0 || diff == 0 && b.quantity == 0)) {
-    throw `Uncompatible compare rules. Absolute compare ${b.quantity} between ${b.agentA} a ${b.agentB} does not match relative compare.`;
+  if (isNumber2(b.quantity) && areNumbers(a.ratios)) {
+    const diff = a.ratios[aIndex] - a.ratios[bIndex];
+    if (!(diff > 0 && b.quantity > 0 || diff < 0 && b.quantity < 0 || diff == 0 && b.quantity == 0)) {
+      throw `Uncompatible compare rules. Absolute compare ${b.quantity} between ${b.agentA} a ${b.agentB} does not match relative compare.`;
+    }
   }
   const lastIndex = nthPart?.agent != null ? a.parts.findIndex((d) => d === nthPart.agent) : aIndex > bIndex ? aIndex : bIndex;
   const nthPartAgent = a.parts[lastIndex];
@@ -4638,7 +4651,7 @@ function compRatiosToCompRule(a, b, nthPart) {
     agent: nthPartAgent,
     entity: b.entity,
     unit: b.unit,
-    quantity: abs(b.quantity / diff) * a.ratios[lastIndex]
+    quantity: isNumber2(b.quantity) && areNumbers(a.ratios) ? abs(b.quantity / a.ratios[aIndex] - a.ratios[bIndex]) * a.ratios[lastIndex] : wrapToQuantity(`abs(b.quantity / (a.ratios[${aIndex}] - a.ratios[${bIndex}])) * a.ratios[${lastIndex}]`, { a, b })
   };
 }
 function inferCompRatiosToCompRule(a, b, nthPart) {
@@ -5947,7 +5960,7 @@ function nthTermRule(a, b) {
     quantity: b.type.kind === "arithmetic" ? first + (a.quantity - 1) * b.type.commonDifference : b.type.kind === "quadratic" ? nthQuadraticElementFromDifference(first, second, b.type.secondDifference, a.quantity) : b.type.kind === "geometric" ? first * Math.pow(b.type.commonRatio, a.quantity - 1) : NaN
   };
 }
-function nthTermExpressionRuleEx(a, b) {
+function nthTermExpressionRule(a, b) {
   if (!isNumber2(a.quantity)) {
     throw "nthTermExpressionRule are not supported by non quantity types";
   }
@@ -5961,7 +5974,7 @@ function nthTermExpressionRuleEx(a, b) {
   });
 }
 function inferNthTermRule(a, b) {
-  const result = b.kind === "pattern" ? nthTermExpressionRuleEx(a, b) : nthTermRule(a, b);
+  const result = b.kind === "pattern" ? nthTermExpressionRule(a, b) : nthTermRule(a, b);
   return {
     name: nthTermRule.name,
     inputParameters: extractKinds(a, b),
@@ -6520,7 +6533,7 @@ function convertContext(context) {
   return Object.entries(context).reduce((out, [key, value]) => {
     out[key] = isRatioPredicate2(value) && isNumber2(value.ratio) ? {
       ...value,
-      ratio: helpers2.convertToFraction(value.ratio)
+      ratio: `${helpers2.convertToFraction(value.ratio)}`
     } : value;
     return out;
   }, {});
@@ -9935,6 +9948,9 @@ parser2.functions.gcd = function(...args) {
 parser2.functions.lcd = function(...args) {
   return lcdCalc3(args);
 };
+parser2.functions.abs = function(arg) {
+  return Math.abs(arg);
+};
 var eps2 = 1e-3;
 parser2.functions.closeTo = function(value, center) {
   const start = center - eps2;
@@ -10002,11 +10018,16 @@ function recurExpr2(node, level, requiredLevel = 0, parentContext = {}) {
           expr = expr.simplify();
         }
       } else {
-        const q = res.quantity ?? res.ratio;
-        if (typeof q == "number" || !isNaN(parseFloat(q))) {
+        const q = res.quantity ?? res.ratio ?? res.ratios;
+        if (typeof q == "number" || !isNaN(parseFloat(q)) || Array.isArray(q) || checkFraction2(q)) {
           expr = parser2.parse(cleanUpExpression2(expr, variable));
-          if (level >= requiredLevel) {
-            expr = expr.simplify({ [variable]: q });
+          if (level >= requiredLevel || Array.isArray(q)) {
+            if (checkFraction2(q)) {
+              const [numerator, denominator] = parseFraction2(q);
+              expr = expr.simplify({ [variable]: numerator / denominator });
+            } else {
+              expr = expr.simplify({ [variable]: q });
+            }
           } else {
             for (let [key, values] of Object.entries(colors2)) {
               if (values.includes(context[variable])) {
@@ -10030,6 +10051,16 @@ function recurExpr2(node, level, requiredLevel = 0, parentContext = {}) {
     return node;
   }
 }
+var fractionRegex2 = /^(-?[0-9]+)\/(-?[0-9]+)$/;
+function checkFraction2(str) {
+  return fractionRegex2.test(str);
+}
+function parseFraction2(str) {
+  const match = fractionRegex2.exec(str);
+  if (!match)
+    return null;
+  return [Number(match[1]), Number(match[2])];
+}
 function toEquationExpr2(lastExpr, requiredLevel = 0, context = {}) {
   const final = recurExpr2({ quantity: lastExpr }, 0, requiredLevel, context);
   return parser2.parse(cleanUpExpression2(final));
@@ -10042,7 +10073,7 @@ function toEquationExprAsText(lastExpr, requiredLevel = 0, context = {}) {
   return expressionToString22(toEquationExpr2(lastExpr, requiredLevel, context).tokens, false).replaceAll('"', "");
 }
 function cleanUpExpression2(exp, variable = "") {
-  const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, variable);
+  const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratios`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, variable);
   return formatNumbersInExpression2(replaced);
 }
 function formatNumbersInExpression2(expr) {

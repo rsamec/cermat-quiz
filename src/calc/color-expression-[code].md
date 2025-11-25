@@ -52,6 +52,7 @@ const valuesMap = ids.map(id => {
 }).filter(({values}) => values.length > 0)
 
 const useColors = deductionTree => {
+    return true;
     const context = deductionTree.context;
     return context != null ? context.autoColors || context.colors || context.bgColors : false
 }
@@ -72,7 +73,10 @@ display(html`<div>
         <div class="v-stack v-stack--m">${values       
         .filter(([key,value]) => useColors(value.deductionTree))
         .map(([key, value]) => {
-            const {depth, width, predicates, rules} = computeTreeMetrics(value.deductionTree);    
+            const {depth, width, predicates, rules} = computeTreeMetrics(value.deductionTree); 
+            if (['evalToQuantityRule','convertRatioCompareToRatiosRule','convertToPartToPartRatios', 'nthTermExpressionRule', 'nthTermRule',
+             'convertRatioCompareToTwoPartRatioRule', 'convertRatioCompareToRatioRule','commonSense', 'alligationRule', 'partEqualRule'].some(d => rules.includes(d))) return '';
+            
             const colorifyParamsForm = Inputs.form({
                 maxDepth: Inputs.range([0, depth - 1], {step: 1, value: 3, label: "Maximální hloubka"}),
                 axioms:  Inputs.toggle({label:"Axioms", value: true}),
@@ -82,12 +86,14 @@ display(html`<div>
             // const notSupportedRules = ["convertToUnitRule", "evalToQuantityRule", "commonSense","alligationRule"]
             // if (notSupportedRules.some(d => rules.includes(d))) return ''
 
+            
+
             const signalValue = signal(colorifyParamsForm.value);
             colorifyParamsForm.addEventListener("input", e => {
                 signalValue.value = colorifyParamsForm.value;
             })            
-
-            return rhtml`<div><div class="card">${colorifyParamsForm}</div><div>${computed(() => {            
+            
+            return rhtml`<div><h3>Úloha ${key}</h3><div class="card">${colorifyParamsForm}</div><div>${computed(() => {            
                 const {deductionTree, colorsMap}  = colorifyDeduceTree(value.deductionTree,signalValue.value );
                 return mdPlus.unsafe(jsonToMarkdownTree(deductionTree, 0, colorsMap).join(''))        
             })}</div></div>`
