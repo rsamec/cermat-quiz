@@ -88,7 +88,8 @@ function proportionPlot({ data, columns, options = {} }) {
   const { width, height, marginLeft, marginRight } = {
     ...{
       marginLeft: 50,
-      marginRight: 60
+      marginRight: 60,
+      height: 200,
     },
     ...options
   }
@@ -200,14 +201,14 @@ export function relativeTwoPartsDiffData(value, { first, second, asPercent } = {
     { agent: second, value: whole }]
 }
 export function relativeParts(d, options) {
-  return partion(relativePartsData(d, options), { width: 300, height: 50, formatAsFraction: !options.asPercent, showRelativeValues: false, unit: 1, multiple: options.asPercent ? 5 : undefined })
+  return partion(relativePartsData(d, options), { width: options.width ?? 300, height: options.height ?? 50, formatAsFraction: !options.asPercent, showRelativeValues: false, unit: 1, multiple: options.asPercent ? 5 : undefined })
 }
 
 export function relativeTwoParts(d, options) {
-  return partion(relativeTwoPartsData(d, options), { width: 300, height: 50, formatAsFraction: !options.asPercent, showRelativeValues: false, unit: 1, multiple: options.asPercent ? 5 : undefined })
+  return partion(relativeTwoPartsData(d, options), { width: options.width ?? 300, height: options.height ?? 50, formatAsFraction: !options.asPercent, showRelativeValues: false, unit: 1, multiple: options.asPercent ? 5 : undefined })
 }
 export function relativeTwoPartsDiff(d, options) {
-  return partion(relativeTwoPartsDiffData(d, options), { width: 300, height: 60, formatAsFraction: !options.asPercent, showRelativeValues: false, unit: 1, multiple: options.asPercent ? 5 : undefined, showSeparate: true })
+  return partion(relativeTwoPartsDiffData(d, options), { width: options.width ?? 300, height: options.height ?? 50, formatAsFraction: !options.asPercent, showRelativeValues: false, unit: 1, multiple: options.asPercent ? 5 : undefined, showSeparate: true })
 }
 
 function label(d) {
@@ -373,47 +374,9 @@ export function deduceTraverse(node) {
         args.push(res)
 
         if (!isLast) {
-          if (newChild?.kind === "ratio" && newChild?.ratio != null) {
-            args.push(relativeTwoPartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: toAgent(newChild.whole), asPercent: newChild.asPercent }))
-          }
-          else if (newChild?.kind === "ratios" && newChild?.ratios?.length === 2) {
-            if (newChild?.parts?.length == 2) {
-              const gcdValue = gcdCalc([newChild.ratios[0], newChild.ratios[1]]);
-              console.log(gcdValue, newChild.ratios);
-              if (gcdValue > 1 && gcdValue <= 10) {
-                const baseRatios = [newChild.ratios[0] / gcdValue, newChild.ratios[1] / gcdValue];
-
-                args.push(proportionPlot({
-                  data: [...Array(gcdValue).keys()].flatMap(d => [
-                    { scaleFactor: d + 1, value: baseRatios[0], type: toAgent(newChild.parts[0]) },
-                    { scaleFactor: d + 1, value: baseRatios[1], type: toAgent(newChild.parts[1]) }
-                  ]),
-                  columns: [toAgent(newChild.parts[0]), toAgent(newChild.parts[1])],
-                  label: toAgent(newChild.whole),
-                  options: { height: gcdValue * 20 + 50 }
-                }))
-              }
-              else {
-                args.push(relativeParts(newChild.ratios, { parts: newChild.parts }))
-              }
-            }
-            else {
-              args.push(relativeParts(newChild.ratios, { parts: newChild.parts }))
-            }
-
-            //args.push(relativeTwoParts(newChild.ratios[0] / newChild.ratios[1], { first: toAgent(newChild.parts[0]), second: toAgent(newChild.parts[2]) }))
-          }
-          else if (newChild?.kind === "rate" && newChild?.quantity && isNumber(newChild?.quantity)) {
-            args.push(partion([
-            { agent: `${newChild.entity?.entity}`, value: newChild.quantity, yValue: isNumber(newChild.baseQuantity) && newChild.baseQuantity != 1 ? `${newChild.baseQuantity} ${newChild.entityBase?.unit ?? newChild.entityBase?.entity}` : `${newChild.entityBase?.unit ?? newChild.entityBase?.entity}` },
-            ], { width: 300, height: 50, marginLeft: 70, formatAsFraction: false, showRelativeValues: false, showSeparate: true }))
-          }
-          if (newChild?.kind === "gcd" || newChild?.kind === "lcd") {
-            const numbers = node.children.slice(0, -2).map(d => isPredicate(d) ? d : last(d)).map(d => d.quantity);
-            args.push(html`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d, i) => html`<div>${numbers[i]} = ${d.join()}</div>`)}</div>`)
-          }
-          else if (newChild?.kind === "comp-ratio" && newChild?.ratio != null) {
-            args.push(relativeTwoPartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: newChild.agentB, asPercent: newChild.asPercent }))
+          const plotFigure = renderPredicatePlot(newChild, { predicatesToExclude: ["cont"] });
+          if (plotFigure != null) {
+            args.push(plotFigure)
           }
         }
       }
@@ -475,54 +438,9 @@ export function stepsTraverse(node) {
         args.push(res)
 
         if (!isLast) {
-          if (newChild?.kind === "ratio" && newChild?.ratio != null) {
-            args.push(relativeTwoPartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: `základ - ${toAgent(newChild.whole)}`, asPercent: newChild.asPercent }))
-          }
-          else if (newChild?.kind === "ratios" && newChild?.parts != null) {
-            if (newChild?.parts?.length == 2) {
-              const gcdValue = gcdCalc([newChild.ratios[0], newChild.ratios[1]]);
-              if (gcdValue > 1 && gcdValue <= 10) {
-                const baseRatios = [newChild.ratios[0] / gcdValue, newChild.ratios[1] / gcdValue];
-
-                args.push(proportionPlot({
-                  data: [...Array(gcdValue).keys()].flatMap(d => [
-                    { scaleFactor: d + 1, value: baseRatios[0], type: toAgent(newChild.parts[0]) },
-                    { scaleFactor: d + 1, value: baseRatios[1], type: toAgent(newChild.parts[1]) }
-                  ]),
-                  columns: [toAgent(newChild.parts[0]), toAgent(newChild.parts[1])],
-                  label: toAgent(newChild.whole)
-                }))
-              }
-              else {
-                args.push(relativeParts(newChild.ratios, { parts: newChild.parts }))
-              }
-            }
-            else {
-              args.push(relativeParts(newChild.ratios, { parts: newChild.parts }))
-            }
-          }
-          else if (newChild?.kind === "rate" && newChild?.quantity && isNumber(newChild?.quantity)) {
-            args.push(partion([
-              { agent: `${newChild.entity?.entity}`, value: newChild.quantity, yValue: `${newChild.entityBase?.entity}` },
-            ], { width: 300, height: 50, marginLeft: 70, formatAsFraction: false, showRelativeValues: false, showSeparate: true }))
-          }
-          else if (newChild?.kind === "unit") {
-            //console.log(inferenceRuleWithQuestion(mapNodeChildrenToPredicates(node)), " -> ", newChild.unit)
-            // args.push(partion([
-            //   { agent: `${newChild.entity?.entity}`, value: newChild.quantity, yValue: `${newChild.entityBase?.entity}` },
-            // ], { width: 300, height: 50, marginLeft: 70, formatAsFraction: false, showRelativeValues: false, showSeparate: true }))
-          }
-          else if (newChild?.kind === "quota" && newChild?.quantity && isNumber(newChild?.quantity)) {
-            args.push(partion([
-              { agent: `${newChild.agentQuota}`, value: newChild.quantity, yValue: `${newChild.agent}` },
-            ], { width: 300, height: 50, marginLeft: 70, formatAsFraction: false, showRelativeValues: false, showSeparate: true }))
-          }
-          else if (newChild?.kind === "gcd" || newChild?.kind === "lcd") {
-            const numbers = node.children.slice(0, -2).map(d => isPredicate(d) ? d : last(d)).map(d => d.quantity);
-            args.push(html`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d, i) => html`<div>${formatNumber(numbers[i])} = ${d.join()}</div>`)}</div>`)
-          }
-          else if (newChild?.kind === "comp-ratio" && newChild?.ratio != null) {
-            args.push(relativeTwoPartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { first: newChild.agentA, second: `základ - ${newChild.agentB}`, asPercent: newChild.asPercent }))
+          const plotFigure = renderPredicatePlot(newChild, { predicatesToExclude: ["cont"] });
+          if (plotFigure != null) {
+            args.push(plotFigure)
           }
         }
 
@@ -610,4 +528,75 @@ export function renderDeduceTreeNode(args, node, level) {
 	  </div>
 	</div>`;
   return proof;
+}
+
+
+export function renderPredicatePlot(newChild, options = { predicatesToExclude: [''] }) {
+  const width = 250;
+  if (newChild == null) return;
+  if (options.predicatesToExclude.includes(newChild.kind)) return;
+
+  if (newChild.kind == "cont" && isNumber(newChild.quantity)) {
+    return partion([
+      { agent: `${newChild.agent} ${newChild.entity ?? ''}`, value: newChild.quantity, yValue: `${newChild.unit ?? ''}` },
+    ], { width, height: 50, marginLeft: 70, formatAsFraction: false, showRelativeValues: false, showSeparate: true })
+  }
+  else if (newChild.kind === "ratio" && newChild.ratio != null) {
+    return relativeTwoPartsDiff(-(1 - newChild.ratio), { first: toAgent(newChild.part), second: `základ - ${toAgent(newChild.whole)}`, asPercent: newChild.asPercent })
+  }
+  else if (newChild.kind === "ratios" && newChild.parts != null) {
+    if (newChild.parts?.length == 2) {
+      const gcdValue = gcdCalc([newChild.ratios[0], newChild.ratios[1]]);
+      if (gcdValue > 1 && gcdValue <= 10) {
+        const baseRatios = [newChild.ratios[0] / gcdValue, newChild.ratios[1] / gcdValue];
+
+        return proportionPlot({
+          data: [...Array(gcdValue).keys()].flatMap(d => [
+            { scaleFactor: d + 1, value: baseRatios[0], type: toAgent(newChild.parts[0]) },
+            { scaleFactor: d + 1, value: baseRatios[1], type: toAgent(newChild.parts[1]) }
+          ]),
+          columns: [toAgent(newChild.parts[0]), toAgent(newChild.parts[1])],
+          label: toAgent(newChild.whole)
+        })
+      }
+      else {
+        return relativeParts(newChild.ratios, { parts: newChild.parts })
+      }
+    }
+    else {
+      return relativeParts(newChild.ratios, { parts: newChild.parts })
+    }
+  }
+  else if (newChild.kind === "rate" && newChild.quantity && isNumber(newChild.quantity)) {
+    return partion([
+      { agent: `${newChild.entity?.entity}`, value: newChild.quantity, yValue: `${newChild.entityBase?.entity}` },
+    ], { width, height: 50, marginLeft: 70, formatAsFraction: false, showRelativeValues: false, showSeparate: true })
+  }
+  else if (newChild.kind === "unit") {
+    //console.log(inferenceRuleWithQuestion(mapNodeChildrenToPredicates(node)), " -> ", newChild.unit)
+    // return partion(
+    //   { agent: `${newChild.entity?.entity}`, value: newChild.quantity, yValue: `${newChild.entityBase?.entity}` },
+    // ], { width, height: 50, marginLeft: 70, formatAsFraction: false, showRelativeValues: false, showSeparate: true }))
+  }
+  else if (newChild.kind === "quota" && newChild.quantity && isNumber(newChild.quantity)) {
+    return partion([
+      { agent: `${newChild.agentQuota}`, value: newChild.quantity, yValue: `${newChild.agent}` },
+    ], { width, height: 50, marginLeft: 70, formatAsFraction: false, showRelativeValues: false, showSeparate: true })
+  }
+  else if (newChild.kind === "gcd" || newChild.kind === "lcd") {
+    const numbers = node.children.slice(0, -2).map(d => isPredicate(d) ? d : last(d)).map(d => d.quantity);
+    return html`<div class='v-stack'><span>Rozklad na prvočísla:</span>${primeFactorization(numbers).map((d, i) => html`<div>${formatNumber(numbers[i])} = ${d.join()}</div>`)}</div>`
+  }
+  else if (newChild.kind === "comp-ratio" && newChild.ratio != null) {
+    return relativeTwoPartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { width, first: newChild.agentA, second: newChild.agentB, asPercent: newChild.asPercent });
+  }
+  else if (newChild.kind === "comp-ratio" && newChild.ratio != null) {
+    return relativeTwoPartsDiff(newChild.ratio >= 0 ? newChild.ratio - 1 : -(1 + (1 / newChild.ratio)), { width, first: newChild.agentA, second: `základ - ${newChild.agentB}`, asPercent: newChild.asPercent })
+  }
+  else if (newChild.kind === "eval-formula") {
+    return;
+  }
+  else {
+    return;
+  }
 }

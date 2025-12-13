@@ -1,4 +1,4 @@
-import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate } from "../components/math.js"
+import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate, cont } from "../components/math.js"
 import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison, Frequency } from "../components/math.js"
 import { partionArray } from '../utils/common-utils.js';
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
@@ -931,23 +931,24 @@ export function getStepsFromTree(tree) {
 }
 
 function isColorifyPredicate(d) {
-  return isQuantityPredicate(d) || isRatioPredicate(d) || isRatiosPredicate(d);
+  return isQuantityPredicate(d) || isRatioPredicate(d);
 }
 export function colorifyDeduceTree(originalTree, { maxDepth, axioms, deductions }: { maxDepth?: number, axioms?: boolean, deductions?: boolean } = { maxDepth: 2, axioms: true, deductions: false }) {
   let counter = 0;
   //const tree = JSON.parse(JSON.stringify(originalTree));
   const tree = originalTree;
   const colorKeys = Object.keys(colors);
+  const deduceMap = new Map();
   const colorsMap = new Map();
   function traverse(node) {
 
     if (!node.children || node.children.length === 0) {
       if (isPredicate(node)) {
-        const newPredicate = isQuantityPredicate(node) && isNumber(node.quantity)
+        const newPredicate = (isQuantityPredicate(node) && isNumber(node.quantity))
           ? Object.assign(node, { quantity: node.quantity.toString() })
-          // : isRatioPredicate(node) && isNumber(node.ratio)
-          //   ? Object.assign(node, { ratio: node.ratio.toString() })
-          : node;
+          : isRatioPredicate(node) && isNumber(node.ratio)
+            ? Object.assign(node, { ratio: false ? node.ratio.toString() : `${new Fraction(node.ratio).toFraction()}`})
+            : node;
         return [newPredicate];
       }
       else {
@@ -967,13 +968,23 @@ export function colorifyDeduceTree(originalTree, { maxDepth, axioms, deductions 
 
     const conclusion = node.context != null ? deduceAs(node.context)(...premises) : deduce(...premises)
     const lastPredicate = last(conclusion);
+    deduceMap.set(node.children[node.children.length - 1], lastPredicate);
 
     if (!colorsMap.has(lastPredicate)) {
       colorsMap.set(lastPredicate, { bgColor: colorKeys[(counter++) % colorKeys.length] });
     }
     for (let i = 0; i != premises.length; i++) {
       if (!colorsMap.has(premises[i]) && isPredicate(premises[i]) && isColorifyPredicate(premises[i])) {
-        colorsMap.set(premises[i], { color: colorKeys[(counter++) % colorKeys.length] });
+        if (deduceMap.has(premises[i])) {
+          const correspondingColor = colorsMap.get(deduceMap.get(premises[i]))?.bgColor;
+          if (correspondingColor != null) {
+            colorsMap.set(premises[i], { color: correspondingColor });
+          }
+        }
+        else {
+          colorsMap.set(premises[i], { color: colorKeys[(counter++) % colorKeys.length] });
+        }
+
       }
     }
     return conclusion;
@@ -982,20 +993,20 @@ export function colorifyDeduceTree(originalTree, { maxDepth, axioms, deductions 
   const result = traverse(tree) as unknown as TreeNodeWithContext;
   result.context = {
     depth: maxDepth ?? tree.context?.depth ?? 2,
-    ...(axioms ? tree.context.colors ?? (tree.context?.autoColors ? {
+    ...(axioms ? tree.context?.colors ?? {
       colors: [...colorsMap.entries()].reduce((out, [predicate, d], index) => {
         if (d.color == null) return out;
         out[d.color] = out[d.color] ? out[d.color].concat([predicate]) : [predicate];
         return out;
       }, {})
-    } : {}) : {}),
-    ...(deductions ? tree.context.bgColors ?? (tree.context?.autoColors ? {
+    } : {}),
+    ...(deductions ? tree.context?.bgColors ?? {
       bgColors: [...colorsMap.entries()].reduce((out, [predicate, d], index) => {
         if (d.bgColor == null) return out;
         out[d.bgColor] = out[d.bgColor] ? out[d.bgColor].concat([predicate]) : [predicate];
         return out;
       }, {})
-    } : {}): {}),
+    } : {}),
   }
   return { deductionTree: result, colorsMap }
 }

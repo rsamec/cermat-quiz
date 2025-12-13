@@ -36,12 +36,15 @@ const quiz = parseQuiz(rawContent);
 
 const ids = quiz.questions.map(d => d.id);
 
-function createAndBindSignals({metadata, inferenceMap}){    
+function createAndBindSignals({metadata, steps}){    
     const {verifyBy} = metadata;
     
     // Create an actor that you can send events to.
     // Note: the actor is not started yet!    
-    const actor = createActor(calcMachine, {input: {verifyBy, inferenceMap}});
+    const actor = createActor(calcMachine, {input: {
+      verifyBy,
+      inferenceMap: new ArraySetMap(steps)
+      }});
     actor.start();    
     
     const snapshot = actor.getSnapshot();
@@ -88,9 +91,8 @@ display(html`<div>
      </details>
      <div class="v-stack v-stack--m">${values.map(([key, value]) => {
         const metadata = metadataMap.get(key.toString());
-        const steps = getStepsFromTree(value.deductionTree);
-        const inferenceMap = new ArraySetMap(steps);
-        const bindings = createAndBindSignals({metadata, inferenceMap})
+        const steps = getStepsFromTree(value.deductionTree);        
+        const bindings = createAndBindSignals({metadata, steps})
         
         return html`<div class="calc-view">${renderCalc({
             ...bindings,

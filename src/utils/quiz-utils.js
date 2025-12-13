@@ -70,7 +70,7 @@ export const quizes = [
   { subject: 'cz', period: 'diploma', tasksRate: 32, codes: generateCode("CM", ["A", "B"]) },
   { subject: 'math', period: '8', tasksRate: 14, codes: generateCode("M5", ["A"]).concat("M5A-2025", "M5B-2025") },
   { subject: 'math', period: '4', tasksRate: 16, codes: generateCode("M9", ["A", "B", "C", "D"], [2023, 2024, 2025]).concat("M9I-2025") },
-  { subject: 'math', period: '6', tasksRate: 16, codes: generateCode("M7", ["A"]).concat("M7A-2025", "M7B-2025") },
+  { subject: 'math', period: '6', tasksRate: 16, codes: generateCode("M7", ["A"]).concat("M7A-2025", "M7B-2025", "M7I-2018") },
   { subject: 'math', period: 'diploma', tasksRate: 25, codes: ["MMA-2025", "MMA-2023", "MMB-2023"] },
   //{ subject: 'math', period: 'diploma', codes:[]},
 ]

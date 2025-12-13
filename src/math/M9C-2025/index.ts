@@ -89,7 +89,7 @@ function kbelik() {
       deduce(
         celkem,
         deduce(
-          cont(kbelikLabel, 50, entity, unit),
+          celkem,
           percent(kbelikLabel, "odsypáno", 46)
         ),
         ctorDifference("zbývá")

@@ -1096,32 +1096,40 @@ function inferConvertRatioCompareToRatiosRule(arr: RatioComparison[], a: { whole
   }
 }
 
+function unitConvertFactors(a: Container | Comparison, b: ConvertUnit) {
+  const destination = helpers.unitAnchor(a.unit);
+  const origin = helpers.unitAnchor(b.unit);
+  const convertFactor = destination >= origin ? destination / origin : origin / destination;
+  return { destination, origin, convertFactor };
+}
 function convertToUnitRule(a: Container | Comparison, b: ConvertUnit): Container | Comparison {
   if (a.unit == null) {
     throw `Missing unit ${a.kind === "cont" ? a.agent : `${a.agentA} to ${a.agentB}`} a ${a.entity}`;
   }
-  if (!isNumber(a.quantity)) {
-    throw "convertToUnit does not support expressions"
+
+  const { destination, origin, convertFactor } = unitConvertFactors(a, b);
+  return {
+    ...a,
+    quantity: isNumber(a.quantity)
+      ? helpers.convertToUnit(a.quantity, a.unit, b.unit)
+      : destination >= origin
+        ? wrapToQuantity(`a.quantity * ${convertFactor}`, { a })
+        : wrapToQuantity(`a.quantity / ${convertFactor}`, { a }),
+    unit: b.unit
   }
-  return { ...a, quantity: helpers.convertToUnit(a.quantity, a.unit, b.unit), unit: b.unit }
 }
 function inferConvertToUnitRule(a: Container | Comparison, b: ConvertUnit): Question<Container | Comparison> {
   const result = convertToUnitRule(a, b)
-  if (!isNumber(a.quantity) || !isNumber(result.quantity)) {
-    throw "convertToUnit does not support expressions"
-  }
-  const destination = helpers.unitAnchor(a.unit);
-  const origin = helpers.unitAnchor(b.unit);
-  const convertFactor = destination >= origin ? destination / origin : origin / destination;
+  const { destination, origin, convertFactor } = unitConvertFactors(a, b);
   return {
     name: convertToUnitRule.name,
     inputParameters: extractKinds(a, b),
-    question: `Převeď ${formatNumber(a.quantity)} ${formatEntity(a)} na ${b.unit}.`,
+    question: isNumber(a.quantity) ? `Převeď ${formatNumber(a.quantity)} ${formatEntity(a)} na ${b.unit}.` : `Převeď na ${b.unit}.`,
     result,
-    options: [
+    options: isNumber(a.quantity) && isNumber(result.quantity) ? [
       { tex: `${formatNumber(a.quantity)} * ${formatNumber(convertFactor)}`, result: formatNumber(result.quantity), ok: destination >= origin },
       { tex: `${formatNumber(a.quantity)} / ${formatNumber(convertFactor)}`, result: formatNumber(result.quantity), ok: destination < origin },
-    ]
+    ] : []
   }
 }
 
@@ -1163,7 +1171,7 @@ function computeQuantityByRatioPart<T extends Predicate & { quantity: NumberOrEx
     ? b.ratio > 0 ? a.quantity / b.ratio : a.quantity * abs(b.ratio)
     : isNumber(b.ratio)
       ? b.ratio > 0 ? wrapToQuantity(`a.quantity / b.ratio`, { a, b }) : wrapToQuantity(`a.quantity * abs(b.ratio)`, { a, b })
-      : wrapToQuantity(`b.ratio > 0 ? a.quantity / b.ratio : a.quantity * abs(b.ratio)`, { a, b })
+      : wrapToQuantity(`a.quantity / b.ratio`, { a, b })
 
 }
 
@@ -1317,10 +1325,6 @@ function inferPartWholeComplementRule(a: Complement, b: PartWholeRatio): Questio
 
 function convertTwoPartRatioToRatioCompareRule(b: PartToPartRatio, { agent, asPercent }: { agent?: string, asPercent?: boolean }): RatioComparison {
 
-  if (!areNumbers(b.ratios)) {
-    throw "ratios does not support non quantity type"
-  }
-  const bRatios = b.ratios as number[]
   if (!(b.ratios.length === 2 && b.parts.length === 2)) {
     throw `Part to part ratio has to have exactly two parts.`
   }
@@ -1334,7 +1338,7 @@ function convertTwoPartRatioToRatioCompareRule(b: PartToPartRatio, { agent, asPe
     kind: 'comp-ratio',
     agentA: b.parts[agentAIndex],
     agentB: b.parts[agentBaseIndex],
-    ratio: bRatios[agentAIndex] / bRatios[agentBaseIndex],
+    ratio: areNumbers(b.ratios) ? b.ratios[agentAIndex] / b.ratios[agentBaseIndex] : wrapToRatio(`b.ratios[${agentAIndex}] / b.ratios[${agentBaseIndex}]`, { b }),
     asPercent
   }
 }
@@ -1422,9 +1426,6 @@ function inferInvertRatioCompareRule(b: RatioComparison): Question<RatioComparis
 }
 
 function convertPartToPartToPartWholeRule(a: NthPart, b: PartToPartRatio, asPercent: boolean): PartWholeRatio {
-  if (!areNumbers(b.ratios)) {
-    throw "ratios does not support non quantity type"
-  }
   if (!b.parts.includes(a.agent)) {
     throw `Missing part ${a.agent} , ${b.parts.join()}.`
   }
@@ -1433,29 +1434,27 @@ function convertPartToPartToPartWholeRule(a: NthPart, b: PartToPartRatio, asPerc
   return {
     kind: 'ratio',
     whole: b.whole,
-    ratio: b.ratios[index] / b.ratios.reduce((out, d) => out += d, 0),
+    ratio: areNumbers(b.ratios)
+      ? b.ratios[index] / b.ratios.reduce((out, d) => out += d, 0)
+      : wrapToRatio(`b.ratios[${index}] / (${b.ratios.map((d, i) => `x${i + 1}`).join(" + ")})`, { b, ...Object.fromEntries(b.ratios.map((d, i) => [`x${i + 1}`, d])) }),
     part: b.parts[index],
     asPercent
   }
 }
 function inferConvertPartToPartToPartWholeRule(a: NthPart, b: PartToPartRatio, last: PartWholeRatio): Question<PartWholeRatio> {
   const result = convertPartToPartToPartWholeRule(a, b, last.asPercent)
-  if (!areNumbers(b.ratios) || !isNumber(result.ratio)) {
-    throw "ratios does not support non quantity type"
-  }
 
   const index = b.parts.indexOf(a.agent);
-  const value = b.ratios[index];
 
   return {
     name: convertPartToPartToPartWholeRule.name,
     inputParameters: extractKinds(a, b, last),
     question: `Vyjádři ${last.asPercent ? "procentem" : "poměrem"} ${result.part} z ${result.whole}?`,
     result,
-    options: [
-      { tex: `${formatNumber(value)} / (${b.ratios.map(d => formatNumber(d)).join(" + ")})`, result: formatRatio(result.ratio, result.asPercent), ok: true },
-      { tex: `${formatNumber(value)} * (${b.ratios.map(d => formatNumber(d)).join(" + ")})`, result: formatRatio(result.ratio, result.asPercent), ok: false },
-    ]
+    options: areNumbers(b.ratios) && isNumber(result.ratio) ? [
+      { tex: `${formatNumber(b.ratios[index])} / (${b.ratios.map(d => formatNumber(d)).join(" + ")})`, result: formatRatio(result.ratio, result.asPercent), ok: true },
+      { tex: `${formatNumber(b.ratios[index])} * (${b.ratios.map(d => formatNumber(d)).join(" + ")})`, result: formatRatio(result.ratio, result.asPercent), ok: false },
+    ] : []
   }
 }
 
@@ -1521,9 +1520,6 @@ function inferTransitiveCompareRule(a: Comparison, b: RatioComparison): Question
 }
 
 function compRatiosToCompRule(a: PartToPartRatio, b: Comparison, nthPart: NthPart): Container {
-  if (!areNumbers(a.ratios) || !isNumber(b.quantity)) {
-    throw "ratios does not support non quantity type"
-  }
 
   const aIndex = a.parts.indexOf(b.agentA);
   const bIndex = a.parts.indexOf(b.agentB);
@@ -1531,9 +1527,12 @@ function compRatiosToCompRule(a: PartToPartRatio, b: Comparison, nthPart: NthPar
     throw `Missing parts to compare ${a.parts.join(",")}, required parts ${b.agentA, b.agentB}`
   }
 
-  const diff = a.ratios[aIndex] - a.ratios[bIndex];
-  if (!((diff > 0 && b.quantity > 0) || (diff < 0 && b.quantity < 0) || (diff == 0 && b.quantity == 0))) {
-    throw `Uncompatible compare rules. Absolute compare ${b.quantity} between ${b.agentA} a ${b.agentB} does not match relative compare.`
+
+  if (isNumber(b.quantity) && areNumbers(a.ratios)) {
+    const diff = a.ratios[aIndex] - a.ratios[bIndex];
+    if (!((diff > 0 && b.quantity > 0) || (diff < 0 && b.quantity < 0) || (diff == 0 && b.quantity == 0))) {
+      throw `Uncompatible compare rules. Absolute compare ${b.quantity} between ${b.agentA} a ${b.agentB} does not match relative compare.`
+    }
   }
 
   const lastIndex = nthPart?.agent != null ? a.parts.findIndex(d => d === nthPart.agent) : aIndex > bIndex ? aIndex : bIndex;
@@ -1544,7 +1543,9 @@ function compRatiosToCompRule(a: PartToPartRatio, b: Comparison, nthPart: NthPar
     agent: nthPartAgent,
     entity: b.entity,
     unit: b.unit,
-    quantity: abs(b.quantity / diff) * a.ratios[lastIndex]
+    quantity: isNumber(b.quantity) && areNumbers(a.ratios)
+      ? abs(b.quantity /(a.ratios[aIndex] - a.ratios[bIndex])) * a.ratios[lastIndex]
+      : wrapToQuantity(`abs(b.quantity / (a.ratios[${aIndex}] - a.ratios[${bIndex}])) * a.ratios[${lastIndex}]`, { a, b })
   }
 }
 function inferCompRatiosToCompRule(a: PartToPartRatio, b: Comparison, nthPart: NthPart): Question<Container> {
@@ -2191,7 +2192,7 @@ function alligationRule(items: Container[] | Rate[], last: Alligation): TwoPartR
   const nums = [a, b, c]
 
   if (!areNumbers(nums.map(d => d.quantity))) {
-    throw `A=lligationRule does not support non quantitive numbers.`
+    throw `AlligationRule does not support non quantitive numbers.`
   }
 
   // Sort them to find the middle (median)
@@ -2763,7 +2764,9 @@ function evalToOptionRule<T extends Predicate & { quantity?: Quantity, ratio?: Q
   let valueToEval = a.quantity ?? a.ratio;
 
   if (isExpressionNode(valueToEval)) {
+    // console.log("Evaluating expression node:", valueToEval);
     valueToEval = helpers.evalNodeToNumber(valueToEval)
+    // console.log("Result:", valueToEval);
   }
 
   if (!isNumber(valueToEval) || isNaN(valueToEval)) {
@@ -3066,7 +3069,7 @@ function nthTermRule(a: Container, b: Sequence): Container {
             ? first * Math.pow(b.type.commonRatio, a.quantity - 1) : NaN
   }
 }
-function nthTermExpressionRuleEx(a: Container, b: Pattern): Container {
+function nthTermExpressionRule(a: Container, b: Pattern): Container {
   if (!isNumber(a.quantity)) {
     throw "nthTermExpressionRule are not supported by non quantity types"
   }
@@ -3081,7 +3084,7 @@ function nthTermExpressionRuleEx(a: Container, b: Pattern): Container {
 }
 
 function inferNthTermRule(a: Container, b: Sequence | Pattern): Question<Container> {
-  const result = b.kind === "pattern" ? nthTermExpressionRuleEx(a, b) : nthTermRule(a, b)
+  const result = b.kind === "pattern" ? nthTermExpressionRule(a, b) : nthTermRule(a, b)
   return {
     name: nthTermRule.name,
     inputParameters: extractKinds(a, b),
@@ -3747,10 +3750,10 @@ function computeOtherAngle(a: Container, relationship: AngleRelationship) {
   const quantity = a.quantity
   switch (relationship) {
     case "complementary":
-      return isNumber(quantity) ? 90 - quantity : wrapToQuantity(`90 - a.quantity`, {a}); // Sum must be 90°
+      return isNumber(quantity) ? 90 - quantity : wrapToQuantity(`90 - a.quantity`, { a }); // Sum must be 90°
     case "supplementary":
     case "sameSide":
-      return isNumber(quantity) ? 180 - quantity : wrapToQuantity(`180 - a.quantity`, {a}); // Sum must be 18°      
+      return isNumber(quantity) ? 180 - quantity : wrapToQuantity(`180 - a.quantity`, { a }); // Sum must be 18°      
     case "opposite":
     case "corresponding":
     case "alternate":
@@ -3759,7 +3762,7 @@ function computeOtherAngle(a: Container, relationship: AngleRelationship) {
     case "axially-symmetric":
     case "isosceles-triangle-at-the-base":
     case "equilateral-triangle":
-      return isNumber(quantity) ? quantity : wrapToQuantity(`a.quantity`, {a}); // Equal angles
+      return isNumber(quantity) ? quantity : wrapToQuantity(`a.quantity`, { a }); // Equal angles
     default:
       throw "Unknown Angle Relationship";
   }

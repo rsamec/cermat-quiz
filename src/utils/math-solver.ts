@@ -27,6 +27,9 @@ parser.functions.gcd = function (...args: number[]) {
 parser.functions.lcd = function (...args: number[]) {
   return lcdCalc(args)
 }
+parser.functions.abs = function (arg: number) {
+  return Math.abs(arg);
+}
 const eps = 0.001;
 parser.functions.closeTo = function (value: number, center: number) {
   const start = center - eps;
@@ -40,6 +43,7 @@ parser.functions.color = function (color: string, value: number) {
 parser.functions.bgColor = function (bgColor: string, value: number) {
   return value;
 }
+
 function gcdCalc(numbers: number[]) {
   let num = 2, res = 1;
   while (num <= Math.min(...numbers)) {
@@ -97,12 +101,12 @@ function recurExpr(node, level, requiredLevel = 0, parentContext: DeduceContext 
       if (res.substitute != null) {
         expr = parser.parse(cleanUpExpression(expr, variable))
         if (level < requiredLevel) {
-          for (let [key, values] of Object.entries(colors)) {            
-            if (values.includes(context[variable])) {          
+          for (let [key, values] of Object.entries(colors)) {
+            if (values.includes(context[variable])) {
               expr = expr.substitute(variable, parser.parse(`color(${key},${variable})`))
             }
           }
-          for (let [key, values] of Object.entries(bgColors)) {            
+          for (let [key, values] of Object.entries(bgColors)) {
             if (values.includes(context[variable])) {
               expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable})`))
             }
@@ -115,16 +119,16 @@ function recurExpr(node, level, requiredLevel = 0, parentContext: DeduceContext 
         }
       }
       else {
-        const q = res.quantity ?? res.ratio;
+        const q = res.quantity ?? res.ratio ?? res.ratios;
 
-        if (typeof q == 'number' || !isNaN(parseFloat(q))) {
+        if (typeof q == 'number' || !isNaN(parseFloat(q)) || Array.isArray(q)) {
           expr = parser.parse(cleanUpExpression(expr, variable))
-          if (level >= requiredLevel) {
-            expr = expr.simplify({ [variable]: q })
+          if (level >= requiredLevel || Array.isArray(q)) {            
+            expr = expr.simplify({ [variable]: q})
             //console.log(":", variable, q, expr.toString())
           }
           else {
-            //console.log(":", variable, context[variable], expr.toString())
+            // console.log("::", variable, context[variable], expr.toString())
             for (let [key, values] of Object.entries(colors)) {
               if (values.includes(context[variable])) {
                 expr = expr.substitute(variable, parser.parse(`color(${key},${variable})`))
@@ -137,7 +141,7 @@ function recurExpr(node, level, requiredLevel = 0, parentContext: DeduceContext 
             }
 
             expr = expr.substitute(variable, q);
-            
+
           }
         }
         else {
@@ -150,6 +154,15 @@ function recurExpr(node, level, requiredLevel = 0, parentContext: DeduceContext 
   else {
     return node;
   }
+}
+const fractionRegex = /^(-?[0-9]+)\/(-?[0-9]+)$/;
+function checkFraction(str) {
+  return fractionRegex.test(str);
+}
+function parseFraction(str) {
+  const match = fractionRegex.exec(str);
+  if (!match) return null;
+  return [Number(match[1]), Number(match[2])];
 }
 export function toEquation(lastNode) {
   const final = recurExpr(lastNode, 0);
@@ -176,6 +189,7 @@ function cleanUpExpression(exp, variable = '') {
 
   const replaced = exp.toString()
     .replaceAll(`${variable}.quantity`, variable)
+    .replaceAll(`${variable}.ratios`, variable)
     .replaceAll(`${variable}.ratio`, variable)
     .replaceAll(`${variable}.baseQuantity`, variable)
 
@@ -317,7 +331,7 @@ export const colors = ({
   darkred: "#e7040f",
   // red: "#ff4136",
   //lightred: "#ff725c",
-  orange: "#ff6300",  
+  orange: "#ff6300",
   yellow: "#ffd700",
   // lightyellow: "#fbf1a9",
   purple: "#5e2ca5",
@@ -366,6 +380,12 @@ function tokensToTex(tokens, opts = {}) {
         if (tok.value === "sqrt") {
           stack.push(`\\sqrt{${a}}`);
         }
+        else if (["abs"].includes(tok.value)) {
+          stack.push(`\\left|${a}\\right|`);
+        }
+        else if (["floor"].includes(tok.value)) {
+          stack.push(`\\lfloor${a}\\rfloor`);
+        }
         else {
           stack.push(`${tok.value}${parens(a)}`);
         }
@@ -385,7 +405,7 @@ function tokensToTex(tokens, opts = {}) {
           stack.push(`${parens(a)}^{${b}}`);
         } else if (tok.value === "*") {
           const sym = options.implicitMul ? "" : options.mulSymbol;
-          stack.push(`${a}${sym}${b}`);
+          stack.push(`${a}${sym} ${b}`);
         } else {
           const texOps = { "==": "=", "!=": "\\ne", "<=": "\\le", ">=": "\\ge" };
           stack.push(`(${a} ${(texOps[tok.value] || tok.value)} ${b})`);
@@ -408,16 +428,17 @@ function tokensToTex(tokens, opts = {}) {
           args.unshift(stack.pop());
         }
         const f = stack.pop();
-
+        if (f != null && f != "color" && f != "bgColor") {
+          
+        }
+        
         if (tok.value === "sqrt" && args.length === 1) {
           stack.push(`\\sqrt{${args[0]}}`);
-        } else if (tok.value === "abs" && args.length === 1) {
-          stack.push(`\\left|${args[0]}\\right|`);
         } else if (["sin", "cos", "tan", "log", "ln"].includes(tok.value)) {
           stack.push(`\\${tok.value}\\left(${args.join(", ")}\\right)`);
-        } else if (f == "color" && args.length === 2) {        
+        } else if (f == "color" && args.length === 2) {
           stack.push(`\\textcolor{${colors[args[0]]}}{${args[1]}}`);
-        } else if (f == "bgColor" && args.length === 2) {        
+        } else if (f == "bgColor" && args.length === 2) {
           stack.push(`\\fcolorbox{${colors[args[0]]}}{none}{\\(${args[1]}\\)}`);
         } else {
           stack.push(`${tok.value}\\left(${args.join(", ")}\\right)`);
