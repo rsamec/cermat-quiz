@@ -59,10 +59,9 @@ const assets = assetsData.filter((({code}) => parseCode(code).period == observab
               <button  popovertarget=popover-apps-${code}>Trénuj<i class="fas fa-caret-down"></i></button>
               <div id=popover-apps-${code} class="menu-items" popover>
                 <div class="v-stack v-stack--m">
-                  <a class="h-stack h-stack--s" href="calc/calculator-${code}" title="Kalkulačka"><i class="fa fa-calculator"></i><span>Kalkulačka</span></a>
-                  <a class="h-stack h-stack--s" href="chat-stepper-${code}" title="Rozhodovačka"><i class="fa fa-diagram-project"></i><span>Rozhodovačka</span></a>
                   <a class="h-stack h-stack--s" href="form-${code}" title="Vyplnění odpovědí"><i class="fa fa-file-waveform"></i><span>Vyplňovačka</span></a>
-                  <a class="h-stack h-stack--s" href="calc/color-expression-${code}" title="Barevné řešení"><i class="fa fa-file-waveform"></i><span>Obarvovačka</span></a>
+                  <a class="h-stack h-stack--s" href="calc/calculator-${code}" title="Kalkulačka"><i class="fa fa-calculator"></i><span>Kalkulačka</span></a>
+                  <a class="h-stack h-stack--s" href="chat-stepper-${code}" title="Rozhodovačka"><i class="fa fa-diagram-project"></i><span>Rozhodovačka</span></a>                  
                 </div>
               </div>              
               <button  popovertarget=popover-ai-${code}>AI <i class="fas fa-caret-down"></i></button>
@@ -70,6 +69,7 @@ const assets = assetsData.filter((({code}) => parseCode(code).period == observab
                 <div class="v-stack v-stack--m">          
                   <a class="h-stack h-stack--s" title="Řešení úloh pomocí AI" href="./ai-gpt-5-mini-as-${code}"><i class="fa fa-brands fa-openai"></i><span>OpenAI - GTP 5 mini</span></a>
                   <a class="h-stack h-stack--s" title="Řešení úloh pomocí AI" href="./ai-o1-mini-as-${code}"><i class="fa fa-brands fa-openai"></i><span>OpenAI - o1 mini</span></a>
+                  <a class="h-stack h-stack--s" title="Řešení úloh pomocí AI" href="./ai-gemini-2.5-flash-as-${code}"><i class="fa fa-brands fa-openai"></i><span>Gemini 2.5 flash</span></a>
                 </div>
               </div>              
               `:''              

@@ -97,6 +97,7 @@ export default {
       open: false,
       name: "Aktuality",
       pages: [
+        { name: "Listopad 2025", path: "/blog/2025-november/index" },
         { name: "Říjen 2025", path: "/blog/2025-october/index" },
         { name: "Březen 2025", path: "/blog/2025-march/index" },
       ]

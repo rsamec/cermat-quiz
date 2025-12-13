@@ -241,9 +241,12 @@ function totalP() {
   })
 }
 ```
-# Úspěšnost dle předmětů
+# Model: ${observable.params.model}
+```js
+```
+## Úspěšnost dle předmětů
 
-Procento vyjadřuje **počet bodů z maximálního počtu možných bodů**. Vstupem jsou všechny úlohy z databanky.
+Procento vyjadřuje **počet bodů z maximálního počtu možných bodů**. Vstupem jsou úlohy z databanky.
 
 ${
   totalP(50)
@@ -265,7 +268,7 @@ ${
 </div>
 
 
-# Detailní výsledky dle testů 
+## Detailní výsledky dle testů 
 *Pro zobrazení konkrétních odpovědí zvolte test v tabulce níže.*
 
 ```js info

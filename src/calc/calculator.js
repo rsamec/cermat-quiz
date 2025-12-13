@@ -30,7 +30,7 @@ export const calcMachine = createMachine({
     history: [],
     input,
   }),
-  id: 'Untitled',
+  id: 'Calculator',
   initial: 'Initial state',
   states: {
     'Initial state': {
@@ -39,10 +39,6 @@ export const calcMachine = createMachine({
           target: 'Adding state',
           actions: ['add'],
         },
-        // toggle: {
-        //   target: 'Playing state',
-        //   actions: ['reset']
-        // }
       },
     },
     'Adding state': {
@@ -86,6 +82,12 @@ export const calcMachine = createMachine({
             actions: ['reset'],
           },
         ],
+        clear: [
+          {
+            target: 'Adding state',
+            actions: ['clear'],
+          },
+        ],
       },
     },
     'Success state': {
@@ -112,6 +114,12 @@ export const calcMachine = createMachine({
           {
             target: 'Initial state',
             actions: ['reset'],
+          },
+        ],
+        clear: [
+          {
+            target: 'Adding state',
+            actions: ['clear'],
           },
         ],
       },
@@ -165,6 +173,10 @@ export const calcMachine = createMachine({
       context.predicates = [];
       context.steps = [];
       context.history = [];
+    },
+    clear: ({ context, event }) => {
+      // Add your action code here
+      context.predicates = [];     
     },
   },
   guards: {

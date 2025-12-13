@@ -1227,7 +1227,7 @@ function alligationRule(items, last2) {
   }
   const nums = [a, b, c];
   if (!areNumbers(nums.map((d) => d.quantity))) {
-    throw `A=lligationRule does not support non quantitive numbers.`;
+    throw `AlligationRule does not support non quantitive numbers.`;
   }
   nums.sort((x, y) => x.quantity - y.quantity);
   const small = nums[0].quantity;

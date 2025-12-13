@@ -2,6 +2,7 @@ import { html as rhtml } from '../utils/reactive-htl.js';
 import { computed } from '@preact/signals-core';
 import mdPlus from "../utils/md-utils.js";
 import { formatPredicate } from "../utils/deduce-utils.js";
+import { renderPredicatePlot } from "../utils/deduce-components.js";
 
 import { inferenceRuleWithQuestion } from "../math/math-configure.js";
 
@@ -21,35 +22,80 @@ export function renderCalc({ context$, currentState$, nextEvents$, axioms, actor
         }
     }
 
+    const inferToRuleChart = (predicates) => {
+        try {
+            const result = inferenceRuleWithQuestion(predicates.concat({}))
+            const chart = renderChart(result.result);
+            return chart != null
+                ? chart
+                : result != null
+                    ? mdPlus.unsafe(formatPredicate(result.result))
+                    : null
+        }
+        catch (e) {
+            return ''
+        }
+    }
+
+
+
     const play = async () => {
         for (let j = 0; j != steps.length; j++) {
             for await (let value of steps[j]) {
+
                 await new Promise((resolve) => setTimeout(() => {
+
                     actor.send({ type: 'next', value })
                     return resolve();
+
                 }, 300));
             }
             await new Promise((resolve) => setTimeout(() => {
+
                 actor.send({ type: 'deduce' })
                 if (j != steps.length - 1) actor.send({ type: 'delete' })
                 return resolve();
+
             }, 500));
         }
     }
+
+    const displaySteps = steps => {
+        actor.send({ type: 'clear' })
+        for (let value of steps) {
+            actor.send({ type: 'next', value })
+        }
+    }
+
     
+    const renderChart = d => renderPredicatePlot(d)
+    const renderChartOrPredicate = d => {
+        const chart = renderChart(d);
+        return chart ?? mdPlus.unsafe(formatPredicate(d))
+    }
 
     return rhtml`<div class="grid grid-cols-2 calc" style="grid-auto-rows: auto;">
 <div class="v-stack v-stack--s">
     <div class="h-stack h-stack--m"><div style="flex:1;"><span class="badge">Úloha ${key}</span></div><span class=${computed(() => currentState$.value == "Error state" ? 'badge badge--danger' : currentState$.value == "Success state" ? 'badge badge--success' : 'badge')}>${computed(() => currentState$.value)}</span></div>
+    <details>
+        <summary>Graficky</summary>
+        <div class="calc-display-visual">
+            <div class="calc-display-visual__input">    
+                ${computed(() => context$.value.predicates.map(d => rhtml`<div class="predicate-visual">${renderChartOrPredicate(d)}</div>`))}
+            </div>
+            <div class="calc-display-visual__output">
+                ${computed(() => inferToRuleChart(context$.value.predicates))}
+            </div>
+        </div>
+    </details>    
     <div class="calc-display">
         <div class="calc-display__input">${computed(() => insertSeparators(context$.value.predicates.map(d => rhtml`${mdPlus.unsafe(formatPredicate(d))}`)))}</div>
         <div class="calc-display__output">${computed(() => context$.value.predicates.length > 1 ? inferToMessage(context$.value.predicates) : '')}</div>
     </div>
-
     <div class="calc-buttons__common">
         <div class="calc-buttons__common--start">
             <button class="btn--calc" disabled=${computed(() => !nextEvents$.value.includes('reset'))} onclick=${() => actor.send({ type: 'reset' })} title="Smazat kompletně"><i class="fa-solid fa-c font-large"></i></button>
-            <button class="btn--calc" disabled=${computed(() => currentState$.value != "Initial state")} onclick=${() => play()} title="Spustit"><i class="fa-solid fa-play  font-large"></i></button>            
+            <button class="btn--calc" onclick=${() => play()} title="Spustit"><i class="fa-solid fa-play  font-large"></i></button>
         </div>
         <div class="calc-buttons__common--end">
             <button class="btn--calc" disabled=${computed(() => !nextEvents$.value.includes('deduce'))} onclick=${() => actor.send({ type: 'deduce' })} title="Vyhodnotit"><i class="fa-solid fa-equals  font-large"></i></button>
@@ -67,16 +113,17 @@ export function renderCalc({ context$, currentState$, nextEvents$, axioms, actor
     </div>
 </div>
 <div class="v-stack v-stack--m calc-history">
-${computed(() => context$.value.history.map((h,i) => {
-        return [h,inferenceRuleWithQuestion(h.concat(context$.value.steps[i]))];
-    }).map(([h,d], i) => {
+${computed(() => context$.value.history.map((h, i) => {
+        return [h, inferenceRuleWithQuestion(h.concat(context$.value.steps[i]))];
+    }).map(([h, d], i) => {
         const promises = rhtml`<details><summary>Použité predikáty ${h.length}</summary><ul>${h.map(d => rhtml`<li>${mdPlus.unsafe(formatPredicate(d))}</li>`)}</ul></details>`;
         const counter = i + 1;
         const option = d.options?.find(opt => opt.ok);
+        const goToButton = rhtml`<button onclick=${() => displaySteps(h)}><i class="fa-solid fa-eye"></i></button>`
         const message = option == null
-            ? rhtml`<div class="v-stack"><div class="h-stack h-stack--s"><span class="badge badge--deduce">${counter}</span>${mdPlus.unsafe(formatPredicate(d.result))}</div>${promises}</div>`
-            : rhtml`<div class="v-stack"><div class="h-stack h-stack--s"><span class="badge badge--deduce">${counter}</span>${mdPlus.unsafe(formatPredicate(d.result))}</div>
-    <div>Akce: <span>${mdPlus.unsafe(d.question)}</span></div>
+            ? rhtml`<div class="v-stack"><div class="h-stack h-stack--s">${goToButton}<span class="badge badge--deduce">${counter}</span>${mdPlus.unsafe(formatPredicate(d.result))}</div>${promises}</div>`
+            : rhtml`<div class="v-stack"><div class="h-stack h-stack--s">${goToButton}<span class="badge badge--deduce">${counter}</span>${mdPlus.unsafe(formatPredicate(d.result))}</div>
+    <div class="h-stack h-stack--s">Akce: <span>${mdPlus.unsafe(d.question)}</span></div>
     <div>Výpočet: <span>${option.tex} = ${option.result}</span></div>
     ${promises}
     </div>`

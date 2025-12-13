@@ -13,6 +13,7 @@ import {formatSubject, formatShortCode, formatPeriod, formatGrade, formatVersion
 const rawData1 = await FileAttachment(`./data/quiz-results-gpt-4o.json`).json();
 const rawData2 = await FileAttachment(`./data/quiz-results-o3-mini.json`).json();
 const rawData3 = await FileAttachment(`./data/quiz-results-gpt-5-mini.json`).json();
+const rawData4 = await FileAttachment(`./data/quiz-results-gemini-2.5-flash.json`).json();
 
 function totalP(rawData) {
 
@@ -83,15 +84,21 @@ function totalP(rawData) {
 
 Řešení testových úloh v češtině, matice a cizích jazycích pomocí AI.
 
- - srovnává se pouze konečný výsledek, né postup řešení
+ - srovnává se pouze konečný výsledek, **né postup řešení**
  - lze srovnávat pouze úlohy, které mají výsledek v textové (číselné) podobě, resp.nelze srovnávat např. konstrukční úlohy, kde výsledkem je geometrická konstrukce - AI nedostává žádné body
 
 
+<div class="tip" label="Postupy řešení">
+ 
+**Postupy řešení** místo konečného výsledku jsou k dispozici u konkrétních testů.
+
+</div>
+
 # Úspěšnost dle předmětů
 
-Procento vyjadřuje **počet bodů z maximálního počtu možných bodů**. Vstupem jsou všechny úlohy z databanky.
+Procento vyjadřuje **počet bodů z maximálního počtu možných bodů**. Vstupem jsou úlohy z databanky.
 
-# model GTP-5-mini
+# model gtp-5-mini
 
 ${
   totalP(rawData3)
@@ -107,13 +114,21 @@ ${
 
 [více informací](./ai-results-o3-mini)
 
-# model GTP-4o
+# model gtp-4o
 
 ${
   totalP(rawData1)
 }
 
 [více informací](./ai-results-gpt-4o)
+
+# model gemini-2.5-flash
+
+${
+  totalP(rawData4)
+}
+
+[více informací](./ai-results-gemini-2.5-flash)
 
 
 
