@@ -121,17 +121,10 @@ function recurExpr(node, level, requiredLevel = 0, parentContext: DeduceContext 
       else {
         const q = res.quantity ?? res.ratio ?? res.ratios;
 
-        if (typeof q == 'number' || !isNaN(parseFloat(q)) || Array.isArray(q) || checkFraction(q)) {
+        if (typeof q == 'number' || !isNaN(parseFloat(q)) || Array.isArray(q)) {
           expr = parser.parse(cleanUpExpression(expr, variable))
           if (level >= requiredLevel || Array.isArray(q)) {            
-            if (checkFraction(q)){
-              const [numerator, denominator] = parseFraction(q);
-              expr = expr.simplify({ [variable]: numerator / denominator });
-            }
-            else {
-            //   console.log("Fraction not detected:", q);
-              expr = expr.simplify({ [variable]: q})
-            }
+            expr = expr.simplify({ [variable]: q})
             //console.log(":", variable, q, expr.toString())
           }
           else {

@@ -3485,15 +3485,10 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
         }
       } else {
         const q = res.quantity ?? res.ratio ?? res.ratios;
-        if (typeof q == "number" || !isNaN(parseFloat(q)) || Array.isArray(q) || checkFraction(q)) {
+        if (typeof q == "number" || !isNaN(parseFloat(q)) || Array.isArray(q)) {
           expr = parser.parse(cleanUpExpression(expr, variable));
           if (level >= requiredLevel || Array.isArray(q)) {
-            if (checkFraction(q)) {
-              const [numerator, denominator] = parseFraction(q);
-              expr = expr.simplify({ [variable]: numerator / denominator });
-            } else {
-              expr = expr.simplify({ [variable]: q });
-            }
+            expr = expr.simplify({ [variable]: q });
           } else {
             for (let [key, values] of Object.entries(colors2)) {
               if (values.includes(context[variable])) {
@@ -3516,16 +3511,6 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
   } else {
     return node;
   }
-}
-var fractionRegex = /^(-?[0-9]+)\/(-?[0-9]+)$/;
-function checkFraction(str) {
-  return fractionRegex.test(str);
-}
-function parseFraction(str) {
-  const match = fractionRegex.exec(str);
-  if (!match)
-    return null;
-  return [Number(match[1]), Number(match[2])];
 }
 function toEquationExpr(lastExpr, requiredLevel = 0, context = {}) {
   const final = recurExpr({ quantity: lastExpr }, 0, requiredLevel, context);
@@ -4651,7 +4636,7 @@ function compRatiosToCompRule(a, b, nthPart) {
     agent: nthPartAgent,
     entity: b.entity,
     unit: b.unit,
-    quantity: isNumber2(b.quantity) && areNumbers(a.ratios) ? abs(b.quantity / a.ratios[aIndex] - a.ratios[bIndex]) * a.ratios[lastIndex] : wrapToQuantity(`abs(b.quantity / (a.ratios[${aIndex}] - a.ratios[${bIndex}])) * a.ratios[${lastIndex}]`, { a, b })
+    quantity: isNumber2(b.quantity) && areNumbers(a.ratios) ? abs(b.quantity / (a.ratios[aIndex] - a.ratios[bIndex])) * a.ratios[lastIndex] : wrapToQuantity(`abs(b.quantity / (a.ratios[${aIndex}] - a.ratios[${bIndex}])) * a.ratios[${lastIndex}]`, { a, b })
   };
 }
 function inferCompRatiosToCompRule(a, b, nthPart) {
@@ -6533,7 +6518,7 @@ function convertContext(context) {
   return Object.entries(context).reduce((out, [key, value]) => {
     out[key] = isRatioPredicate2(value) && isNumber2(value.ratio) ? {
       ...value,
-      ratio: `${helpers2.convertToFraction(value.ratio)}`
+      ratio: helpers2.convertToFraction(value.ratio)
     } : value;
     return out;
   }, {});
@@ -10019,15 +10004,10 @@ function recurExpr2(node, level, requiredLevel = 0, parentContext = {}) {
         }
       } else {
         const q = res.quantity ?? res.ratio ?? res.ratios;
-        if (typeof q == "number" || !isNaN(parseFloat(q)) || Array.isArray(q) || checkFraction2(q)) {
+        if (typeof q == "number" || !isNaN(parseFloat(q)) || Array.isArray(q)) {
           expr = parser2.parse(cleanUpExpression2(expr, variable));
           if (level >= requiredLevel || Array.isArray(q)) {
-            if (checkFraction2(q)) {
-              const [numerator, denominator] = parseFraction2(q);
-              expr = expr.simplify({ [variable]: numerator / denominator });
-            } else {
-              expr = expr.simplify({ [variable]: q });
-            }
+            expr = expr.simplify({ [variable]: q });
           } else {
             for (let [key, values] of Object.entries(colors2)) {
               if (values.includes(context[variable])) {
@@ -10050,16 +10030,6 @@ function recurExpr2(node, level, requiredLevel = 0, parentContext = {}) {
   } else {
     return node;
   }
-}
-var fractionRegex2 = /^(-?[0-9]+)\/(-?[0-9]+)$/;
-function checkFraction2(str) {
-  return fractionRegex2.test(str);
-}
-function parseFraction2(str) {
-  const match = fractionRegex2.exec(str);
-  if (!match)
-    return null;
-  return [Number(match[1]), Number(match[2])];
 }
 function toEquationExpr2(lastExpr, requiredLevel = 0, context = {}) {
   const final = recurExpr2({ quantity: lastExpr }, 0, requiredLevel, context);

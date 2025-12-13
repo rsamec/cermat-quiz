@@ -1544,7 +1544,7 @@ function compRatiosToCompRule(a: PartToPartRatio, b: Comparison, nthPart: NthPar
     entity: b.entity,
     unit: b.unit,
     quantity: isNumber(b.quantity) && areNumbers(a.ratios)
-      ? abs(b.quantity / a.ratios[aIndex] - a.ratios[bIndex]) * a.ratios[lastIndex]
+      ? abs(b.quantity /(a.ratios[aIndex] - a.ratios[bIndex])) * a.ratios[lastIndex]
       : wrapToQuantity(`abs(b.quantity / (a.ratios[${aIndex}] - a.ratios[${bIndex}])) * a.ratios[${lastIndex}]`, { a, b })
   }
 }
@@ -3878,7 +3878,7 @@ function convertContext(context: ExpressionContext) {
   return Object.entries(context).reduce((out, [key, value]) => {
     out[key] = isRatioPredicate(value) && isNumber(value.ratio) ? {
       ...value,
-      ratio: `${helpers.convertToFraction(value.ratio)}`
+      ratio: helpers.convertToFraction(value.ratio)
     } : value;
     return out;
   }, {});
