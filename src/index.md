@@ -5,7 +5,7 @@ style: /assets/css/main.css
 <div class="hero">
   <h1>Cermat úlohy</h1>
   <h2>Mimooficiální databanka úloh</h2>
-  <a href="/blog/2025-october/">Novinky</a>
+  <a href="/blog/2025-november/">Novinky</a>
 
   <video src="./assets/databanka.mp4" autoplay playsinline muted controls style="width: 100%;"></video>
 </a>

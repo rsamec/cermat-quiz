@@ -121,7 +121,7 @@ export default {
     .concat(['/components/quiz.js'])
     .concat(['/components/quiz-store.js'])
     .concat(['/components/math.js'])
-    .concat(['gpt-4o', 'o3-mini', 'gpt-5-mini'].map(model => `/ai-results-${model}`))
+    .concat(['gpt-4o', 'o3-mini', 'gpt-5-mini','gemini-2.5-flash'].map(model => `/ai-results-${model}`))
     //.concat('/blog/20250330')
     .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))

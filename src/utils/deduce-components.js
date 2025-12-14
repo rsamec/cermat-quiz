@@ -8,8 +8,9 @@ import { toEquationExprAsText } from "./math-solver.js";
 
 export function partion(items, options) {
   const total = items.reduce((out, d) => out += d.value, 0);
+  const partTotal = items.filter(d => d.part).reduce((out, d) => out +=d.value, 0);
   const data = items.map(d => ({ ...d, ratio: d.value / total }))
-  const { width, height, unit, multiple, showLegend, showTicks, showSeparate, formatAsFraction, showAbsoluteValues, showRelativeValues, fill, marginLeft } = {
+  const { width, height, unit, multiple, showLegend, showTicks, showSeparate, showSeparatePartLabel, formatAsFraction, showAbsoluteValues, showRelativeValues, fill, marginLeft } = {
     ...{
       height: 150,
       showRelativeValues: true,
@@ -18,6 +19,7 @@ export function partion(items, options) {
       showTicks: false,
       showSeparate: false,
       formatAsFraction: false,
+      showSeparatePartLabel: undefined,
       fill: 'agent'
     },
     ...options
@@ -79,6 +81,22 @@ export function partion(items, options) {
           frameAnchor: "top",
           dy: 0
         }))] : []),
+      ...(showSeparate && showSeparatePartLabel
+        ? [Plot.textX(data, Plot.stackX({
+          x: 0,
+          text: (d, i, arr) => {
+            const partFraction = new Fraction(partTotal);
+            if (i == 0) return partFraction.toFraction();
+            if (i == arr.length -1) return  `${partFraction.d}/${partFraction.d}`;
+          },
+          fontSize: 16,
+          textAnchor: 'end',
+          fy: "agent",
+          dx: -5,
+          dy: 0
+        }))
+        ]
+        : [])
     ]
   })
 };
@@ -89,7 +107,6 @@ function proportionPlot({ data, columns, options = {} }) {
     ...{
       marginLeft: 50,
       marginRight: 60,
-      height: 200,
     },
     ...options
   }
@@ -191,13 +208,11 @@ export function relativeTwoPartsData(value, { first, second, asPercent } = {}) {
   ]
 }
 export function relativeTwoPartsDiffData(value, { first, second, asPercent } = {}) {
-  const d = asPercent ? value * 100 : value;
+  const part = asPercent ? value * 100 : value;
   const whole = asPercent ? 100 : 1;
-
-
   return [
-    { agent: first, value: d > 0 ? whole : whole + d },
-    ...(d != 0 ? [{ agent: first, value: Math.abs(d), opacity: 0.2 }] : []),
+    { agent: first, value: part > 0 ? whole : whole + part, part: true },
+    ...(part != 0 ? [{ agent: first, value: Math.abs(part), part: part > 0, opacity: part > 0 ? 1 : 0.2 }] : []),
     { agent: second, value: whole }]
 }
 export function relativeParts(d, options) {
@@ -556,7 +571,7 @@ export function renderPredicatePlot(newChild, options = { predicatesToExclude: [
             { scaleFactor: d + 1, value: baseRatios[1], type: toAgent(newChild.parts[1]) }
           ]),
           columns: [toAgent(newChild.parts[0]), toAgent(newChild.parts[1])],
-          label: toAgent(newChild.whole)
+          label: toAgent(newChild.whole),
         })
       }
       else {
