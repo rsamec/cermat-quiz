@@ -243,7 +243,8 @@ function graf() {
           chlapci,
           divky,
         ),
-        ctorBooleanOption(0))
+        ctorBooleanOption(0)
+      )
     },
     ceskyJazyk: {
       deductionTree: deduce(

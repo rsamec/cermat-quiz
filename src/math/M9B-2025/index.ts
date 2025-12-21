@@ -1,4 +1,4 @@
-import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, rate, ratio, ratios, ctorPercent, compAngle, ctorComplement, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, ctorLinearEquation, sum, triangleAngle, contLength, contArea, dimensionEntity, cuboidVolume, triangleArea, contTringleAngleSum } from "../../components/math";
+import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, nthPart, rate, ratio, ratios, ctorPercent, compAngle, ctorComplement, pythagoras, nthPartFactor, ctorBooleanOption, ctorOption, ctorLinearEquation, sum, triangleAngle, contLength, contArea, dimensionEntity, cuboidVolume, triangleArea, contTringleAngleSum, triangleAngleSumAgent } from "../../components/math";
 import { anglesNames, createLazyMap, deduce, deduceAs, last, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -130,7 +130,7 @@ function uhelAlfa() {
 
   const soucetUhluVTrojuhelniku = contTringleAngleSum()
   const praveRameho = deduce(
-    ratios(soucetUhluVTrojuhelniku.agent, ["vrcholový úhel", "levé rameno", "pravé rameno"], [40, 70, 70]),
+    ratios(triangleAngleSumAgent, ["vrcholový úhel", "levé rameno", "pravé rameno"], [40, 70, 70]),
     soucetUhluVTrojuhelniku,
   );
 

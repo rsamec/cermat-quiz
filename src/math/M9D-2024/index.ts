@@ -1,4 +1,4 @@
-import { compRatio, cont, ctor, rate, compRelativePercent, comp, contLength, dimensionEntity, ctorUnit, ctorComparePercent, ctorRatios, nthPartFactor, nthPartScale, ctorRate, nthPart, ctorDifference, sum, ctorPercent, ctorOption, lcd, compPercent, ratio, percent, ctorComplement, ctorBooleanOption, ctorExpressionOption, ctorRound, counter, ratios, quota, ctorHasNoRemainder, contAngle, compAngle, contRightAngle, ctorTuple } from "../../components/math";
+import { compRatio, cont, ctor, rate, compRelativePercent, comp, contLength, dimensionEntity, ctorUnit, ctorComparePercent, ctorRatios, nthPartFactor, nthPartScale, ctorRate, nthPart, ctorDifference, sum, ctorPercent, ctorOption, lcd, compPercent, ratio, percent, ctorComplement, ctorBooleanOption, ctorExpressionOption, ctorRound, counter, ratios, quota, ctorHasNoRemainder, contAngle, compAngle, contRightAngle, ctorTuple, rightAngleAgent } from "../../components/math";
 import { anglesNames, createLazyMap, deduce, deduceAs, last, toCont } from "../../utils/deduce-utils";
 
 
@@ -32,7 +32,7 @@ function uhly() {
         ),
         deduce(
             pravyUhly,
-            compAngle(pravyUhly.agent, [anglesNames.alpha, anglesNames.beta].join(" a "), "supplementary")
+            compAngle(rightAngleAgent, [anglesNames.alpha, anglesNames.beta].join(" a "), "supplementary")
         ),
         sum("celkem")
     );

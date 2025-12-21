@@ -73,7 +73,7 @@ export function toCont(child: TreeNode | Predicate, { agent, entity }: { agent: 
 export function toFrequency(child: TreeNode | Predicate, { agent, entityBase, baseQuantity }: { agent: string, entityBase: { entity: string, unit?: string }, baseQuantity: number }): TreeNode {
   return toPredicate(child, mapToFrequency({ agent, entityBase, baseQuantity }));
 }
-export function toRate(child: RatioComparison, { agent, entity, entityBase }: { agent: string, entity: EntityDef, entityBase: EntityDef }) {
+export function toRate(child: RatioComparison, { agent, entity, entityBase }: { agent: string[], entity: EntityDef, entityBase: EntityDef }) {
   return to(child, {
     kind: 'rate',
     agent,
@@ -89,7 +89,7 @@ export function mapToCont({ agent, entity }: { agent: string, entity?: { entity:
     const typeNode = node as unknown as ComparisonDiff | Comparison | Rate | Quota;
     return {
       kind: 'cont',
-      agent,
+      agent: [agent],
       quantity: typeNode.quantity,
       entity: entity != null
         ? entity.entity

@@ -1,4 +1,4 @@
-import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pythagoras, rate, ratio, ratios, ctorOption, ctorBooleanOption, counter, product, sum, contLength, dimensionEntity, pattern, range, triangleArea, squareArea, rectangleArea, circleArea, contTringleAngleSum } from "../../components/math";
+import { commonSense, comp, compAngle, compPercent, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorRatios, ctorUnit, nthPart, pythagoras, rate, ratio, ratios, ctorOption, ctorBooleanOption, counter, product, sum, contLength, dimensionEntity, pattern, range, triangleArea, squareArea, rectangleArea, circleArea, contTringleAngleSum, triangleAngleSumAgent } from "../../components/math";
 import { anglesNames, axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -319,7 +319,7 @@ function angleBeta() {
               cont(`zadaný`, 2, alfaEntity),
               compAngle(`zadaný`, `vrchol u vnitřního ${triangle}`, 'opposite'),
             ),
-            ctorRatios(triangleSum.agent)
+            ctorRatios(triangleAngleSumAgent)
           ),
           alfaA,
           nthPart(vedleKBetaLabel)

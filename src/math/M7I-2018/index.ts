@@ -17,19 +17,21 @@ export function kone() {
   const dny = "doba, po kterou vydrží zásoby"
   const dnyEntity = "dny"
 
-  const nase = "naše"
-  const sousedovy = "sousedovy"
+  const naseZasoby = "naše zásoby"
+  const naseKone = "naše koně"
+  const sousedovyZasoby = "sousedovy zásoby"
+  const sousedovyKone = "sousedovy koně"
 
-  const zasobyPomer = compRelative(sousedovy, nase, 1 / 2)
-  const konePomer = compRatio(sousedovy, nase, 2)
+  const zasobyPomer = compRelative(sousedovyZasoby, naseZasoby, 1 / 2)
+  const konePomer = compRatio(sousedovyKone, naseKone, 2)
 
-  const naseZasoby = cont(nase, 12, dnyEntity)
+  const nase = cont([naseZasoby,naseKone], 12, dnyEntity)
 
   const sousedovyZasobyNaseKone = deduce(
     deduce(
       zasobyPomer,
       proportion(false, [zasoby, dny])
-    ), naseZasoby)
+    ), nase)
 
   const konePomerProportion = deduce(
     konePomer,
@@ -47,7 +49,7 @@ export function kone() {
       deductionTree: deduce(
         deduce(
           konePomerProportion,
-          naseZasoby,
+          nase,
         ),
         ctorBooleanOption(6)
       )
@@ -55,7 +57,7 @@ export function kone() {
     c: {
       deductionTree: deduce(
         deduce(
-          toCont(last(sousedovyZasobyNaseKone), { agent: nase }),
+          last(sousedovyZasobyNaseKone),
           last(konePomerProportion)
         ),
         ctorBooleanOption(9)

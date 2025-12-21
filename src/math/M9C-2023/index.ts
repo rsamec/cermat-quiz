@@ -345,7 +345,7 @@ function vagony() {
                 ),
                 toRate(
                     compRelative("lokomotiva", vagonL, -1 / 4), {
-                    agent: "souprava", entity: { entity: vagonL }, entityBase: { entity }
+                    agent: ["souprava"], entity: { entity: vagonL }, entityBase: { entity }
                 })
             ),
             ctorOption("C", 12)
