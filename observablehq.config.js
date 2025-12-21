@@ -26,7 +26,7 @@ function getFilesRecursive(dir) {
         // If file, add to results
         results.push(filePath);
       }
-  });
+    });
   } catch (err) {
     console.error(`Error reading directory: ${err.message}`);
   }
@@ -121,7 +121,7 @@ export default {
     .concat(['/components/quiz.js'])
     .concat(['/components/quiz-store.js'])
     .concat(['/components/math.js'])
-    .concat(['gpt-4o', 'o3-mini', 'gpt-5-mini','gemini-2.5-flash'].map(model => `/ai-results-${model}`))
+    .concat(['gpt-4o', 'o3-mini', 'gpt-5-mini', 'gemini-2.5-flash'].map(model => `/ai-results-${model}`))
     //.concat('/blog/20250330')
     .concat('/data/quiz-question.zip')
     .concat('/data/quiz-questions.zip')
@@ -137,8 +137,7 @@ export default {
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/math-answers-${code}.json`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/math-geometry-${code}.json`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).filter(code => code == "M9D-2025").map(code => `/notebook-${code}`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/ai-gpt-5-mini-as-${code}`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/ai-o1-mini-as-${code}`))
+    .concat(['o1-mini', 'gpt-5-mini', 'gemini-2.5-flash'].flatMap(model => quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/ai-${model}-as-${code}`)))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-answers-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-geometry-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solution-${code}`))
