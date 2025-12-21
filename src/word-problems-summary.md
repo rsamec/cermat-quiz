@@ -63,6 +63,7 @@ const filteredQuizCategories = Object.entries(quizGeneratedCategories).flatMap((
   const questionMap = getQuestionMapByPeriod(parsedCode.period);
   
   const quiz = questionMap[code];
+  if (quiz == null) return [];
   const builder = makeQuizBuilder(quiz.rawContent)
   
   return value.questions.map((d,i) => {
@@ -145,14 +146,6 @@ const controlsInput = Inputs.radio(
   )
 const controls = Generators.input(controlsInput);
 
-const viewInput = Inputs.radio(
-    new Map([
-      ["Náhled", "view"],
-      ["Odkazy", "links"],
-    ]),
-    {value: "view"}
-  )
-const viewValue = Generators.input(viewInput);
 
 
 const toBadge = (selected, selectedInput, label) => selected.length > 0 ? html`<div class="badge">
@@ -273,19 +266,14 @@ const selected = view(Inputs.table(search,{
 const selectedToRender = selected.length > questionsMaxLimit ? selected.filter((_,i)=> i < questionsMaxLimit): selected;
 ```
 
-<div>
-  ${controlsInput}
-  ${viewInput}
-</div>
+${controlsInput}
 
-${html`${viewValue != 'links' && selected.length > questionsMaxLimit
+${html`${selected.length > questionsMaxLimit
             ? html`<div class="caution" label="Limit - maximální počet úloh">
               <div>Zobrazeno <b>${selectedToRender.length}</b> z <b>${selected.length} úloh</b></div>
             <div>`
           :''}`}
 
 
-${ html`<div class="card">${renderMarkdownWithCopy(viewValue == 'links' 
-? selected.map(d => `- [${formatShortCodeAlt(d.code)} ${d.id}. ${d.name}](./wordproblemraw-${d.code}-n-${d.id})`).join("\n")
-: selectedToRender.map(d => (controls.startsWith("A") ? d.builder.content([parseInt(d.id)], { render: 'content' }) : "") + ' ' + (controls.endsWith("B") ?  (controls.startsWith("A") ? `\n---\n`:'') + d.deductionTrees.map(tree => jsonToMarkdownChat(tree, {rules:selectedRules.flatMap(d => d),predicates:selectedPredicates.flatMap(d => d), formulas: selectedFormulas.flatMap(d => d)}).join("")).join("---\n") : "")).join("\n---\n"), 'md')}</div>`}
+${ html`<div class="card">${renderMarkdownWithCopy(selectedToRender.map(d => (controls.startsWith("A") ? d.builder.content([parseInt(d.id)], { render: 'content' }) : "") + ' ' + (controls.endsWith("B") ?  (controls.startsWith("A") ? `\n---\n`:'') + d.deductionTrees.map(tree => jsonToMarkdownChat(tree, {rules:selectedRules.flatMap(d => d),predicates:selectedPredicates.flatMap(d => d), formulas: selectedFormulas.flatMap(d => d)}).join("")).join("---\n") : "")).join("\n---\n"), 'md')}</div>`}
 

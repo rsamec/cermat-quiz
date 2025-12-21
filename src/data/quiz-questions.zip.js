@@ -1,5 +1,5 @@
 import JSZip from "jszip";
-import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatShortCode, text } from '../utils/quiz-string-utils.js';
+import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatShortCode, formatCodeAlt, text } from '../utils/quiz-string-utils.js';
 import { quizes } from '../utils/quiz-utils.js';
 
 async function main() {
@@ -8,8 +8,9 @@ async function main() {
     const { period, subject } = parseCode(code);
     const baseUrl = `${baseDomainPublic}/${subject}/${period}/${code}`
     const content = await text(`${baseUrl}/index.md`);
+    const data = `# ${formatCodeAlt(code)} \n\n ${content}`
 
-    const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [baseUrl])
+    const rawContent = normalizeImageUrlsToAbsoluteUrls(data, [baseUrl])
     zip.file(`${subject}/${period}/${formatShortCode(code)}.md`, rawContent)
   }
   return zip
