@@ -42,8 +42,8 @@ async function main() {
   for await (const [code, number] of wordProblemsKeyValuePairs) {
     const aiCategories = aiCategoriesData[code]?.questions ?? [];
 
-    const d = parseCode(code);
-    const baseUrl = `${baseDomainPublic}/${d.subject}/${d.period}/${code}`
+    const {subject, period} = parseCode(code);
+    const baseUrl = `${baseDomainPublic}/${subject}/${period}/${code}`
     const content = await text(`${baseUrl}/index.md`);
 
 
@@ -53,7 +53,7 @@ async function main() {
 
     const data = await outputMd(quiz, code, number);
     const fileName = `${number}. ${aiCategories.find(d => d.id == number)?.name ?? 'úloha'}`
-    zip.file(`${code}/${fileName}.md`, data)
+    zip.file(`${period}/${code}/${fileName}.md`, data)
   }
   return zip
 }

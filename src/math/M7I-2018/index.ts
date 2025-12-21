@@ -1,5 +1,6 @@
+import { Agent } from "http";
 import { compRatio, cont, ctorBooleanOption, compRelative, proportion } from "../../components/math";
-import { createLazyMap, deduce } from "../../utils/deduce-utils";
+import { createLazyMap, deduce, last, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   11.1: () => kone().a,
@@ -9,7 +10,7 @@ export default createLazyMap({
 })
 
 
-export function kone() {  
+export function kone() {
 
   const kone = "koně";
   const zasoby = "zásoby ovsa"
@@ -24,27 +25,28 @@ export function kone() {
 
   const naseZasoby = cont(nase, 12, dnyEntity)
 
+  const sousedovyZasobyNaseKone = deduce(
+    deduce(
+      zasobyPomer,
+      proportion(false, [zasoby, dny])
+    ), naseZasoby)
+
+  const konePomerProportion = deduce(
+    konePomer,
+    proportion(true, [dny, kone])
+  )
 
   return {
-    a: {      
+    a: {
       deductionTree: deduce(
-        deduce(
-          deduce(
-            zasobyPomer,
-            proportion(false, [zasoby, dny])
-          ),
-          naseZasoby,
-        ),
+        sousedovyZasobyNaseKone,
         ctorBooleanOption(24)
       )
     },
     b: {
       deductionTree: deduce(
         deduce(
-          deduce(
-            konePomer,
-            proportion(true, [dny, kone])
-          ),
+          konePomerProportion,
           naseZasoby,
         ),
         ctorBooleanOption(6)
@@ -53,16 +55,8 @@ export function kone() {
     c: {
       deductionTree: deduce(
         deduce(
-          deduce(
-            deduce(
-              zasobyPomer,
-              proportion(false, [zasoby, dny])
-            ),
-            naseZasoby
-          ),
-          konePomer,
-          proportion(true, [dny, kone])
-
+          toCont(last(sousedovyZasobyNaseKone), { agent: nase }),
+          last(konePomerProportion)
         ),
         ctorBooleanOption(9)
       )

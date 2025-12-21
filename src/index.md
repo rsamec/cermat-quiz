@@ -4,7 +4,7 @@ style: /assets/css/main.css
 ---
 <div class="hero">
   <h1>Cermat úlohy</h1>
-  <h2>Mimooficiální databanka úloh</h2>
+  <h2>Mimooficiální databanka úloh a postupů řešení</h2>
   <a href="/blog/2025-november/">Novinky</a>
 
   <video src="./assets/databanka.mp4" autoplay playsinline muted controls style="width: 100%;"></video>
@@ -128,6 +128,7 @@ function plotWaffle(rawData) {
 }
 
 ```
+**Smyslem** tohoto projektu je **zdarma** poskytnout [strukturovaná data](/inputs) pro tvorbu výukových materiálů (videa, audia, pracovní listy, kvízů, kartiček, aplikací...). Demonstrovat [konkrétní příklady s návody](/embedding), jak lze databanku využít.
 
 ## Zadání úloh
 
@@ -152,6 +153,14 @@ function plotWaffle(rawData) {
     </div>
   </div>`)}
 </div>
+
+Balíček **všech zadání úloh** ve formátu markdown s rozdělením
+<ul>
+<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/quiz-question.zip"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-brands fa-markdown"></i><span>na úroveň jednotlivých testů</span></a>
+</li>
+<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/quiz-questions.zip"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-brands fa-markdown"></i><span>na úroveň jednotlivých úloh</span></a>
+</li>
+</ul>
 
 ## Řešení úloh - matika
 
@@ -207,6 +216,16 @@ function plotWaffle(rawData) {
 
 </div>
 
+Balíček **všech postupů řešení úloh** ve formátu markdown (generováno heslovitě) s rozdělením
+<ul>
+<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/word-problem.zip"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-brands fa-markdown"></i><span>na úroveň jednotlivých testů</span></a>
+</li>
+<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/word-problems.zip"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-brands fa-markdown"></i><span>na úroveň jednotlivých úloh</span></a>
+</li>
+</ul>
+
+### Aktuální stav vyřešených matematických úloh ze všech úloh v databance.
+
 ${
   plotWaffle(mathMetricsFlatData)
 }
@@ -246,8 +265,6 @@ ${
 
 ## Tvorba vlastních výukových materiálů
 
-**Smyslem** tohoto projektu je **zdarma** poskytnout **[data](/inputs) pro tvorbu výukových materiálů** (videa, audia, pracovní listy, kvízů, kartiček, aplikací...)
-
 ### Příklad - matika 2025 - 2. náhradní termín
 
 <div class="carousel carousel--scroll-markers carousel--inert">
@@ -266,7 +283,9 @@ ${videos.map(({ video, name, id }, i) => html`<div class="carousel__slide" data-
 <div class="tip" label="Notebook LM">
   Videa výše jsou vytvořena pomocí aplikace <a href="https://notebooklm.google.com/" target="_blank">NotebookLM</a> na základě <a href="/word-problems-M9D-2025"> dat</a> z banky úloh. 
   
-  Vytvořte si obdobné **vyukové materiály na míru** na pár kliků <a href="/blog/2025-october/#vyuziti-v-notebook-lm">zde</a>. Prozkoumejte další možnosti integrace <a href="/embedding">více informací</a>.
+  Nejjednodušší způsob jak vytvořit **vyukové materiály na míru** na pár kliků je **stáhnout balíček postupů řešení** ve formátu markdown <a download href="/data/word-problem.zip"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-brands fa-markdown"></i><span> zde</span></a> a nahrát do aplikace.
+
+  Případně prozkoumejte další možnosti integrace <a href="/embedding">více informací</a>.
 </div>
 
 ---

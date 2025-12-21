@@ -17,6 +17,8 @@
     "build:schema": "esbuild ./src/ai/schema.ts --bundle --platform=neutral --outfile=./src/ai/schema.js",
     "build:all": "npm run build:math-solver && npm run build:deduce-utils && npm run build:word-problems && npm run build:schema && npm run build:ai && npm run build:tldraw",
     "generate:word-problems": "node ./src/data/word-problems-solu-[code].txt.js --code M9I-2025",
+    "generate:quiz-question:zip": "node ./src/data/quiz-question.zip.js > ./src/data/quiz-question.zip",
+    "generate:quiz-questions:zip": "node ./src/data/quiz-questions.zip.js > ./src/data/quiz-questions.zip",
     "generate:word-problem:zip": "node ./src/data/word-problem.zip.js > ./src/data/word-problem.zip",
     "generate:word-problems:zip": "node ./src/data/word-problems.zip.js > ./src/data/word-problems.zip",
     "generate:raw": "node ./src/data/word-problems-[code].md.js --code M9I-2025",

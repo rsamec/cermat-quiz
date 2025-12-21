@@ -11095,26 +11095,28 @@ function kone() {
   const zasobyPomer = compRelative(sousedovy, nase, 1 / 2);
   const konePomer = compRatio(sousedovy, nase, 2);
   const naseZasoby = cont(nase, 12, dnyEntity);
+  const sousedovyZasobyNaseKone = deduce(
+    deduce(
+      zasobyPomer,
+      proportion(false, [zasoby, dny])
+    ),
+    naseZasoby
+  );
+  const konePomerProportion = deduce(
+    konePomer,
+    proportion(true, [dny, kone2])
+  );
   return {
     a: {
       deductionTree: deduce(
-        deduce(
-          deduce(
-            zasobyPomer,
-            proportion(false, [zasoby, dny])
-          ),
-          naseZasoby
-        ),
+        sousedovyZasobyNaseKone,
         ctorBooleanOption(24)
       )
     },
     b: {
       deductionTree: deduce(
         deduce(
-          deduce(
-            konePomer,
-            proportion(true, [dny, kone2])
-          ),
+          konePomerProportion,
           naseZasoby
         ),
         ctorBooleanOption(6)
@@ -11123,15 +11125,8 @@ function kone() {
     c: {
       deductionTree: deduce(
         deduce(
-          deduce(
-            deduce(
-              zasobyPomer,
-              proportion(false, [zasoby, dny])
-            ),
-            naseZasoby
-          ),
-          konePomer,
-          proportion(true, [dny, kone2])
+          toCont(last(sousedovyZasobyNaseKone), { agent: nase }),
+          last(konePomerProportion)
         ),
         ctorBooleanOption(9)
       )
