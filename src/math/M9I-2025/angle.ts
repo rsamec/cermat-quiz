@@ -15,7 +15,7 @@ export function desetiuhelnik({ input }: {
   const pocet = cont("desitiúhelník", input.pocetUhlu, pocetUhlu);
 
   const minUhel = deduce(celkem, pocet, ctor('rate'))
-  const alfa = deduce(minUhel, cont("alfa", 2, pocetUhlu));
+  const alfa = toCont(deduce(minUhel, cont(anglesNames.alpha, 2, pocetUhlu)), { agent: anglesNames.alpha });
 
   const triangleSum = contTringleAngleSum(rovnoramennyTrojLabel);
   const uhelRamenaRovnoramennehoTrojuhelniku = (

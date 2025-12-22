@@ -1,63 +1,62 @@
-import { compDiff, cont, ctor } from "../../components/math";
-import { axiomInput, deduce, last, toCont } from "../../utils/deduce-utils";
+import { compDiff, cont, ctorDifference, ctorRate } from "../../components/math";
+import { axiomInput, deduce, last } from "../../utils/deduce-utils";
 
 
 interface InputParameters {
   pocetKusuVKrabice: number,
   missingVyrobku: number,
 }
-export function plnaKrabice({ input }: { input: InputParameters }) {  
-  const triKrabiceABezPetiLabel = "3 krabice bez chybějící výrobků";
+export function plnaKrabice({ input }: { input: InputParameters }) {
+  const triKrabiceABezPetiLabel = "plné krabice a jedna krabice bez chybějící výrobků";
   const missingVyrobkyLabel = "chybějící výrobky";
   const plnaKrabiceLabel = "plná krabice";
-  const plnaKrabiceVyrobkyLabel = "všechny výrobky v plné krabici";
+  const vyrobekAgent = "výrobek"
   const vyrobekEntity = "kus";
   const entity = "gram";
 
-  
-  const plnaKrabiceVyrobkuPocet = axiomInput(cont(plnaKrabiceVyrobkyLabel, input.pocetKusuVKrabice, vyrobekEntity), 1);
+
+  const plnaKrabiceVyrobkuPocet = axiomInput(cont(plnaKrabiceLabel, input.pocetKusuVKrabice, vyrobekEntity), 1);
   const missingVyrobkyPocet = axiomInput(cont(missingVyrobkyLabel, input.missingVyrobku, vyrobekEntity), 2);
 
   const triKrabice = axiomInput(cont(triKrabiceABezPetiLabel, 2000, entity), 3);
-  const rozdil = axiomInput(compDiff(triKrabiceABezPetiLabel, `2 ${plnaKrabiceLabel}`, 480, entity), 4)
+  const rozdil = axiomInput(compDiff(triKrabiceABezPetiLabel, plnaKrabiceLabel, 480, entity), 4)
 
-  const deductionTree1 = deduce(
+  const krabiceRate = deduce(
     deduce(triKrabice, rozdil),
-    cont(`2 ${plnaKrabiceLabel}`, 2, vyrobekEntity),
-    ctor("rate")
+    cont(plnaKrabiceLabel, 2, vyrobekEntity),
+    ctorRate(plnaKrabiceLabel)
   );
 
-  const rozdilGram = deduce(
+  const missingVyrobkyVaha = deduce(
     deduce(
-      last(deductionTree1),
-      cont(`3 ${plnaKrabiceLabel}`, 3, vyrobekEntity),
+      last(krabiceRate),
+      cont(plnaKrabiceLabel, 3, vyrobekEntity),
     ),
-    triKrabice);
+    triKrabice,
+    ctorDifference(missingVyrobkyLabel)
+  );
 
-  const deductionTree2 = deduce(
-    toCont(
-      rozdilGram,
-      { agent: missingVyrobkyLabel }
-    ),
+  const vyrobekRate = deduce(
+    missingVyrobkyVaha,
     missingVyrobkyPocet,
-    ctor("rate")
+    ctorRate(vyrobekAgent)
   );
 
-  const deductionTree3 = deduce(
-    toCont(
-      deductionTree1,
-      { agent: plnaKrabiceLabel }),
+  const prazdnaKrabice = deduce(
     deduce(
-      last(deductionTree2),
-      plnaKrabiceVyrobkuPocet),
-
+      last(krabiceRate),
+      cont(plnaKrabiceLabel, 1, vyrobekEntity)
+    ),
+    deduce(
+      last(vyrobekRate),
+      plnaKrabiceVyrobkuPocet)
   )
 
 
 
   return [
-    { deductionTree: deductionTree1 },
-    { deductionTree: deductionTree2 },
-    { deductionTree: deductionTree3 },
+    { deductionTree: krabiceRate },
+    { deductionTree: vyrobekRate },
+    { deductionTree: prazdnaKrabice },
   ]
 }

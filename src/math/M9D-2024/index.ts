@@ -1,4 +1,4 @@
-import { compRatio, cont, ctor, rate, compRelativePercent, comp, contLength, dimensionEntity, ctorUnit, ctorComparePercent, ctorRatios, nthPartFactor, nthPartScale, ctorRate, nthPart, ctorDifference, sum, ctorPercent, ctorOption, lcd, compPercent, ratio, percent, ctorComplement, ctorBooleanOption, ctorExpressionOption, ctorRound, counter, ratios, quota, ctorHasNoRemainder, contAngle, compAngle, contRightAngle, ctorTuple, rightAngleAgent } from "../../components/math";
+import { compRatio, cont, ctor, rate, compRelativePercent, comp, contLength, dimensionEntity, ctorUnit, ctorComparePercent, ctorRatios, nthPartScale, ctorRate, nthPart, ctorDifference, sum, ctorPercent, ctorOption, lcd, ratio, percent, ctorComplement, ctorBooleanOption, ctorExpressionOption, ctorRound, counter, ratios, ctorHasNoRemainder, contAngle, compAngle, contRightAngle, rightAngleAgent } from "../../components/math";
 import { anglesNames, createLazyMap, deduce, deduceAs, last, toCont } from "../../utils/deduce-utils";
 
 
@@ -73,14 +73,14 @@ function trasa() {
 
     return {
         deductionTree: deduce(
-            toCont(deduce(
+            deduce(
                 trasa,
                 rate(nada, 60, dim.length, baseEntity),
-            ), { agent: nada }),
-            toCont(deduce(
+            ),
+            deduce(
                 rate(adam, 75, dim.length, baseEntity),
                 last(trasa)
-            ), { agent: adam }),
+            ),
             ctor("comp")
         )
     }

@@ -1125,7 +1125,7 @@ function rateRule(a, rate2) {
   const isUnitRate = rate2.baseQuantity === 1;
   return {
     kind: "cont",
-    agent: normalizeToAgent(a.agent),
+    agent: Array.isArray(a.agent) ? mergeAgents(a.agent, rate2.agent) : normalizeToAgent(a.agent),
     entity: isEntityBase2 ? rate2.entityBase.entity : rate2.entity.entity,
     unit: isEntityBase2 ? rate2.entityBase.unit : rate2.entity.unit,
     quantity: aEntity == rate2.entity.entity ? isNumber(a.quantity) && isNumber(rate2.quantity) && isNumber(rate2.baseQuantity) ? a.quantity / (!isUnitRate ? rate2.quantity / rate2.baseQuantity : rate2.quantity) : !isUnitRate ? wrapToQuantity(`a.quantity / (rate.quantity/rate.baseQuantity)`, { a, rate: rate2 }) : wrapToQuantity(`a.quantity / rate.quantity`, { a, rate: rate2 }) : isNumber(a.quantity) && isNumber(rate2.quantity) && isNumber(rate2.baseQuantity) ? a.quantity * (!isUnitRate ? rate2.quantity / rate2.baseQuantity : rate2.quantity) : !isUnitRate ? wrapToQuantity(`a.quantity * (rate.quantity/rate.baseQuantity)`, { a, rate: rate2 }) : wrapToQuantity(`a.quantity * rate.quantity`, { a, rate: rate2 })
@@ -1148,35 +1148,35 @@ function inferRateRule(a, rate2) {
     ] : []
   };
 }
-function quotaRule(a, quota3) {
-  if (!(equalAgent(a.agent, quota3.agent) || equalAgent(a.agent, quota3.agentQuota))) {
-    throw `Mismatch entity ${a.entity} any of ${quota3.agent}, ${quota3.agentQuota}`;
+function quotaRule(a, quota2) {
+  if (!(equalAgent(a.agent, quota2.agent) || equalAgent(a.agent, quota2.agentQuota))) {
+    throw `Mismatch entity ${a.entity} any of ${quota2.agent}, ${quota2.agentQuota}`;
   }
   return {
     kind: "cont",
-    agent: equalAgent(a.agent, quota3.agentQuota) ? [quota3.agent] : [quota3.agentQuota],
+    agent: equalAgent(a.agent, quota2.agentQuota) ? [quota2.agent] : [quota2.agentQuota],
     entity: a.entity,
-    quantity: equalAgent(a.agent, quota3.agentQuota) ? isNumber(a.quantity) && isNumber(quota3.quantity) ? a.quantity * quota3.quantity : wrapToQuantity(`a.quantity * quota.quantity`, { a, quota: quota3 }) : isNumber(a.quantity) && isNumber(quota3.quantity) ? a.quantity / quota3.quantity : wrapToQuantity(`a.quantity / quota.quantity`, { a, quota: quota3 })
+    quantity: equalAgent(a.agent, quota2.agentQuota) ? isNumber(a.quantity) && isNumber(quota2.quantity) ? a.quantity * quota2.quantity : wrapToQuantity(`a.quantity * quota.quantity`, { a, quota: quota2 }) : isNumber(a.quantity) && isNumber(quota2.quantity) ? a.quantity / quota2.quantity : wrapToQuantity(`a.quantity / quota.quantity`, { a, quota: quota2 })
   };
 }
-function inferQuotaRule(a, quota3) {
-  const result = quotaRule(a, quota3);
+function inferQuotaRule(a, quota2) {
+  const result = quotaRule(a, quota2);
   return {
     name: quotaRule.name,
-    inputParameters: extractKinds(a, quota3),
+    inputParameters: extractKinds(a, quota2),
     question: containerQuestion(result),
     result,
-    options: isNumber(a.quantity) && isNumber(quota3.quantity) ? [
-      { tex: `${formatNumber(a.quantity)} * ${formatNumber(quota3.quantity)}`, result: formatNumber(a.quantity * quota3.quantity), ok: equalAgent(a.agent, quota3.agentQuota) },
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(quota3.quantity)}`, result: formatNumber(a.quantity / quota3.quantity), ok: !equalAgent(a.agent, quota3.agentQuota) }
+    options: isNumber(a.quantity) && isNumber(quota2.quantity) ? [
+      { tex: `${formatNumber(a.quantity)} * ${formatNumber(quota2.quantity)}`, result: formatNumber(a.quantity * quota2.quantity), ok: equalAgent(a.agent, quota2.agentQuota) },
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(quota2.quantity)}`, result: formatNumber(a.quantity / quota2.quantity), ok: !equalAgent(a.agent, quota2.agentQuota) }
     ] : []
   };
 }
 function toPartWholeRatio(part, whole, asPercent) {
   return {
     kind: "ratio",
-    part: singleAgent(part.agent),
-    whole: singleAgent(whole.agent),
+    part: joinAgent(part.agent),
+    whole: joinAgent(whole.agent),
     ratio: isNumber(part.quantity) && isNumber(whole.quantity) ? part.quantity / whole.quantity : wrapToRatio(`part.quantity / whole.quantity`, { part, whole }),
     asPercent
   };
@@ -1421,8 +1421,8 @@ function toCompareRule(a, b) {
   }
   return {
     kind: "comp",
-    agentB: singleAgent(b.agent),
-    agentA: singleAgent(a.agent),
+    agentB: complementSingleAgent(b.agent, [a.agent]),
+    agentA: complementSingleAgent(a.agent, [b.agent]),
     quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity - b.quantity : wrapToQuantity(`a.quantity - b.quantity`, { a, b }),
     ...aEntity
   };
@@ -1873,37 +1873,38 @@ function inferSolveEquationRule(a, b, last2) {
     options: []
   };
 }
-function toQuotaRule(a, quota3) {
+function toQuotaRule(a, quota2) {
   return {
     kind: "quota",
-    agentQuota: singleAgent(quota3.agent),
+    agentQuota: singleAgent(quota2.agent),
     agent: singleAgent(a.agent),
-    quantity: isNumber(a.quantity) && isNumber(quota3.quantity) ? Math.floor(a.quantity / quota3.quantity) : wrapToQuantity(`floor(a.quantity / quota.quantity)`, { a, quota: quota3 }),
-    restQuantity: isNumber(a.quantity) && isNumber(quota3.quantity) ? a.quantity % quota3.quantity : wrapToQuantity(`a.quantity % quota.quantity`, { a, quota: quota3 })
+    quantity: isNumber(a.quantity) && isNumber(quota2.quantity) ? Math.floor(a.quantity / quota2.quantity) : wrapToQuantity(`floor(a.quantity / quota.quantity)`, { a, quota: quota2 }),
+    restQuantity: isNumber(a.quantity) && isNumber(quota2.quantity) ? a.quantity % quota2.quantity : wrapToQuantity(`a.quantity % quota.quantity`, { a, quota: quota2 })
   };
 }
-function inferToQuotaRule(a, quota3) {
-  const result = toQuotaRule(a, quota3);
-  if (isNumber(a.quantity) && isNumber(quota3.quantity) && isNumber(result.quantity)) {
+function inferToQuotaRule(a, quota2) {
+  const result = toQuotaRule(a, quota2);
+  if (isNumber(a.quantity) && isNumber(quota2.quantity) && isNumber(result.quantity)) {
     return {
       name: toQuotaRule.name,
-      inputParameters: extractKinds(a, quota3),
-      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity, unit: a.unit })} postupn\u011B na skupiny velikosti ${formatNumber(quota3.quantity)} ${formatEntity({ entity: quota3.entity, unit: quota3.unit })}`,
+      inputParameters: extractKinds(a, quota2),
+      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity, unit: a.unit })} postupn\u011B na skupiny velikosti ${formatNumber(quota2.quantity)} ${formatEntity({ entity: quota2.entity, unit: quota2.unit })}`,
       result,
       options: [
-        { tex: `${formatNumber(a.quantity)} / ${formatNumber(quota3.quantity)}`, result: formatNumber(result.quantity), ok: true },
-        { tex: `${formatNumber(quota3.quantity)} / ${formatNumber(a.quantity)}`, result: formatNumber(result.quantity), ok: false }
+        { tex: `${formatNumber(a.quantity)} / ${formatNumber(quota2.quantity)}`, result: formatNumber(result.quantity), ok: true },
+        { tex: `${formatNumber(quota2.quantity)} / ${formatNumber(a.quantity)}`, result: formatNumber(result.quantity), ok: false }
       ]
     };
   } else {
-    return resultAsQuestion(result, { name: toQuotaRule.name, inputParamters: extractKinds(a, quota3) });
+    return resultAsQuestion(result, { name: toQuotaRule.name, inputParamters: extractKinds(a, quota2) });
   }
 }
 function toRatiosRule(parts, last2) {
   const ratios2 = parts.map((d) => d.quantity);
+  const agents = parts.map((d) => d.agent);
   return {
     kind: "ratios",
-    parts: parts.map((d) => singleAgent(d.agent)),
+    parts: agents.map((d, i) => complementSingleAgent(d, agents)),
     ratios: last2.useBase ? ratiosToBaseForm(ratios2) : ratios2,
     whole: last2.whole
   };
@@ -2717,7 +2718,7 @@ function primeFactorization(numbers) {
   return numbers.map(getPrimeFactors);
 }
 function gcdFromPrimeFactors(primeFactors2) {
-  const intersection = (arr1, arr2) => {
+  const intersection2 = (arr1, arr2) => {
     const result = [];
     const countMap = /* @__PURE__ */ new Map();
     for (const num of arr1) {
@@ -2731,7 +2732,7 @@ function gcdFromPrimeFactors(primeFactors2) {
     }
     return result;
   };
-  return primeFactors2.reduce((acc, curr) => intersection(acc, curr), primeFactors2[0] || []);
+  return primeFactors2.reduce((acc, curr) => intersection2(acc, curr), primeFactors2[0] || []);
 }
 function lcdFromPrimeFactors(primeFactors2) {
   const union = (arr1, arr2) => {
@@ -2844,9 +2845,12 @@ function formatSequencePattern(seqType) {
 function normalizeToAgent(agent) {
   return Array.isArray(agent) ? agent : [agent];
 }
+function joinAgent(a) {
+  return Array.isArray(a) ? a.join() : a;
+}
 function singleAgent(a) {
   if (Array.isArray(a)) {
-    if (a.length !== 1) {
+    if (a.length > 1) {
       throw `Multiple agents found ${a.join()}.`;
     }
     return a[0];
@@ -2854,10 +2858,32 @@ function singleAgent(a) {
     a;
   }
 }
+function complementAgent(a, b) {
+  const setB = new Set(b);
+  return a.filter((x) => !setB.has(x));
+}
+function intersection(...arrays) {
+  if (arrays.length === 0)
+    return [];
+  arrays.sort((a, b) => a.length - b.length);
+  return arrays[0].filter(
+    (item) => arrays.slice(1).every((arr) => arr.includes(item))
+  );
+}
+function complementSingleAgent(a, arr) {
+  if (a.length === 1)
+    return a[0];
+  const complements = complementAgent(a, arr.length > 1 ? intersection(...arr) : arr[0]);
+  console.log(a, arr, complements);
+  return singleAgent(complements);
+}
 function equalAgent(f, s) {
   const a = normalizeToAgent(f);
   const b = normalizeToAgent(s);
   return a.some((d) => b.includes(d));
+}
+function mergeAgents(f, s) {
+  return [.../* @__PURE__ */ new Set([...f, ...s])];
 }
 function mergeAgent(agent, newAgent, arr) {
   const i = arr.indexOf(agent);
@@ -14002,14 +14028,14 @@ function trasa() {
   );
   return {
     deductionTree: deduce(
-      toCont(deduce(
+      deduce(
         trasa2,
         rate(nada, 60, dim2.length, baseEntity)
-      ), { agent: nada }),
-      toCont(deduce(
+      ),
+      deduce(
         rate(adam, 75, dim2.length, baseEntity),
         last(trasa2)
-      ), { agent: adam }),
+      ),
       ctor("comp")
     )
   };
@@ -14391,7 +14417,7 @@ function desetiuhelnik({ input }) {
   const celkem = contAngle("desiti\xFAheln\xEDk", 360);
   const pocet = cont("desiti\xFAheln\xEDk", input.pocetUhlu, pocetUhlu);
   const minUhel = deduce(celkem, pocet, ctor("rate"));
-  const alfa = deduce(minUhel, cont("alfa", 2, pocetUhlu));
+  const alfa = toCont(deduce(minUhel, cont(anglesNames.alpha, 2, pocetUhlu)), { agent: anglesNames.alpha });
   const triangleSum = contTringleAngleSum(rovnoramennyTrojLabel);
   const uhelRamenaRovnoramennehoTrojuhelniku = ({ vrcholovyUhel: vrcholovyUhel2 }, { uhelRamenoLabel }) => toCont(
     deduce(
@@ -14469,50 +14495,48 @@ function domecek3() {
 
 // src/math/M9I-2025/krabice.ts
 function plnaKrabice({ input }) {
-  const triKrabiceABezPetiLabel = "3 krabice bez chyb\u011Bj\xEDc\xED v\xFDrobk\u016F";
+  const triKrabiceABezPetiLabel = "pln\xE9 krabice a jedna krabice bez chyb\u011Bj\xEDc\xED v\xFDrobk\u016F";
   const missingVyrobkyLabel = "chyb\u011Bj\xEDc\xED v\xFDrobky";
   const plnaKrabiceLabel = "pln\xE1 krabice";
-  const plnaKrabiceVyrobkyLabel = "v\u0161echny v\xFDrobky v pln\xE9 krabici";
+  const vyrobekAgent = "v\xFDrobek";
   const vyrobekEntity = "kus";
   const entity3 = "gram";
-  const plnaKrabiceVyrobkuPocet = axiomInput(cont(plnaKrabiceVyrobkyLabel, input.pocetKusuVKrabice, vyrobekEntity), 1);
+  const plnaKrabiceVyrobkuPocet = axiomInput(cont(plnaKrabiceLabel, input.pocetKusuVKrabice, vyrobekEntity), 1);
   const missingVyrobkyPocet = axiomInput(cont(missingVyrobkyLabel, input.missingVyrobku, vyrobekEntity), 2);
   const triKrabice = axiomInput(cont(triKrabiceABezPetiLabel, 2e3, entity3), 3);
-  const rozdil = axiomInput(compDiff(triKrabiceABezPetiLabel, `2 ${plnaKrabiceLabel}`, 480, entity3), 4);
-  const deductionTree1 = deduce(
+  const rozdil = axiomInput(compDiff(triKrabiceABezPetiLabel, plnaKrabiceLabel, 480, entity3), 4);
+  const krabiceRate = deduce(
     deduce(triKrabice, rozdil),
-    cont(`2 ${plnaKrabiceLabel}`, 2, vyrobekEntity),
-    ctor("rate")
+    cont(plnaKrabiceLabel, 2, vyrobekEntity),
+    ctorRate(plnaKrabiceLabel)
   );
-  const rozdilGram = deduce(
+  const missingVyrobkyVaha = deduce(
     deduce(
-      last(deductionTree1),
-      cont(`3 ${plnaKrabiceLabel}`, 3, vyrobekEntity)
+      last(krabiceRate),
+      cont(plnaKrabiceLabel, 3, vyrobekEntity)
     ),
-    triKrabice
+    triKrabice,
+    ctorDifference(missingVyrobkyLabel)
   );
-  const deductionTree2 = deduce(
-    toCont(
-      rozdilGram,
-      { agent: missingVyrobkyLabel }
-    ),
+  const vyrobekRate = deduce(
+    missingVyrobkyVaha,
     missingVyrobkyPocet,
-    ctor("rate")
+    ctorRate(vyrobekAgent)
   );
-  const deductionTree3 = deduce(
-    toCont(
-      deductionTree1,
-      { agent: plnaKrabiceLabel }
+  const prazdnaKrabice = deduce(
+    deduce(
+      last(krabiceRate),
+      cont(plnaKrabiceLabel, 1, vyrobekEntity)
     ),
     deduce(
-      last(deductionTree2),
+      last(vyrobekRate),
       plnaKrabiceVyrobkuPocet
     )
   );
   return [
-    { deductionTree: deductionTree1 },
-    { deductionTree: deductionTree2 },
-    { deductionTree: deductionTree3 }
+    { deductionTree: krabiceRate },
+    { deductionTree: vyrobekRate },
+    { deductionTree: prazdnaKrabice }
   ];
 }
 

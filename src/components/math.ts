@@ -1707,7 +1707,7 @@ function rateRule(a: Container | Quota | Rate, rate: Rate): Container {
   const isUnitRate = rate.baseQuantity === 1;
   return {
     kind: 'cont',
-    agent: normalizeToAgent(a.agent),
+    agent: Array.isArray(a.agent) ? mergeAgents(a.agent, rate.agent) : normalizeToAgent(a.agent),
     entity: isEntityBase
       ? rate.entityBase.entity
       : rate.entity.entity,
@@ -1776,8 +1776,8 @@ function inferQuotaRule(a: Container, quota: Quota): Question<Container> {
 function toPartWholeRatio(part: Container, whole: Container, asPercent?: boolean): PartWholeRatio {
   return {
     kind: 'ratio',
-    part: singleAgent(part.agent),
-    whole: singleAgent(whole.agent),
+    part: joinAgent(part.agent),
+    whole: joinAgent(whole.agent),
     ratio: isNumber(part.quantity) && isNumber(whole.quantity) ? part.quantity / whole.quantity : wrapToRatio(`part.quantity / whole.quantity`, { part, whole }),
     asPercent
   }
@@ -2059,9 +2059,11 @@ function toCompareRule(a: Container | Rate, b: Container | Rate): Comparison {
   const bEntity = b.kind === "rate" ? b.entity : { entity: b.entity, unit: b.unit }
   if (aEntity.entity != bEntity.entity) {
     throw `Mismatch entity ${aEntity.entity}, ${bEntity.entity}`
-  }
+  }  
   return {
-    kind: 'comp', agentB: singleAgent(b.agent), agentA: singleAgent(a.agent),
+    kind: 'comp',
+    agentB: complementSingleAgent(b.agent, [a.agent]),
+    agentA: complementSingleAgent(a.agent, [b.agent]),
     quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity - b.quantity : wrapToQuantity(`a.quantity - b.quantity`, { a, b }),
     ...aEntity
   }
@@ -2085,7 +2087,8 @@ function toDeltaRule(a: Container, b: Container, last: Delta): Delta {
     throw `Mismatch entity ${a.entity}, ${b.entity}`
   }
   return {
-    kind: 'delta', agent: { name: last.agent?.name ?? singleAgent(b.agent), nameBefore: singleAgent(a.agent), nameAfter: singleAgent(b.agent) },
+    kind: 'delta',
+    agent: { name: last.agent?.name ?? singleAgent(b.agent), nameBefore: singleAgent(a.agent), nameAfter: singleAgent(b.agent) },
     quantity: isNumber(a.quantity) && isNumber(b.quantity) ? b.quantity - a.quantity : wrapToQuantity(`b.quantity - a.quantity`, { a, b }),
     entity: a.entity, unit: a.unit
   }
@@ -2295,7 +2298,9 @@ function toRatioCompareRule(a: Container, b: Container, ctor: RatioComparison): 
     throw `Mismatch entity ${b.entity}, ${a.entity}`
   }
   return {
-    kind: 'comp-ratio', agentB: singleAgent(b.agent), agentA: singleAgent(a.agent),
+    kind: 'comp-ratio',
+    agentB: singleAgent(b.agent),
+    agentA: singleAgent(a.agent),
     ratio: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity / b.quantity : wrapToRatio(`a.quantity / b.quantity`, { a, b }),
     ...(ctor.asPercent && { asPercent: true })
   }
@@ -2603,9 +2608,10 @@ function inferToQuotaRule(a: Container, quota: Container): Question<Quota> {
 
 function toRatiosRule(parts: Container[] | Rate[], last: PartToPartRatio): PartToPartRatio {
   const ratios = parts.map(d => d.quantity);
+  const agents: Agent[] = parts.map(d => d.agent);
   return {
     kind: 'ratios',
-    parts: parts.map(d => singleAgent(d.agent)),
+    parts: agents.map((d,i) => complementSingleAgent(d, agents)),
     ratios: last.useBase ? ratiosToBaseForm(ratios) : ratios,
     whole: last.whole
   }
@@ -3852,22 +3858,47 @@ export function formatSequencePattern(seqType: SequenceAnalysis) {
 function normalizeToAgent(agent: string | Agent) {
   return Array.isArray(agent) ? agent : [agent]
 }
+function joinAgent(a: string | Agent) {
+   return Array.isArray(a) ? a.join(): a;
+}
 function singleAgent(a: string | Agent) {
   if (Array.isArray(a)) {
-    if (a.length !== 1) {
-      throw `Multiple agents found ${a.join()}.`
+    if (a.length > 1) {
+      throw `Multiple agents found ${a.join()}.`      
     }
     return a[0];
   }
   else {
     a
   }
+}
 
+function complementAgent(a: Agent, b: Agent) {
+  const setB = new Set(b);
+  return a.filter(x => !setB.has(x));
+}
+function intersection(...arrays) {
+  if (arrays.length === 0) return [];
+
+  arrays.sort((a, b) => a.length - b.length);
+
+  return arrays[0].filter(item =>
+    arrays.slice(1).every(arr => arr.includes(item))
+  );
+}
+function complementSingleAgent(a: Agent, arr: Agent[]) {  
+  if (a.length === 1) return a[0];
+  const complements = complementAgent(a, arr.length > 1 ? intersection(...arr) : arr[0]);
+  console.log(a, arr, complements);
+  return singleAgent(complements);
 }
 function equalAgent(f: string | Agent, s: string | Agent) {
   const a = normalizeToAgent(f);
   const b = normalizeToAgent(s);
   return a.some(d => b.includes(d));
+}
+function mergeAgents(f: Agent, s: Agent) {
+  return [...new Set([...f, ...s])];
 }
 function mergeAgent(agent: string, newAgent: string, arr: Agent) {
   const i = arr.indexOf(agent)
