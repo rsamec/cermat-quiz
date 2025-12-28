@@ -3889,7 +3889,6 @@ function intersection(...arrays) {
 function complementSingleAgent(a: Agent, arr: Agent[]) {  
   if (a.length === 1) return a[0];
   const complements = complementAgent(a, arr.length > 1 ? intersection(...arr) : arr[0]);
-  console.log(a, arr, complements);
   return singleAgent(complements);
 }
 function equalAgent(f: string | Agent, s: string | Agent) {
