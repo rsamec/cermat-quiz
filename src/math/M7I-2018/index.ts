@@ -1,6 +1,5 @@
-import { Agent } from "http";
 import { compRatio, cont, ctorBooleanOption, compRelative, proportion } from "../../components/math";
-import { createLazyMap, deduce, last, toCont } from "../../utils/deduce-utils";
+import { createLazyMap, deduce, last } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   11.1: () => kone().a,

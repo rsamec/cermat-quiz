@@ -1,5 +1,5 @@
 import { commonSense, compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, nthPart, quota, rate, ratio, ratios, ctorPercent, percent, compAngle, ctorLinearEquation, ctorOption, sum, product, counter, triangleAngle, contLength, dimensionEntity, contArea, primeFactors, squareArea, baseAreaVolume, cuboidVolume, formulaRegistry, evalExprAsCont, evalFormulaAsCont, contAngle, contRightAngle } from "../../components/math";
-import { anglesNames, createLazyMap, deduce, deduceAs, last, to, toCont } from "../../utils/deduce-utils";
+import { anglesNames, createLazyMap, deduce, deduceAs, last, to } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   //1:() => porovnani(),
@@ -413,11 +413,11 @@ function obrazce() {
       deductionTree: deduce(
         cont("obrazec č.1", 2, entityPocet),
         deduce(
-          toCont(deduce(
+          deduce(
             contLength("hledaný obrazec", 20),
             contLength("obrazec č.1", 5),
             ctorDifference("přechody"),
-          ), { agent: "přechody" }),
+          ),
           to(deduce(
             tmavyObrazec1,
             tmavyObrazec2,

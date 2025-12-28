@@ -37,7 +37,8 @@
     "generate:json": "node ./src/data/word-problems-[code].tldr.js --code M9I-2025 > ./src/data/word-problems-M9I-2025.json",
     "generate:word-problems:metrics": "node ./src/data/word-problems-metrics.json.js > ./src/data/word-problems-metrics.json",
     "generate:math:metrics": "node ./src/data/math-metrics.json.js > ./src/data/math-metrics.json",
-    "generate:print": "node ./src/print-[code].md.js --code AJA-2024 > ./src/print-AJA-2024.md"
+    "generate:print": "node ./src/print-[code].md.js --code AJA-2024 > ./src/print-AJA-2024.md",
+    "generate:lang":"python3 ./src/data/word-problem-extract-[code].json.py --code M9B-2025 > ./src/data/word-problem-extract-M9B-2025.json"
   },
   "dependencies": {
     "@google/genai": "^1.10.0",

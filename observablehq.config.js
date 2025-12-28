@@ -138,6 +138,7 @@ export default {
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/math-geometry-${code}.json`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).filter(code => code == "M9D-2025").map(code => `/notebook-${code}`))
     .concat(['o1-mini', 'gpt-5-mini', 'gemini-2.5-flash'].flatMap(model => quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/ai-${model}-as-${code}`)))
+    // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/extract-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-answers-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-geometry-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solution-${code}`))

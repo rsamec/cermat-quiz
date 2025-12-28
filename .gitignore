@@ -10,3 +10,5 @@ yarn-error.log
 /gen-screenshots/
 audio/
 .vscode
+.env
+langextract_env
