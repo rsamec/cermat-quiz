@@ -1,5 +1,5 @@
-import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate, cont } from "../components/math.js"
-import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison, Frequency } from "../components/math.js"
+import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate } from "../components/math.js"
+import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison, Frequency, PredicateKind } from "../components/math.js"
 import { partionArray } from '../utils/common-utils.js';
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
 import { evaluate, substitute, toEquationExprAsTex, colors } from "./math-solver.js"
@@ -166,16 +166,16 @@ type TreeMetrics = {
   depth: number;
   width: number;
   predicates: string[]
-  rules: string[]
+  rules: RuleParameters[]
   formulas: string[]
 };
-
+type RuleParameters = { name: string, inputs: PredicateKind[] }
 export function computeTreeMetrics(
   node: Node,
   level = 0,
   levels: Record<number, number> = {},
   predicates: string[] = [],
-  rules: string[] = [],
+  rules: RuleParameters[] = [],
   formulas: string[] = [],
 ): TreeMetrics {
   // Base case: If the node is a leaf
@@ -204,7 +204,7 @@ export function computeTreeMetrics(
 
       if (isConclusion) {
         const result = inferenceRuleWithQuestion(mapNodeChildrenToPredicates(node));
-        rules.push(result.name);
+        rules.push({ name: result.name, inputs: result.inputParameters })
       }
 
       const metrics = computeTreeMetrics(child, level + 1, levels, predicates, rules, formulas);
@@ -734,13 +734,15 @@ function normalizeToArray(d: any | any[]) {
   return Array.isArray(d) ? d : [d]
 }
 
-export function wordProblemGroupById(wordProblem: Record<string, { deductionTree: any }>) {
+export function wordProblemGroupById(
+  wordProblem: Record<string, { deductionTree: any }>,
+  map = ([key, value]) => ({
+    key,
+    deductionTrees: [`Řešení ${key}`, value.deductionTree]
+  })) {
 
   const deductionTrees = Object.entries(wordProblem).reduce((out, [key, value], index) => {
-    out.push({
-      key,
-      deductionTrees: [`Řešení ${key}`, value.deductionTree]
-    })
+    out.push(map([key, value]));
     return out;
   }, []);
 
@@ -947,7 +949,7 @@ export function colorifyDeduceTree(originalTree, { maxDepth, axioms, deductions 
         const newPredicate = (isQuantityPredicate(node) && isNumber(node.quantity))
           ? Object.assign(node, { quantity: node.quantity.toString() })
           : isRatioPredicate(node) && isNumber(node.ratio)
-            ? Object.assign(node, { ratio: false ? node.ratio.toString() : `${new Fraction(node.ratio).toFraction()}`})
+            ? Object.assign(node, { ratio: false ? node.ratio.toString() : `${new Fraction(node.ratio).toFraction()}` })
             : node;
         return [newPredicate];
       }

@@ -1,23 +1,12 @@
 import wordProblems from '../math/word-problems.js';
-import { computeTreeMetrics } from "../utils/deduce-utils.js";
+import { computeTreeMetrics, wordProblemGroupById } from "../utils/deduce-utils.js";
 
 function sum(strings){
   return strings.reduce((acc) => acc = acc + 1,0);
 }
-function wordProblemGroupById(wordProblem) {
-
-  const deductionTrees = Object.entries(wordProblem).reduce((out, [key, value], index) => {
-    out.push({
-      key,
-      ...computeTreeMetrics(value.deductionTree)
-    })
-    return out;
-  }, []);
-
-  return Object.groupBy(deductionTrees, ({ key }) => parseInt(key.split(".")[0]));
-}
 const result = Object.entries(wordProblems).flatMap(([code, value]) => {
-  return Object.entries(wordProblemGroupById(value)).flatMap(([key, values]) => {
+  return Object.entries(wordProblemGroupById(value, ([key,value]) => ({key, ...computeTreeMetrics(value.deductionTree)})))
+  .flatMap(([key, values]) => {
     const predicates = values.flatMap(d => d.predicates);
     const rules = values.flatMap(d => d.rules);
     const formulas = values.flatMap(d => d.formulas);

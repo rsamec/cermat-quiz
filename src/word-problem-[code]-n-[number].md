@@ -146,7 +146,7 @@ function renderValues (values) {
     const bindings = createAndBindSignals({metadata, inferenceMap})
         
     return html.fragment`  
-  <h3>Řešení ${key}</h3>
+  <h2 id=${key}>Řešení ${key}</h2>
   <div class="h-stack h-stack--l h-stack--wrap">
     <div class="h-stack h-stack--m h-stack--wrap">
       <div class="badge">Hloubka: ${depth}</div>

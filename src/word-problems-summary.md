@@ -27,25 +27,8 @@ import * as math from "./components/math.js";
 
 const questionsMaxLimit = 25;
 
-const quizQuestionsMap4 = await FileAttachment(`./data/quiz-math-4.json`).json();
-const quizQuestionsMap6 = await FileAttachment(`./data/quiz-math-6.json`).json();
-const quizQuestionsMap8 = await FileAttachment(`./data/quiz-math-8.json`).json();
-const quizQuestionsMapD = await FileAttachment(`./data/quiz-math-diploma.json`).json();
+const quizQuestionsMap = await FileAttachment(`./data/quiz-math.json`).json();
 
-function getQuestionMapByPeriod(period){
-  if (period == "4"){
-    return quizQuestionsMap4
-  }
-  else if (period == "6"){
-    return quizQuestionsMap6
-  }
-  else if (period == "8"){
-    return quizQuestionsMap8
-  }
-  else if (period == "diploma"){
-    return quizQuestionsMapD
-  }
-}
 
 const quizGeneratedCategories = await FileAttachment("./data/quiz-categories-gemini-2.5-flash.json").json();
 const wordProblemsMetrics = await FileAttachment("./data/word-problems-metrics.json").json();
@@ -60,7 +43,7 @@ const filteredQuizCategories = Object.entries(quizGeneratedCategories).flatMap((
   const wordProblem = wordProblems[code] ?? {};  
   
   const parsedCode = parseCode(code);      
-  const questionMap = getQuestionMapByPeriod(parsedCode.period);
+  const questionMap = quizQuestionsMap
   
   const quiz = questionMap[code];
   if (quiz == null) return [];

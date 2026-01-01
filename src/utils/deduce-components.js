@@ -389,7 +389,7 @@ export function deduceTraverse(node) {
         args.push(res)
 
         if (!isLast) {
-          const plotFigure = renderPredicatePlot(newChild, { predicatesToExclude: ["cont"] });
+          const plotFigure = renderPredicatePlot(newChild,node, { predicatesToExclude: ["cont"] });
           if (plotFigure != null) {
             args.push(plotFigure)
           }
@@ -453,7 +453,7 @@ export function stepsTraverse(node) {
         args.push(res)
 
         if (!isLast) {
-          const plotFigure = renderPredicatePlot(newChild, { predicatesToExclude: ["cont"] });
+          const plotFigure = renderPredicatePlot(newChild,node, { predicatesToExclude: ["cont"] });
           if (plotFigure != null) {
             args.push(plotFigure)
           }
@@ -546,7 +546,7 @@ export function renderDeduceTreeNode(args, node, level) {
 }
 
 
-export function renderPredicatePlot(newChild, options = { predicatesToExclude: [''] }) {
+export function renderPredicatePlot(newChild,node, options = { predicatesToExclude: [''] }) {
   const width = 250;
   if (newChild == null) return;
   if (options.predicatesToExclude.includes(newChild.kind)) return;

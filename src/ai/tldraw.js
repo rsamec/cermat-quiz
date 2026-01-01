@@ -814,11 +814,11 @@ Fraction.prototype = {
   "simplify": function(eps22) {
     const ieps = BigInt(1 / (eps22 || 1e-3) | 0);
     const thisABS = this["abs"]();
-    const cont2 = thisABS["toContinued"]();
-    for (let i = 1; i < cont2.length; i++) {
-      let s = newFraction(cont2[i - 1], C_ONE);
+    const cont = thisABS["toContinued"]();
+    for (let i = 1; i < cont.length; i++) {
+      let s = newFraction(cont[i - 1], C_ONE);
       for (let k = i - 2; k >= 0; k--) {
-        s = s["inverse"]()["add"](cont2[k]);
+        s = s["inverse"]()["add"](cont[k]);
       }
       let t = s["sub"](thisABS);
       if (t["n"] * ieps < t["d"]) {
@@ -5019,7 +5019,7 @@ function inferLcdRule(items, b) {
   const result = lcdRule(values, b);
   return {
     name: lcdRule.name,
-    inputParameters: extractKinds(b),
+    inputParameters: extractKinds(...items, b),
     question: containerQuestion(result),
     result,
     options: areNumbers(values) && isNumber2(result.quantity) ? [
@@ -5310,7 +5310,7 @@ function inferToRatioCompareRule(a, b, ctor) {
     const between = result.ratio > 1 / 2 && result.ratio < 2;
     return {
       name: toRatioCompareRule.name,
-      inputParameters: [a, b, ctor],
+      inputParameters: extractKinds(a, b, ctor),
       question: `Porovnej ${result.agentA} a ${result.agentB}.${between ? `O kolik z ${result.agentB}?` : `Kolikr\xE1t ${result.ratio < 1 ? "men\u0161\xED" : "v\u011Bt\u0161\xED"}?`}`,
       result,
       options: between ? [
@@ -5322,7 +5322,7 @@ function inferToRatioCompareRule(a, b, ctor) {
       ]
     };
   } else {
-    return resultAsQuestion(result, { name: toRatioCompareRule.name, inputParamters: extractKinds(a, b, ctor) });
+    return resultAsQuestion(result, { name: toRatioCompareRule.name, inputParameters: extractKinds(a, b, ctor) });
   }
 }
 function compareToRateRule(a, b, last) {
@@ -5518,7 +5518,7 @@ function inferToRateRule(a, b, rate) {
       ]
     };
   } else {
-    return resultAsQuestion(result, { name: toRateRule.name, inputParamters: extractKinds(a, b, rate) });
+    return resultAsQuestion(result, { name: toRateRule.name, inputParameters: extractKinds(a, b, rate) });
   }
 }
 function solveEquationRule(a, b, last) {
@@ -5562,7 +5562,7 @@ function inferToQuotaRule(a, quota) {
       ]
     };
   } else {
-    return resultAsQuestion(result, { name: toQuotaRule.name, inputParamters: extractKinds(a, quota) });
+    return resultAsQuestion(result, { name: toQuotaRule.name, inputParameters: extractKinds(a, quota) });
   }
 }
 function toRatiosRule(parts, last) {
@@ -5650,7 +5650,7 @@ function inferEvalToQuantityRule(a, b) {
   const result = evalToQuantityRule(a, b);
   return {
     name: evalToQuantityRule.name,
-    inputParameters: extractKinds(a, b),
+    inputParameters: extractKinds(...a, b),
     question: `Vypo\u010Dti v\xFDraz ${b.expression}?`,
     result,
     options: []
@@ -6030,7 +6030,7 @@ function inferenceRuleWithQuestion(children) {
   const result = predicates.length > 1 ? inferenceRuleEx(...predicates) : null;
   return result == null ? {
     name: predicates.find((d) => d.kind == "common-sense") != null ? "commonSense" : "unknownRule",
-    inputParamters: predicates.map((d) => d.kind),
+    inputParameters: predicates.map((d) => d.kind),
     question: last.kind === "cont" ? containerQuestion(last) : last.kind === "comp" ? `${computeQuestion(last.quantity)} porovn\xE1n\xED ${last.agentA} a ${last.agentB}` : last.kind === "ratio" ? `Vyj\xE1d\u0159i jako pom\u011Br ${last.part} k ${last.whole}` : "Co lze vyvodit na z\xE1klad\u011B zadan\xFDch p\u0159edpoklad\u016F?",
     result: last,
     options: []
@@ -6553,7 +6553,7 @@ function isSameEntity(f, s) {
   return f.entity == s.entity && f.unit == s.unit;
 }
 function extractKinds(...args) {
-  return args.filter((d) => d != null).map((d) => d.kind);
+  return args.filter((d) => d != null && d.kind != null).map((d) => d.kind);
 }
 function isNumber2(quantity) {
   return typeof quantity === "number";
@@ -6607,10 +6607,10 @@ function toGenerAgent(a) {
 function formatEntity(d) {
   return d.entity || d.unit ? `(${[d.unit, d.entity].filter((d2) => d2 != null && d2 != "").join(" ")})` : "";
 }
-function resultAsQuestion(result, { name, inputParamters }) {
+function resultAsQuestion(result, { name, inputParameters }) {
   return {
     name,
-    inputParameters: inputParamters,
+    inputParameters,
     question: "",
     result,
     options: []

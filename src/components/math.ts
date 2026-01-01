@@ -1986,7 +1986,7 @@ function inferLcdRule(items: (Container | Rate)[], b: LCD): Question<Container> 
   const result = lcdRule(values, b)
   return {
     name: lcdRule.name,
-    inputParameters: extractKinds(b),
+    inputParameters: extractKinds(...items, b),
     question: containerQuestion(result),
     result,
     options: areNumbers(values) && isNumber(result.quantity) ? [
@@ -2059,7 +2059,7 @@ function toCompareRule(a: Container | Rate, b: Container | Rate): Comparison {
   const bEntity = b.kind === "rate" ? b.entity : { entity: b.entity, unit: b.unit }
   if (aEntity.entity != bEntity.entity) {
     throw `Mismatch entity ${aEntity.entity}, ${bEntity.entity}`
-  }  
+  }
   return {
     kind: 'comp',
     agentB: complementSingleAgent(b.agent, [a.agent]),
@@ -2311,7 +2311,7 @@ function inferToRatioCompareRule(a: Container, b: Container, ctor: RatioComparis
     const between = (result.ratio > 1 / 2 && result.ratio < 2);
     return {
       name: toRatioCompareRule.name,
-      inputParameters: [a, b, ctor],
+      inputParameters: extractKinds(a, b, ctor),
       question: `Porovnej ${result.agentA} a ${result.agentB}.${between ? `O kolik z ${result.agentB}?` : `Kolikrát ${result.ratio < 1 ? 'menší' : 'větší'}?`}`,
       result,
       options: between
@@ -2331,7 +2331,7 @@ function inferToRatioCompareRule(a: Container, b: Container, ctor: RatioComparis
     }
   }
   else {
-    return resultAsQuestion<RatioComparison>(result, { name: toRatioCompareRule.name, inputParamters: extractKinds(a, b, ctor) });
+    return resultAsQuestion<RatioComparison>(result, { name: toRatioCompareRule.name, inputParameters: extractKinds(a, b, ctor) });
   }
 }
 
@@ -2551,7 +2551,7 @@ function inferToRateRule(a: Container, b: Container | Quota, rate: Rate): Questi
     }
   }
   else {
-    return resultAsQuestion<Rate>(result, { name: toRateRule.name, inputParamters: extractKinds(a, b, rate) });
+    return resultAsQuestion<Rate>(result, { name: toRateRule.name, inputParameters: extractKinds(a, b, rate) });
   }
 }
 
@@ -2602,7 +2602,7 @@ function inferToQuotaRule(a: Container, quota: Container): Question<Quota> {
     }
   }
   else {
-    return resultAsQuestion<Quota>(result, { name: toQuotaRule.name, inputParamters: extractKinds(a, quota) });
+    return resultAsQuestion<Quota>(result, { name: toQuotaRule.name, inputParameters: extractKinds(a, quota) });
   }
 }
 
@@ -2611,7 +2611,7 @@ function toRatiosRule(parts: Container[] | Rate[], last: PartToPartRatio): PartT
   const agents: Agent[] = parts.map(d => d.agent);
   return {
     kind: 'ratios',
-    parts: agents.map((d,i) => complementSingleAgent(d, agents)),
+    parts: agents.map((d, i) => complementSingleAgent(d, agents)),
     ratios: last.useBase ? ratiosToBaseForm(ratios) : ratios,
     whole: last.whole
   }
@@ -2713,7 +2713,7 @@ function inferEvalToQuantityRule<
   const result = evalToQuantityRule(a, b);
   return {
     name: evalToQuantityRule.name,
-    inputParameters: extractKinds(a as any, b as any),
+    inputParameters: extractKinds(...a, b as unknown as Predicate),
     question: `Vypočti výraz ${b.expression}?`,
     result,
     options: []
@@ -3183,7 +3183,7 @@ export function inferenceRuleWithQuestion(children: Predicate[]) {
   return result == null
     ? {
       name: predicates.find(d => d.kind == "common-sense") != null ? "commonSense" : "unknownRule",
-      inputParamters: predicates.map(d => d.kind),
+      inputParameters: predicates.map(d => d.kind),
       question: (last.kind === "cont")
         ? containerQuestion(last)
         : (last.kind === "comp")
@@ -3859,12 +3859,12 @@ function normalizeToAgent(agent: string | Agent) {
   return Array.isArray(agent) ? agent : [agent]
 }
 function joinAgent(a: string | Agent) {
-   return Array.isArray(a) ? a.join(): a;
+  return Array.isArray(a) ? a.join() : a;
 }
 function singleAgent(a: string | Agent) {
   if (Array.isArray(a)) {
     if (a.length > 1) {
-      throw `Multiple agents found ${a.join()}.`      
+      throw `Multiple agents found ${a.join()}.`
     }
     return a[0];
   }
@@ -3886,7 +3886,7 @@ function intersection(...arrays) {
     arrays.slice(1).every(arr => arr.includes(item))
   );
 }
-function complementSingleAgent(a: Agent, arr: Agent[]) {  
+function complementSingleAgent(a: Agent, arr: Agent[]) {
   if (a.length === 1) return a[0];
   const complements = complementAgent(a, arr.length > 1 ? intersection(...arr) : arr[0]);
   return singleAgent(complements);
@@ -3913,8 +3913,8 @@ function isSameEntity(f: EntityBase, s: EntityBase) {
   return f.entity == s.entity && f.unit == s.unit
 }
 
-function extractKinds(...args: Predicate[]): PredicateKind[] {
-  return args.filter(d => d != null).map(d => d.kind as unknown as PredicateKind)
+function extractKinds(...args: Predicate[]): PredicateKind[] {   
+  return args.filter(d => d != null && d.kind != null).map(d => d.kind as unknown as PredicateKind)
 }
 
 export function isNumber(quantity: NumberOrExpression | NumberOrVariable): quantity is number {
@@ -3982,10 +3982,10 @@ function toGenerAgent(a: Container): Container {
 function formatEntity(d: EntityBase) {
   return (d.entity || d.unit) ? `(${[d.unit, d.entity].filter(d => d != null && d != "").join(" ")})` : ''
 }
-function resultAsQuestion<T extends Predicate>(result: T, { name, inputParamters }: { name: string, inputParamters: PredicateKind[] }): Question<T> {
+function resultAsQuestion<T extends Predicate>(result: T, { name, inputParameters }: { name: string, inputParameters: PredicateKind[] }): Question<T> {
   return {
     name,
-    inputParameters: inputParamters,
+    inputParameters,
     question: '',
     result,
     options: []

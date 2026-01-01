@@ -89,6 +89,7 @@ export default {
         { name: "Slovní úlohy", path: "/word-problems-summary" },
         { name: "Výrazy, konstrukční úlohy", path: "/math" },
         { name: "Matematizace", path: "/math-deduction" },
+        { name: "Přehled řešení slovních úloh", path: "/word-problems-structure" },
         { name: "Měření obtížnosti", path: "/word-problems-measure" },
         // { name: "Prostředí", path:"math-environments"},
       ]
@@ -150,11 +151,10 @@ export default {
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-${code}`))
     //.concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-ai-${code}`))
     .concat(wordProblemsKeyValuePairs.map(([code, id]) => `/word-problem-${code}-n-${id}`))
-    .concat(quizes.map(d => `/quiz-${d.subject}-${d.period}`))
-    .concat(quizes.map(d => `/quiz-print-${d.subject}-${d.period}`))
+    .concat(quizes.map(d => `/quiz-${d.subject}`))
+    .concat(quizes.map(d => `/quiz-print-${d.subject}`))
     .concat(quizes.map(d => `/quiz-picker-${d.subject}-${d.period}`))
-    .concat(quizes.map(d => `/quiz-sel-${d.subject}-${d.period}`))
-    .concat(quizes.map(d => `/quiz-builder-${d.subject}-${d.period}`))
+    .concat(quizes.map(d => `/quiz-sel-${d.subject}-${d.period}`))    
     .concat(quizes.flatMap(d => printedPages.map(p => `/assets/pdf/${d.subject}-${d.period}/${formatPdfFileName(p)}.pdf`)))
 
 };
