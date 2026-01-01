@@ -11,7 +11,7 @@ Popisuje strukturu použití predikátů v jednotlivých krocích řešení úlo
 ```js
 const metricsRulesData = await FileAttachment("./data/word-problems-metrics-rules.json").json();
 const sets = extractSets(metricsRulesData);
-const combinations = generateCombinations(sets, {type:'intersection', order: 'cardinality:desc', min: 2})
+const combinations = generateCombinations(sets, {type:'distinctIntersection', order: 'cardinality:desc', min: 2})
 
 
 const selection = view(UpSetJSElement(sets, combinations, {height: 1000, theme: mode, mode:'click'}))

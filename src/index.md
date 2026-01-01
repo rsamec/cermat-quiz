@@ -128,9 +128,17 @@ function plotWaffle(rawData) {
 }
 
 ```
-**Smyslem** tohoto projektu je **zdarma** poskytnout [strukturovaná data](/inputs) pro tvorbu výukových materiálů (videa, audia, pracovní listy, kvízů, kartiček, aplikací...). Demonstrovat [konkrétní příklady s návody](/embedding), jak lze databanku využít.
+**Smyslem** tohoto projektu je **zdarma** poskytnout [strukturovaná data](/inputs) pro tvorbu vlastních výukových materiálů (<a href="./notebook-M9D-2025" target="_blank">videa</a>, <a href="./quiz-picker-math-4" targe="_blank">audia</a>, pracovní listy, kvízů, kartiček, aplikací...). 
 
-## Zadání úloh
+<div class="tip" label="Tvorba výukových materiálu">
+    
+  Nejjednodušší způsob jak vytvořit **vyukové materiály na míru** na pár kliků je stáhnout **balíčky zadání a řešení úloh** ve formátu markdown <a download href="/data/word-problem.zip"  title="Řešení slovních úloh "><i class="fa fa-brands fa-markdown"></i><span> zde</span></a> a nahrát do aplikace, např. <a href="https://notebooklm.google.com/" target="_blank">NotebookLM</a>.
+
+  Případně prozkoumejte další možnosti integrace <a href="/embedding">více informací</a>.
+</div>
+
+
+## Banka zadání úloh
 
 <div class="grid grid-cols-4" style="grid-auto-rows: auto;">
  ${subjects.map(subject => html`<div class="card">
@@ -154,15 +162,15 @@ function plotWaffle(rawData) {
   </div>`)}
 </div>
 
-Balíček **všech zadání úloh** ve formátu markdown s rozdělením
+Balíček **všech zadání úloh** ve formátu markdown členěno dle **granularity** až na úroveň
 <ul>
-<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/quiz-question.zip"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-brands fa-markdown"></i><span>na úroveň jednotlivých testů</span></a>
+<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/quiz-questions.zip"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-brands fa-markdown"></i><span>jednotlivých testů</span></a>
 </li>
-<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/quiz-questions.zip"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-brands fa-markdown"></i><span>na úroveň jednotlivých úloh</span></a>
+<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/quiz-question.zip"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-brands fa-markdown"></i><span>jednotlivých úloh</span></a>
 </li>
 </ul>
 
-## Řešení úloh - matika
+## Banka řešení úloh
 
 <div class="grid grid-cols-4" style="grid-auto-rows: auto;">
   <div class="card">
@@ -216,11 +224,11 @@ Balíček **všech zadání úloh** ve formátu markdown s rozdělením
 
 </div>
 
-Balíček **všech postupů řešení úloh** ve formátu markdown (generováno heslovitě) s rozdělením
+Balíček **všech postupů řešení úloh** ve formátu markdown (generováno heslovitě) s členěním dle **granularity** až na úroveň
 <ul>
-<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/word-problem.zip"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-brands fa-markdown"></i><span>na úroveň jednotlivých testů</span></a>
+<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/word-problems.zip"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-brands fa-markdown"></i><span>jednotlivých testů</span></a>
 </li>
-<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/word-problems.zip"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-brands fa-markdown"></i><span>na úroveň jednotlivých úloh</span></a>
+<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/word-problem.zip"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-brands fa-markdown"></i><span>jednotlivých úloh</span></a>
 </li>
 </ul>
 
@@ -262,33 +270,7 @@ ${
 </details>
 
 ---
-
-## Tvorba vlastních výukových materiálů
-
-### Příklad - matika 2025 - 2. náhradní termín
-
-<div class="carousel carousel--scroll-markers carousel--inert">
-${videos.map(({ video, name, id }, i) => html`<div class="carousel__slide" data-label=a${i}>
-    <figure class="parallax-item" role="tabpanel">      
-      <video src=${video} muted loop controls></video>
-     <figcaption>
-     <h2>${name}</h2>     
-     </figcaption> </figure>
-  </div>`)}
-</div>
-
-
-<div style="height:40px"></div>
-
-<div class="tip" label="Notebook LM">
-  Videa výše jsou vytvořena pomocí aplikace <a href="https://notebooklm.google.com/" target="_blank">NotebookLM</a> na základě <a href="/word-problems-M9D-2025"> dat</a> z banky úloh. 
-  
-  Nejjednodušší způsob jak vytvořit **vyukové materiály na míru** na pár kliků je **stáhnout balíček postupů řešení** ve formátu markdown <a download href="/data/word-problem.zip"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-brands fa-markdown"></i><span> zde</span></a> a nahrát do aplikace.
-
-  Případně prozkoumejte další možnosti integrace <a href="/embedding">více informací</a>.
-</div>
-
----
+## Co nabízíme
 
 <div class="grid grid-cols-4" style="grid-auto-rows: auto;"> 
   <div class="card grow">
