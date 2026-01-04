@@ -1,0 +1,612 @@
+{
+  "5": {
+    "id": "5",
+    "title": "Úloha 5",
+    "tasks": [
+      {
+        "id": "5.1",
+        "title": "Délka domu a je rovna polovině délky strany pozemku c. Určete šířku domu b.",
+        "context": "Pozemek je čtverec se stranou c = 30 m. Obsah domu je pětkrát menší než obsah pozemku. Dům má rozměry a × b, kde a = c/2.",
+        "steps": [
+          {
+            "label": "Vypočti výraz a^2? (obsah pozemku)",
+            "calculation": "c = 30 m ⇒ obsah pozemku = c^2 = 30^2",
+            "analysis": "Pozemek má tvar čtverce, proto jeho obsah získáme jako délka strany na druhou.",
+            "result": "Obsah pozemku = 30^2 = 900 m2"
+          },
+          {
+            "label": "Vypočti obsah domu (m2)?",
+            "calculation": "obsah domu = 1/5 · obsah pozemku = 1/5 · 900",
+            "analysis": "Dle zadání má půdorys domu pětkrát menší obsah než celý pozemek, tedy obsah domu je jedna pětina obsahu pozemku.",
+            "result": "Obsah domu = 900 · 1/5 = 180 m2"
+          },
+          {
+            "label": "Vypočti a (m délka)?",
+            "calculation": "a = 1/2 · c = 1/2 · 30",
+            "analysis": "Délka domu a je rovna polovině délky strany pozemku c.",
+            "result": "a = 30/2 = 15 m"
+          },
+          {
+            "label": "Rozděl obsah domu podle délky a a určete šířku b",
+            "calculation": "b = (obsah domu) / a = 180 / 15",
+            "analysis": "Obsah obdélníku (půdorysu domu) je a·b, proto b = obsah / a.",
+            "result": "b = 180 / 15 = 12 m"
+          }
+        ]
+      },
+      {
+        "id": "5.2",
+        "title": "Rozloha rybníčku představuje 18 % celkové rozlohy pozemku. Vypočtěte v m2 rozlohu volné části pozemku, na níž není ani dům, ani rybníček.",
+        "context": "Obsah pozemku = 900 m2, obsah domu = 180 m2, rybníček zabírá 18 % z pozemku.",
+        "steps": [
+          {
+            "label": "Vypočti rybník (m2 obsah)?",
+            "calculation": "obsah rybníčku = 18% · obsah pozemku = 0.18 · 900",
+            "analysis": "18 % z celkové rozlohy pozemku spočítáme jako 0,18 násobené obsahem pozemku.",
+            "result": "Obsah rybníčku = 0.18 · 900 = 162 m2"
+          },
+          {
+            "label": "Vypočti dům a rybník (m2 obsah)?",
+            "calculation": "součet = obsah domu + obsah rybníčku = 180 + 162",
+            "analysis": "Volná plocha se získá odečtením plochy domu a rybníčku od celkové plochy pozemku, takže nejprve sečteme jejich plochy.",
+            "result": "Obsah domu + rybníčku = 180 + 162 = 342 m2"
+          },
+          {
+            "label": "Vypočti rozdíl mezi pozemkem a (dům + rybník)",
+            "calculation": "volná plocha = obsah pozemku − (obsah domu + obsah rybníčku) = 900 − 342",
+            "analysis": "Od celkové plochy pozemku odečteme plochu zastavěnou domem a plochu rybníčku, zbytek je volná plocha.",
+            "result": "Volná část pozemku = 900 − 342 = 558 m2"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 5 \n===\n\n> Na obrázku je plánek pozemku, na kterém se nachází  dům a rybníček.\\\n> Pozemek má tvar čtverce s délkou strany 𝑐=30 m.\n> Světle šedý obdélník představuje půdorys domu a tmavší obrazec představuje rybníček.\\\n> Půdorys domu má **pětkrát menší obsah**, než je celková rozloha pozemku. \n>  \n> ![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9A-2025/image.png)\n> \n> (*CZVV*)\n\n# 5 \n## 5.1 Délka domu 𝑎 je rovna polovině délky strany pozemku 𝑐. \n**Určete šířku domu** 𝑏. \n## 5.2 Rozloha rybníčku představuje 18 % celkové rozlohy pozemku. \n**Vypočtěte v m^2^ rozlohu volné části pozemku, na níž __není__ ani dům, ani rybníček.**\n \n\n"
+  },
+  "6": {
+    "id": "6",
+    "title": "Úloha 6 — Zahradní sud (rotační válec)",
+    "tasks": [
+      {
+        "id": "6.1",
+        "title": "6.1 Při dešti stoupla hladina vody v sudu o 10 mm — kolik litrů přibylo?",
+        "context": "Sud má tvar válce. Obsah dna S = 1 500 cm². Přírůstek výšky hladiny h = 10 mm = ? cm. Objem přidané vody V = S · h. Převést cm³ na litry (1 l = 1 000 cm³).",
+        "steps": [
+          {
+            "label": "Převeď 10 mm na cm",
+            "calculation": "10 mm ÷ 10 = 1 cm",
+            "analysis": "1 centimetr má 10 milimetrů, takže 10 mm je 10 děleno 10 = 1 cm. Potřebujeme výšku v centimetrech, protože obsah dna je v cm².",
+            "result": "vzestup hladiny = 1 cm"
+          },
+          {
+            "label": "Vypočti přidaný objem V = S · h",
+            "calculation": "V = 1 500 cm² · 1 cm = 1 500 cm³",
+            "analysis": "Objem válce odpovídající tenké vrstvě vody výšky h je obsah dna S krát výška h. Používáme S = 1 500 cm² a h = 1 cm.",
+            "result": "přibylo vody = 1 500 cm³"
+          },
+          {
+            "label": "Převeď 1 500 cm³ na litry",
+            "calculation": "1 500 cm³ ÷ 1 000 = 1,5 l",
+            "analysis": "1 litr je 1 000 cm³, proto dělíme objem v cm³ tisícem, abychom dostali litry.",
+            "result": "přibylo vody = 1,5 l"
+          }
+        ]
+      },
+      {
+        "id": "6.2",
+        "title": "6.2 Při silném lijáku přibyly 3 litry — o kolik mm stoupla hladina?",
+        "context": "Sud má obsah dna S = 1 500 cm². Přibylo V = 3 l = ? cm³. Výška přírůstku h = V / S (v cm). Poté převést cm na mm (1 cm = 10 mm).",
+        "steps": [
+          {
+            "label": "Převeď 3 l na cm³",
+            "calculation": "3 l · 1 000 = 3 000 cm³",
+            "analysis": "1 litr odpovídá 1 000 cm³, takže 3 litry jsou 3 · 1 000 = 3 000 cm³.",
+            "result": "přibylo vody = 3 000 cm³"
+          },
+          {
+            "label": "Vypočti vzestup hladiny h = V / S (v cm)",
+            "calculation": "h = 3 000 cm³ ÷ 1 500 cm² = 2 cm",
+            "analysis": "Výška vrstvy vody získáme vydělením přidaného objemu obsahem dna: 3 000 děleno 1 500 = 2. Jednotka je centimetr (cm).",
+            "result": "vzestup hladiny = 2 cm"
+          },
+          {
+            "label": "Převeď 2 cm na mm",
+            "calculation": "2 cm · 10 = 20 mm",
+            "analysis": "1 centimetr má 10 milimetrů, takže 2 cm odpovídají 2 · 10 = 20 mm.",
+            "result": "vzestup hladiny = 20 mm"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT K ÚLOZE 6 \n===\n\n> Zahradní sud má tvar rotačního válce. Dno sudu má obsah 1 500 cm^2^. \n>\n> (*CZVV*) \n\n# 6 \n## 6.1 Při dešti stoupla hladina vody v sudu o 10 mm. \n**Vypočtěte, kolik litrů vody přibylo v sudu během tohoto deště.**\n## 6.2 Při silném lijáku v sudu přibyly 3 litry vody. \n**Vypočtěte, o kolik mm stoupla hladina vody v sudu během tohoto silného lijáku.**\n \n"
+  },
+  "7": {
+    "id": "7",
+    "title": "Úloha 7 — podrobné řešení",
+    "tasks": [
+      {
+        "id": "7.1",
+        "title": "Výpočet α",
+        "context": "Úhly jsou střídavé vnitřní (střídavý vnitřní úhel k α je dán jako 30°). Pro rovnoběžné přímky střídavé vnitřní úhly jsou shodné.",
+        "steps": [
+          {
+            "label": "Určení zadaného úhlu",
+            "calculation": "zadaný = 30°",
+            "analysis": "V zadání je uvedeno, že úhel střídavý vnitřní k úhlu α má velikost 30°. Střídavé vnitřní úhly vznikají při průniku příčky s dvěma rovnoběžkami a jsou si rovny.",
+            "result": "Zadaný úhel = 30°"
+          },
+          {
+            "label": "Závěr pro α",
+            "calculation": "α = 30°",
+            "analysis": "Protože úhel střídavý vnitřní k α má 30° a střídavé vnitřní úhly jsou shodné, platí α = 30°.",
+            "result": "α = 30°"
+          }
+        ]
+      },
+      {
+        "id": "7.2",
+        "title": "Výpočet β",
+        "context": "Máme daný úhel 130°. Nejprve najdeme vedlejší (souměrný/supplementární) úhel k tomuto 130° (součet vedlejších úhlů na přímce je 180°). Poté tento vedlejší úhel je souhlasný (odpovídající) úhel k β, takže β má stejnou velikost.",
+        "steps": [
+          {
+            "label": "Najít vedlejší úhel k 130°",
+            "calculation": "180° − 130° = 50°",
+            "analysis": "Dva vedlejší (sousední) úhly na přímce (nebo tvořící přímku) mají součet 180°. Proto vedlejší úhel k 130° je 50°.",
+            "result": "vedlejší úhel = 50°"
+          },
+          {
+            "label": "Použití souhlasnosti pro β",
+            "calculation": "β = 50°",
+            "analysis": "V zadání je uvedeno, že tento vedlejší úhel je souhlasný (odpovídající) k úhlu β. Souhlasné úhly při rovnoběžkách a příčce jsou shodné, takže β má stejnou velikost jako nalezený vedlejší úhel.",
+            "result": "β = 50°"
+          }
+        ]
+      },
+      {
+        "id": "7.3",
+        "title": "Výpočet γ",
+        "context": "Trojúhelník, o kterém uvažujeme, je pravoúhlý (r ⟂ t), jeden jeho vnitřní úhel je pravý (90°). Zadaný úhel 130° má svůj vedlejší úhel 50°; tento úhel leží v trojúhelníku v jednom vrcholu. Pomocí součtu vnitřních úhlů trojúhelníku (součet = 180°) spočteme třetí úhel, ten je pak vedlejší k γ, takže γ doplníme do přímky.",
+        "steps": [
+          {
+            "label": "Najít vedlejší úhel k 130° (úhel v trojúhelníku u bodu R)",
+            "calculation": "180° − 130° = 50°",
+            "analysis": "Zadaný úhel 130° má vedlejší úhel 50°. Tento úhel odpovídá úhlu v jednom z vrcholů u trojúhelníku (označeném v řešení jako ‚bod R‘).",
+            "result": "úhel v bodě R = 50°"
+          },
+          {
+            "label": "Spočítat zbývající vnitřní úhel trojúhelníku",
+            "calculation": "180° − (50° + 90°) = 40°",
+            "analysis": "Trojúhelník je pravoúhlý, jeden vnitřní úhel je 90° (pravoúhlý). Součet vnitřních úhlů je 180°, takže třetí úhel je 180° − (úhel v bodě R + pravý úhel) = 40°.",
+            "result": "zbývající vrchol trojúhelníku = 40°"
+          },
+          {
+            "label": "Určení γ jako vedlejšího k nalezenému úhlu",
+            "calculation": "180° − 40° = 140°",
+            "analysis": "V zadání je uvedeno, že nalezený vrchol (40°) je vedlejší k úhlu γ, tedy γ a tento úhel jsou suplementární (součet 180°). Proto γ = 180° − 40° = 140°.",
+            "result": "γ = 140°"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 7 \n===\n\n>V rovině leží přímky p, q, r, které se protínají v bodě R, a přímky s, t, pro které platí: s∥r, s⊥t. \n> \n>![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9A-2025/image-1.png)\n>\n>(*CZVV*) \n\n# 7 Vypočtěte ve stupních velikost úhlu \n## 7.1 𝛼, \n## 7.2 𝛽, \n## 7.3 𝛾. \nVelikosti úhlů neměřte, ale vypočtěte (obrázek je pouze ilustrativní). \n\n"
+  },
+  "8": {
+    "id": "8",
+    "title": "Úloha 8",
+    "tasks": [
+      {
+        "id": "8.1",
+        "title": "Řešení 8.1 — Vypočtěte v metrech obvod záhonu",
+        "context": "Po obvodu je 65 rostlin ve stejných rozestupech 40 cm; obvod = počet rostlin × rozestup. Převod cm → m dělením 100.",
+        "steps": [
+          {
+            "label": "Spočítat obvod v centimetrech",
+            "calculation": "65 × 40 = 2600",
+            "analysis": "Počet rostlin po obvodu (65) krát rozestup mezi dvěma sousedními rostlinami (40 cm) dává celkovou délku obvodu v cm.",
+            "result": "2600 cm"
+          },
+          {
+            "label": "Převést centimetry na metry",
+            "calculation": "2600 ÷ 100 = 26",
+            "analysis": "1 m = 100 cm, proto vydělíme výslednou délku v cm stem, abychom dostali metry.",
+            "result": "26 m"
+          }
+        ]
+      },
+      {
+        "id": "8.2",
+        "title": "Řešení 8.2 — O kolik se liší počet rostlin na nejdelší straně od počtu rostlin na protější (kratší) straně",
+        "context": "Čtyřúhelník má tři strany stejně dlouhé (kratší) a čtvrtou delší; krátší strana je o čtvrtinu kratší než delší, tedy poměr krátkých:delší = 3/4 : 1. Celkový obvod 2600 cm (z 8.1). Rozestup mezi rostlinami 40 cm; počet rostlin na straně = délka strany ÷ 40.",
+        "steps": [
+          {
+            "label": "Potvrdit celkovou délku obvodu v cm",
+            "calculation": "65 × 40 = 2600",
+            "analysis": "Stejné jako v podúloze 8.1 — používáme celkovou délku obvodu v cm pro rozdělení mezi čtyři strany.",
+            "result": "2600 cm"
+          },
+          {
+            "label": "Vyjádřit poměr délek stran",
+            "calculation": "kratší : kratší : kratší : delší = 0.75 : 0.75 : 0.75 : 1",
+            "analysis": "Každá z třech stejných stran je o čtvrtinu kratší než čtvrtá strana, tedy každá krátká = 3/4 delší. Celkový poměr součtu délek je 0.75+0.75+0.75+1 = 3.25.",
+            "result": "Poměr součtu stran = 3.25 jednotek"
+          },
+          {
+            "label": "Najít délku jedné jednotky (tj. délku delší strany) v cm",
+            "calculation": "2600 ÷ 3.25 = 800",
+            "analysis": "Celkový obvod 2600 cm rozdělíme podle váženého poměru; jedna 'jednotka' odpovídá délce delší strany (protože v poměru je delší = 1 jednotka).",
+            "result": "Delší strana = 800 cm"
+          },
+          {
+            "label": "Počet rostlin na nejdelší straně",
+            "calculation": "800 ÷ 40 = 20",
+            "analysis": "Každých 40 cm je jedna rostlina; počet rostlin na straně je délka strany dělená 40 cm.",
+            "result": "20 rostlin"
+          },
+          {
+            "label": "Délka kratší strany v cm",
+            "calculation": "800 × 3/4 = 600",
+            "analysis": "Kratší strana je 3/4 délky delší strany, tedy 0,75 × 800 cm = 600 cm.",
+            "result": "600 cm"
+          },
+          {
+            "label": "Počet rostlin na kratší straně",
+            "calculation": "600 ÷ 40 = 15",
+            "analysis": "Stejný postup jako u delší strany: dělením délky kratší strany 40 cm získáme počet rostlin na této straně.",
+            "result": "15 rostlin"
+          },
+          {
+            "label": "Rozdíl počtu rostlin mezi delší a protější kratší stranou",
+            "calculation": "20 − 15 = 5",
+            "analysis": "Počet rostlin na nejdelší straně je 20, na protější krátké straně 15; rozdíl je jejich rozdílem.",
+            "result": "Delší strana má o 5 rostlin více než protější kratší strana"
+          }
+        ]
+      },
+      {
+        "id": "8.3",
+        "title": "Řešení 8.3 — Nejmenší možný počet červeně kvetoucích rostlin po obvodu",
+        "context": "Rostliny se střídají v opakujících se blocích: skupinka červených (r kusů) následovaná dvojicí bílých (2 kusy). Celkově je 65 rostlin. Pokud blok velikosti s = r + 2 se opakuje k-krát, platí k·(r+2)=65. Hledáme minimální možný celkový počet červených (r·k), přičemž r a k jsou celá kladná čísla.",
+        "steps": [
+          {
+            "label": "Rozklad počtu rostlin na faktory",
+            "calculation": "65 = 5 × 13 (prvočíselný rozklad)",
+            "analysis": "Aby se blok (r+2) přesně opakoval k-krát po obvodu, musí (r+2) dělit 65. Děliteli 65 jsou 1, 5, 13, 65; tedy možné velikosti bloku jsou tyto hodnoty.",
+            "result": "Dělitele 65: 1, 5, 13, 65"
+          },
+          {
+            "label": "Vyjádřit velikost bloku a počet opakování",
+            "calculation": "k × (r + 2) = 65 → (r + 2) = 65 / k",
+            "analysis": "Pro každého dělitele 65 odpovídá k = 65 / (r+2) a naopak. Hledáme kombinaci, kde r je kladné celé číslo (r ≥ 1).",
+            "result": "Možné páry (k, r+2): (65,1), (13,5), (5,13), (1,65)"
+          },
+          {
+            "label": "Vyřadit nevhodné možnosti (r musí být ≥ 1)",
+            "calculation": "r = (r+2) − 2",
+            "analysis": "Z možností r+2 = 1 dává r = −1 (nepovolené). Z ostatních: r+2=5 → r=3; r+2=13 → r=11; r+2=65 → r=63. Pro každou volbu k vypočteme celkový počet červených r·k.",
+            "result": "Přípustné (k, r): (13,3), (5,11), (1,63)"
+          },
+          {
+            "label": "Spočítat celkový počet červených rostlin pro každou možnost",
+            "calculation": "k=13: 3×13=39; k=5: 11×5=55; k=1: 63×1=63",
+            "analysis": "Porovnáme výsledné počty červených rostlin a vybereme nejmenší možný. Logicky chceme co největší počet opakování k (tedy co nejmenší blok), ale tak, aby r zůstalo kladné.",
+            "result": "Možné celkové počty červených: 39, 55, 63"
+          },
+          {
+            "label": "Zvolit nejmenší možný celkový počet červených rostlin",
+            "calculation": "min(39, 55, 63) = 39",
+            "analysis": "Z výpočtů vyplývá, že při k = 13 opakováních a r = 3 červených v každé skupině dostaneme celkem 39 červených rostlin, což je nejmenší možný počet při zachování podmínek.",
+            "result": "Nejmenší možný počet červeně kvetoucích rostlin je 39"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 8 \n===\n\n> Záhon v parku má tvar čtyřúhelníku, jehož tři strany jsou stejně dlouhé. Každá z těchto tří \n> stran je o čtvrtinu kratší, než je čtvrtá strana čtyřúhelníku.\\\n> Po obvodu záhonu je ve stejných rozestupech vysázeno celkem 65 rostlin, z nichž je po jedné \n> rostlině i v každém rohu záhonu. Rozestupy mezi rostlinami měří 40 cm. \n> \n> ![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9A-2025/image-2.png)\n> \n> (*CZVV*) \n\n# 8 \n## 8.1 **Vypočtěte** v metrech obvod záhonu. \n## 8.2 **Určete**, o kolik se liší počet rostlin na nejdelší straně záhonu od počtu rostlin na protější straně záhonu. \n## 8.3 Po obvodu záhonu se **pravidelně** střídají stejně početné skupinky červeně kvetoucích rostlin s dvojicemi bíle kvetoucích rostlin. \n**Určete nejmenší možný počet červeně kvetoucích rostlin po obvodu záhonu.**\n\n"
+  },
+  "12": {
+    "id": "12",
+    "title": "Řešení 12",
+    "tasks": [
+      {
+        "id": "12.1",
+        "title": "Objem části s hloubkou 1 m",
+        "context": "Bazén má délku 40 m, šířku 10 m. V celé zóně pro neplavce je hloubka 1 m. V tomto kroku počítáme základní objem při hloubce 1 m přes celou plochu bazénu.",
+        "steps": [
+          {
+            "label": "Vypočti výraz a * b * c?",
+            "calculation": "40 · 10 · 1 = 400",
+            "analysis": "Objem obdélníkového kvádru se spočítá jako délka × šířka × hloubka. Bereme jako základní vrstvu celou plochu bazénu s hloubkou 1 m.",
+            "result": "400 m^3"
+          }
+        ]
+      },
+      {
+        "id": "12.2",
+        "title": "Objem „prohloubení“ v zóně pro plavce (pomyslný hranol)",
+        "context": "Zóna pro plavce má délku 20 m a hloubka se v ní zvětší o 1 m (z 1 m na 2 m). Šířka bazénu je 10 m. Nejprve spočítáme objem, kdyby zvýšení hloubky 1 m bylo rovnoměrné (hranol).",
+        "steps": [
+          {
+            "label": "Vypočti výraz a * b * c?",
+            "calculation": "20 · 1 · 10 = 200",
+            "analysis": "Pokud by byla v této zóně navíc všude rovnoměrně 1 m hloubky, objem by byl délka zóny × šířka × zvýšení hloubky.",
+            "result": "200 m^3"
+          }
+        ]
+      },
+      {
+        "id": "12.3",
+        "title": "Úprava pro šikmé dno (polovina hranolu)",
+        "context": "Hloubka v zóně pro plavce roste postupně z 1 m na 2 m lineárně, takže přídavný objem oproti 1 m vrstvě tvoří trojúhelníkový průřez podél délky zóny — tedy polovinu dříve spočítaného hranolu.",
+        "steps": [
+          {
+            "label": "Vypočti šikmé dno (m^3 objem)?",
+            "calculation": "1/2 · 200 = 100",
+            "analysis": "Protože hloubka narůstá lineárně od 0 (nad základní 1 m) do 1 m, průměrné zvýšení je polovina maximálního (tedy tvar průřezu je trojúhelník), takže skutečný přídavný objem je polovina hranolu vypočteného v předchozím kroku.",
+            "result": "100 m^3"
+          }
+        ]
+      },
+      {
+        "id": "12.4",
+        "title": "Celkový objem bazénu",
+        "context": "Součet základní 1 m vrstvy přes celou plochu a přídavného objemu od šikmého dna v zóně pro plavce.",
+        "steps": [
+          {
+            "label": "Vypočti bazén celkem (m^3 objem)?",
+            "calculation": "400 + 100 = 500",
+            "analysis": "Celkový objem je součet objemu základní vrstvy (400 m^3) a objemu vzniklého šikmým dnem (100 m^3).",
+            "result": "500 m^3"
+          }
+        ]
+      },
+      {
+        "id": "12.5",
+        "title": "Vyhodnocení nabídky odpovědí",
+        "context": "Porovnáme vypočtený celkový objem s možnostmi A–E.",
+        "steps": [
+          {
+            "label": "Vyhodnoť volbu [A]?",
+            "calculation": "Celkový objem = 500 m^3, Volba [A] = 500 m^3",
+            "analysis": "Nalezený výsledek přesně odpovídá možnosti [A].",
+            "result": "Správná volba: A"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 12 \n===\n\n> Bazén má délku 40 metrů a šířku 10 metrů. Hloubka bazénu není všude stejná (viz obrázek). \n> V celé zóně pro neplavce je hloubka 1 m. Zóna pro plavce má šikmé dno a hloubka bazénu \n> se v ní postupně zvětší z 1 m na 2 m.\n> \n> ![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9A-2025/image-7.png)\n>  \n> (*CZVV*) \n\n# 12 Jaký je objem bazénu? \n- [A] 500 m^3^ \n- [B] 550 m^3^ \n- [C] 600 m^3^ \n- [D] 650 m^3^ \n- [E] jiný objem \n \n"
+  },
+  "13": {
+    "id": "13",
+    "title": "Řešení úlohy 13",
+    "tasks": [
+      {
+        "id": "13",
+        "title": "Kolik přihlášek celkem muselo být kvůli nedostatku míst odmítnuto?",
+        "context": "Dva termíny tábora, stejný počet nabízených míst v každém termínu. Celkem 375 přihlášek. V 1. termínu přihlášky překročily nabídku o pětinu (tj. o 20 %), ve 2. termínu o 30 %. Určit, kolik přihlášek muselo být odmítnuto (tj. celkový počet přihlášek minus celkový počet nabízených míst).",
+        "steps": [
+          {
+            "label": "Vypočti poměr přihlášených k nabízeným místům (součet obou termínů)",
+            "calculation": "1. termín: nabídka × (1 + 1/5) = nabídka × 6/5\n2. termín: nabídka × 130% = nabídka × 13/10\nCelkem: 6/5 + 13/10 = 12/10 + 13/10 = 25/10 = 5/2",
+            "analysis": "Nechť x = počet nabízených míst v jednom termínu. Přihlášek v 1. termínu je 6/5 x, v 2. termínu 13/10 x. Celkový počet přihlášek tedy je x*(6/5 + 13/10). Sčítáním zlomků získáme 5/2 x jako poměr celkových přihlášek k jednomu x.",
+            "result": "Celkem přihlášeno = (5/2) × (nabídka za 1 termín)"
+          },
+          {
+            "label": "Urči počty nabízených míst v jednom termínu",
+            "calculation": "Celkem přihlášek = 375 = (5/2) × x ⇒ x = 375 ÷ (5/2) = 375 × (2/5) = 150",
+            "analysis": "Z předchozího kroku víme, že celkový počet přihlášek je 5/2 krát počet míst jednoho termínu. Dosadíme celkově známou hodnotu 375 a vyřešíme rovnici pro x (počet míst v jednom termínu).",
+            "result": "Počet nabízených míst v jednom termínu: 150 osob"
+          },
+          {
+            "label": "Kontrola / rozdělení 150 osob na 1 termín (drobné potvrzení)",
+            "calculation": "150 ÷ 1 × 1 = 150",
+            "analysis": "Tento krok jen potvrzuje, že když máme 150 míst na jeden termín, připisujeme tento počet k jednomu termínu (žádné další dělení není potřeba). Je to kontrolní, ničím nezmění výsledek.",
+            "result": "150 osob pro 1 termín (potvrzeno)"
+          },
+          {
+            "label": "Vypočti celkový počet nabízených míst (oba termíny)",
+            "calculation": "2 × 150 = 300",
+            "analysis": "Jsou dva termíny se stejným počtem míst (150 každý), takže celkový počet nabízených míst je dvojnásobek počtu míst jednoho termínu.",
+            "result": "Celkem nabízeno = 300 osob"
+          },
+          {
+            "label": "Vypočti počet odmítnutých přihlášek",
+            "calculation": "odmítnuto = celkem přihlášeno − celkem nabízeno = 375 − 300 = 75",
+            "analysis": "Každý z 300 nabízených míst může být obsazen jedním dítětem; zbylé přihlášky přesahující nabídku musí být odmítnuty. Rozdíl mezi 375 přihláškami a 300 místy dává počet odmítnutých přihlášek.",
+            "result": "Bylo odmítnuto 75 přihlášek"
+          },
+          {
+            "label": "Vyhodnocení nabídnutých možností",
+            "calculation": "Odpověď v nabídce: [B] 75 přihlášek",
+            "analysis": "Nalezený počet odmítnutých přihlášek (75) odpovídá možnosti B.",
+            "result": "Správná volba: [B]"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT K ÚLOZE 13 \n===\n\n> U Pelhřimova se letos pořádaly dětské tábory ve dvou termínech. Počet nabízených míst byl \n> v obou termínech stejný. Sešlo se celkem 375 přihlášek. V prvním termínu počet přihlášek \n> překročil počet nabízených míst o pětinu, ve druhém termínu o 30 %. \n> \n> (*CZVV*) \n# 13 Kolik přihlášek celkem muselo být kvůli nedostatku míst odmítnuto? \n- [A] 65 přihlášek \n- [B] 75 přihlášek \n- [C] 80 přihlášek \n- [D] 85 přihlášek \n- [E] jiný počet přihlášek \n \n"
+  },
+  "14": {
+    "id": "14",
+    "title": "Řešení úlohy 14",
+    "tasks": [
+      {
+        "id": "14",
+        "title": "Kolik žáků dostalo z testu známku 1?",
+        "context": "Test psalo 20 žáků. Nejhorší známka byla 3. Počet jedniček a dvojek byl stejný. Aritmetický průměr známek byl 1,8. Známky 4 a 5 neměl nikdo.",
+        "steps": [
+          {
+            "label": "Vyjádři dvojky (počet a hodnota)",
+            "calculation": "počet dvojek = x; hodnota každé dvojky = 2; součet bodů z dvojek = x · 2",
+            "analysis": "Označíme počet žáků se známkou 2 proměnnou x. Každá dvojka dává 2 body, takže celkem body od dvojek jsou 2x.",
+            "result": "součet bodů od dvojek = 2x"
+          },
+          {
+            "label": "Vyjádři počet jedniček a dvojek (součet těchto skupin)",
+            "calculation": "jedničky = x; dvojky = x; součet = x + x = 2x",
+            "analysis": "Podmínka v zadání říká, že počet jedniček a dvojek je stejný, proto označíme i počet jedniček x. Součet obou skupin je 2x.",
+            "result": "počet jedniček + počet dvojek = 2x"
+          },
+          {
+            "label": "Vyjádři počet trojek (rozdíl od celkového počtu žáků)",
+            "calculation": "celkem žáků = 20; trojky = 20 - (x + x) = 20 - 2x",
+            "analysis": "Z 20 žáků odečteme ty, kteří dostali jedničky a dvojky (2x), zbytek jsou ti, kdo dostali trojky.",
+            "result": "počet trojek = 20 - 2x"
+          },
+          {
+            "label": "Vyjádři součet bodů od trojek",
+            "calculation": "počet trojek = 20 - 2x; hodnota každé trojky = 3; součet bodů od trojek = 3 · (20 - 2x)",
+            "analysis": "Každá trojka má hodnotu 3 bodů, násobíme počtem trojek.",
+            "result": "součet bodů od trojek = 3(20 - 2x) = 60 - 6x"
+          },
+          {
+            "label": "Vyjádři celkový součet bodů všech žáků",
+            "calculation": "součet = jedničky·1 + dvojky·2 + trojky·3 = x + 2x + 3(20 - 2x) = 60 - 3x",
+            "analysis": "Sečteme body od jedniček (1·x), dvojek (2·x) a trojek (3·(20 - 2x)). Po rozložení a sečtení dostaneme 60 - 3x.",
+            "result": "celkový součet bodů = 60 - 3x"
+          },
+          {
+            "label": "Vyjádři aritmetický průměr a nastav rovnici",
+            "calculation": "aritmetický průměr = (celkový součet bodů) / 20 = (60 - 3x) / 20; rovnici nastavíme = 1,8",
+            "analysis": "Průměr známek je celkový součet bodů dělený počtem žáků (20). Podle zadání tento průměr je 1,8, takže dostaneme rovnici.",
+            "result": "(60 - 3x) / 20 = 1,8"
+          },
+          {
+            "label": "Vyřeš lineární rovnici pro x",
+            "calculation": "(60 - 3x) / 20 = 1,8 ⇒ 60 - 3x = 36 ⇒ -3x = -24 ⇒ x = 8",
+            "analysis": "Vynásobíme obě strany 20, potom upravíme rovnici a vydělíme -3, abychom našli x.",
+            "result": "x = 8, tedy počet jedniček = 8"
+          },
+          {
+            "label": "Vyhodnocení nabídky odpovědí",
+            "calculation": "nalezený počet jedniček = 8",
+            "analysis": "Možnosti obsahují: [A]5, [B]6, [C]7, [D]8, [E]9. Nalezená hodnota 8 odpovídá volbě [D].",
+            "result": "Správná volba: [D] 8 žáků"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A TABULKA K ÚLOZE 14 \n===\n\n> Test z matematiky psalo 20 žáků. Nejhorší známka byla 3. Počet jedniček a dvojek byl stejný. \n> Aritmetický průměr známek všech žáků byl 1,8.\n> \n> |           | | | | | | \n> |-----------|:-:|:-:|:-:|:-:|:-:|\n> |Známka     |1|2|3|4|5| \n> |Počet žáků |?| | |0|0| \n> \n> (*CZVV*) \n\n# 14 Kolik žáků dostalo z testu známku 1? \n- [A] 5 žáků \n- [B] 6 žáků \n- [C] 7 žáků \n- [D] 8 žáků \n- [E] 9 žáků \n \n \n \n"
+  },
+  "15": {
+    "id": "15",
+    "title": "Přiřaďte ke každé úloze (15.1–15.3) odpovídající výsledek (A–F).",
+    "tasks": [
+      {
+        "id": "15.1",
+        "title": "Kolik procent osob nastoupených na hřišti tvořili organizátoři?",
+        "context": "Na hřiště nastoupilo 10 družstev po 11 hráčích a všichni organizátoři. Dohromady 200 osob. Potřebujeme procento organizátorů z celkového počtu.",
+        "steps": [
+          {
+            "label": "Spočítej počet hráčů (osob)",
+            "calculation": "10 * 11 = 110",
+            "analysis": "Je 10 družstev a v každém je 11 hráčů, takže počet hráčů je součin počtu družstev a hráčů na družstvo.",
+            "result": "hráči = 110 osob"
+          },
+          {
+            "label": "Vypočítej počet organizátorů (rozdíl mezi nastoupilo a hráči)",
+            "calculation": "200 - 110 = 90",
+            "analysis": "Z celkového počtu nastoupivších (200) odečteme počet hráčů (110); zbytek tvoří organizátoři.",
+            "result": "organizátoři = 90 osob"
+          },
+          {
+            "label": "Vyjádři organizátory v procentech z celku",
+            "calculation": "90 / 200 * 100 = 45%",
+            "analysis": "Podíl organizátorů z celkového počtu vynásobíme 100, abychom dostali procenta.",
+            "result": "organizátoři tvoří 45 % z nastoupivších"
+          },
+          {
+            "label": "Vyhodnoť volbu odpovědi",
+            "calculation": "45 % → volba [B]",
+            "analysis": "Výsledné procento 45 % odpovídá možnosti B v zadání.",
+            "result": "Volba [B]"
+          }
+        ]
+      },
+      {
+        "id": "15.2",
+        "title": "Kolik procent soutěžících tvořily ženy?",
+        "context": "Soutěže se účastnilo 20 tříčlenných družstev. V každém alespoň jeden muž a alespoň jedna žena. Družstev s jedním mužem bylo čtyřikrát více než družstev s jednou ženou. Najít procento žen ze všech soutěžících.",
+        "steps": [
+          {
+            "label": "Vyjádři poměr družstev s jedním mužem ku družstvům s jednou ženou",
+            "calculation": "4 : 1",
+            "analysis": "Je dáno, že družstev s jedním mužem je čtyřikrát více než družstev s jednou ženou, tedy poměr je 4:1.",
+            "result": "poměr 4:1"
+          },
+          {
+            "label": "Spočítej počet družstev s jednou ženou",
+            "calculation": "20 / (4 + 1) * 1 = 4",
+            "analysis": "Celkem je 5 dílů (4 díly typu 1M + 1 díl typu 1W). Z 20 družstev připadá na každý díl 20/5 = 4 družstva; tedy družstev s jednou ženou je 4.",
+            "result": "družstev s jednou ženou = 4"
+          },
+          {
+            "label": "Spočítej počet družstev s jedním mužem",
+            "calculation": "20 / 5 * 4 = 16",
+            "analysis": "Z pěti dílů připadnou 4 díly na družstva s jedním mužem, tedy 4 * 4 = 16 družstev.",
+            "result": "družstev s jedním mužem = 16"
+          },
+          {
+            "label": "Spočítej počet žen v družstvech s jedním mužem",
+            "calculation": "16 * 2 = 32",
+            "analysis": "Družstvo s jedním mužem má 2 ženy (3členné družstvo). V 16 takových družstvech je 16·2 = 32 žen.",
+            "result": "ženy v těchto družstvech = 32"
+          },
+          {
+            "label": "Spočítej počet žen v družstvech s jednou ženou",
+            "calculation": "4 * 1 = 4",
+            "analysis": "Družstvo s jednou ženou obsahuje právě 1 ženu. Ve 4 takových družstvech je 4·1 = 4 ženy.",
+            "result": "ženy v těchto družstvech = 4"
+          },
+          {
+            "label": "Spočítej celkový počet žen",
+            "calculation": "32 + 4 = 36",
+            "analysis": "Součet žen z obou typů družstev dává celkový počet ženských soutěžících.",
+            "result": "celkem žen = 36"
+          },
+          {
+            "label": "Spočítej celkový počet soutěžících",
+            "calculation": "20 * 3 = 60",
+            "analysis": "Každé ze 20 družstev má 3 členy, tedy celkem 20·3 = 60 soutěžících.",
+            "result": "celkem soutěžících = 60"
+          },
+          {
+            "label": "Vyjádři ženy v procentech z celku",
+            "calculation": "36 / 60 * 100 = 60%",
+            "analysis": "Podíl žen z celkového počtu vyjádříme jako procento: 36/60 = 0,6 → 60 %.",
+            "result": "ženy tvoří 60 % → volba [E]"
+          }
+        ]
+      },
+      {
+        "id": "15.3",
+        "title": "Kolik procent všech soutěžících atletů tvořili běžci?",
+        "context": "Každý atlet soutěžil právě v jedné ze tří disciplín. V hodu oštěpem soutěžilo 12 atletů. Skokanů bylo o 40 % méně než běžců, ale o 50 % více než oštěpařů. Najít procento běžců z celku.",
+        "steps": [
+          {
+            "label": "Spočítej počet skokanů z údajů o oštěpařích (skok je o 50 % více než oštěpařů)",
+            "calculation": "12 * 3/2 = 18",
+            "analysis": "Skokanů je o 50 % více než oštěpařů. 50 % více znamená násobek 1,5 (tedy 3/2). Proto 12·1,5 = 18.",
+            "result": "skok = 18 atletů"
+          },
+          {
+            "label": "Spočítej počet běžců ze vztahu, že skoků je o 40 % méně než běžců",
+            "calculation": "skok = 0,6·běh → běh = 18 / 0,6 = 30",
+            "analysis": "„O 40 % méně“ znamená, že skoků je 60 % (0,6) počtu běžců. Proto běh = skok / 0,6 = 18 / 0,6 = 30.",
+            "result": "běh = 30 atletů"
+          },
+          {
+            "label": "Spočítej celkový počet atletů",
+            "calculation": "12 + 18 + 30 = 60",
+            "analysis": "Součet oštěpařů, skokanů a běžců dává celkový počet soutěžících atletů.",
+            "result": "celkem = 60 atletů"
+          },
+          {
+            "label": "Vyjádři běžce v procentech z celku",
+            "calculation": "30 / 60 * 100 = 50%",
+            "analysis": "Podíl běžců z celkového počtu je 30 ze 60, tedy 0,5 = 50 %.",
+            "result": "běžci tvoří 50 % → volba [C]"
+          }
+        ]
+      }
+    ],
+    "raw": "# 15 Přiřaďte ke každé úloze (15.1–15.3) odpovídající výsledek (A–F). \n## 15.1 Při slavnostním zahájení soutěže nastoupilo na hřiště 10 družstev po 11 hráčích a všichni organizátoři soutěže. Dohromady tak nastoupilo 200 osob. \n**Kolik procent osob nastoupených na hřišti tvořili organizátoři?**\n_____ \n## 15.2 Soutěže se účastnilo 20 tříčlenných družstev.  V každém z nich byl alespoň jeden muž a alespoň jedna žena. Družstev s jedním mužem bylo čtyřikrát více než družstev s jednou ženou. \n**Kolik procent soutěžících tvořily ženy?**\n_____ \n## 15.3 Na atletickém přeboru soutěžil každý atlet právě v jedné ze tří disciplín. V hodu oštěpem soutěžilo 12 atletů. Skokanů bylo o 40 % méně než běžců, ale o 50 % více než oštěpařů. \n**Kolik procent všech soutěžících atletů tvořili běžci?**\n_____ \n- [A] 40 % \n- [B] 45 % \n- [C] 50 % \n- [D] 55 % \n- [E] 60 % \n- [F] více než 60 % \n\n"
+  }
+}

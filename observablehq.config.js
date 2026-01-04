@@ -79,7 +79,14 @@ export default {
         { name: "Tisk", path: "/print" },
         { name: "Integrace", path: "/embedding" },
         { name: "AI", path: "/ai" },
-        // { name: "Kategoie", path:"/categories"}
+        { name: "Mini aplikace", path: "/guides/math-trainer-guide" },
+      ]
+    },
+    {
+      open: false,
+      name: "Mini aplikace",
+      pages: [
+        { name: "Matematický trenažér", path: "/math-trainer" },
       ]
     },
     {
@@ -89,7 +96,7 @@ export default {
         { name: "Slovní úlohy", path: "/word-problems-summary" },
         { name: "Výrazy, konstrukční úlohy", path: "/math" },
         { name: "Matematizace", path: "/math-deduction" },
-        { name: "Přehled řešení slovních úloh", path: "/word-problems-structure" },
+        { name: "Analýza struktury slovních úloh", path: "/word-problems-structure" },
         { name: "Měření obtížnosti", path: "/word-problems-measure" },
         // { name: "Prostředí", path:"math-environments"},
       ]
@@ -98,6 +105,7 @@ export default {
       open: false,
       name: "Aktuality",
       pages: [
+        { name: "Prosinec 2025", path: "/blog/2025-december/index" },
         { name: "Listopad 2025", path: "/blog/2025-november/index" },
         { name: "Říjen 2025", path: "/blog/2025-october/index" },
         { name: "Březen 2025", path: "/blog/2025-march/index" },
@@ -154,7 +162,7 @@ export default {
     .concat(quizes.map(d => `/quiz-${d.subject}`))
     .concat(quizes.map(d => `/quiz-print-${d.subject}`))
     .concat(quizes.map(d => `/quiz-picker-${d.subject}-${d.period}`))
-    .concat(quizes.map(d => `/quiz-sel-${d.subject}-${d.period}`))    
+    .concat(quizes.map(d => `/quiz-sel-${d.subject}-${d.period}`))
     .concat(quizes.flatMap(d => printedPages.map(p => `/assets/pdf/${d.subject}-${d.period}/${formatPdfFileName(p)}.pdf`)))
 
 };

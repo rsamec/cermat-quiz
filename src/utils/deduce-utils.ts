@@ -169,7 +169,7 @@ type TreeMetrics = {
   rules: RuleParameters[]
   formulas: string[]
 };
-type RuleParameters = { name: string, inputs: PredicateKind[] }
+type RuleParameters = { name: string, inputs: PredicateKind[], axioms: boolean[] }
 export function computeTreeMetrics(
   node: Node,
   level = 0,
@@ -177,6 +177,7 @@ export function computeTreeMetrics(
   predicates: string[] = [],
   rules: RuleParameters[] = [],
   formulas: string[] = [],
+  deduceMap = new Map(),
 ): TreeMetrics {
   // Base case: If the node is a leaf
   if (isPredicate(node)) {
@@ -203,11 +204,20 @@ export function computeTreeMetrics(
       const isConclusion = i === node.children.length - 1;
 
       if (isConclusion) {
-        const result = inferenceRuleWithQuestion(mapNodeChildrenToPredicates(node));
-        rules.push({ name: result.name, inputs: result.inputParameters })
+        if (isPredicate(child) && !deduceMap.has(child)) {
+          deduceMap.set(child, child)
+        }
+        const inputParameters = mapNodeChildrenToPredicates(node);
+        const result = inferenceRuleWithQuestion(inputParameters);
+        rules.push({
+          name: result.name,
+          inputs: inputParameters.filter(d => d != null && d.kind != null).map(d => d.kind),
+          axioms: inputParameters.map(d => !deduceMap.has(d))
+        })
+
       }
 
-      const metrics = computeTreeMetrics(child, level + 1, levels, predicates, rules, formulas);
+      const metrics = computeTreeMetrics(child, level + 1, levels, predicates, rules, formulas, deduceMap);
       predicates = metrics.predicates;
       maxDepth = Math.max(maxDepth, metrics.depth);
     }
@@ -825,7 +835,8 @@ Uveď 2 až 3 konkrétní příklady z reálného světa, kde se tento koncept b
     "key-points": generateImportantPoints,
     "working-sheet": generateSubQuizes,
     "more-quizes": generateMoreQuizes,
-    steps: keyPointsAndSteps,
+    steps,
+    keyPointsAndSteps,
   }
 }
 type ThunkMap<T> = {

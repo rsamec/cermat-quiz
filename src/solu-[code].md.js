@@ -90,7 +90,7 @@ details.solutions > summary > h1, h2 {
     display:inline-block;
 }
 </style>
-${solutionsCount == 0 ? `<div class="danger" label="Upozornění">
+${solutionsCount == 0 ? `<div class="caution" label="Upozornění">
   K tomuto testu v tuto chvíli neexistují žádná řešení.
 </div>`: ''}
 ${solutionsCount < quiz.questions.length ? `<div class=${solutionRate < 0.2 ? 'caution' : solutionRate < 0.8 ? 'warning' : 'tip'} label="Upozornění">

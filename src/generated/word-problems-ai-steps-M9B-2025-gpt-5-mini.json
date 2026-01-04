@@ -1,0 +1,551 @@
+{
+  "1": {
+    "id": "1",
+    "title": "Řešení úlohy 1",
+    "tasks": [
+      {
+        "id": "1",
+        "title": "Cena dětské vstupenky",
+        "context": "Dětská vstupenka = 2/5 ceny dospělé vstupenky. Jeden dospělý + 3 děti zaplatili dohromady 330 Kč. Cílem je vypočítat cenu jedné dětské vstupenky.",
+        "steps": [
+          {
+            "label": "Vyjádři poměrem částí vstupenka dětská : vstupenka dospělý",
+            "calculation": "d = (2/5) * a  → poměr d : a = 2 : 5",
+            "analysis": "Zadáno je, že cena dětské vstupenky d je rovna dvěma pětinám ceny dospělé vstupenky a. To znamená d = 2/5 · a. Poměr d : a se tedy zapíše jako 2 : 5.",
+            "result": "Poměr dětská : dospělý = 2 : 5"
+          },
+          {
+            "label": "Rozšířit poměr pro 1 dospělého a 3 děti (kusy)",
+            "calculation": "Pro každé dítě v poměru náleží 2 díly, pro dospělého 5 dílů → celkem dílů = 2 + 2 + 2 + 5 = 11",
+            "analysis": "Máme jednoho dospělého (5 dílů) a tři děti (každé 2 díly podle poměru). Proto rozepíšeme poměr jako 2 : 2 : 2 : 5 (tři dětské položky a jedna dospělá). Sečtením dílů dostaneme celkem 11 dílů.",
+            "result": "Celkem dílů odpovídajících platbě = 11 dílů"
+          },
+          {
+            "label": "Vypočti cenu jedné dětské vstupenky",
+            "calculation": "Cena za 1 díl = 330 / 11 = 30 Kč → dětská = 2 díly = 30 · 2 = 60 Kč",
+            "analysis": "Celková zaplacená částka 330 Kč odpovídá 11 dílům, takže jeden díl má hodnotu 330/11 = 30 Kč. Dětská vstupenka má podle poměru 2 díly, tedy její cena je 2 · 30 = 60 Kč.",
+            "result": "Cena jedné dětské vstupenky = 60 Kč"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT K ÚLOZE 1 \n===\n> Cena dětské vstupenky do muzea je rovna dvěma pětinám ceny vstupenky pro dospělého. \n> Jeden dospělý se třemi dětmi zaplatil za vstupenky 330 korun. \n\n> (*CZVV*) \n\n# 1 Vypočtěte v korunách cenu jedné dětské vstupenky. \n"
+  },
+  "7": {
+    "id": "7",
+    "title": "Úloha 7 — Farmář prodal saláty",
+    "tasks": [
+      {
+        "id": "7.1",
+        "title": "Kolik korun utržil farmář za saláty prodané druhý den?",
+        "context": "Celkový výtěžek ze všech salátů je 5 400 Kč. První den prodal 1/3 všech salátů. Druhý den prodal o třetinu méně salátů než první den (tj. prodal 2/3 množství prodaného první den).",
+        "steps": [
+          {
+            "label": "Urči podíl prodaný první den",
+            "calculation": "1/3",
+            "analysis": "Zadáno: první den farmář prodal třetinu všech salátů.",
+            "result": "Prodáno 1. den = 1/3 z celku."
+          },
+          {
+            "label": "Vyjádři prodané množství druhý den jako zlomek celku",
+            "calculation": "1/3 * 2/3 = 2/9",
+            "analysis": "Druhý den prodal o třetinu méně než první den, tedy prodal 2/3 množství, které prodal první den. První den to bylo 1/3 z celku, proto druhý den: (1/3)·(2/3) = 2/9 z celku.",
+            "result": "Prodáno 2. den = 2/9 z celku."
+          },
+          {
+            "label": "Vypočti částku získanou druhý den",
+            "calculation": "2/9 * 5 400 = 1 200",
+            "analysis": "Celkem farmář utržil 5 400 Kč, z toho 2/9 připadá na druhý den. Vypočteme 2/9 z 5 400.",
+            "result": "Za saláty prodané druhý den utržil farmář 1 200 Kč."
+          }
+        ]
+      },
+      {
+        "id": "7.2",
+        "title": "Vyjádřete výrazem s proměnnou x, kolik salátů prodal druhý den",
+        "context": "Počet všech prodaných salátů označíme x. Druhý den prodal 2/9 z celku (viz předchozí výpočet).",
+        "steps": [
+          {
+            "label": "Použij zjištěný podíl",
+            "calculation": "x * 2/9 = 2x/9",
+            "analysis": "Druhý den farmář prodal 2/9 ze všech salátů a celkem jich bylo x, proto počet prodaných druhý den je x·(2/9).",
+            "result": "Prodáno 2. den = (2/9)·x = 2x/9 salátů."
+          }
+        ]
+      },
+      {
+        "id": "7.3",
+        "title": "Určete počet všech salátů, když třetí den prodal 120 salátů",
+        "context": "Víme, že třetí den bylo prodáno 120 salátů. Zlomkově je prodáno třetí den 4/9 z celku (dle předchozích výpočtů). Celkový výtěžek je 5 400 Kč; cena za jeden salát lze najít z výdělku třetího dne.",
+        "steps": [
+          {
+            "label": "Spočti podíl prodaný za první dva dny",
+            "calculation": "1/3 + 2/9 = 3/9 + 2/9 = 5/9",
+            "analysis": "První den 1/3 = 3/9 a druhý den 2/9, jejich součet dává část prodanou během prvních dvou dnů.",
+            "result": "Prodáno za první dva dny = 5/9 z celku."
+          },
+          {
+            "label": "Urči podíl prodaný třetí den",
+            "calculation": "1 - 5/9 = 4/9",
+            "analysis": "Z celku odečteme část prodanou prvními dvěma dny, dostaneme podíl třetího dne.",
+            "result": "Prodáno 3. den = 4/9 z celku."
+          },
+          {
+            "label": "Vypočti částku získanou třetí den",
+            "calculation": "4/9 * 5 400 = 2 400",
+            "analysis": "Z celkových 5 400 Kč připadá 4/9 na třetí den, proto vynásobíme.",
+            "result": "Za saláty prodané třetí den utržil farmář 2 400 Kč."
+          },
+          {
+            "label": "Urči cenu za jeden salát z údajů o třetím dni",
+            "calculation": "2 400 / 120 = 20",
+            "analysis": "Třetí den prodal 120 salátů a za ně dostal 2 400 Kč, takže cena za jeden salát je 2 400 děleno 120.",
+            "result": "Cena za jeden salát = 20 Kč."
+          },
+          {
+            "label": "Vypočti celkový počet salátů",
+            "calculation": "5 400 / 20 = 270",
+            "analysis": "Celkem farmář utržil 5 400 Kč a cena za salát je 20 Kč, proto celkový počet salátů je 5 400 děleno 20.",
+            "result": "Celkový počet prodaných salátů = 270."
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT K ÚLOZE 7 \n===\n\n> Farmář prodával saláty za jednotnou cenu za kus a v průběhu tří dnů všechny saláty prodal. \n> \n> První den prodal třetinu všech salátů, druhý den prodal o třetinu méně salátů než první den a třetí den prodal zbytek salátů. \n> \n> (*CZVV*) \n\n# 7 \n## 7.1 Za všechny prodané saláty utržil farmář celkem 5 400 korun.\n**Vypočtěte**, kolik korun utržil farmář za saláty prodané druhý den.\n\n## 7.2 Počet všech salátů, které farmář prodal, označíme 𝑥.\n**Vyjádřete výrazem** s proměnnou 𝑥, kolik salátů prodal farmář druhý den.\n\n## 7.3 Třetí den prodal farmář 120 salátů.\n**Určete** počet **všech** salátů, které farmář prodal.\n\n"
+  },
+  "8": {
+    "id": "8",
+    "title": "Úloha 8 — pravoúhlý lichoběžník",
+    "tasks": [
+      {
+        "id": "8.1",
+        "title": "Vypočítej obsah velkého pravoúhlého lichoběžníku (cm^2)",
+        "context": "Použijme rozklad výpočtu obsahu lichoběžníku jako součet dvou výrazů 1/2 * b * h pro obě základny nebo přímo vzorec A = (a + b)/2 * h.",
+        "steps": [
+          {
+            "label": "Vypočti 1/2 * b * h pro spodní základnu",
+            "calculation": "1/2 * 140 * 30 = 0.5 * 140 * 30 = 2100",
+            "analysis": "Pro přístup použitý v zadání počítáme příspěvek spodní základny k obsahu jako 1/2 * b * h (ekvivalentní části celkového vzorce). Spodní základna má délku 140 cm a výška lichoběžníku je 30 cm.",
+            "result": "Obsah (z části se spodní základnou) = 2100 cm2"
+          },
+          {
+            "label": "Vypočti 1/2 * b * h pro horní základnu",
+            "calculation": "1/2 * 100 * 30 = 0.5 * 100 * 30 = 1500",
+            "analysis": "Stejným způsobem spočítáme příspěvek horní základny (100 cm) k obsahu.",
+            "result": "Obsah (z části s horní základnou) = 1500 cm2"
+          },
+          {
+            "label": "Sečti obě části — celkový obsah lichoběžníku",
+            "calculation": "2100 + 1500 = 3600",
+            "analysis": "Celkový obsah lichoběžníku je součet obou částí; alternativně A = ((140 + 100)/2) * 30 = (240/2) * 30 = 120 * 30 = 3600 cm2.",
+            "result": "Obsah velkého lichoběžníku = 3600 cm2"
+          }
+        ]
+      },
+      {
+        "id": "8.2",
+        "title": "Vypočítej obvod velkého pravoúhlého lichoběžníku (cm)",
+        "context": "Obvod lichoběžníku je součet všech jeho stran: horní základna + spodní základna + výška (pravá strana) + šikmá strana (přepona). Šikmou stranu spočteme pomocí Pythagorovy věty z rozdílu základen a výšky.",
+        "steps": [
+          {
+            "label": "Vypočti rozdíl mezi spodní a horní základnou",
+            "calculation": "140 - 100 = 40",
+            "analysis": "Rozdíl délek základen (40 cm) je vodorovná délka od svislé výšky ke šikmé straně v pravoúhlém trojúhelníku, který vzniká při skládání lichoběžníku.",
+            "result": "Rozdíl základen = 40 cm"
+          },
+          {
+            "label": "Spočti šikmou stranu (přeponu) pomocí Pythagorovy věty",
+            "calculation": "sqrt(40^2 + 30^2) = sqrt(1600 + 900) = sqrt(2500) = 50",
+            "analysis": "Máme pravoúhlý trojúhelník s odvěsnami 40 cm a 30 cm, proto přepona = odmocnina z (40^2 + 30^2).",
+            "result": "Přepona (šikmá strana) = 50 cm"
+          },
+          {
+            "label": "Sečti všechny strany — obvod lichoběžníku",
+            "calculation": "50 + 100 + 140 + 30 = 320",
+            "analysis": "Obvod = šikmá strana + horní základna + spodní základna + výška (pravá strana). Dosadíme vypočtené délky.",
+            "result": "Obvod velkého lichoběžníku = 320 cm"
+          }
+        ]
+      },
+      {
+        "id": "8.3",
+        "title": "Vypočítej obvod rovnoběžníku (cm)",
+        "context": "Velký lichoběžník jsme jednou úsečkou rozdělili na menší lichoběžník a rovnoběžník. Je dáno, že oba nové útvary mají stejný obvod. Při dělení úsečka, kterou dělíme, je společná — je součástí obvodu obou menších útvarů, ale není součástí obvodu velkého lichoběžníku. To je nutné zohlednit při výpočtu obvodu rovnoběžníku.",
+        "steps": [
+          {
+            "label": "První odhad: pokud by se obvody rozdělily polovně bez započtení vnitřní úsečky",
+            "calculation": "320 / (1 + 1) * 1 = 160",
+            "analysis": "Jednoduchý dělený odhad by byl, že z celkového obvodu 320 cm má každý z menších útvarů polovinu, tj. 160 cm. Toto nezohledňuje skutečnost, že vnitřní dělící úsečka je součástí obvodů obou menších útvarů, zatímco u velkého lichoběžníku je tato úsečka vnitřní (není součástí jeho obvodu).",
+            "result": "Předběžná hodnota = 160 cm (nutno upravit)"
+          },
+          {
+            "label": "Vypočti rozdíl mezi základnami (znovu) — použití při určení délky vnitřní úsečky",
+            "calculation": "140 - 100 = 40",
+            "analysis": "Rozdíl základen opět určuje vodorovnou projekci trojúhelníku, který tvoří jeden konec vnitřní úsečky/šikmé strany.",
+            "result": "Rozdíl základen = 40 cm"
+          },
+          {
+            "label": "Vypočti délku šikmé strany (přepony) — délka vnitřní dělící úsečky",
+            "calculation": "sqrt(40^2 + 30^2) = 50",
+            "analysis": "Dělící úsečka v obraze má stejnou délku jako šikmá strana velkého lichoběžníku (pravděpodobně je to stejný šikmý úsek délky 50 cm). Tato úsečka patří do obvodů obou menších útvarů; při součtu obvodů menších útvarů se počítá dvakrát, zatímco v obvodu velkého lichoběžníku tato úsečka není zahrnuta.",
+            "result": "Délka vnitřní úsečky (přepona) = 50 cm"
+          },
+          {
+            "label": "Konečný výpočet obvodu rovnoběžníku s korekcí na vnitřní úsečku",
+            "calculation": "P_menší = P_velký / 2 + délka_vnitřní_úsečky = 320/2 + 50 = 160 + 50 = 210",
+            "analysis": "Obvod velkého lichoběžníku je souvislostí mezi obvody obou menších útvarů: P_velký = P_menší + P_rovnoběžník - 2 * s, kde s je délka vnitřní úsečky. Proto pokud P_menší = P_rovnoběžník = P', dostaneme 2P' = P_velký + 2s, tedy P' = P_velký/2 + s. Dosadíme P_velký = 320 cm a s = 50 cm a vyjde P' = 210 cm.",
+            "result": "Obvod rovnoběžníku = 210 cm"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 8 \n===\n\n> Velký pravoúhlý lichoběžník, jehož rozměry jsou uvedeny na obrázku vlevo,  \n> jsme jednou úsečkou rozdělili na menší lichoběžník a rovnoběžník (obrázek vpravo).\n> \n> Oba tyto nové útvary (menší lichoběžník a rovnoběžník) mají stejný obvod. \n> \n> ![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9B-2025/image.png)\n> \n> (*CZVV*) \n\n# 8 Vypočtěte \n## 8.1 v cm^2^ obsah velkého pravoúhlého lichoběžníku, \n## 8.2 v cm obvod velkého pravoúhlého lichoběžníku, \n## 8.3 v cm obvod rovnoběžníku. \n\n"
+  },
+  "11": {
+    "id": "11",
+    "title": "Úloha 11 — podrobné řešení krok po kroku",
+    "tasks": [
+      {
+        "id": "11.1",
+        "title": "11.1: Jabloně zabírají o 15 m² větší plochu než magnolie?",
+        "context": "Úhly ze zadání: jabloně 105°, magnolie 60°, celkem 360°. Magnolie mají plochu 20 m². Zjistíme poměry a plochy a porovnáme rozdíl.",
+        "steps": [
+          {
+            "label": "Vyjádři poměrem jabloně z celku",
+            "calculation": "105 / 360 = 7/24",
+            "analysis": "Jabloně zabírají 105° z celku 360°, proto jejich podíl je 105/360, což se zkrátí na 7/24.",
+            "result": "7/24"
+          },
+          {
+            "label": "Vyjádři poměrem magnolie z celku",
+            "calculation": "60 / 360 = 1/6",
+            "analysis": "Magnolie zabírají 60° z 360°, tedy jejich podíl je 60/360 = 1/6.",
+            "result": "1/6"
+          },
+          {
+            "label": "Vypočti celkovou plochu zahrady",
+            "calculation": "20 ÷ (1/6) = 20 × 6 = 120",
+            "analysis": "Magnolie představují 1/6 celkové plochy a jejich plocha je 20 m², takže celková plocha = 20 ÷ (1/6) = 120 m².",
+            "result": "120 m²"
+          },
+          {
+            "label": "Vypočti plochu jabloní",
+            "calculation": "(7/24) × 120 = 7 × 5 = 35",
+            "analysis": "Plocha jabloní = jejich podíl 7/24 krát celková plocha 120 m² = 35 m².",
+            "result": "35 m²"
+          },
+          {
+            "label": "Porovnej jabloně a magnolie (rozdíl)",
+            "calculation": "35 − 20 = 15",
+            "analysis": "Rozdíl v plochách jabloní a magnolií je 35 m² − 20 m² = 15 m².",
+            "result": "Jabloně zabírají o 15 m² více než magnolie."
+          },
+          {
+            "label": "Vyhodnoť pravdivost tvrzení",
+            "calculation": "zjištěný rozdíl = 15 m², tvrzení = 15 m²",
+            "analysis": "Tvrzení tvrdí, že jabloně zabírají o 15 m² větší plochu než magnolie; zjištěný rozdíl je 15 m², tedy tvrzení je pravdivé.",
+            "result": "Pravda (A)"
+          }
+        ]
+      },
+      {
+        "id": "11.2",
+        "title": "11.2: Levandule a bazalka dohromady zabírají 1,5krát větší plochu než hortenzie?",
+        "context": "Úhly: levandule 60°, bazalka 15°, hortenzie 30°. Porovnáme součet levandule+bazalka s hortenzií poměrem.",
+        "steps": [
+          {
+            "label": "Vypočti dohromady (úhly)",
+            "calculation": "60 + 15 = 75",
+            "analysis": "Součet úhlů pro levanduli a bazalku je 60° + 15° = 75°.",
+            "result": "75°"
+          },
+          {
+            "label": "Porovnej dohromady a hortenzie poměrem",
+            "calculation": "75 / 30 = 5/2 = 2.5",
+            "analysis": "Poměr (levandule + bazalka) : hortenzie je 75° : 30° = 75/30 = 2.5 (5/2).",
+            "result": "5/2 (2.5×)"
+          },
+          {
+            "label": "Vyhodnoť pravdivost tvrzení 1,5×",
+            "calculation": "2.5 ≠ 1.5",
+            "analysis": "Zjištěný poměr je 2.5krát, což není 1.5krát, tudíž tvrzení je nepravdivé.",
+            "result": "Nepravda (N)"
+          }
+        ]
+      },
+      {
+        "id": "11.3",
+        "title": "11.3: Růže zabírají plochu menší než 30 m²?",
+        "context": "Známé úhly: jabloně 105°, magnolie 60°, hortenzie 30°, levandule 60°, bazalka 15°. Neznámý je úhel růží. Magnolie 20 m² → celková plocha 120 m² (viz 11.1).",
+        "steps": [
+          {
+            "label": "Vypočti součet známých úhlů (kromě růží)",
+            "calculation": "105 + 60 + 30 + 60 + 15 = 270",
+            "analysis": "Sečteme všechny uvedené úhly kromě růží: 270°.",
+            "result": "270°"
+          },
+          {
+            "label": "Vypočti úhel růží",
+            "calculation": "360 − 270 = 90",
+            "analysis": "Úhel pro růže je rozdíl mezi celkem 360° a součtem ostatních 270°, tedy 90°.",
+            "result": "90°"
+          },
+          {
+            "label": "Vyjádři poměrem růží k celku",
+            "calculation": "90 / 360 = 1/4",
+            "analysis": "Růže zabírají 90° z 360°, tedy 1/4 celku.",
+            "result": "1/4"
+          },
+          {
+            "label": "Vypočti celkovou plochu zahrady (připomenutí)",
+            "calculation": "20 ÷ (1/6) = 120",
+            "analysis": "Z předchozí části: magnolie = 20 m² = 1/6 celku → celek = 120 m².",
+            "result": "120 m²"
+          },
+          {
+            "label": "Vypočti plochu růží",
+            "calculation": "(1/4) × 120 = 30",
+            "analysis": "Plocha růží = 1/4 × 120 m² = 30 m².",
+            "result": "30 m²"
+          },
+          {
+            "label": "Vyhodnoť pravdivost tvrzení \"menší než 30 m²\"",
+            "calculation": "30 < 30 ? → Ne",
+            "analysis": "Spočítaná plocha růží je přesně 30 m², tedy není menší než 30 m² (je rovna 30 m²).",
+            "result": "Nepravda (N)"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A GRAF K ÚLOZE 11 \n===\n\n> V zahradě se pěstuje 6 druhů rostlin. Diagram udává, jakou část osázené plochy zahrady \n> zabírají jednotlivé druhy rostlin. V každé části zahrady se pěstuje pouze jeden druh rostlin. \n> Magnolie zabírají plochu o rozloze 20 m2. \n> \n> ![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9B-2025/image-3.png) \n> \n> V některých výsečích diagramu je uvedena velikost úhlu, který příslušnou výseč vymezuje. \n> \n> (*CZVV*) \n\n# 11 Rozhodněte o každém z následujících tvrzení (11.1–11.3), zda je pravdivé (A), či nikoli (N). \n \n\n## 11.1 Jabloně zabírají o 15 m^2^ větší plochu, než zabírají magnolie. \n## 11.2 Levandule a bazalka dohromady zabírají 1,5krát větší plochu než hortenzie. \n## 11.3 Růže zabírají plochu menší než 30 m^2^. \n \n \n"
+  },
+  "12": {
+    "id": "12",
+    "title": "Řešení úlohy 12 — krok po kroku",
+    "tasks": [
+      {
+        "id": "12.1",
+        "title": "Vypočti pravé rameno trojúhelníku",
+        "context": "Dva shodné rovnoramenné trojúhelníky; v jednom trojúhelníku jsou úhly v poměru vrcholový : levé rameno : pravé rameno = 40 : 70 : 70.",
+        "steps": [
+          {
+            "label": "součet úhlů v trojúhelníku",
+            "calculation": "180 / (40 + 70 + 70) * 70 = 180 / 180 * 70 = 70°",
+            "analysis": "Součet vnitřních úhlů každého trojúhelníku je 180°. Poměr 40:70:70 má součet 180 jednotek, takže každá 'jednotka' odpovídá 1°; pravé rameno odpovídá 70 jednotkám.",
+            "result": "pravé rameno = 70°"
+          }
+        ]
+      },
+      {
+        "id": "12.2",
+        "title": "Vypočti úhel odpovídající přímce p",
+        "context": "Přímka p je rovnoběžná se základnou jednoho z trojúhelníků. Pravé rameno jednoho trojúhelníku vytváří s p odpovídající (souhlasný) úhel.",
+        "steps": [
+          {
+            "label": "souhlasný úhel s přímkou p",
+            "calculation": "pravé rameno = 70° ⇒ odpovídající úhel u přímky p = 70°",
+            "analysis": "Protože přímka p je rovnoběžná se základnou a úhel u pravého ramene je odpovídající úhel vůči této rovnoběžnosti, jsou tyto úhly shodné.",
+            "result": "úhel na přímce p = 70°"
+          }
+        ]
+      },
+      {
+        "id": "12.3",
+        "title": "Vypočti vrchol A",
+        "context": "Úhel u přímky p je střídavý (vnější) k vrcholovému úhlu v trojúhelníku (vrchol A).",
+        "steps": [
+          {
+            "label": "střídavý vnější úhel",
+            "calculation": "úhel u přímky p = 70° ⇒ vrchol A = 70°",
+            "analysis": "Střídavé (alternující) úhly při rovnoběžkách jsou shodné, takže vrcholový úhel A má stejnou velikost jako dříve určený úhel na p.",
+            "result": "vrchol A = 70°"
+          }
+        ]
+      },
+      {
+        "id": "12.4",
+        "title": "Vypočítej vrchol C dle součtu vnitřních úhlů v trojúhelníku",
+        "context": "V trojúhelníku jsou nyní známy dva úhly: vrchol A a pravé rameno (oba 70°). Potřebujeme třetí úhel C.",
+        "steps": [
+          {
+            "label": "součet vnitřních úhlů",
+            "calculation": "180 − (vrchol A + pravé rameno) = 180 − (70 + 70) = 40°",
+            "analysis": "Součet tří vnitřních úhlů v trojúhelníku je 180°, proto třetí úhel C je rozdíl 180° a součtu dvou známých úhlů.",
+            "result": "vrchol C = 40°"
+          }
+        ]
+      },
+      {
+        "id": "12.5",
+        "title": "Vypočti úhel α",
+        "context": "Úhel α je vedlejší (doplňkový) k vrcholu C — tedy spolu s vrcholem C tvoří přímku (součet 180°).",
+        "steps": [
+          {
+            "label": "vedlejší (doplňkový) úhel",
+            "calculation": "α = 180 − vrchol C = 180 − 40 = 140°",
+            "analysis": "Vedlejší úhly ležící na přímce jsou doplňkové, jejich součet je 180°, proto α je doplňkem úhlu C.",
+            "result": "α = 140°"
+          }
+        ]
+      },
+      {
+        "id": "12.6",
+        "title": "Vyhodnoť volbu odpovědi",
+        "context": "Zjištěná velikost α porovnána s nabízenými možnostmi.",
+        "steps": [
+          {
+            "label": "porovnání s nabídkou",
+            "calculation": "α = 140° ⇒ volba [B]: 140°",
+            "analysis": "Z výpočtu plyne, že správná odpověď odpovídá možnosti B.",
+            "result": "Správná volba: [B] 140°"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 12 \n===\n\n> V rovině leží dva **shodné rovnoramenné** trojúhelníky a přímka p rovnoběžná se základnou jednoho z nich.\n> Druhý trojúhelník má právě jedno rameno rovnoběžné s ramenem prvního trojúhelníku.\n>  \n> ![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9B-2025/image-4.png)\n>  \n> (*CZVV*) \n\n# 12 Jaká je velikost úhlu 𝛼?  \nVelikosti úhlů neměřte, ale vypočtěte (obrázek je pouze ilustrativní). \n- [A] $160\\degree$\n- [B] $140\\degree$ \n- [C] $130\\degree$ \n- [D] $110\\degree$ \n- [E] jiná velikost \n \n"
+  },
+  "14": {
+    "id": "14",
+    "title": "Řešení úlohy 14 — dvoupatrový dort (objemy válcových forem)",
+    "tasks": [
+      {
+        "id": "14",
+        "title": "Celkový objem obou korpusů",
+        "context": "První forma: poloměr r1 = 8 cm, výška h = 5 cm. Druhá forma: poloměr je o čtvrtinu menší než první, tedy r2 = 8 · (1 − 1/4) = 6 cm. Objem válce: V = π r^2 h. Každý korpus má objem odpovídající formě, ve které byl upečen.",
+        "steps": [
+          {
+            "label": "Vypočti výraz a * b * c? (větší korpus)",
+            "calculation": "V1 = π · r1^2 · h = π · 8^2 · 5 = π · 64 · 5 = 320π",
+            "analysis": "Použijeme vzorec pro objem válce V = π r^2 h. Pro větší formu dosadíme r1 = 8 cm a h = 5 cm. Nejprve spočítáme r1^2 = 8^2 = 64, potom vynásobíme výškou 5 a π.",
+            "result": "Větší korpus = 320π cm^3"
+          },
+          {
+            "label": "Vypočti menší korpus (cm délka)?",
+            "calculation": "r2 = 8 · (1 − 1/4) = 8 · 3/4 = 6 cm",
+            "analysis": "Poloměr druhé formy je o čtvrtinu menší než první. To znamená, že zůstane 3/4 původní hodnoty: 8 · 3/4 = 6 cm. (Poznámka: jde o poloměr, nikoli výšku.)",
+            "result": "Menší korpus — poloměr r2 = 6 cm"
+          },
+          {
+            "label": "Vypočti výraz a * b * c? (menší korpus)",
+            "calculation": "V2 = π · r2^2 · h = π · 6^2 · 5 = π · 36 · 5 = 180π",
+            "analysis": "Opět použijeme V = π r^2 h. Pro menší formu dosadíme r2 = 6 cm a h = 5 cm: r2^2 = 36, násobíme 5 a π.",
+            "result": "Menší korpus = 180π cm^3"
+          },
+          {
+            "label": "Vypočti celkem (cm3 objem)?",
+            "calculation": "V_total = V1 + V2 = 320π + 180π = 500π",
+            "analysis": "Celkový objem dvou korpusů je součtem objemů většího a menšího korpusu: 320π + 180π = 500π cm^3.",
+            "result": "Celkem = 500π cm^3"
+          },
+          {
+            "label": "Vyhodnoť volbu [D]?",
+            "calculation": "Možnosti: [A] 350π, [B] 400π, [C] 450π, [D] 500π, [E] 550π → shoda s [D]",
+            "analysis": "Celkový vypočtený objem 500π cm^3 odpovídá možnosti [D].",
+            "result": "Správná volba: [D] 500π cm^3"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 14 \n===\n\n> Na výrobu dortu byly použity dvě různé formy tvaru rotačního válce.\n> \n> Poloměr podstavy první formy je 8 cm a poloměr podstavy druhé formy je o čtvrtinu menší. Výška obou forem je stejná, a to 5 cm. \n> \n> Dvoupatrový dort je složen z většího a menšího korpusu.Každý korpus má stejný objem jako forma, v níž byl upečen.  \n> \n> ![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9B-2025/image-6.png)\n>  \n> (*CZVV*) \n# 14 Jaký je celkový objem obou korpusů dvoupatrového dortu? \n- [A] 350π cm^3^ \n- [B] 400π cm^3^ \n- [C] 450π cm^3^ \n- [D] 500π cm^3^ \n- [E] 550π cm^3^ \n\n"
+  },
+  "15": {
+    "id": "15",
+    "title": "Úloha 15 — Podrobné řešení krok po kroku",
+    "tasks": [
+      {
+        "id": "15.1",
+        "title": "15.1 Vedoucí si všechny děti rozdělili do stejně početných oddílů. Každý vedoucí pak měl na starost jeden oddíl. Kolik procent všech dětí měl na starost jeden vedoucí?",
+        "context": "Na táboře bylo 80 dětí a 5 vedoucích. Děti jsou rozděleny rovnoměrně mezi vedoucí; hledáme, kolik procent všech dětí připadá na jednoho vedoucího.",
+        "steps": [
+          {
+            "label": "Rozdělení dětí mezi vedoucí",
+            "calculation": "80 / 5 = 16",
+            "analysis": "Celkem je 80 dětí a jsou rozděleny rovnoměrně mezi 5 vedoucích, takže každý vedoucí má na starost 80 děleno 5 dětí.",
+            "result": "Každý vedoucí má na starost 16 dětí."
+          },
+          {
+            "label": "Vyjádření části jako procenta celku",
+            "calculation": "16 / 80 * 100 = 20",
+            "analysis": "Procento části z celku spočítáme jako (část / celek) × 100. Použijeme část 16 a celek 80.",
+            "result": "To je 20 % všech dětí."
+          },
+          {
+            "label": "Výběr správné odpovědi",
+            "calculation": "20 % odpovídá volbě A",
+            "analysis": "Z uvedených možností [A] je 20 %, což odpovídá vypočtenému výsledku.",
+            "result": "Správná volba: A"
+          }
+        ]
+      },
+      {
+        "id": "15.2",
+        "title": "15.2 Na táboře bylo mladších dětí o jednu třetinu méně než starších dětí. O kolik procent bylo starších dětí více než mladších?",
+        "context": "Označíme počet mladších dětí M a starších S. Je dáno: M je o jednu třetinu méně než S, tedy M = S - (1/3)S = (2/3)S. Hledáme, o kolik procent je S větší než M.",
+        "steps": [
+          {
+            "label": "Vyjádření vztahu mezi mladšími a staršími",
+            "calculation": "M = (2/3)·S ⇒ S = M / (2/3) = (3/2)·M",
+            "analysis": "Pokud mladších je o jednu třetinu méně než starších, pak mladších = (2/3) × starších. Odtud vyjádříme starší přes mladší: S = M ÷ (2/3) = 3/2 × M.",
+            "result": "Starších je 3/2krát (1,5×) více než mladších."
+          },
+          {
+            "label": "Převedení násobku na procentní zvýšení",
+            "calculation": "(3/2 - 1) × 100 % = (1/2) × 100 % = 50 %",
+            "analysis": "Násobek 3/2 znamená, že starších je o 1/2 (0,5) větší množství než mladších; v procentech je to 0,5×100 % = 50 %.",
+            "result": "Starších je o 50 % více než mladších."
+          },
+          {
+            "label": "Výběr správné odpovědi",
+            "calculation": "50 % odpovídá volbě F",
+            "analysis": "Z nabízených možností je [F] = 50 %, což sedí s výsledkem.",
+            "result": "Správná volba: F"
+          }
+        ]
+      },
+      {
+        "id": "15.3",
+        "title": "15.3 Do lesa šla čtvrtina všech chlapců a polovina všech dívek; chlapců šlo do lesa o 4 méně než dívek. Kolik procent všech dětí tvořily dívky?",
+        "context": "Celkem 80 dětí. Označíme počet dívek x. Polovina dívek šla do lesa (½ x). Počet chlapců je 80 − x, z nich šla čtvrtina ((1/4)(80 − x)). Je dáno, že chlapců na výlet je o 4 méně než dívek na výlet.",
+        "steps": [
+          {
+            "label": "Zavedení proměnné a vyjádření dívek na výletě",
+            "calculation": "dívky na výlet = x · 1/2 = x/2",
+            "analysis": "Označíme celkový počet dívek symbolem x. Polovina všech dívek šla na borůvky, tedy počet dívek na výlet je x/2.",
+            "result": "Dívky na výlet = x/2."
+          },
+          {
+            "label": "Vyjádření počtu chlapců",
+            "calculation": "všichni chlapci = 80 − x",
+            "analysis": "Celkem je 80 dětí, z toho x jsou dívky, zbývající 80 − x jsou chlapci.",
+            "result": "Počet chlapců = 80 − x."
+          },
+          {
+            "label": "Vyjádření chlapců na výletě",
+            "calculation": "chlapci na výlet = (80 − x) · 1/4 = (80 − x)/4",
+            "analysis": "Z chlapců (80 − x) šla čtvrtina, tedy (80 − x)/4 chlapců na výlet.",
+            "result": "Chlapci na výlet = (80 − x)/4."
+          },
+          {
+            "label": "Sestrojení a řešení rovnice podle rozdílu",
+            "calculation": "x/2 − (80 − x)/4 = 4 ⇒ násobíme 4: 2x − (80 − x) = 16 ⇒ 2x − 80 + x = 16 ⇒ 3x = 96 ⇒ x = 32",
+            "analysis": "Podle zadání chlapců na výlet bylo o 4 méně než dívek na výlet, tedy rozdíl dívek na výlet a chlapců na výlet je 4: x/2 − (80 − x)/4 = 4. Řešíme tuto lineární rovnici: nejprve vynásobíme 4, upravíme a získáme x = 32.",
+            "result": "Celkový počet dívek x = 32."
+          },
+          {
+            "label": "Vyjádření počtu dívek jako procenta z celku",
+            "calculation": "32 / 80 × 100 = 40",
+            "analysis": "Procentní podíl dívek spočítáme jako (počet dívek / celkový počet dětí) × 100 = 32/80×100.",
+            "result": "Dívky tvoří 40 % všech dětí."
+          },
+          {
+            "label": "Výběr správné odpovědi",
+            "calculation": "40 % odpovídá volbě D",
+            "analysis": "Z nabízených možností [D] = 40 %, což odpovídá vypočtenému výsledku.",
+            "result": "Správná volba: D"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT K ÚLOZE 15 \n===\n\n> Na táboře bylo 80 dětí, 5 vedoucích a 4 instruktoři. \n> \n> (*CZVV*) \n\n# 15 Přiřaďte ke každé úloze (15.1–15.3) odpovídající výsledek (A–F). \n## 15.1 Vedoucí si všechny děti rozdělili do stejně početných oddílů.  Každý vedoucí pak měl na starost jeden oddíl. \n**Kolik procent všech dětí měl na starost jeden vedoucí?**\n\n## 15.2 Na táboře bylo mladších dětí o jednu třetinu méně než starších dětí. \n**O kolik procent bylo starších dětí více než mladších?**\n_____ \n## 15.3 Děti z tábora se vydaly do lesa na borůvky. Šla čtvrtina všech chlapců a polovina všech dívek, tedy chlapců šlo do lesa o 4 méně než dívek.\n**Kolik procent všech dětí na táboře tvořily dívky?**\n_____ \n- [A] 20 % \n- [B] 25 % \n- [C] 33 % \n- [D] 40 % \n- [E] 45 % \n- [F] 50 % \n\n"
+  }
+}

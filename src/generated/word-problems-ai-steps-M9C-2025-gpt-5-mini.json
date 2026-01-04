@@ -1,0 +1,668 @@
+{
+  "1": {
+    "id": "1",
+    "title": "Určete, kolikrát více je 5 kilogramů než 0,25 gramů",
+    "tasks": [
+      {
+        "id": "1",
+        "title": "Kolikrát více je 5 kg než 0,25 g",
+        "context": "Převod jednotek (1 kg = 1000 g). Pro zjištění, kolikrát je jedno množství větší než druhé, dělíme větší množství menším.",
+        "steps": [
+          {
+            "label": "Převeď 5 kg na gramy",
+            "calculation": "5 × 1 000 = 5 000",
+            "analysis": "1 kilogram obsahuje 1 000 gramů. Abychom převedli hmotnost z kilogramů na gramy, vynásobíme počet kilogramů číslem 1 000. Tedy 5 kg × 1 000 = 5 000 g.",
+            "result": "zadané množství = 5 000 g"
+          },
+          {
+            "label": "Porovnej 5 000 g s 0,25 g — kolikrát větší?",
+            "calculation": "5 000 ÷ 0,25 = 20 000",
+            "analysis": "Chceme zjistit, kolikrát je 5 000 g větší než 0,25 g. Početnásobků získáme dělením větší hodnoty hodnotou menší. Dělíme 5 000 gramy děleno 0,25 gramu: 5 000 ÷ 0,25 = 20 000.",
+            "result": "5 kg je 20 000krát více než 0,25 g"
+          }
+        ]
+      }
+    ],
+    "raw": "# 1 Určete, kolikrát více je 5 kilogramů než 0,25 gramů. \n"
+  },
+  "6": {
+    "id": "6",
+    "title": "Úloha 6 — cena nočního stolku",
+    "tasks": [
+      {
+        "id": "6.1",
+        "title": "Vyjádřete výrazem s proměnnou n cenu skříně",
+        "context": "Noční stolek byl o polovinu levnější než skříň. Označíme cenu nočního stolku n; chceme vyjádřit cenu skříně pomocí n.",
+        "steps": [
+          {
+            "label": "Obrať porovnání skříň a noční stolek",
+            "calculation": "1 ÷ (1/2) = 2",
+            "analysis": "Věta „noční stolek byl o polovinu levnější než skříň\" znamená, že noční stolek stojí 1/2 ceny skříně. Obráceně tedy skříň stojí dvojnásobek ceny nočního stolku.",
+            "result": "Skříň je 2× noční stolek."
+          },
+          {
+            "label": "Vyjádři výrazem cenu skříně",
+            "calculation": "skříň = n · 2",
+            "analysis": "Jestliže noční stolek = n, pak skříň = 2n.",
+            "result": "Skříň = 2n Kč."
+          }
+        ]
+      },
+      {
+        "id": "6.2",
+        "title": "Vyjádřete výrazem s proměnnou n cenu postele",
+        "context": "Noční stolek byl o třetinu dražší než postel. Označíme cenu nočního stolku n; chceme vyjádřit cenu postele pomocí n.",
+        "steps": [
+          {
+            "label": "Obrať porovnání postel a noční stolek",
+            "calculation": "noční stolek = postel · (1 + 1/3) = postel · 4/3; tedy postel = n ÷ (4/3) = n · 3/4",
+            "analysis": "„O třetinu dražší\" znamená přidat 1/3 ceny postele, tedy noční stolek = postel · 4/3. Pro postel vyřešíme: postel = noční stolek ÷ (4/3) = noční stolek · 3/4.",
+            "result": "Postel = n · 3/4 Kč."
+          },
+          {
+            "label": "Vyjádři výrazem cenu postele",
+            "calculation": "postel = n · 3/4",
+            "analysis": "Dosazení: pokud noční stolek = n, pak postel = 3/4 n.",
+            "result": "Postel = 3/4 n Kč."
+          }
+        ]
+      },
+      {
+        "id": "6.3",
+        "title": "Vypočítejte cenu nočního stolku, pokud celkem zaplatili 9 000 Kč",
+        "context": "Použijeme výrazy: skříň = 2n, postel = 3/4 n, noční stolek = n. Celkem 2n + 3/4 n + n = 9000. Vypočítáme n.",
+        "steps": [
+          {
+            "label": "Vyjádři poměrem části skříň:postel:noční stolek",
+            "calculation": "2 : 3/4 : 1 = 2 : 0,75 : 1",
+            "analysis": "Z dřívějších výpočtů jsou koeficienty u n: skříň 2, postel 3/4, noční stolek 1. To dává poměr 2 : 0,75 : 1.",
+            "result": "Poměr dílů je 2 : 0,75 : 1."
+          },
+          {
+            "label": "Spočti součet dílů a vypočítej hodnotu jedné dílčí části",
+            "calculation": "2 + 0,75 + 1 = 3,75; 9000 ÷ 3,75 = 2400",
+            "analysis": "Součet dílů poměru je 3,75. Celková částka 9000 Kč rozdělena podle poměru znamená, že jedna dílčí část (odpovídající nočnímu stolku) je 9000/3,75.",
+            "result": "n = 2400 Kč."
+          },
+          {
+            "label": "Kontrola",
+            "calculation": "2·2400 + 0,75·2400 + 2400 = 4800 + 1800 + 2400 = 9000",
+            "analysis": "Dosadíme zpět: skříň 2n = 4800 Kč, postel 3/4 n = 1800 Kč, noční stolek n = 2400 Kč. Součet je 9000 Kč, tedy souhlasí s podmínkou.",
+            "result": "Kontrola potvrzuje správnost výpočtu."
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT K ÚLOZE 6 \n===\n\n> Do ložnice jsme přikoupili postel, noční stolek a skříň.\n> Noční stolek byl o polovinu levnější než skříň, ale o třetinu dražší než postel.\n> \n> (*CZVV*) \n\n# 6 Cenu nočního stolku označíme 𝑛. \n## 6.1 **Vyjádřete výrazem** s proměnnou 𝑛 cenu skříně.\n## 6.2 **Vyjádřete výrazem** s proměnnou 𝑛 cenu postele.\n## 6.3 Za všechny tři kusy nábytku do ložnice jsme zaplatili celkem 9 000 korun.\n\n**Vypočtěte**, kolik korun stál noční stolek. \n\n"
+  },
+  "7": {
+    "id": "7",
+    "title": "Úloha 7 — Cyklista: rychlosti, délka trasy a čas stoupání",
+    "tasks": [
+      {
+        "id": "7.1",
+        "title": "7.1 Průměrná rychlost cyklisty při klesání (km/h)",
+        "context": "Po rovině jel rychlostí 30 km/h. Klesání bylo o 40 % rychlejší než jízda po rovině.",
+        "steps": [
+          {
+            "label": "Urči násobek pro 40 % navýšení",
+            "calculation": "1 + 0,40 = 1,40",
+            "analysis": "Když je něco o 40 % vyšší, vynásobíme původní hodnotu faktorem 1,40.",
+            "result": "Factor = 1,40"
+          },
+          {
+            "label": "Dopočítej rychlost při klesání",
+            "calculation": "30 * 1,40 = 42 (km/h)  — ekvivalentně 30 * 7/5 = 42",
+            "analysis": "Vynásobíme rychlost na rovině (30 km/h) faktorem 1,40, abychom získali průměrnou rychlost při klesání.",
+            "result": "Rychlost při klesání = 42 km/h"
+          }
+        ]
+      },
+      {
+        "id": "7.2",
+        "title": "7.2 Délka celé cyklistovy trasy (km)",
+        "context": "Část po rovině byla 1/3 celkové trasy. Klesání bylo pětkrát kratší než celá trasa (tj. 1/5). Stoupání je 14 km a tvoří zbytek trasy.",
+        "steps": [
+          {
+            "label": "Vyjádři klesání jako zlomek celé trasy",
+            "calculation": "klesání = 1/5",
+            "analysis": "Zadáno: klesání bylo pětkrát kratší než celá trasa, tedy jeho délka je 1/5 celku.",
+            "result": "Klesání = 1/5 celkové trasy"
+          },
+          {
+            "label": "Sečti podíly roviny a klesání",
+            "calculation": "1/3 + 1/5 = (5/15) + (3/15) = 8/15",
+            "analysis": "Převedeme zlomky na společného jmenovatele 15 a sečteme podíly trasy po rovině a při klesání.",
+            "result": "Rovina + klesání = 8/15 celkové trasy"
+          },
+          {
+            "label": "Urči podíl stoupání z celé trasy",
+            "calculation": "1 - 8/15 = 7/15",
+            "analysis": "Stoupání je zbytek trasy po odečtení roviny a klesání: celek mínus součet předchozích podílů.",
+            "result": "Stoupání = 7/15 celkové trasy"
+          },
+          {
+            "label": "Vypočti délku celé trasy ze známé délky stoupání",
+            "calculation": "celá trasa = 14 / (7/15) = 14 * (15/7) = 2 * 15 = 30 (km)",
+            "analysis": "Stoupání má 14 km a to představuje 7/15 celkové délky, proto vydělíme 14 tímto zlomkem (nebo vynásobíme převrácenou hodnotou).",
+            "result": "Délka celé trasy = 30 km"
+          }
+        ]
+      },
+      {
+        "id": "7.3",
+        "title": "7.3 Jak dlouho (v minutách) cyklista stoupal",
+        "context": "Rychlost při klesání je 42 km/h (z 7.1). Stoupání má rychlost poloviční vůči klesání. Délka stoupání = 14 km.",
+        "steps": [
+          {
+            "label": "Urči průměrnou rychlost při stoupání",
+            "calculation": "42 * 1/2 = 21 (km/h)",
+            "analysis": "Stoupání je na polovinu pomalejší než klesání, tedy rychlost při stoupání je polovina rychlosti při klesání (42 km/h).",
+            "result": "Rychlost při stoupání = 21 km/h"
+          },
+          {
+            "label": "Vypočti dobu stoupání v hodinách",
+            "calculation": "t = s / v = 14 / 21 = 2/3 (h)",
+            "analysis": "Čas potřebný k ujetí 14 km při rychlosti 21 km/h dostaneme podílem vzdálenosti a rychlosti.",
+            "result": "Doba stoupání = 2/3 h"
+          },
+          {
+            "label": "Převeď čas z hodin na minuty",
+            "calculation": "2/3 * 60 = 40 (minut)",
+            "analysis": "1 hodina = 60 minut, vynásobíme čas v hodinách 60, abychom dostali minuty.",
+            "result": "Doba stoupání = 40 minut"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT K ÚLOZE 7 \n===\n\n> Cyklista jel část své trasy po rovině, část klesal a zbytek trasy stoupal.\n> \n> Po rovině ujel třetinu délky celé trasy, a to průměrnou rychlostí 30 km/h. Klesání bylo pětkrát kratší než celá trasa a cyklista ho sjížděl průměrnou rychlostí o 40 % vyšší, než jel po rovině. Stoupání bylo na 14 km trasy a cyklista v něm měl průměrnou rychlost o polovinu nižší než \n> při klesání. \n> \n> (*CZVV*) \n\n# 7 Vypočtěte \n## 7.1 v km/h průměrnou rychlost cyklisty při klesání, \n## 7.2 v km délku celé cyklistovy trasy, \n## 7.3 v minutách, jak dlouho cyklista na své trase stoupal. \n\n"
+  },
+  "8": {
+    "id": "8",
+    "title": "Úloha 8 — řešení krok za krokem",
+    "tasks": [
+      {
+        "id": "8.1",
+        "title": "Vypočtěte obsah jednoho malého kruhu",
+        "context": "Dlaždice jsou čtverce se stranou 20 cm. Z obrázku vyplývá, že malý kruh má průměr 10 cm (polovina strany dlaždice), tedy poloměr 5 cm.",
+        "steps": [
+          {
+            "label": "Urči poloměr malého kruhu",
+            "calculation": "r = 10 cm / 2 = 5 cm",
+            "analysis": "Z obrázku je malý kruh uprostřed dlaždice s průměrem poloviny strany dlaždice (10 cm), proto poloměr je 5 cm.",
+            "result": "poloměr r = 5 cm"
+          },
+          {
+            "label": "Vypočti obsah kruhu podle vzorce",
+            "calculation": "S = π · r^2 = π · 5^2 = 25π ≈ 78,54 cm²",
+            "analysis": "Použijeme vzorec pro obsah kruhu S = πr² a dosadíme r = 5 cm.",
+            "result": "obsah ≈ 78,54 cm²"
+          },
+          {
+            "label": "Zaokrouhli na celé cm²",
+            "calculation": "78,54 ≈ 79",
+            "analysis": "Zaokrouhlení na celé čtverečné centimetry dává 79 cm².",
+            "result": "obsah malého kruhu = 79 cm²"
+          }
+        ]
+      },
+      {
+        "id": "8.2",
+        "title": "O kolik se liší počet malých a velkých kruhů na podlaze",
+        "context": "Podlaha obdélníku 2,0 m × 3,2 m. Dlaždice 20 cm × 20 cm, ale pokládány po čtveřicích (blok 2×2 dlaždice) — tedy opakující se čtverec 40 cm × 40 cm. Začalo se v rohu celou touto čtveřicí. Šířku spár zanedbáváme.",
+        "steps": [
+          {
+            "label": "Převeď šířku 2,0 m na cm",
+            "calculation": "2,0 m · 100 = 200 cm",
+            "analysis": "Převod metrů na centimetry (1 m = 100 cm).",
+            "result": "šířka = 200 cm"
+          },
+          {
+            "label": "Kolik bloků 40 cm se vejde do šířky",
+            "calculation": "200 cm / 40 cm = 5",
+            "analysis": "Každý blok (čtveřice dlaždic) má stranu 40 cm, začínáme v rohu pouze celými bloky, proto dělíme délkou bloku.",
+            "result": "počet bloků v šířce = 5"
+          },
+          {
+            "label": "Převeď délku 3,2 m na cm",
+            "calculation": "3,2 m · 100 = 320 cm",
+            "analysis": "Převod metrů na centimetry.",
+            "result": "délka = 320 cm"
+          },
+          {
+            "label": "Kolik bloků 40 cm se vejde do délky",
+            "calculation": "320 cm / 40 cm = 8",
+            "analysis": "Dělením získáme počet celých bloků podél délky.",
+            "result": "počet bloků v délce = 8"
+          },
+          {
+            "label": "Celkový počet bloků na podlaze",
+            "calculation": "5 · 8 = 40",
+            "analysis": "Počet bloků v šířce krát počet bloků v délce.",
+            "result": "celkem bloků = 40"
+          },
+          {
+            "label": "Počet malých kruhů",
+            "calculation": "4 malé kruhy na jeden blok · 40 bloků = 160",
+            "analysis": "Každá jednotlivá dlaždice obsahuje jeden malý kruh; v bloku jsou 4 dlaždice → 4 malé kruhy na blok.",
+            "result": "malých kruhů = 160"
+          },
+          {
+            "label": "Počet velkých kruhů",
+            "calculation": "1 velký kruh na jeden blok · 40 bloků = 40",
+            "analysis": "Z čtyř čtvrtkruhů v bloku vznikne jeden velký kruh → jeden velký kruh na blok.",
+            "result": "velkých kruhů = 40"
+          },
+          {
+            "label": "Rozdíl počtů malých a velkých kruhů",
+            "calculation": "160 − 40 = 120",
+            "analysis": "Počet malých kruhů minus počet velkých kruhů.",
+            "result": "rozdíl = 120 kruhů (malých více)"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 8 \n===\n\n> Celá podlaha chodby je vydlážděna stejnými dlaždicemi tvaru čtverce se stranou délky 20 cm.\n> \n> Každá dlaždice je ozdobena čtvrtkruhem a malým kruhem jako na obrázku vlevo. \n> \n> Dlaždice se pokládaly pravidelně ve čtveřicích jako na obrázku vpravo, přičemž se začalo v rohu chodby celou touto čtveřicí. \n> \n> ![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9C-2025/image.png)\n>\n> (*CZVV*)\n\n# 8\n## 8.1 Vypočtěte v cm^2^ obsah jednoho malého kruhu.  \nVýsledek zaokrouhlete na celé cm^2^. \n## 8.2 Podlaha chodby má tvar obdélníku s rozměry 2 m a 3,2 m.  \n(Dlaždice jsou položeny těsně vedle sebe, šířku spár zanedbáváme.) \n**Určete, o kolik se liší počet malých a velkých kruhů na podlaze chodby.**\n\n[!NOTE]\n**Doporučení** pro úlohy **9** a **10**: Rýsujte přímo **do záznamového archu.**\n\n\n"
+  },
+  "11": {
+    "id": "11",
+    "title": "Úloha 11 — rozhodněte o pravdivosti tvrzení",
+    "tasks": [
+      {
+        "id": "11.1",
+        "title": "11.1 V prvních třech měsících sezony bylo mezi návštěvníky třikrát více dospělých než dětí.",
+        "context": "První tři měsíce sezony (květen–červen). Z grafu odečteme počty návštěvníků dětí a dospělých za tyto tři měsíce.",
+        "steps": [
+          {
+            "label": "Kontext",
+            "calculation": "",
+            "analysis": "Úkol se vztahuje k součtu návštěv v prvních třech měsících sezony. Z grafu určujeme počet dětí a počet dospělých za tyto měsíce.",
+            "result": "Zaměříme se na součet za první tři měsíce."
+          },
+          {
+            "label": "Počty návštěvníků (první 3 měsíce)",
+            "calculation": "dospělí = 210, děti = 70",
+            "analysis": "Z grafu (součet hodnot za první tři měsíce) čteme, že dospělých bylo 210 a dětí 70.",
+            "result": "Dospělí 210, děti 70"
+          },
+          {
+            "label": "Porovnání (poměr)",
+            "calculation": "210 / 70 = 3",
+            "analysis": "Vydělíme počet dospělých počtem dětí, abychom zjistili, kolikrát více bylo dospělých než dětí.",
+            "result": "Poměr dospělí : děti = 3 (tzn. třikrát více dospělých)"
+          },
+          {
+            "label": "Vyhodnocení tvrzení",
+            "calculation": "zjištěný poměr = 3 → tvrzení: 'třikrát více' = pravdivé",
+            "analysis": "Tvrzení říká, že dospělých bylo třikrát více než dětí; vypočtený poměr je 3, tedy tvrzení odpovídá realitě.",
+            "result": "Závěr: Pravda"
+          }
+        ]
+      },
+      {
+        "id": "11.2",
+        "title": "11.2 Za celou sezonu bylo dospělých návštěvníků průměrně 80 za měsíc.",
+        "context": "Celá sezona trvá pět měsíců (květen–září). Z grafu zjistíme celkový počet dospělých za sezonu a spočítáme měsíční průměr.",
+        "steps": [
+          {
+            "label": "Kontext",
+            "calculation": "",
+            "analysis": "Počítáme průměrný měsíční počet dospělých za celou sezónu trvající 5 měsíců.",
+            "result": "Sezona = 5 měsíců"
+          },
+          {
+            "label": "Celkový počet dospělých za sezonu",
+            "calculation": "dospělí = 400",
+            "analysis": "Z grafu přečteme, že celkem dospělých návštěvníků za sezonu bylo 400.",
+            "result": "Celkem dospělých = 400"
+          },
+          {
+            "label": "Výpočet průměru za měsíc",
+            "calculation": "400 / 5 = 80",
+            "analysis": "Dělíme celkový počet dospělých počtem měsíců (5), abychom získali průměr na měsíc.",
+            "result": "Průměr = 80 dospělých za měsíc"
+          },
+          {
+            "label": "Vyhodnocení tvrzení",
+            "calculation": "zjištěný průměr = 80 → tvrzení = pravdivé",
+            "analysis": "Tvrzení uvádí průměr 80 dospělých za měsíc; vypočtený průměr je 80, tudíž tvrzení je správné.",
+            "result": "Závěr: Pravda"
+          }
+        ]
+      },
+      {
+        "id": "11.3",
+        "title": "11.3 Za celou sezonu tvořily děti 40 % všech návštěvníků rodného domu.",
+        "context": "Celá sezona (5 měsíců). Z grafu známe celkový počet dětí a dospělých; spočítáme procentní podíl dětí z celkového počtu návštěvníků.",
+        "steps": [
+          {
+            "label": "Kontext",
+            "calculation": "",
+            "analysis": "Počítáme procentní podíl dětí z celkového počtu návštěvníků za celou sezonu.",
+            "result": "Sezona = 5 měsíců, porovnáváme děti vůči celku"
+          },
+          {
+            "label": "Počty návštěvníků za sezonu",
+            "calculation": "dospělí = 400, děti = 160",
+            "analysis": "Z grafu přečteme celkový počet dospělých (400) a dětí (160) za celou sezonu.",
+            "result": "Dospělí 400, děti 160"
+          },
+          {
+            "label": "Celkový počet návštěvníků",
+            "calculation": "400 + 160 = 560",
+            "analysis": "Sečteme dospělé a děti, abychom dostali celkový počet návštěvníků za sezonu.",
+            "result": "Celkem návštěvníků = 560"
+          },
+          {
+            "label": "Výpočet procentuálního podílu dětí",
+            "calculation": "160 / 560 * 100 = 28.571428... ≈ 28,57%",
+            "analysis": "Podíl dětí vyjádříme jako (počet dětí / celkem) × 100, výsledkem je přibližně 28,57%.",
+            "result": "Děti tvoří ≈ 28,57 % všech návštěvníků"
+          },
+          {
+            "label": "Vyhodnocení tvrzení",
+            "calculation": "zjištěný podíl ≈ 28,57% ≠ 40% → tvrzení nepravdivé",
+            "analysis": "Tvrzení uvádí, že děti tvoří 40 %; skutečný podíl je přibližně 28,57 %, takže tvrzení neplatí.",
+            "result": "Závěr: Nepravda"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A GRAF K ÚLOZE 11 \n===\n\n> Rodný dům slavného spisovatele je otevřen pouze v letní sezoně od května do září.\n> \n> V pokladně zaznamenávají počet prodaných vstupenek dětským a dospělým návštěvníkům.  \n> \n> V grafu je uvedena návštěvnost v jedné sezoně. \n>\n> ![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9C-2025/image-3.png)\n>\n> (*CZVV*) \n\n# 11 Rozhodněte o každém z následujících tvrzení (11.1–11.3), zda je pravdivé (A), či nikoli (N). \n \n## 11.1 V **prvních třech** měsících sezony bylo mezi návštěvníky rodného domu třikrát více dospělých než dětí. \n## 11.2 Za **celou** sezonu bylo dospělých návštěvníků rodného domu průměrně 80 za měsíc. \n## 11.3 Za celou sezonu tvořily děti 40 % **všech** návštěvníků rodného domu.  \n\n"
+  },
+  "12": {
+    "id": "12",
+    "title": "Kolika kroky prošel Jirka poslední úsek?",
+    "tasks": [
+      {
+        "id": "12.1",
+        "title": "Vypočti delší odvěsna (kroky)",
+        "context": "Z plánku a zápisu Jirky: 3. úsek = 50 kroků, 1. úsek = 30 kroků. Tyto dvě části tvoří dohromady delší odvěsnu pravoúhlého trojúhelníku.",
+        "steps": [
+          {
+            "label": "Součet délek úseků 3. a 1.",
+            "calculation": "50 + 30 = 80",
+            "analysis": "Na obrázku jsou 3. a 1. úsek spojité osy, jejich délky se sčítají a dávají celkovou délku delší odvěsny v příslušném pravoúhlém trojúhelníku.",
+            "result": "delší odvěsna = 80 kroky"
+          }
+        ]
+      },
+      {
+        "id": "12.2",
+        "title": "Vypočítej kratší odvěsnu dle Pythagorovy věty",
+        "context": "V pravoúhlém trojúhelníku je přepona 100 kroků (dána v zadání/na plánku) a známe delší odvěsnu 80 kroků; chceme najít kratší odvěsnu.",
+        "steps": [
+          {
+            "label": "Použití Pythagorovy věty",
+            "calculation": "√(100^2 − 80^2) = √(10000 − 6400) = √3600 = 60",
+            "analysis": "Pythagorova věta říká, že součet čtverců odvěsen se rovná čtverci přepony. Dosazením 100 za přeponu a 80 za jednu odvěsnu vypočteme druhou odvěsnu jako druhou odmocninu rozdílu čtverců.",
+            "result": "kratší odvěsna = 60 kroky"
+          }
+        ]
+      },
+      {
+        "id": "12.3",
+        "title": "Vypočti poslední úsek (kroky)",
+        "context": "Poslední úsek okruhu se skládá ze součtu kratší odvěsny (vypočtené = 60) a délky 2. úseku, kterou Jirka zapsal: 2. úsek = 35 kroků.",
+        "steps": [
+          {
+            "label": "Součet kratší odvěsny a 2. úseku",
+            "calculation": "60 + 35 = 95",
+            "analysis": "Poslední úsek je tvořen těmito dvěma přilehlými částmi, proto se jejich délky sečtou.",
+            "result": "poslední úsek = 95 kroky"
+          }
+        ]
+      },
+      {
+        "id": "12.4",
+        "title": "Vyhodnoť správnou volbu",
+        "context": "Možnosti obsahují hodnotu 95 kroků jako volbu D.",
+        "steps": [
+          {
+            "label": "Porovnání výsledku s nabídkou",
+            "calculation": "poslední úsek = 95 ⇒ volba D",
+            "analysis": "Nalezená délka posledního úseku přesně odpovídá možnosti D (95 kroků).",
+            "result": "Správná volba: D"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 12 \n===\n\n> Na hřišti je podle plánku vymezen uzavřený okruh, v němž na sebe navazuje 5 rovných úseků. Některé sousední úseky jsou na sebe kolmé (viz obrázek). \n> \n> Jirka prošel celý okruh stejně dlouhými kroky a do plánku si zaznamenal jejich počet na prvních čtyřech úsecích. \n>  \n> ![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9C-2025/image-4.png)\n>  \n> (*CZVV*) \n\n# 12 Kolika kroky prošel Jirka poslední úsek okruhu? \n- [A] méně než 85 kroky \n- [B] 85 kroky \n- [C] 90 kroky \n- [D] 95 kroky \n- [E] 100 kroky \n \n"
+  },
+  "13": {
+    "id": "13",
+    "title": "Řešení úlohy 13 — Délka hrany krychle",
+    "tasks": [
+      {
+        "id": "13",
+        "title": "Krok za krokem podle heslovitého řešení",
+        "context": "Celková bílá nepolepená plocha celé krychle je 480 cm². Na každé stěně jsou 5 stejných šedých čtverců uspořádaných po úhlopříčce tak, že sousední šedé čtverce mají právě jeden společný vrchol. Nepolepená (bílá) část každé stěny je rozdělena na malé čtverce stejné velikosti jako ty, které by tvořily celou mřížku 5×5 na stěně.",
+        "steps": [
+          {
+            "label": "Rozděl 480 (obsah) rovnoměrně 6 krát",
+            "calculation": "480 ÷ 6 = 80",
+            "analysis": "Krychle má 6 stěn. Hodnota 480 cm² je součet obsahů všech bílých (nepolepených) částí na celém povrchu krychle, tedy součet přes všechny 6 stěn. Abychom dostali obsah bílé části jedné stěny, vydělíme celkovou bílou plochu počtem stěn.",
+            "result": "Obsah bílé nepolepené části jedné stěny = 80 cm²"
+          },
+          {
+            "label": "Rozděl 80 (obsah) rovnoměrně 20 krát",
+            "calculation": "80 ÷ 20 = 4",
+            "analysis": "Na každé stěně jsou 5 stejných šedých čtverců umístěných po úhlopříčce tak, že sousední šedé čtverce se dotýkají jen vrcholem. To odpovídá tomu, že stěnu rozdělíme na mřížku 5×5 malých stejných čtverců: na úhlopříčce leží 5 šedých čtverců, z celkových 25 malých čtverců jich tedy zbyde 25 − 5 = 20 bílých. Proto obsah jedné stěny (80 cm²) se rovnoměrně rozkládá na 20 bílých malých čtverců.",
+            "result": "Obsah jednoho bílého malého čtverce = 4 cm²"
+          },
+          {
+            "label": "Vypočti délku strany malého čtverce",
+            "calculation": "√4 = 2",
+            "analysis": "Obsah čtverce S = a², takže délka jeho strany a = √S. Pro S = 4 cm² dostaneme a = 2 cm.",
+            "result": "Strana malého čtverce = 2 cm"
+          },
+          {
+            "label": "Vypočti stranu krychle (cm délka)",
+            "calculation": "2 × 5 = 10",
+            "analysis": "Stěna je rozdělena do mřížky 5 × 5 malých čtverců, tedy délka hrany stěny (a tedy hrana krychle) je 5násobek délky strany malého čtverce. Tedy 5 × 2 cm = 10 cm.",
+            "result": "Hrana krychle = 10 cm"
+          },
+          {
+            "label": "Vyhodnoť volbu [B]",
+            "calculation": "Hrana = 10 cm → volba B",
+            "analysis": "Možnosti jsou: A <10, B =10, C =12, D =15, E =20. Z vypočtené hodnoty 10 cm odpovídá volba B.",
+            "result": "Správná odpověď: B"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 13 \n===\n\n> Na každé stěně krychle je vždy jedna úhlopříčka celá přelepena pěti shodnými šedými čtverci tak, že sousední čtverce mají právě jeden společný vrchol (viz obrázek). \n>\n> Nepolepená část každé stěny je bílá.\\ \n> Součet obsahů všech **bílých nepolepených** ploch \n> na povrchu krychle je 480 cm^2^. \n> \n> ![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9C-2025/image-5.png)\n>  \n> (*CZVV*) \n\n# 13 Jakou délku má hrana krychle? \n- [A] méně než 10 cm \n- [B] 10 cm \n- [C] 12 cm \n- [D] 15 cm \n- [E] 20 cm \n\n"
+  },
+  "14": {
+    "id": "14",
+    "title": "Řešení úlohy 14",
+    "tasks": [
+      {
+        "id": "14",
+        "title": "Krokové řešení úlohy 14",
+        "context": "V obdélníku ABCD je na straně CD bod X. Přímka o1 je osa úhlu BAX a přímka o2 je osa úhlu AXB. Na obrázku jsou vyznačeny některé úhly: úhel XAo1 = 22° a úhel ASo2 = 62° (viz zadání). Cílem je vypočítat velikost úhlu α.",
+        "steps": [
+          {
+            "label": "Urči ∠BAo1",
+            "calculation": "22° = 22°",
+            "analysis": "Přímka o1 je osa úhlu BAX, tedy rozdělí úhel BAX na dvě shodné části. V zadání je dáno, že ∠XAo1 = 22°, proto úhel ∠BAo1 (druhá část téhož rozděleného úhlu) musí být také 22°.",
+            "result": "∠BAo1 = 22°"
+          },
+          {
+            "label": "Vypočti ∠Ao2X pomocí součtu úhlů v trojúhelníku",
+            "calculation": "180° - (22° + 62°) = 96°",
+            "analysis": "Z konstrukce vyplývá trojúhelník, jehož dva vrcholové úhly jsou ∠BAo1 = 22° a ∠ASo2 = 62° (úhel ASo2 je dán). Součet vnitřních úhlů v trojúhelníku je 180°, takže zbývající úhel ∠Ao2X = 180° - (22° + 62°).",
+            "result": "∠Ao2X = 96°"
+          },
+          {
+            "label": "Urči ∠o2XC jako střídavý vnitřní k ∠Ao2X",
+            "calculation": "96° = 96°",
+            "analysis": "Úhel ∠o2XC je střídavý vnitřní s úhlem ∠Ao2X vzhledem k přímce o2 a příslušným rovnoběžným přímkám/vztahům v konfiguraci, proto mají stejnou velikost.",
+            "result": "∠o2XC = 96°"
+          },
+          {
+            "label": "Vypočti ∠ASX (vedlejší k ∠ASo2)",
+            "calculation": "180° - 62° = 118°",
+            "analysis": "Úhly ∠ASo2 a ∠ASX jsou vedlejší (souměrné na přímce kolem přímky AS), jejich součet je 180°, takže ∠ASX = 180° - 62°.",
+            "result": "∠ASX = 118°"
+          },
+          {
+            "label": "Vypočti ∠AXo2 pomocí součtu vnitřních úhlů v trojúhelníku",
+            "calculation": "180° - (118° + 22°) = 40°",
+            "analysis": "V příslušném trojúhelníku jsou dva úhly ∠ASX = 118° a ∠XAo1 = 22° (jde o úhel mezi AX a o1). Součet vnitřních úhlů dává ∠AXo2 = 180° - (118° + 22°).",
+            "result": "∠AXo2 = 40°"
+          },
+          {
+            "label": "Urči ∠o2XB (osová souměrnost k ∠AXo2)",
+            "calculation": "40° = 40°",
+            "analysis": "Přímka o2 je osa úhlu AXB, takže rozdělí úhel AXB na dvě shodné části. Úhel ∠o2XB je proto osově souměrný k ∠AXo2 a má stejnou velikost.",
+            "result": "∠o2XB = 40°"
+          },
+          {
+            "label": "Vypočti ∠BXC jako rozdíl ∠o2XC a ∠o2XB",
+            "calculation": "96° - 40° = 56°",
+            "analysis": "Úhel ∠BXC (úhel mezi směry XB a XC) se získá jako rozdíl úhlů ∠o2XC (směrem k XC) a ∠o2XB (směrem k XB), tedy 96° - 40°.",
+            "result": "∠BXC = 56°"
+          },
+          {
+            "label": "Vypočti α v pravém trojúhelníku",
+            "calculation": "180° - (56° + 90°) = 34°",
+            "analysis": "Body B, X, C tvoří trojúhelník s úhlem u C rovným 90°, protože ABCD je obdélník (úhel v C je pravý). Pokud ∠BXC = 56°, pak zbývající úhel α je 180° - (56° + 90°).",
+            "result": "α = 34°"
+          },
+          {
+            "label": "Vyhodnocení volby",
+            "calculation": "α = 34° → volba C",
+            "analysis": "Dospěli jsme k hodnotě α = 34°, která odpovídá nabídce [C].",
+            "result": "Správná volba: [C] 34°"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 14 \n===\n\n> V obdélníku *ABCD* leží na straně *CD* bod X.  \n> Přímka o_1 je osa úhlu *BAX* a přímka o_2 je osa úhlu *AXB*. \n> Velikosti některých úhlů jsou vyznačeny v obrázku.\n> \n> ![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9C-2025/image-6.png)\n>  \n> (*CZVV*) \n\n# 14 Jaká je velikost úhlu 𝛼?\nVelikosti úhlů neměřte, ale vypočtěte (obrázek je pouze ilustrativní). \n- [A] 22° \n- [B] 28° \n- [C] 34° \n- [D] 40° \n- [E] jiná velikost \n \n \n"
+  },
+  "15": {
+    "id": "15",
+    "title": "Úloha 15 — přiřazení výsledků (15.1–15.3)",
+    "tasks": [
+      {
+        "id": "15.1",
+        "title": "15.1 — Kolik hrnků borůvek zbývá v kbelíku?",
+        "context": "Kbelík se úplně naplní 50 hrnky. Z plného kbelíku odsypali 46 % borůvek. Je třeba zjistit, kolik hrnků zůstalo.",
+        "steps": [
+          {
+            "label": "Vypočti odsypáno (hrnků borůvek)",
+            "calculation": "0,46 × 50 = 23",
+            "analysis": "46 % z plného kbelíku znamená 0,46 násobek počtu hrnků; kbelík má 50 hrnků, tedy odsypáno = 0,46·50.",
+            "result": "23 hrnků"
+          },
+          {
+            "label": "Vypočti rozdíl mezi kbelíkem a odsypaným množstvím",
+            "calculation": "50 − 23 = 27",
+            "analysis": "Ze 50 hrnků odečteme odsypaných 23 hrnků, abychom dostali, kolik zbývá v kbelíku.",
+            "result": "27 hrnků"
+          },
+          {
+            "label": "Vyhodnoť volbu odpovědi",
+            "calculation": "27 > 25 (porovnání s možnostmi)",
+            "analysis": "Možnost [F] je 'více než 25 hrnků' — 27 hrnků tuto podmínku splňuje.",
+            "result": "Správná volba: [F]"
+          }
+        ]
+      },
+      {
+        "id": "15.2",
+        "title": "15.2 — O kolik hrnků více vyrobil Tomáš než Petr?",
+        "context": "Petr, Radim, Slávek a Tomáš vyrobili dohromady 240 hrnků. Petr vyrobil o polovinu méně než Radim (tj. 1/2 Radima). Slávek i Tomáš každý o 25 % méně než Radim (tj. 3/4 Radima). Zjistit rozdíl Tomáš − Petr.",
+        "steps": [
+          {
+            "label": "Vyjádři poměry částí (Petr : Slávek : Tomáš : Radim)",
+            "calculation": "P = 1/2·R, S = 3/4·R, T = 3/4·R, R = 1·R → 0,5 : 0,75 : 0,75 : 1 (nebo po vynásobení 4 → 2 : 3 : 3 : 4)",
+            "analysis": "Z podmínek vyplývá Petr = 0,5R, Slávek = 0,75R, Tomáš = 0,75R. Pro přehlednost lze poměry škálovat na celá čísla (vynásobit 4).",
+            "result": "Poměr 2 : 3 : 3 : 4 (P : S : T : R)"
+          },
+          {
+            "label": "Vypočti, kolik hrnků má Radim",
+            "calculation": "Celkem částí = 0,5 + 0,75 + 0,75 + 1 = 3,0; Radim = 240 / 3,0 × 1 = 80",
+            "analysis": "Součet dílů v původních desetinných poměrech je 3,0. Podíl určíme dělením celkového počtu hrnků počtem dílů a následným přepočtem pro Radima.",
+            "result": "Radim = 80 hrnků"
+          },
+          {
+            "label": "Vypočti Tomáše",
+            "calculation": "Tomáš = 3/4 × 80 = 60",
+            "analysis": "Tomáš měl 75 % Radima, tedy 0,75×80 = 60 hrnků.",
+            "result": "Tomáš = 60 hrnků"
+          },
+          {
+            "label": "Vypočti Petra",
+            "calculation": "Petr = 1/2 × 80 = 40",
+            "analysis": "Petr měl polovinu Radima, tedy 0,5×80 = 40 hrnků.",
+            "result": "Petr = 40 hrnků"
+          },
+          {
+            "label": "Porovnej Tomáše a Petra — zjisti rozdíl",
+            "calculation": "60 − 40 = 20",
+            "analysis": "O kolik více vyrobil Tomáš než Petr: rozdíl jejich počtů hrnků.",
+            "result": "Tomáš vyrobil o 20 hrnků více"
+          },
+          {
+            "label": "Vyhodnoť volbu odpovědi",
+            "calculation": "Rozdíl = 20",
+            "analysis": "Možnost [B] je 20 hrnků, což odpovídá vypočítanému rozdílu.",
+            "result": "Správná volba: [B]"
+          }
+        ]
+      },
+      {
+        "id": "15.3",
+        "title": "15.3 — Kolik hrnků rybízu natrhaly všechny tři dohromady?",
+        "context": "Jitka, maminka a babička trhaly do stejně velkých hrnků. Maminka natrhala dvakrát více než Jitka (M = 2·J). Babička natrhala o polovinu více než Jitka (B = 3/2·J). Dále je dáno, že babička natrhala o 2 hrnky méně než maminka (M − B = 2). Najít celkový součet hrnků.",
+        "steps": [
+          {
+            "label": "Porovnej maminku a babičku pomocí Jitky",
+            "calculation": "M = 2·J, B = 3/2·J ⇒ M / B = (2·J) / (3/2·J) = 4/3 ⇒ M = 4/3·B",
+            "analysis": "Vyjádříme obě množství pomocí Jitky a porovnáme: maminka má 2J, babička 1,5J, tedy maminka má o třetinu více než babička (poměr 4:3).",
+            "result": "M = 4/3·B (maminka je o 1/3 větší než babička)"
+          },
+          {
+            "label": "Vypočti babičku z rozdílu 2 hrnků",
+            "calculation": "M − B = 2 a M = 4/3·B ⇒ (4/3·B) − B = (1/3)·B = 2 ⇒ B = 2 ÷ (1/3) = 6",
+            "analysis": "Použijeme vztah mezi M a B: rozdíl je (4/3−1)B = (1/3)B, který se rovná 2; odtud spočítáme B.",
+            "result": "Babička = 6 hrnků"
+          },
+          {
+            "label": "Opět porovnej maminku a babičku (stejný závěr)",
+            "calculation": "Z předchozího: M = 4/3·B",
+            "analysis": "Potvrzení vztahu pro následující výpočty; zachováme stejný krok jako v původním postupu.",
+            "result": "M = 4/3·B"
+          },
+          {
+            "label": "Vypočti maminku",
+            "calculation": "M = 4/3 × 6 = 8",
+            "analysis": "Dosadíme B = 6 do vztahu M = 4/3·B a spočítáme počet hrnků maminky.",
+            "result": "Maminka = 8 hrnků"
+          },
+          {
+            "label": "Vypočti Jitku",
+            "calculation": "B = 3/2·J ⇒ J = B ÷ (3/2) = 6 ÷ 1,5 = 4",
+            "analysis": "Babička má 1,5×Jitka, proto Jitka = B / 1,5. Dosadíme B = 6 a získáme Jitku.",
+            "result": "Jitka = 4 hrnky"
+          },
+          {
+            "label": "Vypočti dohromady (součet všech tří)",
+            "calculation": "6 + 8 + 4 = 18",
+            "analysis": "Sečteme hrnky babičky, maminky a Jitky, abychom získali celkový počet natrhaných hrnků.",
+            "result": "Všechny tři dohromady natrhaly 18 hrnků"
+          },
+          {
+            "label": "Vyhodnoť volbu odpovědi",
+            "calculation": "Součet = 18",
+            "analysis": "Možnost [A] je 18 hrnků, což odpovídá vypočítanému součtu.",
+            "result": "Správná volba: [A]"
+          }
+        ]
+      }
+    ],
+    "raw": "# 15 Přiřaďte ke každé úloze (15.1–15.3) odpovídající výsledek (A–F). \n## 15.1 \nPrázdný kbelík se zcela naplní přesně 50 hrnky borůvek.  \nZ plného kbelíku jsme odsypali 46 % borůvek. \n\n**Kolik hrnků borůvek zbývá v kbelíku?**\n## 15.2 \nHrnčíři Petr, Radim, Slávek a Tomáš vyrobili dohromady 240 hrnků. \nPetr vyrobil o polovinu méně hrnků než Radim.  \nSlávek i Tomáš vyrobili každý o 25 % hrnků méně než Radim. \n\n**O kolik hrnků více vyrobil Tomáš než Petr?**\n## 15.3 \nJitka s maminkou a babičkou trhaly na zahradě rybíz do stejně velkých hrnků. \nMaminka natrhala dvakrát více rybízu než Jitka.  \nBabička natrhala o polovinu více rybízu než Jitka.  \nPřitom babička natrhala o 2 hrnky rybízu méně než maminka. \n\n**Kolik hrnků rybízu natrhaly všechny tři dohromady?**\n- [A] 18 hrnků \n- [B] 20 hrnků \n- [C] 21 hrnků \n- [D] 23 hrnků \n- [E] 25 hrnků \n- [F] více než 25 hrnků \n\n"
+  }
+}

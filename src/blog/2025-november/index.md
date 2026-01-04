@@ -8,7 +8,10 @@ style: /assets/css/blog.css
 
 
 ## Kalkulačka pro slovní úlohy
-<div class="badge badge--warning">Experiment</div>
+<div class="warning" label="Pozor">
+  Tohle je zatím spíš laboratorní křeček než hotový produkt. Může občas utéct z klece.“ 🐹
+</div>
+
 
 <div class="tip" label="Řešení pouze logickou úvahou">
   Žádné výpočty. Žádné sestavování rovnic. Delegujte aritmetiku a algebru na kalkulátor.

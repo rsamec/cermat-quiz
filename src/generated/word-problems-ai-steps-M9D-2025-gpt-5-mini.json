@@ -1,0 +1,842 @@
+{
+  "1": {
+    "id": "1",
+    "title": "Řešení úlohy 1",
+    "tasks": [
+      {
+        "id": "1",
+        "title": "Výpočet délky stuhy použité na třetí dárek",
+        "context": "Máme 3 m stuhy. Nejdříve ustřihneme 1/4 z celku (první dárek). Zbytek zůstane. Z tohoto zbytku ustřihneme 2/5 na druhý dárek. Poslední část (zbytek z tohoto zbytku) je třetí dárek. Cílem je určit délku třetího dárku v cm.",
+        "steps": [
+          {
+            "label": "Vyjádři poměrem zbytek z pásky celkem",
+            "calculation": "1 - 1/4 = 3/4",
+            "analysis": "Z celkové stuhy je na první dárek odstřižena čtvrtina (1/4). Zbytek je doplněk k 1/4 vzhledem k celku, tedy vypočteme 1 minus 1/4.",
+            "result": "Zbytek po prvním ustřižení = 3/4 celku."
+          },
+          {
+            "label": "Vypočti délku zbytku (v metrech)",
+            "calculation": "3/4 × 3 m = 9/4 m = 2,25 m",
+            "analysis": "Celá stuha měřila 3 m. Zbytek je 3/4 z tohoto celku, proto vynásobíme 3/4 krát 3 m. 3/4 × 3 = 9/4 metru, což je 2,25 m.",
+            "result": "Délka zbytku po prvním ustřižení = 2,25 m."
+          },
+          {
+            "label": "Vyjádři poměrem, kolik ze zbytku zůstane pro třetí dárek",
+            "calculation": "1 - 2/5 = 3/5",
+            "analysis": "Zůstávající pásku po prvním střihu jsme znovu rozdělili: na druhý dárek bylo odstřiženo 2/5 z toho zbytku. Třetí dárek dostane zbytek z tohoto zbytku, tedy doplněk k 2/5, což je 1 minus 2/5 = 3/5.",
+            "result": "Třetí dárek dostane 3/5 z předchozího zbytku."
+          },
+          {
+            "label": "Vypočti délku třetího dárku (v metrech)",
+            "calculation": "3/5 × 2,25 m = (3/5) × 9/4 m = 27/20 m = 1,35 m",
+            "analysis": "Zbytku bylo 2,25 m (což je 9/4 m). Třetí dárek je 3/5 z tohoto zbytku, tedy vynásobíme: 3/5 × 9/4 = 27/20 metru. To se převede na desetinné číslo 1,35 m.",
+            "result": "Délka třetího dárku = 1,35 m."
+          },
+          {
+            "label": "Převeď délku na centimetry",
+            "calculation": "1,35 m × 100 = 135 cm",
+            "analysis": "1 metr je 100 centimetrů. Proto vynásobíme délku v metrech 100, abychom získali délku v centimetrech.",
+            "result": "Délka třetího dárku = 135 cm."
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT K ÚLOZE 1 \n===\n\n> Třímetrovou dárkovou stuhu jsme dvěma střihy rozdělili na tři díly různých délek.\n> Nejprve jsme odstřihli čtvrtinu stuhy na první dárek, potom jsme odstřihli dvě pětiny zbytku stuhy na druhý dárek a poslední díl jsme použili na třetí dárek. \n> \n> (*CZVV*) \n\n# 1 Vypočtěte, kolik cm stuhy jsme použili na třetí dárek. \n"
+  },
+  "2": {
+    "id": "2",
+    "title": "Řešení úlohy 2",
+    "tasks": [
+      {
+        "id": "2.1",
+        "title": "Vypočti porovnání větší číslo a menší číslo",
+        "context": "Dvojnásobky dvou čísel se liší o 6, proto samotná čísla se liší o polovinu této hodnoty.",
+        "steps": [
+          {
+            "label": "Z rozdílu dvojnásobků zjisti rozdíl původních čísel",
+            "calculation": "2·(větší − menší) = 6 ⇒ větší − menší = 6 / 2 = 3",
+            "analysis": "Pokud se dvojnásobky liší o 6, rozdíl původních čísel musí být polovina tohoto rozdílu, protože každý člen byl násoben 2.",
+            "result": "Větší číslo je o 3 větší než menší číslo."
+          }
+        ]
+      },
+      {
+        "id": "2.2",
+        "title": "Vypočti menší číslo",
+        "context": "Poměr menšího a většího čísla je 4:5. Víme, že větší − menší = 3.",
+        "steps": [
+          {
+            "label": "Vyjádři čísla podle poměru",
+            "calculation": "menší = 4k, větší = 5k pro nějaké k ∈ N",
+            "analysis": "Poměr 4:5 znamená, že obě čísla jsou násobky konstanty k, kde menší je 4k a větší 5k.",
+            "result": "menší = 4k, větší = 5k"
+          },
+          {
+            "label": "Použij poznatek o rozdílu",
+            "calculation": "větší − menší = 5k − 4k = k, přitom větší − menší = 3 ⇒ k = 3",
+            "analysis": "Rozdíl mezi 5k a 4k je k; z předchozího kroku víme, že tento rozdíl je 3, takže k = 3.",
+            "result": "k = 3"
+          },
+          {
+            "label": "Vypočti menší číslo dosazením k",
+            "calculation": "menší = 4k = 4 · 3 = 12",
+            "analysis": "Dosadíme nalezenou hodnotu k do výrazu pro menší číslo.",
+            "result": "Menší číslo = 12"
+          }
+        ]
+      }
+    ],
+    "raw": "# 2 \nPoměr dvou neznámých přirozených čísel je 4∶5 a dvojnásobky těchto dvou čísel se liší o 6. \n**Určete menší z obou neznámých čísel.**\n\n[!NOTE] \nDoporučení: Úlohy 3.2, 4.3 a 5 řešte přímo v záznamovém archu. \n\n"
+  },
+  "6": {
+    "id": "6",
+    "title": "Úloha 6 — odvoz beden roboty A a B",
+    "tasks": [
+      {
+        "id": "6.1",
+        "title": "6.1 Poměr počtu beden odvezených za 1 hodinu (A : B)",
+        "context": "Robot A odvezl 50 beden za 2 hodiny (po 5 kusech na jízdu). Robot B odvezl 45 beden za 1,5 hodiny (po 3 kusech na jízdu). Potřebujeme zjistit počty beden za 1 hodinu každého robota a vyjádřit jejich poměr v základním tvaru.",
+        "steps": [
+          {
+            "label": "Určení počtu beden za 1 hodinu pro robota A",
+            "calculation": "50 / 2 = 25",
+            "analysis": "Robot A odvezl celkem 50 beden za 2 hodiny. Abychom našli, kolik odveze za 1 hodinu, vydělíme celkový počet hodinou počtem hodin (2).",
+            "result": "25 beden za 1 hodinu"
+          },
+          {
+            "label": "Určení počtu beden za 1 hodinu pro robota B",
+            "calculation": "45 / 1,5 = 30",
+            "analysis": "Robot B odvezl 45 beden za 1,5 hodiny. Dělením 45 počtem hodin 1,5 zjistíme počet beden za jednu hodinu.",
+            "result": "30 beden za 1 hodinu"
+          },
+          {
+            "label": "Vyjádření poměru A : B v základním tvaru",
+            "calculation": "25 : 30 = (děleno 5) → 5 : 6",
+            "analysis": "Poměr 25:30 zmenšíme vydělením obou čísel jejich největším společným dělitelem 5.",
+            "result": "Poměr počtu beden za 1 hodinu A : B = 5 : 6"
+          }
+        ]
+      },
+      {
+        "id": "6.2",
+        "title": "6.2 Poměr počtu jízd za hodinu (A : B)",
+        "context": "Máme rychlosti v bednách za hodinu (A = 25 bed/h, B = 30 bed/h) a víme, kolik beden jede každý robot při jedné jízdě (A po 5, B po 3). Potřebujeme spočítat počet jízd za hodinu a jejich poměr.",
+        "steps": [
+          {
+            "label": "Počet jízd robota A za hodinu",
+            "calculation": "25 / 5 = 5",
+            "analysis": "Robot A odveze 25 beden za hodinu a při jedné jízdě veze 5 beden. Počet jízd za hodinu je počet beden za hodinu děleno kapacitou jedné jízdy.",
+            "result": "5 jízd za hodinu"
+          },
+          {
+            "label": "Počet jízd robota B za hodinu",
+            "calculation": "30 / 3 = 10",
+            "analysis": "Robot B odveze 30 beden za hodinu a při jedné jízdě veze 3 bedny. Počet jízd za hodinu je 30 děleno 3.",
+            "result": "10 jízd za hodinu"
+          },
+          {
+            "label": "Vyjádření poměru počtu jízd A : B",
+            "calculation": "5 : 10 = (děleno 5) → 1 : 2",
+            "analysis": "Poměr 5:10 zjednodušíme vydělením obou čísel největším společným dělitelem 5.",
+            "result": "Poměr počtu jízd A : B = 1 : 2"
+          }
+        ]
+      },
+      {
+        "id": "6.3",
+        "title": "6.3 Kolik beden odvezou oba roboti dohromady za 36 minut",
+        "context": "Potřebujeme spočítat, kolik beden odveze každý robot za 36 minut (0,6 h) a pak sečíst výsledky. Víme rychlosti v bednách za hodinu: A = 25 bed/h, B = 30 bed/h.",
+        "steps": [
+          {
+            "label": "Převod 36 minut na hodiny",
+            "calculation": "36 / 60 = 0,6 = 3/5",
+            "analysis": "36 minut je 36 z 60 minut jedné hodiny, tedy 36/60 hodiny, což je 0,6 hodiny neboli 3/5 hodiny.",
+            "result": "36 minut = 0,6 hodiny (3/5 h)"
+          },
+          {
+            "label": "Počet beden odvezených robotem A za 36 minut",
+            "calculation": "25 * 0,6 = 15",
+            "analysis": "Robot A veze 25 beden za hodinu. Za 0,6 hodiny odveze 25 krát 0,6 = 15 beden.",
+            "result": "Robot A odveze 15 beden"
+          },
+          {
+            "label": "Počet beden odvezených robotem B za 36 minut",
+            "calculation": "30 * 0,6 = 18",
+            "analysis": "Robot B veze 30 beden za hodinu. Za 0,6 hodiny odveze 30 krát 0,6 = 18 beden.",
+            "result": "Robot B odveze 18 beden"
+          },
+          {
+            "label": "Celkový počet beden odvezených oběma roboty za 36 minut",
+            "calculation": "15 + 18 = 33",
+            "analysis": "Sečteme, co odvezl každý robot za 36 minut: 15 + 18 = 33.",
+            "result": "Společně odvezou 33 beden za 36 minut"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT K ÚLOZE 6 \n===\n\n> Na odvoz beden ze skladu se používají dva různí roboti A, B.\\\n> Ve skladu bylo 95 beden.\\\n> Bedny nejprve odvážel robot A, a to po 5 kusech. Jezdil v pravidelných intervalech a odvezl ze skladu za 2 hodiny celkem 50 beden.\\\n> Pak pokračoval robot B, který vozil bedny jen po 3 kusech, avšak v kratších pravidelných intervalech. Odvezl tak ze skladu za 1,5 hodiny zbývajících 45 beden.\n> \n> (*CZVV*) \n\n# 6 \n## 6.1 **Vyjádřete** v základním tvaru **poměr** počtu beden odvezených ze skladu za 1 hodinu robotem A ku počtu beden odvezených za 1 hodinu robotem B. \n## 6.2 **Vyjádřete** v základním tvaru **poměr** počtu jízd robota A za hodinu ku počtu jízd robota B za hodinu. \n## 6.3 **Vypočtěte**, kolik beden by ze skladu odvezli za 36 minut oba roboti dohromady při společném provozu. \n\n"
+  },
+  "7": {
+    "id": "7",
+    "title": "Úloha 7 — podrobné řešení krok po kroku",
+    "tasks": [
+      {
+        "id": "7.1",
+        "title": "7.1 Určete průměrný bodový zisk všech soutěžících v 1. kole",
+        "context": "V 1. kole každý soutěžící získal 8, 9 nebo 10 bodů. V tabulce je uvedeno, že ve 1. kole 5 soutěžících získalo 9 bodů. Celkem soutěží 10 soutěžících. Dále platí, že počet 8-bodových soutěžících je o jednoho menší než počet 10-bodových.",
+        "steps": [
+          {
+            "label": "Vypočti rozdíl mezi celkovým počtem soutěžících a těmi, kteří získali 9 bodů",
+            "calculation": "10 - 5 = 5",
+            "analysis": "Celkově je 10 soutěžících, z toho 5 získalo 9 bodů. Zbytek (10 − 5) tvoří soutěžící, kteří získali buď 8, nebo 10 bodů.",
+            "result": "5 soutěžících (součet 8-bodových a 10-bodových)"
+          },
+          {
+            "label": "Vypočti počet 8-bodových soutěžících",
+            "calculation": "(5 - 1) / 2 = 2",
+            "analysis": "Označme x počet 8-bodových. Počet 10-bodových je x + 1. Platí x + (x + 1) = 5 ⇒ 2x + 1 = 5 ⇒ x = 2.",
+            "result": "2 soutěžící po 8 bodech"
+          },
+          {
+            "label": "Co lze vyvodit o 9-bodových soutěžících",
+            "calculation": "9-bodových = 5 (dle zadání)",
+            "analysis": "Tabulka udává, že ve 1. kole získalo 9 bodů 5 soutěžících; tento údaj jsme již použili.",
+            "result": "5 soutěžících po 9 bodech"
+          },
+          {
+            "label": "Vypočti počet 10-bodových soutěžících",
+            "calculation": "2 + 1 = 3",
+            "analysis": "Počet 10-bodových je o jednoho větší než počet 8-bodových: 2 + 1 = 3.",
+            "result": "3 soutěžící po 10 bodech"
+          },
+          {
+            "label": "Vypočti celkový počet bodů ve 1. kole",
+            "calculation": "2·8 + 5·9 + 3·10 = 16 + 45 + 30 = 91",
+            "analysis": "Součet bodů je dán součtem počtu soutěžících v každé skupině násobených příslušným počtem bodů.",
+            "result": "Celkem 91 bodů"
+          },
+          {
+            "label": "Vypočti počet soutěžících pro kontrolu",
+            "calculation": "2 + 5 + 3 = 10",
+            "analysis": "Zkontrolujeme, že součet počtů v jednotlivých kategoriích se rovná celkovému počtu soutěžících.",
+            "result": "Celkem 10 soutěžících"
+          },
+          {
+            "label": "Rozděl celkem dosažené body mezi soutěžící (průměr)",
+            "calculation": "91 / 10 = 9,1",
+            "analysis": "Aritmetický průměr bodového zisku ve 1. kole se vypočte jako celkový počet bodů dělený počtem soutěžících.",
+            "result": "Průměrný bodový zisk = 9,1 bodu"
+          }
+        ]
+      },
+      {
+        "id": "7.2",
+        "title": "7.2 Určete, kolik soutěžících mohlo ve 2. kole získat 9 bodů (všechna řešení)",
+        "context": "Ve 2. kole je aritmetický průměr 9,5 bodu pro 10 soutěžících, tedy celkem 95 bodů. V 2. kole každý soutěžící získal 8, 9 nebo 10 bodů. Hledáme všechna nenegativní celá řešení pro počty (a,b,c) = (počet 8-bodových, počet 9-bodových, počet 10-bodových) tak, aby a + b + c = 10 a 8a + 9b + 10c = 95.",
+        "steps": [
+          {
+            "label": "Co lze vyvodit na základě zadaných předpokladů (zápis rovnic)",
+            "calculation": "a + b + c = 10; 8a + 9b + 10c = 95",
+            "analysis": "První rovnice je součet počtů soutěžících, druhá říká, že celkový počet bodů je 95 (10·9,5).",
+            "result": "Soustava rovnic stanovena"
+          },
+          {
+            "label": "Odvoď jednodušší vztah mezi b a c",
+            "calculation": "(8a+9b+10c) - 8(a+b+c) = 95 - 80 ⇒ b + 2c = 15",
+            "analysis": "Vynásobíme první rovnici 8 a odečteme ji od druhé rovnice: zůstane b + 2c = 15, což je jednodušší lineární rovnice ve dvou neznámých.",
+            "result": "b + 2c = 15"
+          },
+          {
+            "label": "Najdi možný rozsah pro c z podmínek nenegativity a počtu soutěžících",
+            "calculation": "b = 15 - 2c ≥ 0 ⇒ c ≤ 7; a = 10 - b - c = 10 - (15 - 2c) - c = c - 5 ≥ 0 ⇒ c ≥ 5",
+            "analysis": "Požadujeme, aby b a a byly nenegativní celá čísla. Z podmínky b ≥ 0 plyne c ≤ 7; z a ≥ 0 plyne c ≥ 5. Tudíž c může být 5, 6 nebo 7.",
+            "result": "c ∈ {5, 6, 7}"
+          },
+          {
+            "label": "Získej konkrétní řešení pro jednotlivé hodnoty c",
+            "calculation": "Pro c=5: b=15-2·5=5, a=10-5-5=0 ⇒ (a,b,c)=(0,5,5)\nPro c=6: b=15-2·6=3, a=10-3-6=1 ⇒ (1,3,6)\nPro c=7: b=15-2·7=1, a=10-1-7=2 ⇒ (2,1,7)",
+            "analysis": "Pro každé povolené c spočítáme b z b=15-2c a poté a z a=10-b-c; všechna tři řešení dávají nenegativní celá čísla a vyhovují oběma rovnicím.",
+            "result": "Možné trojice (8-bodoví, 9-bodoví, 10-bodoví): (0,5,5), (1,3,6), (2,1,7)"
+          },
+          {
+            "label": "Závěr — kolik soutěžících mohlo ve 2. kole získat 9 bodů",
+            "calculation": "b ∈ {5, 3, 1}",
+            "analysis": "Z nalezených řešení plyne, že počet 9-bodových může být 5, 3 nebo 1.",
+            "result": "9-bodových = 5 nebo 3 nebo 1"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A TABULKA K ÚLOZE 7 \n===\n\n> Do vědomostní soutěže se přihlásilo 10 soutěžících a všichni se zúčastnili 1. i 2. kola.\\\n> V každém kole získali jednotliví soutěžící 8, 9, nebo 10 bodů. Některé údaje jsou v tabulce. \n> \n> |   |8 bodů|9 bodů|10 bodů|Aritmetický průměr|\n> |---|:---:|:---:|:---:|:---:|\n> |1.kolo||5|||\n> |2.kolo||||9,5|\n> \n> (*CZVV*) \n\n# 7 \n## 7.1 V 1. kole bylo soutěžících, kteří získali 8 bodů, o jednoho méně než těch, kteří získali 10 bodů. \n**Určete průměrný bodový zisk všech soutěžících v 1. kole.**\n## 7.2 Určete, kolik soutěžících mohlo ve 2. kole získat 9 bodů.  \nNajděte všechna řešení. \n\n"
+  },
+  "8": {
+    "id": "8",
+    "title": "Úloha 8 – řešení krok po kroku",
+    "tasks": [
+      {
+        "id": "8.1",
+        "title": "8.1 O kolik cm² je obsah čtverce větší než obsah lichoběžníku",
+        "context": "Čtverec se stranou 12 cm; z něj byly odstřiženy dva shodné pravoúhlé trojúhelníky tak, že vznikl rovnoramenný lichoběžník s kratší základnou 2 cm. Potřebujeme obsah održené části (dva trojúhelníky) — to je rozdíl obsahů čtverce a lichoběžníku.",
+        "steps": [
+          {
+            "label": "Vypočítat délku nejkratší strany pravoúhlého trojúhelníku",
+            "calculation": "(strana čtverce - kratší základna) / 2 = (12 - 2) / 2 = 10 / 2 = 5",
+            "analysis": "Z čtverce o straně 12 cm zůstane uprostřed kratší základna lichoběžníku délky 2 cm. Zbývající délka na horní straně čtverce je 12 - 2 = 10 cm. Ta se dělí na dvě shodné části (odstřižené trojúhelníky), tedy každá má vodorovnou odvěsnu délky 5 cm.",
+            "result": "nejkratší strana pravoúhlého trojúhelníku = 5 cm"
+          },
+          {
+            "label": "Vypočítat obsah jednoho pravoúhlého trojúhelníku",
+            "calculation": "1/2 * základna * výška = 1/2 * 5 * 12 = 0.5 * 60 = 30",
+            "analysis": "Pravoúhlý trojúhelník má odvěsny délky 5 cm (vodorovná část) a 12 cm (svislá strana čtverce). Obsah trojúhelníku je polovina součinu odvěsen.",
+            "result": "obsah jednoho trojúhelníku = 30 cm²"
+          },
+          {
+            "label": "Vypočítat obsah obou odstřižených trojúhelníků",
+            "calculation": "2 * 30 = 60",
+            "analysis": "Od čtverce byly odstřiženy dva shodné trojúhelníky, takže celkově je održená plocha dvojnásobek obsahu jednoho trojúhelníku.",
+            "result": "odstřižené části (2 trojúhelníky) = 60 cm²"
+          },
+          {
+            "label": "Závěr pro podúlohu 8.1",
+            "calculation": "obsah čtverce - obsah lichoběžníku = obsah odstřižených trojúhelníků = 60",
+            "analysis": "Rozdíl mezi obsahem původního čtverce (12² = 144 cm²) a obsahem vzniklého lichoběžníku je právě plocha odstraněných trojúhelníků, tedy 60 cm².",
+            "result": "Obsah čtverce je větší o 60 cm²."
+          }
+        ]
+      },
+      {
+        "id": "8.2",
+        "title": "8.2 Obvod lichoběžníku v cm",
+        "context": "Máme rovnoramenný lichoběžník s kratší základnou 2 cm, delší základnou rovna straně čtverce 12 cm, a ramena jsou přepony pravoúhlých trojúhelníků o odvěsnách 5 cm a 12 cm. Potřebujeme délku ramene a pak součet všech stran.",
+        "steps": [
+          {
+            "label": "Vypočítat délku ramene (nejdelší strany lichoběžníku) pomocí Pythagorovy věty",
+            "calculation": "√(5² + 12²) = √(25 + 144) = √169 = 13",
+            "analysis": "Rameno lichoběžníku je přepona pravoúhlého trojúhelníku s odvěsnami 5 cm (vodorovně) a 12 cm (svisle), proto jeho délku získáme Pythagorovou větou.",
+            "result": "nejdelší strana (rameno) lichoběžníku = 13 cm"
+          },
+          {
+            "label": "Sečíst délky všech stran lichoběžníku",
+            "calculation": "13 + 13 + 2 + 12 = 40",
+            "analysis": "Lichoběžník je rovnoramenný, takže má dvě shodná ramena po 13 cm, kratší základnu 2 cm a delší základnu 12 cm (strana původního čtverce). Obvod je součet všech čtyř stran.",
+            "result": "obvod lichoběžníku = 40 cm"
+          },
+          {
+            "label": "Závěr pro podúlohu 8.2",
+            "calculation": "obvod = 40 cm",
+            "analysis": "Dosažený součet je konečný obvod vzniklého lichoběžníku.",
+            "result": "Obvod lichoběžníku = 40 cm"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 8 \n===\n\n> Ze čtverce o straně délky 12 cm odstřihneme dva shodné trojúhelníky (viz obrázek vlevo). \n> Vznikne tak rovnoramenný lichoběžník, jehož kratší základna má délku 2 cm.\n> \n> ![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9D-2025/image.png)\n>  \n> (*CZVV*) \n\n# 8 \n## 8.1 Určete, o kolik cm2 je obsah čtverce větší než obsah lichoběžníku. \n## 8.2 Vypočtěte v cm obvod lichoběžníku. \n\n[!NOTE]\n**Doporučení** pro úlohy **9** a **10**: Rýsujte přímo **do záznamového archu.**\n\n"
+  },
+  "11": {
+    "id": "11",
+    "title": "Úloha 11 – rozhodněte pravdivost tvrzení (krokové řešení)",
+    "tasks": [
+      {
+        "id": "11.1",
+        "title": "11.1: Je pravda, že α > 64°?",
+        "context": "Trojúhelník KAS je rovnoramenný (z obrázku). Z obrázku / zadání je dán úhel 64° související s tímto trojúhelníkem.",
+        "steps": [
+          {
+            "label": "Kontext",
+            "calculation": "",
+            "analysis": "Máme trojúhelník KAS rovnoramenný; z obrázku (zadání) je uvedena velikost příslušného úhlu 64°.",
+            "result": ""
+          },
+          {
+            "label": "Výpočet α",
+            "calculation": "α = 64°",
+            "analysis": "Ze zadání (a ze schodnosti úhlů v rovnoramenném trojúhelníku nebo přímo z označení v obrázku) vyplývá, že úhel α má velikost 64°.",
+            "result": "α = 64°"
+          },
+          {
+            "label": "Porovnání s 64°",
+            "calculation": "α > 64° ? => 64° > 64°",
+            "analysis": "Porovnáváme zjištěnou hodnotu α = 64° s 64°; nerovnost 64° > 64° není splněna.",
+            "result": "Tvrzení α > 64° je nepravdivé (N)."
+          }
+        ]
+      },
+      {
+        "id": "11.2",
+        "title": "11.2: Je pravda, že α + β > 90°?",
+        "context": "Podle Thaletova pravidla je trojúhelník ABK pravoúhlý (v jednom vrcholu je přímý úhel). Z předchozí části víme, že α = 64°.",
+        "steps": [
+          {
+            "label": "Kontext",
+            "calculation": "",
+            "analysis": "Trojúhelník ABK je pravoúhlý, tedy jeden jeho vnitřní úhel je 90°. Víme α = 64°.",
+            "result": ""
+          },
+          {
+            "label": "Výpočet β",
+            "calculation": "β = 180° − (α + 90°) = 180° − (64° + 90°) = 26°",
+            "analysis": "Součet vnitřních úhlů v trojúhelníku je 180°; pokud je jeden úhel 90° a druhý je α, třetí úhel β je zbytek.",
+            "result": "β = 26°"
+          },
+          {
+            "label": "Součet α + β",
+            "calculation": "α + β = 64° + 26° = 90°",
+            "analysis": "Sečteme zjištěné hodnoty α a β.",
+            "result": "α + β = 90°"
+          },
+          {
+            "label": "Porovnání s 90°",
+            "calculation": "α + β > 90° ? => 90° > 90°",
+            "analysis": "Součet α + β je právě 90°, takže nerovnost > 90° není splněna.",
+            "result": "Tvrzení α + β > 90° je nepravdivé (N)."
+          }
+        ]
+      },
+      {
+        "id": "11.3",
+        "title": "11.3: Je pravda, že γ − α > δ?",
+        "context": "Ze zadání i z předchozích výsledků: α = 64°. Dále z obrázku (a popisu) platí, že úhel SKB je doplňkový vůči α, trojúhelník SBK je rovnoramenný, a δ je vedlejší (súměrný) k γ.",
+        "steps": [
+          {
+            "label": "Výpočet úhlu SKB (doplňkový k α)",
+            "calculation": "SKB = 90° − α = 90° − 64° = 26°",
+            "analysis": "Úhel SKB je doplňkový k danému úhlu 64°, proto je to 90° minus α.",
+            "result": "SKB = 26°"
+          },
+          {
+            "label": "Kontext (rovnoramenný trojúhelník SBK)",
+            "calculation": "",
+            "analysis": "Trojúhelník SBK je rovnoramenný, takže základní úhly u základny (oba úhly při S a K nebo při S a B podle označení) jsou shodné. Z obrázku/výkladu to vede k tomu, že β = SKB.",
+            "result": ""
+          },
+          {
+            "label": "Výpočet β",
+            "calculation": "β = SKB = 26°",
+            "analysis": "Protože SKB = 26° a v rovnoramenném trojúhelníku odpovídající úhel β je stejný, β = 26°.",
+            "result": "β = 26°"
+          },
+          {
+            "label": "Výpočet γ (součet vnitřních úhlů v trojúhelníku SBK)",
+            "calculation": "γ = 180° − (β + SKB) = 180° − (26° + 26°) = 128°",
+            "analysis": "V trojúhelníku jsou součet vnitřních úhlů 180°; γ je zbývající úhel po odečtení dvou shodných úhlů 26°.",
+            "result": "γ = 128°"
+          },
+          {
+            "label": "Výpočet γ − α",
+            "calculation": "γ − α = 128° − 64° = 64°",
+            "analysis": "Odečteme hodnotu α od γ dle zadání.",
+            "result": "γ − α = 64°"
+          },
+          {
+            "label": "Výpočet δ (vedlejší k γ)",
+            "calculation": "δ = 180° − γ = 180° − 128° = 52°",
+            "analysis": "Úhel δ je vedlejší (doplňkový na přímce) k úhlu γ, proto je doplňkem do 180°.",
+            "result": "δ = 52°"
+          },
+          {
+            "label": "Porovnání γ − α a δ",
+            "calculation": "γ − α > δ ? => 64° > 52°",
+            "analysis": "Zjištěné hodnoty dávají 64° oproti 52°; nerovnost je splněna.",
+            "result": "Tvrzení γ − α > δ je pravdivé (A)."
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 11 \n===\n\n> Kružnice se středem S prochází body A, B, K, L.\\\n> Úsečky *AB* a *KL* se protínají v bodě S.\\\n> V obrázku jsou vyznačeny velikosti některých úhlů.\\\n> \n> ![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9D-2025/image-3.png) \n> \n> (*CZVV*) \n\n# 11 Rozhodněte o každém z následujících tvrzení (11.1–11.3), zda je pravdivé (A), či nikoli (N).\nVelikosti úhlů neměřte, ale vypočtěte (obrázek je pouze ilustrativní).\n\n## 11.1 𝛼>64° \n## 11.2 𝛼+𝛽>90° \n## 11.3 𝛾−𝛼>𝛿 \n \n \n \n"
+  },
+  "12": {
+    "id": "12",
+    "title": "Řešení 12",
+    "tasks": [
+      {
+        "id": "12",
+        "title": "Řešení úlohy 12 — krok po kroku",
+        "context": "Dáno: povrch malé krychle je o 42 cm² menší než povrch velké krychle. Součet délek všech hran malé krychle je 36 cm. Hledáme, o kolik cm³ se liší objem velké a malé krychle.",
+        "steps": [
+          {
+            "label": "Vypočti výraz 6 * a^2?",
+            "calculation": "6 * 3^2 = 6 * 9 = 54",
+            "analysis": "Předpokládáme délku hrany malé krychle a = 3 cm (tento výsledek se odvodí později dělením součtu hran). Povrch krychle je S = 6·a^2, tedy dosadíme a = 3.",
+            "result": "Povrch malé krychle S_m = 54 cm²"
+          },
+          {
+            "label": "Vypočti velká krychle (cm² obsah)?",
+            "calculation": "54 + 42 = 96",
+            "analysis": "Povrch velké krychle je o 42 cm² větší než povrch malé krychle, takže S_V = S_m + 42.",
+            "result": "Povrch velké krychle S_V = 96 cm²"
+          },
+          {
+            "label": "Vypočti výraz sqrt(S / 6)?",
+            "calculation": "sqrt(96 / 6) = sqrt(16) = 4",
+            "analysis": "Pro hranu krychle platí a = sqrt(S/6). Pro S_V = 96 dostaneme délku hrany velké krychle a_V = 4 cm.",
+            "result": "Délka hrany velké krychle a_V = 4 cm"
+          },
+          {
+            "label": "Vypočti výraz a * a * a? (objem velké krychle)",
+            "calculation": "4 * 4 * 4 = 64",
+            "analysis": "Objem krychle je V = a^3. Pro a_V = 4 dostaneme V_V = 64 cm³.",
+            "result": "Objem velké krychle V_V = 64 cm³"
+          },
+          {
+            "label": "Rozděl 36 (délka) rovnoměrně 12 krát",
+            "calculation": "36 / 12 = 3",
+            "analysis": "Součet délek všech hran krychle je 12·a. Máme 12·a = 36, takže a = 36/12 = 3 cm.",
+            "result": "Délka hrany malé krychle a_m = 3 cm"
+          },
+          {
+            "label": "Vypočti výraz a * a * a? (objem malé krychle)",
+            "calculation": "3 * 3 * 3 = 27",
+            "analysis": "Objem malé krychle je V_m = a_m^3 = 3^3 = 27 cm³.",
+            "result": "Objem malé krychle V_m = 27 cm³"
+          },
+          {
+            "label": "Porovnej velká krychle a malá krychle. O kolik?",
+            "calculation": "64 - 27 = 37",
+            "analysis": "Rozdíl objemů je V_V - V_m = 64 - 27.",
+            "result": "Velká krychle má o 37 cm³ větší objem než malá krychle"
+          },
+          {
+            "label": "Vyhodnoť volbu [C]?",
+            "calculation": "roz­díl = 37",
+            "analysis": "Možnost [C] uvádí 37 cm³, což odpovídá vypočtenému rozdílu.",
+            "result": "Správná volba: [C]"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT K ÚLOZE 12 \n===\n\n> Povrch malé krychle je o 42 cm^2^ menší než povrch velké krychle.\\\n> Součet délek všech hran malé krychle je 36 cm. \n> \n> (*CZVV*) \n\n# 12 O kolik cm^3^ se liší objem malé a velké krychle? \n- [A] o 14 cm^3^ \n- [B] o 27 cm^3^ \n- [C] o 37 cm^3^ \n- [D] o 46 cm^3^ \n- [E] o jiný objem \n\n"
+  },
+  "13": {
+    "id": "13",
+    "title": "Řešení úlohy 13",
+    "tasks": [
+      {
+        "id": "13.1",
+        "title": "Vyjádři výrazem s proměnnou 2. kolej (vagón)",
+        "context": "Máme první kolej jako neznámou x. Druhá kolej má o 3 vagony více než první.",
+        "steps": [
+          {
+            "label": "Zadání proměnných",
+            "calculation": "1. kolej = x",
+            "analysis": "Necháme počet vagonů vlaku na první koleji jako neznámou x.",
+            "result": "1. kolej = x (vagónů)"
+          },
+          {
+            "label": "Vyjádření 2. koleje",
+            "calculation": "2. kolej = x + 3",
+            "analysis": "Druhá kolej má o 3 vagony více než první, proto k x přičteme 3.",
+            "result": "2. kolej = x + 3 (vagónů)"
+          }
+        ]
+      },
+      {
+        "id": "13.2",
+        "title": "Vyjádři výrazem s proměnnou 3. kolej (vagón)",
+        "context": "Druhá kolej má polovinu počtu vagonů třetí koleje (\"dvakrát méně\" = polovina).",
+        "steps": [
+          {
+            "label": "Použití předchozího výsledku",
+            "calculation": "2. kolej = x + 3",
+            "analysis": "Použijeme vyjádření 2. koleje z předchozího kroku.",
+            "result": "2. kolej = x + 3 (vagónů)"
+          },
+          {
+            "label": "Vyjádření 3. koleje",
+            "calculation": "2. kolej = (1/2) · 3. kolej  =>  3. kolej = 2 · (2. kolej) = 2 · (x + 3)",
+            "analysis": "Pokud je 2. kolej polovina 3. koleje, pak 3. kolej je dvojnásobek 2. koleje.",
+            "result": "3. kolej = 2 · (x + 3) (vagónů)"
+          }
+        ]
+      },
+      {
+        "id": "13.3",
+        "title": "Vyjádři výrazem s proměnnou celkem (vagónů)",
+        "context": "Sečteme počty vagonů všech tří vlaků a vyjádříme celkem pomocí x.",
+        "steps": [
+          {
+            "label": "Seznam výrazů",
+            "calculation": "1. kolej = x; 2. kolej = x + 3; 3. kolej = 2 · (x + 3)",
+            "analysis": "Máme výrazy pro všechny tři koleje vyjádřené pomocí x.",
+            "result": "1. kolej = x; 2. kolej = x + 3; 3. kolej = 2(x + 3)"
+          },
+          {
+            "label": "Výraz pro součet",
+            "calculation": "celkem = x + (x + 3) + 2(x + 3)",
+            "analysis": "Celkový počet vagonů je součet počtů na 1., 2. a 3. koleji.",
+            "result": "celkem = x + (x + 3) + 2(x + 3)"
+          }
+        ]
+      },
+      {
+        "id": "13.4",
+        "title": "Vyřeš lineární rovnici celkem = 41 pro neznámou x",
+        "context": "Celkem vagonů je dáno jako 41, přijde dosadit a vyřešit rovnici.",
+        "steps": [
+          {
+            "label": "Rovnice",
+            "calculation": "x + (x + 3) + 2(x + 3) = 41",
+            "analysis": "Dosadíme výraz pro celkem rovný 41 podle zadání.",
+            "result": "x + (x + 3) + 2(x + 3) = 41"
+          },
+          {
+            "label": "Upravení levé strany",
+            "calculation": "x + x + 3 + 2x + 6 = 41  =>  4x + 9 = 41",
+            "analysis": "Roznásobíme 2(x+3) na 2x+6 a sečteme členy s x a konstanty.",
+            "result": "4x + 9 = 41"
+          },
+          {
+            "label": "Vyřešení pro x",
+            "calculation": "4x = 41 - 9 = 32  =>  x = 32 / 4 = 8",
+            "analysis": "Odečteme 9 a vydělíme 4, abychom získali hodnotu x.",
+            "result": "1. kolej (x) = 8 (vagónů)"
+          }
+        ]
+      },
+      {
+        "id": "13.5",
+        "title": "Vypočti 2. kolej (vagónů)",
+        "context": "Použijeme x = 8 a vztah 2. koleje = x + 3.",
+        "steps": [
+          {
+            "label": "Dosazení",
+            "calculation": "2. kolej = 8 + 3 = 11",
+            "analysis": "K hodnotě x = 8 přičteme 3 podle vztahu pro 2. kolej.",
+            "result": "2. kolej = 11 (vagónů)"
+          }
+        ]
+      },
+      {
+        "id": "13.6",
+        "title": "Vypočti 3. kolej (vagónů)",
+        "context": "Použijeme vztah 3. kolej = 2 · (2. kolej) a hodnotu 2. koleje = 11.",
+        "steps": [
+          {
+            "label": "Výpočet",
+            "calculation": "3. kolej = 2 · 11 = 22",
+            "analysis": "Třetí kolej je dvojnásobek druhé koleje, proto vynásobíme 11 dvěma.",
+            "result": "3. kolej = 22 (vagónů)"
+          }
+        ]
+      },
+      {
+        "id": "13.7",
+        "title": "Porovnej 3. kolej a 1. kolej. O kolik?",
+        "context": "Zjistíme rozdíl mezi 3. a 1. kolejí: 22 a 8 vagónů.",
+        "steps": [
+          {
+            "label": "Rozdíl",
+            "calculation": "22 - 8 = 14",
+            "analysis": "O kolik má 3. kolej více než 1. kolej získáme odečtením počtu vagonů 1. koleje od počtu 3. koleje.",
+            "result": "3. kolej má o 14 vagónů více než 1. kolej"
+          }
+        ]
+      },
+      {
+        "id": "13.8",
+        "title": "Vyhodnoť volbu",
+        "context": "Možnosti odpovědí obsahují volbu [E] = o 14 vagónů.",
+        "steps": [
+          {
+            "label": "Porovnání s možnostmi",
+            "calculation": "Výsledek = 14  => odpovídá volbě [E]",
+            "analysis": "Zjištěný rozdíl 14 je uveden u volby E v seznamu možností.",
+            "result": "Správná volba: [E]"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT K ÚLOZE 13 \n===\n\n> Ve stanici Lichá Lhota stojí na každé ze tří kolejí jeden vlak.\\\n> Vlak na druhé koleji má o 3 vagony více než vlak na první koleji a dvakrát méně vagonů než vlak na třetí koleji.\\\n> Všechny tři vlaky dohromady mají 41 vagonů.\n> \n> (*CZVV*) \n\n# 13 O kolik vagonů více má vlak na třetí koleji než vlak na první koleji? \n- [A] o 8 vagonů \n- [B] o 10 vagonů \n- [C] o 11 vagonů \n- [D] o 13 vagonů \n- [E] o 14 vagonů \n \n"
+  },
+  "14": {
+    "id": "14",
+    "title": "Řešení úlohy 14 – krok po kroku",
+    "tasks": [
+      {
+        "id": "14.1",
+        "title": "Porovnej pěnkavy a sýkory. O kolik?",
+        "context": "Z grafu: pěnkavy = 5 dílek, sýkory = 8 dílek.",
+        "steps": [
+          {
+            "label": "Výpočet rozdílu v dílkách",
+            "calculation": "5 - 8 = -3",
+            "analysis": "Pěnkavy mají o 3 dílky méně než sýkory (záporné číslo znamená „méně o“).",
+            "result": "Pěnkavy méně než sýkory o 3 dílky."
+          }
+        ]
+      },
+      {
+        "id": "14.2",
+        "title": "Urči hodnotu jedné dílky (kolik ptáků odpovídá jedné dílce)",
+        "context": "Z textu: oba dohromady zaznamenali pěnkav o 6 méně než sýkor (tj. rozdíl v počtu ptáků = 6). Tento rozdíl odpovídá rozdílu 3 dílek z předchozího kroku.",
+        "steps": [
+          {
+            "label": "Výpočet počtu ptáků za dílku",
+            "calculation": "6 / 3 = 2",
+            "analysis": "Rozdíl 6 ptáků odpovídá 3 dílkům, proto 1 dílka = 6 ÷ 3 ptáků.",
+            "result": "Jednotka grafu = 2 ptáci na 1 dílku."
+          }
+        ]
+      },
+      {
+        "id": "14.3",
+        "title": "Vypočti celkový počet ptáků, které zaznamenal Jonáš",
+        "context": "Jonáš má v grafu celkem 12 dílek (součet dílek u jeho 5 druhů podle grafu). Jedna dílka = 2 ptáci.",
+        "steps": [
+          {
+            "label": "Přepočet dílek na ptáky pro Jonáše",
+            "calculation": "12 * 2 = 24",
+            "analysis": "Počet dílek Jonáše vynásobíme počtem ptáků na dílku.",
+            "result": "Jonáš zaznamenal 24 ptáků."
+          }
+        ]
+      },
+      {
+        "id": "14.4",
+        "title": "Vypočti celkový počet ptáků, které zaznamenala Beáta (poměr podle textu)",
+        "context": "Text říká: Jonáš zaznamenal celkem o pětinu více jedinců než Beáta. To znamená Jonáš = (6/5) × Beáta, tedy Beáta = Jonáš × 5/6.",
+        "steps": [
+          {
+            "label": "Přepočet podle poměru",
+            "calculation": "24 × (5/6) = 20",
+            "analysis": "Z Jonášova počtu 24 vypočteme Beátin počet obrácením vztahu \"Jonáš o 1/5 více než Beáta\".",
+            "result": "Podle poměru by Beáta měla 20 ptáků."
+          }
+        ]
+      },
+      {
+        "id": "14.5",
+        "title": "Vypočti Beátin počet ptáků podle jejího počtu dílek",
+        "context": "Z grafu: Beáta má 9 dílek. Jedna dílka = 2 ptáci.",
+        "steps": [
+          {
+            "label": "Přepočet dílek Beáty na ptáky",
+            "calculation": "9 * 2 = 18",
+            "analysis": "Počet dílek Beáty vynásobíme počtem ptáků na dílku.",
+            "result": "Podle dílek má Beáta 18 ptáků."
+          }
+        ]
+      },
+      {
+        "id": "14.6",
+        "title": "Urči, kolik brhlík lesní zaznamenala Beáta",
+        "context": "Ze dvou způsobů výpočtu Beátina celku máme 20 (z poměru) a 18 (z Beátiných dílek). Rozdíl mezi těmito hodnotami odpovídá počtu jedinců druhu, který Beáta nezaznamenala (brhlík lesní).",
+        "steps": [
+          {
+            "label": "Výpočet rozdílu",
+            "calculation": "20 - 18 = 2",
+            "analysis": "Rozdíl mezi celkem podle poměru a součtem podle dílek je počet brhlíků, které chybí v Beátiném záznamu.",
+            "result": "Brhlík lesní = 2 jedinci."
+          }
+        ]
+      },
+      {
+        "id": "14.7",
+        "title": "Vyhodnocení správné volby",
+        "context": "Možnosti: [A] 2, [B] 3, [C] 4, [D] 5, [E] více než 5.",
+        "steps": [
+          {
+            "label": "Porovnání s možnostmi",
+            "calculation": "brhlík lesní = 2",
+            "analysis": "Nalezený počet 2 odpovídá možnosti [A].",
+            "result": "Správná volba: [A] 2 jedince."
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A GRAF K ÚLOZE 14 \n===\n\n> Jonáš a Beáta se zapojili do programu Ptačí hodinka. Každý v okolí svého krmítka sledoval výskyt ptáků v průběhu jedné vybrané hodiny. U každého ptačího druhu zaznamenali do grafu vždy nejvyšší počet jedinců spatřených najednou. \n> \n> ![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9D-2025/image-4.png)\n> \n> Jonáš spatřil pět druhů ptáků, zatímco Beáta pouze čtyři z nich. Oba dohromady zaznamenali pěnkav o 6 méně než sýkor. Jonáš zaznamenal celkem o pětinu více ptačích jedinců než Beáta. \n> \n> (*CZVV*) \n\n# 14 Kolik jedinců brhlíka lesního zaznamenala Beáta? \n- [A] 2 jedince \n- [B] 3 jedince \n- [C] 4 jedince \n- [D] 5 jedinců \n- [E] více než 5 jedinců \n \n"
+  },
+  "15": {
+    "id": "15",
+    "title": "Úloha 15 — přiřazení výsledků",
+    "tasks": [
+      {
+        "id": "15.1",
+        "title": "Kolik let bydlí pan Zdeněk v Plzni?",
+        "context": "Pan Zdeněk bydlí posledních 5/8 svého života v Plzni; do Plzně se přestěhoval ve 27 letech.",
+        "steps": [
+          {
+            "label": "Vyjádři poměrem život před přestěhováním k celému životu",
+            "calculation": "1 - 5/8 = 3/8",
+            "analysis": "Z celého života (1) část, kterou strávil v Plzni, je 5/8, zbytek před přestěhováním je doplněk k 1, tedy 3/8.",
+            "result": "Život před přestěhováním = 3/8 celého života"
+          },
+          {
+            "label": "Vypočti celý život (v letech)",
+            "calculation": "27 ÷ (3/8) = 27 × (8/3) = 72",
+            "analysis": "Víš, že před přestěhováním uplynulo 27 let, což odpovídá 3/8 celého života. Celý život získáš vydělením 27 třetinou dílu (3/8).",
+            "result": "Celý život = 72 let"
+          },
+          {
+            "label": "Vypočti dobu bydlení v Plzni",
+            "calculation": "72 - 27 = 45",
+            "analysis": "Doba v Plzni je rozdíl mezi celým věkem (72) a lety před přestěhováním (27).",
+            "result": "Život v Plzni = 45 let"
+          },
+          {
+            "label": "Vyhodnocení volby",
+            "calculation": "Porovnání: výsledek 45 let",
+            "analysis": "Možnosti uvádějí [D] = 45 let, což odpovídá vypočtenému výsledku.",
+            "result": "Správná volba: [D]"
+          }
+        ]
+      },
+      {
+        "id": "15.2",
+        "title": "Kolik let funguje lyceum?",
+        "context": "Nejstarší základní škola funguje 84 let a to je o 75 % více než gymnázium. Poměr lycea a gymnázia je 2:3.",
+        "steps": [
+          {
+            "label": "Vypočti dobu fungování gymnázia",
+            "calculation": "84 = g × (1 + 0.75) = g × 7/4 → g = 84 ÷ (7/4) = 84 × (4/7) = 48",
+            "analysis": "Základní škola je o 75 % delší než gymnázium, tedy její délka je 7/4 délky gymnázia. Vydělením 84 sedmi čtvrtinami získáme délku gymnázia.",
+            "result": "Gymnázium = 48 let"
+          },
+          {
+            "label": "Vypočti dobu fungování lycea",
+            "calculation": "Lyceum = 48 × (2/3) = 32",
+            "analysis": "Poměr lyceum : gymnázium = 2 : 3, tedy lyceum má 2/3 doby gymnázia. Vynásobením 48 dvěma třetinami dostaneme dobu lycea.",
+            "result": "Lyceum = 32 let"
+          },
+          {
+            "label": "Vyhodnocení volby",
+            "calculation": "Porovnání: výsledek 32 let",
+            "analysis": "Možnosti uvádějí [C] = 32 let, což odpovídá vypočtenému výsledku.",
+            "result": "Správná volba: [C]"
+          }
+        ]
+      },
+      {
+        "id": "15.3",
+        "title": "Kolik let je každému z dvojčat?",
+        "context": "Součet věků dvojčat a jejich staršího bratra je 99 let. Každému z dvojčat je o 40 % méně let než jejich bratrovi.",
+        "steps": [
+          {
+            "label": "Vyjádři poměr věků dvojče : dvojče : starší bratr",
+            "calculation": "dvojče = 1 - 0.40 = 0.60 = 3/5 ⇒ poměr 3/5 : 3/5 : 1 (nebo 3 : 3 : 5)",
+            "analysis": "Každé dvojče má o 40 % méně než bratr, tedy 60 % jeho věku (0,6). Pro jednodušší práci lze poměr škálovat na celé čísla 3:3:5.",
+            "result": "Poměr věků = 3 : 3 : 5 (dvojče : dvojče : bratr)"
+          },
+          {
+            "label": "Vypočti věk staršího bratra",
+            "calculation": "Součet dílů = 0.6 + 0.6 + 1 = 2.2; bratr = 99 ÷ 2.2 = 45",
+            "analysis": "Součet věků odpovídá součtu dílů. Vydělením celkové sumy 99 součtem dílů dostaneme hodnotu jednoho dílu (odpovídajícího bratrovi = 1 díl).",
+            "result": "Starší bratr = 45 let"
+          },
+          {
+            "label": "Vypočti věk každého z dvojčat",
+            "calculation": "dvojče = 45 × 3/5 = 45 × 0.6 = 27",
+            "analysis": "Dvojče má 3/5 věku bratra (nebo 0,6 × věk bratra). Vynásobením 45 trojící pětinou dostaneme věk dvojčete.",
+            "result": "Každé dvojče = 27 let"
+          },
+          {
+            "label": "Vyhodnocení volby",
+            "calculation": "Porovnání: výsledek 27 let",
+            "analysis": "Možnosti uvádějí [B] = 27 let, což odpovídá vypočtenému výsledku.",
+            "result": "Správná volba: [B]"
+          }
+        ]
+      }
+    ],
+    "raw": "# 15 Přiřaďte ke každé úloze (15.1–15.3) odpovídající výsledek (A–F). \n## 15.1 \nPan Zdeněk bydlí posledních pět osmin svého dosavadního života v Plzni, \nkam se přestěhoval, když mu bylo 27 let.\n\n**Kolik let bydlí pan Zdeněk v Plzni?**\n\n## 15.2 \nZe tří škol v obci je nejstarší základní škola, která je v provozu již 84 let.  \nFunguje tedy o 75 % delší dobu než gymnázium. Nejmladší školou je lyceum.  \nPoměr doby fungování lycea a gymnázia je 2∶3.\n\n**Kolik let funguje v obci lyceum?**\n\n## 15.3 \nSoučet věků dvojčat a jejich staršího bratra je 99 let.  \nKaždému z dvojčat je o 40 % méně let než jejich bratrovi.\n\n**Kolik let je každému z dvojčat?**\n- [A] 22 let \n- [B] 27 let \n- [C] 32 let \n- [D] 45 let \n- [E] 48 let \n- [F] více než 48 let \n\n"
+  }
+}

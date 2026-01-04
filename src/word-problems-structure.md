@@ -5,41 +5,146 @@ pager: true
 toc: true
 ---
 
-## Četnosti použití predikátů v krocích řešení úloh
-Popisuje strukturu použití predikátů v jednotlivých krocích řešení úloh.
+
+Každý krok ve slovní úloze je klasifikován do kategorií rozdělených na tyto vrstvy:
+
+- Kognitivní vrstva: Strategie (Proč?)
+- Funkční vrstva: Matematika (Jak?)
+- Doménová vrstva: Kontext (Kde/O čem?)
+
+## Kognitivní strategie ("Proč")
+Jakého logického kroku se snažíme dosáhnout?
+
+Tato vrstva určuje záměr a logický směr uvažování. Odpovídá na otázku: **„Jaký myšlenkový proces právě teď probíhá?“**
+
+|Název|Sémantický popis (Význam strategie)|
+|---|---|
+|Formalizace|Proces uchopení reality a jejího převedení do světa matematických objektů a vztahů.|
+|Úsudek / Inference| Vyvození nového vztahu nebo pravdy z existujících informací.|
+|Skládání / Kompozice|Sestavování celku nebo vyššího konceptu z jednotlivých prvků.|
+|Rozklad / Dekompozice|"Rozbití komplexního problému nebo hodnoty na menší, srozumitelné části."|
+|Omezení / Restrikce|"Aplikace pevných pravidel, která omezují prostor možných řešení."|
+|Převod / Konverze|Změna reprezentace nebo měřítka při zachování podstaty entity.|
+|Normalizace|"Zjednodušení na základní, porovnatelný nebo standardní tvar."|
+|Řetězení kroků|"Logické propojování operací do sekvence, kde výstup jedné je vstupem další."|
+|Inverze / Obrácení|Myšlenkový postup pozpátku od výsledku k neznámému vstupu.|
+|Zachování / Invarianta|"Sledování vlastností, které se v průběhu transformací nemění (např. celkový součet)."|
+|Výběr / Selekce|Rozhodování mezi více dostupnými cestami nebo vyhodnocení nejlepší možnosti.|
+|Meta-usuzování|"Plánování postupu, abstrakce problému a dohled nad celkovým cílem."|
+
 
 ```js
-const metricsRulesData = await FileAttachment("./data/word-problems-metrics-rules.json").json();
+const congnitiveMetricsData = await FileAttachment("./data/word-problems-metrics-cognitive.json").json();
+const congnitiveSets = extractSets(congnitiveMetricsData);
+const congnitiveCombinations = generateCombinations(congnitiveSets, {type:'distinctIntersection', order: 'cardinality:desc', min: 1})
+
+
+const congnitiveSelection = view(UpSetJSElement(congnitiveSets, congnitiveCombinations, {height: 1600, theme: mode, mode:'click'}))
+```
+
+```js
+display(renderLinks(congnitiveSelection))
+```
+
+## Funkční provedení ("Jak")
+
+Tyta vrstva je „dělníkem“ systému. Je to konkrétní mechanika, která vykonává příkazy kognitivní vrstvy. Odpovídá na otázku: **"Jaký konkrétní matematický nástroj nebo operace tento krok provádí?"**
+
+|Název|Sémantický popis (Význam provedení)|
+|---|---|
+|Aritmetika|"Základní operace (+, -, *, /) včetně lineárního řešení úměr a rovnic."|
+|Vyšší matematika|"Nelineární operace jako jsou mocniny, odmocniny nebo logaritmy."|
+|Logika a porovnání|"Vyhodnocování podmínek, rovností a nerovností (booleovská logika)."|
+|Mapování a projekce|"Strukturální změny, prohazování prvků nebo přenášení hodnot mezi systémy."|
+|Redukce a krácení|Snižování složitosti dat (např. krácení zlomků nebo hledání dělitelů).|
+|Iterace a cykly|Opakování výpočtu pro řadu prvků nebo procházení posloupností.|
+|Heuristika a odhad|"Přibližné výpočty, intuitivní výběry a „měkká“ logika založená na zkušenosti."|
+|Deklarace|"Akt definování kvantity a nastavení její hodnoty"|
+
+
+```js
+const functionMetricsData = await FileAttachment("./data/word-problems-metrics-functional.json").json();
+const functionSets = extractSets(functionMetricsData);
+const functionCombinations = generateCombinations(functionSets, {type:'distinctIntersection', order: 'cardinality:desc', min: 2})
+
+
+const functionSelection = view(UpSetJSElement(functionSets, functionCombinations, {height: 1600, theme: mode, mode:'click'}))
+```
+
+```js
+display(renderLinks(functionSelection))
+```
+
+
+## Doménový kontext ("Co", "Kde", "O čem")
+
+Tato vrstva zasazuje problém do konkrétní oblasti matematiky a nabízí odpověď na otázku: **„V jakém světě se právě pohybujeme?“** nebo **„O jaké téma jde?“**
+
+|Název|Sémantický popis (O čem je tento svět)|
+|---|---|
+|Kvantity a hodnoty|Práce s čistými čísly a jejich sémantickou existencí v úloze.|
+|Porovnávání|Zkoumání vztahů „o kolik“ nebo „kolikrát“ mezi dvěma objekty.|
+|Poměry a úměry|Logika relativní velikosti a přímé/nepřímé závislosti veličin.|
+|Vztahy část–celek|"Rozebírání struktury objektu (zlomky, procenta, doplňky)."|
+|Distribuce a rozdělování|"Alokace zdrojů (peněz, času, kusů) mezi různé subjekty."|
+|Dynamika a změny|"Sledování vývoje hodnoty v čase (přírůstky, úbytky, transformace)."|
+|Agregace a seskupování|"Slučování prvků do celků, míchání směsí a sčítání položek."|
+|Škálování a transformace|Změna velikosti při zachování vnitřních proporcí (měřítka map).|
+|Jednotky a měření|"Interpretace čísel ve fyzikálním světě (metry, kilogramy, sekundy)."|
+|Teorie čísel|"Vlastnosti celých čísel (dělitelnost, prvočísla, NSN, NSD)."|
+|Algebra a výrazy|"Práce s proměnnými, úpravy výrazů a řešení formálních rovnic."|
+|Geometrie|"Prostorové vztahy, tvary, úhly a metrické vlastnosti v prostoru."|
+|Posloupnosti a vzory|"Hledání řádu, pravidelnosti a předpovídání dalších prvků v řadě."|
+|Evaluation & Meta-reasoning|Hodnocení správnosti postupu a ověřování logických podmínek.|
+|Heuristiky a rozum|Kontrola reálnosti výsledku pomocí zkušeností z běžného života.|
+
+```js
+const domainMetricsData = await FileAttachment("./data/word-problems-metrics-domain.json").json();
+const domainSets = extractSets(domainMetricsData);
+const domainCombinations = generateCombinations(domainSets, {type:'distinctIntersection', order: 'cardinality:desc', min: 2})
+
+
+const domainSelection = view(UpSetJSElement(domainSets, domainCombinations, {height: 1600, theme: mode, mode:'click'}))
+```
+
+```js
+display(renderLinks(domainSelection))
+```
+
+
+
+## Predikáty
+
+Popisuje četnosti použití predikátů v jednotlivých krocích řešení úloh.
+
+```js
+const metricsRulesData = await FileAttachment("./data/word-problems-metrics-predicates.json").json();
 const sets = extractSets(metricsRulesData);
 const combinations = generateCombinations(sets, {type:'distinctIntersection', order: 'cardinality:desc', min: 2})
-
 
 const selection = view(UpSetJSElement(sets, combinations, {height: 1000, theme: mode, mode:'click'}))
 ```
 
-
 ```js
-display(renderPrintLink(selection))
 display(renderLinks(selection))
 ```
 
-## Čestnosti použití pravidel v řešení úloh
+## Pravidla
 
-Popisuje strukturu úlohy, resp. použití pravidel při řešení jednotlivých úloh.
+Popisuje četnosti pravidel v úlohách, resp. použití pravidel při řešení jednotlivých úloh.
 
 
 ```js
-const stepsMmetricsData = await FileAttachment("./data/word-problems-metrics-steps.json").json();
-const stepsSets = extractSets(stepsMmetricsData);
-const stepsCombinations = generateCombinations(stepsSets, {type:'distinctIntersection', order: 'cardinality:desc', min: 2})
+const rulesMetricsData = await FileAttachment("./data/word-problems-metrics-rules.json").json();
+const rulesSets = extractSets(rulesMetricsData);
+const rulesCombinations = generateCombinations(rulesSets, {type:'distinctIntersection', order: 'cardinality:desc', min: 2})
 
 
-const stepsSelection = view(UpSetJSElement(stepsSets, stepsCombinations, {height: 1600, theme: mode, mode:'click'}))
+const rulesSelection = view(UpSetJSElement(rulesSets, rulesCombinations, {height: 1600, theme: mode, mode:'click'}))
 ```
 
 ```js
-display(renderPrintLink(stepsSelection))
-display(renderLinks(stepsSelection))
+display(renderLinks(rulesSelection))
 ```
 
 
@@ -105,12 +210,10 @@ function UpSetJSElement(sets, combinations = undefined, extras = {}) {
 }
 
 function renderLinks(selection){
-  return html`<ul>${(selection?.elems ?? []).map(d => html`<li><a href=./word-problem-${d.code}-n-${d.question}#${d.key} target="_blank">${formatShortCodeAlt(d.code)} - ${d.key}${d.index != null ? ` (krok č.${d.index + 1})`:''}</a></li>`)}</ul>`
-}
 
-function renderPrintLink(selection) {
    if ((selection?.elems ?? []).length === 0) return html`<div class="tip" label="Výběr úloh">Klikněte v grafu, a vytiskněte si úlohy k procvičování.</div>`
-   return html`<div class="tip" label="Výběr úloh"><a href=quiz-math?q=${Object.entries(Object.groupBy(selection?.elems ?? [], d => d.code)).map(([code,values]) => `${code},${values.map(d => d.question).filter(unique).join()}`).join("|")}&useFormControl=true&useCode=true target="_blank">Vyplňovačka</a>, <a href=quiz-print-math?q=${Object.entries(Object.groupBy(selection?.elems ?? [], d => d.code)).map(([code,values]) => `${code},${values.map(d => d.question).filter(unique).join()}`).join("|")} target="_blank">Tisk</a></div>`
+   return html`<div class="tip" label="Výběr úloh"><a href=quiz-math?q=${Object.entries(Object.groupBy(selection?.elems ?? [], d => d.code)).map(([code,values]) => `${code},${values.map(d => d.question).filter(unique).join()}`).join("|")}&useFormControl=true&useCode=true target="_blank">Vyplňovačka</a>, <a href=quiz-print-math?q=${Object.entries(Object.groupBy(selection?.elems ?? [], d => d.code)).map(([code,values]) => `${code},${values.map(d => d.question).filter(unique).join()}`).join("|")} target="_blank">Tisk</a></div>
+   <div><ul>${(selection?.elems ?? []).map(d => html`<li><a href=./word-problem-${d.code}-n-${d.question}#${d.key} target="_blank">${formatShortCodeAlt(d.code)} - ${d.key}${d.index != null ? ` (krok č.${d.index + 1})`:''}</a></li>`)}</ul></div>`
 }
 
 ```

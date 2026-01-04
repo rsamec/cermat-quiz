@@ -1,0 +1,557 @@
+{
+  "1": {
+    "id": "1",
+    "title": "Vypočtěte, o kolik cm^2 je plocha o obsahu 0,2 m^2 větší než plocha o obsahu 20 cm^2",
+    "tasks": [
+      {
+        "id": "1.1",
+        "title": "Převeď 0,2 m^2 na cm^2",
+        "context": "Převod jednotek: 1 m^2 = 10 000 cm^2; převod násobením.",
+        "steps": [
+          {
+            "label": "Převod jednotek",
+            "calculation": "0,2 * 10 000 = 2 000",
+            "analysis": "Jeden čtvereční metr obsahuje 10 000 čtverečních centimetrů, proto se počet m^2 vynásobí 10 000, aby se získal počet cm^2. Používáme 0,2 m^2 × 10 000 = 2 000 cm^2.",
+            "result": "1. plocha = 2 000 cm^2"
+          }
+        ]
+      },
+      {
+        "id": "1.2",
+        "title": "Porovnej 1. a 2. plochu — o kolik je větší",
+        "context": "Máme 1. plochu = 2 000 cm^2 a 2. plochu = 20 cm^2; hledáme rozdíl odečtením menší od větší.",
+        "steps": [
+          {
+            "label": "Odečtení ploch",
+            "calculation": "2 000 - 20 = 1 980",
+            "analysis": "Abychom zjistili, o kolik je první plocha větší než druhá, odečteme obsah menší plochy (20 cm^2) od větší plochy (2 000 cm^2). Výsledek je 1 980 cm^2.",
+            "result": "1. plocha je větší než 2. plocha o 1 980 cm^2"
+          }
+        ]
+      }
+    ],
+    "raw": "# 1 Vypočtěte, o kolik cm^2^ je plocha o obashu 0,2 m^2^ větší než plocha o obsahu 20 cm^2^.\n\n"
+  },
+  "6": {
+    "id": "6",
+    "title": "Úloha 6 — saláty a okurky",
+    "tasks": [
+      {
+        "id": "6.1",
+        "title": "Urči, kolik sazenic salátů zahradník zasadil",
+        "context": "Nechť x = počet zasazených sazenic okurek. Zasazeno salátů je o 4 více než okurek. Čtvrtinu salátů zlikvidovali slimáci (zůstane 3/4). Šestina okurek uschla (zůstane 5/6). Poškozené rostliny eliminujeme a víme, že po zásahu zůstalo stejné množství ujaly salátů i okurek.",
+        "steps": [
+          {
+            "label": "Vyjádři počet zasazených salátů pomocí proměnné",
+            "calculation": "Nechť x = počet zasazených okurek. Zasazeno salátů = x + 4.",
+            "analysis": "Podle zadání zasadil zahradník o 4 sazenice salátů více než okurek, proto bude počet zasazených salátů x + 4.",
+            "result": "zasazeno salátů = x + 4"
+          },
+          {
+            "label": "Vyjádři počet sazenic salátů, které se ujaly",
+            "calculation": "ujalo salátů = 3/4 · (x + 4)",
+            "analysis": "Čtvrtinu zasazených salátů zlikvidovali slimáci, tedy zůstane 3/4 z původního počtu.",
+            "result": "ujalo salátů = 3/4 · (x + 4)"
+          },
+          {
+            "label": "Vyjádři počet okurek, které se ujaly",
+            "calculation": "ujalo okurek = 5/6 · x",
+            "analysis": "Šestina okurek uschla, zůstane tedy 5/6 ze zasazených okurek.",
+            "result": "ujalo okurek = 5/6 · x"
+          },
+          {
+            "label": "Sestav a vyřeš rovnici z podmínky, že se ujalo stejně salátů i okurek",
+            "calculation": "3/4 · (x + 4) = 5/6 · x\nNásobíme obě strany 12 (společný násobek 4 a 6):\n12 · (3/4 · (x + 4)) = 12 · (5/6 · x)\n9 · (x + 4) = 10 · x\n9x + 36 = 10x\n36 = 10x - 9x\n36 = x\nx = 36",
+            "analysis": "Rovnost počtu ujaly rostlin vede k rovnici 3/4(x+4)=5/6 x. Vynásobením 12 zjednodušíme zlomky a získáme lineární rovnici, kterou řešíme standardním způsobem.",
+            "result": "zasazeno okurek = x = 36 sazenic"
+          },
+          {
+            "label": "Vypočti počet zasazených salátů",
+            "calculation": "zasazeno salátů = x + 4 = 36 + 4 = 40",
+            "analysis": "Po dosazení x = 36 dostaneme počet zasazených salátů přidáním 4.",
+            "result": "zasazeno salátů = 40 sazenic"
+          }
+        ]
+      },
+      {
+        "id": "6.2",
+        "title": "Urči, kolik sazenic okurek se ujalo",
+        "context": "Z předchozího výpočtu víme, že bylo zasazeno 36 okurek. Ujelo 5/6 z nich.",
+        "steps": [
+          {
+            "label": "Vypočti počet okurek, které se ujaly",
+            "calculation": "ujalo okurek = 5/6 · 36 = 5 · 6 = 30",
+            "analysis": "Ze 36 zasazených okurek uschla šestina, tedy zůstane 5/6. Vypočteme 5/6 z 36.",
+            "result": "ujalo okurek = 30 sazenic"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT K ÚLOZE 6\n===\n\n> Zahradník sázel na záhon sazenice. Sazenice salátů zasadil o 4 více než sazenic okurek.\\\n> Na záhoně čtvrtinu sazenic salátů zlikvidovali slimáci a šestina sazenic okurek uschla.\\\n> Všechny ostatní sazenice se ujaly. Na záhoně se tak ujal stejný počet sazenic salátů a okurek.\n\n# 6 Určete,\n\n## 6.1 \nkolik sazenic **salátů** zahradník **zasadil**,\n\n\n## 6.2\nkolik sazenic **okurek** se **ujalo**.\n\n"
+  },
+  "7": {
+    "id": "7",
+    "title": "Úloha 7 — Hmotnosti krabice a výrobku",
+    "tasks": [
+      {
+        "id": "7.1",
+        "title": "7.1 Hmotnost jedné plné krabice",
+        "context": "Dvě plné krabice a jedna krabice, ve které chybí 5 výrobků (tedy obsahuje 7 výrobků), vážily dohromady 2000 g. Po odebrání obou plných krabic zůstala na váze neúplná krabice o hmotnosti 480 g. Cíl: zjistit hmotnost jedné plné krabice.",
+        "steps": [
+          {
+            "label": "1) Určení hmotnosti dvou plných krabic",
+            "calculation": "2000 − 480 = 1520",
+            "analysis": "Z celkové hmotnosti tří krabic (2000 g) odečteme hmotnost té neúplné krabice, která zůstala na váze po odebrání dvou plných krabic (480 g). Výsledek je hmotnost dvou plných krabic.",
+            "result": "Dvě plné krabice váží dohromady 1520 g."
+          },
+          {
+            "label": "2) Hmotnost jedné plné krabice",
+            "calculation": "1520 ÷ 2 = 760",
+            "analysis": "Hmotnost dvou shodných plných krabic dělíme 2, abychom dostali hmotnost jedné plné krabice.",
+            "result": "Jedna plná krabice váží 760 g."
+          }
+        ]
+      },
+      {
+        "id": "7.2",
+        "title": "7.2 Hmotnost jednoho výrobku",
+        "context": "Z předchozího víme, že plná krabice (krabice + 12 výrobků) váží 760 g. Tři plné krabice by tedy vážily 3·760 g. Ve skutečnosti tři krabice (dvě plné a jedna s 7 výrobky) vážily 2000 g; rozdíl mezi těmito hmotnostmi odpovídá hmotnosti chybějících 5 výrobků. Cíl: zjistit hmotnost jednoho výrobku.",
+        "steps": [
+          {
+            "label": "1) Hmotnost tří plných krabic",
+            "calculation": "3 × 760 = 2280",
+            "analysis": "Pokud by všechny tři krabice byly plné (po 12 výrobků), jejich celková hmotnost by byla 3×760 g.",
+            "result": "Tři plné krabice by vážily 2280 g."
+          },
+          {
+            "label": "2) Hmotnost chybějících výrobků",
+            "calculation": "2280 − 2000 = 280",
+            "analysis": "Skutečná hmotnost tří krabic byla 2000 g, tedy rozdíl 2280−2000 = 280 g je hmotnost výrobků, které chyběly (5 kusů).",
+            "result": "Hmotnost chybějících 5 výrobků je 280 g."
+          },
+          {
+            "label": "3) Hmotnost jednoho výrobku",
+            "calculation": "280 ÷ 5 = 56",
+            "analysis": "Hmotnost chybějících výrobků vydělíme počtem chybějících kusů (5), abychom dostali hmotnost jednoho výrobku.",
+            "result": "Jeden výrobek váží 56 g."
+          }
+        ]
+      },
+      {
+        "id": "7.3",
+        "title": "7.3 Hmotnost jedné prázdné krabice",
+        "context": "Máme hmotnost jedné plné krabice (krabice + 12 výrobků) = 760 g a hmotnost jednoho výrobku = 56 g. Cíl: zjistit hmotnost prázdné krabice.",
+        "steps": [
+          {
+            "label": "1) Hmotnost plné krabice (opět)",
+            "calculation": "1 × 760 = 760",
+            "analysis": "Potvrzení, že plná krabice váží 760 g (krabice + 12 výrobků).",
+            "result": "Plná krabice = 760 g."
+          },
+          {
+            "label": "2) Hmotnost 12 výrobků v krabici",
+            "calculation": "12 × 56 = 672",
+            "analysis": "Hmotnost výrobků v jedné plné krabici spočítáme jako 12 násobek hmotnosti jednoho výrobku.",
+            "result": "Dvanáct výrobků váží dohromady 672 g."
+          },
+          {
+            "label": "3) Hmotnost prázdné krabice",
+            "calculation": "760 − 672 = 88",
+            "analysis": "Z hmotnosti plné krabice odečteme hmotnost výrobků (672 g); zbytek je hmotnost prázdné krabice.",
+            "result": "Prázdná krabice váží 88 g."
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT K ÚLOZE 7\n===\n\n> Stejné výrobky jsou po 12 kusech baleny do stejných krabic.\n>\n> Na váhu se položily tři krabice, z nichž dvě byly plné, ale ve třetí krabici 5 výrobků chybělo.\\\n> Tyto tři krabice i s výrobky vážily dohromady 2 kg.\n>\n> Když se z váhy odebraly obě plné krabice, display váhy ukazoval 480g.\n\n# 7 Vypočtěte, jaká je hmotnost v gramech\n## 7.1 jedné plné krabice,\n## 7.2 jednoho výrobku,\n## 7.3 jedné prázdné krabice.\n\n"
+  },
+  "11": {
+    "id": "11",
+    "title": "Řešení úlohy 11",
+    "tasks": [
+      {
+        "id": "11.1",
+        "title": "11.1 Zda je α = 72°",
+        "context": "Pravidelný desetiúhelník, střed S; úhel u středu na jeden oblouk = 360°/10 = 36°. Úhel α je dán jako úhel odpovídající dvěma takovým středovým úhlům.",
+        "steps": [
+          {
+            "label": "Rozděl 360° rovnoměrně 10×",
+            "calculation": "360 / 10 = 36",
+            "analysis": "Pravidelný desetiúhelník má 10 stejných středových úhlů; každý středový úhel (úhel v S, který odpovídá jednomu oblouku mezi dvěma sousedními vrcholy) je 360° děleno 10.",
+            "result": "Středový úhel = 36°."
+          },
+          {
+            "label": "Vypočti α jako součet dvou středových úhlů",
+            "calculation": "α = 2 × 36 = 72",
+            "analysis": "Z náčrtku vyplývá, že α odpovídá dvěma sousedním středovým úhlům (tj. úhlu mezi dvěma vrcholy, které jsou od sebe dvě pozice), proto α = 2·36°.",
+            "result": "α = 72°."
+          },
+          {
+            "label": "Vyhodnoti tvrzení",
+            "calculation": "porovnání: vypočtené α (72°) == 72°",
+            "analysis": "Vypočtená hodnota α je právě 72°.",
+            "result": "Závěr: Pravda (A)."
+          }
+        ]
+      },
+      {
+        "id": "11.2",
+        "title": "11.2 Zda je β < 36°",
+        "context": "Použijeme středový úhel 36°. Úhel, který dává vrchol (ve středu trojúhelníku spojeném se středem a dvěma vrcholy), je 108° (tj. 3·36°). β je jeden z rovnáramenných úhlů základny příslušného trojúhelníku.",
+        "steps": [
+          {
+            "label": "Vypočti vrcholový úhel (ve vhodném trojúhelníku)",
+            "calculation": "3 × 36 = 108",
+            "analysis": "Z náčrtku odpovídá příslušný vrcholový úhel třem středovým úhlům, takže tento vrcholový úhel má velikost 108°.",
+            "result": "Vrcholový úhel = 108°."
+          },
+          {
+            "label": "Vypočti součet obou základních úhlů v rovnoramenném trojúhelníku",
+            "calculation": "180 − 108 = 72",
+            "analysis": "Součet úhlů v trojúhelníku je 180°; odčteme vrcholový úhel 108°; zbývající úhelový součet pro obě základny je 72°.",
+            "result": "Součet obou základních (ramenních) úhlů = 72°."
+          },
+          {
+            "label": "Rozděl součet základních úhlů rovnorovnoměrně na 2",
+            "calculation": "72 / 2 = 36",
+            "analysis": "V rovnoramenném trojúhelníku jsou obě základní úhly stejné, proto každý je polovina součtu 72°.",
+            "result": "β = 36°."
+          },
+          {
+            "label": "Vyhodnoti tvrzení β < 36°",
+            "calculation": "porovnání: β (36°) < 36° ?",
+            "analysis": "Vypočtená hodnota β je přesně 36°, tedy není menší než 36°.",
+            "result": "Závěr: Nepravda (N)."
+          }
+        ]
+      },
+      {
+        "id": "11.3",
+        "title": "11.3 Zda je γ = α",
+        "context": "Použijeme středový úhel 36°. Pro γ uvažujeme trojúhelník, jehož vrcholový úhel je 36°; pak dopočteme základní úhly a porovnáme s α.",
+        "steps": [
+          {
+            "label": "Vypočti rozdíl součtu úhlů trojúhelníku a vrcholového úhlu (příslušného trojúhelníku)",
+            "calculation": "180 − 36 = 144",
+            "analysis": "V tomto trojúhelníku je vrcholový úhel 36° (odpovídá jednomu středovému úhlu); odečtením od 180° získáme součet obou základních úhlů: 144°.",
+            "result": "Součet obou základních úhlů = 144°."
+          },
+          {
+            "label": "Rozděl součet základních úhlů rovnorovnoměrně na 2",
+            "calculation": "144 / 2 = 72",
+            "analysis": "Základní úhly jsou v rovnoramenném trojúhelníku stejné, proto každý je 72°.",
+            "result": "γ = 72°."
+          },
+          {
+            "label": "Porovnej α a γ",
+            "calculation": "α (72°) − γ (72°) = 0",
+            "analysis": "Obě velikosti jsou shodné (obě 72°), rozdíl je 0°.",
+            "result": "Závěr: γ = α, tedy Pravda (A)."
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 11\n===\n> V náčrtku pravidelného desitiúhelníku se středem S jsou vyznačeny úhly $\\alpha$, $\\beta$, $\\gamma$.\n>\n> ![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9I-2025/image-3.png)\n\n# 11 Rozhodněte o každém z následujících tvrzení (11.1-11.3), zda je pravdivé (A), či nikoli (N).\n\nÚhly neměřte, náčrtek není přesný.\n\n## 11.1 $\\alpha={72}\\degree$\n## 11.2 $\\beta<{36}\\degree$\n## 11.3 $\\gamma=\\alpha$\n\n\n"
+  },
+  "12": {
+    "id": "12",
+    "title": "Řešení úlohy 12",
+    "tasks": [
+      {
+        "id": "12",
+        "title": "Kolik korun bude stát celá kytice?",
+        "context": "Kytice obsahuje růže, chryzantémy a statice. Je dáno: růže + chryzantémy je o 2 více než chryzantémy + statice (=> růže = statice + 2). Poměry: růže : statice = 5 : 4, statice : chryzantéma = 2 : 3. Ceny: růže 54 Kč, chryzantéma 40 Kč, statice 35 Kč.",
+        "steps": [
+          {
+            "label": "Vypočti statice (kusy)",
+            "calculation": "2 ÷ (1/4) = 8",
+            "analysis": "Z poměru růže : statice = 5 : 4 plyne, že růže je o 1 díl více než statice, tedy o 1/4 počtu static. Z rovnice růže = statice + 2 vyplývá, že tato rozdíl 2 odpovídá 1/4 počtu static. Proto statice = 2 ÷ (1/4).",
+            "result": "statice = 8 kusů"
+          },
+          {
+            "label": "Vypočti růže (kusy)",
+            "calculation": "8 + 2 = 10",
+            "analysis": "Z rovnice růže = statice + 2 a z předchozího výsledku statice = 8 dostaneme počet růží jako 8 + 2.",
+            "result": "růže = 10 kusů"
+          },
+          {
+            "label": "Vypočti růže (cena)",
+            "calculation": "10 × 54 = 540",
+            "analysis": "Cena růží se získá vynásobením počtu růží jednotkovou cenou 54 Kč.",
+            "result": "cena růží = 540 Kč"
+          },
+          {
+            "label": "Vypočti statice (cena)",
+            "calculation": "8 × 35 = 280",
+            "analysis": "Cena static se získá vynásobením počtu static jednotkovou cenou 35 Kč.",
+            "result": "cena static = 280 Kč"
+          },
+          {
+            "label": "Vypočti chryzantémy (kusy)",
+            "calculation": "8 × (3/2) = 12",
+            "analysis": "Z poměru statice : chryzantéma = 2 : 3 plyne, že počet chryzantém je 3/2 počtu static. Pro statice = 8 dostaneme chryzantémy = 8 × 3/2.",
+            "result": "chryzantémy = 12 kusů"
+          },
+          {
+            "label": "Vypočti chryzantémy (cena)",
+            "calculation": "12 × 40 = 480",
+            "analysis": "Cena chryzantém se získá vynásobením počtu chryzantém jednotkovou cenou 40 Kč.",
+            "result": "cena chryzantém = 480 Kč"
+          },
+          {
+            "label": "Vypočti cenu celé kytice",
+            "calculation": "540 + 280 + 480 = 1300",
+            "analysis": "Celková cena kytice je součtem cen všech tří druhů květin: růže (540 Kč) + statice (280 Kč) + chryzantémy (480 Kč).",
+            "result": "cena kytice = 1300 Kč"
+          },
+          {
+            "label": "Vyhodnoť volbu [D]",
+            "calculation": "Výsledek = 1300 Kč",
+            "analysis": "Mezi nabízenými možnostmi je D = 1300 Kč, což souhlasí s vypočtenou celkovou cenou kytice.",
+            "result": "Správná volba: D"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 12\n===\n> Kytice byla svázána ze tří druhů květin: růží, chryzantém a static.\n>\n> Růží a chryzantém dohromady je v kytici o 2 více než chryzantém a static dohromady. Počet růží ku počtu static je v poměru 5 : 4, počet static ku počtu chryzantémm v poměru 2 : 3.\n>\n> V tabulce je u každého druhu květin uvedena cena za jeden kus. Cena celé kytice se získá jako součet cen jednotlivých květin, z nichž byla kytice svázána.\n> \n> |Druh květiny|Cena za kus|Počet kusů v kytici|\n> |--------|:------:|:------:|\n> |Růže       |54 korun||\n> |Chryzantéma|40 korun||\n> |Statice    |35 korun||\n\n\n# 12 Kolik korun bude stát celá kytice? \n- [A] 1090 korun\n- [B] 1252 korun\n- [C] 1280 korun\n- [D] 1300 korun\n- [E] jinou částku\n\n"
+  },
+  "13": {
+    "id": "13",
+    "title": "Řešení úlohy 13",
+    "tasks": [
+      {
+        "id": "13",
+        "title": "Najdi nejmenší počet čar dělících čtvrtku na 40 částí",
+        "context": "Čáry jsou rovnoběžné s jedním nebo druhým okrajem. Pokud je v jednom směru x čar a ve druhém y čar, počet částí je (x+1)(y+1). Hledáme nejmenší x+y tak, aby (x+1)(y+1)=40.",
+        "steps": [
+          {
+            "label": "Vypočti počet pásem?",
+            "calculation": "40 = 2·2·2·5. Možné rozklady 40 na součin dvou čísel: 1·40, 2·20, 4·10, 5·8.",
+            "analysis": "Počet částí je součin počtu pásem v obou směrech. Pásma = (počet čar v daném směru) + 1. Hledáme dvojici pásem (a,b) s a·b = 40, která dává nejmenší součet pásem (a+b), protože počet čar bude a+b−2. Z výčtu párů vybereme pár s nejmenším součtem: 5 a 8 (součet 13).",
+            "result": "Z vybraného páru je jedno pásmo 8 (dále určíme druhé pásmo 5)."
+          },
+          {
+            "label": "Vypočti počet čar pro pásmo 8",
+            "calculation": "počet čar = počet pásem − 1 = 8 − 1 = 7",
+            "analysis": "Když je v jednom směru 8 pásem, vzniká 8−1 = 7 čar v tom směru.",
+            "result": "počet čar v jednom směru = 7"
+          },
+          {
+            "label": "Vypočti počet čar pro pásmo 5",
+            "calculation": "počet čar = počet pásem − 1 = 5 − 1 = 4",
+            "analysis": "Pro druhé pásmo 5 platí obdobně: 5−1 = 4 čáry v tom směru.",
+            "result": "počet čar v druhém směru = 4"
+          },
+          {
+            "label": "Vypočti součet čar",
+            "calculation": "7 + 4 = 11",
+            "analysis": "Celkový počet čar je součet čar v obou směrech.",
+            "result": "celkový počet čar = 11"
+          },
+          {
+            "label": "Vyhodnoť volbu [A]",
+            "calculation": "nalezený počet čar = 11",
+            "analysis": "Možnosti: [A] 11, [B] 12, [C] 13, [D] 14, [E] >14. Nalezené 11 odpovídá možnosti [A].",
+            "result": "Správná volba: [A] 11"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 13\n===\n> Na čtvrtku papíru narýsujeme rovné čáry, které jsou rovnoběžné s jedním nebo s druhým okrajem čtvrty. Čáry jsou nakresleny přes celou čtvrtku a rozdělují ji na několik částí.\n>\n> ![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9I-2025/image-4.png)\n>\n> Např. na obrázku rozděluje 6 rovných čar čtvrtku na 15 částí.\n\n# 13 Jaký je __nejmenší__ počet rovných čar, které rozdělí čtvrtku na 40 částí? \n- [A] 11\n- [B] 12\n- [C] 13\n- [D] 14\n- [E] větší než 14\n\n"
+  },
+  "14": {
+    "id": "14",
+    "title": "Řešení úlohy 14 — krok po kroku",
+    "tasks": [
+      {
+        "id": "14",
+        "title": "Výpočet objemu domečku",
+        "context": "Dřevěný domeček stojí na vodorovné podložce; plocha dotyku s podložkou je 16 cm². Na obrázku jsou některé rozměry (délka 8 cm) a platí v = a. Řešení postupuje po krocích: rozdělení plochy, určení délky strany čtverce, výpočet objemu přízemí, objemu střechy a součtu.",
+        "steps": [
+          {
+            "label": "Vypočti čtverec (obsah)",
+            "calculation": "16 / 4 = 4 (cm²)",
+            "analysis": "Plocha, kterou domeček dotýká podložky, je 16 cm². Podle obrázku lze tuto plochu rozdělit na 4 shodné čtvercové díly (např. dva kolmice spolu tvoří čtvercové buňky). Proto obsah jednoho čtverce získáme dělením 16 čtyřmi.",
+            "result": "Obsah jednoho čtverce = 4 cm²"
+          },
+          {
+            "label": "Vypočti výraz sqrt(S)",
+            "calculation": "√4 = 2 (cm)",
+            "analysis": "Obsah čtverce je 4 cm², tedy délka jeho strany je druhá odmocnina z 4. Tuto délku označíme jako a (šířka).",
+            "result": "Šířka (a) = 2 cm"
+          },
+          {
+            "label": "Vypočti výraz a * b * c (objem přízemí)",
+            "calculation": "a * b * c = 2 * 8 * 2 = 32 (cm³)",
+            "analysis": "Přízemí domečku je pravoúhlý hranol s rozměry: šířka a = 2 cm (z předchozího kroku), délka b = 8 cm (uvedeno na obrázku) a výška c = v = a = 2 cm (dáno podmínkou v = a). Objem hranolu je součin těchto tří rozměrů.",
+            "result": "Objem přízemí = 32 cm³"
+          },
+          {
+            "label": "Vypočti objem střechy",
+            "calculation": "1/2 * 32 = 16 (cm³)",
+            "analysis": "Střecha je tvořena hranolem s trojúhelníkovým příčným průřezem (tj. jde o poloviční objem oproti obdélníkovému hranolu stejné délky a základny). Její objem je tedy polovina objemu přízemí se stejnou základnou a délkou.",
+            "result": "Objem střechy = 16 cm³"
+          },
+          {
+            "label": "Vypočti objem domečku (součet)",
+            "calculation": "32 + 16 = 48 (cm³)",
+            "analysis": "Celkový objem domečku je součtem objemu přízemí a objemu střechy.",
+            "result": "Objem domečku = 48 cm³"
+          },
+          {
+            "label": "Vyhodnoť volbu [B]",
+            "calculation": "Objem domečku = 48 cm³ → volba B: 48 cm³",
+            "analysis": "Ze získaného výsledku odpovídá správná nabídka B.",
+            "result": "Správná odpověď: [B] 48 cm³"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 14\n===\n> Dřevěný domeček se skládá ze dvou kolmých hranolů a stojí na vodorovné podložce.\\\n> Plocha, kterou se domeček dotýká podložky, má obsah 16 cm^2^.\\\n> V obrázku jsou označeny některé rozměry hranolů. Platí *v* = *a*.\n>\n>![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9I-2025/image-5.png)\n\n# 14 Jaký je objem domečku?\n- [A] 42 cm^3^\n- [B] 48 cm^3^\n- [C] 56 cm^3^\n- [D] 64 cm^3^\n- [E] jiný objem\n\n\n"
+  },
+  "15": {
+    "id": "15",
+    "title": "Úloha 15 — přiřaďte výsledky (15.1–15.3)",
+    "tasks": [
+      {
+        "id": "15.1",
+        "title": "Řešení 15.1",
+        "context": "Tři pětiny objemu nádoby jsou zaplněny; po dolití 14 l je nádoba plná. Najít objem nádoby.",
+        "steps": [
+          {
+            "label": "Vyjádři poměrem zbytek z celkem",
+            "calculation": "1 − 3/5 = 2/5",
+            "analysis": "Pokud je nádoba z 3/5 zaplněna, zbývá prázdná část z celku: 1 (celý objem) minus podíl zaplněný.",
+            "result": "Zbytek = 2/5 celého objemu."
+          },
+          {
+            "label": "Vypočti celkem (litrů)",
+            "calculation": "14 ÷ (2/5) = 14 × 5/2 = 35",
+            "analysis": "Doplňovaných 14 litrů odpovídá právě zbytku, tedy 2/5 objemu. Celkový objem získáme vydělením 14 tímto zlomkem.",
+            "result": "Celkový objem = 35 litrů."
+          },
+          {
+            "label": "Vyhodnoť volbu [C]",
+            "calculation": "celkem = 35",
+            "analysis": "Možnost [C] je 35 litrů, což odpovídá vypočtenému objemu.",
+            "result": "Správná volba: [C]."
+          }
+        ]
+      },
+      {
+        "id": "15.2",
+        "title": "Řešení 15.2",
+        "context": "Nádoba je z 55 % zaplněna; po odebrání 12 l bude zaplněna 1/4 objemu. Najít objem nádoby.",
+        "steps": [
+          {
+            "label": "Vypočti nově zaplněno (%)",
+            "calculation": "1/4 × 100% = 25%",
+            "analysis": "Čtvrtina objemu je 25 % celku, tedy po odebrání bude v nádobě 25 % objemu.",
+            "result": "Nově zaplněno = 25 %."
+          },
+          {
+            "label": "Porovnej původně a nově zaplněno",
+            "calculation": "55% − 25% = 30%",
+            "analysis": "Původní stav byl 55 %, po odebrání 25 % — rozdíl je 30 procentních bodů, které odpovídají odebraným 12 litrům.",
+            "result": "Rozdíl = 30 % (odpovídá 12 l)."
+          },
+          {
+            "label": "Rozděl litry na procenta (litr na 1%)",
+            "calculation": "12 ÷ 30 = 0{,}4 (litrů za 1 %)",
+            "analysis": "12 litrů představuje 30 procentních bodů objemu, proto 1 % objemu je 12/30 = 0,4 l.",
+            "result": "1 % objemu = 0,4 l."
+          },
+          {
+            "label": "Vypočti celý objem",
+            "calculation": "100 × 0{,}4 = 40",
+            "analysis": "Celý objem (100 %) je 100 × (litr na 1 %) = 100 × 0,4 l.",
+            "result": "Celkový objem = 40 litrů."
+          },
+          {
+            "label": "Vyhodnoť volbu [E]",
+            "calculation": "celek = 40",
+            "analysis": "Možnost [E] je 40 litrů, shoduje se s výsledkem.",
+            "result": "Správná volba: [E]."
+          }
+        ]
+      },
+      {
+        "id": "15.3",
+        "title": "Řešení 15.3",
+        "context": "Tři stejné nádoby mají různé množství vody: 1. 30 % objemu, 2. 40 % objemu, 3. 19 litrů. Po rovnoměrném rozdělení by každá měla 2/5 objemu. Najít objem jedné nádoby.",
+        "steps": [
+          {
+            "label": "Vyjádři průměr jako procento",
+            "calculation": "2/5 × 100% = 40%",
+            "analysis": "Po rovnoměrném rozdělení by v každé nádobě bylo 2/5 objemu, což je 40 % objemu jedné nádoby.",
+            "result": "Průměrné naplnění po rozdělení = 40 %."
+          },
+          {
+            "label": "Vyjádři podíl 3. nádoby v procentech",
+            "calculation": "(30% + 40% + x)/3 = 40% ⇒ 70% + x = 120% ⇒ x = 50%",
+            "analysis": "Součet procentních podílů tří nádob děleno 3 musí být 40 %. Známé podíly jsou 30 % a 40 %, takže třetí musí mít x tak, aby průměr byl 40 %; řešením je x = 50 %.",
+            "result": "Třetí nádoba obsahuje 50 % svého objemu."
+          },
+          {
+            "label": "Vypočti objem jedné nádoby (litrů)",
+            "calculation": "19 ÷ (1/2) = 19 × 2 = 38",
+            "analysis": "19 litrů je 50 % (třetina zjištěného procenta) objemu jedné nádoby, tedy celkový objem je 19 děleno 1/2 = 38 litrů.",
+            "result": "Objem jedné nádoby = 38 litrů."
+          },
+          {
+            "label": "Vyhodnoť volbu [D]",
+            "calculation": "nádoba = 38",
+            "analysis": "Možnost [D] je 38 litrů, shoduje se s vypočteným objemem.",
+            "result": "Správná volba: [D]."
+          }
+        ]
+      }
+    ],
+    "raw": "# 15 Přiřaďte ke každé úloze (15.1-15.3) odpovídající výsledek (A-F).\n\n## 15.1 Tři pětiny objemu nádoby jsou zaplněny vodou. Celou nádobu zaplníme po dolití dalších 14 litrů vody. (Nádoba nepřeteče.)\n\n**Jaký je objem nádoby?**\n\n## 15.2 Voda v v nádobě vyplňuje 55 % jejího objemu. Když z nádoby odebereme 12 litrů vody, bude zaplněna přesně čtvrtina objemu nádoby.\n\n**Jaký je objem nádoby?**\n\n## 15.3\nV každé ze tří stejných nádob je nalito jíné množství vody.\nV první nádobě vyplňuje voda 30 % jejího objemu a ve druhé nádobě 40 % objemu. Ve třetí nádobě je 19 litrů vody.\nKdybychom vodu ze všech nádob rozdělili rovnoměrně, voda by v každé nádobě vyplnila dvě pětiny jejího objemu.\n\n**Jaký je objem jedné nádoby?**\n\n- [A] 30 litrů\n- [B] 33 litrů\n- [C] 35 litrů\n- [D] 38 litrů\n- [E] 40 litrů\n- [F] jiný objem\n\n\n"
+  },
+  "16": {
+    "id": "16",
+    "title": "Úloha 16 — podrobné řešení",
+    "tasks": [
+      {
+        "id": "16.1",
+        "title": "16.1 Urči počet sloupců ve vyšším obdélníku, je‑li v nižším 21 řad",
+        "context": "Pravidla: vyšší obdélník má o 1 řadu více než nižší. Vyšší vznikne přesunutím některých sloupců; počet přesunutých sloupců je vždy o 1 menší než počet řad v nižším obdélníku (z obdélníku s r řadami se přemístí r−1 sloupců).",
+        "steps": [
+          {
+            "label": "Urči počet sloupců v nižším obdélníku",
+            "calculation": "c = r + 1 = 21 + 1 = 22",
+            "analysis": "Z pravidla o přesouvání sloupců plyne typická konfigurace: pokud nižší obdélník má r řad a přesouvá se právě r−1 sloupců, pak počet sloupců v nižším obdélníku musí být r+1. (Příklady: 2×3 → 3×2, 3×4 → 4×3; rozměry se při tomto typu přeskládání „prohodí“.)",
+            "result": "nižší obdélník má 22 sloupců"
+          },
+          {
+            "label": "Spočti počet čtverečků (celkem) a podle toho počet sloupců ve vyšším obdélníku",
+            "calculation": "N = r · c = 21 · 22 = 462; počet sloupců ve vyšším = N / (r+1) = 462 / 22 = 21",
+            "analysis": "Celkový počet čtverečků se při přeuspořádání nemění. Vyšší obdélník má r+1 = 22 řad, takže jeho počet sloupců je N děleno 22. Výpočet dává celé číslo 21.",
+            "result": "vyšší obdélník má 21 sloupců"
+          }
+        ]
+      },
+      {
+        "id": "16.2",
+        "title": "16.2 Urči počet řad v nižším obdélníku, je‑li ve vyšším 110 sloupců",
+        "context": "Z předchozího vzoru plyne, že při popsaném přeskládání platí: pokud nižší obdélník má r řad a r+1 sloupců, pak vyšší obdélník má r+1 řad a r sloupců. Tedy počet sloupců ve vyšším se rovná počtu řad v nižším.",
+        "steps": [
+          {
+            "label": "Použij vztah mezi počtem řad nižšího a počtem sloupců vyššího",
+            "calculation": "r = počet sloupců ve vyšším = 110",
+            "analysis": "Jak ukazují předchozí příklady a obecné uspořádání (r×(r+1) → (r+1)×r), počet sloupců ve vyšším obdélníku se rovná počtu řad v nižším obdélníku. Proto z daných 110 sloupců ve vyšším plyne, že nižší měl 110 řad.",
+            "result": "nižší obdélník má 110 řad"
+          },
+          {
+            "label": "Kontrola",
+            "calculation": "nižší: r·(r+1)=110·111=12210; vyšší: (r+1)·r=111·110=12210",
+            "analysis": "Po přeuspořádání se počet čtverečků zachovává, obě velikosti dávají stejný součin, takže řešení je konzistentní.",
+            "result": "ověřeno, obě konfigurace mají 12210 čtverečků"
+          }
+        ]
+      }
+    ],
+    "raw": "VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 16\n===\n> ![alt text](https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main/public/math/4/M9I-2025/image-6.png)\n> \n> Pro každou dvojici obdélníků sestavených ze stejného počtu čtverečků platí:\n> - Vyšší z obou obdélníků má vždy o jednu řadu čtverečků více než nižší obdélník.\n> - Vyšší obdélník vznikne z nižšího obdélníku přesunutím několika sloupců do horní řady.\n> - Počet přesunutých sloupců je vždy o 1 menší, než je počet řad v nižším obdélníku. Tedy z obdélníku se 2 řadami se přemístí 1 sloupec, z obdélníku se 3 řadami 2 sloupce, atd.\n>\n# 16\n## 16.1\nV jedné dvojici obdélníků má nižší obdélník 21 řad. V této dvojici určete počet sloupců ve vyšším obdélníku.\n\n## 16.2\nV jiné dvojici obdélníků má vyšší obdélník 110 sloupců. V této dvojici určete počet řad v nižším obdélníku.\n\n"
+  }
+}

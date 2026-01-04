@@ -5,7 +5,7 @@ style: /assets/css/main.css
 <div class="hero">
   <h1>Cermat úlohy</h1>
   <h2>Mimooficiální databanka úloh a postupů řešení</h2>
-  <a href="/blog/2025-november/">Novinky</a>
+  <a href="/blog/2025-december/">Novinky</a>
 
   <video src="./assets/databanka.mp4" autoplay playsinline muted controls style="width: 100%;"></video>
 </a>
@@ -128,7 +128,7 @@ function plotWaffle(rawData) {
 }
 
 ```
-**Smyslem** tohoto projektu je **zdarma** poskytnout [strukturovaná data](/inputs) pro tvorbu vlastních výukových materiálů (<a href="./notebook-M9D-2025" target="_blank">videa</a>, <a href="./quiz-picker-math-4" targe="_blank">audia</a>, pracovní listy, kvízů, kartiček, aplikací...). 
+**Smyslem** tohoto projektu je **zdarma** poskytnout [strukturovaná data](/inputs) pro tvorbu vlastních výukových materiálů (<a href="./notebook-M9D-2025" target="_blank">videa</a>, <a href="./quiz-picker-math-4" targe="_blank">audia</a>, pracovní listy, kvízů, kartiček, <a href="/math-trainer">aplikací</a>,...). 
 
 <div class="tip" label="Tvorba výukových materiálu">
     

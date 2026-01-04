@@ -6524,7 +6524,7 @@ function connectTo(node, input) {
   };
   return connect(node, input);
 }
-function computeTreeMetrics(node, level = 0, levels = {}, predicates = [], rules = [], formulas = []) {
+function computeTreeMetrics(node, level = 0, levels = {}, predicates = [], rules = [], formulas = [], deduceMap = /* @__PURE__ */ new Map()) {
   if (isPredicate(node)) {
     levels[level] = (levels[level] || 0) + 1;
     if (node.kind === "eval-formula" && node.formulaName != null && !formulas.includes(node.formulaName)) {
@@ -6545,10 +6545,18 @@ function computeTreeMetrics(node, level = 0, levels = {}, predicates = [], rules
       const child = node.children[i];
       const isConclusion = i === node.children.length - 1;
       if (isConclusion) {
-        const result = inferenceRuleWithQuestion2(mapNodeChildrenToPredicates(node));
-        rules.push({ name: result.name, inputs: result.inputParameters });
+        if (isPredicate(child) && !deduceMap.has(child)) {
+          deduceMap.set(child, child);
+        }
+        const inputParameters = mapNodeChildrenToPredicates(node);
+        const result = inferenceRuleWithQuestion2(inputParameters);
+        rules.push({
+          name: result.name,
+          inputs: inputParameters.filter((d) => d != null && d.kind != null).map((d) => d.kind),
+          axioms: inputParameters.map((d) => !deduceMap.has(d))
+        });
       }
-      const metrics = computeTreeMetrics(child, level + 1, levels, predicates, rules, formulas);
+      const metrics = computeTreeMetrics(child, level + 1, levels, predicates, rules, formulas, deduceMap);
       predicates = metrics.predicates;
       maxDepth = Math.max(maxDepth, metrics.depth);
     }
@@ -7040,7 +7048,8 @@ Uve\u010F 2 a\u017E 3 konkr\xE9tn\xED p\u0159\xEDklady z re\xE1ln\xE9ho sv\u011B
     "key-points": generateImportantPoints,
     "working-sheet": generateSubQuizes,
     "more-quizes": generateMoreQuizes,
-    steps: keyPointsAndSteps
+    steps,
+    keyPointsAndSteps
   };
 }
 function createLazyMap(thunks) {

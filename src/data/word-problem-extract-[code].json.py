@@ -11,7 +11,7 @@ from langextract.core import exceptions
 
 import requests
 import argparse
-
+import re
 
 def parse_code(code: str) -> dict:
     subject = (
@@ -58,7 +58,18 @@ def read_markdown_file(path: str) -> str:
     return Path(path).read_text(encoding="utf-8")
   except FileNotFoundError:
     raise FileNotFoundError(f"Markdown file not found: {path}")
-    
+
+def normalize_image_urls_to_absolute_urls(markdown: str, segments: list[str]) -> str:
+    regex = re.compile(r'\]\((.*?)\)')
+
+    def replacer(match: re.Match) -> str:
+        image_url = match.group(1)
+        modified_image_url = "/".join(segments + [image_url.replace("./", "")])
+        # Reconstruct the markdown with the modified image URL
+        return f"]({modified_image_url})"
+
+    replaced_markdown = regex.sub(replacer, markdown)
+    return replaced_markdown    
   
 class InvalidDatasetError(exceptions.LangExtractError):
   """Error raised when Dataset is empty or invalid."""
@@ -144,10 +155,11 @@ examples = [
 ]
 parsedCode = parse_code(args.code)
 baseDomain = "https://raw.githubusercontent.com/rsamec/cermat/refs/heads/main"
-baseUrl = f"{baseDomain}/public/{parsedCode.get("subject")}/{parsedCode.get("period")}/{args.code}/index.md"
+baseUrl = f"{baseDomain}/public/{parsedCode.get("subject")}/{parsedCode.get("period")}/{args.code}"
+baseUrlFile = f"{baseUrl}/index.md"
 
 # The input text to be processed
-input_text = fetch_markdown(baseUrl)
+input_text = normalize_image_urls_to_absolute_urls(fetch_markdown(baseUrlFile), [baseUrl]).replace("[!NOTE]","")
 
 
 # Run the extraction
