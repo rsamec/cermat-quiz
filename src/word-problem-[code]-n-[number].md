@@ -12,6 +12,7 @@ import { createMachine , createActor} from 'xstate';
 import { parseQuiz } from './utils/quiz-parser.js';
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, isEmptyOrWhiteSpace } from './utils/quiz-string-utils.js';
 import wordProblems from './math/word-problems.js';
+import { providersConfig } from './utils/quiz-utils.js';
 import {partion, relativeTowParts, relativeTwoPartsDiff, deduceTraverse, highlightLabel, renderChat } from './utils/deduce-components.js';
 import { renderChatStepper, useInput } from './utils/deduce-chat.js';
 import {isPredicate, computeTreeMetrics, jsonToMarkdownTree, jsonToMermaidMindMap, jsonToMarkdownChat, highlight, generateAIMessages, deductionTreeToHierarchy, formatPredicate} from './utils/deduce-utils.js';
@@ -51,13 +52,6 @@ catch(ex){
 
 const wordProblem = wordProblems[code] ?? {};
 
-const providersConfig = [
-  {name:"Open AI ChatGTP",shortName:"ChatGTP",url:"https://chat.openai.com/?temporary-chat=true&q="},
-  {name:"Google AI Mode Gemini",shortName:"Gemini",url:"https://www.google.com/search?udm=50&q="},    
-  {name:"Microsoft Copilot", shortName:"Copilot", url:"https://www.bing.com/search?showconv=1&sendquery=1&q="},
-  {name:"Anthropic Claude", shortName:"Claude", url:"https://claude.ai/new?q="},  
-  {name:"Mistral Le Chat", shortName:"Mistral", url:"https://chat.mistral.ai/chat?q="},  
-]
 
 const providers = new Map(providersConfig.map(d => [d.name, d]));
 const selectedProviderInput = Inputs.select(providers,{ label:"Poskytovatel"});

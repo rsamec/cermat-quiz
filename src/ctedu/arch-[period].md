@@ -3,16 +3,16 @@ title: Záznamový arch, klíč řešení
 footer: false
 pager: true
 toc: true
-style: 'assets/css/arch.css'
+style: /assets/css/arch.css
 ---
 
+
 ```js
-import { QuizStore } from './utils/quiz-store.js';
-import { formFromSchemaWithRefs } from './utils/arch-inputs.js';
+import { QuizStore } from '../utils/quiz-store.js';
+import { formFromSchemaWithRefs } from '../utils/arch-inputs.js';
 
-
-const metadata = await FileAttachment(`./data/form-${observable.params.code}.json`).json();
-const schema = await FileAttachment(`./data/arch-${observable.params.code}.schema.json`).json();
+const metadata = await FileAttachment(`./${observable.params.period}/key.json`).json();
+const schema = await FileAttachment(`./arch-${observable.params.period}.schema.json`).json();
 ```
 
 ```js
@@ -62,7 +62,7 @@ Body: ${values.totalPoints}/${values.maxTotalPoints}
   <thead><tr>
     <th>Otázka</th>
     <th>Odpověď</th>
-    <th>Klíč řešení</th>
+    <th>Klíč řešení</th>    
   </tr></thead>
   <tbody>
   ${values.questions.map(({id: key, node}) => html`<tr class=${!hasAnswer(values.answers[key])  ? '' : values.corrections[key] === true ? 'row--success': 'row--danger'}>

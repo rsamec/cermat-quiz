@@ -92,6 +92,14 @@ export const printedPages = [2, 3, 4].map(columnsCount => ({ pageSize: 'A4', col
   .concat([4, 5, 6, 7, 8].map(columnsCount => ({ pageSize: 'A3', columnsCount, orientation: 'landscape' })))
   .concat([3, 4, 5, 6].map(columnsCount => ({ pageSize: 'A3', columnsCount, orientation: 'portrait' })));
 
+export const providersConfig = [
+  {name:"Open AI ChatGTP",shortName:"ChatGTP",url:"https://chat.openai.com/?temporary-chat=true&q="},
+  {name:"Google AI Mode Gemini",shortName:"Gemini",url:"https://www.google.com/search?udm=50&q="},    
+  {name:"Microsoft Copilot", shortName:"Copilot", url:"https://www.bing.com/search?showconv=1&sendquery=1&q="},
+  {name:"Anthropic Claude", shortName:"Claude", url:"https://claude.ai/new?q="},  
+  {name:"Mistral Le Chat", shortName:"Mistral", url:"https://chat.mistral.ai/chat?q="},  
+]
+
 
 
 export const predicatesCategories = new Map([
@@ -123,8 +131,8 @@ export const rulesCategories = new Map([
   ["Porovnání rozdílem", [`compareRule`, 'toCompareRule', `compareDiffRule`, 'toCompareDiffRule', 'toDifferenceRule', 'partEqualRule']],
   ["Porovnání poměrem", [`ratioCompareRule`, 'toRatioCompareRule', "toDifferenceAsRatioRule", "ratioCompareToCompareRule"]],
   ["Část z celku", ["partToWholeRule", "toPartWholeRatio", "partWholeComplementRule"]],
-  ["Část ku části", ["partToPartRule", "toRatiosRule"]],
-  ["Propojení poměru s část–celek", ["partWholeCompareRule", "toPartWholeCompareRule", "invertRatioCompareRule", "invertRatiosRule", "reverseRatiosRule"]],
+  ["Část ku části", ["partToPartRule", "toRatiosRule", "invertRatiosRule", "reverseRatiosRule"]],
+  ["Propojení poměru s část–celek", ["partWholeCompareRule", "toPartWholeCompareRule", "invertRatioCompareRule"]],
   ["Propojení poměru s část-část", ["compRatiosToCompRule", "convertRatioCompareToRatiosRule"]],
   ["Převod mezi část-celek a poměrem", ['convertPartWholeToRatioCompareRule', 'convertRatioCompareToRatioRule']],
   ["Převod mezi část-část a poměrem", ["convertRatioCompareToTwoPartRatioRule", "convertTwoPartRatioToRatioCompareRule"]],

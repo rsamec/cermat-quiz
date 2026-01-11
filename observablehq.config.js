@@ -1,8 +1,9 @@
 import { formatSubject, formatPeriod, formatPdfFileName } from './src/utils/quiz-string-utils.js';
+import { formatPeriod as formatPeriodDate } from './src/ctedu/utils.js';
 import { quizes, printedPages } from './src/utils/quiz-utils.js';
 import wordProblems from './src/math/word-problems.js';
 import { readdirSync, statSync } from 'fs';
-import { join } from 'path';
+import { join, resolve } from 'path';
 
 
 /**
@@ -43,12 +44,19 @@ const range = (start, end) => Array.from(
 const assetsFiles = getFilesRecursive(`./src/assets/math`).map(d => d.replace("src", ""))
 const wordProblemsKeyValuePairs = Object.entries(wordProblems).flatMap(([key, value]) => Object.keys(value).map(d => d.split('.')[0]).filter(unique).map(d => [key, d]));
 
+const ctEduPath = resolve(`./src/ctedu`);
+
+const ctEduFolders = readdirSync(ctEduPath, { withFileTypes: true })
+  .filter(dirent => dirent.isDirectory())
+  .map(dirent => dirent.name);
+
+const ctEduAssetsFiles = getFilesRecursive(`./src/ctedu`).filter(d => d.endsWith(".png")).map(d => d.replace("src", ""));
 
 // See https://observablehq.com/framework/config for documentation.
 export default {
   // The app’s title; used in the sidebar and webpage titles.
   title: "Banka úloh",
-  header: ({ title, data, path }) => title,
+  header: ({ title, data, path }) => title === "CT_EDU_ROZBOR" ? `Rozbor řešení z ${formatPeriodDate(path.slice(-10))}` : title,
   footer: ({ title, data, path }) => `<div class="h-stack"><div class="h-stack h-stack--s"  style="flex:1"><span>2025</span><i class="fa-solid fa-copyright"></i><a href="mailto:roman.samec2@gmail.com">Roman Samec</a></div></a></div>`,
 
   // The pages and sections in the sidebar. If you don’t specify this option,
@@ -111,6 +119,7 @@ export default {
         { name: "Březen 2025", path: "/blog/2025-march/index" },
       ]
     },
+    { name: "ČT EDU", path: "/ctedu/picker" },
     { name: "Podmínky používání", path: "/app-usage" },
   ],
   globalStylesheets: ['/assets/css/common/stacks.css'],
@@ -125,6 +134,7 @@ export default {
   // The path to the source root.
   root: "src",
   dynamicPaths: []
+    .concat(ctEduAssetsFiles)
     .concat(assetsFiles.concat("/assets/css/print-results.css"))
     .concat(['/components/quiz-html.js'])
     .concat(['/components/quiz.js'])
@@ -136,6 +146,9 @@ export default {
     .concat('/data/quiz-questions.zip')
     .concat('/data/word-problem.zip')
     .concat('/data/word-problems.zip')
+    .concat(ctEduFolders.map(d => `/ctedu/print-${d}`))
+    .concat(ctEduFolders.map(d => `/ctedu/arch-${d}`))
+    .concat(ctEduFolders.map(d => `/ctedu/solution-${d}`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/arch-${code}`))

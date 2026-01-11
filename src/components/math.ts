@@ -45,7 +45,7 @@ type AgentNames = {
 type EmptyUnitDim = ""
 type LengthDim = "mm" | "cm" | "dm" | "m" | "km" | "mi" | EmptyUnitDim
 type AreaDim = "mm2" | "cm2" | "dm2" | "m2" | "km2" | "mi2" | EmptyUnitDim
-type VolumeDim = "mm3" | "cm3" | "dm3" | "m3" | "km3" | "mi3" | EmptyUnitDim
+type VolumeDim = "mm3" | "cm3" | "dm3" | "m3" | "km3" | "mi3" | "l" | EmptyUnitDim
 export const EmptyUnit: EmptyUnitDim = ""
 export function dimensionEntity(unit: LengthDim = "cm") {
   return {
