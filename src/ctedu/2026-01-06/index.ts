@@ -1,5 +1,6 @@
-import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, lcd, rate, sum, counter, product, ctorScale, ctorScaleInvert, ratios, ctorDifference, contLength, dimensionEntity, cuboidVolume, contArea, ctorUnit, contVolume, ctorRate, evalFormulaAsCont, formulaRegistry, ctorPercent, ctorComplement, compRelative, ctorComparePercent, ratio, pythagoras, double, doubleProduct } from "../../components/math";
-import { createLazyMap, deduce, last, to, toCont } from "../../utils/deduce-utils";
+import { cont, ctor, ctorOption, sum, counter, product, ctorDifference, contLength, dimensionEntity, contArea, ctorUnit, contVolume, evalFormulaAsCont, formulaRegistry, ctorPercent, ctorComplement, compRelative, ratio, doubleProduct } from "../../components/math";
+import { createLazyMap, deduce, toCont } from "../../utils/deduce-utils";
+
 export default createLazyMap({
     1: () => porovnani(),
     3.1: () => rovnosti().prvni,
@@ -23,9 +24,11 @@ function porovnani() {
             ),
             counter("druhé zadané číslo", 140),
             ctor("comp-ratio")
-        )
+        ),
+        convertToTestedValue: (value) => 1 / value.ratio
     }
 }
+
 function rovnosti() {
     const entityTime = "čas";
     return {
@@ -68,6 +71,7 @@ function rovnosti() {
         }
     }
 }
+
 function tajuplnyOstrov() {
     const dim = dimensionEntity();
     return {
@@ -85,6 +89,7 @@ function tajuplnyOstrov() {
         )
     }
 }
+
 function obdelnik() {
     const dim = dimensionEntity();
     const AC = contLength("AC", 24);
@@ -105,6 +110,7 @@ function obdelnik() {
 
     }
 }
+
 function procenta() {
     const entityDeti = "děti";
     const entitySamolepky = "samolepky"

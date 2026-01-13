@@ -12,6 +12,7 @@ export type PageSize =
   | "A2";
 
 export type PageOrientation = 'portrait' | 'landscape';
+
 const pageDimensions: Record<PageSize, { width: number; height: number }> = {
   Letter: { width: 612, height: 792 },    // 8.5" x 11"
   Legal: { width: 612, height: 1008 },    // 8.5" x 14"

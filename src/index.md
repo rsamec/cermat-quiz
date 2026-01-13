@@ -164,9 +164,9 @@ function plotWaffle(rawData) {
 
 Balíček **všech zadání úloh** ve formátu markdown členěno dle **granularity** až na úroveň
 <ul>
-<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/quiz-questions.zip"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-brands fa-markdown"></i><span>jednotlivých testů</span></a>
+<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/quiz-questions.zip" ><i class="fa fa-brands fa-markdown"></i><span>jednotlivých testů</span></a>
 </li>
-<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/quiz-question.zip"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-brands fa-markdown"></i><span>jednotlivých úloh</span></a>
+<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/quiz-question.zip" ><i class="fa fa-brands fa-markdown"></i><span>jednotlivých úloh</span></a>
 </li>
 </ul>
 
@@ -226,9 +226,9 @@ Balíček **všech zadání úloh** ve formátu markdown členěno dle **granula
 
 Balíček **všech postupů řešení úloh** ve formátu markdown (generováno heslovitě) s členěním dle **granularity** až na úroveň
 <ul>
-<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/word-problems.zip"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-brands fa-markdown"></i><span>jednotlivých testů</span></a>
+<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/word-problems.zip"><i class="fa fa-brands fa-markdown"></i><span>jednotlivých testů</span></a>
 </li>
-<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/word-problem.zip"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-brands fa-markdown"></i><span>jednotlivých úloh</span></a>
+<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/word-problem.zip"><i class="fa fa-brands fa-markdown"></i><span>jednotlivých úloh</span></a>
 </li>
 </ul>
 

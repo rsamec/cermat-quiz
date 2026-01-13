@@ -72,7 +72,7 @@ async function mergePDFsFromDirectoryWithLabels(directoryPath, outputFilePath, f
     const pdf = await PDFDocument.load(pdfBytes);
 
     const fileName = path.basename(pdfPath);
-    const labelName = `${fileName.substring(4, 8)} ${fileName.substring(2, 3)}`;
+    const labelName = fileName.slice(0,-4); //`${fileName.substring(4, 8)} ${fileName.substring(2, 3)}`;
 
     const pages = pdf.getPages();
     pagesCount.push([fileName,pages.count])
@@ -124,7 +124,7 @@ const args = process.argv.slice(2);
 const directoryPath = args[0] || './generated'; // Default directory if not provided
 
 
-const dirs = ['cz-diploma', 'cz-4', 'math-4']
+const dirs = ['cz-diploma', 'cz-4', 'math-4', 'ctedu']
 // Function to reduce information
 async function processAll(subDirs) {
   const output = [];

@@ -2,7 +2,6 @@ import path from 'path';
 import JSZip from "jszip";
 import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCodeAlt, text, formatShortCode, formatPeriod } from '../utils/quiz-string-utils.js';
 import { quizes } from '../utils/quiz-utils.js';
-import { readTextFromFile } from '../utils/file.utils.js';
 import { parseQuiz } from '../utils/quiz-parser.js';
 import wordProblems, {  } from '../math/word-problems.js';
 import { jsonToMarkdownChat } from "../utils/deduce-utils.js";

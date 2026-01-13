@@ -27,7 +27,7 @@ $$
 $$
 
 # 5
-> Tajuplný ostrov má kruhový tvar. Když trosečník obejde ostov čtyřikrát dokola po jeho obvodu, ujde 1 256 metrů.
+> Tajuplný ostrov má kruhový tvar. Když trosečník obejde ostrov čtyřikrát dokola po jeho obvodu, ujde 1 256 metrů.
 
 **Kolik metrů trosečník ujde, když půjde z kraje ostrova přímo do jeho středu?**
 - [A] méně než 28 metrů

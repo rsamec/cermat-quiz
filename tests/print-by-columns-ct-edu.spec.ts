@@ -3,23 +3,30 @@ import { getTestUrl } from './test.utils';
 import { calculatePageScale, type PageSize, type PageOrientation } from './print.utils';
 import { parseCode, formatPdfFileName } from '../src/utils/quiz-string-utils.js'
 import { quizes, printedPages } from "../src/utils/quiz-utils.js";
+import { resolve } from 'node:path';
+import { readdirSync } from 'node:fs';
 
+const ctEduPath = resolve(`./src/ctedu`);
+
+const ctEduFolders = readdirSync(ctEduPath, { withFileTypes: true })
+  .filter(dirent => dirent.isDirectory())
+  .map(dirent => dirent.name);
+
+const subject = "ctedu";
+  
 const margin = 16;
 const columnWidth = 24 * 17;
-const codes = quizes.flatMap(d => d.codes);
-const printRequestsMap = Object.groupBy<string, { code: string, pageSize: PageSize, columnsCount: number, orientation: PageOrientation }>(codes.flatMap(code => {
-  return printedPages.map(d => ({...d,code}))
-}), ({ code }) => code)
+const printRequestsMap = Object.groupBy<string, { period: string, pageSize: PageSize, columnsCount: number, orientation: PageOrientation }>(ctEduFolders.flatMap(period => {
+  return printedPages.map(d => ({...d,period}))
+}), ({ period }) => period)
 
-for (const code of codes) {
-  test(`${code}`, async ({ page }) => {
-    await page.goto(getTestUrl(`print-${code}`));
+for (const period of ctEduFolders) {
+  test(`${period}`, async ({ page }) => {
+    await page.goto(getTestUrl(`ctedu/print-${period}`));
     await page.emulateMedia({ media: 'print' });
     await expect(page.getByTestId('root')).toBeVisible();
 
-    const { subject, period, year } = parseCode(code);
-
-    const printRequests = printRequestsMap[code];
+    const printRequests = printRequestsMap[period];
     for (const { pageSize, columnsCount, orientation } of printRequests) {
       let pageScale = calculatePageScale(pageSize, orientation, columnWidth, columnsCount, margin);
       console.log(`${pageSize} ${orientation}, ${columnsCount}-> ${pageScale}`);
@@ -33,7 +40,7 @@ for (const code of codes) {
           bottom: margin,
           right: margin,
         },
-        path: ['generated', `${subject}-${period}`, `${formatPdfFileName({pageSize,columnsCount,orientation})}`].concat(`${code}.pdf`).join("/")
+        path: ['generated', `${subject}`, `${formatPdfFileName({pageSize,columnsCount,orientation})}`].concat(`${period}.pdf`).join("/")
       })
     }
   });

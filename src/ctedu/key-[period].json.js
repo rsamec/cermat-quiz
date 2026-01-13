@@ -42,7 +42,6 @@ async function executeESM(jsCode) {
   });
 
   const allowed = new Set([
-    '../../utils/quiz-builder',
     'node:path',
   ]);
 

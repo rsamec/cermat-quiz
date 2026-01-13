@@ -1,4 +1,5 @@
 import _20250106 from './2026-01-06/index';
+import _20250113 from './2026-01-13/index';
 
 import { createLazyMap } from '../utils/deduce-utils';
 
@@ -9,4 +10,5 @@ export { formatSequencePattern } from '../components/math';
 
 export default createLazyMap({  
   "2026-01-06": () => _20250106,
+  "2026-01-13": () => _20250113,
 })

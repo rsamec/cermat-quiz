@@ -9,7 +9,7 @@ const form = rootGroup({
     opened: 5
   }
 }, {
-  1: number(112, { suffix: "krát" }),
+  1: number(5, { suffix: "krát" }),
   2: number(0.6, {}),
   3: group({
     3.1: number(4_480, { suffix: 'cm^2^' }),

@@ -3,7 +3,15 @@ import { normalizeImageUrlsToAbsoluteUrls } from '../utils/quiz-string-utils.js'
 import fs from 'fs';
 import path from 'path';
 import { readTextFromFile } from "../utils/file.utils.js";
+import { parseQuiz } from '../utils/quiz-parser.js';
 import { baseUrl } from "./utils.js";
+
+function outputMd(quiz, number) {
+    const id = parseInt(number, 10);
+    const ids = [id];
+    const output = quiz.content(ids, { ids, render: 'content' });
+    return output;
+}
 
 async function main() {
 
@@ -18,7 +26,14 @@ async function main() {
 
         const content = await readTextFromFile(path.resolve(ctEduPath, `${period}/index.md`));        
         const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${baseUrl}/${period}`])
-        zip.file(`${period}.md`,rawContent)        
+        const quiz = parseQuiz(rawContent);
+
+        const questions = quiz.questions.map(d => d.id);
+        for (const number of questions) {
+            const data = outputMd(quiz, number);
+            const fileName = `${number}. uloha`
+            zip.file(`${period}/${fileName}.md`, data)
+        }
     }
     return zip
 }
