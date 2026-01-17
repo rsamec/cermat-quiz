@@ -23,14 +23,14 @@ import wordProblems from './word-problems.js';
 import { isPredicate, generateAIMessages } from "../utils/deduce-utils.js";
 import { deduceTraverse, highlightLabel, renderChat } from '../utils/deduce-components.js';
 import { normalizeImageUrlsToAbsoluteUrls } from '../utils/quiz-string-utils.js';
-import { formatPeriod, relativeBaseUrl } from './utils.js'
+import { formatPeriod, baseUrl } from './utils.js'
 
 import Fraction from 'fraction.js';
 
 
 const period = observable.params.period;
 const content = await FileAttachment(`./${observable.params.period}/index.md`).text();
-const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${relativeBaseUrl}/${period}`])
+const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${baseUrl}/${period}`])
 const quiz = parseQuiz(rawContent);
 const ids = quiz.questions.map(d => d.id);
 
