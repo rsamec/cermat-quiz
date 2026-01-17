@@ -1,22 +1,20 @@
 import wordProblems from '../math/word-problems.js';
 import { computeTreeMetrics } from "../utils/deduce-utils.js";
-import { predicateTaxonomy, czTranslations } from '../utils/quiz-utils.js';
-
+import { rulesTaxonomy, czTranslations } from '../utils/quiz-utils.js';
+import { unique } from '../utils/common-utils.js';
 
 const result = Object.entries(wordProblems)
   .flatMap(([code, value]) => {
     return Object.entries(value).flatMap(([key, value]) => {
       const metrics = computeTreeMetrics(value.deductionTree);
       const { rules } = metrics;
-      return rules.flatMap((d, i) => ({
-        name: `${code}-${key} ${i + 1}.`,
+      return {
+        name: `${code}-${key}`,
         code,
         key,
         question: key.split(".")[0],
-        index: i,
-        rule: d.name,
-        sets: d.inputs.flatMap(d => predicateTaxonomy[d].functional?.map(d => czTranslations[d]) ?? d)
-      }))
+        sets: rules.flatMap(d => rulesTaxonomy[d.name]?.functional.map(d => czTranslations[d]) ?? d.name).filter(unique)
+      }
     })
   })
 

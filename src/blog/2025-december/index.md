@@ -27,28 +27,16 @@ Základní data, resp. jednotlivé testy, zadání úloh a postupy řešení úl
 
 ## Analýza struktury matematický úloh
 
-
-
-<div class="caution" label="Work in Progress">
-  Klasifikace predikátu a pravidel do jednotlivých kategorií je jen hrubý nástřel.
-</div>
-
-
-Každý krok ve slovní úloze je klasifikován do kategorií rozdělených na tyto vrstvy:
+Každé **pravidlo** použité ve slovní úloze je klasifikováno do kategorií rozdělených na tyto vrstvy:
 
 - [Kognitivní vrstva](/word-problems-structure#kognitivni-strategie-proc): Strategie (Proč?)
 - [Funkční vrstva](/word-problems-structure#funkcni-provedeni-jak): Matematika (Jak?)
 - [Doménová vrstva](/word-problems-structure#domenovy-kontext-co-kde-o-cem): Kontext (Co/Kde/O čem?)
 
-![kognitivní vrstva](image-2.png)
-![funkční vrstva](image-3.png)
-![doménová vrstva](image-4.png)
+![alt text](image-2.png)
 
-Dále jsou k dipsozici
+Každý **predikát** použitý v krocích řešení slovních úloh je klasifikován do kategorií.
 
-- [kategorizace predikátů](/word-problems-structure#predikaty)
-![predikáty](image-5.png)
-- [kombinace kategorizovaných pravidel v úlohách](/word-problems-structure#pravidla)
-![kombinace pravidel](image-6.png)
+- [kategorizace predikátů](/word-problems-structure#cleneni-dle-predikatu)
 
 

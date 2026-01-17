@@ -74,8 +74,9 @@ display(html`<div>
         .filter(([key,value]) => useColors(value.deductionTree))
         .map(([key, value]) => {
             const {depth, width, predicates, rules} = computeTreeMetrics(value.deductionTree); 
-            if (['evalToQuantityRule','convertRatioCompareToRatiosRule','convertToPartToPartRatios', 'nthTermExpressionRule', 'nthTermRule',
-             'convertRatioCompareToTwoPartRatioRule', 'convertRatioCompareToRatioRule','commonSense', 'alligationRule', 'partEqualRule'].some(d => rules.includes(d))) return '';
+            const ruleNames = rules.map(d => d.name);
+            if (['evalToQuantityRule', 'evalToOptionRule','convertRatioCompareToRatiosRule','convertToPartToPartRatios', 'nthTermExpressionRule', 'nthTermRule',
+             'convertRatioCompareToTwoPartRatioRule', 'convertRatioCompareToRatioRule','commonSense', 'alligationRule', 'partEqualRule'].some(d => ruleNames.includes(d))) return '';
             
             const colorifyParamsForm = Inputs.form({
                 maxDepth: Inputs.range([0, depth - 1], {step: 1, value: 3, label: "Maximální hloubka"}),
@@ -84,7 +85,7 @@ display(html`<div>
             });
         
             // const notSupportedRules = ["convertToUnitRule", "evalToQuantityRule", "commonSense","alligationRule"]
-            // if (notSupportedRules.some(d => rules.includes(d))) return ''
+            // if (notSupportedRules.some(d => ruleNames.includes(d))) return ''
 
             
 

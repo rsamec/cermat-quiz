@@ -179,7 +179,6 @@ export const rulesCategories = new Map([
 // 1. COGNITIVE (The Strategy: "Why?")
 // ==========================================
 export const COGNITIVE = {
-  FORMAL: "FORMALIZATION",
   INF: "INFERENCE",      // Deduce a new truth or relationship
   COMP: "COMPOSITION",    // Assemble parts into a whole
   DECOMP: "DECOMPOSITION",  // Split a whole into parts
@@ -197,7 +196,6 @@ export const COGNITIVE = {
 // 2. FUNCTIONAL (The Execution: "How?")
 // ==========================================
 export const FUNCTIONAL = {
-  DECLARATION: "DECLARATION",
   ARITHMETIC: "ARITHMETIC",   // +, -, *, / (Includes linear solving & proportions)
   HIGHER_MATH: "HIGHER_MATH",  // Roots, Exponents, Logarithms
   LOGICAL: "LOGICAL",      // Comparisons (>, <, =), Boolean checks
@@ -227,289 +225,438 @@ export const DOMAINS = {
   COMMON: "Heuristics / Common Sense"
 };
 
+/// ==========================================
+// RULE TAXONOMY (Complete)
 // ==========================================
-// PREDICATE TAXONOMY (Full List)
-// ==========================================
-export const predicateTaxonomy = {
+export const rulesTaxonomy = {
 
-  // --- 1. Quantities & Values ---
-  "cont": {
-    cognitive: [],
-    functional: [FUNCTIONAL.DECLARATION],
-    domain: [DOMAINS.QUANTITY]
-  },
-  "tuple": {
-    cognitive: [COGNITIVE.COMP],
-    functional: [FUNCTIONAL.DECLARATION],
-    domain: [DOMAINS.QUANTITY]
-  },
-
-  // --- 2. Comparisons ---
-  "comp": {
+  // =====================================================
+  // POROVNÁNÍ ROZDÍLEM
+  // =====================================================
+  compareRule: {
     cognitive: [COGNITIVE.INF],
-    functional: [FUNCTIONAL.LOGICAL],
-    domain: [DOMAINS.COMPARE]
-  },
-  "comp-diff": {
-    cognitive: [COGNITIVE.INF, COGNITIVE.DECOMP],
     functional: [FUNCTIONAL.ARITHMETIC],
     domain: [DOMAINS.COMPARE]
   },
-  "diff": {
-    cognitive: [COGNITIVE.DECOMP],
+  toCompareRule: {
+    cognitive: [COGNITIVE.INF],
     functional: [FUNCTIONAL.ARITHMETIC],
     domain: [DOMAINS.COMPARE]
   },
-  "comp-part-eq": {
-    cognitive: [COGNITIVE.INF, COGNITIVE.DECOMP],
+  compareDiffRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.COMPARE]
+  },
+  toCompareDiffRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.COMPARE]
+  },
+  toDifferenceRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.COMPARE]
+  },
+  partEqualRule: {
+    cognitive: [COGNITIVE.INF],
     functional: [FUNCTIONAL.ARITHMETIC],
     domain: [DOMAINS.COMPARE]
   },
 
-  // --- 3. Ratios & Proportions ---
-  "ratio": {
-    cognitive: [COGNITIVE.DECOMP, COGNITIVE.NORM],
-    functional: [FUNCTIONAL.ARITHMETIC],
-    domain: [DOMAINS.RATIO]
-  },
-  "convert-percent": {
-    cognitive: [COGNITIVE.DECOMP, COGNITIVE.NORM],
-    functional: [FUNCTIONAL.ARITHMETIC],
-    domain: [DOMAINS.RATIO]
-  },
-  "comp-ratio": {
+  // =====================================================
+  // POROVNÁNÍ POMĚREM
+  // =====================================================
+  ratioCompareRule: {
     cognitive: [COGNITIVE.INF],
     functional: [FUNCTIONAL.ARITHMETIC],
     domain: [DOMAINS.RATIO, DOMAINS.COMPARE]
   },
-  "invert-comp-ratio": {
-    cognitive: [COGNITIVE.REV],
+  toRatioCompareRule: {
+    cognitive: [COGNITIVE.INF],
     functional: [FUNCTIONAL.ARITHMETIC],
     domain: [DOMAINS.RATIO, DOMAINS.COMPARE]
   },
-  "complement-comp-ratio": {
-    cognitive: [COGNITIVE.INF, COGNITIVE.REV],
-    functional: [FUNCTIONAL.ARITHMETIC], // Inverting division
+  toDifferenceAsRatioRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ARITHMETIC],
     domain: [DOMAINS.RATIO, DOMAINS.COMPARE]
   },
-  "proportion": {
-    cognitive: [COGNITIVE.INF, COGNITIVE.CHAIN],
-    functional: [FUNCTIONAL.ARITHMETIC], // Cross-multiplication
-    domain: [DOMAINS.RATIO, DOMAINS.DISTRIB]
+  ratioCompareToCompareRule: {
+    cognitive: [COGNITIVE.INF, COGNITIVE.CONV],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.RATIO, DOMAINS.COMPARE]
   },
-  "ratios": {
-    cognitive: [COGNITIVE.DECOMP],
-    functional: [FUNCTIONAL.ITERATION],
+
+  // =====================================================
+  // ČÁST Z CELKU
+  // =====================================================
+  partToWholeRule: {
+    cognitive: [COGNITIVE.INF, COGNITIVE.DECOMP],
+    functional: [FUNCTIONAL.ARITHMETIC],
     domain: [DOMAINS.RATIO]
   },
-  "ratios-invert": {
-    cognitive: [COGNITIVE.REV, COGNITIVE.CONV],
+  toPartWholeRatio: {
+    cognitive: [COGNITIVE.INF, COGNITIVE.DECOMP],
     functional: [FUNCTIONAL.MAPPING],
     domain: [DOMAINS.RATIO]
   },
-  "complement": {
-    cognitive: [COGNITIVE.DECOMP, COGNITIVE.REV],
-    functional: [FUNCTIONAL.ARITHMETIC], // 1 - x
-    domain: [DOMAINS.RATIO]
-  },
-  "nth-part": {
-    cognitive: [COGNITIVE.DECOMP],
+  partWholeComplementRule: {
+    cognitive: [COGNITIVE.INF, COGNITIVE.DECOMP, COGNITIVE.INVTR],
     functional: [FUNCTIONAL.ARITHMETIC],
     domain: [DOMAINS.RATIO]
   },
 
-  // --- 5. Distribution & Allocation ---
-  "rate": {
-    cognitive: [COGNITIVE.DECOMP, COGNITIVE.NORM],
-    functional: [FUNCTIONAL.ARITHMETIC], // Normalization via division
-    domain: [DOMAINS.DISTRIB]
+  // =====================================================
+  // ČÁST KU ČÁSTI
+  // =====================================================
+  partToPartRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.RATIO,DOMAINS.COMPARE]
   },
-  "quota": {
-    cognitive: [COGNITIVE.DECOMP, COGNITIVE.CONST],
+  toRatiosRule: {
+    cognitive: [COGNITIVE.CONV],
+    functional: [FUNCTIONAL.MAPPING],
+    domain: [DOMAINS.RATIO,DOMAINS.COMPARE]
+  },
+  invertRatiosRule: {
+    cognitive: [COGNITIVE.REV],
+    functional: [FUNCTIONAL.MAPPING],
+    domain: [DOMAINS.RATIO]
+  },
+  reverseRatiosRule: {
+    cognitive: [COGNITIVE.REV],
+    functional: [FUNCTIONAL.MAPPING],
+    domain: [DOMAINS.RATIO]
+  },
+
+  // =====================================================
+  // PROPOJENÍ POMĚRU S ČÁST–CELEK
+  // =====================================================
+  partWholeCompareRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.RATIO, DOMAINS.COMPARE]
+  },
+  toPartWholeCompareRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.MAPPING],
+    domain: [DOMAINS.RATIO, DOMAINS.COMPARE]
+  },
+  invertRatioCompareRule: {
+    cognitive: [COGNITIVE.REV],
+    functional: [FUNCTIONAL.MAPPING],
+    domain: [DOMAINS.RATIO, DOMAINS.COMPARE]
+  },
+
+  // =====================================================
+  // PROPOJENÍ POMĚRU S ČÁST–ČÁST
+  // =====================================================
+  compRatiosToCompRule: {
+    cognitive: [COGNITIVE.CONV],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.RATIO, DOMAINS.COMPARE]
+  },
+  convertRatioCompareToRatiosRule: {
+    cognitive: [COGNITIVE.CONV],
+    functional: [FUNCTIONAL.MAPPING],
+    domain: [DOMAINS.RATIO, DOMAINS.COMPARE]
+  },
+
+  // =====================================================
+  // PŘEVODY MEZI REPREZENTACEMI
+  // =====================================================
+  convertPartWholeToRatioCompareRule: {
+    cognitive: [COGNITIVE.CONV],
+    functional: [FUNCTIONAL.MAPPING],
+    domain: [DOMAINS.RATIO, DOMAINS.COMPARE]
+  },
+  convertRatioCompareToRatioRule: {
+    cognitive: [COGNITIVE.CONV],
+    functional: [FUNCTIONAL.MAPPING],
+    domain: [DOMAINS.RATIO]
+  },
+  convertRatioCompareToTwoPartRatioRule: {
+    cognitive: [COGNITIVE.CONV],
+    functional: [FUNCTIONAL.MAPPING],
+    domain: [DOMAINS.RATIO]
+  },
+  convertTwoPartRatioToRatioCompareRule: {
+    cognitive: [COGNITIVE.CONV],
+    functional: [FUNCTIONAL.MAPPING],
+    domain: [DOMAINS.RATIO, DOMAINS.COMPARE]
+  },
+  convertPartToPartToPartWholeRule: {
+    cognitive: [COGNITIVE.CONV],
+    functional: [FUNCTIONAL.MAPPING],
+    domain: [DOMAINS.RATIO]
+  },
+  togglePartWholeAsPercentRule: {
+    cognitive: [COGNITIVE.CONV],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.RATIO]
+  },
+  convertPercentRule: {
+    cognitive: [COGNITIVE.CONV],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.RATIO]
+  },
+
+  // =====================================================
+  // ŘETĚZENÍ
+  // =====================================================
+  transitiveRatioCompareRule: {
+    cognitive: [COGNITIVE.CHAIN],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.RATIO, DOMAINS.COMPARE]
+  },
+  transitiveCompareRule: {
+    cognitive: [COGNITIVE.CHAIN],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.COMPARE]
+  },
+  transitiveRatioRule: {
+    cognitive: [COGNITIVE.CHAIN],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.RATIO]
+  },
+  transitiveRateRule: {
+    cognitive: [COGNITIVE.CHAIN],
     functional: [FUNCTIONAL.ARITHMETIC],
     domain: [DOMAINS.DISTRIB]
   },
-  "frequency": {
-    cognitive: [COGNITIVE.DECOMP, COGNITIVE.NORM],
+
+  // =====================================================
+  // SPOJOVÁNÍ & ROZDĚLOVÁNÍ
+  // =====================================================
+  sumRule: {
+    cognitive: [COGNITIVE.COMP],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.AGGREG]
+  },
+  productRule: {
+    cognitive: [COGNITIVE.COMP],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.AGGREG]
+  },
+  rateRule: {
+    cognitive: [COGNITIVE.DECOMP],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.DISTRIB]
+  },
+  toRateRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.DISTRIB]
+  },
+  quotaRule: {
+    cognitive: [COGNITIVE.DECOMP],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.DISTRIB]
+  },
+  toQuotaRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.DISTRIB]
+  },
+  compareToRateRule: {
+    cognitive: [COGNITIVE.CONV],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.DISTRIB]
+  },
+
+  // =====================================================
+  // ÚMĚRNOSTI & ZMĚNY
+  // =====================================================
+  proportionRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.RATIO]
+  },
+  proportionTwoPartRatioRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.RATIO]
+  },
+  deltaRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.DYNAMIC]
+  },
+  toDeltaRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.DYNAMIC]
+  },
+  transferRule: {
+    cognitive: [COGNITIVE.INF, COGNITIVE.INVTR],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.DYNAMIC]
+  },
+
+  // =====================================================
+  // ČÍSELNÁ TEORIE & NORMALIZACE
+  // =====================================================
+  gcdRule: {
+    cognitive: [COGNITIVE.NORM],
     functional: [FUNCTIONAL.REDUCTION],
-    domain: [DOMAINS.DISTRIB]
+    domain: [DOMAINS.NUM_THEORY]
   },
-  "balanced-partition": {
-    cognitive: [COGNITIVE.CONST, COGNITIVE.DECOMP],
-    functional: [FUNCTIONAL.ARITHMETIC],
-    domain: [DOMAINS.DISTRIB]
-  },
-
-  // --- 6. Change & Dynamics ---
-  "delta": {
-    cognitive: [COGNITIVE.INF, COGNITIVE.DECOMP],
-    functional: [FUNCTIONAL.ARITHMETIC],
-    domain: [DOMAINS.DYNAMIC]
-  },
-  "transfer": {
-    cognitive: [COGNITIVE.INVTR, COGNITIVE.CONST],
-    functional: [FUNCTIONAL.ARITHMETIC],
-    domain: [DOMAINS.DYNAMIC]
-  },
-  "slide": {
-    cognitive: [COGNITIVE.CONV],
-    functional: [FUNCTIONAL.ARITHMETIC],
-    domain: [DOMAINS.DYNAMIC]
-  },
-  "slide-invert": {
-    cognitive: [COGNITIVE.CONV, COGNITIVE.REV],
-    functional: [FUNCTIONAL.ARITHMETIC],
-    domain: [DOMAINS.DYNAMIC]
-  },
-  "reverse": {
-    cognitive: [COGNITIVE.REV],
-    functional: [FUNCTIONAL.MAPPING],
-    domain: [DOMAINS.DYNAMIC]
+  lcdRule: {
+    cognitive: [COGNITIVE.NORM],
+    functional: [FUNCTIONAL.REDUCTION],
+    domain: [DOMAINS.NUM_THEORY]
   },
 
-  // --- 7. Aggregation & Composition ---
-  "sum": {
-    cognitive: [COGNITIVE.COMP],
-    functional: [FUNCTIONAL.ARITHMETIC],
-    domain: [DOMAINS.AGGREG]
-  },
-  "product": {
-    cognitive: [COGNITIVE.COMP],
-    functional: [FUNCTIONAL.ARITHMETIC],
-    domain: [DOMAINS.AGGREG]
-  },
-  "sum-combine": {
-    cognitive: [COGNITIVE.COMP, COGNITIVE.CHAIN],
-    functional: [FUNCTIONAL.ITERATION],
-    domain: [DOMAINS.AGGREG]
-  },
-  "product-combine": {
-    cognitive: [COGNITIVE.COMP, COGNITIVE.CHAIN],
-    functional: [FUNCTIONAL.ITERATION],
-    domain: [DOMAINS.AGGREG]
-  },
-  "alligation": {
-    cognitive: [COGNITIVE.COMP, COGNITIVE.CONST],
-    functional: [FUNCTIONAL.ARITHMETIC], // Weighted average calc
-    domain: [DOMAINS.AGGREG, DOMAINS.RATIO]
-  },
-
-  // --- 8. Scaling & Transformation ---
-  "scale": {
+  // =====================================================
+  // JEDNOTKY & ZAOKROUHLENÍ
+  // =====================================================
+  convertToUnitRule: {
     cognitive: [COGNITIVE.CONV],
-    functional: [FUNCTIONAL.ARITHMETIC], // Multiplication
-    domain: [DOMAINS.SCALE]
-  },
-  "scale-invert": {
-    cognitive: [COGNITIVE.CONV, COGNITIVE.REV],
-    functional: [FUNCTIONAL.ARITHMETIC], // Division
-    domain: [DOMAINS.SCALE]
-  },
-  "nth-scale": {
-    cognitive: [COGNITIVE.CONV],
-    functional: [FUNCTIONAL.MAPPING],
-    domain: [DOMAINS.SCALE]
-  },
-  "nth-factor": {
-    cognitive: [COGNITIVE.CONV],
-    functional: [FUNCTIONAL.ITERATION],
-    domain: [DOMAINS.SCALE]
-  },
-
-  // --- 9. Units & Measurement ---
-  "unit": {
-    cognitive: [COGNITIVE.CONV, COGNITIVE.NORM],
     functional: [FUNCTIONAL.MAPPING],
     domain: [DOMAINS.UNIT]
   },
-  "round": {
-    cognitive: [COGNITIVE.NORM],
-    functional: [FUNCTIONAL.HEURISTIC],
-    domain: [DOMAINS.UNIT, DOMAINS.QUANTITY]
+  roundToRule: {
+    cognitive: [COGNITIVE.INVTR],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.QUANTITY]
   },
 
-  // --- 10. Number Theory ---
-  "gcd": {
-    cognitive: [COGNITIVE.NORM, COGNITIVE.DECOMP],
-    functional: [FUNCTIONAL.REDUCTION],
-    domain: [DOMAINS.NUM_THEORY]
-  },
-  "lcd": {
-    cognitive: [COGNITIVE.NORM, COGNITIVE.COMP],
+  // =====================================================
+  // ROZKLADY
+  // =====================================================
+  splitDecimalAndFractionPartsRule: {
+    cognitive: [COGNITIVE.DECOMP],
     functional: [FUNCTIONAL.ARITHMETIC],
-    domain: [DOMAINS.NUM_THEORY]
+    domain: [DOMAINS.QUANTITY]
+  },
+  tupleRule: {
+    cognitive: [COGNITIVE.COMP],
+    functional: [FUNCTIONAL.MAPPING],
+    domain: [DOMAINS.QUANTITY]
   },
 
-  // --- 11. Algebra & Expressions ---
-  "linear-equation": {
-    cognitive: [COGNITIVE.META, COGNITIVE.REV],
-    functional: [FUNCTIONAL.ARITHMETIC], // Basic linear algebra is just arithmetic
-    domain: [DOMAINS.ALGEBRA]
-  },
-  "simplify-expr": {
-    cognitive: [COGNITIVE.NORM],
-    functional: [FUNCTIONAL.REDUCTION],
-    domain: [DOMAINS.ALGEBRA]
-  },
-  "eval-expr": {
-    cognitive: [COGNITIVE.CHAIN, COGNITIVE.INF],
-    functional: [FUNCTIONAL.ARITHMETIC],
-    domain: [DOMAINS.ALGEBRA]
-  },
-  "eval-formula": {
-    cognitive: [COGNITIVE.CHAIN, COGNITIVE.INF],
-    functional: [FUNCTIONAL.ARITHMETIC],
-    domain: [DOMAINS.ALGEBRA]
-  },
-
-  // --- 12. Geometry ---
-  "pythagoras": {
-    cognitive: [COGNITIVE.CONST, COGNITIVE.INF],
-    functional: [FUNCTIONAL.HIGHER_MATH], // Squares and Roots
-    domain: [DOMAINS.GEOMETRY]
-  },
-  "comp-angle": {
-    cognitive: [COGNITIVE.CONST, COGNITIVE.INF],
-    functional: [FUNCTIONAL.LOGICAL],
-    domain: [DOMAINS.GEOMETRY]
-  },
-  "triangle-angle": {
-    cognitive: [COGNITIVE.CONST, COGNITIVE.COMP],
-    functional: [FUNCTIONAL.ARITHMETIC],
-    domain: [DOMAINS.GEOMETRY]
-  },
-
-  // --- 13. Sequences & Patterns ---
-  "sequence": {
-    cognitive: [COGNITIVE.CHAIN, COGNITIVE.INF],
-    functional: [FUNCTIONAL.ITERATION],
-    domain: [DOMAINS.PATTERN]
-  },
-  "nth": {
-    cognitive: [COGNITIVE.CHAIN, COGNITIVE.INF],
-    functional: [FUNCTIONAL.ITERATION],
-    domain: [DOMAINS.PATTERN]
-  },
-  "pattern": {
+  // =====================================================
+  // GEOMETRIE
+  // =====================================================
+  pythagorasRule: {
     cognitive: [COGNITIVE.INF],
-    functional: [FUNCTIONAL.HEURISTIC],
+    functional: [FUNCTIONAL.HIGHER_MATH],
+    domain: [DOMAINS.GEOMETRY]
+  },
+  angleCompareRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.LOGICAL, FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.GEOMETRY]
+  },
+  triangleAngleRule: {
+    cognitive: [COGNITIVE.INF, COGNITIVE.INVTR],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.GEOMETRY]
+  },
+
+  // =====================================================
+  // POSUNY & ŠKÁLOVÁNÍ
+  // =====================================================
+  toSlideRule: {
+    cognitive: [COGNITIVE.CONV],
+    functional: [FUNCTIONAL.MAPPING],
+    domain: [DOMAINS.SCALE]
+  },
+  scaleRule: {
+    cognitive: [COGNITIVE.CONV],
+    functional: [FUNCTIONAL.MAPPING],
+    domain: [DOMAINS.SCALE]
+  },
+  mapRationsByFactorRule: {
+    cognitive: [COGNITIVE.CONV],
+    functional: [FUNCTIONAL.MAPPING],
+    domain: [DOMAINS.SCALE, DOMAINS.RATIO]
+  },
+  nthPartFactorByRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.SCALE, DOMAINS.RATIO]
+  },
+  nthPartScaleByRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.SCALE, DOMAINS.RATIO]
+  },
+
+  // =====================================================
+  // MÍŠENÍ
+  // =====================================================
+  alligationRule: {
+    cognitive: [COGNITIVE.INF, COGNITIVE.INVTR],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.RATIO]
+  },
+
+  // =====================================================
+  // VÝRAZY & ROVNICE
+  // =====================================================
+  evalToQuantityRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.ALGEBRA]
+  },
+  simplifyExprRule: {
+    cognitive: [COGNITIVE.NORM],
+    functional: [FUNCTIONAL.REDUCTION],
+    domain: [DOMAINS.ALGEBRA]
+  },
+  evalQuotaRemainderExprRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.ALGEBRA]
+  },
+  solveEquationRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.ALGEBRA]
+  },
+
+  // =====================================================
+  // POSLOUPNOSTI
+  // =====================================================
+  sequenceRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ITERATION],
+    domain: [DOMAINS.PATTERN]
+  },
+  nthTermRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ITERATION],
+    domain: [DOMAINS.PATTERN]
+  },
+  nthPositionRule: {
+    cognitive: [COGNITIVE.INF],
+    functional: [FUNCTIONAL.ITERATION],
     domain: [DOMAINS.PATTERN]
   },
 
-  // --- 14. Evaluation & Meta-reasoning ---
-  "eval-option": {
-    cognitive: [COGNITIVE.META, COGNITIVE.SEL],
+  // =====================================================
+  // META
+  // =====================================================
+  balancedPartitionRule: {
+    cognitive: [COGNITIVE.INF, COGNITIVE.INVTR],
+    functional: [FUNCTIONAL.ARITHMETIC],
+    domain: [DOMAINS.DISTRIB]
+  },
+  evalToOptionRule: {
+    cognitive: [COGNITIVE.SEL],
     functional: [FUNCTIONAL.HEURISTIC],
     domain: [DOMAINS.META]
   },
-
-  // --- 15. Heuristics / Common Sense ---
-  "common-sense": {
-    cognitive: [COGNITIVE.META, COGNITIVE.SEL],
+  commonSense: {
+    cognitive: [COGNITIVE.META],
     functional: [FUNCTIONAL.HEURISTIC],
     domain: [DOMAINS.COMMON]
   }
 };
+
 
 // ==========================================
 // CZECH TRANSLATIONS (Mapování na češtinu)

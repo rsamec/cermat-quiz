@@ -5,12 +5,22 @@ pager: true
 toc: true
 ---
 
+<div class="caution" label="Work in Progress">
+  Klasifikace predikátu a pravidel do jednotlivých kategorií není dokončena. Jde o první nástřel kategorizace.
+</div>
 
-Každý krok ve slovní úloze je klasifikován do kategorií rozdělených na tyto vrstvy:
+# Členění dle odvozovacích pravidel
 
-- Kognitivní vrstva: Strategie (Proč?)
-- Funkční vrstva: Matematika (Jak?)
-- Doménová vrstva: Kontext (Kde/O čem?)
+Každé **pravidlo** použité ve slovní úloze je klasifikováno do kategorií rozdělených na tyto vrstvy:
+
+- **Kognitivní** vrstva: Strategie (Proč?)
+- **Funkční** vrstva: Matematika (Jak?)
+- **Doménová** vrstva: Kontext (Kde/O čem?) - členěno dle matematické domény
+   - základní členění
+   - dle příbuznosti pravidel
+
+Graficky jsou zobrazeny **počty úloh** jednotlivých **kombinací skupin pravidel** ze všech řešených úloh.
+
 
 ## Kognitivní strategie ("Proč")
 Jakého logického kroku se snažíme dosáhnout?
@@ -19,7 +29,6 @@ Tato vrstva určuje záměr a logický směr uvažování. Odpovídá na otázku
 
 |Název|Sémantický popis (Význam strategie)|
 |---|---|
-|Formalizace|Proces uchopení reality a jejího převedení do světa matematických objektů a vztahů.|
 |Úsudek / Inference| Vyvození nového vztahu nebo pravdy z existujících informací.|
 |Skládání / Kompozice|Sestavování celku nebo vyššího konceptu z jednotlivých prvků.|
 |Rozklad / Dekompozice|"Rozbití komplexního problému nebo hodnoty na menší, srozumitelné části."|
@@ -59,8 +68,6 @@ Tyta vrstva je „dělníkem“ systému. Je to konkrétní mechanika, která vy
 |Redukce a krácení|Snižování složitosti dat (např. krácení zlomků nebo hledání dělitelů).|
 |Iterace a cykly|Opakování výpočtu pro řadu prvků nebo procházení posloupností.|
 |Heuristika a odhad|"Přibližné výpočty, intuitivní výběry a „měkká“ logika založená na zkušenosti."|
-|Deklarace|"Akt definování kvantity a nastavení její hodnoty"|
-
 
 ```js
 const functionMetricsData = await FileAttachment("./data/word-problems-metrics-functional.json").json();
@@ -80,7 +87,7 @@ display(renderLinks(functionSelection))
 
 Tato vrstva zasazuje problém do konkrétní oblasti matematiky a nabízí odpověď na otázku: **„V jakém světě se právě pohybujeme?“** nebo **„O jaké téma jde?“**
 
-|Název|Sémantický popis (O čem je tento svět)|
+|Název|Sémantický popis (O čem je tento matematický svět)|
 |---|---|
 |Kvantity a hodnoty|Práce s čistými čísly a jejich sémantickou existencí v úloze.|
 |Porovnávání|Zkoumání vztahů „o kolik“ nebo „kolikrát“ mezi dvěma objekty.|
@@ -111,27 +118,7 @@ const domainSelection = view(UpSetJSElement(domainSets, domainCombinations, {hei
 display(renderLinks(domainSelection))
 ```
 
-
-
-## Predikáty
-
-Popisuje četnosti použití predikátů v jednotlivých krocích řešení úloh.
-
-```js
-const metricsRulesData = await FileAttachment("./data/word-problems-metrics-predicates.json").json();
-const sets = extractSets(metricsRulesData);
-const combinations = generateCombinations(sets, {type:'distinctIntersection', order: 'cardinality:desc', min: 2})
-
-const selection = view(UpSetJSElement(sets, combinations, {height: 1000, theme: mode, mode:'click'}))
-```
-
-```js
-display(renderLinks(selection))
-```
-
-## Pravidla
-
-Popisuje četnosti pravidel v úlohách, resp. použití pravidel při řešení jednotlivých úloh.
+## Doménový kontext ("Co", "Kde", "O čem") - alternativní členění
 
 
 ```js
@@ -147,6 +134,24 @@ const rulesSelection = view(UpSetJSElement(rulesSets, rulesCombinations, {height
 display(renderLinks(rulesSelection))
 ```
 
+
+# Členění dle predikátů
+
+Každý **predikát** ve slovní úloze je klasifikován do kategorií.
+
+Graficky jsou zobrazeny **počty kroků úloh** jednotlivých **kombinací skupin predikátů** ze všech řešených úloh.
+
+```js
+const metricsRulesData = await FileAttachment("./data/word-problems-metrics-predicates.json").json();
+const sets = extractSets(metricsRulesData);
+const combinations = generateCombinations(sets, {type:'distinctIntersection', order: 'cardinality:desc', min: 2})
+
+const selection = view(UpSetJSElement(sets, combinations, {height: 1000, theme: mode, mode:'click'}))
+```
+
+```js
+display(renderLinks(selection))
+```
 
 ```js
 import { extractSets, generateCombinations,renderVennDiagram, render as renderUpSetJS} from 'npm:@upsetjs/bundle';
