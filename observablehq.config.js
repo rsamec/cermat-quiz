@@ -176,6 +176,7 @@ export default {
     .concat(quizes.map(d => `/quiz-print-${d.subject}`))
     .concat(quizes.map(d => `/quiz-picker-${d.subject}-${d.period}`))
     .concat(quizes.map(d => `/quiz-sel-${d.subject}-${d.period}`))
+    .concat(quizes.flatMap(d => printedPages.map(p => `/assets/pdf/ctedu/${formatPdfFileName(p)}.pdf`)))
     .concat(quizes.flatMap(d => printedPages.map(p => `/assets/pdf/${d.subject}-${d.period}/${formatPdfFileName(p)}.pdf`)))
 
 };
