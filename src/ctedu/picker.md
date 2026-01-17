@@ -49,3 +49,47 @@ Balíček **úloh s postupy řešení úloh** ve formátu markdown členěno dle
 
 
 
+
+## Balíčky PDF pro tisk ke stažení
+
+```js
+const pdfs = await FileAttachment(`./pdf.json`).json();
+function parseFileKey(value) {
+  const parts =  value.split('-');
+  return  {
+    pageSize:parts[0],
+    columnsCount: parts[2],
+    pageOrientation: parts.length === 4 ? 'landscape': 'portrait'}
+}
+
+const pageSizeInput = Inputs.radio(['A4','A3'], {value: 'A4', label: 'Velikost stránky'});
+const pageSize = Generators.input(pageSizeInput);
+view(pageSizeInput);
+
+const pageOrientationInput = Inputs.radio(['portrait','landscape'], {value: 'portrait', label:"Orientace", format: d => d == "landscape" ? 'na šířku': 'na výšku'});
+const pageOrientation = Generators.input(pageOrientationInput);
+view(pageOrientationInput);
+```
+
+```js
+const pdfsData = Object.entries(pdfs).flatMap(([key,value]) => value.map(([code,count]) => ({key, code,count})))
+const filteredData = pdfsData.filter(d =>  parseFileKey(d.key).pageSize === pageSize && parseFileKey(d.key).pageOrientation === pageOrientation);
+
+```
+
+<ul>${Object.entries(pdfs).filter(([key]) => parseFileKey(key).pageSize === pageSize && parseFileKey(key).pageOrientation === pageOrientation).map(([key, values]) => html`<li><a href="/assets/pdf/ctedu/${key}.pdf"><i class="fa-solid fa-file-pdf"></i> ${key} (${values.reduce((out,[v,n])=> out+=n,0)} stránek)</a></li>`)}</ul>
+
+<details>
+  <summary>
+    Obsah PDF balíčků dle počtu sloupců a stran
+  </summary>
+  ${Plot.plot({
+    color: {legend: true, tickFormat: d => formatPeriod(d)},
+    height: 420,
+    x:{ label: 'Počet sloupců na stránce' },
+    y:{ label:'Počet stran' },
+    marks:[
+      Plot.waffleY(filteredData, Plot.groupX({y:"sum"}, {x: "key", y:"count", fill:'code', tip: true})),
+    ]
+   })}
+</details>
