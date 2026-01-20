@@ -33,7 +33,7 @@ const form = rootGroup({
   7: group({
     7.1: word('chůze'),
     7.2: word('řečník'),
-    7.3: match(/^(pomlčka,pomlka,odmlka)$/),
+    7.3: match(/^(pomlčka|pomlka|odmlka)$/),
   }),
   8: option("A"),
   9: words("tísnily,sebevědomě,otcovi,vítězství", fourPoints)
