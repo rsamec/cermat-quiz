@@ -22,7 +22,7 @@ import { parseQuiz } from '../utils/quiz-parser.js';
 import wordProblems from './word-problems.js';
 import { isPredicate, generateAIMessages } from "../utils/deduce-utils.js";
 import { deduceTraverse, highlightLabel, renderChat } from '../utils/deduce-components.js';
-import { normalizeImageUrlsToAbsoluteUrls } from '../utils/quiz-string-utils.js';
+import { normalizeImageUrlsToAbsoluteUrls, baseMediaPublic } from '../utils/quiz-string-utils.js';
 import { formatPeriod, baseUrl } from './utils.js'
 
 import Fraction from 'fraction.js';
@@ -33,6 +33,10 @@ const content = await FileAttachment(`./${observable.params.period}/index.md`).t
 const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${baseUrl}/${period}`])
 const quiz = parseQuiz(rawContent);
 const ids = quiz.questions.map(d => d.id);
+
+
+const notebookArtifactsData = await FileAttachment("../data/notebook-artifacts.json").json();
+const notebookArtifacts = notebookArtifactsData[period] ?? [];
 
 
 const wordProblem = wordProblems[period] ?? {};
@@ -69,7 +73,6 @@ function renderButtons(template, values){
     </details>`
 }
 
-
 const output = ids.map(id => {
    const values = (wordProblem[id] != null)
    ? [[id, wordProblem[id]]] 
@@ -78,12 +81,15 @@ const output = ids.map(id => {
     .map(subId => wordProblem[subId])
     .filter(Boolean)
     .map((d, index) => [`${id}.${index +1}`, d])
+
+  const artifacts = notebookArtifacts.filter(a => a.id == id)  
   
   return html.fragment`
   ${mdPlus.unsafe(quiz.content([id], { ids, render: 'content' }), { docId: `${period}-${id}` })}
   ${renderButtons(quiz.content([id], { ids, render: 'content' }), values)}
   ${values?.length > 0 
   ? html.fragment`
+  ${artifacts.map(a => html`<img src=${baseMediaPublic}/${period}/${a.fileName}.png />`)}
   ${values.map(([key, value]) => html`<div class="card break-inside-avoid-column">
   ${value.deductionTree != null ? html`<div>
   <div class="h-stack">

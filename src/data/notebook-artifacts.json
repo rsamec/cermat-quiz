@@ -1,0 +1,38 @@
+{
+    "2026-01-13": [
+        {
+            "fileName": "Jak vypočítat úhel alfa",
+            "id": 5
+        },
+        {
+            "fileName": "Jak vyřešit matematickou slovní úlohu",
+            "id": 6
+        },
+        {
+            "fileName": "Sportovní statistika v Horní Dolní",
+            "id": 4
+        }
+    ],
+    "2026-01-06": [
+        {
+            "id": 7,
+            "fileName": "Jak na procenta: Slovní úlohy"
+        },
+        {
+            "id": 6,
+            "fileName": "Výpočet obsahu obdélníku pomocí úhlopříčky"
+        },
+        {
+            "id": 5,
+            "fileName": "Geometrie Tajuplného ostrova"
+        },
+        {
+            "id": 3,
+            "fileName": "Matematické doplňovačky a převody jednotek"
+        },
+        {
+            "id": 1,
+            "fileName": "Matematická výzva krok za krokem"
+        }
+    ]
+}

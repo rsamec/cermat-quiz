@@ -25,7 +25,7 @@
     "generate:word-problems:zip": "node ./src/data/word-problems.zip.js > ./src/data/word-problems.zip",
     "generate:raw": "node ./src/data/word-problems-[code].md.js --code M9I-2025",
     "generate:ctedu:zip": "node ./src/ctedu/questions.zip.js > ./src/ctedu/questions.zip",
-    "generate:ctedu:key": "node --experimental-vm-modules ./src/ctedu/key-[period].json.js --period 2026-01-13 > ./src/ctedu/2026-01-13/key.json",
+    "generate:ctedu:key": "node --experimental-vm-modules ./src/ctedu/key-[period].json.js --period 2026-01-20 > ./src/ctedu/2026-01-20/key.json",
     "ai:word-problems:steps:all": "node ./ai-word-problems-schema",
     "ai:word-problems:steps": "node ./src/data/word-problems-ai-[prompt]-[code]-[model]-schema.json.js --code M9B-2025 --prompt steps --model gpt-5-mini > ./src/data/word-problems-ai-steps-M9B-2025-gpt-5-mini.json",
     "ai:word-problems:key-points": "node ./src/data/word-problems-ai-[prompt]-[code]-[model].json.js --code M9B-2025 --prompt key-points --model o4-mini > ./src/data/word-problems-ai-key-points-M9B-2025-o4-mini.json",
@@ -43,7 +43,10 @@
     "generate:word-problems:metrics": "node ./src/data/word-problems-metrics-rules.json.js > ./src/data/word-problems-metrics-rules.json",
     "generate:math:metrics": "node ./src/data/math-metrics.json.js > ./src/data/math-metrics.json",
     "generate:print": "node ./src/print-[code].md.js --code AJA-2024 > ./src/print-AJA-2024.md",
-    "generate:lang": "python3 ./src/data/word-problem-extract-[code].json.py --code M9B-2025 > ./src/data/word-problem-extract-M9B-2025.json"
+    "generate:lang": "python3 ./src/data/word-problem-extract-[code].json.py --code M9B-2025 > ./src/data/word-problem-extract-M9B-2025.json",
+    "notebook:create": "python3 ./src/notebook-lm/create-notebook-[period].py --period 2026-01-06",
+    "notebook:generate": "python3 ./src/notebook-lm/generate-artifacts-[period].py --period 2026-01-06",
+    "notebook:download": "python3 ./src/notebook-lm/download-artifacts-[period].json.py --period 2026-01-06 > ./src/notebook-lm/download-artifacts-2026-01-06.json"
   },
   "dependencies": {
     "@google/genai": "^1.10.0",
@@ -87,7 +90,7 @@
   },
   "devDependencies": {
     "@kitschpatrol/tldraw-cli": "^4.6.41",
-    "@playwright/test": "^1.49.0",
+    "@playwright/test": "^1.57.0",
     "@types/node": "^22.7.6",
     "pdf-lib": "^1.17.1",
     "rimraf": "^5.0.5"

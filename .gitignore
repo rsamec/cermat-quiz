@@ -12,3 +12,8 @@ audio/
 .vscode
 .env
 langextract_env
+notebooklm
+__pycache__
+# Playwright
+/playwright/.auth/
+artifacts
