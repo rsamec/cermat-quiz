@@ -7219,6 +7219,7 @@ export {
   highlight,
   inputLbl,
   isPredicate,
+  isStringContext,
   jsonToMarkdownChat,
   jsonToMarkdownTree,
   jsonToMermaidMindMap,

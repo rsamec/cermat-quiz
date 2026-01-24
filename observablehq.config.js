@@ -120,6 +120,7 @@ export default {
       ]
     },
     { name: "ČT EDU", path: "/ctedu/picker" },
+    { name: "Nastavení", path: "/user-settings" },
     { name: "Podmínky používání", path: "/app-usage" },
   ],
   globalStylesheets: ['/assets/css/common/stacks.css'],

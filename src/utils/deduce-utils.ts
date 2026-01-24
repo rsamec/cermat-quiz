@@ -876,7 +876,7 @@ export const anglesNames = {
   phi: '𝜑',
 }
 
-function isStringContext(context: DeduceContext): context is string {
+export function isStringContext(context: DeduceContext): context is string {
   return typeof context === "string";
 }
 function isObjectContext(context: DeduceContext): context is (ColorContext & ExpressionContext) {

@@ -3,17 +3,11 @@ title: CT_EDU_ROZBOR
 sidebar: true
 footer: false
 pager: true
-toc: true
+toc: false
 style: /assets/css/print-solution.css
 titleFormat: extractPath
 ---
 
-```js
-import { providersConfig } from '../utils/quiz-utils.js';
-const providers = new Map(providersConfig.map(d => [d.name, d]));
-const selectedProviderInput = Inputs.select(providers,{ label:"Poskytovatel"});
-const selectedProvider = Generators.input(selectedProviderInput);
-```
 
 ```js
 
@@ -22,22 +16,44 @@ import { parseQuiz } from '../utils/quiz-parser.js';
 import wordProblems from './word-problems.js';
 import { isPredicate, generateAIMessages } from "../utils/deduce-utils.js";
 import { deduceTraverse, highlightLabel, renderChat } from '../utils/deduce-components.js';
-import { normalizeImageUrlsToAbsoluteUrls, baseMediaPublic } from '../utils/quiz-string-utils.js';
+import { normalizeImageUrlsToAbsoluteUrls } from '../utils/quiz-string-utils.js';
 import { formatPeriod, baseUrl } from './utils.js'
-
+import { providersConfig } from '../utils/quiz-utils.js';
+import { localStorageSubject } from '../utils/storage.utils.js'
 import Fraction from 'fraction.js';
 
+document.addEventListener("keydown", (e) => {
+  if (e.ctrlKey && e.code === "Space") {
+    e.preventDefault();
 
+    const details = document.querySelectorAll("details");
+    if (!details.length) return;
+
+    // Check if all details are currently open
+    const allOpen = Array.from(details).every(d => d.open);
+
+    // Toggle
+    details.forEach(d => {
+      d.open = !allOpen;
+    });
+  }
+});
+
+const defaultProviderCode = "default-ai-provider"
+const defaultProvider$ = localStorageSubject(defaultProviderCode,'ChatGTP', {
+    from: value => providersConfig.find(d => d.shortName === value),
+    to: value => value.shortName
+})
+
+const baseMediaPublic = "http://127.0.0.1:8080/"
 const period = observable.params.period;
 const content = await FileAttachment(`./${observable.params.period}/index.md`).text();
+const notebookArtifacts = await FileAttachment(`../notebook-lm/data/artifacts-${observable.params.period}.json`).json();
 const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${baseUrl}/${period}`])
 const quiz = parseQuiz(rawContent);
 const ids = quiz.questions.map(d => d.id);
 
-
-const notebookArtifactsData = await FileAttachment("../data/notebook-artifacts.json").json();
-const notebookArtifacts = notebookArtifactsData[period] ?? [];
-
+const selectedProvider = defaultProvider$.value;
 
 const wordProblem = wordProblems[period] ?? {};
 
@@ -58,7 +74,6 @@ function renderButtons(template, values){
         {label:"Obdobné úlohy", query:messages.generateMoreQuizes},
         {label:"Pracovní list", query:messages.generateSubQuizes},
         {label:"Generalizace", query:messages.generateSubQuizes},
-
        ])
   }
 
@@ -66,8 +81,8 @@ function renderButtons(template, values){
         template,
         deductionTrees:values.map(([key, value]) => [`Řešení ${key}`,value.deductionTree])});
    
-  return html.fragment`<details class="break-inside-avoid-column">
-      <summary>AI nápověda</summary>
+  return html.fragment`<details class="break-inside-avoid-column no-print">
+      <summary>AI prompts</summary>
       <div class="h-stack h-stack--s h-stack--end h-stack--wrap">${prompts.map(d => renderChatButton(d.label, d.query))}
       </div>
     </details>`
@@ -82,22 +97,25 @@ const output = ids.map(id => {
     .filter(Boolean)
     .map((d, index) => [`${id}.${index +1}`, d])
 
-  const artifacts = notebookArtifacts.filter(a => a.id == id)  
+  const artifacts = notebookArtifacts[id] ?? []
   
   return html.fragment`
   ${mdPlus.unsafe(quiz.content([id], { ids, render: 'content' }), { docId: `${period}-${id}` })}
   ${renderButtons(quiz.content([id], { ids, render: 'content' }), values)}
-  ${values?.length > 0 
-  ? html.fragment`
-  ${artifacts.map(a => html`<img src=${baseMediaPublic}/${period}/${a.fileName}.png />`)}
-  ${values.map(([key, value]) => html`<div class="card break-inside-avoid-column">
-  ${value.deductionTree != null ? html`<div>
-  <div class="h-stack">
-    <div style="flex:1">${key}</div>
-  </div>
-  ${renderChat(value.deductionTree)}
+  ${values?.length > 0 && artifacts.length > 0
+  ? html.fragment`<details><summary>AI artifacts</summary>
+  ${artifacts.map(a => {
+    if (a.kind == 7) return html`<img src=${baseMediaPublic}/${period}/${a.title}.png />`
+    if (a.kind == 1) return html`<audio src=${baseMediaPublic}/${period}/${a.title}.m4a playsinline muted controls style="min-width: 100px;"></audio>`
+    return ''
+  })}</details>
+  ${values.map(([key, value]) => html`<div>
+  ${value.deductionTree != null ? html`<details>
+  <summary>Rozbor krok za krokem - ${key}
+  </summary>
+  <div class="card">${renderChat(value.deductionTree)}</div>
   </div>` : ''}  
-</div>`)}
+</details>`)}
 `: ''}`
 })
 
@@ -123,10 +141,3 @@ details.solutions > summary > h1, h2 {
 ```js
 display(html`<div class=root>${output}</div>`)
 ```
-
-## AI nastavení
-
-${selectedProviderInput}
-<div class="h-stack h-stack--m h-stack--wrap">
-</div>
-

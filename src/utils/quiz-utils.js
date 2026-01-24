@@ -95,7 +95,6 @@ export const printedPages = [2, 3, 4].map(columnsCount => ({ pageSize: 'A4', col
 export const providersConfig = [
   {name:"Open AI ChatGTP",shortName:"ChatGTP",url:"https://chat.openai.com/?temporary-chat=true&q="},
   {name:"Google AI Mode Gemini",shortName:"Gemini",url:"https://www.google.com/search?udm=50&q="},    
-  {name:"Microsoft Copilot", shortName:"Copilot", url:"https://www.bing.com/search?showconv=1&sendquery=1&q="},
   {name:"Anthropic Claude", shortName:"Claude", url:"https://claude.ai/new?q="},  
   {name:"Mistral Le Chat", shortName:"Mistral", url:"https://chat.mistral.ai/chat?q="},  
 ]

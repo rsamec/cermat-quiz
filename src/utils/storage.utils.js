@@ -1,3 +1,4 @@
+import { fromEvent, combineLatest, BehaviorSubject } from 'rxjs';
 function safeJsonStringify(data) {
   return JSON.stringify(data);
 }
@@ -27,4 +28,28 @@ export function get(key, defaultValue){
     if (value == null) return resolve(defaultValue);
     resolve(safeJsonParse(value))
   });
+}
+
+export function localStorageSubject(code, defaultValue, converter){
+  return persistentSubject(localStorage, code, defaultValue, converter)
+}
+export function persistentSubject(storage, code, defaultValue, converter){
+  const persistedValue = storage.getItem(code);
+  let initValue;
+  if (persistedValue !=null){
+    initValue = converter.from(persistedValue)
+  }
+  if (initValue === undefined){
+    initValue = defaultValue
+  }
+  const obs$ =  new BehaviorSubject(initValue);
+  obs$.subscribe(newValue => {
+    if (newValue == null){
+      storage.removeItem(code)
+    }
+    else {
+      storage.setItem(code, converter.to(newValue))
+    }
+  })
+  return obs$;
 }

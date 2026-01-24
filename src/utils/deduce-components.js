@@ -2,13 +2,13 @@ import { html } from "npm:htl";
 import * as Plot from "npm:@observablehq/plot";
 import Fraction from 'npm:fraction.js';
 import { nthQuadraticElements, primeFactorization, lcdCalc, isNumber, gcdCalc } from "../components/math.js";
-import { isPredicate, formatPredicate, mapNodeChildrenToPredicates, last } from "../utils/deduce-utils.js";
+import { isPredicate, formatPredicate, mapNodeChildrenToPredicates, last, isStringContext } from "../utils/deduce-utils.js";
 import { inferenceRuleWithQuestion } from "../math/math-configure.js";
 import { toEquationExprAsText } from "./math-solver.js";
 
 export function partion(items, options) {
   const total = items.reduce((out, d) => out += d.value, 0);
-  const partTotal = items.filter(d => d.part).reduce((out, d) => out +=d.value, 0);
+  const partTotal = items.filter(d => d.part).reduce((out, d) => out += d.value, 0);
   const data = items.map(d => ({ ...d, ratio: d.value / total }))
   const { width, height, unit, multiple, showLegend, showTicks, showSeparate, showSeparatePartLabel, formatAsFraction, showAbsoluteValues, showRelativeValues, fill, marginLeft } = {
     ...{
@@ -87,7 +87,7 @@ export function partion(items, options) {
           text: (d, i, arr) => {
             const partFraction = new Fraction(partTotal);
             if (i == 0) return partFraction.toFraction();
-            if (i == arr.length -1) return  `${partFraction.d}/${partFraction.d}`;
+            if (i == arr.length - 1) return `${partFraction.d}/${partFraction.d}`;
           },
           fontSize: 16,
           textAnchor: 'end',
@@ -389,7 +389,7 @@ export function deduceTraverse(node) {
         args.push(res)
 
         if (!isLast) {
-          const plotFigure = renderPredicatePlot(newChild,node, { predicatesToExclude: ["cont"] });
+          const plotFigure = renderPredicatePlot(newChild, node, { predicatesToExclude: ["cont"] });
           if (plotFigure != null) {
             args.push(plotFigure)
           }
@@ -409,9 +409,9 @@ export function deduceTraverse(node) {
 export function stepsTraverse(node) {
   let counter = 1;
   const deduceMap = new Map();
-
+  const contextStack = [];
   const flatStructure = [];
-  function traverseEx(node) {
+  function traverseEx(node, contextStack) {
 
     // Base case: if the node is a leaf, add it to the result  
     if (isPredicate(node)) {
@@ -424,10 +424,14 @@ export function stepsTraverse(node) {
     if (node.tagName === "FIGURE") {
       return node;
     }
+    if (isStringContext(node.context)) {
+      contextStack.push(node.context);
+    }
 
     const args = []
     let question = null
     // Recursive case: traverse each child
+
     if (node.children) {
       let i = 0;
       for (const child of node.children) {
@@ -449,11 +453,11 @@ export function stepsTraverse(node) {
           question = null;
         }
 
-        const res = traverseEx(newChild);
+        const res = traverseEx(newChild, contextStack);
         args.push(res)
 
         if (!isLast) {
-          const plotFigure = renderPredicatePlot(newChild,node, { predicatesToExclude: ["cont"] });
+          const plotFigure = renderPredicatePlot(newChild, node, { predicatesToExclude: ["cont"] });
           if (plotFigure != null) {
             args.push(plotFigure)
           }
@@ -469,7 +473,7 @@ export function stepsTraverse(node) {
       const premises = arr.slice(0, -1);
       //const questions = premises.filter(d => d?.result != null)
       const conclusion = arr[arr.length - 1];
-      flatStructure.push({ premises, conclusion, questions: [question] });
+      flatStructure.push({ premises, conclusion, questions: [question], context: contextStack.pop() });
 
     }
 
@@ -477,7 +481,7 @@ export function stepsTraverse(node) {
     // For example, add something from the node to `result`.
     return args; //html`<div class="v-stack v-stack--l"><div>${args.slice(0, args.length - 1).map(d => html.fragment`${d}`)}</div> <div style="opacity:0.4">${args[args.length - 1]}</div></div>`;
   }
-  traverseEx(node)
+  traverseEx(node, contextStack)
   return flatStructure;
 }
 function normalizeToArray(d) {
@@ -494,10 +498,11 @@ function formatNumber(d) {
 export function renderChat(deductionTree) {
   const steps = stepsTraverse(deductionTree).map((d, i) => ({ ...d, index: i }));
 
-  return html`<div class="chat">${steps.map(({ premises, conclusion, questions }, i) => {
+  return html`<div class="chat">${steps.map(({ premises, conclusion, questions, context }, i) => {
     const q = questions[0];
     const answer = q?.options?.find(d => d.ok)
     return html`<div class="messages">
+        ${isStringContext(context) ? context : ''}
         <div class='message v-stack v-stack--s'>${premises.map(d => d)}</div>
         ${q != null ? html`<div class='message agent v-stack v-stack--s'>
           <div>${q?.question}</div>
@@ -546,7 +551,7 @@ export function renderDeduceTreeNode(args, node, level) {
 }
 
 
-export function renderPredicatePlot(newChild,node, options = { predicatesToExclude: [''] }) {
+export function renderPredicatePlot(newChild, node, options = { predicatesToExclude: [''] }) {
   const width = 250;
   if (newChild == null) return;
   if (options.predicatesToExclude.includes(newChild.kind)) return;

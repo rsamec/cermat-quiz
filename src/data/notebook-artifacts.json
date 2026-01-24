@@ -34,5 +34,31 @@
             "id": 1,
             "fileName": "Matematická výzva krok za krokem"
         }
+    ],
+    "2026-01-20": [
+        {
+            "id": 6,
+            "fileName": "Výpočet obsahu pravoúhlého lichoběžníku"
+        },
+        {
+            "id": 5,
+            "fileName": "Geometrická výzva: Od kvádru k válci"
+        },
+        {
+            "id": 4,
+            "fileName": "Geometrický výpočet vnořených čtverců"
+        },
+        {
+            "id": 3,
+            "fileName": "Geometrická analýza tácu a dortu"
+        },
+        {
+            "id": 2,
+            "fileName": "Geometrická analýza vepsaného kosočtverce"
+        },
+        {
+            "id": 1,
+            "fileName": "Obvod čtverce z obsahu obdélníku"
+        }
     ]
 }

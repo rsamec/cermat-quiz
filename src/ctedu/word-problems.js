@@ -7158,14 +7158,14 @@ function obyvatelSporty() {
   return {
     deductionTree: deduce(
       deduce(
-        deduceAs("jen tenis")(
+        deduce(
           celkem,
           golf,
-          ctorDifference("tenis")
+          ctorDifference("jen tenis")
         ),
-        deduceAs("tenis spole\u010Dn\u011B s golfem")(
+        deduce(
           last(golf),
-          ratio("golf", "tenis", 2 / 5)
+          ratio("golf", "tenis a golf", 2 / 5)
         ),
         sum("tenis")
       ),
@@ -7174,26 +7174,26 @@ function obyvatelSporty() {
   };
 }
 function velikostUhlu() {
-  const pravyB = contAngle("B", 90);
-  const B = contAngle("B", 30);
+  const pravyB = contAngle("SBA", 90);
+  const B = contAngle("CBS", 30);
   return {
-    deductionTree: deduce(
+    deductionTree: deduceAs("ozna\u010D\xEDme bod S na stran\u011B CD tak, \u017Ee je SB je kolm\xE9 k CD")(
       deduce(
         deduce(
           deduce(
             B,
             deduce(
               pravyB,
-              compAngle("B", "CD", "alternate-interior")
+              compAngle("SBA", "CSB", "alternate-interior")
             ),
-            triangleAngle("C")
+            triangleAngle("SCB")
           ),
-          compAngle("C", "A", "corresponding")
+          compAngle("SCB", "BAD", "corresponding")
         ),
         deduce(
           pravyB,
-          contAngle("CD", 59),
-          triangleAngle("A'")
+          contAngle("BSA", 59),
+          triangleAngle("BAS")
         ),
         ctorDifference(anglesNames.alpha)
       ),
@@ -7335,7 +7335,7 @@ function dort() {
           evalFormulaAsCont(formulaRegistry.surfaceArea.circle, (x) => x.S, "plocha z\xE1kladny dortu", dim2.area)
         ),
         toCont(last(stranaCtverce), { agent: "v\xFD\u0161ka dortu" }),
-        product("dort")
+        product("dort", [], dim2.volume)
       )
     }
   };
@@ -7364,7 +7364,7 @@ function ctverec() {
       deductionTree: deduce(
         deduce(
           deduce(
-            ctverecKLMN,
+            last(ctverecKLMN),
             contArea("\u0161ed\xE1 plocha", 64),
             sum("\u010Dtverec ABCD")
           ),
@@ -7376,7 +7376,6 @@ function ctverec() {
   };
 }
 function valec() {
-  const dim2 = dimensionEntity();
   const polomer = deduce(
     deduceAs("podstava kv\xE1dr")(
       contLength("strana a", 16),

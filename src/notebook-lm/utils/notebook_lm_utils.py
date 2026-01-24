@@ -1,6 +1,19 @@
-from typing import List, Tuple
-from notebooklm import NotebookLMClient, InfographicDetail, InfographicOrientation
+from typing import List, Tuple, Any
+from notebooklm import NotebookLMClient, InfographicDetail, InfographicOrientation, AudioFormat, AudioLength
 import zipfile
+import asyncio
+from PIL import Image
+
+initial_interval = 2.0
+max_interval = 30.0
+timeout = 1000
+between_generation_delay = 1
+
+custom_prompt = """You are an academic dialogue coach for math.
+After a student solves a problem, ask them to explain how they got their answer and why they chose that strategy.
+Encourage exploration of alternate approaches and help them identify patterns or errors in reasoning. 
+Keep the tone curious and supportive.
+- try to add some jokes"""
 
 def read_zip_directory_contents_flat(zip_file: str, directory_name: str) -> List[Tuple[str,str]]:
     results = []
@@ -21,8 +34,19 @@ def read_zip_directory_contents_flat(zip_file: str, directory_name: str) -> List
 
     return results
 
+async def getNotebookId(period:str) -> str:
+    async with await NotebookLMClient.from_storage() as client:
+        # List all notebooks
+        notebooks = await client.notebooks.list()
+        
+        matched = next(filter((lambda x: period in x.title), notebooks), None)
 
-async def createWithSources(period:str, results: List[Tuple[str,str]]):    
+        if matched is None:
+            raise ValueError(f"Does not exist {period}")
+        else:
+            return matched.id
+
+async def createWithSources(period:str, results: List[Tuple[str,str]]) -> str:    
     async with await NotebookLMClient.from_storage() as client:
         # List all notebooks
         notebooks = await client.notebooks.list()
@@ -31,71 +55,78 @@ async def createWithSources(period:str, results: List[Tuple[str,str]]):
 
         if matched is None:
             # Create a new notebook
-            nb = await client.notebooks.create(period)
-            print(f"Created: {nb.id}")            
+            nb = await client.notebooks.create(period)            
 
             # Add sources
             for filename, content in results:
-                print(f"{filename}")
-                await client.sources.add_text(nb.id, filename,  content)                        
+                await client.sources.add_text(nb.id, filename,  content)   
+            return nb.id
            
-        else:            
-            print(f"Already exists {matched.id}: {matched.title}")
+        else:
+            return matched.id            
+            # raise ValueError(f"Already exists {matched.id}: {matched.title}")
        
-async def generateArfifacts(period:str):    
+async def generateArfifacts(id:str, opt: dict[str, bool], waitForComplation: bool) -> dict[str,int]:
     async with await NotebookLMClient.from_storage() as client:
-        # List all notebooks
-        notebooks = await client.notebooks.list()
+        # List and manage
+        sources = await client.sources.list(id)
+        result:dict[str, int] = {}
+        for src in sources:
+            # audio
+            if opt["audio"]:
+                status = await client.artifacts.generate_audio(id, [src.id], "cs", custom_prompt, AudioFormat.DEEP_DIVE, AudioLength.SHORT)
+                if waitForComplation:
+                    await client.artifacts.wait_for_completion(id, status.task_id, initial_interval, max_interval, timeout)
+                else:
+                    await asyncio.sleep(between_generation_delay)  # second(s) delay
+                result[status.task_id] = int(src.title.split(".")[0])
+            
+            # infografics
+            if opt["infographic"]:
+                status = await client.artifacts.generate_infographic(id, [src.id], "cs", None, InfographicOrientation.PORTRAIT, InfographicDetail.STANDARD)
+                if waitForComplation:
+                    await client.artifacts.wait_for_completion(id, status.task_id, initial_interval, max_interval, timeout)
+                else:
+                    await asyncio.sleep(between_generation_delay)  # second(s) delay
+                result[status.task_id] = int(src.title.split(".")[0])
         
-        matched = next(filter((lambda x: period in x.title), notebooks), None)
+        return result
 
-        if matched is None:
-             print(f"Notebook {period} does not exists exists. Use  createWithSources first")
+async def downloadArtifacts(id:str, dir_name:str, artifact_source :dict[str,int]) -> List[Any]:    
+    async with await NotebookLMClient.from_storage() as client:    
+        save_location_root_dir = "artifacts"
+        dowloaded_artifacts:List[Tuple[Any,Any]] = []
         
-        else:            
-            print(f"Already exists {matched.id}: {matched.title}")
+        # List and manage infographics
+        artifacts = await client.artifacts.list_audio(id)
+        for artifact in artifacts:
+            source = artifact_source.get(artifact.id)
+            if source is not None:
+                # audios         
+                saveLocation = f"{save_location_root_dir}/{dir_name}/{artifact.title}"
+                await client.artifacts.download_audio(id,f"{saveLocation}.m4a" , artifact.id)
+                dowloaded_artifacts.append((source, artifact))
+            else:
+                continue
 
-            # List and manage
-            sources = await client.sources.list(matched.id)
-            for src in sources:
-                print(f"{src.id}: {src.title} ({src.source_type})")
-                # # audio
-                # status = await client.artifacts.generate_audio(matched.id, [src.id], "cs", custom_prompt)
-                # final = await client.artifacts.wait_for_completion(matched.id, status.task_id)
-                # print(f"NL: Download URL: {final.url}")
-                # download_path = await client.artifacts.download_audio(matched.id, f"{period}.mp4")
-                # print(f"Download URL: {download_path}")
+        # List and manage infographics
+        artifacts = await client.artifacts.list_infographics(id)
+        for artifact in artifacts:
+            source = artifact_source.get(artifact.id)
+            if source is not None:
+                # infografics         
+                saveLocation = f"{save_location_root_dir}/{dir_name}/{artifact.title}"
+                await client.artifacts.download_infographic(id,f"{saveLocation}.png" , artifact.id)
+                img = Image.open(f"{saveLocation}.png")
+                img.save(
+                    f"{saveLocation}.webp",
+                    format="WEBP",
+                    quality=85,      # 0–100 (higher = better quality)
+                    method=6         # best compression (0–6)
+                )
+                dowloaded_artifacts.append((source, artifact))
+            else:
+                continue
 
-                # infografics
-                status = await client.artifacts.generate_infographic(matched.id, [src.id], "cs", None, InfographicOrientation.PORTRAIT, InfographicDetail.STANDARD)
-                final = await client.artifacts.wait_for_completion(matched.id, status.task_id)
-                print(f"Download URL: {final}")                
-
-
-async def downloadArtifacts(period:str):    
-    async with await NotebookLMClient.from_storage() as client:
-        # List all notebooks
-        notebooks = await client.notebooks.list()
-        
-        matched = next(filter((lambda x: period in x.title), notebooks), None)
-        if matched is None:
-             return []
-        
-        else:            
-            # List and manage
-            artifacts = await client.artifacts.list_infographics(matched.id)            
-            for src in artifacts:
-
-                # # audio
-                # status = await client.artifacts.generate_audio(matched.id, [src.id], "cs", custom_prompt)
-                # final = await client.artifacts.wait_for_completion(matched.id, status.task_id)
-                # print(f"NL: Download URL: {final.url}")
-                # download_path = await client.artifacts.download_audio(matched.id, f"{period}.mp4")
-                # print(f"Download URL: {download_path}")
-
-                # infografics                
-                await client.artifacts.download_infographic(matched.id, f"artifacts/{period}/{src.title}.png", src.id)
-
-        
-            return artifacts
+        return dowloaded_artifacts
 

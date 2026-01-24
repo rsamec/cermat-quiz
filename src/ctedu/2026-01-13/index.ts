@@ -20,14 +20,14 @@ function obyvatelSporty() {
     return {
         deductionTree: deduce(
             deduce(
-                deduceAs("jen tenis")(
+                deduce(
                     celkem,
                     golf,
-                    ctorDifference("tenis")
+                    ctorDifference("jen tenis")
                 ),
-                deduceAs("tenis společně s golfem")(
+                deduce(
                     last(golf),
-                    ratio("golf", "tenis", 2 / 5)
+                    ratio("golf", "tenis a golf", 2 / 5)
                 ),
                 sum("tenis")
             ),
@@ -38,25 +38,25 @@ function obyvatelSporty() {
 
 
 function velikostUhlu() {
-    const pravyB = contAngle("B", 90);
-    const B = contAngle("B", 30);
+    const pravyB = contAngle("SBA", 90);
+    const B = contAngle("CBS", 30);
     return {
-        deductionTree: deduce(
+        deductionTree: deduceAs("označíme bod S na straně CD tak, že je SB je kolmé k CD")(
             deduce(
                 deduce(
                     deduce(
                         B,
                         deduce(
                             pravyB,
-                            compAngle("B", "CD", "alternate-interior")
+                            compAngle("SBA", "CSB", "alternate-interior")
                         ),
-                        triangleAngle("C")),
-                    compAngle("C", "A", "corresponding")
+                        triangleAngle("SCB")),
+                    compAngle("SCB", "BAD", "corresponding")
                 ),
                 deduce(
                     pravyB,
-                    contAngle("CD", 59),
-                    triangleAngle("A'")
+                    contAngle("BSA", 59),
+                    triangleAngle("BAS")
                 ),
                 ctorDifference(anglesNames.alpha)
             ),

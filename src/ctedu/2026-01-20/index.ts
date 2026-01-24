@@ -100,7 +100,7 @@ function dort() {
                     evalFormulaAsCont(formulaRegistry.surfaceArea.circle, x => x.S, "plocha základny dortu", dim.area)
                 ),
                 toCont(last(stranaCtverce), { agent: "výška dortu" }),
-                product("dort")
+                product("dort",[], dim.volume)
             )
         }
     }
@@ -131,7 +131,7 @@ function ctverec() {
             deductionTree: deduce(
                 deduce(
                     deduce(
-                        ctverecKLMN,
+                        last(ctverecKLMN),
                         contArea("šedá plocha", 64),
                         sum("čtverec ABCD")
                     ),
@@ -144,7 +144,6 @@ function ctverec() {
 }
 
 function valec() {
-    const dim = dimensionEntity();
     const polomer = deduce(
         deduceAs("podstava kvádr")(
             contLength("strana a", 16),

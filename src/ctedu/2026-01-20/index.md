@@ -12,7 +12,7 @@
 
 
 
-# 3 Dort tvaru rotačního válce leží na kruhovém tácu. (Průměr podstavy dortu je větší než výška dortu, ale menší než průměř tácu.) Dort jsme rozdělili svislým řezem na dvě stejné poloviny.S
+# 3 Dort tvaru rotačního válce leží na kruhovém tácu. (Průměr podstavy dortu je větší než výška dortu, ale menší než průměř tácu.) Dort jsme rozdělili svislým řezem na dvě stejné poloviny.
 
 > ![alt text](image-1.png)
 
@@ -54,7 +54,7 @@ Výsledek zaokrouhlete na stovky cm^3^
 **Vypočtěte v cm^2^:**
 
 ## 6.1 obsah trojúhelníku ABD,
-## 6.2 obvod lichoběžníku ABCD.
+## 6.2 obsah lichoběžníku ABCD.
 
 # 7 Napište:
 ## 7.1 Spisovné podstatné jméno, které je v 1. pádě čísla jednotného __dvouslabičné__, je příbuzné se slovem CHODIT a skloňuje se podle vzoru RŮŽE.
