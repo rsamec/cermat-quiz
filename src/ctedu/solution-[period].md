@@ -16,7 +16,7 @@ import { parseQuiz } from '../utils/quiz-parser.js';
 import wordProblems from './word-problems.js';
 import { isPredicate, generateAIMessages } from "../utils/deduce-utils.js";
 import { deduceTraverse, highlightLabel, renderChat } from '../utils/deduce-components.js';
-import { normalizeImageUrlsToAbsoluteUrls } from '../utils/quiz-string-utils.js';
+import { normalizeImageUrlsToAbsoluteUrls, baseMediaPublic } from '../utils/quiz-string-utils.js';
 import { formatPeriod, baseUrl } from './utils.js'
 import { providersConfig } from '../utils/quiz-utils.js';
 import { localStorageSubject } from '../utils/storage.utils.js'
@@ -40,12 +40,12 @@ document.addEventListener("keydown", (e) => {
 });
 
 const defaultProviderCode = "default-ai-provider"
-const defaultProvider$ = localStorageSubject(defaultProviderCode,'ChatGTP', {
+const defaultProvider$ = localStorageSubject(defaultProviderCode,providersConfig[0], {
     from: value => providersConfig.find(d => d.shortName === value),
     to: value => value.shortName
 })
 
-const baseMediaPublic = "http://127.0.0.1:8080/"
+// const baseMediaPublic = "http://127.0.0.1:8080/"
 const period = observable.params.period;
 const content = await FileAttachment(`./${observable.params.period}/index.md`).text();
 const notebookArtifacts = await FileAttachment(`../notebook-lm/data/artifacts-${observable.params.period}.json`).json();
