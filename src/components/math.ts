@@ -3761,7 +3761,7 @@ function ratiosToBaseForm(ratios) {
 // #endregion
 
 // #region Angle utils
-export type AngleRelationship = "complementary" | "supplementary" | "opposite" | "corresponding" | "sameSide" | "alternate" | "alternate-interior" | "alternate-exterior" | "axially-symmetric"
+export type AngleRelationship = "complementary" | "supplementary" | "opposite" | "corresponding" | "sameSide" | "alternate" | "alternate-interior" | "alternate-exterior" | "axially-symmetric" | "opposite-in-parallelogram"
   | "isosceles-triangle-at-the-base" | "equilateral-triangle";
 function computeOtherAngle(a: Container, relationship: AngleRelationship) {
   const quantity = a.quantity
@@ -3779,6 +3779,7 @@ function computeOtherAngle(a: Container, relationship: AngleRelationship) {
     case "axially-symmetric":
     case "isosceles-triangle-at-the-base":
     case "equilateral-triangle":
+    case "opposite-in-parallelogram":
       return isNumber(quantity) ? quantity : wrapToQuantity(`a.quantity`, { a }); // Equal angles
     default:
       throw "Unknown Angle Relationship";
@@ -3806,9 +3807,11 @@ export function formatAngle(relationship: AngleRelationship) {
     case "axially-symmetric":
       return "osově souměrný";
     case "isosceles-triangle-at-the-base":
-      return "schodnost úhlů při zákadně rovnoramenného trojúhelníku";
+      return "shodnost úhlů při zákadně rovnoramenného trojúhelníku";
     case "equilateral-triangle":
-      return "schodnost všech úhlů v rovnostranném trojúhelníku";
+      return "shodnost všech úhlů v rovnostranném trojúhelníku";
+    case "opposite-in-parallelogram":
+      return "shodnost protějších úhlů v rovnoběžníku"
     default:
       throw "Neznámý vztah";
 

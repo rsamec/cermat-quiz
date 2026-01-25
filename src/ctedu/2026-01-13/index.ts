@@ -51,7 +51,7 @@ function velikostUhlu() {
                             compAngle("SBA", "CSB", "alternate-interior")
                         ),
                         triangleAngle("SCB")),
-                    compAngle("SCB", "BAD", "corresponding")
+                    compAngle("SCB", "BAD", "opposite-in-parallelogram")
                 ),
                 deduce(
                     pravyB,

@@ -2589,6 +2589,7 @@ function computeOtherAngle(a, relationship) {
     case "axially-symmetric":
     case "isosceles-triangle-at-the-base":
     case "equilateral-triangle":
+    case "opposite-in-parallelogram":
       return isNumber(quantity) ? quantity : wrapToQuantity(`a.quantity`, { a });
     default:
       throw "Unknown Angle Relationship";
@@ -2615,9 +2616,11 @@ function formatAngle(relationship) {
     case "axially-symmetric":
       return "osov\u011B soum\u011Brn\xFD";
     case "isosceles-triangle-at-the-base":
-      return "schodnost \xFAhl\u016F p\u0159i z\xE1kadn\u011B rovnoramenn\xE9ho troj\xFAheln\xEDku";
+      return "shodnost \xFAhl\u016F p\u0159i z\xE1kadn\u011B rovnoramenn\xE9ho troj\xFAheln\xEDku";
     case "equilateral-triangle":
-      return "schodnost v\u0161ech \xFAhl\u016F v rovnostrann\xE9m troj\xFAheln\xEDku";
+      return "shodnost v\u0161ech \xFAhl\u016F v rovnostrann\xE9m troj\xFAheln\xEDku";
+    case "opposite-in-parallelogram":
+      return "shodnost prot\u011Bj\u0161\xEDch \xFAhl\u016F v rovnob\u011B\u017En\xEDku";
     default:
       throw "Nezn\xE1m\xFD vztah";
   }
@@ -7188,7 +7191,7 @@ function velikostUhlu() {
             ),
             triangleAngle("SCB")
           ),
-          compAngle("SCB", "BAD", "corresponding")
+          compAngle("SCB", "BAD", "opposite-in-parallelogram")
         ),
         deduce(
           pravyB,
