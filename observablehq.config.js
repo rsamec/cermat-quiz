@@ -87,7 +87,8 @@ export default {
         { name: "Tisk", path: "/print" },
         { name: "Integrace", path: "/embedding" },
         { name: "AI", path: "/ai" },
-        { name: "Mini aplikace", path: "/guides/math-trainer-guide" },
+        { name: "Mini aplikace", path: "/guides/math-trainer/index" },
+        { name: "Automatizace NotebookLM", path: "/guides/notebook-lm/index" },
       ]
     },
     {
@@ -113,6 +114,7 @@ export default {
       open: false,
       name: "Aktuality",
       pages: [
+        { name: "Leden 2026", path: "/blog/2026-january/index" },
         { name: "Prosinec 2025", path: "/blog/2025-december/index" },
         { name: "Listopad 2025", path: "/blog/2025-november/index" },
         { name: "Říjen 2025", path: "/blog/2025-october/index" },

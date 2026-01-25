@@ -18,7 +18,7 @@ Aplikace nabízí 2 základní obrazovky
 
 Aplikace Matematický trenažér, který slouží jako průvodce rozborem řešení slovních úloh, lze vyzkoušet <a href="/math-trainer">zde</a>
 
-<a href="/guides/math-trainer-guide">Návod na vytvoření</a> pomocí promptu v prostředí <a href="https://gemini.google.com">Gemini</a>.
+<a href="/guides/math-trainer/index">Návod na vytvoření</a> pomocí promptu v prostředí <a href="https://gemini.google.com">Gemini</a>.
 
 Základní data, resp. jednotlivé testy, zadání úloh a postupy řešení úloh jsou použity z <a href="/inputs">banky úloh</a>. 
 - zadání úloh je použíto přímo z banky úloh

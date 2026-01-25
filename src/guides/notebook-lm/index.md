@@ -1,51 +1,52 @@
-from typing import List, Tuple, Any
-from notebooklm import NotebookLMClient, InfographicDetail, InfographicOrientation, AudioFormat, AudioLength
-import zipfile
+---
+title: Automatizace Notebook LM
+sidebar: true
+header: false
+footer: false
+pager: true
+toc: true
+---
+
+
+# Automatizace generování artifacts (audio, infografiky, ...) z aplikace NotebookLM z banky úloh
+
+![alt text](image.png)
+
+- stáhnout zip balíček <a download href="/ctedu/word-problem.zip">ČT EDU data</a>, případně <a download href="/data/word-problem.zip">cermat data</a>
+- extrahovat soubory z balíčku/adresáře
+- use [notebooklm-py](https://github.com/teng-lin/notebooklm-py) knihovnu 
+  - vytvoření notebook
+  - přidání zdrojů
+  - generování artifacts
+  - stažení vygenorovaných artifacts
+
+
+```py
 import asyncio
-from PIL import Image
+import os
+from utils.notebook_lm_utils import read_zip_directory_contents_flat, createWithSources, generateArfifacts, downloadArtifacts
 
-initial_interval = 2.0
-max_interval = 30.0
-timeout = 1000
-between_generation_delay = 1
+# Path to zip package with data
+zip_path = os.path.join(os.getcwd(),"word-problem.zip")
 
-custom_prompt = """You are an academic dialogue coach for math.
-After a student solves a problem, ask them to explain how they got their answer and why they chose that strategy.
-Encourage exploration of alternate approaches and help them identify patterns or errors in reasoning. 
-Keep the tone curious and supportive.
-- try to add some jokes"""
+# Extract data from file
+files = read_zip_directory_contents_flat(zip_path, dir)
 
-def read_zip_directory_contents_flat(zip_file: str, directory_name: str) -> List[Tuple[str,str]]:
-    results = []
-    directory_name = directory_name.rstrip("/") + "/"
 
-    with zipfile.ZipFile(zip_file, "r") as z:
-        for info in z.infolist():
-            if (
-                info.filename.startswith(directory_name)
-                and not info.is_dir()
-                and "/" not in info.filename[len(directory_name):]
-            ):
-                filename_only = info.filename.split("/")[-1]
-                with z.open(info.filename) as f:
-                    results.append(
-                        (filename_only, f.read().decode("utf-8"))
-                    )
+async def run_task(period:str):
+    notebook_id = await createWithSources(period, files)
+    artifact_source = await generateArfifacts(notebook_id, {"infographic":True, "audio": True}, True),
+    result = await downloadArtifacts(notebook_id, period, artifact_source)
+    return result
 
-    return results
+# Run tasks
+asyncio.run(run_task(period))
+```
 
-async def getNotebookId(period:str) -> str:
-    async with await NotebookLMClient.from_storage() as client:
-        # List all notebooks
-        notebooks = await client.notebooks.list()
-        
-        matched = next(filter((lambda x: period in x.title), notebooks), None)
 
-        if matched is None:
-            raise ValueError(f"Does not exist {period}")
-        else:
-            return matched.id
+## Vytvoření notebook a přidání zdrojů
 
+```py
 async def createWithSources(period:str, results: List[Tuple[str,str]]) -> str:    
     async with await NotebookLMClient.from_storage() as client:
         # List all notebooks
@@ -65,7 +66,12 @@ async def createWithSources(period:str, results: List[Tuple[str,str]]) -> str:
         else:
             # raise ValueError(f"Already exists {matched.id}: {matched.title}")
             return matched.id                        
-       
+
+```
+
+## Generování artifacts (audio, infographic)
+
+```py
 async def generateArfifacts(id:str, opt: dict[str, bool], waitForComplation: bool) -> dict[str,int]:
     async with await NotebookLMClient.from_storage() as client:
         # List and manage
@@ -91,7 +97,11 @@ async def generateArfifacts(id:str, opt: dict[str, bool], waitForComplation: boo
                 result[status.task_id] = int(src.title.split(".")[0])
         
         return result
+```
 
+## Stažení artifacts (audio, infographic) and převod png do webp formátu
+
+```py
 async def downloadArtifacts(id:str, dir_name:str, artifact_source :dict[str,int]) -> List[Any]:    
     async with await NotebookLMClient.from_storage() as client:    
         save_location_root_dir = "artifacts"
@@ -129,4 +139,6 @@ async def downloadArtifacts(id:str, dir_name:str, artifact_source :dict[str,int]
                 continue
 
         return dowloaded_artifacts
+```
+
 

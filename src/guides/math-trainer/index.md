@@ -1,7 +1,7 @@
 ---
-title: React
+title: Ukázková aplikace - Matematický trenažér - návod
 sidebar: true
-header: Ukázková aplikace - Matematický trenažér - návod
+header: false
 footer: false
 pager: true
 toc: true
