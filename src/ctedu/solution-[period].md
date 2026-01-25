@@ -105,7 +105,7 @@ const output = ids.map(id => {
   ${values?.length > 0 && artifacts.length > 0
   ? html.fragment`<details><summary>AI artifacts</summary>
   ${artifacts.map(a => {
-    if (a.kind == 7) return html`<img src=${baseMediaPublic}/${period}/${a.title}.png />`
+    if (a.kind == 7) return html`<img src=${baseMediaPublic}/${period}/${a.title}.webp />`
     if (a.kind == 1) return html`<audio src=${baseMediaPublic}/${period}/${a.title}.m4a playsinline muted controls style="min-width: 100px;"></audio>`
     return ''
   })}</details>
