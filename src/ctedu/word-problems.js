@@ -1433,7 +1433,7 @@ function inferConvertPercentRule(a) {
     ] : []
   };
 }
-function toRatioCompareRule(a, b, ctor3) {
+function toRatioCompareRule(a, b, ctor2) {
   if (equalAgent(b.agent, a.agent) && b.entity != a.entity) {
     b = toGenerAgent(b);
     a = toGenerAgent(a);
@@ -1446,16 +1446,16 @@ function toRatioCompareRule(a, b, ctor3) {
     agentB: singleAgent(b.agent),
     agentA: singleAgent(a.agent),
     ratio: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity / b.quantity : wrapToRatio(`a.quantity / b.quantity`, { a, b }),
-    ...ctor3.asPercent && { asPercent: true }
+    ...ctor2.asPercent && { asPercent: true }
   };
 }
-function inferToRatioCompareRule(a, b, ctor3) {
-  const result = toRatioCompareRule(a, b, ctor3);
+function inferToRatioCompareRule(a, b, ctor2) {
+  const result = toRatioCompareRule(a, b, ctor2);
   if (isNumber(result.ratio) && isNumber(a.quantity) && isNumber(b.quantity)) {
     const between = result.ratio > 1 / 2 && result.ratio < 2;
     return {
       name: toRatioCompareRule.name,
-      inputParameters: extractKinds(a, b, ctor3),
+      inputParameters: extractKinds(a, b, ctor2),
       question: `Porovnej ${result.agentA} a ${result.agentB}.${between ? `O kolik z ${result.agentB}?` : `Kolikr\xE1t ${result.ratio < 1 ? "men\u0161\xED" : "v\u011Bt\u0161\xED"}?`}`,
       result,
       options: between ? [
@@ -1467,7 +1467,7 @@ function inferToRatioCompareRule(a, b, ctor3) {
       ]
     };
   } else {
-    return resultAsQuestion(result, { name: toRatioCompareRule.name, inputParameters: extractKinds(a, b, ctor3) });
+    return resultAsQuestion(result, { name: toRatioCompareRule.name, inputParameters: extractKinds(a, b, ctor2) });
   }
 }
 function compareToRateRule(a, b, last2) {

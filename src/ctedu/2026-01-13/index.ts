@@ -1,5 +1,5 @@
-import { cont, ctor, ctorOption, sum, counter, product, ctorDifference, contLength, dimensionEntity, contArea, ctorUnit, contVolume, evalFormulaAsCont, formulaRegistry, ctorPercent, ctorComplement, compRelative, ratio, doubleProduct, percent, contAngle, compAngle, triangleAngle, compRatio, ctorLinearEquation } from "../../components/math";
-import { anglesNames, createLazyMap, deduce, deduceAs, last, toCont } from "../../utils/deduce-utils";
+import { cont, ctorOption, sum, ctorDifference, compRelative, ratio, percent, contAngle, compAngle, triangleAngle, compRatio, ctorLinearEquation } from "../../components/math";
+import { anglesNames, createLazyMap, deduce, deduceAs, last } from "../../utils/deduce-utils";
 
 export default createLazyMap({
     4: () => obyvatelSporty(),
