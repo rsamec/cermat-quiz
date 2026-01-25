@@ -73,4 +73,4 @@ Výsledek zaokrouhlete na stovky cm^3^
 > 
 > Kolem závodní dráhy se tísnili davy příznivců tohoto poměrně riskantního sportu. Všichni s napětím čekali na start. Náhle uslyšeli výstřel z pistole a ve zlomku vteřiny už viděli jen oblaka prachu. Vtom Radek zpozoroval, že se z bezpečnostní zátarasy dostala malá holčička. Sebevědomně si vykračovala po dráze směrem k prudké zatáčce. Radek se ani chvíli nerozmýšlel, přeskočil zábranu a odnesl výletnici zpět otcovy bezpečné náruče. Za svůj obětavý čin si vysloužil všeobecné uznání.
 > 
-> Den se nakonec vydařil. Kromě toho, že Radkova záchranná akce byla úspěšná, Petr byl pyšný na svého mladšího bratra, který obhájil vítězství.
+> Den se nakonec vydařil. Kromě toho, že Radkova záchranná akce byla úspěšná, Petr byl pyšný na svého mladšího bratra, který obhájil výtězství.
