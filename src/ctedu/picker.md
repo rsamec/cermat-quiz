@@ -43,7 +43,7 @@ Balíček **všech zadání úloh** ve formátu markdown členěno dle granulari
 - <a download class="h-stack h-stack--s  h-stack-items--center" href="/ctedu/questions.zip"><i class="fa fa-brands fa-markdown"></i><span>jednotlivých testů</span></a>
 - <a download class="h-stack h-stack--s  h-stack-items--center" href="/ctedu/question.zip"><i class="fa fa-brands fa-markdown"></i><span>jednotlivých úloh</span></a>
 
-Balíček **úloh s postupy řešení úloh** ve formátu markdown členěno dle granularity až na úroveň
+Balíček **úloh s postupy řešení** ve formátu markdown členěno dle granularity až na úroveň
 - <a download class="h-stack h-stack--s  h-stack-items--center" href="/ctedu/word-problems.zip"><i class="fa fa-brands fa-markdown"></i><span>jednotlivých testů</span></a>
 - <a download class="h-stack h-stack--s  h-stack-items--center" href="/ctedu/word-problem.zip"><i class="fa fa-brands fa-markdown"></i><span>jednotlivých úloh</span></a>
 

@@ -8,6 +8,8 @@
     "deploy": "observable deploy",
     "observable": "observable",
     "merge-pdf": "node merge-pdf.js ./generated",
+    "generate-pdf:ctedu":"node src/ctedu/pdf.json.js",
+    "pdf:ctedu":"npm run merge-pdf && rm src/assets/pdf/ctedu/data.json && npm run generate-pdf:ctedu",
     "baml-generate": "baml-cli generate",
     "build:word-problems": "esbuild ./src/math/word-problems.ts --bundle --platform=neutral --outfile=./src/math/word-problems.js",
     "build:deduce-utils": "esbuild ./src/utils/deduce-utils.ts --bundle --platform=neutral --outfile=./src/utils/deduce-utils.js",

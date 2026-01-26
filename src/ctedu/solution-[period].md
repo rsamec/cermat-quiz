@@ -22,11 +22,9 @@ import { providersConfig } from '../utils/quiz-utils.js';
 import { localStorageSubject } from '../utils/storage.utils.js'
 import Fraction from 'fraction.js';
 
-document.addEventListener("keydown", (e) => {
-  if (e.ctrlKey && e.code === "Space") {
-    e.preventDefault();
 
-    const details = document.querySelectorAll("details");
+const toggleExpandAll = () => {
+  const details = document.querySelectorAll("main details");
     if (!details.length) return;
 
     // Check if all details are currently open
@@ -36,6 +34,12 @@ document.addEventListener("keydown", (e) => {
     details.forEach(d => {
       d.open = !allOpen;
     });
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.ctrlKey && e.code === "Space") {
+    e.preventDefault();
+    toggleExpandAll()
   }
 });
 
@@ -131,6 +135,11 @@ function renderChatButton(label, query){
   return html`<a href="${provider.url}${encodeURIComponent(query)}" target="_blank"><button class="btn btn--dual h-stack"><div class="btn__left-part">${label}</div><div class="btn__right-part">${provider.shortName}<div/></button></a>`
 }
 
+const buttonInput = Inputs.button(html`<i class="fa-solid fa-plus" title="expand/collapse all"></i>`, {reduce:() => {
+  toggleExpandAll()
+}})
+buttonInput.className = ''
+buttonInput.querySelector("button").className = "fab";
 ```
 <style>
 details.solutions > summary > h1, h2 {
@@ -138,6 +147,11 @@ details.solutions > summary > h1, h2 {
 }
 </style>
 
+
+${buttonInput}
+
+
 ```js
 display(html`<div class=root>${output}</div>`)
+
 ```

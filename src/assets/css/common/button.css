@@ -67,3 +67,42 @@
     background-color: brightness(1.75);
   }
 }
+
+.fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+
+  width: 56px !important;
+  height: 56px !important;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  line-height: 1; /* IMPORTANT */
+
+  background-color: var(--theme-foreground-fainter);
+  color: var(--theme-foreground);
+
+
+  border: none;
+  cursor: pointer;
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fab i {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.fab:hover {
+  transform: scale(1.1);
+}
+
+.fab:active {
+  transform: scale(0.95);
+}

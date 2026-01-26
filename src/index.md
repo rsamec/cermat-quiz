@@ -5,7 +5,7 @@ style: /assets/css/main.css
 <div class="hero">
   <h1>Cermat úlohy</h1>
   <h2>Mimooficiální databanka úloh a postupů řešení</h2>
-  <a href="/blog/2025-december/">Novinky</a>
+  <a href="/blog/2026-january/">Novinky</a>
 
   <video src="./assets/databanka.mp4" autoplay playsinline muted controls style="width: 100%;"></video>
 </a>
@@ -224,7 +224,7 @@ Balíček **všech zadání úloh** ve formátu markdown členěno dle **granula
 
 </div>
 
-Balíček **všech postupů řešení úloh** ve formátu markdown (generováno heslovitě) s členěním dle **granularity** až na úroveň
+Balíček **úloh s postupy řešení** ve formátu markdown (generováno heslovitě) s členěním dle **granularity** až na úroveň
 <ul>
 <li><a download class="h-stack h-stack--s  h-stack-items--center" href="/data/word-problems.zip"><i class="fa fa-brands fa-markdown"></i><span>jednotlivých testů</span></a>
 </li>

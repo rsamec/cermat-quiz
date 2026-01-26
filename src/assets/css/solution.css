@@ -2,6 +2,7 @@
 @import url("observablehq:theme-air.css");
 @import url("observablehq:theme-near-midnight.css") screen and (prefers-color-scheme: dark);
 @import './common/base.css';
+@import './common/button.css';
 
 summary {
     font-weight: 900;

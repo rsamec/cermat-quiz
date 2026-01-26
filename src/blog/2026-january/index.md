@@ -17,7 +17,7 @@ toc: true
 ![alt text](image.png)
 ![alt text](image-1.png)
 
-Data banka rozšířena o [příklady s ČT EDU](/ctedu/picker).
+Data banka rozšířena o [úlohy od ČT EDU](/ctedu/picker).
 - rozbor, tisk, klíč řešení
 - balíčky pro tisk
 - balíčky (markdown formát) pro AI/automatizaci
