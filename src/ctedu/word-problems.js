@@ -85,11 +85,20 @@ function ctorLinearEquation(agent, entity, variable = "x") {
 function ctorPercent() {
   return { kind: "ratio", asPercent: true };
 }
+function ctorComparePercent() {
+  return { kind: "comp-ratio", asPercent: true };
+}
+function ctorRatios(agent, { useBase } = {}) {
+  return { kind: "ratios", whole: agent, useBase };
+}
 function ctorComplement(part) {
   return { kind: "complement", part };
 }
 function ctorDifference(differenceAgent) {
   return { kind: "diff", differenceAgent };
+}
+function ctorSlide(agent) {
+  return { kind: "slide", agent };
 }
 function cont(agent, quantity, entity, unit, opts) {
   return { kind: "cont", agent: normalizeToAgent(agent), quantity, entity, unit, asRatio: opts?.asFraction };
@@ -179,6 +188,9 @@ function circleArea(wholeAgent, unit = "cm2") {
 }
 function baseAreaVolume(wholeAgent, unit = "cm3") {
   return evalFormulaAsCont(formulaRegistry.volume.baseArea, (x) => x.V, wholeAgent, { entity: dim.volume.entity, unit });
+}
+function proportion(inverse, entities) {
+  return { kind: "proportion", inverse, entities };
 }
 function compareRule(a, b) {
   if (a.entity != b.entity) {
@@ -6799,7 +6811,7 @@ var mdFormattingFunc = (defaultExpressionDepth, context = null) => ({
     const res = [unit, d].filter((d2) => d2 != null).join(" ");
     return isEmptyOrWhiteSpace(res) ? "" : `__${res.trim()}__`;
   },
-  formatAgent: (d) => `**${d}**`,
+  formatAgent: (d) => `**${Array.isArray(d) ? d.join() : d}**`,
   formatSequence: (d) => `${formatSequence2(d)}`,
   formatTable: (data) => `vzor opakov\xE1n\xED ${data.map((d) => d[1]).join()}`
 });
@@ -7431,11 +7443,208 @@ function triangleExample() {
   };
 }
 
+// src/ctedu/2026-01-27/index.ts
+var __default4 = createLazyMap({
+  1: () => porovnani2(),
+  4.1: () => bazen().pocetCerpadel,
+  4.2: () => bazen().pomer,
+  4.3: () => bazen().pocetHodin,
+  5.1: () => krouzkyATridy().rozdil,
+  5.2: () => krouzkyATridy().procent,
+  5.3: () => krouzkyATridy().pomer,
+  6: () => obdelnik2(),
+  7: () => hranol()
+});
+function porovnani2() {
+  return {
+    deductionTree: deduce(
+      deduce(
+        counter("prvn\xED zadan\xE9 \u010D\xEDslo", 8),
+        evalExprAsCont("x^2", "druh\xE1 mocnina", { entity: "" })
+      ),
+      deduce(
+        counter("ratio zadan\xE9 \u010D\xEDslo", 256),
+        evalExprAsCont("sqrt(x)", "druh\xE1 odmocnina", { entity: "" })
+      )
+    )
+  };
+}
+function bazen() {
+  const entity = "doba";
+  const unit = "h";
+  const entityCerpadlo = "\u010Derpadlo";
+  const entityBazen = "velikost baz\xE9nu";
+  const umeraDobaCerpadlo = proportion(true, [entity, entityCerpadlo]);
+  const umeraDobaBazen = proportion(false, [entity, entityBazen]);
+  const potrebaEntity = "pot\u0159eba";
+  return {
+    pomer: {
+      deductionTree: deduce(
+        cont(["nov\u011B", "skute\u010Dn\u011B na\u010Derp\xE1no"], 9, entityCerpadlo),
+        deduce(
+          deduce(
+            deduce(
+              cont(["p\u016Fvodn\u011B"], 8, entityCerpadlo),
+              cont(["nov\u011B"], 16, entityCerpadlo),
+              ctor("comp-ratio")
+            ),
+            umeraDobaCerpadlo
+          ),
+          cont(["p\u016Fvodn\u011B", potrebaEntity], 36, entity, unit)
+        ),
+        ctorPercent()
+      )
+    },
+    pocetCerpadel: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            cont("p\u016Fvodn\u011B", 36, entity, unit),
+            cont("nov\u011B", 24, entity, unit),
+            ctor("comp-ratio")
+          ),
+          umeraDobaCerpadlo
+        ),
+        cont("p\u016Fvodn\u011B", 8, entityCerpadlo)
+      )
+    },
+    pocetHodin: {
+      deductionTree: deduce(
+        cont("za\u010D\xE1tek napou\u0161t\u011Bn\xED", 8, entity, unit),
+        deduce(
+          deduce(
+            deduce(
+              deduce(
+                cont(["p\u016Fvodn\u011B"], 8, entityCerpadlo),
+                cont(["nov\u011B"], 24, entityCerpadlo),
+                ctor("comp-ratio")
+              ),
+              umeraDobaCerpadlo
+            ),
+            cont(["p\u016Fvodn\u011B", "cel\xFD baz\xE9n"], 36, entity, unit)
+          ),
+          deduce(
+            ratio("cel\xFD baz\xE9n", "napu\u0161t\u011Bno de\u0161t\u011Bm", 1 / 3),
+            ctorComplement("zbytek baz\xE9nu")
+          )
+        ),
+        ctorSlide("baz\xE9n zcela napu\u0161t\u011Bn")
+      )
+    }
+  };
+}
+function krouzkyATridy() {
+  const entity = "\u017E\xE1k";
+  const entityBase = "jednotka grafu";
+  const hudebniLabel = "hudebn\xED";
+  const sachovyLabel = "\u0161achov\xFD";
+  const robotickyLabel = "robotick\xFD";
+  const hudebni8 = cont(`${hudebniLabel} 8.`, 5, entityBase);
+  const hudebni9 = cont(`${hudebniLabel} 9.`, 4, entityBase);
+  const sachovy8 = cont(`${sachovyLabel} 8.`, 4, entityBase);
+  const sachovy9 = cont(`${sachovyLabel} 9.`, 7, entityBase);
+  const roboticky8 = cont(`${robotickyLabel} 8.`, 3, entityBase);
+  const roboticky9 = cont(`${robotickyLabel} 9.`, 8, entityBase);
+  const jednotka = deduce(
+    cont("rozd\xEDl 9. a 8.", 14, entity),
+    deduce(
+      deduce(
+        hudebni9,
+        sachovy9,
+        roboticky9,
+        sum("9.")
+      ),
+      deduce(
+        hudebni8,
+        sachovy8,
+        roboticky8,
+        sum("8.")
+      ),
+      ctorDifference("rozd\xEDl 9. a 8.")
+    ),
+    ctor("rate")
+  );
+  return {
+    rozdil: {
+      deductionTree: deduce(
+        jednotka,
+        deduce(sachovy9, sachovy8, ctorDifference(sachovyLabel))
+      )
+    },
+    procent: {
+      deductionTree: deduce(
+        hudebni8,
+        hudebni9,
+        ctorComparePercent()
+      )
+    },
+    pomer: {
+      deductionTree: deduce(
+        roboticky8,
+        roboticky9,
+        ctorRatios(robotickyLabel)
+      )
+    }
+  };
+}
+function obdelnik2() {
+  const dim2 = dimensionEntity();
+  const kratsi = contLength("krat\u0161\xED strana", 9);
+  const delsi = deduce(
+    contArea("obd\xE9ln\xEDk ABCD", 108),
+    kratsi,
+    evalFormulaAsCont(formulaRegistry.surfaceArea.rectangle, (x) => x.b, "del\u0161\xED strana", dim2.length)
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          delsi,
+          kratsi,
+          pythagoras("\xFAhlop\u0159\xED\u010Dka", ["krat\u0161\xED strana", "del\u0161\xED strana"])
+        ),
+        delsi
+      ),
+      ctorOption("C", 3)
+    )
+  };
+}
+function hranol() {
+  const dim2 = dimensionEntity();
+  const strana = deduce(
+    contLength(["hranol", "obvod"], 20),
+    evalFormulaAsCont(formulaRegistry.circumReference.square, (x) => x.a, "strana", dim2.length)
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          contLength(["v\xE1lec", "v\xFD\u0161ka"], 10),
+          deduce(
+            contLength(["v\xE1lec", "polom\u011Br"], 1, "dm"),
+            ctorUnit("cm")
+          ),
+          evalFormulaAsCont(formulaRegistry.volume.cylinder, (x) => x.V, "v\xE1lec", dim2.volume)
+        ),
+        deduce(
+          strana,
+          last(strana),
+          contLength(["hranol", "v\xFD\u0161ka"], 10),
+          evalFormulaAsCont(formulaRegistry.volume.cuboid, (x) => x.V, "hranol", dim2.volume)
+        ),
+        ctorDifference("rozd\xEDl")
+      ),
+      ctorOption("A", 2890)
+    )
+  };
+}
+
 // src/ctedu/word-problems.ts
 var word_problems_default = createLazyMap({
   "2026-01-06": () => __default,
   "2026-01-13": () => __default2,
-  "2026-01-20": () => __default3
+  "2026-01-20": () => __default3,
+  "2026-01-27": () => __default4
 });
 export {
   word_problems_default as default,

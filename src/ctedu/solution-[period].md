@@ -106,13 +106,13 @@ const output = ids.map(id => {
   return html.fragment`
   ${mdPlus.unsafe(quiz.content([id], { ids, render: 'content' }), { docId: `${period}-${id}` })}
   ${renderButtons(quiz.content([id], { ids, render: 'content' }), values)}
-  ${values?.length > 0 && artifacts.length > 0
-  ? html.fragment`<details><summary>AI artifacts</summary>
+  ${values?.length > 0
+  ? html.fragment`${artifacts.length > 0 ? html`<details><summary>AI artifacts</summary>
   ${artifacts.map(a => {
     if (a.kind == 7) return html`<img src=${baseMediaPublic}/${period}/${a.title}.webp />`
     if (a.kind == 1) return html`<audio src=${baseMediaPublic}/${period}/${a.title}.m4a playsinline muted controls style="min-width: 100px;"></audio>`
     return ''
-  })}</details>
+  })}</details>`:''}
   ${values.map(([key, value]) => html`<div>
   ${value.deductionTree != null ? html`<details>
   <summary>Rozbor krok za krokem - ${key}

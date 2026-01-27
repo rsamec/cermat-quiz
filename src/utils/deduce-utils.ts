@@ -503,7 +503,7 @@ const mdFormattingFunc = (defaultExpressionDepth: number, context: DeduceContext
     const res = [unit, d].filter(d => d != null).join(" ");
     return isEmptyOrWhiteSpace(res) ? '' : `__${res.trim()}__`;
   },
-  formatAgent: d => `**${d}**`,
+  formatAgent: d => `**${Array.isArray(d) ? d.join(): d}**`,
   formatSequence: d => `${formatSequence(d)}`,
   formatTable: (data: (string | number)[][]) => `vzor opakování ${data.map(d => d[1]).join()}`
 })

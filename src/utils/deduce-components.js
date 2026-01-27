@@ -262,7 +262,7 @@ export const formatting = {
     }
   },
   formatEntity: (d, u) => [u, d].filter(d => d != null).join(" "),
-  formatAgent: d => html`<b>${d}</b>`,
+  formatAgent: d => html`<b>${Array.isArray(d) ? d.join() : d}</b>`,
   formatSequence: d => formatSequence(d),
 }
 

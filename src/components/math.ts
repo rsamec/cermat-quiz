@@ -756,7 +756,7 @@ export const triangleAngleSumAgent = "součet úhlů v trojúhelníku";
 export function contTringleAngleSum(agent?: string) {
   return contAngle(agent ?? triangleAngleSumAgent, 180, "deg")
 }
-export function contLength(agent: string, quantity: NumberOrVariable, unit: LengthDim = "cm") {
+export function contLength(agent: string | Agent, quantity: NumberOrVariable, unit: LengthDim = "cm") {
   return cont(agent, quantity, dimensionEntity().length.entity, unit)
 }
 export function contArea(agent: string, quantity: NumberOrVariable, unit: AreaDim = "cm2") {

@@ -3812,7 +3812,7 @@ var mdFormattingFunc = (defaultExpressionDepth, context = null) => ({
     const res = [unit, d].filter((d2) => d2 != null).join(" ");
     return isEmptyOrWhiteSpace(res) ? "" : `__${res.trim()}__`;
   },
-  formatAgent: (d) => `**${d}**`,
+  formatAgent: (d) => `**${Array.isArray(d) ? d.join() : d}**`,
   formatSequence: (d) => `${formatSequence2(d)}`,
   formatTable: (data) => `vzor opakov\xE1n\xED ${data.map((d) => d[1]).join()}`
 });
