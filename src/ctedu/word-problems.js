@@ -7460,11 +7460,11 @@ function porovnani2() {
     deductionTree: deduce(
       deduce(
         counter("prvn\xED zadan\xE9 \u010D\xEDslo", 8),
-        evalExprAsCont("x^2", "druh\xE1 mocnina", { entity: "" })
+        evalExprAsCont("x^2", "mocnina prvn\xEDho \u010D\xEDsla", { entity: "" })
       ),
       deduce(
-        counter("ratio zadan\xE9 \u010D\xEDslo", 256),
-        evalExprAsCont("sqrt(x)", "druh\xE1 odmocnina", { entity: "" })
+        counter("druh\xE9 zadan\xE9 \u010D\xEDslo", 256),
+        evalExprAsCont("sqrt(x)", "odmocnina druh\xE9ho \u010D\xEDsla", { entity: "" })
       )
     )
   };

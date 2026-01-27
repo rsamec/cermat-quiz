@@ -18,11 +18,11 @@ function porovnani() {
         deductionTree: deduce(
             deduce(
                 counter("první zadané číslo", 8),
-                evalExprAsCont("x^2", "druhá mocnina", { entity: '' })
+                evalExprAsCont("x^2", "mocnina prvního čísla", { entity: '' })
             ),
             deduce(
-                counter("ratio zadané číslo", 256),
-                evalExprAsCont("sqrt(x)", "druhá odmocnina", { entity: '' })
+                counter("druhé zadané číslo", 256),
+                evalExprAsCont("sqrt(x)", "odmocnina druhého čísla", { entity: '' })
             ),
         )
     }
