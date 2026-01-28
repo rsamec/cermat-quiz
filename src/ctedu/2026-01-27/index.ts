@@ -52,7 +52,8 @@ function bazen() {
                     cont(["původně", potrebaEntity], 36, entity, unit),
                 ),
                 ctorPercent()
-            )
+            ),
+            convertToTestedValue: value => value.ratio * 100
         },
         pocetCerpadel: {
             deductionTree: deduce(
@@ -148,7 +149,8 @@ function krouzkyATridy() {
                 roboticky8,
                 roboticky9,
                 ctorRatios(robotickyLabel)
-            )
+            ),
+            convertToTestedValue: value => value.ratios.join(":")
         }
     }
 }

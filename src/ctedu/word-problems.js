@@ -2316,6 +2316,7 @@ function inferenceRuleEx(...args) {
     if (last2?.kind === "comp-ratio") {
       return inferToRatioCompareRule(a, b, last2);
     }
+    return inferRateRule(a, b);
   } else if ((a.kind === "cont" || a.kind === "comp") && b.kind === "unit") {
     return inferConvertToUnitRule(a, b);
   } else if (a.kind === "unit" && (b.kind === "cont" || b.kind === "comp")) {
@@ -7526,7 +7527,8 @@ function bazen() {
           cont(["p\u016Fvodn\u011B", potrebaEntity], 36, entity, unit)
         ),
         ctorPercent()
-      )
+      ),
+      convertToTestedValue: (value) => value.ratio * 100
     },
     pocetCerpadel: {
       deductionTree: deduce(
@@ -7616,7 +7618,8 @@ function krouzkyATridy() {
         roboticky8,
         roboticky9,
         ctorRatios(robotickyLabel)
-      )
+      ),
+      convertToTestedValue: (value) => value.ratios.join(":")
     }
   };
 }

@@ -6130,6 +6130,7 @@ function inferenceRuleEx(...args) {
     if (last?.kind === "comp-ratio") {
       return inferToRatioCompareRule(a, b, last);
     }
+    return inferRateRule(a, b);
   } else if ((a.kind === "cont" || a.kind === "comp") && b.kind === "unit") {
     return inferConvertToUnitRule(a, b);
   } else if (a.kind === "unit" && (b.kind === "cont" || b.kind === "comp")) {

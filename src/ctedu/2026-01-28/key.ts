@@ -41,7 +41,7 @@ const form = rootGroup({
     8.1: number(5),
     8.2: numbers([3, 14], twoPoints)
   }),
-  9: selfEvaluateImage("", threePoints),
+  9: selfEvaluateImage("", twoPoints),
   10: group({
     10.1: selfEvaluateImage(""),
     10.2: selfEvaluateImage("")
