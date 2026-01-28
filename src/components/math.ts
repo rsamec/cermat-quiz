@@ -828,8 +828,8 @@ export function nthPartScale(agent): NthPartScale {
   return { kind: 'nth-scale', agent }
 }
 
-export function rate(agent: string | Agent, quantity: number, entity: EntityDef, entityBase: EntityDef, baseQuantity: number = 1): Rate {
-  return { kind: 'rate', agent: normalizeToAgent(agent), quantity, baseQuantity, entity: toEntity(entity), entityBase: toEntity(entityBase) }
+export function rate(agent: string | Agent, quantity: NumberOrVariable, entity: EntityDef, entityBase: EntityDef, baseQuantity: number = 1): Rate {
+  return { kind: 'rate', agent: normalizeToAgent(agent), quantity: quantity as NumberOrExpression, baseQuantity, entity: toEntity(entity), entityBase: toEntity(entityBase) }
 }
 export function frequency(agent: string, quantity: number, entity: EntityDef, entityBase: EntityDef, baseQuantity): Frequency {
   return { kind: 'frequency', agent, quantity, baseQuantity, entity: toEntity(entity), entityBase: toEntity(entityBase) }
@@ -2288,14 +2288,14 @@ function inferConvertPercentRule(a: RatioComparison): Question<RatioComparison> 
   }
 }
 
-function toRatioCompareRule(a: Container, b: Container, ctor: RatioComparison): RatioComparison {
-  if (equalAgent(b.agent, a.agent) && b.entity != a.entity) {
+function toRatioCompareRule(a: Container | Rate, b: Container | Rate, ctor: RatioComparison): RatioComparison {
+  if (equalAgent(b.agent, a.agent) && b.entity != a.entity && a.kind === "cont" && b.kind === "cont") {
     //auto convert to
     b = toGenerAgent(b);
     a = toGenerAgent(a)
   }
-  if (b.entity != a.entity) {
-    throw `Mismatch entity ${b.entity}, ${a.entity}`
+  if (!isSameEntity(a.entity, b.entity)) {
+    throw `Mismatch entity ${JSON.stringify(b.entity)}, ${JSON.stringify(a.entity)}`
   }
   return {
     kind: 'comp-ratio',
@@ -2305,7 +2305,7 @@ function toRatioCompareRule(a: Container, b: Container, ctor: RatioComparison): 
     ...(ctor.asPercent && { asPercent: true })
   }
 }
-function inferToRatioCompareRule(a: Container, b: Container, ctor: RatioComparison): Question<RatioComparison> {
+function inferToRatioCompareRule(a: Container | Rate, b: Container | Rate, ctor: RatioComparison): Question<RatioComparison> {
   const result = toRatioCompareRule(a, b, ctor);
   if (isNumber(result.ratio) && isNumber(a.quantity) && isNumber(b.quantity)) {
     const between = (result.ratio > 1 / 2 && result.ratio < 2);
@@ -3267,16 +3267,20 @@ function inferenceRuleEx(...args: Predicate[]): Question<any> {
   else if ((a.kind === "eval-expr" || a.kind === "eval-formula") && b.kind === "cont") {
     return inferEvalToQuantityRule([b], a)
   }
-  else if (a.kind === "rate" && b.kind === "rate" && last?.kind === "ratios") {
-    return inferToRatiosRule([a, b], last)
+  else if (a.kind === "rate" && b.kind === "rate") {
+    if (last?.kind === "ratios") {
+      return inferToRatiosRule([a, b], last)
+    }
+    if (last?.kind === "linear-equation") {
+      return inferSolveEquationRule(a, b, last)
+    }
+    if (last?.kind === "rate") {
+      return inferTrasitiveRateRule(a, b, last)
+    }
+    if (last?.kind === "comp-ratio") {
+      return inferToRatioCompareRule(a, b, last)
+    }
   }
-  else if (a.kind === "rate" && b.kind === "rate" && last?.kind === "linear-equation") {
-    return inferSolveEquationRule(a, b, last)
-  }
-  else if (a.kind === "rate" && b.kind === "rate" && last?.kind === "rate") {
-    return inferTrasitiveRateRule(a, b, last)
-  }
-
   else if ((a.kind === "cont" || a.kind === "comp") && b.kind === "unit") {
     return inferConvertToUnitRule(a, b);
   }
@@ -3912,11 +3916,16 @@ function isEntityBase(value: EntityDef): value is EntityBase {
 function toEntity(entity: EntityDef): EntityBase {
   return isEntityBase(entity) ? entity : { entity }
 }
-function isSameEntity(f: EntityBase, s: EntityBase) {
+function isSameEntity(eF: EntityDef, eS: EntityDef) {
+
+  const f = isEntityBase(eF) ? eF : toEntity(eF)
+  const s = isEntityBase(eS) ? eS : toEntity(eS)
+
   return f.entity == s.entity && f.unit == s.unit
 }
 
-function extractKinds(...args: Predicate[]): PredicateKind[] {   
+
+function extractKinds(...args: Predicate[]): PredicateKind[] {
   return args.filter(d => d != null && d.kind != null).map(d => d.kind as unknown as PredicateKind)
 }
 

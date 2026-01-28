@@ -27,7 +27,7 @@
     "generate:word-problems:zip": "node ./src/data/word-problems.zip.js > ./src/data/word-problems.zip",
     "generate:raw": "node ./src/data/word-problems-[code].md.js --code M9I-2025",
     "generate:ctedu:zip": "node ./src/ctedu/questions.zip.js > ./src/ctedu/questions.zip",
-    "generate:ctedu:key": "node --experimental-vm-modules ./src/ctedu/key-[period].json.js --period 2026-01-27 > ./src/ctedu/2026-01-27/key.json",
+    "generate:ctedu:key": "node --experimental-vm-modules ./src/ctedu/key-[period].json.js --period 2026-01-28 > ./src/ctedu/2026-01-28/key.json",
     "ai:word-problems:steps:all": "node ./ai-word-problems-schema",
     "ai:word-problems:steps": "node ./src/data/word-problems-ai-[prompt]-[code]-[model]-schema.json.js --code M9B-2025 --prompt steps --model gpt-5-mini > ./src/data/word-problems-ai-steps-M9B-2025-gpt-5-mini.json",
     "ai:word-problems:key-points": "node ./src/data/word-problems-ai-[prompt]-[code]-[model].json.js --code M9B-2025 --prompt key-points --model o4-mini > ./src/data/word-problems-ai-key-points-M9B-2025-o4-mini.json",
@@ -46,8 +46,8 @@
     "generate:math:metrics": "node ./src/data/math-metrics.json.js > ./src/data/math-metrics.json",
     "generate:print": "node ./src/print-[code].md.js --code AJA-2024 > ./src/print-AJA-2024.md",
     "generate:lang": "python3 ./src/data/word-problem-extract-[code].json.py --code M9B-2025 > ./src/data/word-problem-extract-M9B-2025.json",
-    "notebook:generate": "python3 ./src/notebook-lm/generate-artifacts-[period].json.py --period 2026-01-27 > ./src/notebook-lm/data/temp-artifacts-2026-01-27.json",
-    "notebook:download": "python3 ./src/notebook-lm/download-artifacts-[period].json.py --period 2026-01-27 > ./src/notebook-lm/data/artifacts-2026-01-27.json",
+    "notebook:generate": "python3 ./src/notebook-lm/generate-artifacts-[period].json.py --period 2026-01-28 > ./src/notebook-lm/data/temp-artifacts-2026-01-28.json",
+    "notebook:download": "python3 ./src/notebook-lm/download-artifacts-[period].json.py --period 2026-01-28 > ./src/notebook-lm/data/artifacts-2026-01-28.json",
     "notebook:all": "python3 ./src/notebook-lm/notebook-artifacts-[period].json.py --period 2026-01-20 > ./src/notebook-lm/data/artifacts-2026-01-20.json"
   },
   "dependencies": {

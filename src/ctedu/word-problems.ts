@@ -2,6 +2,7 @@ import _20250106 from './2026-01-06/index';
 import _20250113 from './2026-01-13/index';
 import _20250120 from './2026-01-20/index';
 import _20250127 from './2026-01-27/index';
+import _20250128 from './2026-01-28/index';
 
 import { createLazyMap } from '../utils/deduce-utils';
 
@@ -15,4 +16,5 @@ export default createLazyMap({
   "2026-01-13": () => _20250113,
   "2026-01-20": () => _20250120,
   "2026-01-27": () => _20250127,
+  "2026-01-28": () => _20250128,
 })

@@ -1,3 +1,5 @@
+import { ValidationFunctionArgs } from "./assert"
+
 export type JsonRegExp = { source: string, flags: string }
 export type Option<T> = { name: string, value: T }
 export type ComputeFunctionArgs<T> = { args: T }
@@ -10,6 +12,19 @@ export type GroupCompute = ComputeFunctionArgs<{ points: number, min: number }[]
   kind: 'group'
 }
 export type ComputeFunctionSpec = SumCompute | GroupCompute
+
+export type SelfEvaluateText = {
+  kind: 'text',
+  content: string
+}
+
+export type SelfEvaluateImage = {
+  kind: 'image'
+  src: string
+}
+export type SelfEvaluateValidator = ValidationFunctionArgs<{ options: Option<number>[], hint: SelfEvaluateText | SelfEvaluateImage }> & {
+  kind: "selfEvaluate"
+}
 
 
 export type ComponentFunctionArgs<T> = { args?: T }
@@ -277,22 +292,22 @@ export function sortedOptions(sortedOptions: string[], { points}: additionalConf
     return { verifyBy: { kind: 'equalSortedOptions', args: sortedOptions }, points, inputBy: { kind: 'sortedOptions' } } as const
 }
 
-// export function selfEvaluateImage(src: string, { points}: additionalConfig = { points: 1 }) {
-//     points = points ?? 1;
-//     return selfEvaluate({ kind: 'image' as const, src }, { points});
-// }
-// export function selfEvaluateText(content: string, { points}: additionalConfig = { points: 1 }) {
-//     points = points ?? 1;
-//     return selfEvaluate({ kind: 'text' as const, content }, { points});
-// }
-// export function selfEvaluate(hint: SelfEvaluateText | SelfEvaluateImage, { points}: additionalConfig = { points: 1 }) {
-//     points = points ?? 1;
-//     const options = getPoints(points ?? 1)
-//     return {
-//         verifyBy: { kind: 'selfEvaluate', args: { options, hint } } as SelfEvaluateValidator,
-//         inputBy: { kind: 'options' as const, args: options },        
-//     } as const
-// }
+export function selfEvaluateImage(src: string, { points}: additionalConfig = { points: 1 }) {
+    points = points ?? 1;
+    return selfEvaluate({ kind: 'image' as const, src }, { points});
+}
+export function selfEvaluateText(content: string, { points}: additionalConfig = { points: 1 }) {
+    points = points ?? 1;
+    return selfEvaluate({ kind: 'text' as const, content }, { points});
+}
+export function selfEvaluate(hint: SelfEvaluateText | SelfEvaluateImage, { points}: additionalConfig = { points: 1 }) {
+    points = points ?? 1;
+    const options = getPoints(points ?? 1)
+    return {
+        verifyBy: { kind: 'selfEvaluate', args: { options, hint } } as SelfEvaluateValidator,
+        inputBy: { kind: 'options' as const, args: options },        
+    } as const
+}
 
 
 function stringPatternToRegex(input: string) {

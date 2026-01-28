@@ -1313,12 +1313,12 @@ function inferConvertPercentRule(a) {
   };
 }
 function toRatioCompareRule(a, b, ctor) {
-  if (equalAgent(b.agent, a.agent) && b.entity != a.entity) {
+  if (equalAgent(b.agent, a.agent) && b.entity != a.entity && a.kind === "cont" && b.kind === "cont") {
     b = toGenerAgent(b);
     a = toGenerAgent(a);
   }
-  if (b.entity != a.entity) {
-    throw `Mismatch entity ${b.entity}, ${a.entity}`;
+  if (!isSameEntity(a.entity, b.entity)) {
+    throw `Mismatch entity ${JSON.stringify(b.entity)}, ${JSON.stringify(a.entity)}`;
   }
   return {
     kind: "comp-ratio",
@@ -2146,12 +2146,19 @@ function inferenceRuleEx(...args) {
     return inferEvalToQuantityRule([a], b);
   } else if ((a.kind === "eval-expr" || a.kind === "eval-formula") && b.kind === "cont") {
     return inferEvalToQuantityRule([b], a);
-  } else if (a.kind === "rate" && b.kind === "rate" && last2?.kind === "ratios") {
-    return inferToRatiosRule([a, b], last2);
-  } else if (a.kind === "rate" && b.kind === "rate" && last2?.kind === "linear-equation") {
-    return inferSolveEquationRule(a, b, last2);
-  } else if (a.kind === "rate" && b.kind === "rate" && last2?.kind === "rate") {
-    return inferTrasitiveRateRule(a, b, last2);
+  } else if (a.kind === "rate" && b.kind === "rate") {
+    if (last2?.kind === "ratios") {
+      return inferToRatiosRule([a, b], last2);
+    }
+    if (last2?.kind === "linear-equation") {
+      return inferSolveEquationRule(a, b, last2);
+    }
+    if (last2?.kind === "rate") {
+      return inferTrasitiveRateRule(a, b, last2);
+    }
+    if (last2?.kind === "comp-ratio") {
+      return inferToRatioCompareRule(a, b, last2);
+    }
   } else if ((a.kind === "cont" || a.kind === "comp") && b.kind === "unit") {
     return inferConvertToUnitRule(a, b);
   } else if (a.kind === "unit" && (b.kind === "cont" || b.kind === "comp")) {
@@ -2583,7 +2590,9 @@ function isEntityBase(value) {
 function toEntity(entity) {
   return isEntityBase(entity) ? entity : { entity };
 }
-function isSameEntity(f, s) {
+function isSameEntity(eF, eS) {
+  const f = isEntityBase(eF) ? eF : toEntity(eF);
+  const s = isEntityBase(eS) ? eS : toEntity(eS);
   return f.entity == s.entity && f.unit == s.unit;
 }
 function extractKinds(...args) {
