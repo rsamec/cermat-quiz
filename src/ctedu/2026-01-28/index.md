@@ -189,6 +189,10 @@ Velikost úhlů neměřte, ale výpočtěte (obrázek je pouze ilustrativní).
 
 VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 16
 ===
+> Na začátku promítání je na plátně zobrazen šedý pravoúhlý trojúhleník ABC (viz obrázek).\
+> Dále se na plátně v každém kroku objeví nový větší pravoúhlý trojúhelník s vrcholem A a přeponou ležící na polopřímce AB a je vždy o 2 cm delší než v předchozím trojúhelníku.\
+> V 1. kroku se tak objeví trojúhleník AB~1~C~1~, ve 2. kroku trojúhleník AB~2~C~2~ atd.\
+> Poměr délek obou odvěsen bude ve všech trojúhelnících stejný.\
 > ![alt text](image-9.png)
 
 # 16 Určete,
