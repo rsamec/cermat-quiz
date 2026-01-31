@@ -107,14 +107,14 @@ const output = ids.map(id => {
   ${mdPlus.unsafe(quiz.content([id], { ids, render: 'content' }), { docId: `${period}-${id}` })}
   ${renderButtons(quiz.content([id], { ids, render: 'content' }), values)}
   ${values?.length > 0
-  ? html.fragment`${artifacts.length > 0 ? html`<details><summary>AI artifacts</summary>
+  ? html.fragment`${artifacts.length > 0 ? html`<details><summary class="no-print">AI artifacts</summary>
   ${artifacts.map(a => {
     if (a.kind == 7) return html`<img src=${baseMediaPublic}/${period}/${a.title}.webp />`
     if (a.kind == 1) return html`<audio src=${baseMediaPublic}/${period}/${a.title}.m4a playsinline muted controls style="min-width: 100px;"></audio>`
     return ''
   })}</details>`:''}
   ${values.map(([key, value]) => html`<div>
-  ${value.deductionTree != null ? html`<details>
+  ${value.deductionTree != null ? html`<details class="no-print">
   <summary>Rozbor krok za krokem - ${key}
   </summary>
   <div class="card">${renderChat(value.deductionTree)}</div>
@@ -135,7 +135,7 @@ function renderChatButton(label, query){
   return html`<a href="${provider.url}${encodeURIComponent(query)}" target="_blank"><button class="btn btn--dual h-stack"><div class="btn__left-part">${label}</div><div class="btn__right-part">${provider.shortName}<div/></button></a>`
 }
 
-const buttonInput = Inputs.button(html`<i class="fa-solid fa-plus" title="expand/collapse all"></i>`, {reduce:() => {
+const buttonInput = Inputs.button(html`<i class="fa-solid fa-plus no-print" title="expand/collapse all"></i>`, {reduce:() => {
   toggleExpandAll()
 }})
 buttonInput.className = ''

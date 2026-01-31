@@ -3,17 +3,26 @@
   #observablehq-main,  
   .observablehq-center,
   .observablehq-main,
+  #observablehq-header,
   .observablehq .observablehq--block {
-    margin: 0px;
+    margin: 0px;    
+  }
+
+  #observablehq-header{
+    padding: 0px;
   }
 
   audio {
     display: none;
   }
 
-  #observablehq-toc {
-    display: none;
+  #observablehq-toc,
+  #observablehq-header
+  {
+    display: none;  
   }
+
+  
   .no-print {
     display: none;
   }
