@@ -1,5 +1,5 @@
-import { cont, ctor, ctorOption, sum, counter, ctorDifference, contLength, dimensionEntity, evalFormulaAsCont, formulaRegistry, ctorPercent, ctorComplement, ratio, evalExprAsCont, proportion, ctorComparePercent, ctorRatios, pythagoras, rate, compDiff, ctorLinearEquation, productCombine, percent, halfProduct, ctorBooleanOption, comp } from "../../components/math";
-import { createLazyMap, deduce, last } from "../../utils/deduce-utils";
+import { cont, ctor, ctorOption, sum, counter, ctorDifference, contLength, dimensionEntity, evalFormulaAsCont, formulaRegistry, ctorPercent, ctorComplement, ratio, evalExprAsCont, proportion, ctorComparePercent, ctorRatios, pythagoras, rate, compDiff, ctorLinearEquation, productCombine, percent, halfProduct, ctorBooleanOption, comp, contAngle, compAngle, commonSense, contRightAngle, triangleAngle, ratios, ctorScale, double, ctorSlide, nthPart } from "../../components/math";
+import { anglesNames, createLazyMap, deduce, deduceAs, last, to } from "../../utils/deduce-utils";
 
 export default createLazyMap({
     1: () => vypocet(),
@@ -14,9 +14,13 @@ export default createLazyMap({
     11.3: () => cykloTrasy().c,
     12: () => hranol(),
     13: () => obdelnik(),
+    14: () => uhelAlfa(),
     15.1: () => procenta().prvni,
     15.2: () => procenta().druha,
     15.3: () => procenta().treti,
+    16.1: () => trojuhelnik().a,
+    16.2: () => trojuhelnik().b,
+    16.3: () => trojuhelnik().c,
 
 })
 
@@ -238,6 +242,83 @@ function hranol() {
     }
 }
 
+function uhelAlfa() {
+    const csx = contAngle("CSX", 20)
+    return {
+        deductionTree: deduce(
+            deduce(
+                deduceAs("Využití vlastností úhlopříček kosočtverce")(
+                    contRightAngle("BSC"),
+                    deduceAs("Vlastnost těžnice v pravoúhlém trojúhelníku, resp. trojúhelník CSX je rovnoramenný s rameny SX and CX")(
+                        csx,
+                        compAngle("CSX", "SCX", "isosceles-triangle-at-the-base")
+                    ),
+                    triangleAngle("CBS")
+                ),
+                compAngle("CBS", anglesNames.phi, "alternate-interior")
+            ),
+            ctorOption("E", 70)
+        )
+    }
+}
+
+function trojuhelnik() {
+    const dim = dimensionEntity();
+    const rozdilDelekLabel = "rozdíl délek odvěsen"
+    const kratsiLabel = "kratší strana"
+    const delsiLabel = "delší strana"
+    const agent = "trojúhelník"
+    const entityBase = "krok"
+    const kratsi = contLength(kratsiLabel, 5)
+    const delsi = contLength(delsiLabel, 12)
+    const vychoziRozdilDelek = deduce(delsi, kratsi, ctorDifference("výchozí rozdíl délek odvěsen"))
+    const delsiStranaRate = rate(delsiLabel, 2, dim.length, entityBase)
+    const kratsiStranaRate = rate(kratsiLabel, 5, dim.length, entityBase, 6)
+    const rateRozdilDelek = rate(rozdilDelekLabel, 7, dim.length, entityBase, 6)
+    const pomerStran = deduce(kratsi, delsi, ctorRatios(agent))
+    return {
+        a: {
+            deductionTree: deduce(
+                deduce(
+                    contLength(rozdilDelekLabel, 14),
+                    vychoziRozdilDelek,
+                    ctorDifference(rozdilDelekLabel)
+                ),
+                rateRozdilDelek
+            ),
+        },
+        b: {
+            deductionTree: deduce(
+                deduce(
+                    deduce(
+                        cont(delsiLabel, 60, entityBase),
+                        delsiStranaRate
+                    ),
+                    contLength(`výchozí ${delsiLabel}`, 12),
+                    ctor("slide")
+                ),
+                pomerStran,
+                nthPart(kratsiLabel)
+            ),
+        },
+        c: {
+            deductionTree: deduce(
+                deduce(
+                    deduce(
+                        contLength(kratsiLabel, 300),
+                        contLength(`výchozí ${kratsiLabel}`, 5),
+                        ctor("slide-invert")
+                    ),
+                    kratsiStranaRate
+                ),
+                cont("posun o", 1, entityBase),
+                ctor('slide-invert')
+            )
+        }
+
+
+    }
+}
 
 function procenta() {
     const entityCena = "cena"

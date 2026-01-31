@@ -1716,12 +1716,12 @@ function rateRule(a: Container | Quota | Rate, rate: Rate): Container {
       : rate.entity.unit,
     quantity: aEntity == rate.entity.entity
       ? isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(rate.baseQuantity)
-        ? a.quantity / (!isUnitRate ? rate.quantity / rate.baseQuantity : rate.quantity)
+        ? a.quantity / (!isUnitRate ? (rate.quantity / rate.baseQuantity) : rate.quantity)
         : !isUnitRate
           ? wrapToQuantity(`a.quantity / (rate.quantity/rate.baseQuantity)`, { a, rate })
           : wrapToQuantity(`a.quantity / rate.quantity`, { a, rate })
       : isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(rate.baseQuantity)
-        ? a.quantity * (!isUnitRate ? rate.quantity / rate.baseQuantity : rate.quantity)
+        ? a.quantity * (!isUnitRate ? (rate.quantity / rate.baseQuantity) : rate.quantity)
         : !isUnitRate
           ? wrapToQuantity(`a.quantity * (rate.quantity/rate.baseQuantity)`, { a, rate })
           : wrapToQuantity(`a.quantity * rate.quantity`, { a, rate })
@@ -1739,7 +1739,7 @@ function inferRateRule(a: Container | Quota | Rate, rate: Rate): Question<Contai
     options: isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(result.quantity) && isNumber(rate.baseQuantity) ? [
       { tex: `${formatNumber(a.quantity)} * ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: isUnitRate && aEntity !== rate.entity.entity },
       ...(!isUnitRate ? [{ tex: `${formatNumber(a.quantity)} * (${formatNumber(rate.quantity)}/${formatNumber(rate.baseQuantity)})`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity !== rate.entity.entity }] : []),
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: aEntity === rate.entity.entity },
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: isUnitRate &&  aEntity === rate.entity.entity },
       ...(!isUnitRate ? [{ tex: `${formatNumber(a.quantity)} / (${formatNumber(rate.quantity)}/${formatNumber(rate.baseQuantity)})`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity === rate.entity.entity }] : []),
     ]
       : []
