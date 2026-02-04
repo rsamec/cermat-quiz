@@ -483,8 +483,14 @@ export function doubleProduct(agent: string) {
 export function half() {
   return counter("polovina", 1 / 2, { asRatio: true })
 }
+export function quater() {
+  return counter("čtvrtina", 1 / 4, { asRatio: true })
+}
 export function halfProduct(agent: string) {
   return [half(), product(agent)]
+}
+export function quaterProduct(agent: string) {
+  return [quater(), product(agent)]
 }
 
 export function product(wholeAgent: string, partAgents?: string[], asEntity?: EntityDef): Product {

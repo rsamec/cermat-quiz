@@ -65,8 +65,14 @@ function doubleProduct(agent) {
 function half() {
   return counter("polovina", 1 / 2, { asRatio: true });
 }
+function quater() {
+  return counter("\u010Dtvrtina", 1 / 4, { asRatio: true });
+}
 function halfProduct(agent) {
   return [half(), product(agent)];
+}
+function quaterProduct(agent) {
+  return [quater(), product(agent)];
 }
 function product(wholeAgent, partAgents, asEntity) {
   return {
@@ -168,6 +174,9 @@ function compRelative(agentA, agentB, ratio3, asPercent) {
     throw "Relative compare should be between (-1,1).";
   }
   return { kind: "comp-ratio", agentA, agentB, ratio: 1 + ratio3, asPercent };
+}
+function compRelativePercent(agentA, agentB, percent2) {
+  return compRelative(agentA, agentB, percent2 / 100, true);
 }
 function compRatio(agentA, agentB, ratio3) {
   return { kind: "comp-ratio", agentA, agentB, ratio: ratio3 };
@@ -8049,13 +8058,122 @@ function procenta3() {
   };
 }
 
+// src/ctedu/2026-02-03/index.ts
+var __default6 = createLazyMap({
+  1: () => vypocet2(),
+  4: () => obrazec(),
+  5: () => trojuhelnik2(),
+  6: () => procenta4()
+});
+function vypocet2() {
+  return {
+    deductionTree: deduce(
+      deduce(
+        counter("1. prvo\u010D\xEDslo", 2),
+        counter("2. prvo\u010D\xEDslo", 3),
+        counter("3. prvo\u010D\xEDslo", 5),
+        counter("4. prvo\u010D\xEDslo", 7),
+        counter("5. prvo\u010D\xEDslo", 11),
+        counter("6. prvo\u010D\xEDslo", 13),
+        counter("7. prvo\u010D\xEDslo", 17),
+        counter("8. prvo\u010D\xEDslo", 19),
+        sum("sou\u010Det")
+      ),
+      ratio("sou\u010Det", "sedmina", 1 / 7)
+    )
+  };
+}
+function trojuhelnik2() {
+  const dim2 = dimensionEntity();
+  const zakladna = contLength("z\xE1kladna AB", 16);
+  const ramenoBC = deduce(
+    deduce(
+      contArea("troj\xFAhlen\xEDk ABC", 120),
+      zakladna,
+      evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, (x) => x.h, "v\xFD\u0161ka", dim2.length)
+    ),
+    deduce(
+      zakladna,
+      ...halfProduct("polovina z\xE1kladny")
+    ),
+    pythagoras("p\u0159epona BC", ["v\xFD\u0161ka", "polovina z\xE1kladny"])
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          deduce(
+            contArea("troj\xFAhlen\xEDk ABC", 120),
+            zakladna,
+            evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, (x) => x.h, "v\xFD\u0161ka", dim2.length)
+          ),
+          deduce(
+            zakladna,
+            ...halfProduct("polovina z\xE1kladny")
+          ),
+          pythagoras("rameno BC", ["v\xFD\u0161ka", "polovina z\xE1kladny"])
+        ),
+        contLength("rameno AC", 17),
+        sum("celkem")
+      ),
+      ctorOption("C", 34)
+    )
+  };
+}
+function obrazec() {
+  const dim2 = dimensionEntity("dm");
+  const pulkruh = "p\u016Flkruh";
+  const ctvrtKruh = "\u010Dtvrtkruh";
+  const polomer = "polom\u011Br";
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          deduce(
+            deduce(
+              contLength([pulkruh, polomer], 1, "dm"),
+              evalFormulaAsCont(formulaRegistry.surfaceArea.circle, (x) => x.S, pulkruh, dim2.area)
+            ),
+            ...halfProduct(pulkruh)
+          ),
+          deduce(
+            deduce(
+              contLength([ctvrtKruh, polomer], 2, "dm"),
+              evalFormulaAsCont(formulaRegistry.surfaceArea.circle, (x) => x.S, ctvrtKruh, dim2.area)
+            ),
+            ...quaterProduct(ctvrtKruh)
+          ),
+          sum("\u0161ed\xFD obrazec")
+        ),
+        ctorUnit("cm2")
+      ),
+      ctorOption("C", 471)
+    )
+  };
+}
+function procenta4() {
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          compRelativePercent("cena na ja\u0159e", "cena v l\xE9t\u011B", 25),
+          compRelative("cena na podzim", "cena v l\xE9t\u011B", 1 / 2)
+        ),
+        ctor("invert-comp-ratio")
+      ),
+      ctor("convert-percent")
+    )
+  };
+}
+
 // src/ctedu/word-problems.ts
 var word_problems_default = createLazyMap({
   "2026-01-06": () => __default,
   "2026-01-13": () => __default2,
   "2026-01-20": () => __default3,
   "2026-01-27": () => __default4,
-  "2026-01-28": () => __default5
+  "2026-01-28": () => __default5,
+  "2026-02-03": () => __default6
 });
 export {
   word_problems_default as default,
