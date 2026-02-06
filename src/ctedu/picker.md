@@ -27,7 +27,15 @@ const ctEduFolders = await FileAttachment("../ctedu/folders.json").json();
         ${ctEduFolders.map(period => html`<div class="h-stack h-stack--m h-stack-items--center h-stack--wrap">
               <a class="h-stack h-stack--s" href="./solution-${period}"><i class="fas fa-money-check"></i><span>${formatPeriod(period)}</span></a>
               <a class="h-stack h-stack--s" href="./print-${period}"><i class="fa-solid fa-print"></i><span>tisk</span></a>            
-              <a class="h-stack h-stack--s" href="./arch-${period}"><i class="fa-solid fa-key"></i><span>klíč</span></a>            
+              <a class="h-stack h-stack--s" href="./arch-${period}"><i class="fa-solid fa-key"></i><span>klíč</span></a>
+              <button  popovertarget=popover-apps-${year}>Trénuj<i class="fas fa-caret-down"></i></button>
+              <div id=popover-apps-${year} class="menu-items" popover>
+                <div class="v-stack v-stack--m">
+                  <a class="h-stack h-stack--s" href="./form-${period}" title="Vyplnění odpovědí"><i class="fa fa-file-waveform"></i><span>Vyplňovačka</span></a>
+                  <a class="h-stack h-stack--s" href="./calculator-${period}" title="Kalkulačka"><i class="fa fa-calculator"></i><span>Kalkulačka</span></a>
+                  <a class="h-stack h-stack--s" href="./chat-stepper-${period}" title="Rozhodovačka"><i class="fa fa-diagram-project"></i><span>Rozhodovačka</span></a>                  
+                </div>
+              </div>              
           <div>`
         )}
       </div>

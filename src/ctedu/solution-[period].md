@@ -1,5 +1,5 @@
 ---
-title: CT_EDU_ROZBOR
+title: CT_EDU Rozbor řešení
 sidebar: true
 footer: false
 pager: true
@@ -77,7 +77,7 @@ function renderButtons(template, values){
         {label:"Krokové řešení", query:messages.steps},
         {label:"Obdobné úlohy", query:messages.generateMoreQuizes},
         {label:"Pracovní list", query:messages.generateSubQuizes},
-        {label:"Generalizace", query:messages.generateSubQuizes},
+        {label:"Generalizace", query:messages.generalization},
        ])
   }
 
@@ -107,7 +107,7 @@ const output = ids.map(id => {
   ${mdPlus.unsafe(quiz.content([id], { ids, render: 'content' }), { docId: `${period}-${id}` })}
   ${renderButtons(quiz.content([id], { ids, render: 'content' }), values)}
   ${values?.length > 0
-  ? html.fragment`${artifacts.length > 0 ? html`<details><summary class="no-print">AI artifacts</summary>
+  ? html.fragment`${artifacts.length > 0 ? html`<details open><summary class="no-print">AI artifacts</summary>
   ${artifacts.map(a => {
     if (a.kind == 7) return html`<img src=${baseMediaPublic}/${period}/${a.title}.webp />`
     if (a.kind == 1) return html`<audio src=${baseMediaPublic}/${period}/${a.title}.m4a playsinline muted controls style="min-width: 100px;"></audio>`

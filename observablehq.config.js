@@ -56,7 +56,7 @@ const ctEduAssetsFiles = getFilesRecursive(`./src/ctedu`).filter(d => d.endsWith
 export default {
   // The app’s title; used in the sidebar and webpage titles.
   title: "Banka úloh",
-  header: ({ title, data, path }) => title === "CT_EDU_ROZBOR" ? `Rozbor řešení z ${formatPeriodDate(path.slice(-10))}` : title,
+  header: ({ title, data, path }) => title?.startsWith("CT_EDU") ? `${title.substring(6)} ${formatPeriodDate(path.slice(-10))}` : title,
   footer: ({ title, data, path }) => `<div class="h-stack"><div class="h-stack h-stack--s"  style="flex:1"><span>2025</span><i class="fa-solid fa-copyright"></i><a href="mailto:roman.samec2@gmail.com">Roman Samec</a></div></a></div>`,
 
   // The pages and sections in the sidebar. If you don’t specify this option,
@@ -152,6 +152,9 @@ export default {
     .concat(ctEduFolders.map(d => `/ctedu/print-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/arch-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/solution-${d}`))
+    .concat(ctEduFolders.map(d => `/ctedu/form-${d}`))
+    .concat(ctEduFolders.map(d => `/ctedu/chat-stepper-${d}`))
+    .concat(ctEduFolders.map(d => `/ctedu/calculator-${d}`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/arch-${code}`))
