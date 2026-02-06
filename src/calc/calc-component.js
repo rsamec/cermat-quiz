@@ -94,12 +94,12 @@ export function renderCalc({ context$, currentState$, nextEvents$, axioms, actor
     </div>
     <div class="calc-buttons__common">
         <div class="calc-buttons__common--start">
-            <button class="btn--calc" disabled=${computed(() => !nextEvents$.value.includes('reset'))} onclick=${() => actor.send({ type: 'reset' })} title="Smazat kompletně"><i class="fa-solid fa-c font-large"></i></button>
+            <button class="btn--calc btn--calc--danger" disabled=${computed(() => !nextEvents$.value.includes('reset'))} onclick=${() => actor.send({ type: 'reset' })} title="Smazat kompletně"><i class="fa-solid fa-c font-large"></i></button>
             <button class="btn--calc" onclick=${() => play()} title="Spustit"><i class="fa-solid fa-play  font-large"></i></button>
         </div>
         <div class="calc-buttons__common--end">
-            <button class="btn--calc" disabled=${computed(() => !nextEvents$.value.includes('deduce'))} onclick=${() => actor.send({ type: 'deduce' })} title="Vyhodnotit"><i class="fa-solid fa-equals  font-large"></i></button>
-            <button class="btn--calc" disabled=${computed(() => !nextEvents$.value.includes('delete'))} onclick=${() => actor.send({ type: 'delete' })} title="Smazat poslední zadaný"><i class="fa-solid fa-delete-left  font-large"></i></button>            
+            <button class="btn--calc btn--calc--success" disabled=${computed(() => !nextEvents$.value.includes('deduce'))} onclick=${() => actor.send({ type: 'deduce' })} title="Vyhodnotit"><i class="fa-solid fa-equals  font-large"></i></button>
+            <button class="btn--calc btn--calc--warning" disabled=${computed(() => !nextEvents$.value.includes('delete'))} onclick=${() => actor.send({ type: 'delete' })} title="Smazat poslední zadaný"><i class="fa-solid fa-delete-left  font-large"></i></button>            
         </div>
     </div>
 
