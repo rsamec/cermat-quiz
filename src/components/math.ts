@@ -1006,15 +1006,21 @@ function transitiveRatioCompareRule(a: RatioComparison, b: RatioComparison): Rat
     throw `Mismatch agent ${a.agentA}, ${a.agentB} any of ${b.agentA}, ${b.agentB}`
   }
 }
-function inferTransitiveRatioCompareRule(b: RatioComparison, a: RatioComparison): Question<RatioComparison> {
-  const result = transitiveRatioCompareRule(b, a)
+function inferTransitiveRatioCompareRule(a: RatioComparison, b: RatioComparison): Question<RatioComparison> {
+  const result = transitiveRatioCompareRule(a, b)
   return {
     name: transitiveRatioCompareRule.name,
     inputParameters: extractKinds(a, b),
     question: `Porovnej ${result.agentA} a ${result.agentB}?`,
     result,
-    options: [
-    ]
+    options: isNumber(a.ratio) && isNumber(b.ratio) && isNumber(result.ratio)
+      ? [
+        { tex: `${formatRatio(abs(a.ratio))} * ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentB === b.agentA },
+        { tex: `${formatRatio(abs(a.ratio))} / ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentB === b.agentB },
+        { tex: `1/${formatRatio(abs(a.ratio))} * ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentA === b.agentA },
+        { tex: `1/${formatRatio(abs(a.ratio))} / ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentA === b.agentB }
+      ]
+      : []
   }
 }
 
@@ -1745,7 +1751,7 @@ function inferRateRule(a: Container | Quota | Rate, rate: Rate): Question<Contai
     options: isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(result.quantity) && isNumber(rate.baseQuantity) ? [
       { tex: `${formatNumber(a.quantity)} * ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: isUnitRate && aEntity !== rate.entity.entity },
       ...(!isUnitRate ? [{ tex: `${formatNumber(a.quantity)} * (${formatNumber(rate.quantity)}/${formatNumber(rate.baseQuantity)})`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity !== rate.entity.entity }] : []),
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: isUnitRate &&  aEntity === rate.entity.entity },
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: isUnitRate && aEntity === rate.entity.entity },
       ...(!isUnitRate ? [{ tex: `${formatNumber(a.quantity)} / (${formatNumber(rate.quantity)}/${formatNumber(rate.baseQuantity)})`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity === rate.entity.entity }] : []),
     ]
       : []
@@ -3286,7 +3292,7 @@ function inferenceRuleEx(...args: Predicate[]): Question<any> {
     if (last?.kind === "comp-ratio") {
       return inferToRatioCompareRule(a, b, last)
     }
-    return inferRateRule(a,b)
+    return inferRateRule(a, b)
   }
   else if ((a.kind === "cont" || a.kind === "comp") && b.kind === "unit") {
     return inferConvertToUnitRule(a, b);

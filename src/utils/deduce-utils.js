@@ -205,14 +205,19 @@ function transitiveRatioCompareRule(a, b) {
     throw `Mismatch agent ${a.agentA}, ${a.agentB} any of ${b.agentA}, ${b.agentB}`;
   }
 }
-function inferTransitiveRatioCompareRule(b, a) {
-  const result = transitiveRatioCompareRule(b, a);
+function inferTransitiveRatioCompareRule(a, b) {
+  const result = transitiveRatioCompareRule(a, b);
   return {
     name: transitiveRatioCompareRule.name,
     inputParameters: extractKinds(a, b),
     question: `Porovnej ${result.agentA} a ${result.agentB}?`,
     result,
-    options: []
+    options: isNumber(a.ratio) && isNumber(b.ratio) && isNumber(result.ratio) ? [
+      { tex: `${formatRatio(abs(a.ratio))} * ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentB === b.agentA },
+      { tex: `${formatRatio(abs(a.ratio))} / ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentB === b.agentB },
+      { tex: `1/${formatRatio(abs(a.ratio))} * ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentA === b.agentA },
+      { tex: `1/${formatRatio(abs(a.ratio))} / ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentA === b.agentB }
+    ] : []
   };
 }
 function convertRatioCompareToRatioRule(b) {

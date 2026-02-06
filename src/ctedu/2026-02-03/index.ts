@@ -104,11 +104,9 @@ function procenta() {
     return {
         deductionTree: deduce(
             deduce(
-                deduce(
-                    compRelativePercent("cena na jaře", "cena v létě", 25),
-                    compRelative("cena na podzim", "cena v létě", 1 / 2),
-                ),
-                ctor("invert-comp-ratio")
+                compRelative("cena na podzim", "cena v létě", 1 / 2),
+                compRelativePercent("cena na jaře", "cena v létě", 25),
+
             ),
             ctor('convert-percent')
         )
