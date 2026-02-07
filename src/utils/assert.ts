@@ -68,7 +68,7 @@ export class CoreVerifyiers {
   }
 
   static MatchTo(pattern: JsonRegExp) {
-    const regex = new RegExp(pattern.source,pattern.flags);
+    const regex = new RegExp(pattern.source, pattern.flags);
     return (control: string) => {
       return regex.test(control) ? undefined : { 'expected': pattern, 'actual': control, errorCount: null };
     }
@@ -107,8 +107,10 @@ export class CoreVerifyiers {
 
   static EqualStringCollectionTo(value: string[]) {
     return (control: string[] | string) => {
-      const controlValue = normalizeToArray(control).map(d => d?.trim())
-      const errorCount = controlValue.length - intersection(controlValue, value) + Math.max(value.length - controlValue.length, 0);
+      const controlValue = normalizeToArray(control).map(d => d?.trim()).filter(d => !isEmptyOrWhiteSpace(d))
+      const oks = intersection(controlValue, value);
+      const errors = (controlValue.length - oks)
+      const errorCount = Math.max(value.length - Math.max(oks - errors, 0), 0);
       return errorCount === 0 ? undefined : { 'expected': value, 'actual': controlValue, errorCount }
     }
   }
@@ -124,9 +126,9 @@ export class CoreVerifyiers {
 
   static SortedOptionsEqualTo(values: string[]) {
     return (control: Option<string>[] | string[] | string) => {
-      const options = normalizeToArray(control);      
-      return Array.isArray(options) && values.length === options.length && values.join() === options.map((d:any) => d.value ?? d).map(d => d?.trim()).join() ? undefined :
-        { 'expected': values, 'actual': options, errorCount: null }      
+      const options = normalizeToArray(control);
+      return Array.isArray(options) && values.length === options.length && values.join() === options.map((d: any) => d.value ?? d).map(d => d?.trim()).join() ? undefined :
+        { 'expected': values, 'actual': options, errorCount: null }
     }
   }
 
@@ -138,12 +140,12 @@ export class CoreVerifyiers {
   }
 
 
-  static MatchObjectValues(patterns: Record<string,JsonRegExp>) {
+  static MatchObjectValues(patterns: Record<string, JsonRegExp>) {
     return (control: Record<string, string>) => {
-    
+
       const controlValues = Object.values(control ?? {});
-      const match = Object.values(patterns).map(pattern => new RegExp(pattern.source,pattern.flags)).every((d,i) => d.test(controlValues[i]));
-      
+      const match = Object.values(patterns).map(pattern => new RegExp(pattern.source, pattern.flags)).every((d, i) => d.test(controlValues[i]));
+
       return match ? undefined : { 'expected': patterns, 'actual': control, errorCount: null }
     }
   }
@@ -200,33 +202,33 @@ function normalizeToArray(value: string | any[]) {
       : value.split(",")
 }
 function areDeeplyEqual(obj1: any, obj2: any): boolean {
-  
-    // Base case: If both objects are identical, return true.
-    if (obj1 === obj2) {
-      return true;
-    }
-    // Check if both objects are objects and not null.
-    if (typeof obj1 !== 'object' || typeof obj2 !== 'object' || obj1 === null || obj2 === null) {
-      return false;
-    }
-    // Get the keys of both objects.
-    const keys1 = Object.keys(obj1);
-    const keys2 = Object.keys(obj2);
-    // Check if the number of keys is the same.
-    if (keys1.length !== keys2.length) {
-      return false;
-    }
-    // Iterate through the keys and compare their values recursively.
-    for (const key of keys1) {
-      if (!keys2.includes(key) || !areDeeplyEqual(obj1[key], obj2[key])) {
-        return false;
-      }
-    }
-    // If all checks pass, the objects are deep equal.
+
+  // Base case: If both objects are identical, return true.
+  if (obj1 === obj2) {
     return true;
-  
+  }
+  // Check if both objects are objects and not null.
+  if (typeof obj1 !== 'object' || typeof obj2 !== 'object' || obj1 === null || obj2 === null) {
+    return false;
+  }
+  // Get the keys of both objects.
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+  // Check if the number of keys is the same.
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+  // Iterate through the keys and compare their values recursively.
+  for (const key of keys1) {
+    if (!keys2.includes(key) || !areDeeplyEqual(obj1[key], obj2[key])) {
+      return false;
+    }
+  }
+  // If all checks pass, the objects are deep equal.
+  return true;
+
 }
-function simplifyExpression(value: string){
+function simplifyExpression(value: string) {
   //@todo simplify math expression
   return value;
 }
