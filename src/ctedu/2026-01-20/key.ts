@@ -1,5 +1,5 @@
 
-import { fourPoints, group, match, mathEquation, number, option, rootGroup, task3Max3Points, task3Max6Points, twoPoints, word, words } from "../../utils/quiz-builder";
+import { fourPoints, group, match, number, option, rootGroup, twoPoints, word, words } from "../../utils/quiz-builder";
 
 const form = rootGroup({
   code: 'CTEDU-2026-01-20',

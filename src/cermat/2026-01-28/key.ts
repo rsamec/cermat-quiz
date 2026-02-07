@@ -1,5 +1,5 @@
 
-import { group, mathEquation, mathExpr, mathRatio, number, numbers, option, optionBool, rootGroup, selfEvaluateImage, task2Max3Points, task3Max3Points, task3Max4Points, task3Max6Points, tasks4Max2Points, threePoints, twoPoints, words } from "../../utils/quiz-builder";
+import { group, mathEquation, mathExpr, number, numbers, numbersGroup, option, optionBool, rootGroup, selfEvaluateImage, task2Max3Points, task3Max4Points, task3Max6Points, twoPoints } from "../../utils/quiz-builder";
 
 const form = rootGroup({
   code: 'CTEDU-2026-01-28',
@@ -25,7 +25,7 @@ const form = rootGroup({
   }),
   5: group({
     5.1: mathEquation(false, { hintType: 'equation' }, twoPoints),
-    5.2: mathEquation("x=1;y=-5", { hintType: 'equation' }, twoPoints)
+    5.2: numbersGroup({x:1,y:-5}, twoPoints)
   }),
   6: group({
     6.1: mathExpr("2h-6", { hintType: 'expression' }),

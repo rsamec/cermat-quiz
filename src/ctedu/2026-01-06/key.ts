@@ -16,7 +16,7 @@ const form = rootGroup({
     3.2: number(1_200, { suffix: 'cm^3^' }),
     3.3: number(15, { suffix: "krát" }),
   }),
-  4: mathEquation('x=1/7', { hintType: 'equation' }, twoPoints),
+  4: mathEquation('1/7', { prefix:"x", hintType: 'fraction' }, twoPoints),
   5: option("C", twoPoints),
   6: option("D", twoPoints),
   7: group({

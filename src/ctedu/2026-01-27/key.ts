@@ -1,5 +1,5 @@
 
-import { group, mathEquation, mathExpr, mathRatio, number, option, optionBool, rootGroup, task3Max3Points, tasks4Max2Points, threePoints, twoPoints, words } from "../../utils/quiz-builder";
+import { group, mathExpr, mathRatio, number, numbersGroup, option, optionBool, rootGroup, task3Max3Points, tasks4Max2Points, threePoints, twoPoints, words } from "../../utils/quiz-builder";
 
 const form = rootGroup({
   code: 'CTEDU-2026-01-27',
@@ -11,7 +11,10 @@ const form = rootGroup({
 }, {
   1: number(48),
   2: mathExpr("(4a+1)(4a-1)", { hintType: 'expression' }),
-  3: mathEquation('x=-4,y=3', { hintType: 'equation' }, twoPoints),
+  3: numbersGroup({
+    x: -4,
+    y: 3
+  }, twoPoints),
   4: group({
     4.1: number(12, { suffix: 'čerpadel' }),
     4.2: number(50, { suffix: '%' }),

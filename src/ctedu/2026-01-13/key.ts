@@ -20,7 +20,7 @@ const form = rootGroup({
     6.2: mathExpr("5x", { hintType: 'expression' }),
     6.3: number(125, { suffix: "testů" }, twoPoints),
   }),
-  7: mathEquation('y=5/4', { hintType: 'equation' }, twoPoints),
+  7: mathEquation('5/4', { prefix:"y", hintType: 'fraction' }, twoPoints),
   8: group({
     8.1: wordsGroup({
       podmět:"detox",

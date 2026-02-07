@@ -1,5 +1,5 @@
 
-import { group, mathEquation, mathExpr, number, option, rootGroup, threePoints, twoPoints, word, words } from "../../utils/quiz-builder";
+import { group, mathExpr, number, numbersGroup, option, rootGroup, threePoints, twoPoints, word, words } from "../../utils/quiz-builder";
 
 const form = rootGroup({
   code: 'CTEDU-2026-02-03',
@@ -11,7 +11,7 @@ const form = rootGroup({
 }, {
   1: number(11),
   2: mathExpr("(5a-6)", { hintType: 'expression' }),
-  3: mathEquation('x=-2,y=0', { hintType: 'equation' }, twoPoints),
+  3: numbersGroup({ x: -2, y: 0 }, twoPoints),
   4: option("C", twoPoints),
   5: option("C", twoPoints),
   6: number(20, { suffix: "%" }, twoPoints),
