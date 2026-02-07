@@ -9,7 +9,7 @@ toc: true
 ## ČT EDU jako nový zdroj dat pro banku úloh
 
 <div class="caution" label="Upozornění">    
-Úlohy byly převzaty z kanálu ČT EDU. Neoficiální verze vzniklá bez vědomí ČT.
+Úlohy byly převzaty z kanálu ČT EDU. Neoficiální verze.
 
 [Více informací](/app-usage)
 </div>

@@ -3,6 +3,13 @@
 
 <div class="caution" label="Upozornění">
   Využití dat je limitováno dodržením pravidel <a href="https://prijimacky.cermat.cz/files/files/CZVV_pravidla-vyuziti-webstrankyn.pdf">CERMAT licence</a>. 🤦
+  
+  Jedná se o **neoficiální** verzi s uděleným souhlasem CERMAT.
+</div>
+<div class="warning" label="Varování">
+  Úlohy byly převzaty z kanálu ČT EDU dle uváděného hesla vzdělávání volně dostupné pro všechny. 🐹
+  
+  Jedná se o **neoficiální** verzi bez vědomí ČT.
 </div>
 
 1. Aplikace je zdarma a je poskytována „tak, jak je“, bez jakýchkoliv záruk. „Experimentální režim: používejte jen na vlastní riziko a s přimhouřeným okem.“ 😉
@@ -10,12 +17,7 @@
 3. Provozovatel neodpovídá za škody ani následky použití.
 4. Provozovatel může kdykoli obsah upravit, omezit nebo ukončit dostupnost aplikace.
 
-
 Používáním této aplikace uživatel souhlasí s výše uvedenými podmínkami.
-
-<div class="warning" label="Pozor">
-  Tohle je zatím spíš laboratorní křeček než hotový produkt. Může občas utéct z klece.“ 🐹
-</div>
 
 <div class="tip" label="Hlášení chyb">
   Databanka je spravována na <a href="https://github.com/rsamec/cermat"><i class="fa-brands fa-github"></i> github</a>.
