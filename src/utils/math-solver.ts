@@ -69,6 +69,16 @@ export function substitute(expression: string, source: string, replace: string) 
   return parser.parse(expression).substitute(source, replace)
 }
 
+export function substituteContext(expression:string, context: Record<string, number>) {
+  let expr = parser.parse(expression);
+  const variables = expr.variables();
+  for (let variable of variables) {
+    expr = expr.substitute(variable, context[variable])
+  }
+  return expr;
+}
+
+
 export function simplify(expression: string, context?: Record<string, any>) {
   return parser.parse(expression).simplify(expression, context)
 }
@@ -184,7 +194,6 @@ export function toEquationExprAsText(lastExpr, requiredLevel = 0, context: Deduc
 export function toEquationExprAsTex(lastExpr, requiredLevel = 0, context: DeduceContext = {}) {
   return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel, context).tokens)} $`
 }
-
 function cleanUpExpression(exp, variable = '') {
 
   const replaced = exp.toString()

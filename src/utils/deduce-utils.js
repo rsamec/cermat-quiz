@@ -1,11 +1,13 @@
 // src/components/math.ts
 var defaultHelpers = {
   convertToFraction: (d) => d,
+  convertToFractionAsLatex: (d) => d,
   convertToUnit: (d) => d,
   unitAnchor: () => 1,
   solveLinearEquation: (fist, second, variable) => NaN,
   evalExpression: (expression, context) => NaN,
-  evalNodeToNumber: (expression) => NaN
+  evalNodeToNumber: (expression) => NaN,
+  substituteContext: (expression, context) => NaN
 };
 var helpers = defaultHelpers;
 function configure(config) {
@@ -1226,8 +1228,8 @@ function inferPythagorasRule(a, b, last2) {
     question: `Vypo\u010D\xEDtej stranu ${result.agent} dle Pythagorovi v\u011Bty?`,
     result,
     options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(longest.quantity) && isNumber(otherSite.quantity) && isNumber(result.quantity) ? [
-      { tex: `odmocnina z (${formatNumber(longest.quantity)}^2 - ${formatNumber(otherSite.quantity)}^2)`, result: formatNumber(result.quantity), ok: equalAgent(a.agent, last2.longest) || equalAgent(b.agent, last2.longest) },
-      { tex: `odmocnina z (${formatNumber(a.quantity)}^2 + ${formatNumber(b.quantity)}^2)`, result: formatNumber(result.quantity), ok: !(equalAgent(a.agent, last2.longest) || equalAgent(b.agent, last2.longest)) }
+      { tex: `\\sqrt{${formatNumber(longest.quantity)}^2 - ${formatNumber(otherSite.quantity)}^2}`, result: formatNumber(result.quantity), ok: equalAgent(a.agent, last2.longest) || equalAgent(b.agent, last2.longest) },
+      { tex: `\\sqrt{${formatNumber(a.quantity)}^2 + ${formatNumber(b.quantity)}^2}`, result: formatNumber(result.quantity), ok: !(equalAgent(a.agent, last2.longest) || equalAgent(b.agent, last2.longest)) }
     ] : []
   };
 }
@@ -1664,6 +1666,7 @@ function evalToQuantityRule(a, b) {
   }, {});
   return {
     ...b.predicate,
+    substitutedExpr: helpers.substituteContext(b.expression, context).toString(),
     quantity: areNumbers(quantities) ? helpers.evalExpression(b.expression, context) : wrapToQuantity(`${b.expression}`, variables.reduce((out, d, i) => {
       out[d] = a[i];
       return out;
@@ -1682,7 +1685,9 @@ function inferEvalToQuantityRule(a, b) {
     inputParameters: extractKinds(...a, b),
     question: `Vypo\u010Dti v\xFDraz ${b.expression}?`,
     result,
-    options: []
+    options: isNumber(result.quantity) ? [
+      { tex: result.substitutedExpr, result: formatNumber(result.quantity), ok: true }
+    ] : []
   };
 }
 function simplifyExprRuleAsRatio(a, b) {
@@ -2637,7 +2642,7 @@ function formatNumber(d) {
 function formatRatio(d, asPercent) {
   if (asPercent)
     return `${formatNumber(d * 100)} %`;
-  return helpers.convertToFraction(d);
+  return helpers.convertToFractionAsLatex(d);
 }
 function containerQuestion(d) {
   return `${computeQuestion(d.quantity)} ${d.agent}${formatEntity(d)}?`;
@@ -6090,6 +6095,14 @@ function evaluate2(expression, context) {
 function substitute2(expression, source, replace) {
   return parser.parse(expression).substitute(source, replace);
 }
+function substituteContext(expression, context) {
+  let expr = parser.parse(expression);
+  const variables = expr.variables();
+  for (let variable of variables) {
+    expr = expr.substitute(variable, context[variable]);
+  }
+  return expr;
+}
 function evalExpression(expression, quantityOrContext) {
   const expr = typeof expression === "string" ? parser.parse(expression) : toEquationExpr(expression);
   const variables = expr.variables();
@@ -6411,11 +6424,13 @@ var convert = configureMeasurements({
 });
 configure({
   convertToFraction: (d) => new Fraction(d).toFraction(),
+  convertToFractionAsLatex: (d) => new Fraction(d).toLatex(),
   convertToUnit: (d, from, to2) => convert(d).from(from).to(to2),
   unitAnchor: (unit) => convert().getUnit(unit)?.unit?.to_anchor,
   solveLinearEquation: (first, second, variable) => solveLinearEquation(first, second, variable),
   evalExpression: (expression, quantity) => evalExpression(expression, quantity),
-  evalNodeToNumber: (expression) => evaluateNodeToNumber(expression)
+  evalNodeToNumber: (expression) => evaluateNodeToNumber(expression),
+  substituteContext: (expression, context) => substituteContext(expression, context)
 });
 var inferenceRuleWithQuestion2 = inferenceRuleWithQuestion;
 

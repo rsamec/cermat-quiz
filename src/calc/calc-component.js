@@ -77,17 +77,6 @@ export function renderCalc({ context$, currentState$, nextEvents$, axioms, actor
     return rhtml`<div class="grid grid-cols-2 calc" style="grid-auto-rows: auto;">
 <div class="v-stack v-stack--s">
     <div class="h-stack h-stack--m"><div style="flex:1;"><span class="badge">Úloha ${key}</span></div><span class=${computed(() => currentState$.value == "Error state" ? 'badge badge--danger' : currentState$.value == "Success state" ? 'badge badge--success' : 'badge')}>${computed(() => currentState$.value)}</span></div>
-    <details>
-        <summary>Graficky</summary>
-        <div class="calc-display-visual">
-            <div class="calc-display-visual__input">    
-                ${computed(() => context$.value.predicates.map(d => rhtml`<div class="predicate-visual">${renderChartOrPredicate(d)}</div>`))}
-            </div>
-            <div class="calc-display-visual__output">
-                ${computed(() => inferToRuleChart(context$.value.predicates))}
-            </div>
-        </div>
-    </details>    
     <div class="calc-display">
         <div class="calc-display__input">${computed(() => insertSeparators(context$.value.predicates.map(d => rhtml`${mdPlus.unsafe(formatPredicate(d))}`)))}</div>
         <div class="calc-display__output">${computed(() => context$.value.predicates.length > 1 ? inferToMessage(context$.value.predicates) : '')}</div>
@@ -119,12 +108,12 @@ ${computed(() => context$.value.history.map((h, i) => {
         const promises = rhtml`<details><summary>Použité predikáty ${h.length}</summary><ul>${h.map(d => rhtml`<li>${mdPlus.unsafe(formatPredicate(d))}</li>`)}</ul></details>`;
         const counter = i + 1;
         const option = d.options?.find(opt => opt.ok);
-        const goToButton = rhtml`<button onclick=${() => displaySteps(h)}><i class="fa-solid fa-eye"></i></button>`
-        const message = option == null
+        const goToButton = rhtml`<button class="btn" onclick=${() => displaySteps(h)}><i class="fa-solid fa-eye"></i></button>`
+        const message = d.question == null
             ? rhtml`<div class="v-stack"><div class="h-stack h-stack--s">${goToButton}<span class="badge badge--deduce">${counter}</span>${mdPlus.unsafe(formatPredicate(d.result))}</div>${promises}</div>`
             : rhtml`<div class="v-stack"><div class="h-stack h-stack--s">${goToButton}<span class="badge badge--deduce">${counter}</span>${mdPlus.unsafe(formatPredicate(d.result))}</div>
-    <div class="h-stack h-stack--s">Akce: <span>${mdPlus.unsafe(d.question)}</span></div>
-    <div>Výpočet: <span>${option.tex} = ${option.result}</span></div>
+    <div class="h-stack h-stack--s"><span>${mdPlus.unsafe(d.question)}</span></div>
+    ${option != null ? rhtml`<div>${mdPlus.unsafe(`$${option.tex} = ${option.result}$`)}</div>`:''}
     ${promises}
     </div>`
         return message;

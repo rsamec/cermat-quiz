@@ -506,7 +506,7 @@ export function renderChat(deductionTree) {
         <div class='message v-stack v-stack--s'>${premises.map(d => d)}</div>
         ${q != null ? html`<div class='message agent v-stack v-stack--s'>
           <div>${q?.question}</div>
-          ${answer != null ? html`<div>${answer.tex} = ${answer.result}</div>` : ''}
+          ${answer != null ? html`<div>${mdPlus.unsafe(`$${answer.tex} = ${answer.result}$`)}</div>` : ''}
         </div>`: ''
       }
         ${steps.length == i + 1 ? html`<div class='message'>${conclusion}</div>` : ''}
@@ -542,7 +542,7 @@ export function renderDeduceTreeNode(args, node, level) {
       <div class="ri">${result?.question != null && result.question != "" ? html`<i class="fa-solid fa-circle-question" onmouseenter=${(e) => onmouseenter(e.target.parentElement.querySelector('[popover]'), e.target)} onmouseleave=${(e) => onmouseleave(e.target.parentElement.querySelector('[popover]'))}></i>
         <div popover="hint">
           ${html`<div>${result?.question}</div>`}          
-          ${option != null ? html`<div>${option.tex} = ${option.result}</div>` : ''}
+          ${option != null ? html`<div>${mdPlus.unsafe(`$${option.tex} = ${option.result}$`)}</div>` : ''}
         </div>` : ''}
       </div>
 	  </div>

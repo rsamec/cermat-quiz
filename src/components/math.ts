@@ -1,19 +1,24 @@
 export type UnitType = string
 export type Helpers = {
   convertToFraction?: (quantity: number) => string | number,
+  convertToFractionAsLatex?: (quantity: number) => string,
   convertToUnit?: (quantity: number, from: UnitType, to: UnitType) => number
   unitAnchor?: (unit: UnitType) => number;
   solveLinearEquation?: (first: Quantity, second: Quantity, variable: string) => number
   evalExpression?: (expression: Expression | ExpressionNode, quantityOrContext: number | Record<string, number>) => number
   evalNodeToNumber?: (expression: ExpressionNode) => number
+  substituteContext?: (expression: Expression, context: Record<string, number>) => number
+
 }
 const defaultHelpers: Helpers = {
   convertToFraction: d => d,
+  convertToFractionAsLatex: d => d,
   convertToUnit: d => d,
   unitAnchor: () => 1,
   solveLinearEquation: (fist, second, variable) => NaN,
   evalExpression: (expression, context) => NaN,
-  evalNodeToNumber: (expression) => NaN
+  evalNodeToNumber: (expression) => NaN,
+  substituteContext: (expression, context) => NaN,
 
 }
 
@@ -2195,8 +2200,8 @@ function inferPythagorasRule(a: Container, b: Container, last: Phytagoras): Ques
     question: `Vypočítej stranu ${result.agent} dle Pythagorovi věty?`,
     result,
     options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(longest.quantity) && isNumber(otherSite.quantity) && isNumber(result.quantity) ? [
-      { tex: `odmocnina z (${formatNumber(longest.quantity)}^2 - ${formatNumber(otherSite.quantity)}^2)`, result: formatNumber(result.quantity), ok: equalAgent(a.agent, last.longest) || equalAgent(b.agent, last.longest) },
-      { tex: `odmocnina z (${formatNumber(a.quantity)}^2 + ${formatNumber(b.quantity)}^2)`, result: formatNumber(result.quantity), ok: !(equalAgent(a.agent, last.longest) || equalAgent(b.agent, last.longest)) },
+      { tex: `\\sqrt{${formatNumber(longest.quantity)}^2 - ${formatNumber(otherSite.quantity)}^2}`, result: formatNumber(result.quantity), ok: equalAgent(a.agent, last.longest) || equalAgent(b.agent, last.longest) },
+      { tex: `\\sqrt{${formatNumber(a.quantity)}^2 + ${formatNumber(b.quantity)}^2}`, result: formatNumber(result.quantity), ok: !(equalAgent(a.agent, last.longest) || equalAgent(b.agent, last.longest)) },
     ] : []
   }
 }
@@ -2699,8 +2704,11 @@ function evalToQuantityRule<
     return out;
   }, {});
 
+
+
   return {
     ...b.predicate,
+    substitutedExpr: helpers.substituteContext(b.expression, context).toString(),
     quantity: areNumbers(quantities) ? helpers.evalExpression(b.expression, context) : wrapToQuantity(`${b.expression}`, variables.reduce((out, d, i) => {
       out[d] = a[i];
       return out;
@@ -2722,13 +2730,17 @@ function inferEvalToQuantityRule<
   T extends Predicate & { quantity: Quantity },
   K extends Omit<Predicate, 'quantity'>
 >(a: T[], b: EvalExpr<K> | EvalFormula<K>): Question<any> {
-  const result = evalToQuantityRule(a, b);
+  const result = evalToQuantityRule<any, any>(a, b);
   return {
     name: evalToQuantityRule.name,
     inputParameters: extractKinds(...a, b as unknown as Predicate),
     question: `Vypočti výraz ${b.expression}?`,
     result,
-    options: []
+    options: isNumber(result.quantity)
+      ? [
+        { tex: result.substitutedExpr, result: formatNumber(result.quantity), ok: true }
+      ]
+      : []
   }
 }
 
@@ -2775,7 +2787,8 @@ function evalQuotaRemainderExprRule(a: Quota, b: Option): Predicate {
     kind: 'eval-option',
     expression: b.expression,
     expressionNice: convertToExpression(b.expectedValue, b.compareTo === "closeTo" ? "equal" : b.compareTo, { ...b.expectedValueOptions, asPercent: false }),
-    value: b.optionValue != null ? matched ? b.optionValue : null : matched
+    value: b.optionValue != null
+      ? matched ? b.optionValue : null : matched
   }
 }
 function inferEvalQuotaRemainderExprRule(a: Quota, b: Option): Question<Predicate> {
@@ -2810,7 +2823,11 @@ function evalToOptionRule<T extends Predicate & { quantity?: Quantity, ratio?: Q
     kind: 'eval-option',
     expression: b.expression,
     expressionNice: convertToExpression(b.expectedValue, b.compareTo === "closeTo" ? "equal" : b.compareTo, { ...b.expectedValueOptions, asPercent: false }),
-    value: b.optionValue != null ? matched ? b.optionValue : null : matched
+    value: b.optionValue != null
+      ? matched
+        ? b.optionValue
+        : null
+      : matched
   }
 }
 function inferEvalToOptionRule<T extends Predicate>(a: T, b: Option): Question<Option> {
@@ -3983,7 +4000,7 @@ function formatNumber(d: number) {
 
 function formatRatio(d: number, asPercent?: boolean) {
   if (asPercent) return `${formatNumber(d * 100)} %`;
-  return helpers.convertToFraction(d) as string;
+  return helpers.convertToFractionAsLatex(d);
   //return (d > -2 && d < 2) ? helpers.convertToFraction(d) as string : formatNumber(d)
 }
 

@@ -1669,6 +1669,14 @@ function evaluate2(expression, context) {
 function substitute2(expression, source, replace) {
   return parser.parse(expression).substitute(source, replace);
 }
+function substituteContext(expression, context) {
+  let expr = parser.parse(expression);
+  const variables = expr.variables();
+  for (let variable of variables) {
+    expr = expr.substitute(variable, context[variable]);
+  }
+  return expr;
+}
 function simplify2(expression, context) {
   return parser.parse(expression).simplify(expression, context);
 }
@@ -2141,6 +2149,7 @@ export {
   simplify2 as simplify,
   solveLinearEquation,
   substitute2 as substitute,
+  substituteContext,
   toEquation,
   toEquationExprAsTex,
   toEquationExprAsText

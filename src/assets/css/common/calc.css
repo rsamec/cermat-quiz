@@ -156,13 +156,13 @@
   max-width: 200px;
   display: flex;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: 0px;
   border:none;
   background-color: var(--theme-background-alt);
   color: var(--theme-foreground);
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  box-shadow: 0 1px 2px var(--theme-foreground-alt);
+  box-shadow: 0 0px 2px var(--theme-foreground-alt);
 }
 .btn--calc:hover {
   opacity: 0.8;

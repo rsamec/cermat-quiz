@@ -164,7 +164,7 @@ function renderChat(deductionTree) {
 <div class='message v-stack v-stack--s'>${premises.join("")}</div>
 ${q != null ? `<div class='message agent v-stack v-stack--s'>
 <div>${q?.question}</div>
-${answer != null ? `<div>${answer.tex} = ${answer.result}</div>` : ''}
+${answer != null ? `<div>${mdPlus.unsafe(`$${answer.tex} = ${answer.result}$`)}</div>` : ''}
 </div>`: ''}
 ${steps.length == i + 1 ? `<div class='message'>${conclusion}</div>` : ''}
 </div>`}).join("")}</div>`

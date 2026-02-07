@@ -2,6 +2,7 @@ import { html as rhtml, forEach } from './reactive-htl.js';
 import { signal, computed } from '@preact/signals-core';
 import {stepsTraverse} from './deduce-components.js';
 import * as Inputs from 'npm:@observablehq/inputs';
+import mdPlus from './md-utils.js';
 
 
 export function renderChatStepper(deductionTree){
@@ -24,9 +25,9 @@ export function renderChatStepper(deductionTree){
 function renderStep({premises, conclusion, questions, index}, steps$, addStep, answers$, stepsCount){
   
   const q = questions[0];
-  const rawOptions = q?.options == null || q.options.length === 0 ?  [{tex:'Další krok', ok: true}]: q.options;
+  const rawOptions = q?.options == null || q.options.length === 0 ?  [{tex:'Další krok', ok: true, simpleText: true }]: q.options;
   const options = shuffle(rawOptions);
-  const qInput = Inputs.button(options.map(d => ([d.tex,value => {
+  const qInput = Inputs.button(options.map(d => ([d.simpleText ? d.tex : mdPlus.unsafe(`$${d.tex}$`),value => {
     if (d.ok) {
       addStep();
     }
@@ -40,7 +41,7 @@ function renderStep({premises, conclusion, questions, index}, steps$, addStep, a
     <div class='message agent v-stack'>
       ${q != null ? q.question:''}
       <div class=${computed(() => steps$.value.length === index + 1 ? '':'hidden')}>${qInput}</div>
-      ${options.map(d => rhtml`<span class=${computed(() => answers$.value[index] === d && d.result != null ? (d.ok ? 'badge badge--success': 'badge badge--danger') : 'hidden')} style="align-self:flex-start;">${d.tex} = ${d.result}</span>`)}
+      ${options.map(d => rhtml`<span class=${computed(() => answers$.value[index] === d && d.result != null ? (d.ok ? 'badge badge--success': 'badge badge--danger') : 'hidden')} style="align-self:flex-start;">${mdPlus.unsafe(`$${d.tex} = ${d.result}$`)}</span>`)}
     </div>
     ${computed(() => stepsCount == index + 1 && answers$.value[index]?.ok === true ? rhtml`<div class="message">${conclusion}</div>`:'')}
   </div>
