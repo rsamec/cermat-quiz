@@ -576,8 +576,8 @@ function inferConvertRatioCompareToTwoPartRatioRule(b, a, last2) {
     question: `Vyj\xE1d\u0159i pom\u011Brem \u010D\xE1st\xED ${[b.agentA, b.agentB].join(":")}?`,
     result,
     options: areNumbers(result.ratios) ? [
-      { tex: `(${formatRatio(abs(b.ratio))}) v pom\u011Bru k 1`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: true },
-      { tex: `(1 / ${formatRatio(abs(b.ratio))}) v pom\u011Bru k 1`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: false }
+      { tex: `${formatRatio(abs(b.ratio))}`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: true },
+      { tex: `1 / ${formatRatio(abs(b.ratio))}`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: false }
     ] : []
   };
 }
@@ -604,8 +604,8 @@ function inferConvertRatioCompareToRatiosRule(arr, a, last2) {
     question: `Vyj\xE1d\u0159i pom\u011Brem \u010D\xE1st\xED ${tempResult.parts.join(":")}?`,
     result,
     options: areNumbers(result.ratios) ? [
-      { tex: `(${numbers.map((d) => formatRatio(abs(d)))}) v pom\u011Bru k 1`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: true },
-      { tex: `(1 / ${numbers.map((d) => formatRatio(abs(d)))}) v pom\u011Bru k 1`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: false }
+      { tex: `${numbers.map((d) => formatRatio(abs(d)))}`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: true },
+      { tex: `1 / ${numbers.map((d) => formatRatio(abs(d)))}`, result: result.ratios.map((d) => formatRatio(d)).join(":"), ok: false }
     ] : []
   };
 }
@@ -658,9 +658,7 @@ function inferRoundToRule(a, b) {
     inputParameters: extractKinds(a, b),
     question: isNumber(a.quantity) ? `Zaokrouhli ${formatNumber(a.quantity)} ${formatEntity(a)} na ${formatOrder(b.order)}.` : `Zaokrouhli na ${formatOrder(b.order)}.`,
     result,
-    options: isNumber(a.quantity) && isNumber(result.quantity) ? [
-      { tex: `${formatNumber(a.quantity)} `, result: formatNumber(result.quantity), ok: true }
-    ] : []
+    options: isNumber(a.quantity) && isNumber(result.quantity) ? [] : []
   };
 }
 function computeQuantityByRatioBase(a, b) {
@@ -1018,11 +1016,11 @@ function inferProportionRule(a, b) {
   return {
     name: proportionRule.name,
     inputParameters: extractKinds(a, b),
-    question: `Jak\xFD je vztah mezi veli\u010Dinami? ${b.entities?.join(" a ")}`,
+    question: `Jak\xFD je vztah mezi veli\u010Dinami? ${b.entities?.join(" a ")}. Vyj\xE1d\u0159i jako pom\u011Br.`,
     result,
     options: isNumber(a.ratio) ? [
-      { tex: `zachovat pom\u011Br`, result: formatRatio(a.ratio), ok: !b.inverse },
-      { tex: `obr\xE1tit pom\u011Br - 1 / ${formatRatio(a.ratio)}`, result: formatRatio(1 / a.ratio), ok: b.inverse }
+      { tex: `${formatRatio(a.ratio)}`, result: formatRatio(a.ratio), ok: !b.inverse },
+      { tex: `1 / ${formatRatio(a.ratio)}`, result: formatRatio(1 / a.ratio), ok: b.inverse }
     ] : []
   };
 }
@@ -1044,15 +1042,12 @@ function inferProportionTwoPartRatioRule(a, b) {
     inputParameters: extractKinds(a, b),
     question: `Jak\xFD je vztah mezi veli\u010Dinami? ${b.entities?.join(" a ")}`,
     result,
-    options: [
-      { tex: `zachovat pom\u011Br`, result: result.ratios.join(":"), ok: !b.inverse },
-      { tex: `obr\xE1tit pom\u011Br`, result: result.ratios.join(":"), ok: b.inverse }
-    ]
+    options: []
   };
 }
 function invertRatiosRule(a, b) {
   if (!areNumbers(a.ratios)) {
-    throw `invertRatisRule is not support by non quantity type`;
+    throw `invertRatiosRule is not support by non quantity type`;
   }
   return {
     kind: "ratios",
@@ -1071,9 +1066,7 @@ function inferInvertRatiosRule(a, b) {
     inputParameters: extractKinds(a, b),
     question: `P\u0159eve\u010F pom\u011Bry na obracen\xE9 hodnoty.`,
     result,
-    options: areNumbers(a.ratios) ? [
-      { tex: `obr\xE1tit pom\u011Br`, result: result.ratios.join(":"), ok: true }
-    ] : []
+    options: areNumbers(a.ratios) ? [] : []
   };
 }
 function inferReverseRatiosRule(a, b) {
@@ -1087,9 +1080,7 @@ function inferReverseRatiosRule(a, b) {
     inputParameters: extractKinds(a, b),
     question: `Oto\u010D \u010Dleny pom\u011Bru.`,
     result,
-    options: areNumbers(a.ratios) ? [
-      { tex: `${a.ratios.join(":")} => ${result.ratios.join(":")}`, result: result.ratios.join(":"), ok: true }
-    ] : []
+    options: areNumbers(a.ratios) ? [] : []
   };
 }
 function partToWholeRule(a, b) {
@@ -1578,9 +1569,7 @@ function inferAlligationRule(items, last2) {
     inputParameters: extractKinds(...items, last2),
     question: `Vypo\u010D\xEDtej ${result.whole} mezi ${result.parts.join(" a ")} vyv\xE1\u017Een\xEDm v\u016F\u010Di pr\u016Fm\u011Bru?`,
     result,
-    options: areNumbers(result.ratios) ? [
-      { tex: `${formatNumber(avarage)} - ${formatNumber(min2)} :: ${formatNumber(max2)} - ${formatNumber(avarage)}`, result: result.ratios.join(":"), ok: true }
-    ] : []
+    options: areNumbers(result.ratios) ? [] : []
   };
 }
 function triangleAngleRule(a, b, last2) {
@@ -1923,9 +1912,7 @@ function inferToRatiosRule(parts, last2) {
     inputParameters: extractKinds(...parts, last2),
     question: `Vyj\xE1d\u0159i pom\u011Brem mezi ${result.parts.join(":")}?`,
     result,
-    options: areNumbers(result.ratios) ? [
-      { tex: `${last2.useBase ? parts.map((d) => d.quantity).map((d) => formatNumber(d)).join(":") : ""}`, result: result.ratios.map((d) => formatNumber(d)).join(":"), ok: true }
-    ] : []
+    options: areNumbers(result.ratios) ? [] : []
   };
 }
 function transitiveRateRule(a, b, newAgent) {
@@ -1996,7 +1983,7 @@ function inferEvalToQuantityRule(a, b) {
     question: `Vypo\u010Dti v\xFDraz ${b.expression}?`,
     result,
     options: isNumber(result.quantity) ? [
-      { tex: result.substitutedExpr, result: formatNumber(result.quantity), ok: true }
+      { tex: replaceSqrt(result.substitutedExpr), result: formatNumber(result.quantity), ok: true }
     ] : []
   };
 }
@@ -2322,8 +2309,8 @@ function inferNthTermRule(a, b) {
     inputParameters: extractKinds(a, b),
     question: `Vypo\u010Dti ${result.entity}?`,
     result,
-    options: isNumber(a.quantity) && isNumber(result.quantity) ? [
-      { tex: b.kind === "pattern" ? b.nthTermDescription ?? b.nthTerm : formatSequence(b.type, a.quantity), result: formatNumber(result.quantity), ok: true }
+    options: isNumber(a.quantity) && isNumber(result.quantity) && b.kind === "pattern" ? [
+      { tex: b.nthTermDescription ?? b.nthTerm, result: formatNumber(result.quantity), ok: true }
     ] : []
   };
 }
@@ -2360,8 +2347,8 @@ function inferNthPositionRule(a, b, newEntity = "nth") {
     inputParameters: extractKinds(a, b),
     question: `Vypo\u010Dti pozici ${result.agent} = ${formatEntity(a)}?`,
     result,
-    options: isNumber(result.quantity) ? [
-      { tex: "Dle vzorce", result: formatNumber(result.quantity), ok: true }
+    options: isNumber(result.quantity) && b.kind === "pattern" ? [
+      { tex: b.nthPosition, result: formatNumber(result.quantity), ok: true }
     ] : []
   };
 }
@@ -2832,26 +2819,6 @@ function formatAngle(relationship) {
       throw "Nezn\xE1m\xFD vztah";
   }
 }
-function formatSequence(type, n) {
-  const simplify2 = (d, op = "") => d !== 1 ? `${d}${op}` : "";
-  if (type.kind === "arithmetic")
-    return `${type.sequence[0]} + ${type.commonDifference}(${formatNumber(n)}-1)`;
-  if (type.kind === "quadratic") {
-    const [first, second] = type.sequence;
-    const { A, B, C } = nthQuadraticElements(first, second, type.secondDifference);
-    let parts = [`${simplify2(A, "*")}${formatNumber(n)}^2^`];
-    if (B !== 0) {
-      parts = parts.concat(`${simplify2(B, "*")}${formatNumber(n)}`);
-    }
-    if (C !== 0) {
-      parts = parts.concat(`${simplify2(C, "*")}${formatNumber(n)}`);
-    }
-    return `${parts.map((d, i) => `${i !== 0 ? " + " : ""}${d}`).join(" ")}`;
-  }
-  if (type.kind === "geometric") {
-    return `${simplify2(type.sequence[0], "*")}${type.commonRatio}^(${formatNumber(n)}-1)^`;
-  }
-}
 function sequenceOptions(seqType) {
   return [
     { tex: "stejn\xFD rozd\xEDl", result: `${seqType.kind === "arithmetic" ? formatNumber(seqType.commonDifference) : "chybn\u011B"}`, ok: seqType.kind === "arithmetic" },
@@ -3006,6 +2973,10 @@ function range(size, startAt = 0) {
   return [...Array(size).keys()].map((i) => i + startAt);
 }
 var unique = (value, index, array) => array.indexOf(value) === index;
+var regexSqrt = /sqrt\s*(?:\(([^)]+)\)|([A-Za-z0-9+\-*/\s]+))/g;
+function replaceSqrt(str) {
+  return str.replace(regexSqrt, "\\sqrt{$1$2}");
+}
 var formulaRegistry = {
   circumReference: {
     square: {
@@ -7096,7 +7067,7 @@ var mdFormattingFunc = (defaultExpressionDepth, context = null) => ({
     return isEmptyOrWhiteSpace(res) ? "" : `__${res.trim()}__`;
   },
   formatAgent: (d) => `**${Array.isArray(d) ? d.join() : d}**`,
-  formatSequence: (d) => `${formatSequence2(d)}`,
+  formatSequence: (d) => `${formatSequence(d)}`,
   formatTable: (data) => `vzor opakov\xE1n\xED ${data.map((d) => d[1]).join()}`
 });
 var mdFormatting = mdFormattingFunc(0);
@@ -7104,7 +7075,7 @@ var mermaidFormatting = {
   ...mdFormatting,
   formatKind: (d) => ``
 };
-function formatSequence2(type) {
+function formatSequence(type) {
   const simplify2 = (d, op = "") => d !== 1 ? `${d}${op}` : "";
   if (type.kind === "arithmetic")
     return `${type.sequence.join()} => a^n^ = ${type.sequence[0]} + ${type.commonDifference}(n-1)`;
@@ -7125,7 +7096,7 @@ function formatSequence2(type) {
   }
 }
 function formatPredicate(d, formatting) {
-  const { formatKind, formatAgent, formatEntity: formatEntity2, formatQuantity, formatRatio: formatRatio2, formatSequence: formatSequence3, formatTable, compose } = { ...mdFormatting, ...formatting };
+  const { formatKind, formatAgent, formatEntity: formatEntity2, formatQuantity, formatRatio: formatRatio2, formatSequence: formatSequence2, formatTable, compose } = { ...mdFormatting, ...formatting };
   if (isQuantityPredicate(d) && d.quantity == null || isRatioPredicate(d) && d.ratio == null || isRatiosPredicate(d) && d.ratios == null) {
     return formatKind(d);
   }
@@ -7186,7 +7157,7 @@ function formatPredicate(d, formatting) {
       result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${d.restQuantity !== 0 ? ` se zbytkem ${formatQuantity(d.restQuantity)}` : ""}`;
       break;
     case "sequence":
-      result = compose`${d.type != null ? formatSequence3(d.type) : ""}`;
+      result = compose`${d.type != null ? formatSequence2(d.type) : ""}`;
       break;
     case "pattern":
       result = compose`${formatTable(

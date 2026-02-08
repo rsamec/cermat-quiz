@@ -1079,8 +1079,8 @@ function inferConvertRatioCompareToTwoPartRatioRule(b: RatioComparison, a: { who
     question: `Vyjádři poměrem částí ${[b.agentA, b.agentB].join(":")}?`,
     result,
     options: areNumbers(result.ratios) ? [
-      { tex: `(${formatRatio(abs(b.ratio))}) v poměru k 1`, result: result.ratios.map(d => formatRatio(d)).join(":"), ok: true },
-      { tex: `(1 / ${formatRatio(abs(b.ratio))}) v poměru k 1`, result: result.ratios.map(d => formatRatio(d)).join(":"), ok: false },
+      { tex: `${formatRatio(abs(b.ratio))}`, result: result.ratios.map(d => formatRatio(d)).join(":"), ok: true },
+      { tex: `1 / ${formatRatio(abs(b.ratio))}`, result: result.ratios.map(d => formatRatio(d)).join(":"), ok: false },
     ] : []
   }
 }
@@ -1110,8 +1110,8 @@ function inferConvertRatioCompareToRatiosRule(arr: RatioComparison[], a: { whole
     question: `Vyjádři poměrem částí ${tempResult.parts.join(":")}?`,
     result,
     options: areNumbers(result.ratios) ? [
-      { tex: `(${numbers.map(d => formatRatio(abs(d)))}) v poměru k 1`, result: result.ratios.map(d => formatRatio(d)).join(":"), ok: true },
-      { tex: `(1 / ${numbers.map(d => formatRatio(abs(d)))}) v poměru k 1`, result: result.ratios.map(d => formatRatio(d)).join(":"), ok: false },
+      { tex: `${numbers.map(d => formatRatio(abs(d)))}`, result: result.ratios.map(d => formatRatio(d)).join(":"), ok: true },
+      { tex: `1 / ${numbers.map(d => formatRatio(abs(d)))}`, result: result.ratios.map(d => formatRatio(d)).join(":"), ok: false },
     ] : []
   }
 }
@@ -1173,9 +1173,7 @@ function inferRoundToRule(a: Container, b: Round): Question<Container> {
     inputParameters: extractKinds(a, b),
     question: isNumber(a.quantity) ? `Zaokrouhli ${formatNumber(a.quantity)} ${formatEntity(a)} na ${formatOrder(b.order)}.` : `Zaokrouhli na ${formatOrder(b.order)}.`,
     result,
-    options: isNumber(a.quantity) && isNumber(result.quantity) ? [
-      { tex: `${formatNumber(a.quantity)} `, result: formatNumber(result.quantity), ok: true },
-    ] : []
+    options: isNumber(a.quantity) && isNumber(result.quantity) ? [] : []
   }
 }
 
@@ -1605,11 +1603,11 @@ function inferProportionRule(a: RatioComparison, b: Proportion): Question<RatioC
   return {
     name: proportionRule.name,
     inputParameters: extractKinds(a, b),
-    question: `Jaký je vztah mezi veličinami? ${b.entities?.join(' a ')}`,
+    question: `Jaký je vztah mezi veličinami? ${b.entities?.join(' a ')}. Vyjádři jako poměr.`,
     result,
     options: isNumber(a.ratio) ? [
-      { tex: `zachovat poměr`, result: formatRatio(a.ratio), ok: !b.inverse },
-      { tex: `obrátit poměr - 1 / ${formatRatio(a.ratio)}`, result: formatRatio(1 / a.ratio), ok: b.inverse },
+      { tex: `${formatRatio(a.ratio)}`, result: formatRatio(a.ratio), ok: !b.inverse },
+      { tex: `1 / ${formatRatio(a.ratio)}`, result: formatRatio(1 / a.ratio), ok: b.inverse },
     ] : []
   }
 }
@@ -1633,16 +1631,13 @@ function inferProportionTwoPartRatioRule(a: PartToPartRatio, b: Proportion): Que
     inputParameters: extractKinds(a, b),
     question: `Jaký je vztah mezi veličinami? ${b.entities?.join(' a ')}`,
     result,
-    options: [
-      { tex: `zachovat poměr`, result: result.ratios.join(":"), ok: !b.inverse },
-      { tex: `obrátit poměr`, result: result.ratios.join(":"), ok: b.inverse },
-    ]
+    options: []
   }
 }
 
 function invertRatiosRule(a: PartToPartRatio, b: RatiosInvert): PartToPartRatio {
   if (!areNumbers(a.ratios)) {
-    throw `invertRatisRule is not support by non quantity type`
+    throw `invertRatiosRule is not support by non quantity type`
   }
   return {
     kind: 'ratios',
@@ -1662,7 +1657,6 @@ function inferInvertRatiosRule(a: PartToPartRatio, b: RatiosInvert): Question<Pa
     question: `Převeď poměry na obracené hodnoty.`,
     result,
     options: areNumbers(a.ratios) ? [
-      { tex: `obrátit poměr`, result: result.ratios.join(":"), ok: true },
     ] : []
   }
 }
@@ -1677,9 +1671,7 @@ function inferReverseRatiosRule(a: PartToPartRatio, b: Reverse): Question<PartTo
     inputParameters: extractKinds(a, b),
     question: `Otoč členy poměru.`,
     result,
-    options: areNumbers(a.ratios) ? [
-      { tex: `${a.ratios.join(":")} => ${result.ratios.join(":")}`, result: result.ratios.join(":"), ok: true },
-    ] : []
+    options: areNumbers(a.ratios) ? [] : []
   }
 }
 
@@ -2249,9 +2241,9 @@ function inferAlligationRule(items: Container[] | Rate[], last: Alligation): Que
     inputParameters: extractKinds(...items, last),
     question: `Vypočítej ${result.whole} mezi ${result.parts.join(" a ")} vyvážením vůči průměru?`,
     result,
-    options: areNumbers(result.ratios) ? [
-      { tex: `${formatNumber(avarage)} - ${formatNumber(min)} :: ${formatNumber(max)} - ${formatNumber(avarage)}`, result: result.ratios.join(":"), ok: true },
-    ] : []
+    options: areNumbers(result.ratios)
+      ? []
+      : []
   }
 }
 
@@ -2640,9 +2632,9 @@ function inferToRatiosRule(parts: Container[] | Rate[], last: PartToPartRatio): 
     inputParameters: extractKinds(...parts, last),
     question: `Vyjádři poměrem mezi ${result.parts.join(":")}?`,
     result,
-    options: areNumbers(result.ratios) ? [
-      { tex: `${last.useBase ? parts.map(d => d.quantity).map(d => formatNumber(d)).join(":") : ''}`, result: result.ratios.map(d => formatNumber(d)).join(":"), ok: true },
-    ] : []
+    options: areNumbers(result.ratios)
+      ? []
+      : []
   }
 }
 
@@ -2738,7 +2730,7 @@ function inferEvalToQuantityRule<
     result,
     options: isNumber(result.quantity)
       ? [
-        { tex: result.substitutedExpr, result: formatNumber(result.quantity), ok: true }
+        { tex: replaceSqrt(result.substitutedExpr), result: formatNumber(result.quantity), ok: true }
       ]
       : []
   }
@@ -3136,8 +3128,8 @@ function inferNthTermRule(a: Container, b: Sequence | Pattern): Question<Contain
     inputParameters: extractKinds(a, b),
     question: `Vypočti ${result.entity}?`,
     result,
-    options: isNumber(a.quantity) && isNumber(result.quantity) ? [
-      { tex: b.kind === "pattern" ? (b.nthTermDescription ?? b.nthTerm) : formatSequence(b.type, a.quantity), result: formatNumber(result.quantity), ok: true },
+    options: isNumber(a.quantity) && isNumber(result.quantity) && b.kind === "pattern" ? [
+      { tex: b.nthTermDescription ?? b.nthTerm, result: formatNumber(result.quantity), ok: true },
     ] : []
   }
 }
@@ -3183,8 +3175,8 @@ function inferNthPositionRule(a: Container, b: Sequence | Pattern, newEntity: st
     inputParameters: extractKinds(a, b),
     question: `Vypočti pozici ${result.agent} = ${formatEntity(a)}?`,
     result,
-    options: isNumber(result.quantity) ? [
-      { tex: 'Dle vzorce', result: formatNumber(result.quantity), ok: true },
+    options: isNumber(result.quantity) && b.kind === "pattern" ? [
+      { tex: b.nthPosition, result: formatNumber(result.quantity), ok: true },
     ] : []
   }
 }
@@ -4061,6 +4053,12 @@ export function range(size, startAt = 0) {
   return [...Array(size).keys()].map(i => i + startAt);
 }
 const unique = (value, index, array) => array.indexOf(value) === index;
+
+const regexSqrt = /sqrt\s*(?:\(([^)]+)\)|([A-Za-z0-9+\-*/\s]+))/g;
+
+function replaceSqrt(str) {
+  return str.replace(regexSqrt, '\\sqrt{$1$2}');
+}
 // #endregion
 
 

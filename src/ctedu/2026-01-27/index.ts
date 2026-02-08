@@ -30,10 +30,8 @@ function porovnani() {
 function bazen() {
     const entity = "doba"
     const unit = "h"
-    const entityCerpadlo = "čerpadlo"
-    const entityBazen = "velikost bazénu"
+    const entityCerpadlo = "čerpadlo"    
     const umeraDobaCerpadlo = proportion(true, [entity, entityCerpadlo])
-    const umeraDobaBazen = proportion(false, [entity, entityBazen])
 
     const potrebaEntity = "potřeba";
     return {
@@ -42,9 +40,9 @@ function bazen() {
                 cont(["nově", "skutečně načerpáno"], 9, entityCerpadlo),
                 deduce(
                     deduce(
-                        deduce(
-                            cont(["původně"], 8, entityCerpadlo),
+                        deduce(                            
                             cont(["nově"], 16, entityCerpadlo),
+                            cont(["původně"], 8, entityCerpadlo),
                             ctor("comp-ratio")
                         ),
                         umeraDobaCerpadlo
@@ -58,9 +56,9 @@ function bazen() {
         pocetCerpadel: {
             deductionTree: deduce(
                 deduce(
-                    deduce(
-                        cont("původně", 36, entity, unit),
+                    deduce(                        
                         cont("nově", 24, entity, unit),
+                        cont("původně", 36, entity, unit),
                         ctor("comp-ratio")
                     ),
                     umeraDobaCerpadlo
@@ -74,9 +72,9 @@ function bazen() {
                 deduce(
                     deduce(
                         deduce(
-                            deduce(
-                                cont(["původně"], 8, entityCerpadlo),
+                            deduce(                                
                                 cont(["nově"], 24, entityCerpadlo),
+                                cont(["původně"], 8, entityCerpadlo),
                                 ctor("comp-ratio")
                             ),
                             umeraDobaCerpadlo

@@ -88,9 +88,8 @@ function automat() {
     const entity = "doba"
     const unit = "h"
     const entityAutomat = "automat"
-    const entityZakazka = "velikost zakázky"
     const umeraDobaAutomat = proportion(true, [entity, entityAutomat])
-    const umeraDobaZakazka = proportion(false, [entity, entityZakazka])
+
 
     const zakazka = "celá zakázka"
 

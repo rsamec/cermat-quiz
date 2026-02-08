@@ -457,7 +457,7 @@ export function stepsTraverse(node) {
         const res = traverseEx(newChild, contextStack);
         args.push(res)
 
-        if (!isLast) {
+        if (!isLast || (isLast && node.children.some(d => d.kind == "proportion"))) {
           const plotFigure = renderPredicatePlot(newChild, node, { predicatesToExclude: ["cont"] });
           if (plotFigure != null) {
             args.push(plotFigure)
