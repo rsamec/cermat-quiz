@@ -4133,7 +4133,7 @@ function inferToPartWholeCompareRule(a, b) {
   return {
     name: toPartWholeCompareRule.name,
     inputParameters: extractKinds(a, b),
-    question: `Porovnej ${result.agentA} a ${result.agentB}. Kolikr\xE1t? `,
+    question: `Porovnej ${result.agentA} a ${result.agentB}. Kolikr\xE1t?`,
     result,
     options: isNumber2(a.ratio) && isNumber2(b.ratio) ? [
       {
@@ -4710,7 +4710,7 @@ function inferProportionRule(a, b) {
   return {
     name: proportionRule.name,
     inputParameters: extractKinds(a, b),
-    question: `Jak\xFD je vztah mezi veli\u010Dinami? ${b.entities?.join(" a ")}. Vyj\xE1d\u0159i jako pom\u011Br.`,
+    question: `Jak\xFD je vztah mezi veli\u010Dinami ${b.entities?.join(" a ")}?. Porovnej ${a.agentA} a ${a.agentB}. Kolikr\xE1t?`,
     result,
     options: isNumber2(a.ratio) ? [
       { tex: `${formatRatio(a.ratio)}`, result: formatRatio(a.ratio), ok: !b.inverse },
@@ -5680,7 +5680,8 @@ function inferEvalToQuantityRule(a, b) {
     question: `Vypo\u010Dti v\xFDraz ${b.expression}?`,
     result,
     options: isNumber2(result.quantity) ? [
-      { tex: replaceSqrt(helpers2.substituteContext(b.expression, createContextToQuantityRule(a.map((d) => d.quantity), extractDistinctWords(b.expression))).toString()), result: formatNumber(result.quantity), ok: true }
+      { tex: replaceSqrt(helpers2.substituteContext(b.expression, createContextToQuantityRule(a.map((d) => d.quantity), extractDistinctWords(b.expression))).toString()), result: formatNumber(result.quantity), ok: true },
+      ...a.length > 1 ? [{ tex: replaceSqrt(helpers2.substituteContext(b.expression, createContextToQuantityRule(a.map((d) => d.quantity).reverse(), extractDistinctWords(b.expression))).toString()), result: formatNumber(result.quantity), ok: false }] : []
     ] : []
   };
 }

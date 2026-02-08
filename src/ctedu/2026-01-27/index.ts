@@ -169,7 +169,7 @@ function obdelnik() {
                     kratsi,
                     pythagoras("úhlopříčka", ["kratší strana", "delší strana"])
                 ),
-                delsi
+                last(delsi)
             ),
             ctorOption("C", 3)
         )
