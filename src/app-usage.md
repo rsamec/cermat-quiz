@@ -2,12 +2,12 @@
 # Podmínky používání aplikace
 
 <div class="caution" label="Upozornění">
-  Využití dat je limitováno dodržením pravidel <a href="https://prijimacky.cermat.cz/files/files/CZVV_pravidla-vyuziti-webstrankyn.pdf">CERMAT licence</a>. 🤦
+  Využití CERMAT dat je limitováno dodržením pravidel <a href="https://prijimacky.cermat.cz/files/files/CZVV_pravidla-vyuziti-webstrankyn.pdf">CERMAT licence</a>. 🤦
   
   Jedná se o **neoficiální** verzi s uděleným souhlasem CERMAT.
 </div>
 <div class="warning" label="Varování">
-  Úlohy byly převzaty z kanálu ČT EDU dle uváděného hesla vzdělávání volně dostupné pro všechny. 🐹
+  ČT EDU úlohy byly převzaty z kanálu ČT EDU dle uváděného hesla vzdělávání volně dostupné pro všechny. 🐹
   
   Jedná se o **neoficiální** verzi bez vědomí ČT.
 </div>
