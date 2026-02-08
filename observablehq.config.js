@@ -114,6 +114,7 @@ export default {
       open: false,
       name: "Aktuality",
       pages: [
+        { name: "Únor 2026", path: "/blog/2026-february/index" },
         { name: "Leden 2026", path: "/blog/2026-january/index" },
         { name: "Prosinec 2025", path: "/blog/2025-december/index" },
         { name: "Listopad 2025", path: "/blog/2025-november/index" },
