@@ -647,7 +647,7 @@ function roundToRule(a, b) {
   }
   return {
     ...a,
-    quantity: isNumber(a.quantity) ? Math.round(a.quantity / order) * order : wrapToQuantity(`round ${a.quantity}`, { a, b })
+    quantity: isNumber(a.quantity) ? Math.round(a.quantity / order) * order : wrapToQuantity(`${order} * floor((a.quantity + ${Math.round(order / 2)})/${order})`, { a })
     //@TODO - fix usage of the b.order in expression
   };
 }
@@ -1954,16 +1954,19 @@ function inferTrasitiveRateRule(a, b, last2) {
     ] : []
   };
 }
-function evalToQuantityRule(a, b) {
-  const quantities = a.map((d) => d.quantity);
-  const variables = extractDistinctWords(b.expression);
+function createContextToQuantityRule(quantities, variables) {
   const context = quantities.reduce((out, d, i) => {
     out[variables[i]] = d;
     return out;
   }, {});
+  return context;
+}
+function evalToQuantityRule(a, b) {
+  const quantities = a.map((d) => d.quantity);
+  const variables = extractDistinctWords(b.expression);
+  const context = createContextToQuantityRule(quantities, variables);
   return {
     ...b.predicate,
-    substitutedExpr: helpers.substituteContext(b.expression, context).toString(),
     quantity: areNumbers(quantities) ? helpers.evalExpression(b.expression, context) : wrapToQuantity(`${b.expression}`, variables.reduce((out, d, i) => {
       out[d] = a[i];
       return out;
@@ -1983,7 +1986,7 @@ function inferEvalToQuantityRule(a, b) {
     question: `Vypo\u010Dti v\xFDraz ${b.expression}?`,
     result,
     options: isNumber(result.quantity) ? [
-      { tex: replaceSqrt(result.substitutedExpr), result: formatNumber(result.quantity), ok: true }
+      { tex: replaceSqrt(helpers.substituteContext(b.expression, createContextToQuantityRule(a.map((d) => d.quantity), extractDistinctWords(b.expression))).toString()), result: formatNumber(result.quantity), ok: true }
     ] : []
   };
 }
@@ -2449,9 +2452,9 @@ function inferenceRuleEx(...args) {
     return inferSimplifyExprRule(a, b);
   } else if (a.kind === "simplify-expr" && (b.kind === "comp-ratio" || b.kind === "cont")) {
     return inferSimplifyExprRule(b, a);
-  } else if (a.kind === "cont" && (b.kind === "eval-expr" || b.kind === "eval-formula")) {
+  } else if ((a.kind === "cont" || a.kind === "rate" || a.kind === "quota") && (b.kind === "eval-expr" || b.kind === "eval-formula")) {
     return inferEvalToQuantityRule([a], b);
-  } else if ((a.kind === "eval-expr" || a.kind === "eval-formula") && b.kind === "cont") {
+  } else if ((a.kind === "eval-expr" || a.kind === "eval-formula") && (b.kind === "cont" || b.kind === "rate" || b.kind === "quota")) {
     return inferEvalToQuantityRule([b], a);
   } else if (a.kind === "rate" && b.kind === "rate") {
     if (last2?.kind === "ratios") {
@@ -6627,7 +6630,7 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
         if (typeof q == "number" || !isNaN(parseFloat(q)) || Array.isArray(q)) {
           expr = parser.parse(cleanUpExpression(expr, variable));
           if (level >= requiredLevel || Array.isArray(q)) {
-            expr = expr.simplify({ [variable]: q });
+            expr = expr.simplify({ [variable]: checkFraction(q) ? getFraction(q) : q });
           } else {
             for (let [key, values] of Object.entries(colors2)) {
               if (values.includes(context[variable])) {
@@ -6650,6 +6653,20 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
   } else {
     return node;
   }
+}
+var fractionRegex = /^(-?[0-9]+)\/(-?[0-9]+)$/;
+function checkFraction(str) {
+  return fractionRegex.test(str);
+}
+function parseFraction(str) {
+  const match = fractionRegex.exec(str);
+  if (!match)
+    return null;
+  return [Number(match[1]), Number(match[2])];
+}
+function getFraction(str) {
+  const f = parseFraction(str);
+  return f[0] / f[1];
 }
 function toEquationExpr(lastExpr, requiredLevel = 0, context = {}) {
   const final = recurExpr({ quantity: lastExpr }, 0, requiredLevel, context);
@@ -7004,7 +7021,10 @@ function mapToFrequency({ agent, entityBase, baseQuantity }) {
 function toPredicate(node, mapFn) {
   const nodeToMap = isPredicate(node) ? node : last(node);
   const newNode = mapFn(nodeToMap);
-  return { children: [...isPredicate(node) ? [node] : node.children.slice(0, -1), newNode] };
+  return {
+    children: [...isPredicate(node) ? [node] : node.children.slice(0, -1), newNode],
+    useMapping: true
+  };
 }
 function connectTo(node, input) {
   let inputState = {
@@ -7154,7 +7174,7 @@ function formatPredicate(d, formatting) {
       result = compose`${formatAgent(d.agent)} ${d.asRatio ? formatRatio2(d.quantity) : formatQuantity(d.quantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} per ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? "" : formatQuantity(d.baseQuantity)}${d.entityBase.entity != "" ? " " : ""}${formatEntity2(d.entityBase.entity, d.entityBase.unit)}`;
       break;
     case "quota":
-      result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${d.restQuantity !== 0 ? ` se zbytkem ${formatQuantity(d.restQuantity)}` : ""}`;
+      result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${isNumber(d.restQuantity) && d.restQuantity !== 0 ? ` se zbytkem ${formatQuantity(d.restQuantity)}` : ""}`;
       break;
     case "sequence":
       result = compose`${d.type != null ? formatSequence2(d.type) : ""}`;

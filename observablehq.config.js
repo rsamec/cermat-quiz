@@ -155,6 +155,7 @@ export default {
     .concat(ctEduFolders.map(d => `/ctedu/form-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/chat-stepper-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/calculator-${d}`))
+    .concat(ctEduFolders.map(d => `/ctedu/color-expression-${d}`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/arch-${code}`))

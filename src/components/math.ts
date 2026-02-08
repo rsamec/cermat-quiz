@@ -1163,7 +1163,7 @@ function roundToRule(a: Container, b: Round): Container {
     ...a,
     quantity: isNumber(a.quantity)
       ? Math.round(a.quantity / order) * order
-      : wrapToQuantity(`round ${a.quantity}`, { a, b }) //@TODO - fix usage of the b.order in expression
+      : wrapToQuantity(`${order} * floor((a.quantity + ${Math.round(order / 2)})/${order})`, { a }) //@TODO - fix usage of the b.order in expression
   };
 }
 function inferRoundToRule(a: Container, b: Round): Question<Container> {
@@ -2682,6 +2682,13 @@ function inferTrasitiveRateRule(a: Rate, b: Rate, last: Rate): Question<Rate> {
   }
 }
 
+function createContextToQuantityRule(quantities: NumberOrExpression[], variables: string[]) {
+  const context = quantities.reduce((out, d, i) => {
+    out[variables[i]] = d
+    return out;
+  }, {});
+  return context;
+}
 
 function evalToQuantityRule<
   T extends Predicate & { quantity: Quantity },
@@ -2690,17 +2697,10 @@ function evalToQuantityRule<
 
   const quantities = a.map(d => d.quantity);
   const variables = extractDistinctWords(b.expression);
-
-  const context = quantities.reduce((out, d, i) => {
-    out[variables[i]] = d
-    return out;
-  }, {});
-
-
+  const context = createContextToQuantityRule(quantities, variables)
 
   return {
     ...b.predicate,
-    substitutedExpr: helpers.substituteContext(b.expression, context).toString(),
     quantity: areNumbers(quantities) ? helpers.evalExpression(b.expression, context) : wrapToQuantity(`${b.expression}`, variables.reduce((out, d, i) => {
       out[d] = a[i];
       return out;
@@ -2730,7 +2730,7 @@ function inferEvalToQuantityRule<
     result,
     options: isNumber(result.quantity)
       ? [
-        { tex: replaceSqrt(result.substitutedExpr), result: formatNumber(result.quantity), ok: true }
+        { tex: replaceSqrt(helpers.substituteContext(b.expression, createContextToQuantityRule(a.map(d => d.quantity), extractDistinctWords(b.expression))).toString()), result: formatNumber(result.quantity), ok: true }
       ]
       : []
   }
@@ -3282,10 +3282,10 @@ function inferenceRuleEx(...args: Predicate[]): Question<any> {
   else if (a.kind === "simplify-expr" && (b.kind === "comp-ratio" || b.kind === "cont")) {
     return inferSimplifyExprRule(b, a)
   }
-  else if (a.kind === "cont" && (b.kind === "eval-expr" || b.kind === "eval-formula")) {
+  else if ((a.kind === "cont" || a.kind === "rate" || a.kind === "quota") && (b.kind === "eval-expr" || b.kind === "eval-formula")) {
     return inferEvalToQuantityRule([a], b)
   }
-  else if ((a.kind === "eval-expr" || a.kind === "eval-formula") && b.kind === "cont") {
+  else if ((a.kind === "eval-expr" || a.kind === "eval-formula") && (b.kind === "cont" || b.kind === "rate" || b.kind === "quota")) {
     return inferEvalToQuantityRule([b], a)
   }
   else if (a.kind === "rate" && b.kind === "rate") {

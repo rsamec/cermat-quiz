@@ -134,7 +134,8 @@ function recurExpr(node, level, requiredLevel = 0, parentContext: DeduceContext 
         if (typeof q == 'number' || !isNaN(parseFloat(q)) || Array.isArray(q)) {
           expr = parser.parse(cleanUpExpression(expr, variable))
           if (level >= requiredLevel || Array.isArray(q)) {            
-            expr = expr.simplify({ [variable]: q})
+            
+            expr = expr.simplify({ [variable]: checkFraction(q) ? getFraction(q): q})
             //console.log(":", variable, q, expr.toString())
           }
           else {
@@ -173,6 +174,10 @@ function parseFraction(str) {
   const match = fractionRegex.exec(str);
   if (!match) return null;
   return [Number(match[1]), Number(match[2])];
+}
+function getFraction(str){
+  const f = parseFraction(str);
+  return f[0]/f[1];
 }
 export function toEquation(lastNode) {
   const final = recurExpr(lastNode, 0);

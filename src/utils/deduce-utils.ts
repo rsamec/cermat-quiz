@@ -35,6 +35,7 @@ export function deduceLbl(value: number) {
 export type Node = TreeNode | Predicate
 export type TreeNode = {
   children?: Node[]
+  useMapping?: boolean 
 }
 
 export type TreeNodeWithContext = { children: TreeNode, context: DeduceContext };
@@ -124,9 +125,12 @@ export function mapToFrequency({ agent, entityBase, baseQuantity }: { agent: str
   }
 }
 export function toPredicate<T extends Predicate>(node: TreeNode | T, mapFn: (node: T) => Predicate): TreeNode {
-  const nodeToMap = isPredicate(node) ? node : last(node) as T;
+  const nodeToMap = isPredicate(node) ? node : last(node) as T;  
   const newNode = mapFn(nodeToMap);
-  return { children: [...(isPredicate(node) ? [node] : node.children.slice(0, -1)), newNode] };
+  return { 
+    children: [...(isPredicate(node) ? [node] : node.children.slice(0, -1)), newNode],    
+    useMapping: true
+   };
 }
 
 export function connectTo(node: any, input: TreeNode) {
@@ -641,7 +645,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = compose`${formatAgent(d.agent)} ${d.asRatio ? formatRatio(d.quantity) : formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} per ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? '' : formatQuantity(d.baseQuantity)}${d.entityBase.entity != "" ? " " : ""}${formatEntity(d.entityBase.entity, d.entityBase.unit)}`
       break;
     case "quota":
-      result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${d.restQuantity !== 0 ? ` se zbytkem ${formatQuantity(d.restQuantity)}` : ''}`
+      result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${ isNumber(d.restQuantity) && d.restQuantity !== 0 ? ` se zbytkem ${formatQuantity(d.restQuantity)}` : ''}`
       break;
     case "sequence":
       result = compose`${d.type != null ? formatSequence(d.type) : ''}`
@@ -979,7 +983,8 @@ export function colorifyDeduceTree(originalTree, { maxDepth, axioms, deductions 
     const premises = items;
 
 
-    const conclusion = node.context != null ? deduceAs(node.context)(...premises) : deduce(...premises)
+    const conclusion = node.useMapping ? node : node.context != null ? deduceAs(node.context)(...premises) : deduce(...premises)
+    
     const lastPredicate = last(conclusion);
     deduceMap.set(node.children[node.children.length - 1], lastPredicate);
 
@@ -1001,8 +1006,8 @@ export function colorifyDeduceTree(originalTree, { maxDepth, axioms, deductions 
       }
     }
     return conclusion;
-
   }
+
   const result = traverse(tree) as unknown as TreeNodeWithContext;
   result.context = {
     depth: maxDepth ?? tree.context?.depth ?? 2,
