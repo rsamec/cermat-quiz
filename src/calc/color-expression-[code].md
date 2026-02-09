@@ -73,16 +73,21 @@ display(html`<div>
         <div class="v-stack v-stack--m">${values       
         .filter(([key,value]) => useColors(value.deductionTree))
         .map(([key, value]) => {
-            const {depth, width, predicates, rules} = computeTreeMetrics(value.deductionTree); 
+            const dTree = value.deductionTree;
+            const hackedDTree = dTree.children.some(d => d.kind == "eval-option") ? dTree.children.find(d => d.kind != "eval-option"): dTree;        
+            
+            const {depth, width, predicates, rules} = computeTreeMetrics(hackedDTree); 
             const ruleNames = rules.map(d => d.name);
-            if (['evalToQuantityRule', 'evalToOptionRule','convertRatioCompareToRatiosRule','convertToPartToPartRatios', 'nthTermExpressionRule', 'nthTermRule',
+            if (['convertRatioCompareToRatiosRule','convertToPartToPartRatios', 'nthTermExpressionRule', 'nthTermRule','solveEquationRule',
              'convertRatioCompareToTwoPartRatioRule', 'convertRatioCompareToRatioRule','commonSense', 'alligationRule', 'partEqualRule'].some(d => ruleNames.includes(d))) return '';
             
+            const finalDepth = depth - 1;
             const colorifyParamsForm = Inputs.form({
-                maxDepth: Inputs.range([0, depth - 1], {step: 1, value: 3, label: "Maximální hloubka"}),
+                maxDepth: Inputs.range([0, finalDepth], {step: 1, value: finalDepth, label: "Maximální hloubka"}),
                 axioms:  Inputs.toggle({label:"Axioms", value: true}),
                 deductions: Inputs.toggle({label:"Deductions", value: true}),
             });
+           
         
             // const notSupportedRules = ["convertToUnitRule", "evalToQuantityRule", "commonSense","alligationRule"]
             // if (notSupportedRules.some(d => ruleNames.includes(d))) return ''
@@ -95,7 +100,7 @@ display(html`<div>
             })            
             
             return rhtml`<div><h3>Úloha ${key}</h3><div class="card">${colorifyParamsForm}</div><div>${computed(() => {            
-                const {deductionTree, colorsMap}  = colorifyDeduceTree(value.deductionTree,signalValue.value );
+                const {deductionTree, colorsMap}  = colorifyDeduceTree(hackedDTree,signalValue.value );
                 return mdPlus.unsafe(jsonToMarkdownTree(deductionTree, 0, colorsMap).join(''))        
             })}</div></div>`
         })}</div>

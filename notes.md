@@ -110,3 +110,10 @@ Celkové množství mléka, které původních 7 farmářových krav nadojilo za
         - [CONT] **farma původně**=105 __l objem__
           - [RATE] **farma původně** 15 __l objem__ per  __kráva__
           - [CONT] **farma původně**=7 __kráva__
+
+
+Řešení příkladu ve formě dedukčního stromu ve markdown nested option list, kde 
+- kořen stromu je konečný výsledek úlohy
+- uzly stromu jsou 
+  - odvozené predikáty na základě svých dětských uzlů
+  - listy stromu jsou axiom predikáty

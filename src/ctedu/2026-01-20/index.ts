@@ -1,4 +1,4 @@
-import { cont, ctor, ctorOption, sum, counter, product, ctorDifference, contLength, dimensionEntity, contArea, ctorUnit, contVolume, evalFormulaAsCont, formulaRegistry, ctorPercent, ctorComplement, compRelative, ratio, doubleProduct, halfProduct, pythagoras, evalExprAsCont, circleArea, baseAreaVolume, ctorRound, triangleArea } from "../../components/math";
+import { cont, ctor, sum, counter, product, contLength, dimensionEntity, contArea, ctorUnit, evalFormulaAsCont, formulaRegistry, doubleProduct, halfProduct, pythagoras, evalExprAsCont, circleArea, baseAreaVolume, ctorRound, triangleArea } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -17,20 +17,21 @@ export default createLazyMap({
 
 function strihaniCtvercu() {
     const dim = dimensionEntity();
+    const ctverecLabel = "čtverec"
     return {
         deductionTree: deduce(
             deduce(
-                toCont(deduce(
+                deduce(
                     deduce(
                         contArea("obdélník", 7.2, "dm2"),
                         ctorUnit("cm2")
                     ),
-                    counter("čtverec", 20),
+                    counter(ctverecLabel, 20),
                     ctor("quota")
-                ), { agent: 'čtverec' }),
-                evalFormulaAsCont(formulaRegistry.surfaceArea.square, x => x.a, "čtverec", dim.length)
+                ),
+                evalFormulaAsCont(formulaRegistry.surfaceArea.square, x => x.a, [ctverecLabel, "strana"], dim.length)
             ),
-            evalFormulaAsCont(formulaRegistry.circumReference.square, x => x.o, "čtverec", dim.length)
+            evalFormulaAsCont(formulaRegistry.circumReference.square, x => x.o, [ctverecLabel, "obvod"], dim.length)
         )
     }
 }
@@ -100,7 +101,7 @@ function dort() {
                     evalFormulaAsCont(formulaRegistry.surfaceArea.circle, x => x.S, "plocha základny dortu", dim.area)
                 ),
                 toCont(last(stranaCtverce), { agent: "výška dortu" }),
-                product("dort",[], dim.volume)
+                product("dort", [], dim.volume)
             )
         }
     }

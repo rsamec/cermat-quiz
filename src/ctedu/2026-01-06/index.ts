@@ -1,4 +1,4 @@
-import { cont, ctor, ctorOption, sum, counter, product, ctorDifference, contLength, dimensionEntity, contArea, ctorUnit, contVolume, evalFormulaAsCont, formulaRegistry, ctorPercent, ctorComplement, compRelative, ratio, doubleProduct } from "../../components/math";
+import { cont, ctor, ctorOption, sum, counter, product, ctorDifference, contLength, dimensionEntity, contArea, ctorUnit, contVolume, evalFormulaAsCont, formulaRegistry, ctorPercent, ctorComplement, compRelative, ratio, doubleProduct, ctorRate } from "../../components/math";
 import { createLazyMap, deduce, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -74,15 +74,15 @@ function rovnosti() {
 
 function tajuplnyOstrov() {
     const dim = dimensionEntity();
+    const ostrovLabel = "ostrov"
     return {
         deductionTree: deduce(
             deduce(
-                toCont(
-                    deduce(
-                        contLength("ostrov", 1256, "m"),
-                        cont("ostrov", 4, "počet obejití"),
-                        ctor("rate")
-                    ), { agent: "obvod ostrova" }),
+                deduce(
+                    contLength(ostrovLabel, 1256, "m"),
+                    cont(ostrovLabel, 4, "počet obejití"),
+                    ctorRate([ostrovLabel, "obvod"])
+                ),
                 evalFormulaAsCont(formulaRegistry.circumReference.circle, x => x.r, "poloměr ostrova", { entity: dim.length.entity, unit: "m" })
             ),
             ctorOption("C", 50)

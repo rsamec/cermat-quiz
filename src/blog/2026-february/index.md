@@ -6,8 +6,8 @@ toc: true
 ---
 
 
-# ČT EDU úlohy - přidány trénovácí mini apps
-- Vyplňovačka - trénuj řešení úloh, spočteme celkové body
+# ČT EDU úlohy - přidány trénovací mini aplikace
+- Vyplňovačka - trénuj a vyplň řešení úloh, automatická kontrola správnosti a počítání bodů
 - Kalkulačka - trénuj strukturované myšlení, nudné výpočty deleguj na kalkulátor
 - Rozhodovačka - trénuj převod konceptů a principů na matematický výpočet
 - Rozpad výpočtu - barevný rozpad výpočtu dle jednotlivých kroků

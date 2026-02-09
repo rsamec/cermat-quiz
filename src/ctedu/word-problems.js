@@ -55,6 +55,9 @@ function ctorUnit(unit) {
 function sum(wholeAgent, wholeEntity) {
   return { kind: "sum", wholeAgent, wholeEntity };
 }
+function ctorRate(agent, baseQuantity = 1) {
+  return { kind: "rate", agent: normalizeToAgent(agent), baseQuantity };
+}
 function counter(agent, quantity, { asRatio } = {}) {
   return { kind: "cont", agent: normalizeToAgent(agent), quantity, entity: "", asRatio };
 }
@@ -158,23 +161,23 @@ function pythagoras(longestSite, sites) {
 function triangleAngle(agent) {
   return { kind: "triangle-angle", agent };
 }
-function compRelative(agentA, agentB, ratio3, asPercent) {
-  if (ratio3 <= -1 && ratio3 >= 1) {
+function compRelative(agentA, agentB, ratio2, asPercent) {
+  if (ratio2 <= -1 && ratio2 >= 1) {
     throw "Relative compare should be between (-1,1).";
   }
-  return { kind: "comp-ratio", agentA, agentB, ratio: 1 + ratio3, asPercent };
+  return { kind: "comp-ratio", agentA, agentB, ratio: 1 + ratio2, asPercent };
 }
 function compRelativePercent(agentA, agentB, percent2) {
   return compRelative(agentA, agentB, percent2 / 100, true);
 }
-function compRatio(agentA, agentB, ratio3) {
-  return { kind: "comp-ratio", agentA, agentB, ratio: ratio3 };
+function compRatio(agentA, agentB, ratio2) {
+  return { kind: "comp-ratio", agentA, agentB, ratio: ratio2 };
 }
 function compDiff(agentMinuend, agentSubtrahend, quantity, entity) {
   return { kind: "comp-diff", agentMinuend, agentSubtrahend, quantity, entity };
 }
-function ratio(whole, part, ratio3) {
-  return { kind: "ratio", whole, part, ratio: ratio3 };
+function ratio(whole, part, ratio2) {
+  return { kind: "ratio", whole, part, ratio: ratio2 };
 }
 function percent(whole, part, percent2) {
   return { kind: "ratio", whole, part, ratio: percent2 / 100, asPercent: true };
@@ -1061,8 +1064,8 @@ function sumRule(items, b) {
     }
     ;
     const ratios = items.map((d) => d.ratio);
-    const ratio3 = areNumbers(ratios) ? ratios.reduce((out, d) => out += d, 0) : wrapToRatio(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
-    return items.every((d) => d.kind === "ratio") ? { kind: "ratio", whole: bases[0], ratio: ratio3, part: b.wholeAgent, asPercent: items[0].asPercent } : { kind: "comp-ratio", agentA: b.wholeAgent, agentB: bases[0], ratio: ratio3, asPercent: items[0].asPercent };
+    const ratio2 = areNumbers(ratios) ? ratios.reduce((out, d) => out += d, 0) : wrapToRatio(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
+    return items.every((d) => d.kind === "ratio") ? { kind: "ratio", whole: bases[0], ratio: ratio2, part: b.wholeAgent, asPercent: items[0].asPercent } : { kind: "comp-ratio", agentA: b.wholeAgent, agentB: bases[0], ratio: ratio2, asPercent: items[0].asPercent };
   } else if (items.every((d) => isQuantityPredicate(d))) {
     if (items.every((d) => isFrequencyPredicate(d))) {
       const values = items.map((d) => [d.quantity, d.baseQuantity]);
@@ -3849,11 +3852,11 @@ var Converter = class {
         throw new MeasureStructureError(`Unable to find anchor for "${origin.measure}" to "${destination.measure}". Please make sure it is defined.`);
       }
       const transform = (_a = anchor[destination.system]) === null || _a === void 0 ? void 0 : _a.transform;
-      const ratio3 = (_b = anchor[destination.system]) === null || _b === void 0 ? void 0 : _b.ratio;
+      const ratio2 = (_b = anchor[destination.system]) === null || _b === void 0 ? void 0 : _b.ratio;
       if (typeof transform === "function") {
         result = transform(result);
-      } else if (typeof ratio3 === "number") {
-        result *= ratio3;
+      } else if (typeof ratio2 === "number") {
+        result *= ratio2;
       } else {
         throw new MeasureStructureError("A system anchor needs to either have a defined ratio number or a transform function.");
       }
@@ -7096,16 +7099,14 @@ function rovnosti() {
 }
 function tajuplnyOstrov() {
   const dim2 = dimensionEntity();
+  const ostrovLabel = "ostrov";
   return {
     deductionTree: deduce(
       deduce(
-        toCont(
-          deduce(
-            contLength("ostrov", 1256, "m"),
-            cont("ostrov", 4, "po\u010Det obejit\xED"),
-            ctor("rate")
-          ),
-          { agent: "obvod ostrova" }
+        deduce(
+          contLength(ostrovLabel, 1256, "m"),
+          cont(ostrovLabel, 4, "po\u010Det obejit\xED"),
+          ctorRate([ostrovLabel, "obvod"])
         ),
         evalFormulaAsCont(formulaRegistry.circumReference.circle, (x) => x.r, "polom\u011Br ostrova", { entity: dim2.length.entity, unit: "m" })
       ),
@@ -7304,20 +7305,21 @@ var __default3 = createLazyMap({
 });
 function strihaniCtvercu() {
   const dim2 = dimensionEntity();
+  const ctverecLabel = "\u010Dtverec";
   return {
     deductionTree: deduce(
       deduce(
-        toCont(deduce(
+        deduce(
           deduce(
             contArea("obd\xE9ln\xEDk", 7.2, "dm2"),
             ctorUnit("cm2")
           ),
-          counter("\u010Dtverec", 20),
+          counter(ctverecLabel, 20),
           ctor("quota")
-        ), { agent: "\u010Dtverec" }),
-        evalFormulaAsCont(formulaRegistry.surfaceArea.square, (x) => x.a, "\u010Dtverec", dim2.length)
+        ),
+        evalFormulaAsCont(formulaRegistry.surfaceArea.square, (x) => x.a, [ctverecLabel, "strana"], dim2.length)
       ),
-      evalFormulaAsCont(formulaRegistry.circumReference.square, (x) => x.o, "\u010Dtverec", dim2.length)
+      evalFormulaAsCont(formulaRegistry.circumReference.square, (x) => x.o, [ctverecLabel, "obvod"], dim2.length)
     )
   };
 }

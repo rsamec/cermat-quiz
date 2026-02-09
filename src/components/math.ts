@@ -569,7 +569,7 @@ export function evalExprAsCont(expression: string, agent: AgentMatcher, entity: 
 export function evalExprAsRate(expression: string, predicate: RateEval): EvalExpr<RateEval> {
   return { kind: 'eval-expr', expression, predicate }
 }
-export function evalFormulaAsCont<F>(f: Formula<F>, expression: (context: F) => Expression, agent: AgentMatcher, entity: EntityBase, opts: { asRatio?: boolean } = {}): EvalFormula<ContainerEval> {
+export function evalFormulaAsCont<F>(f: Formula<F>, expression: (context: F) => Expression, agent: string | Agent, entity: EntityBase, opts: { asRatio?: boolean } = {}): EvalFormula<ContainerEval> {
   return { kind: 'eval-formula', expression: expression(f.formula), formulaName: f.name, predicate: { kind: 'cont', agent: normalizeToAgent(agent), ...entity, asRatio: opts.asRatio } }
 }
 export function evalFormulaAsRate<F>(f: Formula<F>, expression: (context: F) => Expression, predicate: RateEval): EvalFormula<RateEval> {
