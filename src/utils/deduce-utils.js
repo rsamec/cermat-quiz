@@ -6126,7 +6126,7 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
         if (typeof q == "number" || !isNaN(parseFloat(q)) || Array.isArray(q)) {
           expr = parser.parse(cleanUpExpression(expr, variable));
           if (level >= requiredLevel || Array.isArray(q)) {
-            expr = expr.simplify({ [variable]: q });
+            expr = expr.simplify({ [variable]: parentContext?.checkFraction && checkFraction(q) ? getFraction(q) : q });
           } else {
             for (let [key, values] of Object.entries(colors2)) {
               if (values.includes(context[variable])) {
@@ -6149,6 +6149,20 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
   } else {
     return node;
   }
+}
+var fractionRegex = /^(-?[0-9]+)\/(-?[0-9]+)$/;
+function checkFraction(str) {
+  return fractionRegex.test(str);
+}
+function parseFraction(str) {
+  const match = fractionRegex.exec(str);
+  if (!match)
+    return null;
+  return [Number(match[1]), Number(match[2])];
+}
+function getFraction(str) {
+  const f = parseFraction(str);
+  return f[0] / f[1];
 }
 function toEquationExpr(lastExpr, requiredLevel = 0, context = {}) {
   const final = recurExpr({ quantity: lastExpr }, 0, requiredLevel, context);
@@ -7212,7 +7226,8 @@ function colorifyDeduceTree(originalTree, { maxDepth, axioms, deductions } = { m
         out[d.bgColor] = out[d.bgColor] ? out[d.bgColor].concat([predicate]) : [predicate];
         return out;
       }, {})
-    } : {}
+    } : {},
+    checkFraction: true
   };
   return { deductionTree: result, colorsMap };
 }

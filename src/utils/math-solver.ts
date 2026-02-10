@@ -3,6 +3,7 @@ interface DeduceContext {
   colors?: Record<string, any[]>
   bgColors?: Record<string, any[]>
   depth?: number
+  checkFraction?: boolean
 }
 const parser = new Parser({
   operators: {
@@ -135,8 +136,8 @@ function recurExpr(node, level, requiredLevel = 0, parentContext: DeduceContext 
           expr = parser.parse(cleanUpExpression(expr, variable))
           if (level >= requiredLevel || Array.isArray(q)) {            
             
-            //expr = expr.simplify({ [variable]: checkFraction(q) ? getFraction(q): q})
-            expr = expr.simplify({ [variable]: q})
+            expr = expr.simplify({ [variable]: parentContext?.checkFraction && checkFraction(q) ? getFraction(q): q})
+            //expr = expr.simplify({ [variable]: q})
             //console.log(":", variable, q, expr.toString())
           }
           else {

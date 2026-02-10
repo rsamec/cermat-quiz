@@ -46,8 +46,8 @@
     "generate:math:metrics": "node ./src/data/math-metrics.json.js > ./src/data/math-metrics.json",
     "generate:print": "node ./src/print-[code].md.js --code AJA-2024 > ./src/print-AJA-2024.md",
     "generate:lang": "python3 ./src/data/word-problem-extract-[code].json.py --code M9B-2025 > ./src/data/word-problem-extract-M9B-2025.json",
-    "notebook:generate": "python3 ./src/notebook-lm/generate-artifacts-[period].json.py --period 2026-01-27 > ./src/notebook-lm/data/temp-artifacts-2026-01-27.json",
-    "notebook:download": "python3 ./src/notebook-lm/download-artifacts-[period].json.py --period 2026-01-27 > ./src/notebook-lm/data/artifacts-2026-01-27.json",
+    "notebook:generate": "python3 ./src/notebook-lm/generate-artifacts-[period].json.py --period 2026-02-10 > ./src/notebook-lm/data/temp-artifacts-2026-02-10.json",
+    "notebook:download": "python3 ./src/notebook-lm/download-artifacts-[period].json.py --period 2026-02-10 > ./src/notebook-lm/data/artifacts-2026-02-10.json",
     "notebook:all": "python3 ./src/notebook-lm/notebook-artifacts-[period].json.py --period 2026-01-20 > ./src/notebook-lm/data/artifacts-2026-01-20.json"
   },
   "dependencies": {

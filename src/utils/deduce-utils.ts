@@ -1025,6 +1025,7 @@ export function colorifyDeduceTree(originalTree, { maxDepth, axioms, deductions 
         return out;
       }, {})
     } : {}),
+    checkFraction: true
   }
   return { deductionTree: result, colorsMap }
 }
