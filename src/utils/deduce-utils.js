@@ -271,6 +271,11 @@ function inferConvertRatioCompareToTwoPartRatioRule(b, a, last2) {
     ] : []
   };
 }
+function inferConvertRatioCompareToTwoPartRatioRule2(a, b, last2) {
+  const ratios = convertRatioCompareToTwoPartRatioRule(a, { whole: singleAgent(b.agent) });
+  console.log(ratios);
+  return inferPartToPartRule(b, ratios);
+}
 function convertRatioCompareToRatiosRule(arr, a) {
   const numbers = arr.map((d) => d.ratio);
   if (!areNumbers(numbers)) {
@@ -2220,9 +2225,9 @@ function inferenceRuleEx(...args) {
   } else if (a.kind === "quota" && b.kind == "cont") {
     return kind === "rate" ? inferToRateRule(b, a, last2) : inferQuotaRule(b, a);
   } else if (a.kind === "comp-ratio" && (b.kind === "cont" || b.kind === "rate")) {
-    return inferRatioCompareRule(b, a, kind === "nth-part" && last2);
+    return kind === "comp-part-eq" ? inferConvertRatioCompareToTwoPartRatioRule2(a, b, last2) : inferRatioCompareRule(b, a, kind === "nth-part" && last2);
   } else if ((a.kind === "cont" || a.kind === "rate") && b.kind === "comp-ratio") {
-    return inferRatioCompareRule(a, b, kind === "nth-part" && last2);
+    return kind === "comp-part-eq" ? inferConvertRatioCompareToTwoPartRatioRule2(b, a, last2) : inferRatioCompareRule(a, b, kind === "nth-part" && last2);
   } else if (a.kind === "comp-ratio" && b.kind === "convert-percent") {
     return inferConvertPercentRule(a);
   } else if (a.kind === "convert-percent" && b.kind === "comp-ratio") {
@@ -6121,7 +6126,7 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
         if (typeof q == "number" || !isNaN(parseFloat(q)) || Array.isArray(q)) {
           expr = parser.parse(cleanUpExpression(expr, variable));
           if (level >= requiredLevel || Array.isArray(q)) {
-            expr = expr.simplify({ [variable]: checkFraction(q) ? getFraction(q) : q });
+            expr = expr.simplify({ [variable]: q });
           } else {
             for (let [key, values] of Object.entries(colors2)) {
               if (values.includes(context[variable])) {
@@ -6144,20 +6149,6 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
   } else {
     return node;
   }
-}
-var fractionRegex = /^(-?[0-9]+)\/(-?[0-9]+)$/;
-function checkFraction(str) {
-  return fractionRegex.test(str);
-}
-function parseFraction(str) {
-  const match = fractionRegex.exec(str);
-  if (!match)
-    return null;
-  return [Number(match[1]), Number(match[2])];
-}
-function getFraction(str) {
-  const f = parseFraction(str);
-  return f[0] / f[1];
 }
 function toEquationExpr(lastExpr, requiredLevel = 0, context = {}) {
   const final = recurExpr({ quantity: lastExpr }, 0, requiredLevel, context);

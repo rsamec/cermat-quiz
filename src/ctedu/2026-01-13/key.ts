@@ -14,7 +14,6 @@ const form = rootGroup({
   3: number(0.36, {}),
   4: option("C", twoPoints),
   5: option("B", twoPoints),
-  
   6: group({
     6.1: mathExpr("4/5x", { hintType: 'expression' }),
     6.2: mathExpr("5x", { hintType: 'expression' }),

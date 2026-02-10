@@ -135,7 +135,8 @@ function recurExpr(node, level, requiredLevel = 0, parentContext: DeduceContext 
           expr = parser.parse(cleanUpExpression(expr, variable))
           if (level >= requiredLevel || Array.isArray(q)) {            
             
-            expr = expr.simplify({ [variable]: checkFraction(q) ? getFraction(q): q})
+            //expr = expr.simplify({ [variable]: checkFraction(q) ? getFraction(q): q})
+            expr = expr.simplify({ [variable]: q})
             //console.log(":", variable, q, expr.toString())
           }
           else {
