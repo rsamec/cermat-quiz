@@ -1,7 +1,7 @@
 # Cermat úlohy
 Mimooficiální databanka úloh a jejich řešení...
 
-[Demo](https://rsamec.github.io/cermat-quiz)
+[Demo](https://www.cermatdata.cz/)
 
 # Databanka úloh
 
