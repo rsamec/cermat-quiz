@@ -1,5 +1,5 @@
 ---
-title: $code$ - Rozbor řešení
+title: Rozbor řešení - $code$
 sidebar: true
 footer: false
 pager: true

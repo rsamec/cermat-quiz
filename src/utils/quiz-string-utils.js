@@ -24,7 +24,7 @@ export function parseCode(code) {
   const order = code[2];
 
   const year = code.slice(-4);
-  return { subject, grade, order, period, year }
+  return { subject, grade, order, period, year, code }
 }
 
 export function formatGrade(grade) {

@@ -1,6 +1,6 @@
-import { formatShortCode } from "../utils/quiz-string-utils.js";
-export function formatCode(period){
-    return formatShortCode(period)
+import { formatVersionByCode } from "../utils/quiz-string-utils.js";
+export function formatCode(code){
+    return formatVersionByCode(code)
 }
 
 export const baseUrl = "https://www.cermatdata.cz/cermat";

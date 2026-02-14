@@ -1,5 +1,5 @@
 ---
-title: $code$ - Barevný rozpad výpočtu
+title: Barevný rozpad výpočtu - $code$
 sidebar: true
 pager: false
 footer: false

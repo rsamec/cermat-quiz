@@ -63,7 +63,7 @@ const cermatAssetsFiles = getFilesRecursive(`./src/cermat`).filter(d => d.endsWi
 export default {
   // The app’s title; used in the sidebar and webpage titles.
   title: "Banka úloh",
-  header: ({ title, data, path }) => title?.startsWith("CT_EDU") ? `${formatPeriodDate(path.slice(-10))} - ${title.substring(6)} ` : codeRegex.test(title) ? title.replace(codeRegex, (_, __) => formatCode(path.slice(-8))): title,
+  header: ({ title, data, path }) => title?.startsWith("CT_EDU") ? `${title.substring(6)} - ${formatPeriodDate(path.slice(-10))}` : codeRegex.test(title) ? title.replace(codeRegex, (_, __) => formatCode(path.slice(-8))): title,
   footer: ({ title, data, path }) => `<div class="h-stack"><div class="h-stack h-stack--s"  style="flex:1"><span>2025</span><i class="fa-solid fa-copyright"></i><a href="mailto:roman.samec2@gmail.com">Roman Samec</a></div></a></div>`,
 
   // The pages and sections in the sidebar. If you don’t specify this option,

@@ -1,5 +1,5 @@
 ---
-title: $code$ - Vyplňovačk$a
+title: Vyplňovačka - $code$
 sidebar: true
 pager: false
 footer: false

@@ -8,26 +8,29 @@ style: '/assets/css/quiz-picker.css'
 ---
 
 ```js
-import { quizes } from '../utils/quiz-utils.js';
-import { formatCode} from './utils.js'
-const ctEduFolders = await FileAttachment("../cermat/folders.json").json();
+import { parseCode, formatSubject } from '../utils/quiz-string-utils.js';
+import { formatCode } from './utils.js'
+
+const folders = await FileAttachment("../cermat/folders.json").json();
+
+const parsedCodes = Object.entries(Object.groupBy(folders.map(d => parseCode(d)), d => `${d.year} ${formatSubject(d.subject)}`));
 
 ```
 <!-- Cards with big numbers -->
 
 <div class="grid grid-cols-4">
- ${[2026].map((year) => html`<div class="card">
+ ${parsedCodes.map(([year, codes]) => html`<div class="card">
     <div class="v-stack v-stack--l">
     <div class="v-stack v-stack--s">
       <div>
         <div class="big">${year}</div>
       </div>
       <div class="v-stack v-stack--l">
-        ${ctEduFolders.map(code => html`<div class="h-stack h-stack--m h-stack-items--center h-stack--wrap">
+        ${codes.map(({code, subject}) => html`<div class="h-stack h-stack--m h-stack-items--center h-stack--wrap">
               <a class="h-stack h-stack--s" href="./solution-${code}"><i class="fas fa-money-check"></i><span>${formatCode(code)}</span></a>
               <a class="h-stack h-stack--s" href="./print-${code}"><i class="fa-solid fa-print"></i><span>tisk</span></a>            
               <a class="h-stack h-stack--s" href="./arch-${code}"><i class="fa-solid fa-key"></i><span>klíč</span></a>
-              <button  popovertarget=popover-apps-${code}>Trénuj<i class="fas fa-caret-down"></i></button>
+              ${subject == "math" ? html`<button  popovertarget=popover-apps-${code}>Trénuj<i class="fas fa-caret-down"></i></button>
               <div id=popover-apps-${code} class="menu-items" popover>
                 <div class="v-stack v-stack--m">
                   <a class="h-stack h-stack--s" href="../apps/cermat-form-${code}" title="Vyplnění odpovědí"><i class="fa fa-file-waveform"></i><span>Vyplňovačka</span></a>
@@ -35,7 +38,7 @@ const ctEduFolders = await FileAttachment("../cermat/folders.json").json();
                   <a class="h-stack h-stack--s" href="../apps/cermat-chatstepper-${code}" title="Rozhodovačka"><i class="fa fa-diagram-project"></i><span>Rozhodovačka</span></a>
                   <a class="h-stack h-stack--s" href="../apps/cermat-colorexpression-${code}" title="Obarvovačka"><i class="fa fa-palette"></i><span>Rozpad výpočtu</span></a>
                 </div>
-              </div>              
+              </div>`:''}              
           <div>`
         )}
       </div>
