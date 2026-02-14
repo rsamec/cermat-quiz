@@ -7,15 +7,15 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const directories = fs.readdirSync(path.join(__dirname, "./src/ctedu"), { withFileTypes: true })
+const directories = fs.readdirSync(path.join(__dirname, "./src/cermat"), { withFileTypes: true })
   .filter(entry => entry.isDirectory())
   .map(entry => entry.name);
 
   // Output directory
-const outputDir = path.join(__dirname, "./src/ctedu");
+const outputDir = path.join(__dirname, "./src/cermat");
 
 for (const period of directories) {
-    const cmd = `node --experimental-vm-modules ./src/ctedu/key-[period].json.js --period ${period}`;
+    const cmd = `node --experimental-vm-modules ./src/cermat/key-[code].json.js --code ${period}`;
 
     console.log(`\n▶ Running: ${cmd}`);
 

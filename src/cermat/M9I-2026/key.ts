@@ -25,7 +25,7 @@ const form = rootGroup({
   }),
   5: group({
     5.1: mathEquation(false, { hintType: 'equation' }, twoPoints),
-    5.2: numbersGroup({x:1,y:-5}, twoPoints)
+    5.2: numbersGroup({ x: 1, y: -5 }, twoPoints)
   }),
   6: group({
     6.1: mathExpr("2h-6", { hintType: 'expression' }),
@@ -34,17 +34,17 @@ const form = rootGroup({
   }),
   7: group({
     7.1: number(36, { suffix: 'hodin' }),
-    7.2: mathExpr("1/6", { hintType: 'fraction' }),
+    7.2: mathExpr("1/6", { suffix: 'zakázky', hintType: 'fraction' }),
     7.3: number(42, { suffix: 'hodin' }, twoPoints),
   }),
   8: group({
     8.1: number(5),
     8.2: numbers([3, 14], twoPoints)
   }),
-  9: selfEvaluateImage("", twoPoints),
+  9: selfEvaluateImage("image-10.png", twoPoints),
   10: group({
-    10.1: selfEvaluateImage(""),
-    10.2: selfEvaluateImage("")
+    10.1: selfEvaluateImage("image-10.png"),
+    10.2: selfEvaluateImage("image-10.png")
   }, task2Max3Points),
   11: group({
     11.1: optionBool(true),
@@ -60,9 +60,9 @@ const form = rootGroup({
     15.3: option('B'),
   }, task3Max6Points),
   16: group({
-    16.1: number(6, { suffix: 'kroku' }),
+    16.1: number(6, { prefix: "v", suffix: 'kroku' }),
     16.2: number(55, { suffix: 'cm' }),
-    16.3: number(353, { suffix: 'kroku' }, twoPoints)
+    16.3: number(353, { prefix: "v", suffix: 'kroku' }, twoPoints)
   })
 })
 export default form;

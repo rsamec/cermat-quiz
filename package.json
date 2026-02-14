@@ -31,6 +31,7 @@
     "generate:raw": "node ./src/data/word-problems-[code].md.js --code M9I-2025",
     "generate:ctedu:zip": "node ./src/ctedu/questions.zip.js > ./src/ctedu/questions.zip",
     "generate:ctedu:keys": "node --experimental-vm-modules ./ctedu-keys.js",
+    "generate:cermat:keys": "node --experimental-vm-modules ./cermat-keys.js",
     "ai:word-problems:steps:all": "node ./ai-word-problems-schema",
     "ai:word-problems:steps": "node ./src/data/word-problems-ai-[prompt]-[code]-[model]-schema.json.js --code M9B-2025 --prompt steps --model gpt-5-mini > ./src/data/word-problems-ai-steps-M9B-2025-gpt-5-mini.json",
     "ai:word-problems:key-points": "node ./src/data/word-problems-ai-[prompt]-[code]-[model].json.js --code M9B-2025 --prompt key-points --model o4-mini > ./src/data/word-problems-ai-key-points-M9B-2025-o4-mini.json",

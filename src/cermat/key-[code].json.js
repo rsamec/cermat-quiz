@@ -5,14 +5,13 @@ import { readTextFromFile } from "../utils/file.utils.js";
 import { buildTS, executeESM } from "../utils/ts-build.utils.js";
 
 const {
-  values: { period }
+  values: { code }
 } = parseArgs({
-  options: { period: { type: "string" } }
+  options: { code: { type: "string" } }
 });
-
-const sourceDirPath = path.resolve(`./src/ctedu`);
-const content = await readTextFromFile(path.resolve(sourceDirPath, `${period}/key.ts`));
-const compiled = await buildTS(content, `${sourceDirPath}/${period}`);
+const sourceDirPath = path.resolve(`./src/cermat`);
+const content = await readTextFromFile(path.resolve(sourceDirPath, `${code}/key.ts`));
+const compiled = await buildTS(content, `${sourceDirPath}/${code}`);
 const result = await executeESM(compiled);
 process.stdout.write(JSON.stringify(result))
 
