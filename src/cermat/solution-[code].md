@@ -62,7 +62,7 @@ const selectedProvider = defaultProvider$.value;
 const wordProblem = wordProblems[code] ?? {};
 
 function renderButtons(template, values){
-  
+  no
   const hasValues = values?.filter(([key, value]) => value.deductionTree != null).length > 0;
   const prompts = [
     {label:"Smyslupnost", query:`${template} \n Vysvětli, proč dáva smysl řešit výše uvedenou konkrétní úlohu. Jaké principy a koncepty se žák při řešení úlohy naučí? Ukaž propojení teorie s reálným světem, kde se tento koncept běžně uplatňuje. Nevracej výsledek ani postup řešení.`},

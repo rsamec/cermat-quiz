@@ -19,7 +19,7 @@ const schema = await FileAttachment(`./arch-${observable.params.period}.schema.j
 const personForm = formFromSchemaWithRefs(schema, {});
 const person = Generators.input(personForm);
 
-const showAnswersInput =  Inputs.toggle({label: "Zobrazit klíč řešení"})
+const showAnswersInput =  Inputs.toggle({label: "Zobrazit klíč řešení", value: true})
 const showAnswers = Generators.input(showAnswersInput);
 ```
 

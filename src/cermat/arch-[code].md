@@ -10,16 +10,18 @@ style: /assets/css/arch.css
 ```js
 import { QuizStore } from '../utils/quiz-store.js';
 import { formFromSchemaWithRefs } from '../utils/arch-inputs.js';
+import { baseUrl } from './utils.js'
 
 const metadata = await FileAttachment(`./${observable.params.code}/key.json`).json();
 const schema = await FileAttachment(`./arch-${observable.params.code}.schema.json`).json();
+const code = observable.params.code;
 ```
 
 ```js
 const personForm = formFromSchemaWithRefs(schema, {});
 const person = Generators.input(personForm);
 
-const showAnswersInput =  Inputs.toggle({label: "Zobrazit klíč řešení"})
+const showAnswersInput =  Inputs.toggle({label: "Zobrazit klíč řešení", value: true})
 const showAnswers = Generators.input(showAnswersInput);
 ```
 
@@ -68,7 +70,7 @@ Body: ${values.totalPoints}/${values.maxTotalPoints}
   ${values.questions.map(({id: key, node}) => html`<tr class=${!hasAnswer(values.answers[key])  ? '' : values.corrections[key] === true ? 'row--success': 'row--danger'}>
   <td>${key}</td>
   <td>${formatArgs(values.answers[key])}</td>
-  <td>${formatArgs(node.verifyBy?.args)}</td>
+  <td>${node.verifyBy?.kind == "selfEvaluate" && node.verifyBy.args.hint?.kind == "image" ? html`<img src=${baseUrl}/${code}/${node.verifyBy.args.hint.src}  />` : formatArgs(node.verifyBy?.args)}</td>
 </tr></tbody>`)}</table>`:''}
 </div>
 </div>

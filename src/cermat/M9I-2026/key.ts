@@ -43,8 +43,8 @@ const form = rootGroup({
   }),
   9: selfEvaluateImage("image-10.png", twoPoints),
   10: group({
-    10.1: selfEvaluateImage("image-10.png"),
-    10.2: selfEvaluateImage("image-10.png")
+    10.1: selfEvaluateImage("image-11.png"),
+    10.2: selfEvaluateImage("image-11.png")
   }, task2Max3Points),
   11: group({
     11.1: optionBool(true),

@@ -5,9 +5,9 @@ import { readdirSync, statSync } from 'fs';
 import { join, resolve } from 'path';
 
 const codeRegex = /\$(.*?)\$/;
-export function formatPeriodDate(period){
-    const [year, month, date] = period.split("-").map(d => parseInt(d));
-    return new Date(year,month - 1, date).toLocaleDateString()
+export function formatPeriodDate(period) {
+  const [year, month, date] = period.split("-").map(d => parseInt(d));
+  return new Date(year, month - 1, date).toLocaleDateString()
 }
 /**
  * Recursively retrieves all files in a directory.
@@ -63,7 +63,7 @@ const cermatAssetsFiles = getFilesRecursive(`./src/cermat`).filter(d => d.endsWi
 export default {
   // The app’s title; used in the sidebar and webpage titles.
   title: "Banka úloh",
-  header: ({ title, data, path }) => title?.startsWith("CT_EDU") ? `${title.substring(6)} - ${formatPeriodDate(path.slice(-10))}` : codeRegex.test(title) ? title.replace(codeRegex, (_, __) => formatCode(path.slice(-8))): title,
+  header: ({ title, data, path }) => title?.startsWith("CT_EDU") ? `${title.substring(6)} - ${formatPeriodDate(path.slice(-10))}` : codeRegex.test(title) ? title.replace(codeRegex, (_, __) => formatCode(path.slice(-8))) : title,
   footer: ({ title, data, path }) => `<div class="h-stack"><div class="h-stack h-stack--s"  style="flex:1"><span>2025</span><i class="fa-solid fa-copyright"></i><a href="mailto:roman.samec2@gmail.com">Roman Samec</a></div></a></div>`,
 
   // The pages and sections in the sidebar. If you don’t specify this option,
@@ -130,7 +130,7 @@ export default {
       ]
     },
     { name: "ČT EDU", path: "/ctedu/picker" },
-    { name: "Cermat", path: "/cermat/picker" },
+    { name: "Nanečisto", path: "/cermat/picker" },
     { name: "Nastavení", path: "/user-settings" },
     { name: "Podmínky používání", path: "/app-usage" },
   ],
@@ -168,8 +168,8 @@ export default {
     .concat(ctEduFolders.map(d => `/ctedu/form-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/chat-stepper-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/calculator-${d}`))
-    .concat(ctEduFolders.map(d => `/ctedu/color-expression-${d}`))        
-    .concat(cermatFolders.flatMap(d => ['form','chatstepper','calculator','colorexpression'].map(app => `/apps/cermat-${app}-${d}`)))
+    .concat(ctEduFolders.map(d => `/ctedu/color-expression-${d}`))
+    .concat(cermatFolders.flatMap(d => ['form', 'chatstepper', 'calculator', 'colorexpression'].map(app => `/apps/cermat-${app}-${d}`)))
     .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/arch-${code}`))
