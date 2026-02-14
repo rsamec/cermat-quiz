@@ -25,7 +25,8 @@ for (const source of ["ctedu", "cermat"]) {
       await page.emulateMedia({ media: 'print' });
       await expect(page.getByTestId('root')).toBeVisible();
 
-      const subject = source == "cermat" ? parseCode(code).subject : source;
+      //const subject = source == "cermat" ? parseCode(code).subject : source;
+      const subject = source;
       const printRequests = printRequestsMap[code];
       for (const { pageSize, columnsCount, orientation } of printRequests) {
         let pageScale = calculatePageScale(pageSize, orientation, columnWidth, columnsCount, margin);

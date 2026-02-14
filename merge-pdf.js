@@ -124,7 +124,7 @@ const args = process.argv.slice(2);
 const directoryPath = args[0] || './generated'; // Default directory if not provided
 
 
-const dirs = ['cz-diploma', 'cz-4', 'math-4', 'ctedu']
+const dirs = ['cz-diploma', 'cz-4', 'math-4', 'ctedu', 'cermat']
 // Function to reduce information
 async function processAll(subDirs) {
   const output = [];
