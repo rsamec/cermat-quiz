@@ -1,5 +1,5 @@
 ---
-title: CT_EDU Kalkulačka
+title: $code$ - Kalkulačka
 sidebar: true
 pager: false
 footer: false
@@ -25,7 +25,7 @@ const wordProblems = wordProblemsModule.default;
 
 const metadata = await FileAttachment(`../${observable.params.source}/${observable.params.code}/key.json`).json();
 const rawContentData = await FileAttachment(`../${observable.params.source}/${observable.params.code}/index.md`).text();
-const rawContent = normalizeImageUrlsToAbsoluteUrls(rawContentData, [`${observable.params.source}/${observable.params.code}`])
+const rawContent = normalizeImageUrlsToAbsoluteUrls(rawContentData, [`../${observable.params.source}/${observable.params.code}`])
 const code = observable.params.code;
 
 const leafs = getAllLeafsWithAncestors(convertTree(metadata));

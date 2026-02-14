@@ -1,5 +1,5 @@
 ---
-title: CT_EDU Vyplňovačka
+title: $code$ - Vyplňovačk$a
 sidebar: true
 pager: false
 footer: false
@@ -22,7 +22,7 @@ function getQuestionIds(metadata) {
  
 const metadata = await FileAttachment(`../${observable.params.source}/${observable.params.period}/key.json`).json();
 const rawContentData = await FileAttachment(`../${observable.params.source}/${observable.params.period}/index.md`).text();
-const rawContent = normalizeImageUrlsToAbsoluteUrls(rawContentData, [`${observable.params.source}/${observable.params.period}`])
+const rawContent = normalizeImageUrlsToAbsoluteUrls(rawContentData, [`../${observable.params.source}/${observable.params.period}`])
 
 const code = observable.params.period;
 const quizQuestionsMap = {[code]:{rawContent, metadata}};
