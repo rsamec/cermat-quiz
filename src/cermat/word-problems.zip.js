@@ -1,5 +1,5 @@
 import JSZip from "jszip";
-import { normalizeImageUrlsToAbsoluteUrls } from '../utils/quiz-string-utils.js';
+import { normalizeImageUrlsToAbsoluteUrls, parseCode } from '../utils/quiz-string-utils.js';
 import wordProblems from "./word-problems.js";
 import fs from 'fs';
 import path from 'path';
@@ -46,7 +46,8 @@ async function main() {
 
     const folders = fs.readdirSync(ctEduPath, { withFileTypes: true })
         .filter(dirent => dirent.isDirectory())
-        .map(dirent => dirent.name);
+        .map(dirent => dirent.name)
+        .filter(d => parseCode(d).subject == "math");
 
     const zip = new JSZip();
     for await (const code of folders) {

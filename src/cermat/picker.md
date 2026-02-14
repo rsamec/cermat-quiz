@@ -13,21 +13,21 @@ import { formatCode } from './utils.js'
 
 const folders = await FileAttachment("../cermat/folders.json").json();
 
-const parsedCodes = Object.entries(Object.groupBy(folders.map(d => parseCode(d)), d => `${d.year} ${formatSubject(d.subject)}`));
+const parsedCodes = Object.entries(Object.groupBy(folders.map(d => parseCode(d)), d => `${formatSubject(d.subject)}`));
 
 ```
 <!-- Cards with big numbers -->
 
 <div class="grid grid-cols-4">
- ${parsedCodes.map(([year, codes]) => html`<div class="card">
+ ${parsedCodes.map(([groupKey, codes]) => html`<div class="card">
     <div class="v-stack v-stack--l">
     <div class="v-stack v-stack--s">
       <div>
-        <div class="big">${year}</div>
+        <div class="big">${groupKey}</div>
       </div>
       <div class="v-stack v-stack--l">
-        ${codes.map(({code, subject}) => html`<div class="h-stack h-stack--m h-stack-items--center h-stack--wrap">
-              <a class="h-stack h-stack--s" href="./solution-${code}"><i class="fas fa-money-check"></i><span>${formatCode(code)}</span></a>
+        ${codes.map(({code, subject, year}) => html`<div class="h-stack h-stack--m h-stack-items--center h-stack--wrap">
+              <a class="h-stack h-stack--s" href="./solution-${code}"><i class="fas fa-money-check"></i><span>${year}</span></a>
               <a class="h-stack h-stack--s" href="./print-${code}"><i class="fa-solid fa-print"></i><span>tisk</span></a>            
               <a class="h-stack h-stack--s" href="./arch-${code}"><i class="fa-solid fa-key"></i><span>klíč</span></a>
               ${subject == "math" ? html`<button  popovertarget=popover-apps-${code}>Trénuj<i class="fas fa-caret-down"></i></button>
