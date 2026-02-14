@@ -7,19 +7,19 @@ from collections import defaultdict
 from utils.notebook_lm_utils import read_zip_directory_contents_flat, createWithSources, generateArfifacts, downloadArtifacts
 
 parser = argparse.ArgumentParser(description="Example CLI")
-parser.add_argument("--period", type=str)
+parser.add_argument("--code", type=str)
 args = parser.parse_args()
-period = args.period
+code = args.code
 zip_path = os.path.join(os.getcwd(),"src", ".observablehq","cache","ctedu", "word-problem.zip")
 
-files = read_zip_directory_contents_flat(zip_path, period)
-async def run_task(period:str):
-    notebook_id = await createWithSources(period, files)
+files = read_zip_directory_contents_flat(zip_path, code)
+async def run_task(code:str):
+    notebook_id = await createWithSources(code, files)
     artifact_source = await generateArfifacts(notebook_id, {"infographic":True, "audio": True}, True),
-    result = await downloadArtifacts(notebook_id, period, artifact_source)
+    result = await downloadArtifacts(notebook_id, code, artifact_source)
     return result
 
-download_artifacts = asyncio.run(run_task(period))
+download_artifacts = asyncio.run(run_task(code))
 
 grouped = defaultdict(list)
 for source, artifact in download_artifacts:

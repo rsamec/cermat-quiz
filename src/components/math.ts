@@ -3406,10 +3406,10 @@ function inferenceRuleEx(...args: Predicate[]): Question<any> {
     return kind === "rate" ? inferToRateRule(b, a, last) : inferQuotaRule(b, a)
   }
   else if (a.kind === "comp-ratio" && (b.kind === "cont" || b.kind === "rate")) {
-    return kind === "comp-part-eq" ? inferConvertRatioCompareToTwoPartRatioRule2(a, b, last) : inferRatioCompareRule(b, a, kind === "nth-part" && last);
+    return inferRatioCompareRule(b, a, kind === "nth-part" && last);
   }
   else if ((a.kind === "cont" || a.kind === "rate") && b.kind === "comp-ratio") {
-    return kind === "comp-part-eq" ? inferConvertRatioCompareToTwoPartRatioRule2(b, a, last) : inferRatioCompareRule(a, b, kind === "nth-part" && last);
+    return inferRatioCompareRule(a, b, kind === "nth-part" && last);
   }
   else if (a.kind === "comp-ratio" && b.kind === "convert-percent") {
     return inferConvertPercentRule(a);

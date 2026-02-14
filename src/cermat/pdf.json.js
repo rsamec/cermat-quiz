@@ -3,7 +3,7 @@ import { readJsonFromFile, fileExists, saveJsonToFile } from '../utils/file.util
 import { processSubDirectory } from '../utils/pdf.utils.js';
 
 
-const subDir = `ctedu`
+const subDir = `cermat`
 const outputDir = path.resolve('./src/assets/pdf', subDir);
 const jsonDataFilePath = path.join(outputDir,"data.json");
 

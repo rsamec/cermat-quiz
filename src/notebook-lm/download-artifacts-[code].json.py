@@ -15,11 +15,11 @@ Keep the tone curious and supportive.
 
 # Parse args
 parser = argparse.ArgumentParser(description="Example CLI")
-parser.add_argument("--period", type=str)
+parser.add_argument("--code", type=str)
 args = parser.parse_args()
-period = args.period
+code = args.code
 
-data_path = os.path.join(os.getcwd(),"src", "notebook-lm","data", f"temp-artifacts-{period}.json")
+data_path = os.path.join(os.getcwd(),"src", "notebook-lm","data", f"temp-artifacts-{code}.json")
 
 with open(data_path, "r") as f:
     data = json.load(f)
@@ -28,12 +28,12 @@ artifacts_source: Dict[str, int] = {
     for item in data
 }
 
-async def run_task(period:str):
-    notebook_id = await getNotebookId(period)
-    artifact_source = await downloadArtifacts(notebook_id,period,artifacts_source)
+async def run_task(code:str):
+    notebook_id = await getNotebookId(code)
+    artifact_source = await downloadArtifacts(notebook_id,code,artifacts_source)
     return artifact_source
 
-download_artifacts = asyncio.run(run_task(period))
+download_artifacts = asyncio.run(run_task(code))
 
 grouped = defaultdict(list)
 for source, artifact in download_artifacts:

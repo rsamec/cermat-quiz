@@ -581,11 +581,6 @@ function inferConvertRatioCompareToTwoPartRatioRule(b, a, last2) {
     ] : []
   };
 }
-function inferConvertRatioCompareToTwoPartRatioRule2(a, b, last2) {
-  const ratios2 = convertRatioCompareToTwoPartRatioRule(a, { whole: singleAgent(b.agent) });
-  console.log(ratios2);
-  return inferPartToPartRule(b, ratios2);
-}
 function convertRatioCompareToRatiosRule(arr, a) {
   const numbers = arr.map((d) => d.ratio);
   if (!areNumbers(numbers)) {
@@ -2535,9 +2530,9 @@ function inferenceRuleEx(...args) {
   } else if (a.kind === "quota" && b.kind == "cont") {
     return kind === "rate" ? inferToRateRule(b, a, last2) : inferQuotaRule(b, a);
   } else if (a.kind === "comp-ratio" && (b.kind === "cont" || b.kind === "rate")) {
-    return kind === "comp-part-eq" ? inferConvertRatioCompareToTwoPartRatioRule2(a, b, last2) : inferRatioCompareRule(b, a, kind === "nth-part" && last2);
+    return inferRatioCompareRule(b, a, kind === "nth-part" && last2);
   } else if ((a.kind === "cont" || a.kind === "rate") && b.kind === "comp-ratio") {
-    return kind === "comp-part-eq" ? inferConvertRatioCompareToTwoPartRatioRule2(b, a, last2) : inferRatioCompareRule(a, b, kind === "nth-part" && last2);
+    return inferRatioCompareRule(a, b, kind === "nth-part" && last2);
   } else if (a.kind === "comp-ratio" && b.kind === "convert-percent") {
     return inferConvertPercentRule(a);
   } else if (a.kind === "convert-percent" && b.kind === "comp-ratio") {

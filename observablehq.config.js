@@ -1,4 +1,4 @@
-import { formatSubject, formatPeriod, formatPdfFileName } from './src/utils/quiz-string-utils.js';
+import { formatSubject, formatCode, formatPeriod, formatPdfFileName } from './src/utils/quiz-string-utils.js';
 import { formatPeriod as formatPeriodDate } from './src/ctedu/utils.js';
 import { quizes, printedPages } from './src/utils/quiz-utils.js';
 import wordProblems from './src/math/word-problems.js';
@@ -45,12 +45,16 @@ const assetsFiles = getFilesRecursive(`./src/assets/math`).map(d => d.replace("s
 const wordProblemsKeyValuePairs = Object.entries(wordProblems).flatMap(([key, value]) => Object.keys(value).map(d => d.split('.')[0]).filter(unique).map(d => [key, d]));
 
 const ctEduPath = resolve(`./src/ctedu`);
-
 const ctEduFolders = readdirSync(ctEduPath, { withFileTypes: true })
   .filter(dirent => dirent.isDirectory())
   .map(dirent => dirent.name);
-
 const ctEduAssetsFiles = getFilesRecursive(`./src/ctedu`).filter(d => d.endsWith(".png")).map(d => d.replace("src", ""));
+
+const cermatPath = resolve(`./src/cermat`);
+const cermatFolders = readdirSync(cermatPath, { withFileTypes: true })
+  .filter(dirent => dirent.isDirectory())
+  .map(dirent => dirent.name);
+const cermatAssetsFiles = getFilesRecursive(`./src/cermat`).filter(d => d.endsWith(".png")).map(d => d.replace("src", ""));
 
 // See https://observablehq.com/framework/config for documentation.
 export default {
@@ -123,6 +127,7 @@ export default {
       ]
     },
     { name: "ČT EDU", path: "/ctedu/picker" },
+    { name: "Cermat", path: "/cermat/picker" },
     { name: "Nastavení", path: "/user-settings" },
     { name: "Podmínky používání", path: "/app-usage" },
   ],
@@ -139,6 +144,7 @@ export default {
   root: "src",
   dynamicPaths: []
     .concat(ctEduAssetsFiles)
+    .concat(cermatAssetsFiles)
     .concat(assetsFiles.concat("/assets/css/print-results.css"))
     .concat(['/components/quiz-html.js'])
     .concat(['/components/quiz.js'])
@@ -153,10 +159,14 @@ export default {
     .concat(ctEduFolders.map(d => `/ctedu/print-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/arch-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/solution-${d}`))
+    .concat(cermatFolders.map(d => `/ctedu/print-${d}`))
+    .concat(cermatFolders.map(d => `/ctedu/arch-${d}`))
+    .concat(cermatFolders.map(d => `/ctedu/solution-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/form-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/chat-stepper-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/calculator-${d}`))
-    .concat(ctEduFolders.map(d => `/ctedu/color-expression-${d}`))
+    .concat(ctEduFolders.map(d => `/ctedu/color-expression-${d}`))        
+    .concat(cermatFolders.flatMap(d => ['form','chatstepper','calculator','colorexpression'].map(app => `/apps/cermat-${app}-${d}`)))
     .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))
     .concat(quizes.flatMap(d => d.codes).map(code => `/arch-${code}`))
@@ -184,6 +194,7 @@ export default {
     .concat(quizes.map(d => `/quiz-print-${d.subject}`))
     .concat(quizes.map(d => `/quiz-picker-${d.subject}-${d.period}`))
     .concat(quizes.map(d => `/quiz-sel-${d.subject}-${d.period}`))
+    .concat(quizes.flatMap(d => printedPages.map(p => `/assets/pdf/cermat/${formatPdfFileName(p)}.pdf`)))
     .concat(quizes.flatMap(d => printedPages.map(p => `/assets/pdf/ctedu/${formatPdfFileName(p)}.pdf`)))
     .concat(quizes.flatMap(d => printedPages.map(p => `/assets/pdf/${d.subject}-${d.period}/${formatPdfFileName(p)}.pdf`)))
 

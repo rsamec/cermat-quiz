@@ -9,7 +9,9 @@
     "observable": "observable",
     "merge-pdf": "node merge-pdf.js ./generated",
     "generate-pdf:ctedu":"node src/ctedu/pdf.json.js",
+    "generate-pdf:cermat":"node src/cermat/pdf.json.js",
     "pdf:ctedu":"npm run merge-pdf && rm src/assets/pdf/ctedu/data.json && npm run generate-pdf:ctedu",
+    "pdf:cermat":"npm run merge-pdf && rm src/assets/pdf/cermat/data.json && npm run generate-pdf:cermat",
     "baml-generate": "baml-cli generate",
     "build:word-problems": "esbuild ./src/math/word-problems.ts --bundle --platform=neutral --outfile=./src/math/word-problems.js",
     "build:deduce-utils": "esbuild ./src/utils/deduce-utils.ts --bundle --platform=neutral --outfile=./src/utils/deduce-utils.js",
@@ -19,6 +21,7 @@
     "build:schema": "esbuild ./src/ai/schema.ts --bundle --platform=neutral --outfile=./src/ai/schema.js",
     "build:steps-schema": "esbuild ./src/ai/steps-schema.ts --bundle --platform=neutral --outfile=./src/ai/steps-schema.js",
     "build:ctedu": "esbuild ./src/ctedu/word-problems.ts --bundle --platform=neutral --outfile=./src/ctedu/word-problems.js",
+    "build:cermat": "esbuild ./src/cermat/word-problems.ts --bundle --platform=neutral --outfile=./src/cermat/word-problems.js",
     "build:all": "npm run build:math-solver && npm run build:deduce-utils && npm run build:word-problems && npm run build:schema && npm run build:steps-schema && npm run build:ai && npm run build:tldraw && npm run build:ctedu",
     "generate:word-problems": "node ./src/data/word-problems-solu-[code].txt.js --code M9I-2025",
     "generate:quiz-question:zip": "node ./src/data/quiz-question.zip.js > ./src/data/quiz-question.zip",
@@ -46,9 +49,9 @@
     "generate:math:metrics": "node ./src/data/math-metrics.json.js > ./src/data/math-metrics.json",
     "generate:print": "node ./src/print-[code].md.js --code AJA-2024 > ./src/print-AJA-2024.md",
     "generate:lang": "python3 ./src/data/word-problem-extract-[code].json.py --code M9B-2025 > ./src/data/word-problem-extract-M9B-2025.json",
-    "notebook:generate": "python3 ./src/notebook-lm/generate-artifacts-[period].json.py --period 2026-02-10 > ./src/notebook-lm/data/temp-artifacts-2026-02-10.json",
-    "notebook:download": "python3 ./src/notebook-lm/download-artifacts-[period].json.py --period 2026-02-10 > ./src/notebook-lm/data/artifacts-2026-02-10.json",
-    "notebook:all": "python3 ./src/notebook-lm/notebook-artifacts-[period].json.py --period 2026-01-20 > ./src/notebook-lm/data/artifacts-2026-01-20.json"
+    "notebook:generate": "python3 ./src/notebook-lm/generate-artifacts-[code].json.py --code M9I-2026 > ./src/notebook-lm/data/temp-artifacts-M9I-2026.json",
+    "notebook:download": "python3 ./src/notebook-lm/download-artifacts-[code].json.py --code M9I-2026 > ./src/notebook-lm/data/artifacts-M9I-2026.json",
+    "notebook:all": "python3 ./src/notebook-lm/notebook-artifacts-[code].json.py --code 2026-01-20 > ./src/notebook-lm/data/artifacts-2026-01-20.json"
   },
   "dependencies": {
     "@google/genai": "^1.10.0",
