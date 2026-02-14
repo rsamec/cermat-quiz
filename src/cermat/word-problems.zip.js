@@ -4,24 +4,23 @@ import wordProblems from "./word-problems.js";
 import fs from 'fs';
 import path from 'path';
 import { readTextFromFile } from "../utils/file.utils.js";
-import { baseUrl } from "./utils.js";
-import { formatPeriod } from "./utils.js";
+import { baseUrl, formatCode } from "./utils.js";
 import { parseQuiz } from '../utils/quiz-parser.js';
 import { jsonToMarkdownChat } from "../utils/deduce-utils.js";
 
 const ctEduPath = path.resolve(`./src/cermat`);
 
-async function outputMd(period){
+async function outputMd(code){
 
-  const content = await readTextFromFile(path.resolve(ctEduPath, `${period}/index.md`));        
-  const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${baseUrl}/${period}`])
+  const content = await readTextFromFile(path.resolve(ctEduPath, `${code}/index.md`));        
+  const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${baseUrl}/${code}`])
   
   const quiz = parseQuiz(rawContent);
   
   const ids = quiz.questions.map(d => d.id);
   
-  const wordProblem = wordProblems[period];
-  const output = `# ${formatPeriod(period)}
+  const wordProblem = wordProblems[code];
+  const output = `# ${formatCode(code)}
   
   ${ids.map(id => {
     const values = (wordProblem?.[id] != null)
@@ -50,10 +49,10 @@ async function main() {
         .map(dirent => dirent.name);
 
     const zip = new JSZip();
-    for await (const period of folders) {
+    for await (const code of folders) {
 
-        const output = await outputMd(period)
-        zip.file(`${period}.md`,output)        
+        const output = await outputMd(code)
+        zip.file(`${formatCode(code)}.md`,output)        
     }
     return zip
 }

@@ -3,7 +3,7 @@ import { normalizeImageUrlsToAbsoluteUrls } from '../utils/quiz-string-utils.js'
 import fs from 'fs';
 import path from 'path';
 import { readTextFromFile } from "../utils/file.utils.js";
-import { baseUrl } from "./utils.js";
+import { baseUrl, formatCode } from "./utils.js";
 
 async function main() {
 
@@ -14,11 +14,11 @@ async function main() {
         .map(dirent => dirent.name);
 
     const zip = new JSZip();
-    for await (const period of folders) {
+    for await (const code of folders) {
 
-        const content = await readTextFromFile(path.resolve(ctEduPath, `${period}/index.md`));        
-        const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${baseUrl}/${period}`])
-        zip.file(`${period}.md`,rawContent)        
+        const content = await readTextFromFile(path.resolve(ctEduPath, `${code}/index.md`));        
+        const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${baseUrl}/${code}`])
+        zip.file(`${formatCode(code)}.md`,rawContent)        
     }
     return zip
 }

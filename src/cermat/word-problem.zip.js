@@ -10,11 +10,11 @@ import { jsonToMarkdownChat } from "../utils/deduce-utils.js";
 
 const unique = (value, index, array) => array.indexOf(value) === index;
 
-function outputMd(quiz, period, number) {
+function outputMd(quiz, code, number) {
     const id = parseInt(number, 10);
     const ids = [id];
     
-    const wordProblem = wordProblems[period];
+    const wordProblem = wordProblems[code];
     const values = (wordProblem?.[id] != null)
         ? [[id, wordProblem[id]]]
         : [1, 2, 3, 4]
@@ -42,22 +42,19 @@ async function main() {
         .map(dirent => dirent.name);
 
     const zip = new JSZip();
-    for await (const period of folders) {
-
-        
-
-        const content = await readTextFromFile(path.resolve(ctEduPath, `${period}/index.md`));
-        const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${baseUrl}/${period}`])
+    for await (const code of folders) {
+        const content = await readTextFromFile(path.resolve(ctEduPath, `${code}/index.md`));
+        const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${baseUrl}/${code}`])
         const quiz = parseQuiz(rawContent);
 
-        const wordProblem = wordProblems[period];
+        const wordProblem = wordProblems[code];
         const wordProblemKeys = Object.keys(wordProblem).map(d => d.split('.')[0]).filter(unique);
         const questions = quiz.questions.map(d => d.id).filter(d => wordProblemKeys.includes(d.toString()));
         
         for (const number of questions) {
-            const data = outputMd(quiz, period, number);
+            const data = outputMd(quiz, code, number);
             const fileName = `${number}. uloha`
-            zip.file(`${period}/${fileName}.md`, data)
+            zip.file(`${code}/${fileName}.md`, data)
         }
     }
     return zip

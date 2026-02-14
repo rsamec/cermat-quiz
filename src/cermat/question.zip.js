@@ -22,17 +22,17 @@ async function main() {
         .map(dirent => dirent.name);
 
     const zip = new JSZip();
-    for await (const period of folders) {
+    for await (const code of folders) {
 
-        const content = await readTextFromFile(path.resolve(ctEduPath, `${period}/index.md`));        
-        const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${baseUrl}/${period}`])
+        const content = await readTextFromFile(path.resolve(ctEduPath, `${code}/index.md`));        
+        const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${baseUrl}/${code}`])
         const quiz = parseQuiz(rawContent);
 
         const questions = quiz.questions.map(d => d.id);
         for (const number of questions) {
             const data = outputMd(quiz, number);
             const fileName = `${number}. uloha`
-            zip.file(`${period}/${fileName}.md`, data)
+            zip.file(`${code}/${fileName}.md`, data)
         }
     }
     return zip
