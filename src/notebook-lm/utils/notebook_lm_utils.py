@@ -1,4 +1,4 @@
-from typing import List, Tuple, Any
+from typing import Dict, List, Tuple, Any
 from notebooklm import NotebookLMClient, InfographicDetail, InfographicOrientation, AudioFormat, AudioLength
 import zipfile
 import asyncio
@@ -66,14 +66,19 @@ async def createWithSources(period:str, results: List[Tuple[str,str]]) -> str:
             # raise ValueError(f"Already exists {matched.id}: {matched.title}")
             return matched.id                        
        
-async def generateArfifacts(id:str, opt: dict[str, bool], waitForComplation: bool) -> dict[str,int]:
+async def generateArfifacts(id:str, result :dict[str,int],  opt: dict[str, bool], waitForComplation: bool) -> dict[str,int]:
     async with await NotebookLMClient.from_storage() as client:
         # List and manage
         sources = await client.sources.list(id)
-        result:dict[str, int] = {}
         for src in sources:
+            artifacts = []
+            # artifact_ids = get_artifacts_by_source(result, src.id)            
+            # for artifact_id in artifact_ids:
+            #     artifacts.append(await client.artifacts.get(id, artifact_id))
+            # print(f"{src}, {artifact_ids}")
+
             # audio
-            if opt["audio"]:
+            if opt["audio"] and not any(d.kind == "audio" for d in artifacts):                
                 status = await client.artifacts.generate_audio(id, [src.id], "cs", custom_prompt, AudioFormat.DEEP_DIVE, AudioLength.SHORT)
                 if waitForComplation:
                     await client.artifacts.wait_for_completion(id, status.task_id, initial_interval, max_interval, timeout)
@@ -82,7 +87,7 @@ async def generateArfifacts(id:str, opt: dict[str, bool], waitForComplation: boo
                 result[status.task_id] = int(src.title.split(".")[0])
             
             # infografics
-            if opt["infographic"]:
+            if opt["infographic"] and not any(d.kind == "infographic" for d in artifacts):
                 status = await client.artifacts.generate_infographic(id, [src.id], "cs", None, InfographicOrientation.PORTRAIT, InfographicDetail.STANDARD)
                 if waitForComplation:
                     await client.artifacts.wait_for_completion(id, status.task_id, initial_interval, max_interval, timeout)
@@ -130,3 +135,16 @@ async def downloadArtifacts(id:str, dir_name:str, artifact_source :dict[str,int]
 
         return dowloaded_artifacts
 
+
+def get_artifacts_by_source(
+    existing_source: Dict[str, Any],
+    source_id: Any
+) -> List[str]:
+    """
+    Returns all artifacts_id whose value equals the given source_id.
+    """
+    return [
+        artifacts_id
+        for artifacts_id, id in existing_source.items()
+        if id == source_id and not artifacts_id
+    ]

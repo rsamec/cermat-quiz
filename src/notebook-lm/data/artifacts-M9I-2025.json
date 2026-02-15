@@ -1,1 +1,152 @@
-{}
+{
+    "16": [
+        {
+            "title": "Rostoucí trojúhelník s poměrem pět ku dvanácti",
+            "kind": 1
+        },
+        {
+            "title": "Krokové zvětšování odvěsen pravoúhlého trojúhelníku",
+            "kind": 1
+        },
+        {
+            "title": "Geometrie: Růst podobných trojúhelníků",
+            "kind": 7
+        }
+    ],
+    "7": [
+        {
+            "title": "Výpočet času zakázky při změně počtu robotů",
+            "kind": 1
+        },
+        {
+            "title": "Výpočet práce automatů pomocí strojohodin",
+            "kind": 1
+        },
+        {
+            "title": "Efektivita výroby a počet automatů",
+            "kind": 7
+        }
+    ],
+    "11": [
+        {
+            "title": "Rozluštění grafu cyklistů bez čísel",
+            "kind": 1
+        },
+        {
+            "title": "Výpočet kilometrů a procent z grafu cyklistů",
+            "kind": 1
+        },
+        {
+            "title": "Analýza víkendových cyklistických výkonů",
+            "kind": 7
+        },
+        {
+            "title": "Analýza víkendového tréninku cyklistů",
+            "kind": 7
+        }
+    ],
+    "15": [
+        {
+            "title": "Výpočet výhodnosti sýrů a zdražení lyží",
+            "kind": 1
+        },
+        {
+            "title": "Výpočet procent sýrů, lodí a lyží",
+            "kind": 1
+        },
+        {
+            "title": "Matematické výzvy: Procenta v praxi",
+            "kind": 7
+        },
+        {
+            "title": "Procenta v praxi: Slovní úlohy",
+            "kind": 7
+        }
+    ],
+    "6": [
+        {
+            "title": "Výpočet ceny housek a rohlíků pomocí rovnice",
+            "kind": 1
+        },
+        {
+            "title": "Výpočet ceny housek a rohlíků pomocí rovnice",
+            "kind": 1
+        },
+        {
+            "title": "Matematická výzva: Cena pečiva",
+            "kind": 7
+        }
+    ],
+    "14": [
+        {
+            "title": "Těžnice na přeponu odhaluje úhel kosočtverce",
+            "kind": 1
+        },
+        {
+            "title": "Výpočet úhlu kosočtverce pomocí těžnice",
+            "kind": 1
+        },
+        {
+            "title": "Výpočet úhlu v kosočtverci",
+            "kind": 7
+        },
+        {
+            "title": "Výpočet úhlu v kosočtverci",
+            "kind": 7
+        }
+    ],
+    "1": [
+        {
+            "title": "Zrádnost druhé mocniny součtu prvních prvočísel",
+            "kind": 1
+        },
+        {
+            "title": "Nejčastější chyba při umocňování součtu prvočísel",
+            "kind": 1
+        },
+        {
+            "title": "Výpočet druhé mocniny součtu prvočísel",
+            "kind": 7
+        },
+        {
+            "title": "Výpočet druhé mocniny součtu prvočísel",
+            "kind": 7
+        }
+    ],
+    "13": [
+        {
+            "title": "Elegantní řešení obsahu trojúhelníku Pythagorejskou trojicí",
+            "kind": 1
+        },
+        {
+            "title": "Výpočet obsahu a past s přeponou",
+            "kind": 1
+        },
+        {
+            "title": "Výpočet obsahu pravoúhlého trojúhelníku",
+            "kind": 7
+        },
+        {
+            "title": "Jak vypočítat obsah pravoúhlého trojúhelníku",
+            "kind": 7
+        }
+    ],
+    "12": [
+        {
+            "title": "Výpočet objemu kvádru s vyříznutým půlválcem",
+            "kind": 1
+        },
+        {
+            "title": "Výpočet objemu kvádru s půlkruhovou drážkou",
+            "kind": 1
+        },
+        {
+            "title": "Objem tělesa s prohlubní",
+            "kind": 7
+        },
+        {
+            "title": "Výpočet objemu tělesa s prohlubní",
+            "kind": 7
+        }
+    ]
+}

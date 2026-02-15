@@ -15,7 +15,7 @@ zip_path = os.path.join(os.getcwd(),"src", ".observablehq","cache","ctedu", "wor
 files = read_zip_directory_contents_flat(zip_path, code)
 async def run_task(code:str):
     notebook_id = await createWithSources(code, files)
-    artifact_source = await generateArfifacts(notebook_id, {"infographic":True, "audio": True}, True),
+    artifact_source = await generateArfifacts(notebook_id,{}, {"infographic":True, "audio": True}, True),
     result = await downloadArtifacts(notebook_id, code, artifact_source)
     return result
 
