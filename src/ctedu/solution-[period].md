@@ -105,7 +105,7 @@ const output = ids.map(id => {
   
   return html.fragment`
   ${mdPlus.unsafe(quiz.content([id], { ids, render: 'content' }), { docId: `${period}-${id}` })}
-  ${renderButtons(quiz.content([id], { ids, render: 'content' }), values)}
+  ${renderButtons(quiz.content([id], { ids:[id], render: 'content' }), values)}
   ${values?.length > 0
   ? html.fragment`${artifacts.length > 0 ? html`<details open><summary class="no-print">AI artifacts</summary>
   ${artifacts.map(a => {

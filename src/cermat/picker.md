@@ -30,15 +30,15 @@ const parsedCodes = Object.entries(Object.groupBy(folders.map(d => parseCode(d))
               <a class="h-stack h-stack--s" href="./solution-${code}"><i class="fas fa-money-check"></i><span>${year}</span></a>
               <a class="h-stack h-stack--s" href="./print-${code}"><i class="fa-solid fa-print"></i><span>tisk</span></a>            
               <a class="h-stack h-stack--s" href="./arch-${code}"><i class="fa-solid fa-key"></i><span>klíč</span></a>
-              ${subject == "math" ? html`<button  popovertarget=popover-apps-${code}>Trénuj<i class="fas fa-caret-down"></i></button>
+              <button  popovertarget=popover-apps-${code}>Trénuj<i class="fas fa-caret-down"></i></button>
               <div id=popover-apps-${code} class="menu-items" popover>
                 <div class="v-stack v-stack--m">
                   <a class="h-stack h-stack--s" href="../apps/cermat-form-${code}" title="Vyplnění odpovědí"><i class="fa fa-file-waveform"></i><span>Vyplňovačka</span></a>
-                  <a class="h-stack h-stack--s" href="../apps/cermat-calculator-${code}" title="Kalkulačka"><i class="fa fa-calculator"></i><span>Kalkulačka</span></a>
+                  ${subject == "math" ? html`<a class="h-stack h-stack--s" href="../apps/cermat-calculator-${code}" title="Kalkulačka"><i class="fa fa-calculator"></i><span>Kalkulačka</span></a>
                   <a class="h-stack h-stack--s" href="../apps/cermat-chatstepper-${code}" title="Rozhodovačka"><i class="fa fa-diagram-project"></i><span>Rozhodovačka</span></a>
-                  <a class="h-stack h-stack--s" href="../apps/cermat-colorexpression-${code}" title="Obarvovačka"><i class="fa fa-palette"></i><span>Rozpad výpočtu</span></a>
+                  <a class="h-stack h-stack--s" href="../apps/cermat-colorexpression-${code}" title="Obarvovačka"><i class="fa fa-palette"></i><span>Rozpad výpočtu</span></a>`:''}
                 </div>
-              </div>`:''}              
+              </div>              
           <div>`
         )}
       </div>

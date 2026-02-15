@@ -41,14 +41,13 @@ VÝCHOZÍ TEXTY K ÚLOHÁM 1–3
 
 **TEXT 2**
 
-**Epanastrofa** je opakování stejného slova / stejného slovního spojení na konci jednoho 
-a na začátku bezprostředně následujícího verše.
-
-**Syntaktický paralelismus** vzniká opakováním stejných či podobných větných 
-konstrukcí ve verších po sobě následujících, např.:
- 
-*Hvězda svítí, dokud neuchřadne,* \
-*sopka pálí, dokud nevychladne*.
+> **Epanastrofa** je opakování stejného slova / stejného slovního spojení na konci jednoho 
+> a na začátku bezprostředně následujícího verše.
+> 
+> **Syntaktický paralelismus** vzniká opakováním stejných či podobných větných 
+> konstrukcí ve verších po sobě následujících, např.:\
+> *Hvězda svítí, dokud neuchřadne,* \
+> *sopka pálí, dokud nevychladne*.
 
 # 1 Které z následujících tvrzení odpovídá TEXTU 1?
 - [A] Staré ženy o tom, že Dolní Lhotu navštívil Bůh, hovořily při dojení krav.
