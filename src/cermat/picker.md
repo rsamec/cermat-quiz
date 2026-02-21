@@ -34,7 +34,7 @@ const parsedCodes = Object.entries(Object.groupBy(folders.map(d => parseCode(d))
               <div id=popover-apps-${code} class="menu-items" popover>
                 <div class="v-stack v-stack--m">
                   <a class="h-stack h-stack--s" href="../apps/cermat-form-${code}" title="Vyplnění odpovědí"><i class="fa fa-file-waveform"></i><span>Vyplňovačka</span></a>
-                  ${subject == "math" ? html`<a class="h-stack h-stack--s" href="../apps/cermat-calculator-${code}" title="Kalkulačka"><i class="fa fa-calculator"></i><span>Kalkulačka</span></a>
+                  ${subject == "math" ? html.fragment`<a class="h-stack h-stack--s" href="../apps/cermat-calculator-${code}" title="Kalkulačka"><i class="fa fa-calculator"></i><span>Kalkulačka</span></a>
                   <a class="h-stack h-stack--s" href="../apps/cermat-chatstepper-${code}" title="Rozhodovačka"><i class="fa fa-diagram-project"></i><span>Rozhodovačka</span></a>
                   <a class="h-stack h-stack--s" href="../apps/cermat-colorexpression-${code}" title="Obarvovačka"><i class="fa fa-palette"></i><span>Rozpad výpočtu</span></a>`:''}
                 </div>
