@@ -27,7 +27,7 @@ const ids = quiz.questions.map(d => d.id);
 const wordProblem = wordProblems[code];
 process.stdout.write(`---
 title: ${formatCode(code)}
-source: ČT EDU
+source: Cermat
 toc: false
 ---
 
