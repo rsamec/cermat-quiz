@@ -38,7 +38,14 @@ const parsedCodes = Object.entries(Object.groupBy(folders.map(d => parseCode(d))
                   <a class="h-stack h-stack--s" href="../apps/cermat-chatstepper-${code}" title="Rozhodovačka"><i class="fa fa-diagram-project"></i><span>Rozhodovačka</span></a>
                   <a class="h-stack h-stack--s" href="../apps/cermat-colorexpression-${code}" title="Obarvovačka"><i class="fa fa-palette"></i><span>Rozpad výpočtu</span></a>`:''}
                 </div>
-              </div>              
+              </div>
+              ${subject == "math" ? html`<button  popovertarget=popover-data-${code}>Data<i class="fas fa-caret-down"></i></button>
+              <div id=popover-data-${code} class="menu-items" popover>
+                <div class="v-stack v-stack--m">
+                  <a class="h-stack h-stack--s" href="./word-problems-${code}" title="Řešení slovních úloh (markdown)"><i class="fa fa-brands fa-markdown"></i><span>Postupy řešení - markdown</span></a>
+                  <a download class="h-stack h-stack--s" href="./word-problems-${code}.tldr"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-chart-diagram"></i><span>Postupy řešení - tldraw</span><a>
+                </div>
+              </div>`:''}              
           <div>`
         )}
       </div>
