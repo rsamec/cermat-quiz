@@ -315,7 +315,7 @@ export function deductionTreeToHierarchy(node: { children: any[], context: Deduc
     }
 
 
-    const questionRule = inferenceRuleWithQuestion(mapNodeChildrenToPredicates(node)) as Question;
+    const questionRule = inferenceRuleWithQuestion(mapNodeChildrenToPredicates(node), { formatRatioAsLatex: false }) as Question;
 
     const option = questionRule?.options?.find(d => d.ok);
     const questionShapes = []

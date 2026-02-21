@@ -6050,12 +6050,14 @@ function inferNthPositionRule(a, b, newEntity = "nth") {
     ] : []
   };
 }
-function inferenceRuleWithQuestion(children) {
+var globalFormatRatioAsLatex = true;
+function inferenceRuleWithQuestion(children, { formatRatioAsLatex } = { formatRatioAsLatex: true }) {
   if (children.length < 1) {
     throw "inferenceRuleWithQuestion requires at least one child";
   }
   const last = children[children.length - 1];
   const predicates = children.slice(0, -1);
+  globalFormatRatioAsLatex = formatRatioAsLatex;
   const result = predicates.length > 1 ? inferenceRuleEx(...predicates) : null;
   return result == null ? {
     name: predicates.find((d) => d.kind == "common-sense") != null ? "commonSense" : "unknownRule",
@@ -6610,7 +6612,7 @@ function formatNumber(d) {
 function formatRatio(d, asPercent) {
   if (asPercent)
     return `${formatNumber(d * 100)} %`;
-  return helpers2.convertToFractionAsLatex(d);
+  return globalFormatRatioAsLatex ? helpers2.convertToFractionAsLatex(d) : d > -2 && d < 2 ? helpers2.convertToFraction(d) : formatNumber(d);
 }
 function containerQuestion(d) {
   return `${computeQuestion(d.quantity)} ${d.agent}${formatEntity(d)}?`;
@@ -11596,7 +11598,7 @@ function deductionTreeToHierarchy(node, links, isLast, extra) {
       note: ""
     });
   }
-  const questionRule = inferenceRuleWithQuestion2(mapNodeChildrenToPredicates(node));
+  const questionRule = inferenceRuleWithQuestion2(mapNodeChildrenToPredicates(node), { formatRatioAsLatex: false });
   const option = questionRule?.options?.find((d) => d.ok);
   const questionShapes = [];
   const questionShape = {

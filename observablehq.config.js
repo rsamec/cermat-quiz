@@ -162,6 +162,8 @@ export default {
     .concat(ctEduFolders.map(d => `/ctedu/print-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/arch-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/solution-${d}`))
+    .concat(ctEduFolders.map(d => `/ctedu/word-problems-${d}`))
+    .concat(ctEduFolders.map(d => `/ctedu/word-problems-${d}.tldr`))
     .concat(cermatFolders.map(d => `/cermat/print-${d}`))
     .concat(cermatFolders.map(d => `/cermat/arch-${d}`))
     .concat(cermatFolders.map(d => `/cermat/solution-${d}`))

@@ -1084,13 +1084,6 @@ function inferConvertRatioCompareToTwoPartRatioRule(b: RatioComparison, a: { who
     ] : []
   }
 }
-
-function inferConvertRatioCompareToTwoPartRatioRule2(a: RatioComparison, b: Container | Rate, last: CompareAndPartEqual) {
-  const ratios = convertRatioCompareToTwoPartRatioRule(a, { whole: singleAgent(b.agent) })
-  console.log(ratios);
-  return inferPartToPartRule(b, ratios)
-}
-
 function convertRatioCompareToRatiosRule(arr: RatioComparison[], a: { whole: AgentMatcher }): PartToPartRatio {
   const numbers = arr.map(d => d.ratio);
   if (!areNumbers(numbers)) {
@@ -3196,18 +3189,20 @@ function inferNthPositionRule(a: Container, b: Sequence | Pattern, newEntity: st
 function isQuestion(value: Question<any> | Predicate): value is Question<any> {
   return (value as any)?.result != null
 }
-
+let globalFormatRatioAsLatex = true;
 export function inferenceRule(...args: Predicate[]): Predicate {
+  globalFormatRatioAsLatex = true;
   const value = inferenceRuleEx(...args);
   return isQuestion(value) ? value.result : value;
 }
-export function inferenceRuleWithQuestion(children: Predicate[]) {
+export function inferenceRuleWithQuestion(children: Predicate[], { formatRatioAsLatex }: { formatRatioAsLatex: boolean } = { formatRatioAsLatex: true }) {
   if (children.length < 1) {
     throw "inferenceRuleWithQuestion requires at least one child";
   }
   const last = children[children.length - 1];
   const predicates = children.slice(0, -1);
-
+  
+  globalFormatRatioAsLatex = formatRatioAsLatex;
   const result = predicates.length > 1 ? inferenceRuleEx(...predicates) : null;
   //if result == null not possible to evaluate -> it has no derived computation  
   return result == null
@@ -4001,8 +3996,9 @@ function formatNumber(d: number) {
 
 function formatRatio(d: number, asPercent?: boolean) {
   if (asPercent) return `${formatNumber(d * 100)} %`;
-  return helpers.convertToFractionAsLatex(d);
-  //return (d > -2 && d < 2) ? helpers.convertToFraction(d) as string : formatNumber(d)
+  return globalFormatRatioAsLatex
+    ? helpers.convertToFractionAsLatex(d)
+    : (d > -2 && d < 2) ? helpers.convertToFraction(d) as string : formatNumber(d)
 }
 
 function containerQuestion(d: Container) {

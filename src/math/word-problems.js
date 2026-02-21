@@ -2359,16 +2359,19 @@ function inferNthPositionRule(a, b, newEntity = "nth") {
 function isQuestion(value) {
   return value?.result != null;
 }
+var globalFormatRatioAsLatex = true;
 function inferenceRule(...args) {
+  globalFormatRatioAsLatex = true;
   const value = inferenceRuleEx(...args);
   return isQuestion(value) ? value.result : value;
 }
-function inferenceRuleWithQuestion(children) {
+function inferenceRuleWithQuestion(children, { formatRatioAsLatex } = { formatRatioAsLatex: true }) {
   if (children.length < 1) {
     throw "inferenceRuleWithQuestion requires at least one child";
   }
   const last2 = children[children.length - 1];
   const predicates = children.slice(0, -1);
+  globalFormatRatioAsLatex = formatRatioAsLatex;
   const result = predicates.length > 1 ? inferenceRuleEx(...predicates) : null;
   return result == null ? {
     name: predicates.find((d) => d.kind == "common-sense") != null ? "commonSense" : "unknownRule",
@@ -2927,7 +2930,7 @@ function formatNumber(d) {
 function formatRatio(d, asPercent) {
   if (asPercent)
     return `${formatNumber(d * 100)} %`;
-  return helpers.convertToFractionAsLatex(d);
+  return globalFormatRatioAsLatex ? helpers.convertToFractionAsLatex(d) : d > -2 && d < 2 ? helpers.convertToFraction(d) : formatNumber(d);
 }
 function containerQuestion(d) {
   return `${computeQuestion(d.quantity)} ${d.agent}${formatEntity(d)}?`;
