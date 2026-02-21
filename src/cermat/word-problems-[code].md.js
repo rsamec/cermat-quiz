@@ -3,7 +3,7 @@ import { parseQuiz } from '../utils/quiz-parser.js';
 import { normalizeImageUrlsToAbsoluteUrls } from '../utils/quiz-string-utils.js';
 import wordProblems, { } from './word-problems.js';
 import { jsonToMarkdownChat } from "../utils/deduce-utils.js";
-import { formatPeriod, relativeBaseUrl } from './utils.js'
+import { formatCode, relativeBaseUrl } from './utils.js'
 import path from 'path';
 import { readTextFromFile } from "../utils/file.utils.js";
 
@@ -26,7 +26,7 @@ const ids = quiz.questions.map(d => d.id);
 
 const wordProblem = wordProblems[code];
 process.stdout.write(`---
-title: ${formatPeriod(code)}
+title: ${formatCode(code)}
 source: ČT EDU
 toc: false
 ---
