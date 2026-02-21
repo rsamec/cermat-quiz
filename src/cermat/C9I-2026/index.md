@@ -115,7 +115,7 @@ VÝCHOZÍ TEXTY K ÚLOHÁM 7–12
 > nabízí turistům mnoho možností. __Můžete odpočívat na pláži, vydat se do hor na atraktivní, ale náročný výlet nebo prozkoumat historii ostrova.__ Jedna z nejvyhledávanějších krétských 
 > památek se nachází na pahorku Kefala. Řeč je o areálu Knóssos.
 > 
-> (**2**) Krétu kdysi (cca mezi lety 2600 a 1450 př. n. l.) obývala minojská civilizace1. 
+> (**2**) Krétu kdysi (cca mezi lety 2600 a 1450 př. n. l.) obývala minojská civilizace[^1]. 
 > Minojci zde stavěli impozantní paláce (např. v Knóssu, ve Faistu), jejichž ústřední částí 
 > bylo nádvoří obestavěné budovami. __Všechny tyto stavby ale byly časem zničeny, ať už přírodními katastrofami, nebo lidským zaviněním.__ 
 > 
