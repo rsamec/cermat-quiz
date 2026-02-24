@@ -113,7 +113,7 @@ function sud() {
   }
 }
 
-function uhly() {
+export function uhly() {
   const angleLabel = "zadaný"
   const angle1 = contAngle(angleLabel, 30)
   const angle2 = contAngle(angleLabel, 130)

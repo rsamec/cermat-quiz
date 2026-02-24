@@ -33,14 +33,14 @@ $$
 $$
 
 
-
+# 5
 >V rovině leží přímky p, q, r, které se protínají v bodě R, a přímky s, t, pro které platí: s∥r, s⊥t. 
 > 
 > ![alt text](image.png)
 >
 >(*CZVV*) 
 
-# 5 Vypočtěte ve stupních velikost úhlu 
+**Vypočtěte ve stupních velikost úhlu**
 ## 5.1 𝛼, 
 ## 5.2 𝛽, 
 ## 5.3 𝛾. 
