@@ -1781,16 +1781,24 @@ function inferQuotaRule(a: Container, quota: Quota): Question<Container> {
   }
 }
 
-function toPartWholeRatio(part: Container, whole: Container, asPercent?: boolean): PartWholeRatio {
+function toPartWholeRatio(part: Container | Rate | Quota, whole: Container | Rate | Quota, asPercent?: boolean): PartWholeRatio {
+  const toAgent = (predicate: Container | Rate | Quota) => {
+    const entities = predicate.kind == "rate"
+      ? [predicate.entityBase.entity]
+      : predicate.kind == "quota"
+        ? [predicate.agentQuota]
+        : [];
+    return Array.isArray(predicate.agent) ? predicate.agent.concat(entities) : [predicate.agent].concat(entities);
+  }
   return {
     kind: 'ratio',
-    part: joinAgent(part.agent),
-    whole: joinAgent(whole.agent),
+    part: joinAgent(toAgent(part)),
+    whole: joinAgent(toAgent(whole)),
     ratio: isNumber(part.quantity) && isNumber(whole.quantity) ? part.quantity / whole.quantity : wrapToRatio(`part.quantity / whole.quantity`, { part, whole }),
     asPercent
   }
 }
-function inferToPartWholeRatio(part: Container, whole: Container, last: PartWholeRatio): Question<PartWholeRatio> {
+function inferToPartWholeRatio(part: Container | Rate | Quota, whole: Container | Rate | Quota, last: PartWholeRatio): Question<PartWholeRatio> {
   const result = toPartWholeRatio(part, whole, last.asPercent)
   return {
     name: toPartWholeRatio.name,
@@ -3201,7 +3209,7 @@ export function inferenceRuleWithQuestion(children: Predicate[], { formatRatioAs
   }
   const last = children[children.length - 1];
   const predicates = children.slice(0, -1);
-  
+
   globalFormatRatioAsLatex = formatRatioAsLatex;
   const result = predicates.length > 1 ? inferenceRuleEx(...predicates) : null;
   //if result == null not possible to evaluate -> it has no derived computation  
@@ -3353,10 +3361,10 @@ function inferenceRuleEx(...args: Predicate[]): Question<any> {
     return kind === "comp-part-eq" ? inferPartEqualRule(b, a) : inferCompareRule(a, b);
   }
   else if ((a.kind === "cont" || a.kind === "quota" || a.kind === "rate") && b.kind == "rate") {
-    return inferRateRule(a, b)
+    return kind === "ratio" ? inferToPartWholeRatio(b, a, last) : inferRateRule(a, b)
   }
   else if (a.kind === "rate" && (b.kind == "cont" || b.kind === "quota" || b.kind === "rate")) {
-    return inferRateRule(b, a)
+    return kind === "ratio" ? inferToPartWholeRatio(a, b, last) : inferRateRule(b, a)
   }
   else if (a.kind === "comp" && b.kind == "comp-ratio") {
     return kind === "comp" ? inferTransitiveCompareRule(a, b) : inferRatioCompareToCompareRule(b, a, kind === "nth-part" && last)

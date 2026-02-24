@@ -861,10 +861,14 @@ function inferQuotaRule(a, quota) {
   };
 }
 function toPartWholeRatio(part, whole, asPercent) {
+  const toAgent = (predicate) => {
+    const entities = predicate.kind == "rate" ? [predicate.entityBase.entity] : predicate.kind == "quota" ? [predicate.agentQuota] : [];
+    return Array.isArray(predicate.agent) ? predicate.agent.concat(entities) : [predicate.agent].concat(entities);
+  };
   return {
     kind: "ratio",
-    part: joinAgent(part.agent),
-    whole: joinAgent(whole.agent),
+    part: joinAgent(toAgent(part)),
+    whole: joinAgent(toAgent(whole)),
     ratio: isNumber(part.quantity) && isNumber(whole.quantity) ? part.quantity / whole.quantity : wrapToRatio(`part.quantity / whole.quantity`, { part, whole }),
     asPercent
   };
@@ -2191,9 +2195,9 @@ function inferenceRuleEx(...args) {
   } else if (a.kind === "cont" && b.kind === "comp") {
     return kind === "comp-part-eq" ? inferPartEqualRule(b, a) : inferCompareRule(a, b);
   } else if ((a.kind === "cont" || a.kind === "quota" || a.kind === "rate") && b.kind == "rate") {
-    return inferRateRule(a, b);
+    return kind === "ratio" ? inferToPartWholeRatio(b, a, last2) : inferRateRule(a, b);
   } else if (a.kind === "rate" && (b.kind == "cont" || b.kind === "quota" || b.kind === "rate")) {
-    return inferRateRule(b, a);
+    return kind === "ratio" ? inferToPartWholeRatio(a, b, last2) : inferRateRule(b, a);
   } else if (a.kind === "comp" && b.kind == "comp-ratio") {
     return kind === "comp" ? inferTransitiveCompareRule(a, b) : inferRatioCompareToCompareRule(b, a, kind === "nth-part" && last2);
   } else if (a.kind === "comp-ratio" && b.kind == "comp") {

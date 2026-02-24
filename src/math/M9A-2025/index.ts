@@ -270,7 +270,7 @@ function pelhrimov() {
 }
 
 
-function organizatoriPercent() {
+export function organizatoriPercent() {
   const entity = "osoby";
   const entityBase = "družstvo"
   const celkem = cont("nastoupilo", 200, entity);

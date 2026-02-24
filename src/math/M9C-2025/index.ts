@@ -249,7 +249,7 @@ function dlazdice() {
   }
 }
 
-function rodinnyDum() {
+export function rodinnyDum() {
   const entity = "návštěvník"
 
   const dospelyCelkem = cont("dospělý", 80 + 60 + 70 + 90 + 100, "návštěvník");

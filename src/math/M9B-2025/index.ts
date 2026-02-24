@@ -126,7 +126,7 @@ function dort() {
 }
 
 
-function uhelAlfa() {
+export function uhelAlfa() {
 
   const soucetUhluVTrojuhelniku = contTringleAngleSum()
   const praveRameho = deduce(
@@ -211,7 +211,7 @@ function pravouhlyLichobeznik() {
 }
 
 
-function zahrada() {
+export function zahrada() {
   const magnolieL = "magnolie";
   const jablonL = "jabloň"
   const ruzeL = "růže"
