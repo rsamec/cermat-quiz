@@ -8773,6 +8773,16 @@ function pravouhlyLichobeznik() {
         prepona,
         sum("rovnob\u011B\u017En\xEDk obvod")
       )
+    },
+    obvodRovnobeznikExpanded: {
+      deductionTree: deduce(
+        deduce(
+          obvod,
+          ratios(`${agentLabel} obvod`, ["men\u0161\xED lichob\u011B\u017En\xEDk", "rovnob\u011B\u017En\xEDk"], [1, 1])
+        ),
+        prepona,
+        sum("rovnob\u011B\u017En\xEDk obvod")
+      )
     }
   };
 }
@@ -9345,6 +9355,18 @@ function tabor2() {
   };
 }
 
+// src/ctedu/2026-03-03/index.ts
+var __default9 = createLazyMap({
+  1.1: () => zahon().obvod,
+  1.2: () => zahon().rozdilPocetRostlin,
+  1.3: () => zahon().nejmensiPocetCerveneKvetoucich,
+  2: () => pravouhlyLichobeznik().obvodRovnobeznikExpanded,
+  3: () => tabor().mladsiPercent,
+  4.1: () => salaty().druhyDenTrzba,
+  4.2: () => salaty().druhyDenVyrazSPromenou,
+  4.3: () => salaty().pocetSalatu
+});
+
 // src/ctedu/word-problems.ts
 var word_problems_default = createLazyMap({
   "2026-01-06": () => __default,
@@ -9354,7 +9376,8 @@ var word_problems_default = createLazyMap({
   "2026-02-03": () => __default5,
   "2026-02-10": () => __default6,
   "2026-02-17": () => __default7,
-  "2026-02-24": () => __default8
+  "2026-02-24": () => __default8,
+  "2026-03-03": () => __default9
 });
 export {
   word_problems_default as default,

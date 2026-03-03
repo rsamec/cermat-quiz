@@ -41,7 +41,7 @@ function porovnani() {
     )
   }
 }
-function salaty() {
+export function salaty() {
   const entity = "salát";
   const den1Ratio = ratio("celkem", "prodáno 1.den", 1 / 3);
   const den2vsDen1 = compRelative("prodáno 2.den", "prodáno 1.den", -1 / 3);
@@ -154,7 +154,7 @@ export function uhelAlfa() {
     )
   }
 }
-function pravouhlyLichobeznik() {
+export function pravouhlyLichobeznik() {
 
   const agentLabel = "lichoběžník";
   const spodniZakladna = contLength("spodní základna", 140);
@@ -206,7 +206,18 @@ function pravouhlyLichobeznik() {
         prepona,
         sum("rovnoběžník obvod")
       )
-    }
+    },
+    obvodRovnobeznikExpanded: {
+      deductionTree: deduce(
+        deduce(
+          obvod,
+          ratios(`${agentLabel} obvod`, ["menší lichoběžník", "rovnoběžník"], [1, 1])
+        ),
+        prepona,
+        sum("rovnoběžník obvod")
+      )
+    },
+  
   }
 }
 
@@ -303,7 +314,7 @@ export function zahrada() {
 }
 
 
-function tabor() {
+export function tabor() {
   const entity = "děti";
   const entityBase = "vedoucí"
   const deti = cont("tábor", 80, entity);

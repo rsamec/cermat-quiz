@@ -143,7 +143,7 @@ export function uhly() {
   }
 }
 
-function zahon() {
+export function zahon() {
   const dim = dimensionEntity();
 
   const entity = "počet";
