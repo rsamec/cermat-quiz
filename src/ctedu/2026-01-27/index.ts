@@ -51,7 +51,6 @@ function bazen() {
                 ),
                 ctorPercent()
             ),
-            convertToTestedValue: value => value.ratio * 100
         },
         pocetCerpadel: {
             deductionTree: deduce(

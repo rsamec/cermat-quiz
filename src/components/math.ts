@@ -413,7 +413,7 @@ export type LinearEquation = {
   entity: EntityBase
 }
 
-export type Question<T extends Predicate> = {
+export type Question<T extends TruePredicate> = {
   name: string
   inputParameters: PredicateKind[],
   question: string,
@@ -442,18 +442,25 @@ export type FormattingOptions = {
 
 export type EntityDef = string | EntityBase
 
-export type QuantityPredicate = Container | Comparison | Transfer | Rate | ComparisonDiff | Transfer | Quota | Frequency | Delta
+export type QuantityPredicate = Container | Comparison | ComparisonDiff |  Rate |  Quota | Frequency | Delta | Transfer
+export type ComparisonActionPredicate = CompareAndPartEqual | AngleComparison | TriangleAngle | Phytagoras
 export type RatioPredicate = RatioComparison | PartWholeRatio
+export type ComplementActionPredicate = Complement | ComplementCompRatio
 export type RatiosPredicate = PartToPartRatio | TwoPartRatio | ThreePartRatio;
-export type ExpressionPredicate = EvalExpr<ContainerEval | RateEval> | EvalFormula<ContainerEval | RateEval> | SimplifyExpr | LinearEquation | Phytagoras;
+export type ExpressionPredicate = EvalExpr<ContainerEval | RateEval> | EvalFormula<ContainerEval | RateEval> | SimplifyExpr | LinearEquation;
 export type CommonSensePredicate = CommonSense | Proportion
-export type MultipleOperationPredicate = Sum | SumCombine | Product | ProductCombine | GCD | LCD
-export type SingleOperationPredicate = Scale | InvertScale | Slide | InvertSlide | Difference | Complement | ConvertUnit | Round | ConvertPercent | InvertCompRatio | Reverse | ComplementCompRatio | RatiosInvert | RatiosBase | NumberDecimalPart | NumberFractionPart
+
+export type MultipleOperationPredicate = Sum | SumCombine | Product | ProductCombine | GCD | LCD | BalancedPartition | Alligation
+export type SingleOperationPredicate = Scale | InvertScale | Slide | InvertSlide | Difference | ConvertUnit | Round | ConvertPercent | InvertCompRatio | Reverse | RatiosInvert | RatiosBase | NumberDecimalPart | NumberFractionPart
+
 export type OperationPredicate = SingleOperationPredicate | MultipleOperationPredicate
+export type MetaPredicate = NthRule | NthPart | NthPartFactor | NthPartScale
+export type StructurePredicate = Sequence | Pattern | Tuple | Option
 
-export type Predicate = QuantityPredicate | RatioPredicate | RatiosPredicate | ExpressionPredicate | MultipleOperationPredicate | CommonSensePredicate | OperationPredicate
-  | Sequence | Pattern | BalancedPartition | Alligation | NthRule | NthPart | NthPartFactor | NthPartScale | AngleComparison | TriangleAngle | Tuple | Option | CompareAndPartEqual
+export type TruePredicate = QuantityPredicate | RatioPredicate | RatiosPredicate | StructurePredicate
+export type ActionPredicate = OperationPredicate | ComparisonActionPredicate | ExpressionPredicate | ComplementActionPredicate 
 
+export type Predicate = TruePredicate | ActionPredicate | MetaPredicate | CommonSensePredicate 
 export type PredicateKind = Pick<Predicate, 'kind'>
 // #endregion
 
@@ -958,13 +965,13 @@ function partWholeCompareRule(b: RatioComparison, a: PartWholeRatio): PartWholeR
   if (a.part == b.agentB) {
     return {
       kind: 'ratio', whole: a.whole, part: b.agentA,
-      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? b.ratio >= 0 ? a.ratio * b.ratio : a.ratio / abs(b.ratio) : wrapToRatio(`b.ratio >= 0 ? a.ratio * b.ratio : a.ratio / abs(b.ratio)`, { a, b })
+      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? b.ratio >= 0 ? a.ratio * b.ratio : a.ratio / abs(b.ratio) : wrapToRatio(`a.ratio * b.ratio`, { a, b })
     }
   }
   else if (a.part == b.agentA) {
     return {
       kind: 'ratio', whole: a.whole, part: b.agentB,
-      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? b.ratio > 0 ? a.ratio / b.ratio : a.ratio * abs(b.ratio) : wrapToRatio(`b.ratio > 0 ? a.ratio / b.ratio : a.ratio * abs(b.ratio)`, { a, b })
+      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? b.ratio > 0 ? a.ratio / b.ratio : a.ratio * abs(b.ratio) : wrapToRatio(`a.ratio / b.ratio`, { a, b })
     }
   }
 }
@@ -1040,16 +1047,12 @@ function convertRatioCompareToRatioRule(b: RatioComparison): PartWholeRatio {
 function inferConvertRatioCompareToRatioRule(b: RatioComparison): Question<PartWholeRatio> {
   const result = convertRatioCompareToRatioRule(b);
 
-  if (!isNumber(b.ratio) || !isNumber(result.ratio)) {
-    throw "convertRatioCompareToRatioRule does not support expressions"
-  }
-
   return {
     name: convertRatioCompareToRatioRule.name,
     inputParameters: extractKinds(b),
     question: `Vyjádři ${result.part} jako část z ${result.whole}?`,
     result,
-    options: isNumber(result.ratio) ? [
+    options: isNumber(result.ratio) && isNumber(b.ratio) ? [
       { tex: `${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: result.whole == b.agentA },
       { tex: `1 / ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: result.whole == b.agentB },
     ] : []
@@ -2746,8 +2749,7 @@ function inferEvalToQuantityRule<
   }
 }
 
-function simplifyExprRuleAsRatio(a: RatioComparison, b: SimplifyExpr): Predicate {
-
+function simplifyExprRuleAsRatio(a: RatioComparison, b: SimplifyExpr): RatioComparison {
   if (isNumber(a.ratio)) {
     throw `simplifyExpr does not support quantity types`
   }
@@ -2755,9 +2757,9 @@ function simplifyExprRuleAsRatio(a: RatioComparison, b: SimplifyExpr): Predicate
   return {
     ...a,
     ratio: helpers.evalExpression(a.ratio, b.context)
-  } as Predicate
+  }
 }
-function simplifyExprRuleAsQuantity(a: Container, b: SimplifyExpr): Predicate {
+function simplifyExprRuleAsQuantity(a: Container, b: SimplifyExpr): Container {
 
   if (isNumber(a.quantity)) {
     throw `simplifyExpr does not support quantity types`
@@ -2766,9 +2768,9 @@ function simplifyExprRuleAsQuantity(a: Container, b: SimplifyExpr): Predicate {
   return {
     ...a,
     quantity: helpers.evalExpression(a.quantity, b.context)
-  } as Predicate
+  }
 }
-function inferSimplifyExprRule(a: RatioComparison | Container, b: SimplifyExpr): Question<Predicate> {
+function inferSimplifyExprRule(a: RatioComparison | Container, b: SimplifyExpr): Question<TruePredicate> {
   const result = isQuantityPredicate(a) ? simplifyExprRuleAsQuantity(a, b) : simplifyExprRuleAsRatio(a, b);
   return {
     name: "simplifyExprRule",
@@ -2778,7 +2780,7 @@ function inferSimplifyExprRule(a: RatioComparison | Container, b: SimplifyExpr):
     options: []
   }
 }
-function evalQuotaRemainderExprRule(a: Quota, b: Option): Predicate {
+function evalQuotaRemainderExprRule(a: Quota, b: Option): TruePredicate {
 
   if (!isNumber(a.restQuantity)) {
     throw `evalQuotaRemainderExprRule does not support quantity types`
@@ -2793,7 +2795,7 @@ function evalQuotaRemainderExprRule(a: Quota, b: Option): Predicate {
       ? matched ? b.optionValue : null : matched
   }
 }
-function inferEvalQuotaRemainderExprRule(a: Quota, b: Option): Question<Predicate> {
+function inferEvalQuotaRemainderExprRule(a: Quota, b: Option): Question<TruePredicate> {
   const result = evalQuotaRemainderExprRule(a, b);
   return {
     name: evalQuotaRemainderExprRule.name,
@@ -3194,11 +3196,11 @@ function inferNthPositionRule(a: Container, b: Sequence | Pattern, newEntity: st
 // #endregion
 
 // #region Inference rules application
-function isQuestion(value: Question<any> | Predicate): value is Question<any> {
+function isQuestion(value: Question<TruePredicate> | TruePredicate): value is Question<any> {
   return (value as any)?.result != null
 }
 let globalFormatRatioAsLatex = true;
-export function inferenceRule(...args: Predicate[]): Predicate {
+export function inferenceRule(...args: Predicate[]): TruePredicate {
   globalFormatRatioAsLatex = true;
   const value = inferenceRuleEx(...args);
   return isQuestion(value) ? value.result : value;
@@ -3229,7 +3231,7 @@ export function inferenceRuleWithQuestion(children: Predicate[], { formatRatioAs
     }
     : result;
 }
-function inferenceRuleEx(...args: Predicate[]): Question<any> {
+function inferenceRuleEx(...args: Predicate[]): Question<TruePredicate> {
   const [a, b, ...rest] = args;
   const last = rest?.length > 0 ? rest[rest.length - 1] : null;
   const kind = last?.kind;
@@ -4029,7 +4031,7 @@ function toGenerAgent(a: Container): Container {
 function formatEntity(d: EntityBase) {
   return (d.entity || d.unit) ? `(${[d.unit, d.entity].filter(d => d != null && d != "").join(" ")})` : ''
 }
-function resultAsQuestion<T extends Predicate>(result: T, { name, inputParameters }: { name: string, inputParameters: PredicateKind[] }): Question<T> {
+function resultAsQuestion<T extends TruePredicate>(result: T, { name, inputParameters }: { name: string, inputParameters: PredicateKind[] }): Question<T> {
   return {
     name,
     inputParameters,

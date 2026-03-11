@@ -460,14 +460,14 @@ function partWholeCompareRule(b, a) {
       kind: "ratio",
       whole: a.whole,
       part: b.agentA,
-      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? b.ratio >= 0 ? a.ratio * b.ratio : a.ratio / abs(b.ratio) : wrapToRatio(`b.ratio >= 0 ? a.ratio * b.ratio : a.ratio / abs(b.ratio)`, { a, b })
+      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? b.ratio >= 0 ? a.ratio * b.ratio : a.ratio / abs(b.ratio) : wrapToRatio(`a.ratio * b.ratio`, { a, b })
     };
   } else if (a.part == b.agentA) {
     return {
       kind: "ratio",
       whole: a.whole,
       part: b.agentB,
-      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? b.ratio > 0 ? a.ratio / b.ratio : a.ratio * abs(b.ratio) : wrapToRatio(`b.ratio > 0 ? a.ratio / b.ratio : a.ratio * abs(b.ratio)`, { a, b })
+      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? b.ratio > 0 ? a.ratio / b.ratio : a.ratio * abs(b.ratio) : wrapToRatio(`a.ratio / b.ratio`, { a, b })
     };
   }
 }
@@ -541,15 +541,12 @@ function convertRatioCompareToRatioRule(b) {
 }
 function inferConvertRatioCompareToRatioRule(b) {
   const result = convertRatioCompareToRatioRule(b);
-  if (!isNumber(b.ratio) || !isNumber(result.ratio)) {
-    throw "convertRatioCompareToRatioRule does not support expressions";
-  }
   return {
     name: convertRatioCompareToRatioRule.name,
     inputParameters: extractKinds(b),
     question: `Vyj\xE1d\u0159i ${result.part} jako \u010D\xE1st z ${result.whole}?`,
     result,
-    options: isNumber(result.ratio) ? [
+    options: isNumber(result.ratio) && isNumber(b.ratio) ? [
       { tex: `${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: result.whole == b.agentA },
       { tex: `1 / ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: result.whole == b.agentB }
     ] : []
@@ -15352,6 +15349,16 @@ function pravouhlyLichobeznik() {
       deductionTree: deduce(
         deduce(
           last(obvod),
+          ratios(`${agentLabel} obvod`, ["men\u0161\xED lichob\u011B\u017En\xEDk", "rovnob\u011B\u017En\xEDk"], [1, 1])
+        ),
+        prepona,
+        sum("rovnob\u011B\u017En\xEDk obvod")
+      )
+    },
+    obvodRovnobeznikExpanded: {
+      deductionTree: deduce(
+        deduce(
+          obvod,
           ratios(`${agentLabel} obvod`, ["men\u0161\xED lichob\u011B\u017En\xEDk", "rovnob\u011B\u017En\xEDk"], [1, 1])
         ),
         prepona,

@@ -4154,14 +4154,14 @@ function partWholeCompareRule(b, a) {
       kind: "ratio",
       whole: a.whole,
       part: b.agentA,
-      ratio: isNumber2(a.ratio) && isNumber2(b.ratio) ? b.ratio >= 0 ? a.ratio * b.ratio : a.ratio / abs(b.ratio) : wrapToRatio(`b.ratio >= 0 ? a.ratio * b.ratio : a.ratio / abs(b.ratio)`, { a, b })
+      ratio: isNumber2(a.ratio) && isNumber2(b.ratio) ? b.ratio >= 0 ? a.ratio * b.ratio : a.ratio / abs(b.ratio) : wrapToRatio(`a.ratio * b.ratio`, { a, b })
     };
   } else if (a.part == b.agentA) {
     return {
       kind: "ratio",
       whole: a.whole,
       part: b.agentB,
-      ratio: isNumber2(a.ratio) && isNumber2(b.ratio) ? b.ratio > 0 ? a.ratio / b.ratio : a.ratio * abs(b.ratio) : wrapToRatio(`b.ratio > 0 ? a.ratio / b.ratio : a.ratio * abs(b.ratio)`, { a, b })
+      ratio: isNumber2(a.ratio) && isNumber2(b.ratio) ? b.ratio > 0 ? a.ratio / b.ratio : a.ratio * abs(b.ratio) : wrapToRatio(`a.ratio / b.ratio`, { a, b })
     };
   }
 }
@@ -4235,15 +4235,12 @@ function convertRatioCompareToRatioRule(b) {
 }
 function inferConvertRatioCompareToRatioRule(b) {
   const result = convertRatioCompareToRatioRule(b);
-  if (!isNumber2(b.ratio) || !isNumber2(result.ratio)) {
-    throw "convertRatioCompareToRatioRule does not support expressions";
-  }
   return {
     name: convertRatioCompareToRatioRule.name,
     inputParameters: extractKinds(b),
     question: `Vyj\xE1d\u0159i ${result.part} jako \u010D\xE1st z ${result.whole}?`,
     result,
-    options: isNumber2(result.ratio) ? [
+    options: isNumber2(result.ratio) && isNumber2(b.ratio) ? [
       { tex: `${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: result.whole == b.agentA },
       { tex: `1 / ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: result.whole == b.agentB }
     ] : []

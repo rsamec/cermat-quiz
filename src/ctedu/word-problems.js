@@ -354,14 +354,14 @@ function partWholeCompareRule(b, a) {
       kind: "ratio",
       whole: a.whole,
       part: b.agentA,
-      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? b.ratio >= 0 ? a.ratio * b.ratio : a.ratio / abs(b.ratio) : wrapToRatio(`b.ratio >= 0 ? a.ratio * b.ratio : a.ratio / abs(b.ratio)`, { a, b })
+      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? b.ratio >= 0 ? a.ratio * b.ratio : a.ratio / abs(b.ratio) : wrapToRatio(`a.ratio * b.ratio`, { a, b })
     };
   } else if (a.part == b.agentA) {
     return {
       kind: "ratio",
       whole: a.whole,
       part: b.agentB,
-      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? b.ratio > 0 ? a.ratio / b.ratio : a.ratio * abs(b.ratio) : wrapToRatio(`b.ratio > 0 ? a.ratio / b.ratio : a.ratio * abs(b.ratio)`, { a, b })
+      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? b.ratio > 0 ? a.ratio / b.ratio : a.ratio * abs(b.ratio) : wrapToRatio(`a.ratio / b.ratio`, { a, b })
     };
   }
 }
@@ -435,15 +435,12 @@ function convertRatioCompareToRatioRule(b) {
 }
 function inferConvertRatioCompareToRatioRule(b) {
   const result = convertRatioCompareToRatioRule(b);
-  if (!isNumber(b.ratio) || !isNumber(result.ratio)) {
-    throw "convertRatioCompareToRatioRule does not support expressions";
-  }
   return {
     name: convertRatioCompareToRatioRule.name,
     inputParameters: extractKinds(b),
     question: `Vyj\xE1d\u0159i ${result.part} jako \u010D\xE1st z ${result.whole}?`,
     result,
-    options: isNumber(result.ratio) ? [
+    options: isNumber(result.ratio) && isNumber(b.ratio) ? [
       { tex: `${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: result.whole == b.agentA },
       { tex: `1 / ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: result.whole == b.agentB }
     ] : []
@@ -1040,27 +1037,27 @@ function inferRateRule(a, rate2) {
     ] : []
   };
 }
-function quotaRule(a, quota2) {
-  if (!(equalAgent(a.agent, quota2.agent) || equalAgent(a.agent, quota2.agentQuota))) {
-    throw `Mismatch entity ${a.entity} any of ${quota2.agent}, ${quota2.agentQuota}`;
+function quotaRule(a, quota3) {
+  if (!(equalAgent(a.agent, quota3.agent) || equalAgent(a.agent, quota3.agentQuota))) {
+    throw `Mismatch entity ${a.entity} any of ${quota3.agent}, ${quota3.agentQuota}`;
   }
   return {
     kind: "cont",
-    agent: equalAgent(a.agent, quota2.agentQuota) ? [quota2.agent] : [quota2.agentQuota],
+    agent: equalAgent(a.agent, quota3.agentQuota) ? [quota3.agent] : [quota3.agentQuota],
     entity: a.entity,
-    quantity: equalAgent(a.agent, quota2.agentQuota) ? isNumber(a.quantity) && isNumber(quota2.quantity) ? a.quantity * quota2.quantity : wrapToQuantity(`a.quantity * quota.quantity`, { a, quota: quota2 }) : isNumber(a.quantity) && isNumber(quota2.quantity) ? a.quantity / quota2.quantity : wrapToQuantity(`a.quantity / quota.quantity`, { a, quota: quota2 })
+    quantity: equalAgent(a.agent, quota3.agentQuota) ? isNumber(a.quantity) && isNumber(quota3.quantity) ? a.quantity * quota3.quantity : wrapToQuantity(`a.quantity * quota.quantity`, { a, quota: quota3 }) : isNumber(a.quantity) && isNumber(quota3.quantity) ? a.quantity / quota3.quantity : wrapToQuantity(`a.quantity / quota.quantity`, { a, quota: quota3 })
   };
 }
-function inferQuotaRule(a, quota2) {
-  const result = quotaRule(a, quota2);
+function inferQuotaRule(a, quota3) {
+  const result = quotaRule(a, quota3);
   return {
     name: quotaRule.name,
-    inputParameters: extractKinds(a, quota2),
+    inputParameters: extractKinds(a, quota3),
     question: containerQuestion(result),
     result,
-    options: isNumber(a.quantity) && isNumber(quota2.quantity) ? [
-      { tex: `${formatNumber(a.quantity)} * ${formatNumber(quota2.quantity)}`, result: formatNumber(a.quantity * quota2.quantity), ok: equalAgent(a.agent, quota2.agentQuota) },
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(quota2.quantity)}`, result: formatNumber(a.quantity / quota2.quantity), ok: !equalAgent(a.agent, quota2.agentQuota) }
+    options: isNumber(a.quantity) && isNumber(quota3.quantity) ? [
+      { tex: `${formatNumber(a.quantity)} * ${formatNumber(quota3.quantity)}`, result: formatNumber(a.quantity * quota3.quantity), ok: equalAgent(a.agent, quota3.agentQuota) },
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(quota3.quantity)}`, result: formatNumber(a.quantity / quota3.quantity), ok: !equalAgent(a.agent, quota3.agentQuota) }
     ] : []
   };
 }
@@ -1767,30 +1764,30 @@ function inferSolveEquationRule(a, b, last2) {
     options: []
   };
 }
-function toQuotaRule(a, quota2) {
+function toQuotaRule(a, quota3) {
   return {
     kind: "quota",
-    agentQuota: singleAgent(quota2.agent),
+    agentQuota: singleAgent(quota3.agent),
     agent: singleAgent(a.agent),
-    quantity: isNumber(a.quantity) && isNumber(quota2.quantity) ? Math.floor(a.quantity / quota2.quantity) : wrapToQuantity(`floor(a.quantity / quota.quantity)`, { a, quota: quota2 }),
-    restQuantity: isNumber(a.quantity) && isNumber(quota2.quantity) ? a.quantity % quota2.quantity : wrapToQuantity(`a.quantity % quota.quantity`, { a, quota: quota2 })
+    quantity: isNumber(a.quantity) && isNumber(quota3.quantity) ? Math.floor(a.quantity / quota3.quantity) : wrapToQuantity(`floor(a.quantity / quota.quantity)`, { a, quota: quota3 }),
+    restQuantity: isNumber(a.quantity) && isNumber(quota3.quantity) ? a.quantity % quota3.quantity : wrapToQuantity(`a.quantity % quota.quantity`, { a, quota: quota3 })
   };
 }
-function inferToQuotaRule(a, quota2) {
-  const result = toQuotaRule(a, quota2);
-  if (isNumber(a.quantity) && isNumber(quota2.quantity) && isNumber(result.quantity)) {
+function inferToQuotaRule(a, quota3) {
+  const result = toQuotaRule(a, quota3);
+  if (isNumber(a.quantity) && isNumber(quota3.quantity) && isNumber(result.quantity)) {
     return {
       name: toQuotaRule.name,
-      inputParameters: extractKinds(a, quota2),
-      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity, unit: a.unit })} postupn\u011B na skupiny velikosti ${formatNumber(quota2.quantity)} ${formatEntity({ entity: quota2.entity, unit: quota2.unit })}`,
+      inputParameters: extractKinds(a, quota3),
+      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity, unit: a.unit })} postupn\u011B na skupiny velikosti ${formatNumber(quota3.quantity)} ${formatEntity({ entity: quota3.entity, unit: quota3.unit })}`,
       result,
       options: [
-        { tex: `${formatNumber(a.quantity)} / ${formatNumber(quota2.quantity)}`, result: formatNumber(result.quantity), ok: true },
-        { tex: `${formatNumber(quota2.quantity)} / ${formatNumber(a.quantity)}`, result: formatNumber(result.quantity), ok: false }
+        { tex: `${formatNumber(a.quantity)} / ${formatNumber(quota3.quantity)}`, result: formatNumber(result.quantity), ok: true },
+        { tex: `${formatNumber(quota3.quantity)} / ${formatNumber(a.quantity)}`, result: formatNumber(result.quantity), ok: false }
       ]
     };
   } else {
-    return resultAsQuestion(result, { name: toQuotaRule.name, inputParameters: extractKinds(a, quota2) });
+    return resultAsQuestion(result, { name: toQuotaRule.name, inputParameters: extractKinds(a, quota3) });
   }
 }
 function toRatiosRule(parts, last2) {
@@ -7590,8 +7587,7 @@ function bazen() {
           cont(["p\u016Fvodn\u011B", potrebaEntity], 36, entity, unit)
         ),
         ctorPercent()
-      ),
-      convertToTestedValue: (value) => value.ratio * 100
+      )
     },
     pocetCerpadel: {
       deductionTree: deduce(
@@ -9367,6 +9363,88 @@ var __default9 = createLazyMap({
   4.3: () => salaty().pocetSalatu
 });
 
+// src/ctedu/2026-03-10/index.ts
+var __default10 = createLazyMap({
+  1: () => procento(),
+  4.1: () => symboly().plus,
+  4.2: () => symboly().dohromady,
+  4.3: () => symboly().hvezdicka
+});
+function procento() {
+  return {
+    deductionTree: deduce(
+      deduce(
+        cont("\u010D\xE1st", 1080, "\u010Das", "min"),
+        ctorUnit("h")
+      ),
+      cont("celek", 24, "\u010Das", "h"),
+      ctorPercent()
+    )
+  };
+}
+function symboly() {
+  const entity = "symbol";
+  const entityBase = "p\xEDpnut\xED";
+  const plusAgent = "sud\xE9 - plus";
+  const kratAgent = "lich\xE9 - kr\xE1t";
+  const hvezdaAgent = "hv\u011Bzdi\u010Dka";
+  const plusRate = rate(plusAgent, 2, entity, entityBase);
+  const kratRate = rate(kratAgent, 2, entity, entityBase);
+  const pipaniHvezdaRate = rate(hvezdaAgent, 3, entityBase, entity);
+  const pipnuti11 = "11. p\xEDpnut\xED";
+  const pipnuti90 = "90. p\xEDpnut\xED";
+  const situace9 = "situace";
+  return {
+    plus: {
+      deductionTree: deduce(
+        deduce(
+          cont([pipnuti11, plusAgent], 6, entityBase),
+          plusRate
+        ),
+        cont([pipnuti11, hvezdaAgent], 3, entity),
+        ctorDifference(pipnuti11)
+      )
+    },
+    dohromady: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            cont([pipnuti90, plusAgent], 45, entityBase),
+            plusRate
+          ),
+          deduce(
+            cont([pipnuti90, kratAgent], 45, entityBase),
+            kratRate
+          ),
+          sum(`${pipnuti90}, ${plusAgent} a ${kratAgent}`)
+        ),
+        cont([pipnuti11, hvezdaAgent], 30, entity),
+        ctorDifference(pipnuti90)
+      )
+    },
+    hvezdicka: {
+      deductionTree: deduce(
+        deduce(
+          toCont(
+            deduce(
+              deduce(
+                cont(hvezdaAgent, 9, entity),
+                pipaniHvezdaRate
+              ),
+              cont(kratAgent, 2, entityBase),
+              ctor("quota")
+            ),
+            { agent: kratAgent, entity: { entity: entityBase } }
+          ),
+          kratRate
+        ),
+        cont(hvezdaAgent, 9, entity),
+        ctorDifference(kratAgent)
+      )
+    }
+  };
+}
+
 // src/ctedu/word-problems.ts
 var word_problems_default = createLazyMap({
   "2026-01-06": () => __default,
@@ -9377,7 +9455,8 @@ var word_problems_default = createLazyMap({
   "2026-02-10": () => __default6,
   "2026-02-17": () => __default7,
   "2026-02-24": () => __default8,
-  "2026-03-03": () => __default9
+  "2026-03-03": () => __default9,
+  "2026-03-10": () => __default10
 });
 export {
   word_problems_default as default,

@@ -56,6 +56,9 @@ for (const period of ctEduFolders) {
         if (resultNode.kind === "comp-ratio" && resultNode.asPercent) {
           expect(Math.abs((resultQuantity - 1) * 100), `${period}: ${key}`).toEqual(expect.closeTo(verifyBy.args, 2))
         }
+        else if (resultNode.kind === "ratio" && resultNode.asPercent) {
+          expect(Math.abs(resultQuantity * 100), `${period}: ${key}`).toEqual(expect.closeTo(verifyBy.args, 2))
+        }
         else {
           expect(resultQuantity, `${period}: ${key}`).toEqual(expect.closeTo(verifyBy.args, 2))
         }
