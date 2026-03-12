@@ -360,7 +360,7 @@ function rate(agent, quantity, entity3, entityBase, baseQuantity = 1) {
   return { kind: "rate", agent: normalizeToAgent(agent), quantity, baseQuantity, entity: toEntity(entity3), entityBase: toEntity(entityBase) };
 }
 function quota(agent, agentQuota, quantity, restQuantity = 0) {
-  return { kind: "quota", agent, agentQuota, quantity, restQuantity };
+  return { kind: "quota", agent: normalizeToAgent(agent), agentQuota, quantity, restQuantity };
 }
 function proportion(inverse, entities) {
   return { kind: "proportion", inverse, entities };
@@ -1149,7 +1149,7 @@ function quotaRule(a, quota2) {
   }
   return {
     kind: "cont",
-    agent: equalAgent(a.agent, quota2.agentQuota) ? [quota2.agent] : [quota2.agentQuota],
+    agent: equalAgent(a.agent, quota2.agentQuota) ? normalizeToAgent(quota2.agent) : normalizeToAgent(quota2.agentQuota),
     entity: a.entity,
     quantity: equalAgent(a.agent, quota2.agentQuota) ? isNumber(a.quantity) && isNumber(quota2.quantity) ? a.quantity * quota2.quantity : wrapToQuantity(`a.quantity * quota.quantity`, { a, quota: quota2 }) : isNumber(a.quantity) && isNumber(quota2.quantity) ? a.quantity / quota2.quantity : wrapToQuantity(`a.quantity / quota.quantity`, { a, quota: quota2 })
   };
@@ -1169,8 +1169,9 @@ function inferQuotaRule(a, quota2) {
 }
 function toPartWholeRatio(part, whole, asPercent) {
   const toAgent = (predicate) => {
-    const entities = predicate.kind == "rate" ? [predicate.entityBase.entity] : predicate.kind == "quota" ? [predicate.agentQuota] : [];
-    return Array.isArray(predicate.agent) ? predicate.agent.concat(entities) : [predicate.agent].concat(entities);
+    const agent = normalizeToAgent(predicate.agent);
+    const entities = predicate.kind == "rate" ? [predicate.entityBase.entity] : predicate.kind == "quota" ? normalizeToAgent(predicate.agentQuota) : [];
+    return agent.concat(entities);
   };
   return {
     kind: "ratio",
@@ -1231,14 +1232,14 @@ function sumRule(items, b) {
     ;
     const ratios2 = items.map((d) => d.ratio);
     const ratio2 = areNumbers(ratios2) ? ratios2.reduce((out, d) => out += d, 0) : wrapToRatio(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
-    return items.every((d) => d.kind === "ratio") ? { kind: "ratio", whole: bases[0], ratio: ratio2, part: b.wholeAgent, asPercent: items[0].asPercent } : { kind: "comp-ratio", agentA: b.wholeAgent, agentB: bases[0], ratio: ratio2, asPercent: items[0].asPercent };
+    return items.every((d) => d.kind === "ratio") ? { kind: "ratio", whole: bases[0], ratio: ratio2, part: joinAgent(b.wholeAgent), asPercent: items[0].asPercent } : { kind: "comp-ratio", agentA: joinAgent(b.wholeAgent), agentB: bases[0], ratio: ratio2, asPercent: items[0].asPercent };
   } else if (items.every((d) => isQuantityPredicate(d))) {
     if (items.every((d) => isFrequencyPredicate(d))) {
       const values = items.map((d) => [d.quantity, d.baseQuantity]);
       const quantity = areTupleNumbers(values) ? values.reduce((out, [q, baseQ]) => out += q * baseQ, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity * x${i + 1}.baseQuantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
       return {
         kind: "cont",
-        agent: [b.wholeAgent],
+        agent: normalizeToAgent(b.wholeAgent),
         quantity,
         entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entityBase.entity,
         unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].entityBase.unit
@@ -1248,7 +1249,7 @@ function sumRule(items, b) {
       const quantity = areNumbers(values) ? values.reduce((out, d) => out += d, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
       if (items.every((d) => isRatePredicate(d))) {
         const { entity: entity3, entityBase } = items[0];
-        return { kind: "rate", agent: [b.wholeAgent], quantity, entity: entity3, entityBase, baseQuantity: 1 };
+        return { kind: "rate", agent: normalizeToAgent(b.wholeAgent), quantity, entity: entity3, entityBase, baseQuantity: 1 };
       } else {
         if (b.kind !== "sum-combine") {
           const itemsEntities = items.map((d) => d.entity);
@@ -1258,7 +1259,7 @@ function sumRule(items, b) {
         }
         return {
           kind: "cont",
-          agent: [b.wholeAgent],
+          agent: normalizeToAgent(b.wholeAgent),
           quantity,
           entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entity,
           unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].unit
@@ -1295,7 +1296,7 @@ function productRule(items, b) {
   const convertedEntity = entity3 != null ? toEntity(entity3) : { entity: "", unit: void 0 };
   return {
     kind: "cont",
-    agent: [b.wholeAgent],
+    agent: normalizeToAgent(b.wholeAgent),
     quantity: areNumbers(values) ? values.reduce((out, d) => out *= d, 1) : wrapToQuantity(items.map((d, i) => `y${i + 1}.quantity`).join(" * "), Object.fromEntries(items.map((d, i) => [`y${i + 1}`, d]))),
     entity: convertedEntity.entity,
     unit: convertedEntity.unit
@@ -1828,7 +1829,7 @@ function toRateRule(a, b, rate2) {
       unit: a.unit
     },
     entityBase: {
-      entity: b.kind === "cont" ? b.entity : b.agentQuota,
+      entity: b.kind === "cont" ? b.entity : joinAgent(b.agentQuota),
       unit: b.kind === "cont" ? b.unit : EmptyUnit
     },
     baseQuantity: rate2?.baseQuantity ?? 1
@@ -1840,7 +1841,7 @@ function inferToRateRule(a, b, rate2) {
     return {
       name: toRateRule.name,
       inputParameters: extractKinds(a, b, rate2),
-      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnom\u011Brn\u011B ${formatNumber(b.quantity)} kr\xE1t${result.baseQuantity !== 1 ? ` po ${formatNumber(result.baseQuantity)} ${formatEntity({ entity: b.kind === "cont" ? b.entity : b.agentQuota })}` : ""}`,
+      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnom\u011Brn\u011B ${formatNumber(b.quantity)} kr\xE1t${result.baseQuantity !== 1 ? ` po ${formatNumber(result.baseQuantity)} ${formatEntity({ entity: b.kind === "cont" ? b.entity : joinAgent(b.agentQuota) })}` : ""}`,
       result,
       options: [
         { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: rate2.baseQuantity === 1 },
@@ -1873,8 +1874,8 @@ function inferSolveEquationRule(a, b, last2) {
 function toQuotaRule(a, quota2) {
   return {
     kind: "quota",
-    agentQuota: singleAgent(quota2.agent),
-    agent: singleAgent(a.agent),
+    agentQuota: quota2.agent,
+    agent: a.agent,
     quantity: isNumber(a.quantity) && isNumber(quota2.quantity) ? Math.floor(a.quantity / quota2.quantity) : wrapToQuantity(`floor(a.quantity / quota.quantity)`, { a, quota: quota2 }),
     restQuantity: isNumber(a.quantity) && isNumber(quota2.quantity) ? a.quantity % quota2.quantity : wrapToQuantity(`a.quantity % quota.quantity`, { a, quota: quota2 })
   };
@@ -16324,30 +16325,31 @@ function trzby() {
 
 // src/math/MMA-2025/index.ts
 var MMA_2025_default = createLazyMap({
-  1: () => boruvky({
-    input: {
-      quantityEntity: {
-        entity: "hmotnost",
-        unit: "g",
-        groupSize: 50
-      },
-      priceEntity: {
-        entity: "korun"
-      },
-      agentA: {
-        label: "prodejce 1",
-        quantity: 650,
-        price: 150
-      },
-      agentB: {
-        label: "prodejce 2",
-        quantity: 0.5,
-        price: 120,
-        unit: "kg"
-      },
-      finalPrice: 600
-    }
-  }),
+  // 1: () => boruvky({
+  //   input: {
+  //     quantityEntity: {
+  //       entity: "hmotnost",
+  //       unit: "g",
+  //       groupSize: 50,
+  //     },
+  //     priceEntity: {
+  //       entity: "korun",
+  //     },
+  //     agentA: {
+  //       label: "prodejce 1",
+  //       quantity: 650,
+  //       price: 150,
+  //     },
+  //     agentB:
+  //     {
+  //       label: "prodejce 2",
+  //       quantity: 0.5,
+  //       price: 120,
+  //       unit: "kg"
+  //     },
+  //     finalPrice: 600,
+  //   }
+  // }),
   //3:()=> delitelnost(),
   5.1: () => spotrebaPaliva().beznePalivo,
   5.2: () => spotrebaPaliva().powerPalivo,
@@ -16358,53 +16360,6 @@ var MMA_2025_default = createLazyMap({
   20: () => vzestupHladinyVody(),
   21: () => vyrezKrychle()
 });
-function boruvky(inputs) {
-  const { quantityEntity, priceEntity, agentA, agentB, finalPrice } = inputs.input;
-  const skupinaAgent = `skupina po ${quantityEntity.groupSize}${quantityEntity.unit}`;
-  const skupina = cont(skupinaAgent, quantityEntity.groupSize, quantityEntity.entity, quantityEntity.unit);
-  const pocetSkupin = deduce(
-    cont(agentA.label, agentA.quantity, quantityEntity.entity, quantityEntity.unit),
-    skupina,
-    ctor("quota")
-  );
-  const pocetSkupinAgent = `${last(pocetSkupin).quantity} ${skupinaAgent}`;
-  const morePriceEntity = deduceAs(`za dra\u017E\u0161\xED cenu ${agentB.label}`)(
-    toCont(
-      pocetSkupin,
-      { agent: pocetSkupinAgent }
-    ),
-    deduce(
-      cont(agentB.label, agentB.price, priceEntity.entity),
-      deduce(
-        deduce(
-          cont(agentB.label, agentB.quantity, quantityEntity.entity, agentB.unit),
-          ctorUnit(quantityEntity.unit)
-        ),
-        skupina,
-        ctor("quota")
-      ),
-      ctor("rate")
-    )
-    //asCont({ agent: `13 dávek` })
-  );
-  return {
-    template: () => `Na trhu prod\xE1vaj\xED bor\u016Fvky dva prodejci.
-Prvn\xED prodejce prod\xE1v\xE1 1 litr za 150 korun. P\u0159itom 1 litr bor\u016Fvek m\xE1 hmotnost 650 g.
-Druh\xFD prodejce bor\u016Fvky v\xE1\u017E\xED a za 0,5 kg se zaplat\xED 120 korun.
-Z\xE1kazn\xEDk koupil levn\u011Bj\u0161\xED bor\u016Fvky celkem za 600 korun.
-
-Vypo\u010Dt\u011Bte, za kolik korun by z\xE1kazn\xEDk koupil dra\u017E\u0161\xED bor\u016Fvky
-o stejn\xE9 hmotnosti.`,
-    deductionTree: deduce(
-      morePriceEntity,
-      deduceAs(`za levn\u011Bj\u0161\xED cenu ${agentA.label}`)(
-        cont("celkem", finalPrice, priceEntity.entity),
-        cont(pocetSkupinAgent, agentA.price, priceEntity.entity),
-        ctor("comp-ratio")
-      )
-    )
-  };
-}
 function spotrebaPaliva() {
   const standard = "b\u011B\u017En\xE9 palivo";
   const power = "power";

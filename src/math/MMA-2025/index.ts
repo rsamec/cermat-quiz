@@ -3,31 +3,31 @@ import { createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "
 
 
 export default createLazyMap({
-  1: () => boruvky({
-    input: {
-      quantityEntity: {
-        entity: "hmotnost",
-        unit: "g",
-        groupSize: 50,
-      },
-      priceEntity: {
-        entity: "korun",
-      },
-      agentA: {
-        label: "prodejce 1",
-        quantity: 650,
-        price: 150,
-      },
-      agentB:
-      {
-        label: "prodejce 2",
-        quantity: 0.5,
-        price: 120,
-        unit: "kg"
-      },
-      finalPrice: 600,
-    }
-  }),
+  // 1: () => boruvky({
+  //   input: {
+  //     quantityEntity: {
+  //       entity: "hmotnost",
+  //       unit: "g",
+  //       groupSize: 50,
+  //     },
+  //     priceEntity: {
+  //       entity: "korun",
+  //     },
+  //     agentA: {
+  //       label: "prodejce 1",
+  //       quantity: 650,
+  //       price: 150,
+  //     },
+  //     agentB:
+  //     {
+  //       label: "prodejce 2",
+  //       quantity: 0.5,
+  //       price: 120,
+  //       unit: "kg"
+  //     },
+  //     finalPrice: 600,
+  //   }
+  // }),
   //3:()=> delitelnost(),
   5.1: () => spotrebaPaliva().beznePalivo,
   5.2: () => spotrebaPaliva().powerPalivo,

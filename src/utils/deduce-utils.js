@@ -839,7 +839,7 @@ function quotaRule(a, quota) {
   }
   return {
     kind: "cont",
-    agent: equalAgent(a.agent, quota.agentQuota) ? [quota.agent] : [quota.agentQuota],
+    agent: equalAgent(a.agent, quota.agentQuota) ? normalizeToAgent(quota.agent) : normalizeToAgent(quota.agentQuota),
     entity: a.entity,
     quantity: equalAgent(a.agent, quota.agentQuota) ? isNumber(a.quantity) && isNumber(quota.quantity) ? a.quantity * quota.quantity : wrapToQuantity(`a.quantity * quota.quantity`, { a, quota }) : isNumber(a.quantity) && isNumber(quota.quantity) ? a.quantity / quota.quantity : wrapToQuantity(`a.quantity / quota.quantity`, { a, quota })
   };
@@ -859,8 +859,9 @@ function inferQuotaRule(a, quota) {
 }
 function toPartWholeRatio(part, whole, asPercent) {
   const toAgent = (predicate) => {
-    const entities = predicate.kind == "rate" ? [predicate.entityBase.entity] : predicate.kind == "quota" ? [predicate.agentQuota] : [];
-    return Array.isArray(predicate.agent) ? predicate.agent.concat(entities) : [predicate.agent].concat(entities);
+    const agent = normalizeToAgent(predicate.agent);
+    const entities = predicate.kind == "rate" ? [predicate.entityBase.entity] : predicate.kind == "quota" ? normalizeToAgent(predicate.agentQuota) : [];
+    return agent.concat(entities);
   };
   return {
     kind: "ratio",
@@ -921,14 +922,14 @@ function sumRule(items, b) {
     ;
     const ratios = items.map((d) => d.ratio);
     const ratio = areNumbers(ratios) ? ratios.reduce((out, d) => out += d, 0) : wrapToRatio(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
-    return items.every((d) => d.kind === "ratio") ? { kind: "ratio", whole: bases[0], ratio, part: b.wholeAgent, asPercent: items[0].asPercent } : { kind: "comp-ratio", agentA: b.wholeAgent, agentB: bases[0], ratio, asPercent: items[0].asPercent };
+    return items.every((d) => d.kind === "ratio") ? { kind: "ratio", whole: bases[0], ratio, part: joinAgent(b.wholeAgent), asPercent: items[0].asPercent } : { kind: "comp-ratio", agentA: joinAgent(b.wholeAgent), agentB: bases[0], ratio, asPercent: items[0].asPercent };
   } else if (items.every((d) => isQuantityPredicate(d))) {
     if (items.every((d) => isFrequencyPredicate(d))) {
       const values = items.map((d) => [d.quantity, d.baseQuantity]);
       const quantity = areTupleNumbers(values) ? values.reduce((out, [q, baseQ]) => out += q * baseQ, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity * x${i + 1}.baseQuantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
       return {
         kind: "cont",
-        agent: [b.wholeAgent],
+        agent: normalizeToAgent(b.wholeAgent),
         quantity,
         entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entityBase.entity,
         unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].entityBase.unit
@@ -938,7 +939,7 @@ function sumRule(items, b) {
       const quantity = areNumbers(values) ? values.reduce((out, d) => out += d, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
       if (items.every((d) => isRatePredicate(d))) {
         const { entity, entityBase } = items[0];
-        return { kind: "rate", agent: [b.wholeAgent], quantity, entity, entityBase, baseQuantity: 1 };
+        return { kind: "rate", agent: normalizeToAgent(b.wholeAgent), quantity, entity, entityBase, baseQuantity: 1 };
       } else {
         if (b.kind !== "sum-combine") {
           const itemsEntities = items.map((d) => d.entity);
@@ -948,7 +949,7 @@ function sumRule(items, b) {
         }
         return {
           kind: "cont",
-          agent: [b.wholeAgent],
+          agent: normalizeToAgent(b.wholeAgent),
           quantity,
           entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entity,
           unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].unit
@@ -985,7 +986,7 @@ function productRule(items, b) {
   const convertedEntity = entity != null ? toEntity(entity) : { entity: "", unit: void 0 };
   return {
     kind: "cont",
-    agent: [b.wholeAgent],
+    agent: normalizeToAgent(b.wholeAgent),
     quantity: areNumbers(values) ? values.reduce((out, d) => out *= d, 1) : wrapToQuantity(items.map((d, i) => `y${i + 1}.quantity`).join(" * "), Object.fromEntries(items.map((d, i) => [`y${i + 1}`, d]))),
     entity: convertedEntity.entity,
     unit: convertedEntity.unit
@@ -1518,7 +1519,7 @@ function toRateRule(a, b, rate) {
       unit: a.unit
     },
     entityBase: {
-      entity: b.kind === "cont" ? b.entity : b.agentQuota,
+      entity: b.kind === "cont" ? b.entity : joinAgent(b.agentQuota),
       unit: b.kind === "cont" ? b.unit : EmptyUnit
     },
     baseQuantity: rate?.baseQuantity ?? 1
@@ -1530,7 +1531,7 @@ function inferToRateRule(a, b, rate) {
     return {
       name: toRateRule.name,
       inputParameters: extractKinds(a, b, rate),
-      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnom\u011Brn\u011B ${formatNumber(b.quantity)} kr\xE1t${result.baseQuantity !== 1 ? ` po ${formatNumber(result.baseQuantity)} ${formatEntity({ entity: b.kind === "cont" ? b.entity : b.agentQuota })}` : ""}`,
+      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnom\u011Brn\u011B ${formatNumber(b.quantity)} kr\xE1t${result.baseQuantity !== 1 ? ` po ${formatNumber(result.baseQuantity)} ${formatEntity({ entity: b.kind === "cont" ? b.entity : joinAgent(b.agentQuota) })}` : ""}`,
       result,
       options: [
         { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: rate.baseQuantity === 1 },
@@ -1563,8 +1564,8 @@ function inferSolveEquationRule(a, b, last2) {
 function toQuotaRule(a, quota) {
   return {
     kind: "quota",
-    agentQuota: singleAgent(quota.agent),
-    agent: singleAgent(a.agent),
+    agentQuota: quota.agent,
+    agent: a.agent,
     quantity: isNumber(a.quantity) && isNumber(quota.quantity) ? Math.floor(a.quantity / quota.quantity) : wrapToQuantity(`floor(a.quantity / quota.quantity)`, { a, quota }),
     restQuantity: isNumber(a.quantity) && isNumber(quota.quantity) ? a.quantity % quota.quantity : wrapToQuantity(`a.quantity % quota.quantity`, { a, quota })
   };

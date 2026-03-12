@@ -235,8 +235,8 @@ export type Frequency = {
 
 export type Quota = {
   kind: 'quota'
-  agentQuota: string,
-  agent: string
+  agentQuota: Agent
+  agent: Agent
   quantity: Quantity
   restQuantity: Quantity
 }
@@ -277,7 +277,7 @@ export type ProductCombine = Combine & {
   kind: 'product-combine'
 }
 type Combine = {
-  wholeAgent: string
+  wholeAgent: Agent | string
   wholeEntity: EntityBase
   partAgents?: string[]
 }
@@ -818,7 +818,7 @@ export function cylinderVolume(wholeAgent: string, unit: VolumeDim = "cm3") {
 export function baseAreaVolume(wholeAgent: string, unit: VolumeDim = "cm3") {
   return evalFormulaAsCont(formulaRegistry.volume.baseArea, x => x.V, wholeAgent, { entity: dim.volume.entity, unit });
 }
-export function productCombine(wholeAgent: string, wholeEntity: EntityDef, partAgents?: string[]): ProductCombine {
+export function productCombine(wholeAgent: Agent | string, wholeEntity: EntityDef, partAgents?: string[]): ProductCombine {
   return {
     kind: 'product-combine',
     wholeAgent,
@@ -853,8 +853,8 @@ export function frequency(agent: string, quantity: number, entity: EntityDef, en
   return { kind: 'frequency', agent, quantity, baseQuantity, entity: toEntity(entity), entityBase: toEntity(entityBase) }
 }
 
-export function quota(agent: string, agentQuota, quantity: number, restQuantity = 0): Quota {
-  return { kind: 'quota', agent, agentQuota, quantity, restQuantity }
+export function quota(agent: string | Agent, agentQuota, quantity: number, restQuantity = 0): Quota {
+  return { kind: 'quota', agent:normalizeToAgent(agent), agentQuota, quantity, restQuantity }
 }
 
 export function proportion(inverse: boolean, entities: [string, string]): Proportion {
@@ -1763,7 +1763,7 @@ function quotaRule(a: Container, quota: Quota): Container {
   }
   return {
     kind: 'cont',
-    agent: equalAgent(a.agent, quota.agentQuota) ? [quota.agent] : [quota.agentQuota],
+    agent: equalAgent(a.agent, quota.agentQuota) ? normalizeToAgent(quota.agent) : normalizeToAgent(quota.agentQuota),
     entity: a.entity,
     quantity: equalAgent(a.agent, quota.agentQuota)
       ? isNumber(a.quantity) && isNumber(quota.quantity) ? a.quantity * quota.quantity : wrapToQuantity(`a.quantity * quota.quantity`, { a, quota })
@@ -1786,12 +1786,13 @@ function inferQuotaRule(a: Container, quota: Quota): Question<Container> {
 
 function toPartWholeRatio(part: Container | Rate | Quota, whole: Container | Rate | Quota, asPercent?: boolean): PartWholeRatio {
   const toAgent = (predicate: Container | Rate | Quota) => {
+    const agent = normalizeToAgent(predicate.agent)
     const entities = predicate.kind == "rate"
       ? [predicate.entityBase.entity]
       : predicate.kind == "quota"
-        ? [predicate.agentQuota]
+        ? normalizeToAgent(predicate.agentQuota)
         : [];
-    return Array.isArray(predicate.agent) ? predicate.agent.concat(entities) : [predicate.agent].concat(entities);
+    return agent.concat(entities);
   }
   return {
     kind: 'ratio',
@@ -1862,8 +1863,8 @@ function sumRule(items: Container[] | PartWholeRatio[] | Rate[] | RatioCompariso
     const ratio = areNumbers(ratios) ? ratios.reduce((out, d) => out += d, 0) : wrapToRatio(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
 
     return items.every(d => d.kind === "ratio")
-      ? { kind: 'ratio', whole: bases[0], ratio, part: b.wholeAgent, asPercent: items[0].asPercent }
-      : { kind: 'comp-ratio', agentA: b.wholeAgent, agentB: bases[0], ratio, asPercent: items[0].asPercent }
+      ? { kind: 'ratio', whole: bases[0], ratio, part: joinAgent(b.wholeAgent), asPercent: items[0].asPercent }
+      : { kind: 'comp-ratio', agentA: joinAgent(b.wholeAgent), agentB: bases[0], ratio, asPercent: items[0].asPercent }
   }
   else if (items.every(d => isQuantityPredicate(d))) {
     if (items.every(d => isFrequencyPredicate(d))) {
@@ -1871,7 +1872,7 @@ function sumRule(items: Container[] | PartWholeRatio[] | Rate[] | RatioCompariso
       const quantity = areTupleNumbers(values) ? values.reduce((out, [q, baseQ]) => out += q * baseQ, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity * x${i + 1}.baseQuantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
       return {
         kind: 'cont',
-        agent: [b.wholeAgent],
+        agent: normalizeToAgent(b.wholeAgent),
         quantity,
         entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entityBase.entity,
         unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].entityBase.unit
@@ -1882,7 +1883,7 @@ function sumRule(items: Container[] | PartWholeRatio[] | Rate[] | RatioCompariso
       const quantity = areNumbers(values) ? values.reduce((out, d) => out += d, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
       if (items.every(d => isRatePredicate(d))) {
         const { entity, entityBase } = items[0];
-        return { kind: 'rate', agent: [b.wholeAgent], quantity, entity, entityBase, baseQuantity: 1 }
+        return { kind: 'rate', agent: normalizeToAgent(b.wholeAgent), quantity, entity, entityBase, baseQuantity: 1 }
       }
       else {
         if (b.kind !== 'sum-combine') {
@@ -1893,7 +1894,7 @@ function sumRule(items: Container[] | PartWholeRatio[] | Rate[] | RatioCompariso
         }
         return {
           kind: 'cont',
-          agent: [b.wholeAgent],
+          agent: normalizeToAgent(b.wholeAgent),
           quantity,
           entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entity,
           unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].unit
@@ -1945,7 +1946,7 @@ function productRule(items: Container[], b: ProductCombine | Product): Container
   const convertedEntity = entity != null ? toEntity(entity) : { entity: "", unit: undefined }
 
   return {
-    kind: 'cont', agent: [b.wholeAgent],
+    kind: 'cont', agent: normalizeToAgent(b.wholeAgent),
     quantity: areNumbers(values) ? values.reduce((out, d) => out *= d, 1) : wrapToQuantity(items.map((d, i) => `y${i + 1}.quantity`).join(" * "), Object.fromEntries(items.map((d, i) => [`y${i + 1}`, d]))),
     entity: convertedEntity.entity, unit: convertedEntity.unit
   }
@@ -2548,7 +2549,7 @@ function toRateRule(a: Container, b: Container | Quota, rate: Rate): Rate {
       unit: a.unit
     },
     entityBase: {
-      entity: b.kind === "cont" ? b.entity : b.agentQuota,
+      entity: b.kind === "cont" ? b.entity : joinAgent(b.agentQuota),
       unit: b.kind === "cont" ? b.unit : EmptyUnit,
     },
     baseQuantity: rate?.baseQuantity ?? 1
@@ -2560,7 +2561,7 @@ function inferToRateRule(a: Container, b: Container | Quota, rate: Rate): Questi
     return {
       name: toRateRule.name,
       inputParameters: extractKinds(a, b, rate),
-      question: `Rozděl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnoměrně ${formatNumber(b.quantity)} krát${result.baseQuantity !== 1 ? ` po ${formatNumber(result.baseQuantity)} ${formatEntity({ entity: b.kind === "cont" ? b.entity : b.agentQuota })}` : ''}`,
+      question: `Rozděl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnoměrně ${formatNumber(b.quantity)} krát${result.baseQuantity !== 1 ? ` po ${formatNumber(result.baseQuantity)} ${formatEntity({ entity: b.kind === "cont" ? b.entity : joinAgent(b.agentQuota) })}` : ''}`,
       result,
       options: [
         { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: rate.baseQuantity === 1 },
@@ -2600,8 +2601,8 @@ function toQuotaRule(a: Container, quota: Container): Quota {
 
   return {
     kind: 'quota',
-    agentQuota: singleAgent(quota.agent),
-    agent: singleAgent(a.agent),
+    agentQuota: quota.agent,
+    agent: a.agent,
     quantity: isNumber(a.quantity) && isNumber(quota.quantity) ? Math.floor(a.quantity / quota.quantity) : wrapToQuantity(`floor(a.quantity / quota.quantity)`, { a, quota }),
     restQuantity: isNumber(a.quantity) && isNumber(quota.quantity) ? a.quantity % quota.quantity : wrapToQuantity(`a.quantity % quota.quantity`, { a, quota })
   }

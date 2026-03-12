@@ -254,7 +254,7 @@ function rate(agent, quantity, entity, entityBase, baseQuantity = 1) {
   return { kind: "rate", agent: normalizeToAgent(agent), quantity, baseQuantity, entity: toEntity(entity), entityBase: toEntity(entityBase) };
 }
 function quota(agent, agentQuota, quantity, restQuantity = 0) {
-  return { kind: "quota", agent, agentQuota, quantity, restQuantity };
+  return { kind: "quota", agent: normalizeToAgent(agent), agentQuota, quantity, restQuantity };
 }
 function proportion(inverse, entities) {
   return { kind: "proportion", inverse, entities };
@@ -1043,7 +1043,7 @@ function quotaRule(a, quota3) {
   }
   return {
     kind: "cont",
-    agent: equalAgent(a.agent, quota3.agentQuota) ? [quota3.agent] : [quota3.agentQuota],
+    agent: equalAgent(a.agent, quota3.agentQuota) ? normalizeToAgent(quota3.agent) : normalizeToAgent(quota3.agentQuota),
     entity: a.entity,
     quantity: equalAgent(a.agent, quota3.agentQuota) ? isNumber(a.quantity) && isNumber(quota3.quantity) ? a.quantity * quota3.quantity : wrapToQuantity(`a.quantity * quota.quantity`, { a, quota: quota3 }) : isNumber(a.quantity) && isNumber(quota3.quantity) ? a.quantity / quota3.quantity : wrapToQuantity(`a.quantity / quota.quantity`, { a, quota: quota3 })
   };
@@ -1063,8 +1063,9 @@ function inferQuotaRule(a, quota3) {
 }
 function toPartWholeRatio(part, whole, asPercent) {
   const toAgent = (predicate) => {
-    const entities = predicate.kind == "rate" ? [predicate.entityBase.entity] : predicate.kind == "quota" ? [predicate.agentQuota] : [];
-    return Array.isArray(predicate.agent) ? predicate.agent.concat(entities) : [predicate.agent].concat(entities);
+    const agent = normalizeToAgent(predicate.agent);
+    const entities = predicate.kind == "rate" ? [predicate.entityBase.entity] : predicate.kind == "quota" ? normalizeToAgent(predicate.agentQuota) : [];
+    return agent.concat(entities);
   };
   return {
     kind: "ratio",
@@ -1125,14 +1126,14 @@ function sumRule(items, b) {
     ;
     const ratios2 = items.map((d) => d.ratio);
     const ratio2 = areNumbers(ratios2) ? ratios2.reduce((out, d) => out += d, 0) : wrapToRatio(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
-    return items.every((d) => d.kind === "ratio") ? { kind: "ratio", whole: bases[0], ratio: ratio2, part: b.wholeAgent, asPercent: items[0].asPercent } : { kind: "comp-ratio", agentA: b.wholeAgent, agentB: bases[0], ratio: ratio2, asPercent: items[0].asPercent };
+    return items.every((d) => d.kind === "ratio") ? { kind: "ratio", whole: bases[0], ratio: ratio2, part: joinAgent(b.wholeAgent), asPercent: items[0].asPercent } : { kind: "comp-ratio", agentA: joinAgent(b.wholeAgent), agentB: bases[0], ratio: ratio2, asPercent: items[0].asPercent };
   } else if (items.every((d) => isQuantityPredicate(d))) {
     if (items.every((d) => isFrequencyPredicate(d))) {
       const values = items.map((d) => [d.quantity, d.baseQuantity]);
       const quantity = areTupleNumbers(values) ? values.reduce((out, [q, baseQ]) => out += q * baseQ, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity * x${i + 1}.baseQuantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
       return {
         kind: "cont",
-        agent: [b.wholeAgent],
+        agent: normalizeToAgent(b.wholeAgent),
         quantity,
         entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entityBase.entity,
         unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].entityBase.unit
@@ -1142,7 +1143,7 @@ function sumRule(items, b) {
       const quantity = areNumbers(values) ? values.reduce((out, d) => out += d, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
       if (items.every((d) => isRatePredicate(d))) {
         const { entity, entityBase } = items[0];
-        return { kind: "rate", agent: [b.wholeAgent], quantity, entity, entityBase, baseQuantity: 1 };
+        return { kind: "rate", agent: normalizeToAgent(b.wholeAgent), quantity, entity, entityBase, baseQuantity: 1 };
       } else {
         if (b.kind !== "sum-combine") {
           const itemsEntities = items.map((d) => d.entity);
@@ -1152,7 +1153,7 @@ function sumRule(items, b) {
         }
         return {
           kind: "cont",
-          agent: [b.wholeAgent],
+          agent: normalizeToAgent(b.wholeAgent),
           quantity,
           entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entity,
           unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].unit
@@ -1189,7 +1190,7 @@ function productRule(items, b) {
   const convertedEntity = entity != null ? toEntity(entity) : { entity: "", unit: void 0 };
   return {
     kind: "cont",
-    agent: [b.wholeAgent],
+    agent: normalizeToAgent(b.wholeAgent),
     quantity: areNumbers(values) ? values.reduce((out, d) => out *= d, 1) : wrapToQuantity(items.map((d, i) => `y${i + 1}.quantity`).join(" * "), Object.fromEntries(items.map((d, i) => [`y${i + 1}`, d]))),
     entity: convertedEntity.entity,
     unit: convertedEntity.unit
@@ -1722,7 +1723,7 @@ function toRateRule(a, b, rate2) {
       unit: a.unit
     },
     entityBase: {
-      entity: b.kind === "cont" ? b.entity : b.agentQuota,
+      entity: b.kind === "cont" ? b.entity : joinAgent(b.agentQuota),
       unit: b.kind === "cont" ? b.unit : EmptyUnit
     },
     baseQuantity: rate2?.baseQuantity ?? 1
@@ -1734,7 +1735,7 @@ function inferToRateRule(a, b, rate2) {
     return {
       name: toRateRule.name,
       inputParameters: extractKinds(a, b, rate2),
-      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnom\u011Brn\u011B ${formatNumber(b.quantity)} kr\xE1t${result.baseQuantity !== 1 ? ` po ${formatNumber(result.baseQuantity)} ${formatEntity({ entity: b.kind === "cont" ? b.entity : b.agentQuota })}` : ""}`,
+      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnom\u011Brn\u011B ${formatNumber(b.quantity)} kr\xE1t${result.baseQuantity !== 1 ? ` po ${formatNumber(result.baseQuantity)} ${formatEntity({ entity: b.kind === "cont" ? b.entity : joinAgent(b.agentQuota) })}` : ""}`,
       result,
       options: [
         { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: rate2.baseQuantity === 1 },
@@ -1767,8 +1768,8 @@ function inferSolveEquationRule(a, b, last2) {
 function toQuotaRule(a, quota3) {
   return {
     kind: "quota",
-    agentQuota: singleAgent(quota3.agent),
-    agent: singleAgent(a.agent),
+    agentQuota: quota3.agent,
+    agent: a.agent,
     quantity: isNumber(a.quantity) && isNumber(quota3.quantity) ? Math.floor(a.quantity / quota3.quantity) : wrapToQuantity(`floor(a.quantity / quota.quantity)`, { a, quota: quota3 }),
     restQuantity: isNumber(a.quantity) && isNumber(quota3.quantity) ? a.quantity % quota3.quantity : wrapToQuantity(`a.quantity % quota.quantity`, { a, quota: quota3 })
   };
@@ -9366,6 +9367,9 @@ var __default9 = createLazyMap({
 // src/ctedu/2026-03-10/index.ts
 var __default10 = createLazyMap({
   1: () => procento(),
+  3.1: () => mozaika().a,
+  3.2: () => mozaika().b,
+  3.3: () => mozaika().c,
   4.1: () => symboly().plus,
   4.2: () => symboly().dohromady,
   4.3: () => symboly().hvezdicka
@@ -9382,18 +9386,85 @@ function procento() {
     )
   };
 }
+function mozaika() {
+  const entitySloupec = "sloupc\u016F";
+  const entityRadek = "\u0159\xE1dk\u016F";
+  const obrazec12 = "mozaika s 12 \u0159adami";
+  const korekce = "korekce okraje";
+  const sedeCtverce = "\u0161ed\xE9 \u010Dtverce";
+  const bileCtverce = "b\xEDl\xE9 \u010Dtverce";
+  const ctverec2 = "\u010Dtverec";
+  const okraje = "mozaika";
+  const mozajka = "mozaika";
+  const kratsiStrana = deduce(
+    deduce(
+      cont(okraje, 70, bileCtverce),
+      cont("korekce - rohy", 4, bileCtverce),
+      ctorDifference(okraje)
+    ),
+    cont(bileCtverce, 4, "stran"),
+    ctor("quota")
+  );
+  return {
+    a: {
+      deductionTree: deduce(
+        deduce(
+          cont(obrazec12, 12, entitySloupec),
+          cont(korekce, 2, entitySloupec),
+          ctorDifference(obrazec12)
+        ),
+        deduce(
+          cont(obrazec12, 13, entityRadek),
+          cont(korekce, 2, entityRadek),
+          ctorDifference(obrazec12)
+        ),
+        productCombine(obrazec12, { entity: sedeCtverce })
+      )
+    },
+    b: {
+      deductionTree: deduce(
+        toCont(kratsiStrana, { agent: okraje, entity: { entity: entitySloupec } }),
+        to(
+          last(kratsiStrana),
+          commonSense("2 zbyl\xE9 b\xEDl\xE9 \u010Dtverce odpov\xEDd\xE1j\xED +1 pro horn\xED a doln\xED okraj"),
+          cont(okraje, 17, entityRadek)
+        ),
+        productCombine(okraje, { entity: sedeCtverce })
+      )
+    },
+    c: {
+      deductionTree: deduce(
+        cont([mozajka, "celkem"], 380, ctverec2),
+        deduceAs("Hled\xE1me dv\u011B \u010D\xEDsla vedle sebe (\u0159ady a sloupce), jejich\u017E sou\u010Din je 380.")(
+          deduce(
+            cont(mozajka, 19, entitySloupec),
+            cont(korekce, 2, entitySloupec),
+            ctorDifference(mozajka)
+          ),
+          deduce(
+            cont(mozajka, 20, entityRadek),
+            cont(korekce, 2, entityRadek),
+            ctorDifference(mozajka)
+          ),
+          productCombine([mozajka, sedeCtverce], { entity: ctverec2 })
+        ),
+        ctorDifference(mozajka)
+      )
+    }
+  };
+}
 function symboly() {
   const entity = "symbol";
   const entityBase = "p\xEDpnut\xED";
-  const plusAgent = "sud\xE9 - plus";
-  const kratAgent = "lich\xE9 - kr\xE1t";
+  const plusAgent = "lich\xE9";
+  const kratAgent = "sud\xE9";
   const hvezdaAgent = "hv\u011Bzdi\u010Dka";
   const plusRate = rate(plusAgent, 2, entity, entityBase);
   const kratRate = rate(kratAgent, 2, entity, entityBase);
   const pipaniHvezdaRate = rate(hvezdaAgent, 3, entityBase, entity);
-  const pipnuti11 = "11. p\xEDpnut\xED";
-  const pipnuti90 = "90. p\xEDpnut\xED";
-  const situace9 = "situace";
+  const pipnuti11 = "obrazovka p\u0159i 11. p\xEDpnut\xED";
+  const pipnuti90 = "obrazovka p\u0159i 90. p\xEDpnut\xED";
+  const symbolHvezda9 = "obrazovka s 9 hv\u011Bzdi\u010Dkami";
   return {
     plus: {
       deductionTree: deduce(
@@ -9428,7 +9499,7 @@ function symboly() {
           toCont(
             deduce(
               deduce(
-                cont(hvezdaAgent, 9, entity),
+                cont([symbolHvezda9, hvezdaAgent], 9, entity),
                 pipaniHvezdaRate
               ),
               cont(kratAgent, 2, entityBase),
