@@ -45,10 +45,9 @@ jobs:
         with:
           path: ./dist
       - name: Publish
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: cermat-quiz
-          directory: dist
+          command: pages deploy dist --project-name=cermat-quiz
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
