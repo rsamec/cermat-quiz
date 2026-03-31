@@ -442,7 +442,7 @@ export type FormattingOptions = {
 
 export type EntityDef = string | EntityBase
 
-export type QuantityPredicate = Container | Comparison | ComparisonDiff |  Rate |  Quota | Frequency | Delta | Transfer
+export type QuantityPredicate = Container | Comparison | ComparisonDiff | Rate | Quota | Frequency | Delta | Transfer
 export type ComparisonActionPredicate = CompareAndPartEqual | AngleComparison | TriangleAngle | Phytagoras
 export type RatioPredicate = RatioComparison | PartWholeRatio
 export type ComplementActionPredicate = Complement | ComplementCompRatio
@@ -458,9 +458,9 @@ export type MetaPredicate = NthRule | NthPart | NthPartFactor | NthPartScale
 export type StructurePredicate = Sequence | Pattern | Tuple | Option
 
 export type TruePredicate = QuantityPredicate | RatioPredicate | RatiosPredicate | StructurePredicate
-export type ActionPredicate = OperationPredicate | ComparisonActionPredicate | ExpressionPredicate | ComplementActionPredicate 
+export type ActionPredicate = OperationPredicate | ComparisonActionPredicate | ExpressionPredicate | ComplementActionPredicate
 
-export type Predicate = TruePredicate | ActionPredicate | MetaPredicate | CommonSensePredicate 
+export type Predicate = TruePredicate | ActionPredicate | MetaPredicate | CommonSensePredicate
 export type PredicateKind = Pick<Predicate, 'kind'>
 // #endregion
 
@@ -498,13 +498,19 @@ export function half() {
 export function quater() {
   return counter("čtvrtina", 1 / 4, { asRatio: true })
 }
+export function third() {
+  return counter("třetina", 1 / 3, { asRatio: true })
+}
 export function halfProduct(agent: string) {
   return [half(), product(agent)]
 }
+
 export function quaterProduct(agent: string) {
   return [quater(), product(agent)]
 }
-
+export function thirdProduct(agent: string) {
+  return [third(), product(agent)]
+}
 export function product(wholeAgent: string, partAgents?: string[], asEntity?: EntityDef): Product {
   return {
     kind: "product",
@@ -854,7 +860,7 @@ export function frequency(agent: string, quantity: number, entity: EntityDef, en
 }
 
 export function quota(agent: string | Agent, agentQuota, quantity: number, restQuantity = 0): Quota {
-  return { kind: 'quota', agent:normalizeToAgent(agent), agentQuota, quantity, restQuantity }
+  return { kind: 'quota', agent: normalizeToAgent(agent), agentQuota, quantity, restQuantity }
 }
 
 export function proportion(inverse: boolean, entities: [string, string]): Proportion {

@@ -286,6 +286,18 @@ export function numbersGroup(numbers: { [key: string]: number }, { points}: addi
     } as const
 }
 
+export function mathExprGroup(numbers: { [key: string]: string }, { points}: additionalConfig = { points: 1 }) {
+    points = points ?? 1;
+    return {
+        verifyBy: { kind: 'equalMathExpression', args: numbers },
+        points,
+        inputBy: Object.keys(numbers).reduce((out: { [key: string]: ComponentFunctionSpec }, d) => {
+            out[d] = { kind: 'number' as const };
+            return out;
+        }, {})
+    } as const
+}
+
 
 export function sortedOptions(sortedOptions: string[], { points}: additionalConfig = { points: 1 }) {
     points = points ?? 1;

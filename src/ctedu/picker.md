@@ -23,10 +23,10 @@ const ctEduFolders = await FileAttachment("../ctedu/folders.json").json();
         <div class="big">${year}</div>
       </div>
       <div class="v-stack v-stack--l">
-        ${ctEduFolders.map(period => html`<div class="h-stack h-stack--m h-stack-items--center h-stack--wrap">
-              <a class="h-stack h-stack--s" href="./solution-${period}"><i class="fas fa-money-check"></i><span>${formatPeriod(period)}</span></a>
+        ${ctEduFolders.map(period => html`<div class="h-stack h-stack--m h-stack-items--center h-stack--wrap"><a class="h-stack h-stack--s" href="./solution-${period}"><i class="fas fa-money-check"></i><span>${formatPeriod(period)}</span></a>
               <a class="h-stack h-stack--s" href="./print-${period}"><i class="fa-solid fa-print"></i><span>tisk</span></a>            
               <a class="h-stack h-stack--s" href="./arch-${period}"><i class="fa-solid fa-key"></i><span>klíč</span></a>
+              <div class="h-stack h-stack--m h-stack-items--center h-stack--wrap">
               <button  popovertarget=popover-apps-${period}>Trénuj<i class="fas fa-caret-down"></i></button>
               <div id=popover-apps-${period} class="menu-items" popover>
                 <div class="v-stack v-stack--m">
@@ -42,6 +42,7 @@ const ctEduFolders = await FileAttachment("../ctedu/folders.json").json();
                   <a class="h-stack h-stack--s" href="./word-problems-${period}" title="Řešení slovních úloh (markdown)"><i class="fa fa-brands fa-markdown"></i><span>Postupy řešení - markdown</span></a>
                   <a download class="h-stack h-stack--s" href="./word-problems-${period}.tldr"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-chart-diagram"></i><span>Postupy řešení - tldraw</span><a>
                 </div>
+              </div>
               </div>                        
           <div>`
         )}
