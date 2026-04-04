@@ -130,7 +130,8 @@ export default {
       ]
     },
     { name: "ČT EDU", path: "/ctedu/picker" },
-    { name: "Nanečisto", path: "/cermat/picker" },
+    { name: "Cermat matika", path: "/cermat/picker-math" },
+    { name: "Cermat čeština", path: "/cermat/picker-cz" },
     { name: "Nastavení", path: "/user-settings" },
     { name: "Podmínky používání", path: "/app-usage" },
   ],
