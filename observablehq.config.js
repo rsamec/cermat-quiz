@@ -1,4 +1,4 @@
-import { formatSubject, formatCode, formatPeriod, formatPdfFileName } from './src/utils/quiz-string-utils.js';
+import { formatSubject, parseCode, formatCode, formatPeriod, formatPdfFileName } from './src/utils/quiz-string-utils.js';
 import { quizes, printedPages } from './src/utils/quiz-utils.js';
 import wordProblems from './src/math/word-problems.js';
 import { readdirSync, statSync } from 'fs';
@@ -59,6 +59,9 @@ const cermatFolders = readdirSync(cermatPath, { withFileTypes: true })
   .map(dirent => dirent.name);
 const cermatAssetsFiles = getFilesRecursive(`./src/cermat`).filter(d => d.endsWith(".png")).map(d => d.replace("src", ""));
 
+const cermatKeys = Object.keys(Object.groupBy(cermatFolders.map(d => parseCode(d)), d => `${d.subject}-${d.period}`))
+
+
 // See https://observablehq.com/framework/config for documentation.
 export default {
   // The app’s title; used in the sidebar and webpage titles.
@@ -72,26 +75,18 @@ export default {
   pages: [
     {
       open: true,
-      name: "Testy",
-      pages: quizes.map(d => ({
-        name: `${formatSubject(d.subject)} ${formatPeriod(d.period)}`,
-        path: `/quiz-picker-${d.subject}-${d.period}`,
+      name: "Cermat",
+      pages: cermatKeys.map(d => ({
+        name: `${formatSubject(d.split('-')[0])} ${formatPeriod(d.split('-')[1])}`,
+        path: `/cermat/picker-${d}`,
       }))
     },
-    {
-      open: false,
-      name: "Sestavení testu z úloh",
-      pages: quizes.map(d => ({
-        name: `${formatSubject(d.subject)} ${formatPeriod(d.period)}`,
-        path: `/quiz-sel-${d.subject}-${d.period}`,
-      }))
-    },
+    { name: "ČT EDU", path: "/ctedu/picker" },
     {
       open: false,
       name: "Návody",
       pages: [
         { name: "Data", path: "/inputs" },
-        { name: "Tisk", path: "/print" },
         { name: "Integrace", path: "/embedding" },
         { name: "AI", path: "/ai" },
         { name: "Mini aplikace", path: "/guides/math-trainer/index" },
@@ -109,10 +104,10 @@ export default {
       open: false,
       name: "Matematika",
       pages: [
-        { name: "Slovní úlohy", path: "/word-problems-summary" },
+        // { name: "Slovní úlohy", path: "/word-problems-summary" },
         { name: "Výrazy, konstrukční úlohy", path: "/math" },
         { name: "Matematizace", path: "/math-deduction" },
-        { name: "Analýza struktury slovních úloh", path: "/word-problems-structure" },
+        //{ name: "Analýza struktury slovních úloh", path: "/word-problems-structure" },
         { name: "Měření obtížnosti", path: "/word-problems-measure" },
         // { name: "Prostředí", path:"math-environments"},
       ]
@@ -128,10 +123,7 @@ export default {
         { name: "Říjen 2025", path: "/blog/2025-october/index" },
         { name: "Březen 2025", path: "/blog/2025-march/index" },
       ]
-    },
-    { name: "ČT EDU", path: "/ctedu/picker" },
-    { name: "Cermat matika", path: "/cermat/picker-math" },
-    { name: "Cermat čeština", path: "/cermat/picker-cz" },
+    },    
     { name: "Nastavení", path: "/user-settings" },
     { name: "Podmínky používání", path: "/app-usage" },
   ],
@@ -154,12 +146,12 @@ export default {
     .concat(['/components/quiz.js'])
     .concat(['/components/quiz-store.js'])
     .concat(['/components/math.js'])
-    .concat(['gpt-4o', 'o3-mini', 'gpt-5-mini', 'gemini-2.5-flash'].map(model => `/ai-results-${model}`))
+    // .concat(['gpt-4o', 'o3-mini', 'gpt-5-mini', 'gemini-2.5-flash'].map(model => `/ai-results-${model}`))
     //.concat('/blog/20250330')
-    .concat('/data/quiz-question.zip')
-    .concat('/data/quiz-questions.zip')
-    .concat('/data/word-problem.zip')
-    .concat('/data/word-problems.zip')
+    // .concat('/data/quiz-question.zip')
+    // .concat('/data/quiz-questions.zip')
+    // .concat('/data/word-problem.zip')
+    // .concat('/data/word-problems.zip')
     .concat(ctEduFolders.map(d => `/ctedu/print-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/arch-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/solution-${d}`))
@@ -175,36 +167,18 @@ export default {
     .concat(ctEduFolders.map(d => `/ctedu/calculator-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/color-expression-${d}`))
     .concat(cermatFolders.flatMap(d => ['form', 'chatstepper', 'calculator', 'colorexpression'].map(app => `/apps/cermat-${app}-${d}`)))
-    .concat(quizes.flatMap(d => d.codes).map(code => `/form-${code}`))
-    .concat(quizes.flatMap(d => d.codes).map(code => `/print-${code}`))
-    .concat(quizes.flatMap(d => d.codes).map(code => `/arch-${code}`))
-    .concat(quizes.flatMap(d => d.codes).map(code => `/data/arch-${code}.schema.json`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.md`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.json`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.tldr`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/math-answers-${code}.json`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/math-geometry-${code}.json`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).filter(code => code == "M9D-2025").map(code => `/notebook-${code}`))
-    .concat(['o1-mini', 'gpt-5-mini', 'gemini-2.5-flash'].flatMap(model => quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/ai-${model}-as-${code}`)))
+    //.concat(quizes.flatMap(d => d.codes).map(code => `/data/arch-${code}.schema.json`))
+    // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.md`))
+    // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.json`))
+    // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.tldr`))
+    // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/math-answers-${code}.json`))
+    // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/math-geometry-${code}.json`))
+    // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).filter(code => code == "M9D-2025").map(code => `/notebook-${code}`))
+    // .concat(['o1-mini', 'gpt-5-mini', 'gemini-2.5-flash'].flatMap(model => quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/ai-${model}-as-${code}`)))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/extract-${code}`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-answers-${code}`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-geometry-${code}`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solution-${code}`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-tree-${code}`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/chat-stepper-${code}`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/calc/calculator-${code}`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/calc/color-expression-${code}`))
-    // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solu-${code}`))
-    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-${code}`))
-    //.concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/word-problems-ai-${code}`))
-    .concat(wordProblemsKeyValuePairs.map(([code, id]) => `/word-problem-${code}-n-${id}`))
-    .concat(quizes.map(d => `/quiz-${d.subject}`))
-    .concat(quizes.map(d => `/quiz-print-${d.subject}`))
-    .concat(quizes.map(d => `/quiz-picker-${d.subject}-${d.period}`))
-    .concat(quizes.map(d => `/quiz-sel-${d.subject}-${d.period}`))
-    .concat(quizes.flatMap(_ => printedPages.map(p => `/assets/pdf/cermat-math/${formatPdfFileName(p)}.pdf`)))
-    .concat(quizes.flatMap(_ => printedPages.map(p => `/assets/pdf/cermat-cz/${formatPdfFileName(p)}.pdf`)))
+    // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-answers-${code}`))
+    // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-geometry-${code}`))
+    // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solution-${code}`))
+    .concat(quizes.flatMap(d => printedPages.map(p => `/assets/pdf/cermat-${d.subject}-${d.period}/${formatPdfFileName(p)}.pdf`)))
     .concat(quizes.flatMap(_ => printedPages.map(p => `/assets/pdf/ctedu/${formatPdfFileName(p)}.pdf`)))
-    .concat(quizes.flatMap(d => printedPages.map(p => `/assets/pdf/${d.subject}-${d.period}/${formatPdfFileName(p)}.pdf`)))
-
 };

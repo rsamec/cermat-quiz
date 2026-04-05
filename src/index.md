@@ -36,11 +36,18 @@ const mathMetricsCount = mathMetricsData.reduce((out,d) => {
 },{wordProblem:{count: 0, steps:0}, geometry:{count:0, steps:0}, expression:{count:0, steps:0}});
 
 
+const cermatFolders = await FileAttachment("./cermat/folders.json").json();
+const parsedCermatFolders = Object.entries(Object.groupBy(cermatFolders.map(d => parseCode(d)), d => d.subject)).map(([subject, codes]) => {
+  const periods = Object.groupBy(codes, d => d.period);
+  const tasks = Object.entries(periods).reduce((out, [period, codes]) => {
+    const tasksRate = quizes.find(q => q.period == period && q.subject == subject).tasksRate;
+    out+= tasksRate * codes.length;
+    return out;
+  }, 0);
+  return [subject, {total: codes.length, tasks, periods: Object.keys(periods)}]
+});
 
-const subjectWithPeriods = Object.fromEntries(d3.rollup(quizes, v => ({total: d3.sum(v, d => d.codes.length), tasks: d3.sum(v, d => d.codes.length * d.tasksRate), periods: v.map(d => d.period)}), d => d.subject))
 
-const subjects = ["math","cz","en","de"];
-const periods = ["4","6","8", "diploma"];
 
 const code = "M9D-2025";
 const notebookVideosData = await FileAttachment("./data/notebook-videos.json").json();
@@ -141,21 +148,21 @@ function plotWaffle(rawData) {
 ## Banka zadání úloh
 
 <div class="grid grid-cols-4" style="grid-auto-rows: auto;">
- ${subjects.map(subject => html`<div class="card">
+ ${parsedCermatFolders.map(([subject, data]) => html`<div class="card">
     <h2><strong>${formatSubject(subject)}</strong></h2>
     <div class="v-stack v-stack--s">
       <div class="h-stack h-stack--l">
         <div>
-          <span class="big">${subjectWithPeriods[subject].tasks}</span>
+          <span class="big">${data.tasks}</span>
           <span>úloh</span>
         </div>
         <div>
-          <span class="big">${subjectWithPeriods[subject].total}</span>
+          <span class="big">${data.total}</span>
           <span>testů</span>
         </div>
       </div>
       <div class="h-stack h-stack--m h-stack--wrap">
-      ${subjectWithPeriods[subject].periods.map(period => html`<a class="h-stack h-stack--xs" href="./quiz-picker-${subject}-${period}">${formatPeriod(period)}<span><span></a>
+      ${data.periods.map(period => html`<a class="h-stack h-stack--xs" href="./cermat/picker-${subject}-${period}">${formatPeriod(period)}<span><span></a>
         `)}
       </div>
     </div>
