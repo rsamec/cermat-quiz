@@ -179,6 +179,6 @@ export default {
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-answers-${code}`))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-geometry-${code}`))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/solution-${code}`))
-    .concat(quizes.flatMap(d => printedPages.map(p => `/assets/pdf/cermat-${d.subject}-${d.period}/${formatPdfFileName(p)}.pdf`)))
-    .concat(quizes.flatMap(_ => printedPages.map(p => `/assets/pdf/ctedu/${formatPdfFileName(p)}.pdf`)))
+    .concat(cermatKeys.map(key => printedPages.map(p => `/assets/pdf/cermat-${key}/${formatPdfFileName(p)}.pdf`)))
+    .concat(printedPages.map(p => `/assets/pdf/ctedu/${formatPdfFileName(p)}.pdf`))
 };
