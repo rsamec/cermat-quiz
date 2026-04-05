@@ -52,11 +52,8 @@ const defaultProvider$ = localStorageSubject(defaultProviderCode,providersConfig
 // const baseMediaPublic = "http://127.0.0.1:8080/"
 const code = observable.params.code;
 const content = await FileAttachment(`./${observable.params.code}/index.md`).text();
-//const notebookArtifactsAttachment = await FileAttachment(`../notebook-lm/data/artifacts-${observable.params.code}.json`);
-let notebookArtifacts = {}
-// if (!isNaN(notebookArtifactsAttachment.size)){
-//   notebookArtifacts =  await notebookArtifactsAttachment.json();
-// }
+const notebookArtifacts = await FileAttachment(`./artifacts-${observable.params.code}.json`).json();
+  
 const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${baseUrl}/${code}`])
 const quiz = parseQuiz(rawContent);
 const ids = quiz.questions.map(d => d.id);
