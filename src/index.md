@@ -135,7 +135,7 @@ function plotWaffle(rawData) {
 }
 
 ```
-**Smyslem** tohoto projektu je **zdarma** poskytnout [strukturovaná data](/inputs) pro tvorbu vlastních výukových materiálů (<a href="./notebook-M9D-2025" target="_blank">videa</a>, <a href="./quiz-picker-math-4" targe="_blank">audia</a>, pracovní listy, kvízů, kartiček, <a href="/math-trainer">aplikací</a>,...). 
+**Smyslem** tohoto projektu je **zdarma** poskytnout [strukturovaná data](/inputs) pro tvorbu vlastních výukových materiálů (<a href="./notebook-M9D-2025" target="_blank">videa</a>, <a href="./picker-math-4" targe="_blank">audia</a>, pracovní listy, kvízů, kartiček, <a href="/math-trainer">aplikací</a>,...). 
 
 <div class="tip" label="Tvorba výukových materiálu">
     
