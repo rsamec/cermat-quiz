@@ -51,13 +51,13 @@ const ctEduPath = resolve(`./src/ctedu`);
 const ctEduFolders = readdirSync(ctEduPath, { withFileTypes: true })
   .filter(dirent => dirent.isDirectory())
   .map(dirent => dirent.name);
-const ctEduAssetsFiles = getFilesRecursive(`./src/ctedu`).filter(d => d.endsWith(".png")).map(d => d.replace("src", ""));
+const ctEduAssetsFiles = getFilesRecursive(`./src/ctedu`).filter(d => d.endsWith(".png") || d.endsWith(".jpeg")).map(d => d.replace("src", ""));
 
 const cermatPath = resolve(`./src/cermat`);
 const cermatFolders = readdirSync(cermatPath, { withFileTypes: true })
   .filter(dirent => dirent.isDirectory())
   .map(dirent => dirent.name);
-const cermatAssetsFiles = getFilesRecursive(`./src/cermat`).filter(d => d.endsWith(".png")).map(d => d.replace("src", ""));
+const cermatAssetsFiles = getFilesRecursive(`./src/cermat`).filter(d => d.endsWith(".png") || d.endsWith(".jpeg")).map(d => d.replace("src", ""));
 
 const cermatKeys = Object.keys(Object.groupBy(cermatFolders.map(d => parseCode(d)), d => `${d.subject}-${d.period}`))
 
