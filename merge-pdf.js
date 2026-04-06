@@ -124,7 +124,7 @@ const args = process.argv.slice(2);
 const directoryPath = args[0] || './generated'; // Default directory if not provided
 
 const periods = ['4','6','8','diploma'];
-const dirs = ['ctedu', ...periods.flatMap(d => `cermat-math-${d}`), ...periods.flatMap(d => `cermat-cz-${d}`)]
+const dirs = ['ctedu', ...periods.flatMap(d => `cermat-math-${d}`), ...periods.flatMap(d => `cermat-cz-${d}`), ...['en', 'de'].flatMap(d => `cermat-${d}-diploma`)]
 // Function to reduce information
 async function processAll(subDirs) {
   const output = [];

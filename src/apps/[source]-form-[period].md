@@ -14,11 +14,11 @@ import { fromEvent, combineLatest, BehaviorSubject } from 'rxjs';
 import { map, startWith, tap } from  'rxjs/operators';
 import { QuizStore } from '../utils/quiz-store.js';
 import * as a from "npm:@appnest/masonry-layout";
-import { normalizeImageUrlsToAbsoluteUrls } from "../utils/quiz-string-utils.js";
+import { normalizeImageUrlsToAbsoluteUrls, getQuestionIds, parseCode } from "../utils/quiz-string-utils.js";
 
-function getQuestionIds(metadata) {
-    return Object.keys(metadata.children).map(d => parseInt(d, 10))    
-}
+// function getQuestionIds(metadata) {
+//     return Object.keys(metadata.children).map(d => parseInt(d, 10))    
+// }
  
 const metadata = await FileAttachment(`../${observable.params.source}/${observable.params.period}/key.json`).json();
 const rawContentData = await FileAttachment(`../${observable.params.source}/${observable.params.period}/index.md`).text();
@@ -69,7 +69,7 @@ const state = {
 const parameters = ({
   questions: [[code].concat(getQuestionIds(metadata,code))],
   quizQuestionsMap,
-  subject:'math',
+  subject: parseCode(code).subject,
   displayOptions: {useFormControl:true,useAIHelpers:false,useGoToDetail: false, useResources:false},
   mathResourcesMap: {},
 })
