@@ -8,18 +8,18 @@ import { baseUrl, formatCode } from "./utils.js";
 import { parseQuiz } from '../utils/quiz-parser.js';
 import { jsonToMarkdownChat } from "../utils/deduce-utils.js";
 
-const ctEduPath = path.resolve(`./src/cermat`);
+const cermatPath = path.resolve(`./src/cermat`);
 
 async function outputMd(code){
 
-  const content = await readTextFromFile(path.resolve(ctEduPath, `${code}/index.md`));        
+  const content = await readTextFromFile(path.resolve(cermatPath, `${code}/index.md`));        
   const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${baseUrl}/${code}`])
   
   const quiz = parseQuiz(rawContent);
   
   const ids = quiz.questions.map(d => d.id);
   
-  const wordProblem = wordProblems[code];
+  const wordProblem = wordProblems[code] ?? {};
   const output = `# ${formatCode(code)}
   
   ${ids.map(id => {
@@ -44,7 +44,7 @@ ${jsonToMarkdownChat(value.deductionTree).join("")}`).join("")} \n---`:''}).join
 
 async function main() {
 
-    const folders = fs.readdirSync(ctEduPath, { withFileTypes: true })
+    const folders = fs.readdirSync(cermatPath, { withFileTypes: true })
         .filter(dirent => dirent.isDirectory())
         .map(dirent => dirent.name)
         .filter(d => parseCode(d).subject == "math");

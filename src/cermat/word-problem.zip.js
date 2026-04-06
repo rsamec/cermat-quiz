@@ -35,20 +35,20 @@ ${jsonToMarkdownChat(value.deductionTree).join("")}`).join("")} \n---` : ''}
 
 async function main() {
 
-    const ctEduPath = path.resolve(`./src/cermat`);
+    const cermatPath = path.resolve(`./src/cermat`);
 
-    const folders = fs.readdirSync(ctEduPath, { withFileTypes: true })
+    const folders = fs.readdirSync(cermatPath, { withFileTypes: true })
         .filter(dirent => dirent.isDirectory())
         .map(dirent => dirent.name)
         .filter(d => parseCode(d).subject == "math");
 
     const zip = new JSZip();
     for await (const code of folders) {
-        const content = await readTextFromFile(path.resolve(ctEduPath, `${code}/index.md`));
+        const content = await readTextFromFile(path.resolve(cermatPath, `${code}/index.md`));
         const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${baseUrl}/${code}`])
         const quiz = parseQuiz(rawContent);
 
-        const wordProblem = wordProblems[code];
+        const wordProblem = wordProblems[code] ?? {};        
         const wordProblemKeys = Object.keys(wordProblem).map(d => d.split('.')[0]).filter(unique);
         const questions = quiz.questions.map(d => d.id).filter(d => wordProblemKeys.includes(d.toString()));
         
