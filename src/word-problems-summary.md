@@ -15,7 +15,7 @@ style: /assets/css/word-problems.css
 ```js
 import { formatCode, parseCode, formatPeriod, formatShortCodeAlt, formatShortCode, formatVersion} from './utils/quiz-string-utils.js';
 import { unique, download } from "./utils/common-utils.js";
-import wordProblems from './math/word-problems.js';
+import wordProblems from './cermat/word-problems.js';
 
 import {categories, predicatesCategories, rulesCategories} from './utils/quiz-utils.js';
 import { renderChatStepper, useInput } from './utils/deduce-chat.js';
@@ -29,8 +29,6 @@ const questionsMaxLimit = 25;
 
 const quizQuestionsMap = await FileAttachment(`./data/quiz-math.json`).json();
 
-
-const quizGeneratedCategories = await FileAttachment("./data/quiz-categories-gemini-2.5-flash.json").json();
 const wordProblemsMetrics = await FileAttachment("./data/word-problems-metrics.json").json();
 
 const markdownParser = parser.configure([]);
@@ -39,21 +37,20 @@ function makeQuizBuilder(normalizedQuiz) {
   return getQuizBuilder(parsedTree, normalizedQuiz,{});
 }
 
-const filteredQuizCategories = Object.entries(quizGeneratedCategories).flatMap(([code, value]) => {
-  const wordProblem = wordProblems[code] ?? {};  
+const filteredQuizCategories = Object.entries(wordProblems).flatMap(([code, codeProblems]) => {
   
-  const parsedCode = parseCode(code);      
+  const parsedCode = parseCode(code);
   const questionMap = quizQuestionsMap
   
   const quiz = questionMap[code];
   if (quiz == null) return [];
   const builder = makeQuizBuilder(quiz.rawContent)
-  
-  return value.questions.map((d,i) => {
-
-    const metrics = wordProblemsMetrics[code]?.[d.id]; 
+  console.log(builder.questions)
+  return Object.entries(Object.groupBy(Object.entries(codeProblems), ([id]) => id.split('.')[0])).map(([groupKey, problems]) => {
+    const metrics = wordProblemsMetrics[code]?.[groupKey]; 
       return {
-        ...d,
+        id: groupKey,
+        name: builder.questions.find(q => q.id == groupKey)?.title ?? groupKey,
         code,
         year: parsedCode.year,
         period: parsedCode.period,
@@ -65,14 +62,7 @@ const filteredQuizCategories = Object.entries(quizGeneratedCategories).flatMap((
         formulas: metrics?.formulas ?? [],
         hasSolution: metrics != null,
         builder,      
-        deductionTrees: wordProblem[d.id] != null 
-          ? [wordProblem[d.id].deductionTree] 
-          : [1, 2, 3, 4]
-          .map(i => `${d.id}.${i}`)
-          .map(subId => wordProblem[subId])
-          .filter(Boolean)
-          .map(d => d.deductionTree)
-
+        deductionTrees: problems.map(([id, value]) => value.deductionTree)
       };
     })
   }
@@ -219,7 +209,6 @@ const search = view(Inputs.search(filtered,{placeholder: "Vyhledej úlohy…"}))
 const selected = view(Inputs.table(search,{  
   columns: [
     "name",
-    "summary",
     "year",
     "period",
     "version",
@@ -227,8 +216,7 @@ const selected = view(Inputs.table(search,{
   header: {
     year:"Rok",
     period: "Period",
-    name: "Název",
-    summary: "Popis",
+    name: "Úloha",
     version: "Verze",
   },
   width: {
@@ -238,7 +226,7 @@ const selected = view(Inputs.table(search,{
     version: 70,   
   },
   format: {
-    name: (d,i,o) => html`<a href="./word-problem-${o[i].code}-n-${o[i].id}" target="_blank">${d}</a>`,
+    name: (d,i,o) => html`<a href="./cermat/solution-${o[i].code}#${o[i].id}" target="_blank">${d}</a>`,
     period: d => html`${formatPeriod(d)}`
   }
 }))

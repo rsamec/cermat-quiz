@@ -14,8 +14,6 @@ const {
 });
 
 const content = await readTextFromFile(path.resolve(`./src/cermat`, `${code}/index.md`));        
-
-// const rawContent = content;
 const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${relativeBaseUrl}/${code}`])
 const quiz = parseQuiz(rawContent);
 

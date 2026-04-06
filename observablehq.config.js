@@ -104,10 +104,10 @@ export default {
       open: false,
       name: "Matematika",
       pages: [
-        // { name: "Slovní úlohy", path: "/word-problems-summary" },
+        { name: "Slovní úlohy", path: "/word-problems-summary" },
         { name: "Výrazy, konstrukční úlohy", path: "/math" },
         { name: "Matematizace", path: "/math-deduction" },
-        //{ name: "Analýza struktury slovních úloh", path: "/word-problems-structure" },
+        // { name: "Analýza struktury slovních úloh", path: "/word-problems-structure" },
         { name: "Měření obtížnosti", path: "/word-problems-measure" },
         // { name: "Prostředí", path:"math-environments"},
       ]
@@ -174,7 +174,7 @@ export default {
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/math-answers-${code}.json`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/math-geometry-${code}.json`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).filter(code => code == "M9D-2025").map(code => `/notebook-${code}`))
-    // .concat(['o1-mini', 'gpt-5-mini', 'gemini-2.5-flash'].flatMap(model => quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/ai-${model}-as-${code}`)))
+    // .concat(['o1-mini', 'gpt-5-mini', 'gemini-2.5-flash'].flatMap(model => cermatFolders.filter(d => d.startsWith("M")).map(code => `/cermat/ai-${model}-as-${code}`)))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/extract-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-answers-${code}`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/math-geometry-${code}`))

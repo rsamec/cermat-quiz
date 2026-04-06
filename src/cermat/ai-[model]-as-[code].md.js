@@ -1,26 +1,25 @@
 import { parseArgs } from "node:util";
 import path from 'path';
-import mdPlus from './utils/md-utils.js';
-import { parseQuiz } from './utils/quiz-parser.js';
-import {readJsonFromFile} from './utils/file.utils.js';
-import { baseDomainPublic, parseCode, normalizeImageUrlsToAbsoluteUrls, formatCode, text, normalizeLatex } from './utils/quiz-string-utils.js';
+import mdPlus from '../utils/md-utils.js';
+import { parseQuiz } from '../utils/quiz-parser.js';
+import { readJsonFromFile, readTextFromFile } from '../utils/file.utils.js';
+import { normalizeImageUrlsToAbsoluteUrls, normalizeLatex } from '../utils/quiz-string-utils.js';
+import { formatCode, relativeBaseUrl } from "./utils.js";
+
+
 const {
-  values: { 
+  values: {
     code, model
- }
+  }
 } = parseArgs({
-  options: { 
-    code: { type: "string"},
-    model: {type: "string"}
+  options: {
+    code: { type: "string" },
+    model: { type: "string" }
   }
 });
 
-const d = parseCode(code);
-const baseUrl = `${baseDomainPublic}/${d.subject}/${d.period}/${code}`
-const content = await text(`${baseUrl}/index.md`);
-
-
-const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [baseUrl])
+const content = await readTextFromFile(path.resolve(`./src/cermat`, `${code}/index.md`));
+const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${relativeBaseUrl}/${code}`])
 const quiz = parseQuiz(rawContent);
 
 const filePath = path.resolve(`./src/data/quiz-answers-detail-${model}.json`);
@@ -74,17 +73,17 @@ details.solutions > summary > h1, h2 {
 
 ${answers == null ? ` <div class="warning" label="Upozornění">
   K tomuto testu v tuto chvíli neexistují žádná řešení.
-</div>`:''}
+</div>`: ''}
 
 
 <div class="root">${ids.map(id => {
 
 
-const template = quiz.content([id],{ ids, render:'content'});
-  
+  const template = quiz.content([id], { ids, render: 'content' });
 
-return `
-${mdPlus.renderToString(template, {docId:`${code}-${id}` })}
+
+  return `
+${mdPlus.renderToString(template, { docId: `${code}-${id}` })}
 
 ${answers != null ? `
 <details class="solutions" open>
@@ -92,7 +91,7 @@ ${answers != null ? `
 <div class="break-inside-avoid-column">
 <div class="card">
 <div class="h-stack h-stack--end"><div class="badge badge--danger">Neověřeno</div></div>
-${answers[id] != null ? mdPlus.renderToString(normalizeLatex(answers[id])): 'N/A'}
-</div></details>`:''}
+${answers[id] != null ? mdPlus.renderToString(normalizeLatex(answers[id])) : 'N/A'}
+</div></details>`: ''}
 `}).join('')}
 </div></div>`)
