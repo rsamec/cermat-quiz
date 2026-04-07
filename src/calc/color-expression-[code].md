@@ -78,7 +78,7 @@ display(html`<div>
             
             const {depth, width, predicates, rules} = computeTreeMetrics(hackedDTree); 
             const ruleNames = rules.map(d => d.name);
-            if (['convertRatioCompareToRatiosRule','convertToPartToPartRatios', 'nthTermExpressionRule', 'nthTermRule','solveEquationRule',
+            if (['convertRatioCompareToRatiosRule','convertToPartToPartRatios', 'nthTermExpressionRule', 'nthTermRule','solveEquationRule', 'gcdRule', 'lcdRule','toRatiosRule',
              'convertRatioCompareToTwoPartRatioRule', 'convertRatioCompareToRatioRule','commonSense', 'alligationRule', 'partEqualRule'].some(d => ruleNames.includes(d))) return '';
             
             const finalDepth = depth - 1;
