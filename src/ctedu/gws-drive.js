@@ -4,16 +4,22 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import JSZip from "jszip";
+import { parseArgs } from "node:util";
+
+const {
+  values: { zip }
+} = parseArgs({
+  options: { zip: { type: "string" } }
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const __tempDir = "./generated";
-const __zipPath = path.join(__dirname, "./src/.observablehq/cache/ctedu");
 
-const directories = fs.readdirSync(path.join(__dirname, "./src/ctedu"), { withFileTypes: true })
+const directories = fs.readdirSync(path.join(__dirname), { withFileTypes: true })
   .filter(entry => entry.isDirectory())
-  .map(entry => entry.name);
-
+  .map(entry => entry.name)
+  .filter(d => d === "2026-03-31")
 
 
 async function extractZip(zipPath, outputDir) {
@@ -55,10 +61,10 @@ function deleteFolder(folder){
     }
 } 
 
-await extractZip(path.join(__zipPath,"word-problem.zip"),__tempDir);
+await extractZip(path.join(__dirname, zip),__tempDir);
 
 // Output directory
-const parentId = "1ew4zWYbf-v1__bBTird9cTJzNl0G0Ero"
+const parentId = "10qqoSQOXGeOUV6d_xCeiA2xV65bbD8qI"
 for (const period of directories) {
      
     const cmd = `gws drive files create --json '{"name": "${period}", "mimeType": "application/vnd.google-apps.folder", "parents": ["${parentId}"]}'`

@@ -5115,8 +5115,8 @@ function toCompareRule(a, b) {
   }
   return {
     kind: "comp",
-    agentB: complementSingleAgent(b.agent, [a.agent]),
-    agentA: complementSingleAgent(a.agent, [b.agent]),
+    agentB: complementSingleAgent(normalizeToAgent(b.agent), [a.agent]),
+    agentA: complementSingleAgent(normalizeToAgent(a.agent), [b.agent]),
     quantity: isNumber2(a.quantity) && isNumber2(b.quantity) ? a.quantity - b.quantity : wrapToQuantity(`a.quantity - b.quantity`, { a, b }),
     ...aEntity
   };
