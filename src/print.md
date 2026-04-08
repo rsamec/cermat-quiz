@@ -14,7 +14,7 @@ import {formatSubject, formatPeriod} from './utils/quiz-string-utils.js';
 const pdfs = await FileAttachment(`./data/pdf.json`).json();
 
 function formatSubjectAndPeriod (value) {
-  const [subject,period] = value.split('-')
+  const [source, subject,period] = value.split('-')
   return `${formatSubject(subject)} ${formatPeriod(period)}`
 }
 

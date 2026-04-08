@@ -13,10 +13,10 @@ async function getOutput(subDir) {
   return outputData;
 }
 
-const subDirs = quizes.map(({ subject, period }) => `${subject}-${period}`);
+const subDirs = quizes.map(({ subject, period }) => `cermat-${subject}-${period}`);
 Promise.all(subDirs.map(d => getOutput(d))).then(response => {
   const res = response
-    .flatMap((d, i) => Object.entries(d).map(([file, values]) => ({ file, values, directory: subDirs[i] })))
+    .flatMap((d, i) => Object.entries(d).map(([file, values]) => ({ file, values, directory: subDirs[i],  })))
     .flatMap(d => d.values.map(([fileName, count]) => ({ ...d, fileName, count })))
 
   process.stdout.write(JSON.stringify(res));

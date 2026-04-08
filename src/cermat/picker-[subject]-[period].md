@@ -8,13 +8,25 @@ style: '/assets/css/quiz-picker.css'
 ---
 
 ```js
-import { parseCode, formatSubject, formatPeriod,formatVersionByCode, formatShortCode } from '../utils/quiz-string-utils.js';
+import { parseCode, formatSubject, formatPeriod,formatVersionByCode, formatShortCode, baseMediaPublic, normalizeAssetFileName } from '../utils/quiz-string-utils.js';
 import { formatCode } from './utils.js'
 
 const folders = await FileAttachment("../cermat/folders.json").json();
 const subject = observable.params.subject;
 const period = observable.params.period;
 const parsedCodes = Object.entries(Object.groupBy(folders.map(d => parseCode(d)).filter(d => d.subject === subject && d.period == period), d => d.year));
+
+const assetsData = await FileAttachment("/data/word-problems-assets.json").json();
+const assets = assetsData.filter((({code}) => parseCode(code).period == observable.params.period)).map(({code, explainer, deepDive}) => {  
+  const {period} = parseCode(code);
+  return {
+    video: `${baseMediaPublic}/${period}/${explainer}`,
+    audio: `${baseMediaPublic}/${period}/${normalizeAssetFileName(deepDive)}`,
+    name: `${formatCode(code)}`,
+    description: deepDive.slice(0,-4),
+    id: code,
+  }
+})
 
 ```
 <!-- Cards with big numbers -->
@@ -55,6 +67,24 @@ const parsedCodes = Object.entries(Object.groupBy(folders.map(d => parseCode(d))
     </div>
   </div>`
   )}
+</div>
+
+
+${assets.length > 0 ? html`<h2>AI Artifacts - Podcasts</h2><div class="warning" label="Vygenerovány pomocí NotebookLM"><b>Minimalizace chyb</b> je dosaženo tak, že se vedle zadání úlohy vždy předává i <b>řešení úlohy</b> ve formě heslovitého rozboru řešení úlohy.</div>`:''}
+
+
+
+
+<div class="grid grid-cols-4">
+${assets.map(({ video, name, id, audio, description }, i) => html`<div class="carousel__slide" data-label=a${i}>
+    <figure class="parallax-item" role="tabpanel">
+    <figcaption style="padding:10px 0px">    
+      <h2>${name}</h2>
+      <span>${description}</span>
+     </figcaption> 
+       <audio src=${audio} playsinline controls style="min-width: 100px;" preload="metadata"></audio>     
+    </figure>
+  </div>`)}
 </div>
 
 

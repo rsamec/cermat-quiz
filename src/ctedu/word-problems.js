@@ -9950,7 +9950,7 @@ function papir() {
       deduce(
         contLength("\u0161\xED\u0159ka", 80),
         contLength("d\xE9lka", 208),
-        gcd("nejv\u011Bt\u0161\xED spole\u010Dn\xFD n\xE1sobek", ...dim2.lengths)
+        gcd("nejv\u011Bt\u0161\xED mo\u017En\xFD \u010Dtverec", ...dim2.lengths)
       ),
       evalFormulaAsCont(formulaRegistry.circumReference.square, (x) => x.o, "\u010Dtverec", dim2.length)
     )
@@ -10025,9 +10025,13 @@ function obdelnik4() {
 function miska() {
   const entity = "kuli\u010Dka";
   const rozdil = "rozd\xEDl";
+  const cerneNavic = toPredicate(deduce(
+    cont(["celkem", "\u010Dern\xE9 nav\xEDc"], 6, entity),
+    ratio("celkem", "t\u0159etina", 1 / 3)
+  ), (node) => comp("\u010Dern\xE9", "b\xEDl\xE9", node.quantity, entity));
   const bila = deduce(
     cont(rozdil, 12, entity),
-    comp("\u010Dern\xE9", "b\xEDl\xE9", 2, entity),
+    cerneNavic,
     ctor("comp-part-eq")
   );
   return {

@@ -139,7 +139,7 @@ function plotWaffle(rawData) {
 
 <div class="tip" label="Tvorba výukových materiálu">
     
-  Nejjednodušší způsob jak vytvořit **vyukové materiály na míru** na pár kliků je stáhnout **balíčky zadání a řešení úloh** ve formátu markdown <a download href="/data/word-problem.zip"  title="Řešení slovních úloh "><i class="fa fa-brands fa-markdown"></i><span> zde</span></a> a nahrát do aplikace, např. <a href="https://notebooklm.google.com/" target="_blank">NotebookLM</a>.
+  Nejjednodušší způsob jak vytvořit **vyukové materiály na míru** na pár kliků je stáhnout **balíčky zadání a řešení úloh** ve formátu markdown <a download href="/cermat/word-problem.zip"  title="Řešení slovních úloh "><i class="fa fa-brands fa-markdown"></i><span> zde</span></a> a nahrát do aplikace, např. <a href="https://notebooklm.google.com/" target="_blank">NotebookLM</a>.
 
   Případně prozkoumejte další možnosti integrace <a href="/embedding">více informací</a>.
 </div>

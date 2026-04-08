@@ -1,5 +1,6 @@
-import { ctor, ctorOption, sum, ratio, ctorUnit, compRelativePercent, contAngle, cont, ctorDifference, rate, contLength, dimensionEntity, ctorRatios, evalFormulaAsCont, formulaRegistry, ctorPercent, gcd, quaterProduct, contArea, product, comp } from "../../components/math";
-import { createLazyMap, deduce, last } from "../../utils/deduce-utils";
+import { ctor, ctorOption, sum, ratio, ctorUnit, compRelativePercent, contAngle, cont, ctorDifference, rate, contLength, dimensionEntity, ctorRatios, evalFormulaAsCont, formulaRegistry, ctorPercent, gcd, quaterProduct, contArea, product, comp, thirdProduct } from "../../components/math";
+import type { Container } from "../../components/math";
+import { createLazyMap, deduce, last, toPredicate } from "../../utils/deduce-utils";
 
 export default createLazyMap({
     1: () => stupne(),
@@ -33,7 +34,7 @@ function papir() {
             deduce(
                 contLength("šířka", 80),
                 contLength("délka", 208),
-                gcd("největší společný násobek", ...dim.lengths),
+                gcd("největší možný čtverec", ...dim.lengths),
             ),
             evalFormulaAsCont(formulaRegistry.circumReference.square, x => x.o, "čtverec", dim.length)
         )
@@ -52,7 +53,7 @@ function cesta() {
     )
     return {
         rozdil: {
-            deductionTree: deduce(                
+            deductionTree: deduce(
                 igor,
                 max,
             )
@@ -114,9 +115,14 @@ function miska() {
     const entity = "kulička"
     const rozdil = "rozdíl"
 
+    const cerneNavic = toPredicate(deduce(
+        cont(["celkem", "černé navíc"], 6, entity),
+        ratio("celkem", "třetina", 1 / 3)
+    ), (node: Container) => comp("černé", "bílé", node.quantity as number, entity))
+
     const bila = deduce(
         cont(rozdil, 12, entity),
-        comp("černé", "bílé", 2, entity),
+        cerneNavic,
         ctor('comp-part-eq')
     );
     return {
