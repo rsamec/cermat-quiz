@@ -17,7 +17,7 @@ import wordProblems from './word-problems.js';
 import { isPredicate, generateAIMessages } from "../utils/deduce-utils.js";
 import { deduceTraverse, highlightLabel, renderChat } from '../utils/deduce-components.js';
 import { normalizeImageUrlsToAbsoluteUrls, baseMediaPublic } from '../utils/quiz-string-utils.js';
-import { baseUrl } from './utils.js'
+import { baseUrl, merge } from './utils.js'
 import { providersConfig } from '../utils/quiz-utils.js';
 import { localStorageSubject } from '../utils/storage.utils.js'
 import Fraction from 'fraction.js';
@@ -53,6 +53,7 @@ const defaultProvider$ = localStorageSubject(defaultProviderCode,providersConfig
 const code = observable.params.code;
 const content = await FileAttachment(`./${observable.params.code}/index.md`).text();
 const notebookArtifacts = await FileAttachment(`./artifacts-${observable.params.code}.json`).json();
+const mathArtifactsAll = await FileAttachment(`./math-artifacts-${observable.params.code}.json`).json();
   
 const rawContent = normalizeImageUrlsToAbsoluteUrls(content, [`${baseUrl}/${code}`])
 const quiz = parseQuiz(rawContent);
@@ -91,7 +92,6 @@ function renderButtons(template, values){
       </div>
     </details>`
 }
-
 const output = ids.map(id => {
    const values = (wordProblem[id] != null)
    ? [[id, wordProblem[id]]] 
@@ -102,10 +102,18 @@ const output = ids.map(id => {
     .map((d, index) => [`${id}.${index +1}`, d])
 
   const artifacts = notebookArtifacts[id] ?? []
+  const mathArtifacts = mathArtifactsAll[id] ?? []
   
+  console.log(mathArtifacts)
+
   return html.fragment`
   ${mdPlus.unsafe(quiz.content([id], { ids, render: 'content' }), { docId: `${code}-${id}` })}
   ${renderButtons(quiz.content([id], { ids:[id], render: 'content' }), values)}
+  
+  ${mathArtifacts.length > 0 ? html`<details open><summary class="no-print">Artifacts</summary>
+  ${mathArtifacts.flatMap(([key,value], i) => value.results.flatMap((_,i) => html`<video src="/assets/math/${code}/${key}-${i}.mp4" playsinline muted controls></video>`))}
+  </details>`:''}
+
   ${values?.length > 0
   ? html.fragment`${artifacts.length > 0 ? html`<details open><summary class="no-print">AI artifacts</summary>
   ${artifacts.map(a => {

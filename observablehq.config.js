@@ -160,6 +160,7 @@ export default {
     .concat(cermatFolders.map(d => `/cermat/print-${d}`))
     .concat(cermatFolders.map(d => `/cermat/arch-${d}`))
     .concat(cermatFolders.map(d => `/cermat/solution-${d}`))
+    .concat(cermatFolders.map(d => `/cermat/solu-${d}`))
     .concat(cermatFolders.filter(d => d.startsWith("M")).map(d => `/cermat/word-problems-${d}`))
     .concat(cermatFolders.filter(d => d.startsWith("M")).map(d => `/cermat/word-problems-${d}.tldr`))
     .concat(ctEduFolders.map(d => `/ctedu/form-${d}`))
