@@ -4,7 +4,7 @@ import wordProblems from './src/math/word-problems.js';
 import { readdirSync, statSync } from 'fs';
 import { join, resolve } from 'path';
 
-const codeRegex = /\$(.*?)\$/;
+const codeRegex = /\$(.*?)\$/g;
 export function formatPeriodDate(period) {
   const [year, month, date] = period.split("-").map(d => parseInt(d));
   return new Date(year, month - 1, date).toLocaleDateString()
@@ -160,7 +160,7 @@ export default {
     .concat(cermatFolders.map(d => `/cermat/print-${d}`))
     .concat(cermatFolders.map(d => `/cermat/arch-${d}`))
     .concat(cermatFolders.map(d => `/cermat/solution-${d}`))
-    .concat(cermatFolders.map(d => `/cermat/solu-${d}`))
+    // .concat(cermatFolders.map(d => `/cermat/solu-${d}`))
     .concat(cermatFolders.filter(d => d.startsWith("M")).map(d => `/cermat/word-problems-${d}`))
     .concat(cermatFolders.filter(d => d.startsWith("M")).map(d => `/cermat/word-problems-${d}.tldr`))
     .concat(ctEduFolders.map(d => `/ctedu/form-${d}`))
