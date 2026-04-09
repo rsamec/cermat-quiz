@@ -76,7 +76,7 @@ display(html`<div>
             const colorifyParamsForm = Inputs.form({
                 maxDepth: Inputs.range([0, finalDepth], {step: 1, value: finalDepth, label: "Maximální hloubka"}),
                 axioms:  Inputs.toggle({label:"Axioms", value: true}),
-                deductions: Inputs.toggle({label:"Deductions", value: true}),
+                deductions: Inputs.toggle({label:"Deductions", value: false}),
             });
         
             // const notSupportedRules = ["convertToUnitRule", "evalToQuantityRule", "commonSense","alligationRule"]
