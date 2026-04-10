@@ -10,7 +10,6 @@ $$
 \sqrt{1-0{,}8^2}:6=
 $$
 
-
 # 3 Vypočtěte a výsledek zapište zlomkem v základním tvaru: 
 ## 3.1 
 $$

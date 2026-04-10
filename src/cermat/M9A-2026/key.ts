@@ -1,4 +1,4 @@
-import { group, mathExpr, number, numbersGroup, option, optionBool, rootGroup, selfEvaluateImage, task3Max4Points, twoPoints } from "../../utils/quiz-builder";
+import { group, mathExpr, number, numbersGroup, option, optionBool, rootGroup, selfEvaluateImage, task3Max4Points, threePoints, twoPoints } from "../../utils/quiz-builder";
 
 const form = rootGroup({
   code: 'M9PAD26C0T01',
@@ -34,18 +34,18 @@ const form = rootGroup({
   6: group({
     6.1: mathExpr('x/3', { hintType: 'expression' }),
     6.2: mathExpr('x/6', { hintType: 'expression' }),
-    6.3: number(64, { suffix: 'km' }),
+    6.3: number(64, { suffix: 'km' }, twoPoints),
   }),
   7: group({
     7.1: number(5, { suffix: 'km' }),
-    7.2: number(54, { suffix: 'minut' }),
+    7.2: number(54, { suffix: 'minut' }, twoPoints),
   }),
   8: group({
     8.1: number(10, { prefix: '', suffix: 'stupňů' }),
-    8.2: number(70, { prefix: '', suffix: 'stupňů' }),
+    8.2: number(70, { prefix: '', suffix: 'stupňů' }, twoPoints),
   }),
-  9: selfEvaluateImage("", twoPoints),
-  10: selfEvaluateImage("", twoPoints),
+  9: selfEvaluateImage("image-12.png", threePoints),
+  10: selfEvaluateImage("image-13.png", twoPoints),
   11: group({
     11.1: optionBool(true),
     11.2: optionBool(true),
