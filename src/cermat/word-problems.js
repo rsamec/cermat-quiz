@@ -70,8 +70,14 @@ function doubleProduct(agent) {
 function half() {
   return counter("polovina", 1 / 2, { asRatio: true });
 }
+function quater() {
+  return counter("\u010Dtvrtina", 1 / 4, { asRatio: true });
+}
 function halfProduct(agent) {
   return [half(), product(agent)];
+}
+function quaterProduct(agent) {
+  return [quater(), product(agent)];
 }
 function product(wholeAgent, partAgents, asEntity) {
   return {
@@ -1421,8 +1427,8 @@ function toCompareRule(a, b) {
   }
   return {
     kind: "comp",
-    agentB: complementSingleAgent(b.agent, [a.agent]),
-    agentA: complementSingleAgent(a.agent, [b.agent]),
+    agentB: complementSingleAgent(normalizeToAgent(b.agent), [a.agent]),
+    agentA: complementSingleAgent(normalizeToAgent(a.agent), [b.agent]),
     quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity - b.quantity : wrapToQuantity(`a.quantity - b.quantity`, { a, b }),
     ...aEntity
   };
@@ -9209,7 +9215,7 @@ function hranol2() {
     last(vyskaHranol),
     contLength(bocniStenaCtverecL, lastQuantity(vyskaHranol))
   );
-  const obsah = deduce(
+  const obsah2 = deduce(
     deduce(
       last(bocniStenaCtverec),
       podstavaVyska,
@@ -9242,11 +9248,11 @@ function hranol2() {
       )
     },
     obsahPodstava: {
-      deductionTree: obsah
+      deductionTree: obsah2
     },
     objem: {
       deductionTree: deduce(
-        last(obsah),
+        last(obsah2),
         last(vyskaHranol),
         baseAreaVolume("objem hranolu")
       )
@@ -10043,7 +10049,7 @@ function carTrip() {
 function sestiuhelnik() {
   const entity3 = "troj\xFAhlen\xEDk";
   const dark = cont("tmav\xE1 \u010D\xE1st", 2, entity3);
-  const obsah = contArea("tmav\xE1 \u010D\xE1st", 112);
+  const obsah2 = contArea("tmav\xE1 \u010D\xE1st", 112);
   return {
     deductionTree: deduce(
       deduce(
@@ -10056,7 +10062,7 @@ function sestiuhelnik() {
           dark,
           ctor("comp-ratio")
         ),
-        obsah
+        obsah2
       ),
       ctorOption("D", 224)
     )
@@ -12540,13 +12546,13 @@ function vysazovaniStromu() {
 }
 function parkoviste() {
   const entity3 = "m\xEDst";
-  const parkoviste2 = cont("parkovi\u0161t\u011B", 105, entity3);
+  const parkoviste3 = cont("parkovi\u0161t\u011B", 105, entity3);
   return {
     osobnichAut: {
       deductionTree: deduce(
         deduce(
           compRatio("autobus", "auto", 4),
-          parkoviste2
+          parkoviste3
         ),
         rate("parkovi\u0161t\u011B", 1, entity3, "auto")
       )
@@ -12561,7 +12567,7 @@ function parkoviste() {
           rate("parkovi\u0161t\u011B", 4, entity3, "autobus"),
           nthPartFactor("autobus")
         ),
-        parkoviste2,
+        parkoviste3,
         nthPart("autobus")
       )
     }
@@ -13059,7 +13065,7 @@ function build8({ input }) {
   const widthRectangle = axiomInput(contLength(`${rectangleLabel} \u0161\xED\u0159ka`, input.tangaWidth), 1);
   const ratio2 = compRatio(`\u0161ed\xE1 tanga \u0161\xED\u0159ka`, `${circelPartLabel} ${radiusLabel}`, 2);
   const dRadius = deduce(width, ratio2);
-  const obsah = deduce(last(dRadius), circleArea(areaCircleLabel));
+  const obsah2 = deduce(last(dRadius), circleArea(areaCircleLabel));
   const dd1 = deduce(
     deduce(
       widthRectangle,
@@ -13070,7 +13076,7 @@ function build8({ input }) {
     deduce(
       counter(circelPartLabel, 2),
       deduce(
-        obsah,
+        obsah2,
         compRatio(areaCircleLabel, circelPartLabel, 4)
       ),
       product(`dvojice ${circelPartLabel}`)
@@ -15146,18 +15152,18 @@ function atletika() {
     ostep,
     compRelative("skok", "o\u0161t\u011Bp", 1 / 2)
   );
-  const beh = deduce(
+  const beh2 = deduce(
     skok,
     compRelative("skok", "b\u011Bh", -2 / 5)
   );
   return {
     deductionTree: deduce(
       deduce(
-        beh,
+        beh2,
         deduce(
           ostep,
           last(skok),
-          last(beh),
+          last(beh2),
           sum("celkem")
         ),
         ctorPercent()
@@ -16159,7 +16165,7 @@ function krychle3() {
   const dim2 = dimensionEntity();
   const malaLabel = "mal\xE1 krychle";
   const velkaLabel = "velk\xE1 krychle";
-  const obsah = comp(velkaLabel, malaLabel, 42, dim2.area);
+  const obsah2 = comp(velkaLabel, malaLabel, 42, dim2.area);
   const stranaMala = toCont(deduce(
     cont(malaLabel, 36, dim2.length.entity, dim2.length.unit),
     cont(malaLabel, 12, "hran"),
@@ -16171,7 +16177,7 @@ function krychle3() {
         last(stranaMala),
         cubeArea(malaLabel)
       ),
-      obsah
+      obsah2
     ),
     evalFormulaAsCont(formulaRegistry.surfaceArea.cube, (x) => x.a, velkaLabel, dim2.length)
   );
@@ -16629,6 +16635,317 @@ function kruhovaVysec() {
   };
 }
 
+// src/cermat/M9A-2026/index.ts
+var M9A_2026_default = createLazyMap({
+  5: () => sud3(),
+  6.1: () => cyklosteska().stanekKChate,
+  6.2: () => cyklosteska().stanekKMistuZtraty,
+  6.3: () => cyklosteska().ujeto,
+  7.1: () => beh().bara,
+  7.2: () => beh().baraOkruh,
+  8.1: () => uhel().phi,
+  8.2: () => uhel().alpha,
+  11.1: () => nakladNaLodi().a,
+  11.2: () => nakladNaLodi().b,
+  11.3: () => nakladNaLodi().c,
+  12: () => parkoviste2(),
+  13: () => obsah(),
+  14: () => hranol5(),
+  15.1: () => procenta7().prvni,
+  15.2: () => procenta7().druha,
+  15.3: () => procenta7().treti
+});
+function sud3() {
+  return {
+    deductionTree: deduce(
+      cont("v\u011Bt\u0161\xED sud", 360, "litr"),
+      compRelative("v\u011Bt\u0161\xED sud", "men\u0161\xED sud", 1 / 3)
+    )
+  };
+}
+function cyklosteska() {
+  const dim2 = dimensionEntity("km");
+  const cyklotrasa = "cyklostezka";
+  const trasa2 = contLength(cyklotrasa, "x", "km");
+  const nadraziToStanekLabel = "od n\xE1dra\u017E\xED ke st\xE1nku";
+  const nadraziToStanekPomer = ratio(cyklotrasa, nadraziToStanekLabel, 2 / 3);
+  const mistoZtratyLabel = "od m\xEDsta ztr\xE1ty k chat\u011B";
+  const stanek = deduce(
+    deduce(
+      nadraziToStanekPomer,
+      ctorComplement("od st\xE1nku k chat\u011B")
+    ),
+    trasa2
+  );
+  const mistoZtratyPomer = ratio("od n\xE1dra\u017E\xED ke st\xE1nku", "od st\xE1nek k m\xEDstu ztr\xE1ty telefonu", 1 / 4);
+  const mistoZtraty = deduce(
+    deduce(nadraziToStanekPomer, trasa2),
+    mistoZtratyPomer
+  );
+  const celkem = deduce(
+    deduce(last(stanek), last(mistoZtraty), sum(mistoZtratyLabel)),
+    contLength(mistoZtratyLabel, 24, "km"),
+    ctorLinearEquation(cyklotrasa, dim2.length, "x")
+  );
+  const mistoZtratyAbsolutne = deduce(
+    deduce(nadraziToStanekPomer, last(celkem)),
+    mistoZtratyPomer
+  );
+  return {
+    stanekKChate: {
+      deductionTree: stanek
+    },
+    stanekKMistuZtraty: {
+      deductionTree: mistoZtraty
+    },
+    ujeto: {
+      deductionTree: deduce(
+        celkem,
+        deduce(
+          mistoZtratyAbsolutne,
+          ...doubleProduct("cesta nav\xEDc k\u016Fli ztr\xE1t\u011B telefonu")
+        ),
+        sum("celkem")
+      )
+    }
+  };
+}
+function beh() {
+  const dim2 = dimensionEntity("km");
+  const entityBase = { entity: "doba", unit: "min" };
+  const adamLabel = "Adam cel\xE1 trasa";
+  const adamDelka = contLength(adamLabel, 10, "km");
+  const baraLabel = "B\xE1ra cel\xE1 trasa";
+  const baraDelka = contLength(baraLabel, 9, "km");
+  const baraDoba = cont("B\xE1ra ub\u011Bhla", 30, entityBase.entity, entityBase.unit);
+  const baraUbehla = deduce(
+    baraDelka,
+    deduce(
+      adamDelka,
+      deduce(
+        deduce(
+          adamDelka,
+          cont(adamLabel, 50, entityBase.entity, entityBase.unit),
+          ctor("rate")
+        ),
+        cont(["Adam", "ub\u011Bhl"], 30, entityBase.entity, entityBase.unit)
+      ),
+      ctorDifference("zb\xFDv\xE1 \xFAb\u011Bhnout(Adam i B\xE1ra)")
+    ),
+    ctorDifference("B\xE1ra ub\u011Bhla")
+  );
+  return {
+    bara: {
+      deductionTree: baraUbehla
+    },
+    baraOkruh: {
+      deductionTree: deduce(
+        baraDoba,
+        deduce(
+          baraDelka,
+          last(baraUbehla),
+          ctor("comp-ratio")
+        )
+      )
+    }
+  };
+}
+function nakladNaLodi() {
+  const percent2 = "procent";
+  const entity3 = { entity: "hmotnost", unit: "tun" };
+  const kavaHodnota = cont("k\xE1va", 36, entity3.entity, entity3.unit);
+  const banany = cont("ban\xE1ny", 36, entity3.entity, entity3.unit);
+  const celek = cont("celek", 100, percent2);
+  const ryze = cont("r\xFD\u017Ee", 35, percent2);
+  const kavaABanany = deduce(
+    celek,
+    deduce(
+      cont("r\xFD\u017Ee", 35, percent2),
+      cont("cukr", 25, percent2),
+      sum("r\xFD\u017Ee a cukr")
+    ),
+    ctorDifference("k\xE1va a ban\xE1ny")
+  );
+  const kava = deduce(last(kavaABanany), ratios("k\xE1va a ban\xE1ny", ["k\xE1va", "ban\xE1ny"], [1, 1]), nthPart("k\xE1va"));
+  return {
+    a: {
+      deductionTree: deduce(
+        deduce(
+          kavaABanany,
+          celek,
+          ctor("ratio")
+        ),
+        ctorBooleanOption(2 / 5)
+      )
+    },
+    b: {
+      deductionTree: deduce(
+        kava,
+        ryze,
+        ctorRatios("pom\u011Br zbo\u017E\xED", { useBase: true })
+      )
+    },
+    c: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            kavaHodnota,
+            last(kava),
+            ctorRate("zbo\u017E\xED")
+          ),
+          ryze
+        ),
+        ctorBooleanOption(63)
+      )
+    }
+  };
+}
+function obsah() {
+  const zakladna = contLength("LM", 16);
+  const rameno = deduce(
+    deduce(
+      contLength("KLM", 50),
+      zakladna,
+      ctorDifference("ob\u011B ramena")
+    ),
+    ratios("ob\u011B ramena", ["KL", "KM"], [1, 1]),
+    nthPart("KL")
+  );
+  const polovinaZakladna = deduce(zakladna, ...halfProduct("polovina z\xE1kladny"));
+  return {
+    deductionTree: deduce(
+      deduce(
+        zakladna,
+        deduce(
+          polovinaZakladna,
+          rameno,
+          pythagoras("KL", ["polovina z\xE1kladny", "v\xFD\u0161ka na LM"])
+        ),
+        evalFormulaAsCont(formulaRegistry.surfaceArea.triangle, (x) => x.S, "KLM", dimensionEntity().area)
+      ),
+      ctorOption("A", 120)
+    )
+  };
+}
+function parkoviste2() {
+  const parkovisteLabel = "parkovi\u0161t\u011B";
+  const zasobovaniLabel = "z\xE1sobov\xE1n\xED";
+  const zasobovani = cont(zasobovaniLabel, 15, "m\xEDst");
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduceAs("letos")(
+          zasobovani,
+          percent(parkovisteLabel, zasobovaniLabel, 4)
+        ),
+        deduceAs("loni")(
+          zasobovani,
+          ratio(parkovisteLabel, zasobovaniLabel, 1 / 20)
+        ),
+        ctorDifference("nav\xFD\u0161en\xED kapacity")
+      ),
+      ctorOption("C", 75)
+    )
+  };
+}
+function hranol5() {
+  const dim2 = dimensionEntity();
+  const strana = contArea("\u0161\xED\u0159ka st\u011Bny", 3);
+  const stranaPovrch = deduce(
+    contArea("hranol", 72),
+    ...quaterProduct("jedna bo\u010Dn\xED st\u011Bna")
+  );
+  return {
+    deductionTree: deduceAs("po\u010D\xEDt\xE1me pouze zv\u011Bt\u0161en\xED/rozd\xEDl mezi dv\u011Bmi hranoly")(
+      stranaPovrch,
+      strana,
+      ctor("quota")
+    )
+    // deduce(
+    //     deduce(
+    //         deduce(
+    //             contLength(["hranol", "strana"], 2),
+    //             contLength(["hranol", "strana"], 2),
+    //             contLength(["hranol", "výška"], 4),
+    //             evalFormulaAsCont(formulaRegistry.volume.cuboid, x => x.V, "hranol", dim.volume)
+    //         ),
+    //         deduce(
+    //             deduce(
+    //                 contLength(["válec", "poloměr"], 1),
+    //                 contLength(["válec", "výška"], 4),
+    //                 evalFormulaAsCont(formulaRegistry.volume.cylinder, x => x.V, "válec", dim.volume)
+    //             ),
+    //             ...halfProduct("polovina válce")
+    //         ),
+    //         ctorDifference("těleso s prohlubní")
+    //     ),
+    //     ctorOption("B", 9.72)
+    // )
+  };
+}
+function uhel() {
+  const phi = deduceAs("ozna\u010D\xEDme pravo\xFAhl\xFD troj\u016Fheln\xEDk BOQ, kde O = je pr\u016Fse\u010D\xEDk o a q a Q je pr\u016Fse\u010D\xEDk q a AB")(
+    contRightAngle("OQB"),
+    deduce(
+      contAngle("zadan\xFD \xFAhel", 100),
+      compAngle("zadan\xFD \xFAhel", "BOQ", "supplementary")
+    ),
+    triangleAngle("QBO")
+  );
+  return {
+    phi: {
+      deductionTree: phi
+    },
+    alpha: {
+      deductionTree: deduce(
+        contRightAngle("BCA"),
+        deduce(
+          phi,
+          ...doubleProduct("ABC")
+        ),
+        triangleAngle(anglesNames.alpha)
+      )
+    }
+  };
+}
+function procenta7() {
+  const entity3 = "kv\xE1dr";
+  const b = cont("t\u011Bleso B", 3, entity3);
+  const c = cont("t\u011Bleso C", 5, entity3);
+  return {
+    prvni: {
+      deductionTree: deduce(
+        deduce(
+          b,
+          cont("t\u011Bleso A", 2, entity3),
+          ctorComparePercent()
+        ),
+        ctorOption("E", 50, { asPercent: true })
+      )
+    },
+    druha: {
+      deductionTree: deduce(
+        deduce(
+          b,
+          c,
+          ctorComparePercent()
+        ),
+        ctorOption("D", 40, { asPercent: true })
+      )
+    },
+    treti: {
+      deductionTree: deduce(
+        deduce(
+          cont("zapln\u011Bn\xED", 1 / 2, entity3),
+          c,
+          ctorPercent()
+        ),
+        ctorOption("A", 10, { asPercent: true })
+      )
+    }
+  };
+}
+
 // src/cermat/M9I-2026/index.ts
 var M9I_2026_default = createLazyMap({
   1: () => vypocet(),
@@ -16641,12 +16958,12 @@ var M9I_2026_default = createLazyMap({
   11.1: () => cykloTrasy().a,
   11.2: () => cykloTrasy().b,
   11.3: () => cykloTrasy().c,
-  12: () => hranol5(),
+  12: () => hranol6(),
   13: () => obdelnik2(),
   14: () => uhelAlfa2(),
-  15.1: () => procenta7().prvni,
-  15.2: () => procenta7().druha,
-  15.3: () => procenta7().treti,
+  15.1: () => procenta8().prvni,
+  15.2: () => procenta8().druha,
+  15.3: () => procenta8().treti,
   16.1: () => trojuhelnik2().a,
   16.2: () => trojuhelnik2().b,
   16.3: () => trojuhelnik2().c
@@ -16819,7 +17136,7 @@ function obdelnik2() {
     )
   };
 }
-function hranol5() {
+function hranol6() {
   const dim2 = dimensionEntity();
   const strana = deduce(
     contLength(["hranol", "obvod"], 20),
@@ -16922,7 +17239,7 @@ function trojuhelnik2() {
     }
   };
 }
-function procenta7() {
+function procenta8() {
   const entityCena = "cena";
   const unit = "K\u010D";
   const entityKusy = "kus";
@@ -17021,7 +17338,8 @@ var word_problems_default = createLazyMap({
   "M9D-2025": () => M9D_2025_default,
   "MMA-2023": () => MMA_2023_default,
   "MMA-2025": () => MMA_2025_default,
-  "M9I-2026": () => M9I_2026_default
+  "M9I-2026": () => M9I_2026_default,
+  "M9A-2026": () => M9A_2026_default
 });
 export {
   word_problems_default as default,

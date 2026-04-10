@@ -9,16 +9,17 @@ function usages(strings) {
   }, {});
 }
 
-const result = Object.entries(wordProblems).reduce((out, [key, value]) => {
-
+const result = Object.entries(wordProblems).reduce((out, [key, value]) => {  
   out[key] = Object.entries(wordProblemGroupById(value, ([key, value]) => ({ key, ...computeTreeMetrics(value.deductionTree) })))
     .reduce((out, [key, values]) => {
       const predicates = values.flatMap(d => d.predicates);
       const rules = values.flatMap(d => d.rules).map(d => d.name);
-      const formulas = values.flatMap(d => d.formulas);
+      const formulas = values.flatMap(d => d.formulas);      
+      const useBase = values.find(d => d.useBase)
       out[key] = {
-        predicates: predicates.filter(unique),
+        predicates: predicates.filter(unique),        
         usages: usages(predicates),
+        useBase,
         rules,
         rulesUsages: usages(rules),
         formulas,

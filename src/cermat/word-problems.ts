@@ -29,6 +29,7 @@ import M9D_2025 from '../math/M9D-2025/index';
 import MMA_2023 from '../math/MMA-2023/index';
 import MMA_2025 from '../math/MMA-2025/index';
 
+import M9A_2026 from './M9A-2026/index';
 import M9I_2026 from './M9I-2026/index';
 
 import { createLazyMap } from '../utils/deduce-utils';
@@ -73,5 +74,6 @@ export default createLazyMap({
     "MMA-2025": () => MMA_2025,
     
     "M9I-2026": () => M9I_2026,
+    "M9A-2026": () => M9A_2026,
 
 })

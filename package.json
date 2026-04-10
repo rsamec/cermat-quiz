@@ -12,7 +12,7 @@
     "generate-pdf:cermat":"node ./run-pdf.js",
     "generate-pdf:cermat-cz":"node src/cermat/pdf-[subject]-[period].json.js --subject cz --period 4",
     "pdf:ctedu":"npm run merge-pdf && rm src/assets/pdf/ctedu/data.json && npm run generate-pdf:ctedu",
-    "pdf:cermat":"npm run merge-pdf && rm -f src/assets/pdf/cermat**/data.json && npm run generate-pdf:cermat",
+    "pdf:cermat":"npm run merge-pdf && rm -f src/assets/pdf/cermat-math-4/data.json && npm run generate-pdf:cermat",
     "drive:ctedu": "node src/ctedu/gws-drive.js --zip ../../src/.observablehq/cache/ctedu/word-problem.zip",
     "drive:cermat": "node src/cermat/gws-drive.js --zip ../../src/.observablehq/cache/cermat/word-problem.zip",
     "baml-generate": "baml-cli generate",

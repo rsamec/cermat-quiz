@@ -171,7 +171,8 @@ type TreeMetrics = {
   width: number;
   predicates: string[]
   rules: RuleParameters[]
-  formulas: string[]
+  formulas: string[],
+  useBase: boolean,
 };
 type RuleParameters = { name: string, inputs: PredicateKind[], axioms: boolean[] }
 export function computeTreeMetrics(
@@ -181,6 +182,7 @@ export function computeTreeMetrics(
   predicates: string[] = [],
   rules: RuleParameters[] = [],
   formulas: string[] = [],
+  useBase: boolean,
   deduceMap = new Map(),
 ): TreeMetrics {
   // Base case: If the node is a leaf
@@ -193,6 +195,7 @@ export function computeTreeMetrics(
       depth: level + 1,
       width: Math.max(...Object.values(levels)),
       predicates: predicates.includes(node.kind) ? predicates : predicates.concat(node.kind),
+      useBase: useBase || (node.kind == "ratios" && node.useBase),
       rules,
       formulas,
     };
@@ -214,23 +217,24 @@ export function computeTreeMetrics(
         const inputParameters = mapNodeChildrenToPredicates(node);
         const result = inferenceRuleWithQuestion(inputParameters);
         rules.push({
-          name: result.name,
+          name: result.name,          
           inputs: inputParameters.filter(d => d != null && d.kind != null).map(d => d.kind),
           axioms: inputParameters.map(d => !deduceMap.has(d))
         })
 
       }
 
-      const metrics = computeTreeMetrics(child, level + 1, levels, predicates, rules, formulas, deduceMap);
+      const metrics = computeTreeMetrics(child, level + 1, levels, predicates, rules, formulas, useBase, deduceMap);
       predicates = metrics.predicates;
+      useBase = metrics.useBase;
       maxDepth = Math.max(maxDepth, metrics.depth);
     }
 
-    return { depth: maxDepth, width: Math.max(...Object.values(levels)), predicates, rules, formulas };
+    return { depth: maxDepth, width: Math.max(...Object.values(levels)), predicates, rules, formulas, useBase };
   }
 
   // Fallback for empty nodes
-  return { depth: level, width: Math.max(...Object.values(levels)), predicates, rules, formulas };
+  return { depth: level, width: Math.max(...Object.values(levels)), predicates, rules, formulas, useBase };
 }
 
 

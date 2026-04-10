@@ -67,7 +67,9 @@ display(html`<div>
             const dTree = value.deductionTree;
             const hackedDTree = dTree.children.some(d => d.kind == "eval-option") ? dTree.children.find(d => d.kind != "eval-option"): dTree;        
             
-            const {depth, width, predicates, rules} = computeTreeMetrics(hackedDTree); 
+            const {depth, width, predicates, rules, useBase} = computeTreeMetrics(hackedDTree); 
+            
+            if (useBase) return '';
             const ruleNames = rules.map(d => d.name);
             if (['convertRatioCompareToRatiosRule','convertToPartToPartRatios', 'nthTermExpressionRule', 'nthTermRule','solveEquationRule',
              'convertRatioCompareToTwoPartRatioRule', 'convertRatioCompareToRatioRule','commonSense', 'alligationRule', 'partEqualRule'].some(d => ruleNames.includes(d))) return '';

@@ -6554,7 +6554,7 @@ function connectTo(node, input) {
   };
   return connect(node, input);
 }
-function computeTreeMetrics(node, level = 0, levels = {}, predicates = [], rules = [], formulas = [], deduceMap = /* @__PURE__ */ new Map()) {
+function computeTreeMetrics(node, level = 0, levels = {}, predicates = [], rules = [], formulas = [], useBase, deduceMap = /* @__PURE__ */ new Map()) {
   if (isPredicate(node)) {
     levels[level] = (levels[level] || 0) + 1;
     if (node.kind === "eval-formula" && node.formulaName != null && !formulas.includes(node.formulaName)) {
@@ -6564,6 +6564,7 @@ function computeTreeMetrics(node, level = 0, levels = {}, predicates = [], rules
       depth: level + 1,
       width: Math.max(...Object.values(levels)),
       predicates: predicates.includes(node.kind) ? predicates : predicates.concat(node.kind),
+      useBase: useBase || node.kind == "ratios" && node.useBase,
       rules,
       formulas
     };
@@ -6586,13 +6587,14 @@ function computeTreeMetrics(node, level = 0, levels = {}, predicates = [], rules
           axioms: inputParameters.map((d) => !deduceMap.has(d))
         });
       }
-      const metrics = computeTreeMetrics(child, level + 1, levels, predicates, rules, formulas, deduceMap);
+      const metrics = computeTreeMetrics(child, level + 1, levels, predicates, rules, formulas, useBase, deduceMap);
       predicates = metrics.predicates;
+      useBase = metrics.useBase;
       maxDepth = Math.max(maxDepth, metrics.depth);
     }
-    return { depth: maxDepth, width: Math.max(...Object.values(levels)), predicates, rules, formulas };
+    return { depth: maxDepth, width: Math.max(...Object.values(levels)), predicates, rules, formulas, useBase };
   }
-  return { depth: level, width: Math.max(...Object.values(levels)), predicates, rules, formulas };
+  return { depth: level, width: Math.max(...Object.values(levels)), predicates, rules, formulas, useBase };
 }
 function jsonToMarkdownTree(node, level = 0, parentContext) {
   const indent = "  ".repeat(level);
