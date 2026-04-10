@@ -160,6 +160,6 @@ ${buttonInput}
 
 
 ```js
-display(html`<div class=root>${output}</div>`)
+display(html`<div data-testid="root" class=root>${output}</div>`)
 
 ```

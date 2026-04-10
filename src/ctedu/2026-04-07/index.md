@@ -14,7 +14,7 @@
 **Vypočítejte:**
 
 ## 3.1 O kolik **metrů** méně ušel Max oproti Igorovi?
-## 3.2 Kolik **sekund** trvala cesta Igorovi, jestliže šel průměrnou rychlostí 120 metrů za sekundu.
+## 3.2 Kolik **sekund** trvala cesta Igorovi, jestliže šel průměrnou rychlostí 120 metrů za minutu.
 
 # 4
 
