@@ -620,5 +620,97 @@
         }
       ]
     }
+  },
+  "M9A-2026": {
+    "9": {
+      "header": "Sestrojte vrcholy B, C trojúhelníku ABC, označte je písmeny a trojúhelník narýsujte.",
+      "results": [
+        {
+          "Name": "Sestrojit",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": [
+                {
+                  "Step": "",
+                  "Expression": "$ r;b \\perp A $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ B;b \\cap r $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ k;k(B;|AB| + 2) $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ C_1;k \\cap k = {C_1;} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ C_2;k \\cap k = {;C_2} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\triangle ABC_1 $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ \\triangle ABC_2 $"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "10": {
+      "header": "Sestrojte vrcholy B, C, D rovnoběžníku ABCD, označte je písmeny a rovnoběžník narýsujte.",
+      "results": [
+        {
+          "Name": "Sestrojit",
+          "TemplateSteps": [
+            {
+              "Name": "Postup řešení",
+              "Steps": [
+                {
+                  "Step": "",
+                  "Expression": "$ r;o \\perp A $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ S;o \\cap r $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ k1;k1(S;|AS|) $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ C;k1 \\cap r $"
+                },
+                 {
+                  "Step": "",
+                  "Expression": "$ k2;k2(S;2 \\cdot |AS|) $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ B;k2 \\cap o = {B;} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$ D;k2 \\cap o = {;D} $"
+                },
+                {
+                  "Step": "",
+                  "Expression": "$\\square ABCD $"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
   }
 }

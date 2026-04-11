@@ -68,7 +68,7 @@ Zkoušku nazapisujte.
 VÝCHOZÍ TEXT K ÚLOZE 5 
 ===
 
-> Větší su má o třetinu větší objem než menší sud.\
+> Větší sud má o třetinu větší objem než menší sud.\
 > Objem většího sudu je 360 litrů.
 >
 > (*CZVV*) 
@@ -163,9 +163,10 @@ VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 10
 > (*CZVV*) 
 
 # 10 
-Bod A je vrchol **rovnoběžníku** *ABCD*.\  
+Bod A je vrchol **rovnoběžníku** *ABCD*.\
 Přímka o je osou souměrnosti tohoto rovnoběžníku a leží na ní vrcholy B, D.\
-Úhlopříčka *BD* rovnoběžníku *ABCD* je dvakrát delší než úhlopříčka *AC*. 
+Úhlopříčka *BD* rovnoběžníku *ABCD* je dvakrát delší než úhlopříčka *AC*.
+
 **Sestrojte** vrcholy B, C, D rovnoběžníku *ABCD*, **označte** je písmeny  
 a rovnoběžník **narýsujte**. 
 
