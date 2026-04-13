@@ -7,6 +7,7 @@ yarn-error.log
 /blob-report/
 /playwright/.cache/
 /generated/
+/generated-ai/
 /gen-screenshots/
 /audio/
 .vscode

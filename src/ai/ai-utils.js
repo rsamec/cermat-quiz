@@ -617,11 +617,11 @@ var LineDecoder = class {
     this.buffer = new Uint8Array();
     __classPrivateFieldSet(this, _LineDecoder_carriageReturnIndex, null, "f");
   }
-  decode(chunk) {
-    if (chunk == null) {
+  decode(chunk2) {
+    if (chunk2 == null) {
       return [];
     }
-    const binaryChunk = chunk instanceof ArrayBuffer ? new Uint8Array(chunk) : typeof chunk === "string" ? new TextEncoder().encode(chunk) : chunk;
+    const binaryChunk = chunk2 instanceof ArrayBuffer ? new Uint8Array(chunk2) : typeof chunk2 === "string" ? new TextEncoder().encode(chunk2) : chunk2;
     let newData = new Uint8Array(this.buffer.length + binaryChunk.length);
     newData.set(this.buffer);
     newData.set(binaryChunk, this.buffer.length);
@@ -810,8 +810,8 @@ var Stream = class _Stream {
     async function* iterLines() {
       const lineDecoder = new LineDecoder();
       const iter = ReadableStreamToAsyncIterable(readableStream);
-      for await (const chunk of iter) {
-        for (const line of lineDecoder.decode(chunk)) {
+      for await (const chunk2 of iter) {
+        for (const line of lineDecoder.decode(chunk2)) {
           yield line;
         }
       }
@@ -925,11 +925,11 @@ async function* _iterSSEMessages(response, controller) {
 }
 async function* iterSSEChunks(iterator) {
   let data = new Uint8Array();
-  for await (const chunk of iterator) {
-    if (chunk == null) {
+  for await (const chunk2 of iterator) {
+    if (chunk2 == null) {
       continue;
     }
-    const binaryChunk = chunk instanceof ArrayBuffer ? new Uint8Array(chunk) : typeof chunk === "string" ? new TextEncoder().encode(chunk) : chunk;
+    const binaryChunk = chunk2 instanceof ArrayBuffer ? new Uint8Array(chunk2) : typeof chunk2 === "string" ? new TextEncoder().encode(chunk2) : chunk2;
     let newData = new Uint8Array(data.length + binaryChunk.length);
     newData.set(data);
     newData.set(binaryChunk, data.length);
@@ -1027,8 +1027,8 @@ async function getBytes(value) {
   } else if (isBlobLike(value)) {
     parts.push(await value.arrayBuffer());
   } else if (isAsyncIterableIterator(value)) {
-    for await (const chunk of value) {
-      parts.push(chunk);
+    for await (const chunk2 of value) {
+      parts.push(chunk2);
     }
   } else {
     throw new Error(`Unexpected data type: ${typeof value}; constructor: ${value?.constructor?.name}; props: ${propsForError(value)}`);
@@ -3112,8 +3112,8 @@ var ChatCompletionStream = class _ChatCompletionStream extends AbstractChatCompl
     __classPrivateFieldGet5(this, _ChatCompletionStream_instances, "m", _ChatCompletionStream_beginRequest).call(this);
     const stream = await client2.chat.completions.create({ ...params, stream: true }, { ...options, signal: this.controller.signal });
     this._connected();
-    for await (const chunk of stream) {
-      __classPrivateFieldGet5(this, _ChatCompletionStream_instances, "m", _ChatCompletionStream_addChunk).call(this, chunk);
+    for await (const chunk2 of stream) {
+      __classPrivateFieldGet5(this, _ChatCompletionStream_instances, "m", _ChatCompletionStream_addChunk).call(this, chunk2);
     }
     if (stream.controller.signal?.aborted) {
       throw new APIUserAbortError();
@@ -3131,12 +3131,12 @@ var ChatCompletionStream = class _ChatCompletionStream extends AbstractChatCompl
     this._connected();
     const stream = Stream.fromReadableStream(readableStream, this.controller);
     let chatId;
-    for await (const chunk of stream) {
-      if (chatId && chatId !== chunk.id) {
+    for await (const chunk2 of stream) {
+      if (chatId && chatId !== chunk2.id) {
         this._addChatCompletion(__classPrivateFieldGet5(this, _ChatCompletionStream_instances, "m", _ChatCompletionStream_endRequest).call(this));
       }
-      __classPrivateFieldGet5(this, _ChatCompletionStream_instances, "m", _ChatCompletionStream_addChunk).call(this, chunk);
-      chatId = chunk.id;
+      __classPrivateFieldGet5(this, _ChatCompletionStream_instances, "m", _ChatCompletionStream_addChunk).call(this, chunk2);
+      chatId = chunk2.id;
     }
     if (stream.controller.signal?.aborted) {
       throw new APIUserAbortError();
@@ -3162,12 +3162,12 @@ var ChatCompletionStream = class _ChatCompletionStream extends AbstractChatCompl
     };
     __classPrivateFieldGet5(this, _ChatCompletionStream_choiceEventStates, "f")[choice.index] = state;
     return state;
-  }, _ChatCompletionStream_addChunk = function _ChatCompletionStream_addChunk2(chunk) {
+  }, _ChatCompletionStream_addChunk = function _ChatCompletionStream_addChunk2(chunk2) {
     if (this.ended)
       return;
-    const completion = __classPrivateFieldGet5(this, _ChatCompletionStream_instances, "m", _ChatCompletionStream_accumulateChatCompletion).call(this, chunk);
-    this._emit("chunk", chunk, completion);
-    for (const choice of chunk.choices) {
+    const completion = __classPrivateFieldGet5(this, _ChatCompletionStream_instances, "m", _ChatCompletionStream_accumulateChatCompletion).call(this, chunk2);
+    this._emit("chunk", chunk2, completion);
+    for (const choice of chunk2.choices) {
       const choiceSnapshot = completion.choices[choice.index];
       if (choice.delta.content != null && choiceSnapshot.message?.role === "assistant" && choiceSnapshot.message?.content) {
         this._emit("content", choice.delta.content, choiceSnapshot.message.content);
@@ -3291,10 +3291,10 @@ var ChatCompletionStream = class _ChatCompletionStream extends AbstractChatCompl
       return responseFormat;
     }
     return null;
-  }, _ChatCompletionStream_accumulateChatCompletion = function _ChatCompletionStream_accumulateChatCompletion2(chunk) {
+  }, _ChatCompletionStream_accumulateChatCompletion = function _ChatCompletionStream_accumulateChatCompletion2(chunk2) {
     var _a2, _b, _c, _d;
     let snapshot = __classPrivateFieldGet5(this, _ChatCompletionStream_currentChatCompletionSnapshot, "f");
-    const { choices, ...rest } = chunk;
+    const { choices, ...rest } = chunk2;
     if (!snapshot) {
       snapshot = __classPrivateFieldSet4(this, _ChatCompletionStream_currentChatCompletionSnapshot, {
         ...rest,
@@ -3303,7 +3303,7 @@ var ChatCompletionStream = class _ChatCompletionStream extends AbstractChatCompl
     } else {
       Object.assign(snapshot, rest);
     }
-    for (const { delta, finish_reason, index, logprobs = null, ...other } of chunk.choices) {
+    for (const { delta, finish_reason, index, logprobs = null, ...other } of chunk2.choices) {
       let choice = snapshot.choices[index];
       if (!choice) {
         choice = snapshot.choices[index] = { finish_reason, index, message: {}, logprobs, ...other };
@@ -3393,12 +3393,12 @@ var ChatCompletionStream = class _ChatCompletionStream extends AbstractChatCompl
     const pushQueue = [];
     const readQueue = [];
     let done = false;
-    this.on("chunk", (chunk) => {
+    this.on("chunk", (chunk2) => {
       const reader = readQueue.shift();
       if (reader) {
-        reader.resolve(chunk);
+        reader.resolve(chunk2);
       } else {
-        pushQueue.push(chunk);
+        pushQueue.push(chunk2);
       }
     });
     this.on("end", () => {
@@ -3428,10 +3428,10 @@ var ChatCompletionStream = class _ChatCompletionStream extends AbstractChatCompl
           if (done) {
             return { value: void 0, done: true };
           }
-          return new Promise((resolve, reject) => readQueue.push({ resolve, reject })).then((chunk2) => chunk2 ? { value: chunk2, done: false } : { value: void 0, done: true });
+          return new Promise((resolve, reject) => readQueue.push({ resolve, reject })).then((chunk3) => chunk3 ? { value: chunk3, done: false } : { value: void 0, done: true });
         }
-        const chunk = pushQueue.shift();
-        return { value: chunk, done: false };
+        const chunk2 = pushQueue.shift();
+        return { value: chunk2, done: false };
       },
       return: async () => {
         this.abort();
@@ -3758,10 +3758,10 @@ var AssistantStream = class _AssistantStream extends EventStream {
           if (done) {
             return { value: void 0, done: true };
           }
-          return new Promise((resolve, reject) => readQueue.push({ resolve, reject })).then((chunk2) => chunk2 ? { value: chunk2, done: false } : { value: void 0, done: true });
+          return new Promise((resolve, reject) => readQueue.push({ resolve, reject })).then((chunk3) => chunk3 ? { value: chunk3, done: false } : { value: void 0, done: true });
         }
-        const chunk = pushQueue.shift();
-        return { value: chunk, done: false };
+        const chunk2 = pushQueue.shift();
+        return { value: chunk2, done: false };
       },
       return: async () => {
         this.abort();
@@ -10664,14 +10664,14 @@ var Chat3 = class {
         for (var _f = true, streamResponse_1 = __asyncValues(streamResponse), streamResponse_1_1; streamResponse_1_1 = yield __await(streamResponse_1.next()), _c = streamResponse_1_1.done, !_c; _f = true) {
           _e = streamResponse_1_1.value;
           _f = false;
-          const chunk = _e;
-          if (isValidResponse(chunk)) {
-            const content = (_b = (_a2 = chunk.candidates) === null || _a2 === void 0 ? void 0 : _a2[0]) === null || _b === void 0 ? void 0 : _b.content;
+          const chunk2 = _e;
+          if (isValidResponse(chunk2)) {
+            const content = (_b = (_a2 = chunk2.candidates) === null || _a2 === void 0 ? void 0 : _a2[0]) === null || _b === void 0 ? void 0 : _b.content;
             if (content !== void 0) {
               outputContent.push(content);
             }
           }
-          yield yield __await(chunk);
+          yield yield __await(chunk2);
         }
       } catch (e_1_1) {
         e_1 = { error: e_1_1 };
@@ -11237,7 +11237,7 @@ async function uploadBlob(file, uploadUrl, apiClient) {
   fileSize = file.size;
   while (offset < fileSize) {
     const chunkSize = Math.min(MAX_CHUNK_SIZE, fileSize - offset);
-    const chunk = file.slice(offset, offset + chunkSize);
+    const chunk2 = file.slice(offset, offset + chunkSize);
     if (offset + chunkSize >= fileSize) {
       uploadCommand += ", finalize";
     }
@@ -11246,7 +11246,7 @@ async function uploadBlob(file, uploadUrl, apiClient) {
     while (retryCount < MAX_RETRY_COUNT) {
       response = await apiClient.request({
         path: "",
-        body: chunk,
+        body: chunk2,
         httpMethod: "POST",
         httpOptions: {
           apiVersion: "",
@@ -18659,11 +18659,11 @@ var Models2 = class extends BaseModule {
             for (var _f = true, response_1 = (e_1 = void 0, __asyncValues(response)), response_1_1; response_1_1 = yield __await(response_1.next()), _c2 = response_1_1.done, !_c2; _f = true) {
               _e = response_1_1.value;
               _f = false;
-              const chunk = _e;
-              yield yield __await(chunk);
-              if (chunk.candidates && ((_a3 = chunk.candidates[0]) === null || _a3 === void 0 ? void 0 : _a3.content)) {
-                responseContents.push(chunk.candidates[0].content);
-                for (const part of (_b2 = chunk.candidates[0].content.parts) !== null && _b2 !== void 0 ? _b2 : []) {
+              const chunk2 = _e;
+              yield yield __await(chunk2);
+              if (chunk2.candidates && ((_a3 = chunk2.candidates[0]) === null || _a3 === void 0 ? void 0 : _a3.content)) {
+                responseContents.push(chunk2.candidates[0].content);
+                for (const part of (_b2 = chunk2.candidates[0].content.parts) !== null && _b2 !== void 0 ? _b2 : []) {
                   if (remoteCallCount < maxRemoteCalls && part.functionCall) {
                     if (!part.functionCall.name) {
                       throw new Error("Function call name was not returned by the model.");
@@ -18809,10 +18809,10 @@ var Models2 = class extends BaseModule {
             for (var _d2 = true, apiResponse_1 = __asyncValues(apiResponse), apiResponse_1_1; apiResponse_1_1 = yield __await(apiResponse_1.next()), _a3 = apiResponse_1_1.done, !_a3; _d2 = true) {
               _c2 = apiResponse_1_1.value;
               _d2 = false;
-              const chunk = _c2;
-              const resp = generateContentResponseFromVertex(yield __await(chunk.json()));
+              const chunk2 = _c2;
+              const resp = generateContentResponseFromVertex(yield __await(chunk2.json()));
               resp["sdkHttpResponse"] = {
-                headers: chunk.headers
+                headers: chunk2.headers
               };
               const typedResp = new GenerateContentResponse();
               Object.assign(typedResp, resp);
@@ -18854,10 +18854,10 @@ var Models2 = class extends BaseModule {
             for (var _d2 = true, apiResponse_2 = __asyncValues(apiResponse), apiResponse_2_1; apiResponse_2_1 = yield __await(apiResponse_2.next()), _a3 = apiResponse_2_1.done, !_a3; _d2 = true) {
               _c2 = apiResponse_2_1.value;
               _d2 = false;
-              const chunk = _c2;
-              const resp = generateContentResponseFromMldev(yield __await(chunk.json()));
+              const chunk2 = _c2;
+              const resp = generateContentResponseFromMldev(yield __await(chunk2.json()));
               resp["sdkHttpResponse"] = {
-                headers: chunk.headers
+                headers: chunk2.headers
               };
               const typedResp = new GenerateContentResponse();
               Object.assign(typedResp, resp);
@@ -26736,8 +26736,17 @@ var client = new AIWrapper({
   geminiKey: process.env.GEMINI_API_KEY,
   githubKey: process.env.GITHUB_TOKEN
 });
+function chunk(arr, chunkSize = 3) {
+  const chunks = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    const chunk2 = arr.slice(i, i + chunkSize);
+    chunks.push(chunk2);
+  }
+  return chunks;
+}
 export {
   AIWrapper,
+  chunk,
   client
 };
 /*! Bundled license information:

@@ -184,3 +184,13 @@ export const client = new AIWrapper({
   geminiKey: process.env.GEMINI_API_KEY,
   githubKey: process.env.GITHUB_TOKEN,
 })
+
+export function chunk<T>(arr: T[], chunkSize = 3) {
+
+  const chunks = []
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    const chunk = arr.slice(i, i + chunkSize);
+    chunks.push(chunk);
+  }
+  return chunks;
+}
