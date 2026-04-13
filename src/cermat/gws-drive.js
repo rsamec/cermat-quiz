@@ -19,7 +19,7 @@ const __tempDir = "./generated";
 const directories = fs.readdirSync(path.join(__dirname), { withFileTypes: true })
   .filter(entry => entry.isDirectory())
   .map(entry => entry.name)
-  .filter(d => d === "M9A-2026")
+  .filter(d => d === "M9B-2026")
 
 
 async function extractZip(zipPath, outputDir) {
