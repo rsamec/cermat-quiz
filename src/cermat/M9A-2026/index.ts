@@ -239,32 +239,14 @@ function hranol() {
     );
 
     return {
-        deductionTree: deduceAs("počítáme pouze zvětšení/rozdíl mezi dvěmi hranoly")(
-            stranaPovrch,
-            strana,
-            ctor('quota')
+        deductionTree: deduce(
+            deduceAs("počítáme pouze zvětšení/rozdíl mezi dvěmi hranoly")(
+                stranaPovrch,
+                strana,
+                ctor('quota')
+            ),
+            ctorOption("B", 6)
         )
-        // deduce(
-        //     deduce(
-
-        //         deduce(
-        //             contLength(["hranol", "strana"], 2),
-        //             contLength(["hranol", "strana"], 2),
-        //             contLength(["hranol", "výška"], 4),
-        //             evalFormulaAsCont(formulaRegistry.volume.cuboid, x => x.V, "hranol", dim.volume)
-        //         ),
-        //         deduce(
-        //             deduce(
-        //                 contLength(["válec", "poloměr"], 1),
-        //                 contLength(["válec", "výška"], 4),
-        //                 evalFormulaAsCont(formulaRegistry.volume.cylinder, x => x.V, "válec", dim.volume)
-        //             ),
-        //             ...halfProduct("polovina válce")
-        //         ),
-        //         ctorDifference("těleso s prohlubní")
-        //     ),
-        //     ctorOption("B", 9.72)
-        // )
     }
 }
 
@@ -304,7 +286,7 @@ function procenta() {
     return {
         prvni: {
             deductionTree: deduce(
-                deduce(                    
+                deduce(
                     b,
                     cont("těleso A", 2, entity),
                     ctorComparePercent()
@@ -314,9 +296,9 @@ function procenta() {
         },
         druha: {
             deductionTree: deduce(
-                deduce(                    
+                deduce(
                     b,
-                    c,                    
+                    c,
                     ctorComparePercent()
                 ),
                 ctorOption("D", 40, { asPercent: true })
@@ -326,7 +308,7 @@ function procenta() {
             deductionTree: deduce(
                 deduce(
                     cont("zaplnění", 1 / 2, entity),
-                    c,                    
+                    c,
                     ctorPercent()
                 ),
                 ctorOption("A", 10, { asPercent: true })

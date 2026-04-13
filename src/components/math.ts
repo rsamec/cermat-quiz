@@ -2323,10 +2323,11 @@ function toRatioCompareRule(a: Container | Rate, b: Container | Rate, ctor: Rati
   if (!isSameEntity(a.entity, b.entity)) {
     throw `Mismatch entity ${JSON.stringify(b.entity)}, ${JSON.stringify(a.entity)}`
   }
+  const [bAgent, aAgent]  = arrayDiffs(b.agent,a.agent);
   return {
     kind: 'comp-ratio',
-    agentB: singleAgent(b.agent),
-    agentA: singleAgent(a.agent),
+    agentB: singleAgent(bAgent),
+    agentA: singleAgent(aAgent),
     ratio: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity / b.quantity : wrapToRatio(`a.quantity / b.quantity`, { a, b }),
     ...(ctor.asPercent && { asPercent: true })
   }
@@ -3922,7 +3923,33 @@ function singleAgent(a: string | Agent) {
     a
   }
 }
+function arrayDiffs(arr1: Agent, arr2: Agent) {
+  const set1 = new Set(arr1);
+  const set2 = new Set(arr2);
 
+  const intersection = [];
+  const onlyInArr1 = [];
+  const onlyInArr2 = [];
+
+  for (const item of set1) {
+    if (set2.has(item)) {
+      intersection.push(item);
+    } else {
+      onlyInArr1.push(item);
+    }
+  }
+
+  for (const item of set2) {
+    if (!set1.has(item)) {
+      onlyInArr2.push(item);
+    }
+  }
+
+  return [
+    onlyInArr1,
+    onlyInArr2
+  ]
+}
 function complementAgent(a: Agent, b: Agent) {
   const setB = new Set(b);
   return a.filter(x => !setB.has(x));
@@ -3949,7 +3976,8 @@ function equalAgent(f: string | Agent, s: string | Agent) {
 function mergeAgents(f: Agent, s: Agent) {
   return [...new Set([...f, ...s])];
 }
-function mergeAgent(agent: string, newAgent: string, arr: Agent) {
+function mergeAgent(agent: string, newAgent: string, array: Agent) {
+  const arr = Array.isArray(array) ? array: [array];
   const i = arr.indexOf(agent)
   return i !== -1 ? arr.toSpliced(i, 1, newAgent) : newAgent;
 }
