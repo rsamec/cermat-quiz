@@ -167,7 +167,7 @@ export default {
     .concat(ctEduFolders.map(d => `/ctedu/chat-stepper-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/calculator-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/color-expression-${d}`))
-    .concat(cermatFolders.flatMap(d => ['form', 'chatstepper', 'calculator', 'colorexpression'].map(app => `/apps/cermat-${app}-${d}`)))
+    .concat(cermatFolders.flatMap(d => ['form', 'chatstepper', 'calculator', 'colorexpression','print'].map(app => `/apps/cermat-${app}-${d}`)))
     //.concat(quizes.flatMap(d => d.codes).map(code => `/data/arch-${code}.schema.json`))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.md`))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.json`))
