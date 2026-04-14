@@ -8,7 +8,7 @@ import { flextree } from 'd3-flextree';
 import Fraction from 'fraction.js';
 import { convertToShapes, createFrame, createShapeId } from "./tldraw-utils.js";
 import { dir } from "console";
-export { createBookmarks, createFrame, createShapeId, convertToShapes } from "./tldraw-utils.js";
+export { createBookmarks, createFrame, createShapeId, convertToShapes, createEmbed } from "./tldraw-utils.js";
 
 const defaultWidth = 250;
 const defaultHeight = 200;

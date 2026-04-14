@@ -1,6 +1,6 @@
 import { parseArgs } from "node:util";
 import wordProblems from './word-problems.js';
-import { deductionTreeShapes } from "../ai/tldraw.js";
+import { deductionTreeShapes, createShapeId, createEmbed } from "../ai/tldraw.js";
 import { mapShapes, mapBindings, serialize, createPage } from "../ai/tldraw-store.js";
 
 const {
@@ -25,10 +25,26 @@ const result = Object.entries(wordProblem).sort(([f], [s]) => f.localeCompare(s,
       out.push(newPage);
       cumulativeY = 0;
       usedQuestionIds.push(id)
+
+      const printEmbedId = createShapeId();
+      const printEmbed = {
+        ...createEmbed({
+          id: printEmbedId,
+          url: `https://www.cermatdata.cz/apps/cermat-print-${code}?q=${id}`,
+          h: 600,
+          w: 600
+        }),
+        x: -650,
+        y: cumulativeY,
+        parentId: newPage.id
+      }
+      out.push(printEmbed)      
     }
 
     const deduceTreeResponse = deductionTreeShapes(value.deductionTree, `Úloha ${key}`);
     const { data, width, height } = deduceTreeResponse;
+
+   
 
     const shapesToAdd = mapShapes(data.shapes.map((d, i) => ({
       ...d,

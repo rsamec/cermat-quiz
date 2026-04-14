@@ -11154,6 +11154,26 @@ function createFrame({ id, name, h, w, color }) {
 function createBookmarks(shapes) {
   return convertToShapes(shapes);
 }
+function createEmbed({ id, h, w, url }) {
+  const root = {
+    type: "embed",
+    id,
+    props: {
+      w,
+      h,
+      url
+    },
+    x: 0,
+    y: 0,
+    typeName: "shape",
+    index: `a0`,
+    "rotation": 0,
+    "isLocked": false,
+    "opacity": 1,
+    "meta": {}
+  };
+  return root;
+}
 var FILL_MAP = {
   none: "none",
   solid: "fill",
@@ -11661,6 +11681,7 @@ function deductionTreeToHierarchy(node, links, isLast, extra) {
 export {
   convertToShapes,
   createBookmarks,
+  createEmbed,
   createFrame,
   createShapeId,
   deductionTreeShapes,

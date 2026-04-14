@@ -1,4 +1,4 @@
-import type { TLTextShape, TLLineShape, TLArrowShape, TLGeoShape, TLNoteShape, TLShapePartial, IndexKey, TLArrowBinding, TLBindingCreate, TLDefaultFillStyle, TLShapeId, TLBookmarkShape, TLFrameShape, TLAsset, TLAssetId } from "@tldraw/tldraw";
+import type { TLTextShape, TLLineShape, TLArrowShape, TLGeoShape, TLNoteShape, TLShapePartial, IndexKey, TLArrowBinding, TLBindingCreate, TLDefaultFillStyle, TLShapeId, TLBookmarkShape, TLFrameShape, TLAsset, TLAssetId, TLEmbedShape } from "@tldraw/tldraw";
 import type { ISimpleBookmarkShape, ISimpleFill, ISimpleShape } from "./schema";
 
 type TLShapes = TLShapePartial<TLTextShape> | TLShapePartial<TLLineShape> | TLShapePartial<TLArrowShape> | TLShapePartial<TLNoteShape> | TLShapePartial<TLGeoShape> | TLShapePartial<TLBookmarkShape>;
@@ -30,6 +30,28 @@ export function createFrame({ id, name, h, w, color }) {
 }
 export function createBookmarks(shapes: ISimpleBookmarkShape[]) {
     return convertToShapes(shapes)
+}
+
+export function createEmbed({ id, h, w, url }) {
+    const root: Partial<TLEmbedShape> = {
+        type: 'embed',
+        id,
+        props: {
+            w,
+            h,
+            url
+        },
+        x: 0,
+        y: 0,
+        typeName: "shape",
+        index: `a0`,
+        "rotation": 0,
+        "isLocked": false,
+        "opacity": 1,
+        "meta": {},
+
+    }
+    return root;
 }
 
 type TLDraw = {
@@ -272,6 +294,8 @@ export function convertToShapes(shapes: ISimpleShape[]
                 });
                 break
             }
+
+
         }
     }
     return result;
