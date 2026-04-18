@@ -61,6 +61,12 @@ function ctorRate(agent, baseQuantity = 1) {
 function counter(agent, quantity, { asRatio } = {}) {
   return { kind: "cont", agent: normalizeToAgent(agent), quantity, entity: "", asRatio };
 }
+function counterPercent(agent, quantity) {
+  return { kind: "cont", agent: normalizeToAgent(agent), quantity, entity: "%" };
+}
+function wholePercent() {
+  return { kind: "cont", agent: ["celek"], quantity: 100, entity: "%" };
+}
 function double() {
   return counter("dvojn\xE1sobek", 2);
 }
@@ -378,33 +384,32 @@ function commonSense(description) {
   return { kind: "common-sense", description };
 }
 function compareRule(a, b) {
-  if (a.entity != b.entity) {
-    throw `Mismatch entity ${a.entity}, ${b.entity} `;
+  const aEntity = toEntity(a.entity);
+  const bEntity = toEntity(b.entity);
+  if (!isSameEntity(aEntity, bEntity)) {
+    throw `Mismatch entity ${aEntity.entity} ${aEntity.unit ?? ""}, ${bEntity.entity} ${bEntity.unit ?? ""}`;
   }
   if (equalAgent(a.agent, b.agentB)) {
     return {
-      kind: "cont",
+      ...a,
       agent: [b.agentA],
-      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity + b.quantity : wrapToQuantity(`a.quantity + b.quantity`, { a, b }),
-      entity: a.entity,
-      unit: a.unit
+      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity + b.quantity : wrapToQuantity(`a.quantity + b.quantity`, { a, b })
     };
   } else if (equalAgent(a.agent, b.agentA)) {
     return {
-      kind: "cont",
+      ...a,
       agent: [b.agentB],
-      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity + -1 * b.quantity : wrapToQuantity(`a.quantity + -1 * b.quantity`, { a, b }),
-      entity: a.entity,
-      unit: a.unit
+      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity + -1 * b.quantity : wrapToQuantity(`a.quantity + -1 * b.quantity`, { a, b })
     };
   }
+  throw `No matching agents ${a.agent, b.agentA, b.agentB}`;
 }
 function inferCompareRule(a, b) {
   const result = compareRule(a, b);
   return {
     name: compareRule.name,
     inputParameters: extractKinds(a, b),
-    question: `${computeQuestion(result.quantity)} ${equalAgent(a.agent, b.agentB) ? b.agentA : b.agentB}${formatEntity(result)}?`,
+    question: `${computeQuestion(result.quantity)} ${equalAgent(a.agent, b.agentB) ? b.agentA : b.agentB}${formatEntity(toEntity(result.entity))}?`,
     result,
     options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.quantity) ? [
       { tex: `${formatNumber(a.quantity)} ${b.quantity > 0 ? " + " : " - "} ${formatNumber(abs(b.quantity))} `, result: formatNumber(result.quantity), ok: equalAgent(a.agent, b.agentB) },
@@ -1202,7 +1207,7 @@ function inferToPartWholeRatio(part, whole, last2) {
 }
 function compareDiffRule(a, b) {
   if (!(equalAgent(a.agent, b.agentMinuend) || equalAgent(a.agent, b.agentSubtrahend))) {
-    throw `Mismatch agents ${a.agent} any of ${b.agentMinuend} ${b.agentSubtrahend}`;
+    throw `CompareDiff: Mismatch agents ${a.agent} any of ${b.agentMinuend} ${b.agentSubtrahend}`;
   }
   if (a.entity != b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`;
@@ -2505,10 +2510,10 @@ function inferenceRuleEx(...args) {
     return inferTogglePartWholeAsPercentRule(a);
   } else if (a.kind === "ratio" && b.kind === "ratio") {
     return kind === "diff" ? inferToDifferenceAsRatioRule(a, b, last2) : kind === "comp-ratio" ? inferToPartWholeCompareRule(a, b) : inferTransitiveRatioRule(a, b);
-  } else if (a.kind === "comp" && b.kind === "cont") {
-    return kind === "comp-part-eq" ? inferPartEqualRule(a, b) : inferCompareRule(b, a);
-  } else if (a.kind === "cont" && b.kind === "comp") {
-    return kind === "comp-part-eq" ? inferPartEqualRule(b, a) : inferCompareRule(a, b);
+  } else if (a.kind === "comp" && (b.kind === "cont" || b.kind === "rate")) {
+    return kind === "comp-part-eq" && b.kind === "cont" ? inferPartEqualRule(a, b) : inferCompareRule(b, a);
+  } else if ((a.kind === "cont" || a.kind == "rate") && b.kind === "comp") {
+    return kind === "comp-part-eq" && a.kind === "cont" ? inferPartEqualRule(b, a) : inferCompareRule(a, b);
   } else if ((a.kind === "cont" || a.kind === "quota" || a.kind === "rate") && b.kind == "rate") {
     return kind === "ratio" ? inferToPartWholeRatio(b, a, last2) : inferRateRule(a, b);
   } else if (a.kind === "rate" && (b.kind == "cont" || b.kind === "quota" || b.kind === "rate")) {
@@ -2906,7 +2911,7 @@ function complementSingleAgent(a, arr) {
 function equalAgent(f, s) {
   const a = normalizeToAgent(f);
   const b = normalizeToAgent(s);
-  return a.some((d) => b.includes(d));
+  return a.join() === b.join() || a.some((d) => b.includes(d));
 }
 function mergeAgents(f, s) {
   return [.../* @__PURE__ */ new Set([...f, ...s])];
@@ -7014,10 +7019,16 @@ function to(...children) {
 function toCont(child, { agent, entity: entity3 }) {
   return toPredicate(child, mapToCont({ agent, entity: entity3 }));
 }
+function toPercent(child, { whole }) {
+  return toPredicate(child, mapToPercent({ whole }));
+}
 function toFrequency(child, { agent, entityBase, baseQuantity }) {
   return toPredicate(child, mapToFrequency({ agent, entityBase, baseQuantity }));
 }
-function toRate(child, { agent, entity: entity3, entityBase }) {
+function toRate(child, { agent, entityBase, baseQuantity }) {
+  return toPredicate(child, mapToRate({ agent, entityBase, baseQuantity }));
+}
+function toRate2(child, { agent, entity: entity3, entityBase }) {
   return to(child, {
     kind: "rate",
     agent,
@@ -7040,6 +7051,21 @@ function mapToCont({ agent, entity: entity3 }) {
     };
   };
 }
+function mapToRate({ agent, entityBase, baseQuantity }) {
+  return (node) => {
+    return {
+      kind: "rate",
+      agent,
+      quantity: node.quantity,
+      baseQuantity,
+      entity: {
+        entity: node.entity,
+        unit: node.unit
+      },
+      entityBase
+    };
+  };
+}
 function mapToFrequency({ agent, entityBase, baseQuantity }) {
   return (node) => {
     return {
@@ -7052,6 +7078,19 @@ function mapToFrequency({ agent, entityBase, baseQuantity }) {
         unit: node.unit
       },
       entityBase
+    };
+  };
+}
+function mapToPercent({ whole }) {
+  return (node) => {
+    const a = node.agent;
+    const part = Array.isArray(a) ? a.join() : a;
+    return {
+      kind: "ratio",
+      whole,
+      part,
+      ratio: node.quantity / 100,
+      asPercent: true
     };
   };
 }
@@ -9508,6 +9547,492 @@ function ctvercovaSit() {
   };
 }
 
+// src/cermat/M7A-2026/index.ts
+var M7A_2026_default = createLazyMap({
+  1: () => veslarka(),
+  4.1: () => aquapark().toboganJizdy,
+  4.2: () => aquapark().zetony,
+  7.1: () => pekar().a,
+  7.2: () => pekar().b,
+  7.3: () => pekar().c,
+  15.1: () => procenta().a,
+  15.2: () => procenta().b,
+  15.3: () => procenta().c
+});
+function veslarka() {
+  const entityBase = { entity: "\u010Das", unit: "min" };
+  return {
+    deductionTree: deduce(
+      deduce(
+        cont(["vesla\u0159ka", "ujede"], 6, entityBase.entity, entityBase.unit),
+        cont(["vesla\u0159ka", "ujela"], 1.5, entityBase.entity, entityBase.unit),
+        ctor("comp-ratio")
+      ),
+      contLength(["vesla\u0159ka", "ujela"], 350, "m")
+    )
+  };
+}
+function aquapark() {
+  const toboganLabel = "tobog\xE1n";
+  const clunLabel = "\u010Dlun";
+  const entityBase = "\u017Eeton";
+  const entity3 = "j\xEDzda";
+  const toboganRate = rate(toboganLabel, 3, entity3, entityBase, 4);
+  const clunRate = rate(clunLabel, 2, entity3, entityBase, 15);
+  const tobogan = deduce(
+    deduce(
+      cont(toboganLabel, 3, entity3),
+      cont(clunLabel, 2, entity3),
+      lcd("nejmen\u0161\xED spole\u010Dn\xFD po\u010Det j\xEDzd", entity3)
+    ),
+    ...doubleProduct(toboganLabel)
+  );
+  return {
+    toboganJizdy: {
+      deductionTree: deduce(
+        deduce(
+          cont("Petr", 70, entityBase),
+          deduce(
+            cont(clunLabel, 4, entity3),
+            clunRate
+          ),
+          ctorDifference(toboganLabel)
+        ),
+        toboganRate
+      )
+    },
+    zetony: {
+      deductionTree: deduce(
+        deduce(
+          tobogan,
+          toboganRate
+        ),
+        deduce(
+          deduce(
+            last(tobogan),
+            compRatio(toboganLabel, clunLabel, 2)
+          ),
+          clunRate
+        ),
+        sum("Nela celkem")
+      )
+    }
+  };
+}
+function pekar() {
+  const entity3 = { entity: "curk", unit: "g" };
+  const babovkyEntity = "b\xE1bovka";
+  const babovky = cont("spot\u0159eba dle receptu", 6, babovkyEntity);
+  const babovky3 = cont("spot\u0159eba dle receptu - polovina", 3, babovkyEntity);
+  const babovkyCil = cont("hledan\xE1 spot\u0159eba", 21, babovkyEntity);
+  const cukr = cont("spot\u0159eba dle receptu", 840, entity3.entity, entity3.unit);
+  const babovkaUnitRate = deduce(
+    cukr,
+    babovky,
+    ctor("rate")
+  );
+  return {
+    a: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            babovky,
+            babovky3,
+            ctor("comp-ratio")
+          ),
+          cukr
+        ),
+        deduce(
+          babovky3,
+          babovkyCil,
+          ctor("comp-ratio")
+        )
+      )
+    },
+    b: {
+      deductionTree: deduce(
+        deduce(
+          cont("spot\u0159eba v pek\xE1rn\u011B", 7, entity3.entity, "kg"),
+          ctorUnit("g")
+        ),
+        babovkaUnitRate
+      )
+    },
+    c: {
+      deductionTree: deduce(
+        cont("v\xE1no\u010Dka", 27, "kus"),
+        compRelativePercent("v\xE1no\u010Dka", "b\xE1bovka", -25)
+      )
+    }
+  };
+}
+function procenta() {
+  const entity3 = "sazenice";
+  const agentVsechnyDny = "v\u0161echny t\u0159i dny";
+  const prvniDen = deduce(
+    wholePercent(),
+    counterPercent("zb\xFDv\xE1 po 1. den", 60),
+    ctorDifference("1.den")
+  );
+  const prvniADruhyDen = deduce(
+    prvniDen,
+    compRelativePercent("1.den a 2.den", "1.den", 50)
+  );
+  const tretiDen = deduce(
+    wholePercent(),
+    last(prvniADruhyDen),
+    ctorDifference("3.den")
+  );
+  return {
+    a: {
+      deductionTree: deduce(
+        deduce(
+          prvniADruhyDen,
+          last(prvniDen),
+          ctorDifference("2.den")
+        ),
+        ctorOption("A", 20, { asPercent: true })
+      )
+    },
+    b: {
+      deductionTree: deduce(
+        tretiDen,
+        ctorOption("E", 40, { asPercent: true })
+      )
+    },
+    c: {
+      deductionTree: deduce(
+        deduce(
+          cont("Jarka", 162, entity3),
+          deduce(
+            cont("3.den", 216, entity3),
+            toPercent(last(tretiDen), { whole: agentVsechnyDny })
+          ),
+          ctorPercent()
+        ),
+        ctorOption("C", 30, { asPercent: true })
+      )
+    }
+  };
+}
+
+// src/cermat/M7B-2026/index.ts
+var M7B_2026_default = createLazyMap({
+  1: () => krabice(),
+  3.1: () => osa().dilek,
+  3.2: () => osa().a,
+  3.3: () => osa().b,
+  // 4.1: () => stuha().a,
+  // 4.2: () => stuha().b,
+  5.1: () => farmar().pocetCuket,
+  5.2: () => farmar().celkemCuket,
+  7.1: () => kvadr().a,
+  7.2: () => kvadr().b,
+  11: () => plasty(),
+  12: () => podlaha(),
+  13: () => nadrz().b,
+  14: () => nadrz().c,
+  15.1: () => procenta2().a,
+  15.2: () => procenta2().b,
+  15.3: () => procenta2().c
+});
+function krabice() {
+  const entity3 = "kapesn\xEDk";
+  return {
+    deductionTree: deduce(
+      cont("v\u011Bt\u0161\xED krabi\u010Dka", 200, entity3),
+      compRelative("v\u011Bt\u0161\xED krabi\u010Dka", "men\u0161\xED krabi\u010Dka", 1 / 4)
+    )
+  };
+}
+function osa() {
+  const entityBase = "d\xEDlek";
+  const entity3 = "hodnota";
+  const A = cont("od v\xFDchoz\xEDho bodu k A", 4, entityBase);
+  const B = cont("od v\xFDchoz\xEDho bodu k B", 7, entityBase);
+  const prvniBod = cont("v\xFDchoz\xED bod", 40, entity3);
+  const hodnotaDilku = deduce(
+    deduce(
+      cont("(A+B)", 168, entity3),
+      deduce(
+        cont("A k v\xFDchoz\xEDmu bodu", 40, entity3),
+        cont("B k v\xFDchoz\xEDmu bodu", 40, entity3),
+        sum("(A+B) k v\xFDchoz\xEDmu bodu")
+      ),
+      ctorDifference("osa")
+    ),
+    deduce(
+      A,
+      B,
+      sum("osa")
+    ),
+    ctor("rate")
+  );
+  return {
+    dilek: {
+      deductionTree: hodnotaDilku
+    },
+    a: {
+      deductionTree: deduce(
+        prvniBod,
+        deduce(
+          last(hodnotaDilku),
+          A
+        ),
+        sum("A")
+      )
+    },
+    b: {
+      deductionTree: deduce(
+        prvniBod,
+        deduce(
+          last(hodnotaDilku),
+          B
+        ),
+        sum("B")
+      )
+    }
+  };
+}
+function farmar() {
+  const entityBase = "bedna";
+  const entity3 = "cuketa";
+  const agent = "farm\xE1\u0159";
+  const prodano = cont("prod\xE1no", 310, entity3);
+  const male = cont(["sklizeno", "mal\xE9"], 4, entityBase);
+  const stredni = cont(["sklizeno", "st\u0159edn\xED"], 3, entityBase);
+  const comparison = comp("st\u0159edn\xED", "mal\xE9", 30, entity3);
+  const malaRate = rate(["prodan\xE9", "mal\xE9"], "x", entity3, entityBase);
+  const malaRateHodnota = deduce(
+    deduce(
+      deduce(
+        deduce(
+          compDiff(["sklizeno", "mal\xE9"].join(), ["prodan\xE9", "mal\xE9"].join(), 1, entityBase),
+          male
+        ),
+        malaRate
+      ),
+      deduce(
+        deduce(
+          compDiff(["sklizeno", "st\u0159edn\xED"].join(), ["prodan\xE9", "st\u0159edn\xED"].join(), 1, entityBase),
+          stredni
+        ),
+        deduce(
+          malaRate,
+          comparison
+        )
+      ),
+      sum("prod\xE1no")
+    ),
+    prodano,
+    ctorLinearEquation("mal\xE1", { entity: entity3 }, "x")
+  );
+  const malaRateHodnotaRate = toRate(last(malaRateHodnota), { agent: ["sklizeno", "mal\xE9"], entityBase: { entity: entityBase }, baseQuantity: 1 });
+  return {
+    pocetCuket: {
+      deductionTree: malaRateHodnota
+    },
+    celkemCuket: {
+      deductionTree: deduce(
+        deduce(
+          malaRateHodnotaRate,
+          male
+        ),
+        deduce(
+          deduce(
+            malaRateHodnotaRate,
+            comparison
+          ),
+          stredni
+        ),
+        cont(["sklizeno", "velk\xE9"], 120, entity3),
+        sum("sklizeno")
+      )
+    }
+  };
+}
+function kvadr() {
+  const podstava = contArea("podstava", 54);
+  const strany = ratios("strany", ["podstava", "v\u011Bt\u0161\xED bo\u010Dn\xED strana", "men\u0161\xED bo\u010Dn\xED strana"], [6, 15, 10]);
+  const vetsiBok = deduce(
+    podstava,
+    strany,
+    nthPart("v\u011Bt\u0161\xED bo\u010Dn\xED strana")
+  );
+  const mensiBok = deduce(
+    podstava,
+    strany,
+    nthPart("men\u0161\xED bo\u010Dn\xED strana")
+  );
+  return {
+    a: {
+      deductionTree: deduce(
+        deduce(
+          podstava,
+          vetsiBok,
+          mensiBok,
+          sum("3 bo\u010Dn\xED strany dohromady")
+        ),
+        ...doubleProduct("kv\xE1dr")
+      )
+    },
+    b: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            last(vetsiBok),
+            ...halfProduct("\u0161ed\xFD rovnob\u011B\u017En\xEDk na v\u011Bt\u0161\xED bo\u010Dn\xED stran\u011B")
+          ),
+          deduce(
+            last(mensiBok),
+            ...halfProduct("\u0161ed\xFD rovnob\u011B\u017En\xEDk na men\u0161\xED bo\u010Dn\xED stran\u011B")
+          ),
+          sum("2 \u0161ed\xE9 rovnob\u011B\u017En\xEDky dohromady")
+        ),
+        ...doubleProduct("v\u0161echny \u0161ed\xE9 rovnob\u011B\u017En\xEDky")
+      )
+    }
+  };
+}
+function nadrz() {
+  const entity3 = "\u010Derpadla";
+  const entityTime = { entity: "\u010Das", unit: "min" };
+  return {
+    b: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            compRelative("B", "A", 1 / 2),
+            proportion(true, ["\u010Derpadla", "doba"])
+          ),
+          cont("A", 6, entity3)
+        ),
+        ctorOption("C", 4)
+      )
+    },
+    c: {
+      deductionTree: deduce(
+        deduce(
+          cont("\u010D\xE1st C", 18, entityTime.entity, entityTime.unit),
+          deduce(
+            compRelativePercent("C", "A", -25),
+            cont("A", 40, entityTime.entity, entityTime.unit)
+          ),
+          ctorPercent()
+        ),
+        ctorOption("C", 60, { asPercent: true })
+      )
+    }
+  };
+}
+function podlaha() {
+  const dlazdice2 = deduce(
+    contArea("dla\u017Edice", 25),
+    evalFormulaAsCont(formulaRegistry.surfaceArea.square, (x) => x.a, "dla\u017Edice strana", dimensionEntity().length)
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          deduce(
+            contLength("d\xE9lka", 2, "m"),
+            ctorUnit("cm")
+          ),
+          dlazdice2,
+          ctor("quota")
+        ),
+        deduce(
+          deduce(
+            contLength("\u0161\xEDrka", 1.25, "m"),
+            ctorUnit("cm")
+          ),
+          last(dlazdice2),
+          ctor("quota")
+        ),
+        product("dla\u017Edice")
+      ),
+      ctorOption("A", 1e3)
+    )
+  };
+}
+function plasty() {
+  const entity3 = "plastov\xE1 v\xED\u010Dka";
+  const trickaRate = rate("v\xFDroba", 5, entity3, "tri\u010Dko");
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          cont("v\xFDroba", 1200, entity3),
+          deduce(
+            percent("v\xFDroba", "nepou\u017Eiteln\xE1", 15),
+            ctorComplement("pou\u017Eiteln\xE1")
+          )
+        ),
+        trickaRate
+      ),
+      ctorOption("B", 204)
+    )
+  };
+}
+function procenta2() {
+  const entity3 = "m\xEDst";
+  const celkem = cont("celkem", 300, entity3);
+  const muzi = cont("mu\u017Ei", 108, entity3);
+  const zeny = cont("\u017Eeny", 120, entity3);
+  const obsazeno = deduce(
+    muzi,
+    zeny,
+    sum("obsazeno")
+  );
+  const neobsazeno = deduce(
+    celkem,
+    obsazeno,
+    ctorDifference("neobsazeno")
+  );
+  return {
+    a: {
+      deductionTree: deduce(
+        deduce(
+          neobsazeno,
+          celkem,
+          ctorPercent()
+        ),
+        ctorOption("E", 24, { asPercent: true })
+      )
+    },
+    b: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            deduce(
+              last(obsazeno),
+              deduce(
+                ratio("neobsazeno", "zaplaceno", 1 / 6),
+                last(neobsazeno)
+              ),
+              sum("zaplaceno")
+            ),
+            celkem,
+            ctorPercent()
+          ),
+          ctorComplement("nezaplaceno")
+        ),
+        ctorOption("D", 20, { asPercent: true })
+      )
+    },
+    c: {
+      deductionTree: deduce(
+        deduce(
+          muzi,
+          zeny,
+          ctorComparePercent()
+        ),
+        ctorOption("A", 10, { asPercent: true })
+      )
+    }
+  };
+}
+
 // src/math/M5A-2023/index.ts
 var cetarParams2 = {
   input: {
@@ -10194,7 +10719,7 @@ var M5A_2025_default = createLazyMap({
   8.1: () => turistickyOdil().pocetMuzu,
   8.2: () => turistickyOdil().pocetClenu,
   8.3: () => turistickyOdil().pocetZen,
-  9: () => farmar(),
+  9: () => farmar2(),
   10: () => penize(),
   11: () => ctvercovaSit3(),
   12: () => ctvercovaSit22(),
@@ -10580,7 +11105,7 @@ function domecek2() {
     }
   };
 }
-function farmar() {
+function farmar2() {
   const entityBase = "kr\xE1va";
   const entity3 = "objem";
   const unit = "l";
@@ -11680,9 +12205,9 @@ var M9B_2023_default = createLazyMap({
   12: () => uhly2(),
   13: () => hranol3(),
   14: () => kosikar(),
-  15.1: () => procenta().skauti,
-  15.2: () => procenta().kapesne,
-  15.3: () => procenta().vstupenky,
+  15.1: () => procenta3().skauti,
+  15.2: () => procenta3().kapesne,
+  15.3: () => procenta3().vstupenky,
   16.1: () => vzorCtverce().pridano,
   16.2: () => vzorCtverce().rozdil,
   16.3: () => vzorCtverce().pocet
@@ -11863,7 +12388,7 @@ function kosikar() {
     )
   };
 }
-function procenta() {
+function procenta3() {
   const entity3 = "\u010Dleni";
   const letos = cont("letos", 60, entity3);
   const vstupenkyEntity = "vstupenky";
@@ -12086,9 +12611,9 @@ var M9C_2023_default = createLazyMap({
   12: () => vagony(),
   13: () => uhly3(),
   14: () => hranol4(),
-  15.1: () => procenta2().encyklopediePocetStran,
-  15.2: () => procenta2().rozaPocetStran,
-  15.3: () => procenta2().pocetKnih,
+  15.1: () => procenta4().encyklopediePocetStran,
+  15.2: () => procenta4().rozaPocetStran,
+  15.3: () => procenta4().pocetKnih,
   16.1: () => obrazce2().bileCtverce,
   16.2: () => obrazce2().sedeCtverce,
   16.3: () => obrazce2().sedeCtverecPosledniObrazec
@@ -12325,7 +12850,7 @@ function hranol4() {
     )
   };
 }
-function procenta2() {
+function procenta4() {
   const entity3 = "knih";
   const nemecky = cont("n\u011Bmecky psan\xFDch", 30, entity3);
   const celkemKnih = deduce(
@@ -12380,7 +12905,7 @@ function vagony() {
           ratio("souprava", "lokomotiva", 1 / 17),
           cont("v\u0161echny vag\xF3ny", 16, entity3)
         ),
-        toRate(
+        toRate2(
           compRelative("lokomotiva", vagonL, -1 / 4),
           {
             agent: ["souprava"],
@@ -12490,10 +13015,10 @@ var M9D_2023_default = createLazyMap({
   11.2: () => park()[2],
   11.3: () => park()[3],
   12: () => obdelnik(),
-  14: () => kvadr(),
-  15.1: () => procenta3().loni,
-  15.2: () => procenta3().zaci,
-  15.3: () => procenta3().muzi,
+  14: () => kvadr2(),
+  15.1: () => procenta5().loni,
+  15.2: () => procenta5().zaci,
+  15.3: () => procenta5().muzi,
   16.1: () => obrazce3().pocetUsecek,
   16.2: () => obrazce3().rozdilPuntiku,
   16.3: () => obrazce3().pocetUsecekPro300Puntiku
@@ -12623,7 +13148,7 @@ function obdelnik() {
     )
   };
 }
-function procenta3() {
+function procenta5() {
   const entity3 = "uchaze\u010D\u016F";
   const zaci = "\u017E\xE1ci";
   const dospely = "dosp\u011Bl\xFD";
@@ -12748,7 +13273,7 @@ function park() {
     }
   };
 }
-function kvadr() {
+function kvadr2() {
   const delkaL = "d\xE9lka";
   const sirkaL = "\u0161\xED\u0159ka";
   const delka = contLength(delkaL, 8);
@@ -13317,15 +13842,15 @@ var M9B_2024_default = createLazyMap({
   8.1: () => kruhy().osmyObrazec,
   8.2: () => kruhy().tmaveKruhy,
   11: () => hracka(),
-  12: () => pekar(),
+  12: () => pekar2(),
   13: () => uhlyTrojuhelniku(),
   14: () => pulkruh(),
   15.1: () => graf().stejnyPocet,
   15.2: () => graf().ceskyJazyk,
   15.3: () => graf().matika,
-  16.1: () => procenta4().lyzarskyPobyt,
-  16.2: () => procenta4().cenaUcebnice,
-  16.3: () => procenta4().darek
+  16.1: () => procenta6().lyzarskyPobyt,
+  16.2: () => procenta6().cenaUcebnice,
+  16.3: () => procenta6().darek
 });
 function delkaKroku() {
   const entityBase = "krok";
@@ -13452,7 +13977,7 @@ function hracka() {
     )
   };
 }
-function pekar() {
+function pekar2() {
   const labelSmall = "mal\xE9";
   const labelBig = "velk\xE9";
   const entityBase = "kol\xE1\u010Dky";
@@ -13610,7 +14135,7 @@ function kruhy() {
     }
   };
 }
-function procenta4() {
+function procenta6() {
   const entity3 = "korun";
   const entityEUR = "euro";
   const entityPercent2 = "%";
@@ -14072,9 +14597,9 @@ var M9D_2024_default = createLazyMap({
   15.1: () => jablka().stejnaMnozstvi,
   15.2: () => jablka().jenLevnejsi,
   15.3: () => jablka().nejviceKilogramu,
-  16.1: () => procenta5().neznameCislo,
-  16.2: () => procenta5().zlomky,
-  16.3: () => procenta5().cerpadla
+  16.1: () => procenta7().neznameCislo,
+  16.2: () => procenta7().zlomky,
+  16.3: () => procenta7().cerpadla
 });
 function trasa() {
   const dim2 = dimensionEntity();
@@ -14428,7 +14953,7 @@ function jablka() {
     }
   };
 }
-function procenta5() {
+function procenta7() {
   const entity3 = { entity: "voda", unit: "litr" };
   const entityBase = { entity: "\u010Das", unit: "h" };
   const cerpadloMensiVykon = "m\xE9n\u011B v\xFDkonn\xE9 \u010Derpadlo";
@@ -15949,9 +16474,9 @@ var M9D_2025_default = createLazyMap({
   12: () => krychle3(),
   13: () => vlak(),
   14: () => brhlikLesni(),
-  15.1: () => procenta6().a,
-  15.2: () => procenta6().b,
-  15.3: () => procenta6().c
+  15.1: () => procenta8().a,
+  15.2: () => procenta8().b,
+  15.3: () => procenta8().c
 });
 function uhly7() {
   const pravyUhel = contRightAngle();
@@ -16285,7 +16810,7 @@ function brhlikLesni() {
     )
   };
 }
-function procenta6() {
+function procenta8() {
   const entity3 = "let";
   const zivotPredPrestehovanim = cont("\u017Eivot p\u0159ed p\u0159est\u011Bhov\xE1n\xEDm do Plzn\u011B", 27, entity3);
   const compareDvojceVsBratr = compRelativePercent("dvoj\u010De", "star\u0161\xED bratr", -40);
@@ -16676,9 +17201,9 @@ var M9A_2026_default = createLazyMap({
   12: () => parkoviste2(),
   13: () => obsah(),
   14: () => hranol5(),
-  15.1: () => procenta7().prvni,
-  15.2: () => procenta7().druha,
-  15.3: () => procenta7().treti
+  15.1: () => procenta9().prvni,
+  15.2: () => procenta9().druha,
+  15.3: () => procenta9().treti
 });
 function sud3() {
   return {
@@ -16916,7 +17441,7 @@ function uhel() {
     }
   };
 }
-function procenta7() {
+function procenta9() {
   const entity3 = "kv\xE1dr";
   const b = cont("t\u011Bleso B", 3, entity3);
   const c = cont("t\u011Bleso C", 5, entity3);
@@ -16972,9 +17497,9 @@ var M9B_2026_default = createLazyMap({
   11.3: () => parkoviste3().c,
   13: () => krychle4(),
   14: () => hrnek(),
-  15.1: () => procenta8().prvni,
-  15.2: () => procenta8().druha,
-  15.3: () => procenta8().treti
+  15.1: () => procenta10().prvni,
+  15.2: () => procenta10().druha,
+  15.3: () => procenta10().treti
 });
 function vypocetPlocha() {
   return {
@@ -17203,7 +17728,7 @@ function krychle4() {
     )
   };
 }
-function procenta8() {
+function procenta10() {
   const entity3 = "kg";
   const entityPercent2 = "%";
   const dzemPercent = percent("celek", "d\u017Eem", 65);
@@ -17272,9 +17797,9 @@ var M9I_2026_default = createLazyMap({
   12: () => hranol6(),
   13: () => obdelnik2(),
   14: () => uhelAlfa2(),
-  15.1: () => procenta9().prvni,
-  15.2: () => procenta9().druha,
-  15.3: () => procenta9().treti,
+  15.1: () => procenta11().prvni,
+  15.2: () => procenta11().druha,
+  15.3: () => procenta11().treti,
   16.1: () => trojuhelnik3().a,
   16.2: () => trojuhelnik3().b,
   16.3: () => trojuhelnik3().c
@@ -17550,7 +18075,7 @@ function trojuhelnik3() {
     }
   };
 }
-function procenta9() {
+function procenta11() {
   const entityCena = "cena";
   const unit = "K\u010D";
   const entityKusy = "kus";
@@ -17632,6 +18157,8 @@ var word_problems_default = createLazyMap({
   "M7A-2024": () => M7A_2024_default,
   "M7A-2025": () => M7A_2025_default,
   "M7B-2025": () => M7B_2025_default,
+  "M7A-2026": () => M7A_2026_default,
+  "M7B-2026": () => M7B_2026_default,
   // "M9I-2017": () => M9I_2017,
   "M7I-2018": () => M7I_2018_default,
   "M9A-2023": () => M9A_2023_default,

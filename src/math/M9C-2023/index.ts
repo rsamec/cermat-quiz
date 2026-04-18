@@ -1,5 +1,5 @@
 import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, pythagoras, rate, ratio, sum, product, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorBooleanOption, contLength, dimensionEntity, nthPart, comp, oblongNumbers, nth, counter, ctorRound, ratios, alligation, ctorRatiosInvert, percent, ctorExpressionOption, contArea, halfProduct, evalFormulaAsCont, formulaRegistry, baseAreaVolume, circleArea, triangleAngle, compAngle, contAngle, contRightAngle } from "../../components/math";
-import { anglesNames, createLazyMap, deduce, deduceAs, last, to, toCont, toRate } from "../../utils/deduce-utils";
+import { anglesNames, createLazyMap, deduce, deduceAs, last, to, toCont, toRate2 } from "../../utils/deduce-utils";
 
 
 export default createLazyMap({
@@ -343,7 +343,7 @@ function vagony() {
                     ratio("souprava", "lokomotiva", 1 / 17),
                     cont("všechny vagóny", 16, entity),
                 ),
-                toRate(
+                toRate2(
                     compRelative("lokomotiva", vagonL, -1 / 4), {
                     agent: ["souprava"], entity: { entity: vagonL }, entityBase: { entity }
                 })

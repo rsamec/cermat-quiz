@@ -485,6 +485,14 @@ export function ctorRate(agent: string | Agent, baseQuantity: number = 1) {
 export function counter(agent: string | Agent, quantity: number, { asRatio }: { asRatio?: boolean } = {}): Container {
   return { kind: "cont", agent: normalizeToAgent(agent), quantity, entity: '', asRatio }
 }
+export function counterPercent(agent: string | Agent, quantity: number): Container {
+  return { kind: "cont", agent: normalizeToAgent(agent), quantity, entity: '%' }
+}
+
+export function wholePercent(): Container {
+  return { kind: "cont", agent: ["celek"], quantity: 100, entity: '%' }
+}
+
 export function double() {
   return counter("dvojnásobek", 2)
 }
@@ -879,35 +887,39 @@ export function commonSense(description: string): CommonSense {
 
 // #region Inference rules
 
-function compareRule(a: Container, b: Comparison): Container {
+function compareRule(a: Container | Rate, b: Comparison): Container | Rate {
   //check
-  if (a.entity != b.entity) {
-    throw `Mismatch entity ${a.entity}, ${b.entity} `
+  const aEntity = toEntity(a.entity)
+  const bEntity = toEntity(b.entity)
+  if (!isSameEntity(aEntity, bEntity)) {
+    throw `Mismatch entity ${aEntity.entity} ${aEntity.unit ?? ''}, ${bEntity.entity} ${bEntity.unit ?? ''}`
   }
+
 
   if (equalAgent(a.agent, b.agentB)) {
     return {
-      kind: 'cont', agent: [b.agentA],
-      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity + b.quantity : wrapToQuantity(`a.quantity + b.quantity`, { a, b }),
-      entity: a.entity, unit: a.unit
+      ...a,
+      agent: [b.agentA],      
+      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity + b.quantity : wrapToQuantity(`a.quantity + b.quantity`, { a, b }),    
     }
   }
   else if (equalAgent(a.agent, b.agentA)) {
     return {
-      kind: 'cont', agent: [b.agentB],
-      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity + -1 * b.quantity : wrapToQuantity(`a.quantity + -1 * b.quantity`, { a, b }),
-      entity: a.entity, unit: a.unit
+      ...a,
+      agent: [b.agentB],
+      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity + -1 * b.quantity : wrapToQuantity(`a.quantity + -1 * b.quantity`, { a, b }),      
     }
   }
+  throw `No matching agents ${a.agent, b.agentA, b.agentB}`
 }
 
-function inferCompareRule(a: Container, b: Comparison): Question<Container> {
+function inferCompareRule(a: Container | Rate, b: Comparison): Question<Container | Rate> {
   const result = compareRule(a, b)
 
   return {
     name: compareRule.name,
     inputParameters: extractKinds(a, b),
-    question: `${computeQuestion(result.quantity)} ${equalAgent(a.agent, b.agentB) ? b.agentA : b.agentB}${formatEntity(result)}?`,
+    question: `${computeQuestion(result.quantity)} ${equalAgent(a.agent, b.agentB) ? b.agentA : b.agentB}${formatEntity(toEntity(result.entity))}?`,
     result,
     options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.quantity)
       ? [
@@ -1825,7 +1837,7 @@ function inferToPartWholeRatio(part: Container | Rate | Quota, whole: Container 
 
 function compareDiffRule(a: Container, b: ComparisonDiff): Container {
   if (!(equalAgent(a.agent, b.agentMinuend) || equalAgent(a.agent, b.agentSubtrahend))) {
-    throw `Mismatch agents ${a.agent} any of ${b.agentMinuend} ${b.agentSubtrahend}`
+    throw `CompareDiff: Mismatch agents ${a.agent} any of ${b.agentMinuend} ${b.agentSubtrahend}`
   }
   if (a.entity != b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`
@@ -2323,7 +2335,7 @@ function toRatioCompareRule(a: Container | Rate, b: Container | Rate, ctor: Rati
   if (!isSameEntity(a.entity, b.entity)) {
     throw `Mismatch entity ${JSON.stringify(b.entity)}, ${JSON.stringify(a.entity)}`
   }
-  const [bAgent, aAgent]  = arrayDiffs(b.agent,a.agent);
+  const [bAgent, aAgent] = arrayDiffs(b.agent, a.agent);
   return {
     kind: 'comp-ratio',
     agentB: singleAgent(bAgent),
@@ -3362,13 +3374,13 @@ function inferenceRuleEx(...args: Predicate[]): Question<TruePredicate> {
         ? inferToPartWholeCompareRule(a, b)
         : inferTransitiveRatioRule(a, b)
   }
-  else if (a.kind === "comp" && b.kind === "cont") {
+  else if (a.kind === "comp" && (b.kind === "cont" || b.kind === "rate")) {
 
-    return kind === "comp-part-eq" ? inferPartEqualRule(a, b) : inferCompareRule(b, a);
+    return kind === "comp-part-eq" && b.kind === "cont" ? inferPartEqualRule(a, b) : inferCompareRule(b, a);
   }
-  else if (a.kind === "cont" && b.kind === "comp") {
+  else if ((a.kind === "cont" || a.kind == "rate") && b.kind === "comp") {
 
-    return kind === "comp-part-eq" ? inferPartEqualRule(b, a) : inferCompareRule(a, b);
+    return kind === "comp-part-eq" && a.kind === "cont" ? inferPartEqualRule(b, a) : inferCompareRule(a, b);
   }
   else if ((a.kind === "cont" || a.kind === "quota" || a.kind === "rate") && b.kind == "rate") {
     return kind === "ratio" ? inferToPartWholeRatio(b, a, last) : inferRateRule(a, b)
@@ -3529,9 +3541,7 @@ function inferenceRuleEx(...args: Predicate[]): Question<TruePredicate> {
           ? inferNthPartFactorByRule(a, b, last)
           : kind === "nth-part"
             ? inferPartToPartRule(b, a, last) : inferPartToPartRule(b, a);
-
-
-  }
+  }    
   else if (a.kind === "cont" && b.kind === "comp-diff") {
     return inferCompareDiffRule(a, b);
   }
@@ -3971,13 +3981,13 @@ function complementSingleAgent(a: Agent, arr: Agent[]) {
 function equalAgent(f: string | Agent, s: string | Agent) {
   const a = normalizeToAgent(f);
   const b = normalizeToAgent(s);
-  return a.some(d => b.includes(d));
+  return a.join() === b.join() || a.some(d => b.includes(d));
 }
 function mergeAgents(f: Agent, s: Agent) {
   return [...new Set([...f, ...s])];
 }
 function mergeAgent(agent: string, newAgent: string, array: Agent) {
-  const arr = Array.isArray(array) ? array: [array];
+  const arr = Array.isArray(array) ? array : [array];
   const i = arr.indexOf(agent)
   return i !== -1 ? arr.toSpliced(i, 1, newAgent) : newAgent;
 }

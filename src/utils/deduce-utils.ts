@@ -1,5 +1,5 @@
-import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate } from "../components/math.js"
-import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison, Frequency, PredicateKind } from "../components/math.js"
+import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate, cont } from "../components/math.js"
+import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison, Frequency, PredicateKind, PartWholeRatio} from "../components/math.js"
 import { partionArray } from '../utils/common-utils.js';
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
 import { evaluate, substitute, toEquationExprAsTex, colors } from "./math-solver.js"
@@ -71,10 +71,21 @@ export function to(...children: Node[]): TreeNode {
 export function toCont(child: TreeNode | Predicate, { agent, entity }: { agent: string, entity?: { entity: string, unit?: string } }): TreeNode {
   return toPredicate(child, mapToCont({ agent, entity }));
 }
+export function toPercent(child: TreeNode | Predicate, { whole}: { whole:string }): TreeNode {
+  return toPredicate(child, mapToPercent({ whole }));
+}
 export function toFrequency(child: TreeNode | Predicate, { agent, entityBase, baseQuantity }: { agent: string, entityBase: { entity: string, unit?: string }, baseQuantity: number }): TreeNode {
   return toPredicate(child, mapToFrequency({ agent, entityBase, baseQuantity }));
 }
-export function toRate(child: RatioComparison, { agent, entity, entityBase }: { agent: string[], entity: EntityDef, entityBase: EntityDef }) {
+export function toRate(child: TreeNode | Predicate, { agent, entityBase, baseQuantity }: { agent: string[], entityBase: { entity: string, unit?: string }, baseQuantity: number }): TreeNode {
+  return toPredicate(child, mapToRate({ agent, entityBase, baseQuantity }));
+}
+export function toQuotaRest(child:  TreeNode | Predicate, { agent, entity}: { agent: string[], entity: { entity: string, unit?: string }}): TreeNode {
+  return toPredicate(child, (node: Quota) => cont(agent,  node.restQuantity as number, entity.entity, entity.unit));
+}
+
+
+export function toRate2(child: RatioComparison, { agent, entity, entityBase }: { agent: string[], entity: EntityDef, entityBase: EntityDef }) {
   return to(child, {
     kind: 'rate',
     agent,
@@ -109,6 +120,22 @@ export function mapToCont({ agent, entity }: { agent: string, entity?: { entity:
     }
   }
 }
+export function mapToRate({ agent, entityBase, baseQuantity }: { agent: string[], entityBase: { entity: string, unit?: string }, baseQuantity: number }) {
+  return (node: Container): Rate => {
+    return {
+      kind: 'rate',
+      agent,
+      quantity: node.quantity,
+      baseQuantity,
+      entity: {
+        entity: node.entity,
+        unit: node.unit,
+      },
+      entityBase
+    }
+  }
+}
+
 export function mapToFrequency({ agent, entityBase, baseQuantity }: { agent: string, entityBase: { entity: string, unit?: string }, baseQuantity: number }) {
   return (node: Container): Frequency => {
     return {
@@ -124,6 +151,20 @@ export function mapToFrequency({ agent, entityBase, baseQuantity }: { agent: str
     }
   }
 }
+export function mapToPercent({ whole }: { whole: string}) {
+  return (node: Container): PartWholeRatio => {
+    const a = node.agent;
+    const part = Array.isArray(a) ? a.join() : a;
+    return {
+      kind: 'ratio',
+      whole,
+      part,
+      ratio: (node.quantity as number) / 100,
+      asPercent: true, 
+    }
+  }
+}
+
 export function toPredicate<T extends Predicate>(node: TreeNode | T, mapFn: (node: T) => Predicate): TreeNode {
   const nodeToMap = isPredicate(node) ? node : last(node) as T;
   const newNode = mapFn(nodeToMap);

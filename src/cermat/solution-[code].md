@@ -104,8 +104,6 @@ const output = ids.map(id => {
   const artifacts = notebookArtifacts[id] ?? []
   const mathArtifacts = mathArtifactsAll[id] ?? []
   
-  console.log(mathArtifacts)
-
   return html.fragment`
   ${mdPlus.unsafe(quiz.content([id], { ids, render: 'content' }), { docId: `${code}-${id}` })}
   ${renderButtons(quiz.content([id], { ids:[id], render: 'content' }), values)}

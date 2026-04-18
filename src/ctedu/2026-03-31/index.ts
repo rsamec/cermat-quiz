@@ -1,5 +1,5 @@
-import { ctor, ctorOption, sum, ratio, ctorUnit, compRelativePercent, compRelative, contAngle, cont, ctorDifference, ctorLinearEquation, nthPart, compRatio, proportion, percent, ratios, ctorComparePercent, rate, contLength, dimensionEntity, ctorRatios, ctorRate, ctorBooleanOption, evalFormulaAsCont, formulaRegistry, productCombine, contVolume, compAngle } from "../../components/math";
-import { createLazyMap, deduce, last, toRate } from "../../utils/deduce-utils";
+import { ctor, ctorOption, sum, ctorUnit, compRelativePercent, cont, ctorDifference, percent, contLength, dimensionEntity, evalFormulaAsCont, formulaRegistry, productCombine, contVolume } from "../../components/math";
+import { createLazyMap, deduce, last } from "../../utils/deduce-utils";
 
 export default createLazyMap({
     4.1: () => bazen().litry,

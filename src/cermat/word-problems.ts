@@ -2,6 +2,8 @@ import M7A_2023 from '../math/M7A-2023/index';
 import M7A_2024 from '../math/M7A-2024/index';
 import M7A_2025 from '../math/M7A-2025/index';
 import M7B_2025 from '../math/M7B-2025/index';
+import M7A_2026 from './M7A-2026/index';
+import M7B_2026 from './M7B-2026/index';
 
 import M5A_2023 from '../math/M5A-2023/index';
 import M5A_2024 from '../math/M5A-2024/index';
@@ -33,6 +35,8 @@ import M9A_2026 from './M9A-2026/index';
 import M9B_2026 from './M9B-2026/index';
 import M9I_2026 from './M9I-2026/index';
 
+
+
 import { createLazyMap } from '../utils/deduce-utils';
 
 //re export - due to static server rendering
@@ -51,7 +55,9 @@ export default createLazyMap({
     "M7A-2024": () => M7A_2024,
     "M7A-2025": () => M7A_2025,
     "M7B-2025": () => M7B_2025,
-  
+    "M7A-2026": () => M7A_2026,
+    "M7B-2026": () => M7B_2026,
+
     // "M9I-2017": () => M9I_2017,
     "M7I-2018": () => M7I_2018,
   

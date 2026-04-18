@@ -40,6 +40,9 @@ function isRatePredicate(value) {
 function isFrequencyPredicate(value) {
   return value.kind === "frequency";
 }
+function cont(agent, quantity, entity, unit, opts) {
+  return { kind: "cont", agent: normalizeToAgent(agent), quantity, entity, unit, asRatio: opts?.asFraction };
+}
 function convertToExpression(expectedValue, compareTo, expectedValueOptions, variable = "x") {
   const convertedValue = Array.isArray(expectedValue) ? expectedValue : expectedValueOptions.asFraction ? helpers.convertToFraction(expectedValue) : expectedValueOptions.asPercent ? expectedValue / 100 : expectedValue;
   const toCompare = (comp) => `${variable} ${comp} ${convertedValue}`;
@@ -62,33 +65,32 @@ function compDiff(agentMinuend, agentSubtrahend, quantity, entity) {
   return { kind: "comp-diff", agentMinuend, agentSubtrahend, quantity, entity };
 }
 function compareRule(a, b) {
-  if (a.entity != b.entity) {
-    throw `Mismatch entity ${a.entity}, ${b.entity} `;
+  const aEntity = toEntity(a.entity);
+  const bEntity = toEntity(b.entity);
+  if (!isSameEntity(aEntity, bEntity)) {
+    throw `Mismatch entity ${aEntity.entity} ${aEntity.unit ?? ""}, ${bEntity.entity} ${bEntity.unit ?? ""}`;
   }
   if (equalAgent(a.agent, b.agentB)) {
     return {
-      kind: "cont",
+      ...a,
       agent: [b.agentA],
-      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity + b.quantity : wrapToQuantity(`a.quantity + b.quantity`, { a, b }),
-      entity: a.entity,
-      unit: a.unit
+      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity + b.quantity : wrapToQuantity(`a.quantity + b.quantity`, { a, b })
     };
   } else if (equalAgent(a.agent, b.agentA)) {
     return {
-      kind: "cont",
+      ...a,
       agent: [b.agentB],
-      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity + -1 * b.quantity : wrapToQuantity(`a.quantity + -1 * b.quantity`, { a, b }),
-      entity: a.entity,
-      unit: a.unit
+      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity + -1 * b.quantity : wrapToQuantity(`a.quantity + -1 * b.quantity`, { a, b })
     };
   }
+  throw `No matching agents ${a.agent, b.agentA, b.agentB}`;
 }
 function inferCompareRule(a, b) {
   const result = compareRule(a, b);
   return {
     name: compareRule.name,
     inputParameters: extractKinds(a, b),
-    question: `${computeQuestion(result.quantity)} ${equalAgent(a.agent, b.agentB) ? b.agentA : b.agentB}${formatEntity(result)}?`,
+    question: `${computeQuestion(result.quantity)} ${equalAgent(a.agent, b.agentB) ? b.agentA : b.agentB}${formatEntity(toEntity(result.entity))}?`,
     result,
     options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.quantity) ? [
       { tex: `${formatNumber(a.quantity)} ${b.quantity > 0 ? " + " : " - "} ${formatNumber(abs(b.quantity))} `, result: formatNumber(result.quantity), ok: equalAgent(a.agent, b.agentB) },
@@ -886,7 +888,7 @@ function inferToPartWholeRatio(part, whole, last2) {
 }
 function compareDiffRule(a, b) {
   if (!(equalAgent(a.agent, b.agentMinuend) || equalAgent(a.agent, b.agentSubtrahend))) {
-    throw `Mismatch agents ${a.agent} any of ${b.agentMinuend} ${b.agentSubtrahend}`;
+    throw `CompareDiff: Mismatch agents ${a.agent} any of ${b.agentMinuend} ${b.agentSubtrahend}`;
   }
   if (a.entity != b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`;
@@ -2189,10 +2191,10 @@ function inferenceRuleEx(...args) {
     return inferTogglePartWholeAsPercentRule(a);
   } else if (a.kind === "ratio" && b.kind === "ratio") {
     return kind === "diff" ? inferToDifferenceAsRatioRule(a, b, last2) : kind === "comp-ratio" ? inferToPartWholeCompareRule(a, b) : inferTransitiveRatioRule(a, b);
-  } else if (a.kind === "comp" && b.kind === "cont") {
-    return kind === "comp-part-eq" ? inferPartEqualRule(a, b) : inferCompareRule(b, a);
-  } else if (a.kind === "cont" && b.kind === "comp") {
-    return kind === "comp-part-eq" ? inferPartEqualRule(b, a) : inferCompareRule(a, b);
+  } else if (a.kind === "comp" && (b.kind === "cont" || b.kind === "rate")) {
+    return kind === "comp-part-eq" && b.kind === "cont" ? inferPartEqualRule(a, b) : inferCompareRule(b, a);
+  } else if ((a.kind === "cont" || a.kind == "rate") && b.kind === "comp") {
+    return kind === "comp-part-eq" && a.kind === "cont" ? inferPartEqualRule(b, a) : inferCompareRule(a, b);
   } else if ((a.kind === "cont" || a.kind === "quota" || a.kind === "rate") && b.kind == "rate") {
     return kind === "ratio" ? inferToPartWholeRatio(b, a, last2) : inferRateRule(a, b);
   } else if (a.kind === "rate" && (b.kind == "cont" || b.kind === "quota" || b.kind === "rate")) {
@@ -2586,7 +2588,7 @@ function complementSingleAgent(a, arr) {
 function equalAgent(f, s) {
   const a = normalizeToAgent(f);
   const b = normalizeToAgent(s);
-  return a.some((d) => b.includes(d));
+  return a.join() === b.join() || a.some((d) => b.includes(d));
 }
 function mergeAgents(f, s) {
   return [.../* @__PURE__ */ new Set([...f, ...s])];
@@ -3453,11 +3455,11 @@ Fraction.prototype = {
   "simplify": function(eps2) {
     const ieps = BigInt(1 / (eps2 || 1e-3) | 0);
     const thisABS = this["abs"]();
-    const cont = thisABS["toContinued"]();
-    for (let i = 1; i < cont.length; i++) {
-      let s = newFraction(cont[i - 1], C_ONE);
+    const cont2 = thisABS["toContinued"]();
+    for (let i = 1; i < cont2.length; i++) {
+      let s = newFraction(cont2[i - 1], C_ONE);
       for (let k = i - 2; k >= 0; k--) {
-        s = s["inverse"]()["add"](cont[k]);
+        s = s["inverse"]()["add"](cont2[k]);
       }
       let t = s["sub"](thisABS);
       if (t["n"] * ieps < t["d"]) {
@@ -6504,10 +6506,19 @@ function to(...children) {
 function toCont(child, { agent, entity }) {
   return toPredicate(child, mapToCont({ agent, entity }));
 }
+function toPercent(child, { whole }) {
+  return toPredicate(child, mapToPercent({ whole }));
+}
 function toFrequency(child, { agent, entityBase, baseQuantity }) {
   return toPredicate(child, mapToFrequency({ agent, entityBase, baseQuantity }));
 }
-function toRate(child, { agent, entity, entityBase }) {
+function toRate(child, { agent, entityBase, baseQuantity }) {
+  return toPredicate(child, mapToRate({ agent, entityBase, baseQuantity }));
+}
+function toQuotaRest(child, { agent, entity }) {
+  return toPredicate(child, (node) => cont(agent, node.restQuantity, entity.entity, entity.unit));
+}
+function toRate2(child, { agent, entity, entityBase }) {
   return to(child, {
     kind: "rate",
     agent,
@@ -6530,6 +6541,21 @@ function mapToCont({ agent, entity }) {
     };
   };
 }
+function mapToRate({ agent, entityBase, baseQuantity }) {
+  return (node) => {
+    return {
+      kind: "rate",
+      agent,
+      quantity: node.quantity,
+      baseQuantity,
+      entity: {
+        entity: node.entity,
+        unit: node.unit
+      },
+      entityBase
+    };
+  };
+}
 function mapToFrequency({ agent, entityBase, baseQuantity }) {
   return (node) => {
     return {
@@ -6542,6 +6568,19 @@ function mapToFrequency({ agent, entityBase, baseQuantity }) {
         unit: node.unit
       },
       entityBase
+    };
+  };
+}
+function mapToPercent({ whole }) {
+  return (node) => {
+    const a = node.agent;
+    const part = Array.isArray(a) ? a.join() : a;
+    return {
+      kind: "ratio",
+      whole,
+      part,
+      ratio: node.quantity / 100,
+      asPercent: true
     };
   };
 }
@@ -7288,13 +7327,18 @@ export {
   mapNodeChildrenToPredicates,
   mapToCont,
   mapToFrequency,
+  mapToPercent,
+  mapToRate,
   mdFormatTable,
   to,
   toAs,
   toCont,
   toFrequency,
+  toPercent,
   toPredicate,
+  toQuotaRest,
   toRate,
+  toRate2,
   wordProblemGroupById
 };
 /*!
