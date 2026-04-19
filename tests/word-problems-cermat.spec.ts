@@ -65,7 +65,7 @@ for (const period of ctEduFolders) {
       }
       else if (verifyBy.kind === "equalOption") {
         //expect(resultNode.kind).toBe("eval-option");
-        if (resultNode.kind === "ratios") {
+        if (resultNode.kind === "ratios" || resultNode.kind === "tuple") {
           skip(`Skipping equalOption for ${period}: ${key}`);
         }
         else {

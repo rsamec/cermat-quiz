@@ -899,15 +899,15 @@ function compareRule(a: Container | Rate, b: Comparison): Container | Rate {
   if (equalAgent(a.agent, b.agentB)) {
     return {
       ...a,
-      agent: [b.agentA],      
-      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity + b.quantity : wrapToQuantity(`a.quantity + b.quantity`, { a, b }),    
+      agent: [b.agentA],
+      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity + b.quantity : wrapToQuantity(`a.quantity + b.quantity`, { a, b }),
     }
   }
   else if (equalAgent(a.agent, b.agentA)) {
     return {
       ...a,
       agent: [b.agentB],
-      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity + -1 * b.quantity : wrapToQuantity(`a.quantity + -1 * b.quantity`, { a, b }),      
+      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity + -1 * b.quantity : wrapToQuantity(`a.quantity + -1 * b.quantity`, { a, b }),
     }
   }
   throw `No matching agents ${a.agent, b.agentA, b.agentB}`
@@ -2092,21 +2092,23 @@ function inferToSequenceRule(items: Container[]): Question<Sequence> {
   }
 }
 
-function toCompareRule(a: Container | Rate, b: Container | Rate): Comparison {
-  const aEntity = a.kind === "rate" ? a.entity : { entity: a.entity, unit: a.unit }
-  const bEntity = b.kind === "rate" ? b.entity : { entity: b.entity, unit: b.unit }
+function toCompareRule(a: Container | Rate | Quota | Delta, b: Container | Rate | Quota | Delta): Comparison {
+  const aEntity = a.kind === "rate" ? a.entity : a.kind === "quota" ? { entity: a.agentQuota } : { entity: a.entity, unit: a.unit }
+  const bEntity = b.kind === "rate" ? b.entity : b.kind === "quota" ? { entity: b.agentQuota } : { entity: b.entity, unit: b.unit }
   if (aEntity.entity != bEntity.entity) {
     throw `Mismatch entity ${aEntity.entity}, ${bEntity.entity}`
   }
+  const aAgent = a.kind === "delta" ? [a.agent.name] : a.agent;
+  const bAgent = b.kind === "delta" ? [b.agent.name] : b.agent;
   return {
     kind: 'comp',
-    agentB: complementSingleAgent(normalizeToAgent(b.agent), [a.agent]),
-    agentA: complementSingleAgent(normalizeToAgent(a.agent), [b.agent]),
+    agentB: complementSingleAgent(normalizeToAgent(bAgent), [aAgent]),
+    agentA: complementSingleAgent(normalizeToAgent(aAgent), [bAgent]),
     quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity - b.quantity : wrapToQuantity(`a.quantity - b.quantity`, { a, b }),
     ...aEntity
   }
 }
-function inferToCompareRule(a: Container | Rate, b: Container | Rate): Question<Comparison> {
+function inferToCompareRule(a: Container | Rate | Quota | Delta, b: Container | Rate | Quota | Delta): Question<Comparison> {
   const result = toCompareRule(a, b)
   return {
     name: toCompareRule.name,
@@ -2865,33 +2867,47 @@ function inferEvalToOptionRule<T extends Predicate>(a: T, b: Option): Question<O
   }
 }
 
-function partToPartRule(a: Container | Rate, partToPartRatio: PartToPartRatio, nth?: NthPart): Container | Rate {
+function partToPartRule(a: Container | Rate | Quota, partToPartRatio: PartToPartRatio, nth?: NthPart): Container | Rate {
+
+  const aEntity = a.kind == "quota" ? { entity: a.agentQuota } : toEntity(a.entity)
   if (!(partToPartRatio.whole != null && matchAgent(partToPartRatio.whole, a) || partToPartRatio.parts.some(d => matchAgent(d, a)))) {
-    throw `Mismatch agent ${[a.agent, a.entity].join()} any of ${[partToPartRatio.whole].concat(partToPartRatio.parts).join()} (partToPartRule)`
+    throw `Mismatch agent ${[a.agent, aEntity].join()} any of ${[partToPartRatio.whole].concat(partToPartRatio.parts).join()} (partToPartRule)`
   }
 
   const sourcePartIndex = partToPartRatio.parts.findIndex(d => matchAgent(d, a))
   const targetPartIndex = nth != null ? partToPartRatio.parts.findIndex(d => d === nth.agent) : matchAgent(partToPartRatio[0], a) ? 0 : partToPartRatio.parts.length - 1;
 
   const matchedWhole = matchAgent(partToPartRatio.whole, a);
-  return {
-    ...a,
-    agent: (matchedWhole || nth != null) && targetPartIndex != -1
-      ? [partToPartRatio.parts[targetPartIndex]]
-      : [partToPartRatio.whole],
-    quantity: matchedWhole
-      ? areNumbers(partToPartRatio.ratios) && isNumber(a.quantity)
-        ? (a.quantity / partToPartRatio.ratios.reduce((out, d) => out += d, 0)) * partToPartRatio.ratios[targetPartIndex]
-        : wrapToQuantity(`a.quantity / (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")}) * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio })
-      : areNumbers(partToPartRatio.ratios) && isNumber(a.quantity)
-        ? (a.quantity / partToPartRatio.ratios[sourcePartIndex]) * (nth != null ? partToPartRatio.ratios[targetPartIndex] : partToPartRatio.ratios.reduce((out, d) => out += d, 0))
-        : nth != null
-          ? wrapToQuantity(`a.quantity / b.ratios[${sourcePartIndex}] * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio })
-          : wrapToQuantity(`a.quantity / b.ratios[${sourcePartIndex}] * (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")})`, { a, b: partToPartRatio }),
 
-  }
+  const agent = (matchedWhole || nth != null) && targetPartIndex != -1
+    ? [partToPartRatio.parts[targetPartIndex]]
+    : [partToPartRatio.whole];
+
+  const quantity = matchedWhole
+    ? areNumbers(partToPartRatio.ratios) && isNumber(a.quantity)
+      ? (a.quantity / partToPartRatio.ratios.reduce((out, d) => out += d, 0)) * partToPartRatio.ratios[targetPartIndex]
+      : wrapToQuantity(`a.quantity / (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")}) * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio })
+    : areNumbers(partToPartRatio.ratios) && isNumber(a.quantity)
+      ? (a.quantity / partToPartRatio.ratios[sourcePartIndex]) * (nth != null ? partToPartRatio.ratios[targetPartIndex] : partToPartRatio.ratios.reduce((out, d) => out += d, 0))
+      : nth != null
+        ? wrapToQuantity(`a.quantity / b.ratios[${sourcePartIndex}] * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio })
+        : wrapToQuantity(`a.quantity / b.ratios[${sourcePartIndex}] * (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")})`, { a, b: partToPartRatio });
+
+  return a.kind === "quota" ?
+    {
+      kind: 'cont',
+      agent,
+      quantity,
+      entity: joinAgent(aEntity.entity),
+    }
+    : {
+      ...a,
+      agent,
+      quantity,
+
+    }
 }
-function inferPartToPartRule(a: Container | Rate, partToPartRatio: PartToPartRatio, nth?: NthPart): Question<Container | Rate> {
+function inferPartToPartRule(a: Container | Rate | Quota, partToPartRatio: PartToPartRatio, nth?: NthPart): Question<Container | Rate> {
   const result = partToPartRule(a, partToPartRatio, nth)
   const matchedWhole = matchAgent(partToPartRatio.whole, a);
   let sourcePartIndex = partToPartRatio.parts.findIndex(d => matchAgent(d, a))
@@ -3307,6 +3323,9 @@ function inferenceRuleEx(...args: Predicate[]): Question<TruePredicate> {
     if (kind === "linear-equation") return inferSolveEquationRule(a, b, last)
     return inferToCompareRule(a, b)
   }
+  else if (a.kind === "delta" && b.kind == "delta") {
+    return inferToCompareRule(a, b)
+  }
   else if (a.kind === "comp-ratio" && b.kind === "comp-ratio" && kind === "ratios") {
     return inferConvertRatioCompareToRatiosRule([a, b], last)
   }
@@ -3541,7 +3560,13 @@ function inferenceRuleEx(...args: Predicate[]): Question<TruePredicate> {
           ? inferNthPartFactorByRule(a, b, last)
           : kind === "nth-part"
             ? inferPartToPartRule(b, a, last) : inferPartToPartRule(b, a);
-  }    
+  }
+  else if (a.kind === "ratios" && b.kind === "quota") {
+    return inferPartToPartRule(b, a)
+  }
+  else if (a.kind === "quota" && b.kind === "ratios") {
+    return inferPartToPartRule(a, b)
+  }
   else if (a.kind === "cont" && b.kind === "comp-diff") {
     return inferCompareDiffRule(a, b);
   }

@@ -14,7 +14,7 @@ export default createLazyMap({
     11: () => obchod(),
     12: () => knizniSerie(),
     13: () => brambory(),
-    // 14: () => uhly(),
+    14: () => uhly(),
     15.1: () => jablka().stejnaMnozstvi,
     15.2: () => jablka().jenLevnejsi,
     15.3: () => jablka().nejviceKilogramu,
@@ -38,21 +38,20 @@ function uhly() {
     );
 
     return {
-        deductionTree: //deduce(
+        deductionTree: deduce(
+            deduce(
+                suma,
+                ctor('number-decimal-part')
+            ),
             deduce(
                 deduce(
-                    suma,
-                    ctor('number-decimal-part')
+                    last(suma),
+                    ctor('number-fraction-part')
                 ),
-                deduce(
-                    deduce(
-                        last(suma),
-                        ctor('number-fraction-part')
-                    ),
-                    ctorUnit("arcmin")
-                ),
-                ctor('tuple')
+                ctorUnit("arcmin")
             ),
+            ctor('tuple')
+        )
         //     ctorOption("C", [143, 30])
         // )
     }

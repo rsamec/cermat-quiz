@@ -260,6 +260,14 @@ function percent(whole, part, percent2) {
 function ratios(whole, parts, ratios3) {
   return { kind: "ratios", parts, whole, ratios: ratios3 };
 }
+function sumCombine(wholeAgent, wholeEntity, partAgents) {
+  return {
+    kind: "sum-combine",
+    wholeAgent,
+    partAgents: partAgents ?? [],
+    wholeEntity: toEntity(wholeEntity)
+  };
+}
 function pattern({ nthTerm, nthPosition, nthTermFormat, nthTermDescription }, { entity: entity3, unit }) {
   return {
     kind: "pattern",
@@ -1425,15 +1433,17 @@ function inferToSequenceRule(items) {
   };
 }
 function toCompareRule(a, b) {
-  const aEntity = a.kind === "rate" ? a.entity : { entity: a.entity, unit: a.unit };
-  const bEntity = b.kind === "rate" ? b.entity : { entity: b.entity, unit: b.unit };
+  const aEntity = a.kind === "rate" ? a.entity : a.kind === "quota" ? { entity: a.agentQuota } : { entity: a.entity, unit: a.unit };
+  const bEntity = b.kind === "rate" ? b.entity : b.kind === "quota" ? { entity: b.agentQuota } : { entity: b.entity, unit: b.unit };
   if (aEntity.entity != bEntity.entity) {
     throw `Mismatch entity ${aEntity.entity}, ${bEntity.entity}`;
   }
+  const aAgent = a.kind === "delta" ? [a.agent.name] : a.agent;
+  const bAgent = b.kind === "delta" ? [b.agent.name] : b.agent;
   return {
     kind: "comp",
-    agentB: complementSingleAgent(normalizeToAgent(b.agent), [a.agent]),
-    agentA: complementSingleAgent(normalizeToAgent(a.agent), [b.agent]),
+    agentB: complementSingleAgent(normalizeToAgent(bAgent), [aAgent]),
+    agentA: complementSingleAgent(normalizeToAgent(aAgent), [bAgent]),
     quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity - b.quantity : wrapToQuantity(`a.quantity - b.quantity`, { a, b }),
     ...aEntity
   };
@@ -2085,16 +2095,24 @@ function inferEvalToOptionRule(a, b) {
   };
 }
 function partToPartRule(a, partToPartRatio, nth2) {
+  const aEntity = a.kind == "quota" ? { entity: a.agentQuota } : toEntity(a.entity);
   if (!(partToPartRatio.whole != null && matchAgent(partToPartRatio.whole, a) || partToPartRatio.parts.some((d) => matchAgent(d, a)))) {
-    throw `Mismatch agent ${[a.agent, a.entity].join()} any of ${[partToPartRatio.whole].concat(partToPartRatio.parts).join()} (partToPartRule)`;
+    throw `Mismatch agent ${[a.agent, aEntity].join()} any of ${[partToPartRatio.whole].concat(partToPartRatio.parts).join()} (partToPartRule)`;
   }
   const sourcePartIndex = partToPartRatio.parts.findIndex((d) => matchAgent(d, a));
   const targetPartIndex = nth2 != null ? partToPartRatio.parts.findIndex((d) => d === nth2.agent) : matchAgent(partToPartRatio[0], a) ? 0 : partToPartRatio.parts.length - 1;
   const matchedWhole = matchAgent(partToPartRatio.whole, a);
-  return {
+  const agent = (matchedWhole || nth2 != null) && targetPartIndex != -1 ? [partToPartRatio.parts[targetPartIndex]] : [partToPartRatio.whole];
+  const quantity = matchedWhole ? areNumbers(partToPartRatio.ratios) && isNumber(a.quantity) ? a.quantity / partToPartRatio.ratios.reduce((out, d) => out += d, 0) * partToPartRatio.ratios[targetPartIndex] : wrapToQuantity(`a.quantity / (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")}) * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio }) : areNumbers(partToPartRatio.ratios) && isNumber(a.quantity) ? a.quantity / partToPartRatio.ratios[sourcePartIndex] * (nth2 != null ? partToPartRatio.ratios[targetPartIndex] : partToPartRatio.ratios.reduce((out, d) => out += d, 0)) : nth2 != null ? wrapToQuantity(`a.quantity / b.ratios[${sourcePartIndex}] * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio }) : wrapToQuantity(`a.quantity / b.ratios[${sourcePartIndex}] * (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")})`, { a, b: partToPartRatio });
+  return a.kind === "quota" ? {
+    kind: "cont",
+    agent,
+    quantity,
+    entity: joinAgent(aEntity.entity)
+  } : {
     ...a,
-    agent: (matchedWhole || nth2 != null) && targetPartIndex != -1 ? [partToPartRatio.parts[targetPartIndex]] : [partToPartRatio.whole],
-    quantity: matchedWhole ? areNumbers(partToPartRatio.ratios) && isNumber(a.quantity) ? a.quantity / partToPartRatio.ratios.reduce((out, d) => out += d, 0) * partToPartRatio.ratios[targetPartIndex] : wrapToQuantity(`a.quantity / (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")}) * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio }) : areNumbers(partToPartRatio.ratios) && isNumber(a.quantity) ? a.quantity / partToPartRatio.ratios[sourcePartIndex] * (nth2 != null ? partToPartRatio.ratios[targetPartIndex] : partToPartRatio.ratios.reduce((out, d) => out += d, 0)) : nth2 != null ? wrapToQuantity(`a.quantity / b.ratios[${sourcePartIndex}] * b.ratios[${targetPartIndex}]`, { a, b: partToPartRatio }) : wrapToQuantity(`a.quantity / b.ratios[${sourcePartIndex}] * (${partToPartRatio.ratios.map((d, i) => `b.ratios[${i}]`).join(" + ")})`, { a, b: partToPartRatio })
+    agent,
+    quantity
   };
 }
 function inferPartToPartRule(a, partToPartRatio, nth2) {
@@ -2464,6 +2482,8 @@ function inferenceRuleEx(...args) {
     if (kind === "linear-equation")
       return inferSolveEquationRule(a, b, last2);
     return inferToCompareRule(a, b);
+  } else if (a.kind === "delta" && b.kind == "delta") {
+    return inferToCompareRule(a, b);
   } else if (a.kind === "comp-ratio" && b.kind === "comp-ratio" && kind === "ratios") {
     return inferConvertRatioCompareToRatiosRule([a, b], last2);
   } else if ((a.kind === "comp-ratio" || a.kind === "cont") && b.kind === "simplify-expr") {
@@ -2608,6 +2628,10 @@ function inferenceRuleEx(...args) {
     return kind === "scale" ? inferMapRatiosByFactorRule(b, a) : kind === "scale-invert" ? inferMapRatiosByFactorRule(b, a, true) : kind === "nth-factor" ? inferNthPartFactorByRule(b, a, last2) : kind === "nth-part" ? inferPartToPartRule(a, b, last2) : inferPartToPartRule(a, b);
   } else if (a.kind === "ratios" && b.kind == "cont") {
     return kind === "scale" ? inferMapRatiosByFactorRule(a, b) : kind === "scale-invert" ? inferMapRatiosByFactorRule(a, b, true) : kind === "nth-factor" ? inferNthPartFactorByRule(a, b, last2) : kind === "nth-part" ? inferPartToPartRule(b, a, last2) : inferPartToPartRule(b, a);
+  } else if (a.kind === "ratios" && b.kind === "quota") {
+    return inferPartToPartRule(b, a);
+  } else if (a.kind === "quota" && b.kind === "ratios") {
+    return inferPartToPartRule(a, b);
   } else if (a.kind === "cont" && b.kind === "comp-diff") {
     return inferCompareDiffRule(a, b);
   } else if (a.kind === "comp-diff" && b.kind === "cont") {
@@ -7028,6 +7052,9 @@ function toFrequency(child, { agent, entityBase, baseQuantity }) {
 function toRate(child, { agent, entityBase, baseQuantity }) {
   return toPredicate(child, mapToRate({ agent, entityBase, baseQuantity }));
 }
+function toQuotaRest(child, { agent, entity: entity3 }) {
+  return toPredicate(child, (node) => cont(agent, node.restQuantity, entity3.entity, entity3.unit));
+}
 function toRate2(child, { agent, entity: entity3, entityBase }) {
   return to(child, {
     kind: "rate",
@@ -9722,12 +9749,15 @@ var M7B_2026_default = createLazyMap({
   3.1: () => osa().dilek,
   3.2: () => osa().a,
   3.3: () => osa().b,
-  // 4.1: () => stuha().a,
-  // 4.2: () => stuha().b,
+  4.1: () => stuha().a,
+  4.2: () => stuha().b,
   5.1: () => farmar().pocetCuket,
   5.2: () => farmar().celkemCuket,
   7.1: () => kvadr().a,
   7.2: () => kvadr().b,
+  10.1: () => hry().a,
+  10.2: () => hry().b,
+  10.3: () => hry().c,
   11: () => plasty(),
   12: () => podlaha(),
   13: () => nadrz().b,
@@ -9735,6 +9765,9 @@ var M7B_2026_default = createLazyMap({
   15.1: () => procenta2().a,
   15.2: () => procenta2().b,
   15.3: () => procenta2().c
+  // 16.1: () => hra().a,
+  // 16.2: () => hra().a,
+  // 16.3: () => hra().a,
 });
 function krabice() {
   const entity3 = "kapesn\xEDk";
@@ -9794,6 +9827,32 @@ function osa() {
     }
   };
 }
+function stuha() {
+  const dim2 = dimensionEntity();
+  const odstrizeno = deduce(
+    deduce(
+      contLength("odst\u0159i\u017Eeno", 1.7, "m"),
+      ctorUnit("cm")
+    ),
+    contLength("odst\u0159i\u017Eeno", 6),
+    ctor("quota")
+  );
+  return {
+    a: {
+      deductionTree: deduce(
+        odstrizeno,
+        ratios("odst\u0159i\u017Eeno", ["b\xEDl\xFD", "\u010Derven\xFD"], [1, 1])
+      )
+    },
+    b: {
+      deductionTree: deduce(
+        contLength("prou\u017Eek", 6),
+        toQuotaRest(last(odstrizeno), { agent: ["odst\u0159i\u017Een\xED zbytek"], entity: dim2.length }),
+        ctorDifference("stuha zbytek")
+      )
+    }
+  };
+}
 function farmar() {
   const entityBase = "bedna";
   const entity3 = "cuketa";
@@ -9847,6 +9906,62 @@ function farmar() {
         ),
         cont(["sklizeno", "velk\xE9"], 120, entity3),
         sum("sklizeno")
+      )
+    }
+  };
+}
+function hry() {
+  const finishedEntity = "dohran\xE9 hry";
+  const workingEntity = "rozehran\xE9 hry";
+  const leden = "leden";
+  const unor = "\xFAnor";
+  const brezen = "b\u0159ezen";
+  const duben = "duben";
+  const kveten = "kv\u011Bten";
+  return {
+    a: {
+      deductionTree: deduce(
+        deduce(
+          cont(leden, 2, workingEntity),
+          cont(unor, 1, workingEntity),
+          ctor("delta")
+        ),
+        ctorBooleanOption(-1)
+      )
+    },
+    b: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            cont(unor, 1, workingEntity),
+            cont(unor, 2, finishedEntity),
+            sumCombine(`${unor} celkem`, "hry")
+          ),
+          deduce(
+            cont(brezen, 3, workingEntity),
+            cont(brezen, 3, finishedEntity),
+            sumCombine(`${brezen} celkem`, "hry")
+          ),
+          ctor("delta")
+        ),
+        ctorBooleanOption(2)
+      )
+    },
+    c: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            cont(brezen, 3, finishedEntity),
+            cont(duben, 5, finishedEntity),
+            ctor("delta")
+          ),
+          deduce(
+            cont(duben, 5, finishedEntity),
+            cont(kveten, 5, finishedEntity),
+            ctor("delta")
+          )
+        ),
+        ctorBooleanOption(0)
       )
     }
   };
@@ -14593,7 +14708,7 @@ var M9D_2024_default = createLazyMap({
   11: () => obchod2(),
   12: () => knizniSerie(),
   13: () => brambory(),
-  // 14: () => uhly(),
+  14: () => uhly5(),
   15.1: () => jablka().stejnaMnozstvi,
   15.2: () => jablka().jenLevnejsi,
   15.3: () => jablka().nejviceKilogramu,
@@ -14601,6 +14716,38 @@ var M9D_2024_default = createLazyMap({
   16.2: () => procenta7().zlomky,
   16.3: () => procenta7().cerpadla
 });
+function uhly5() {
+  const pravyUhly = contRightAngle();
+  const suma = deduce(
+    deduce(
+      contAngle("zadan\xFD", 126.5),
+      compAngle("zadan\xFD", anglesNames.gamma, "supplementary")
+    ),
+    deduce(
+      pravyUhly,
+      compAngle(rightAngleAgent, [anglesNames.alpha, anglesNames.beta].join(" a "), "supplementary")
+    ),
+    sum("celkem")
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        suma,
+        ctor("number-decimal-part")
+      ),
+      deduce(
+        deduce(
+          last(suma),
+          ctor("number-fraction-part")
+        ),
+        ctorUnit("arcmin")
+      ),
+      ctor("tuple")
+    )
+    //     ctorOption("C", [143, 30])
+    // )
+  };
+}
 function trasa() {
   const dim2 = dimensionEntity();
   const baseEntity = "krok";
@@ -15376,9 +15523,9 @@ var M9A_2025_default = createLazyMap({
   5.2: () => pozemek2().rozlohaVolnyPozemek,
   6.1: () => sud2().vzestupObjem,
   6.2: () => sud2().vzestupVyska,
-  7.1: () => uhly5().alfa,
-  7.2: () => uhly5().beta,
-  7.3: () => uhly5().gamma,
+  7.1: () => uhly6().alfa,
+  7.2: () => uhly6().beta,
+  7.3: () => uhly6().gamma,
   8.1: () => zahon3().obvod,
   8.2: () => zahon3().rozdilPocetRostlin,
   8.3: () => zahon3().nejmensiPocetCerveneKvetoucich,
@@ -15454,7 +15601,7 @@ function sud2() {
     }
   };
 }
-function uhly5() {
+function uhly6() {
   const angleLabel = "zadan\xFD";
   const angle1 = contAngle(angleLabel, 30);
   const angle2 = contAngle(angleLabel, 130);
@@ -16090,12 +16237,12 @@ var M9C_2025_default = createLazyMap({
   11.3: () => rodinnyDum().c,
   12: () => hriste(),
   13: () => krychle2(),
-  14: () => uhly6(),
+  14: () => uhly7(),
   15.1: () => kbelik(),
   15.2: () => hrnciri(),
   15.3: () => rybiz()
 });
-function uhly6() {
+function uhly7() {
   const zadanyUhel = contAngle("XAo~1~", 22, "deg");
   const zadanyUhelStred = contAngle("ASo~2~", 62, "deg");
   const osoveSymetrnyUhel = deduce(
@@ -16459,7 +16606,7 @@ function rybiz() {
 
 // src/math/M9D-2025/index.ts
 var M9D_2025_default = createLazyMap({
-  1: () => stuha(),
+  1: () => stuha2(),
   2: () => porovnani3(),
   6.1: () => roboti().pomerBeden,
   6.2: () => roboti().pomerJizd,
@@ -16468,9 +16615,9 @@ var M9D_2025_default = createLazyMap({
   8.2: () => ctverec().obvod,
   7.1: () => soutez2().prvniKolo,
   7.2: () => soutez2().druheKolo,
-  11.1: () => uhly7().a,
-  11.2: () => uhly7().b,
-  11.3: () => uhly7().c,
+  11.1: () => uhly8().a,
+  11.2: () => uhly8().b,
+  11.3: () => uhly8().c,
   12: () => krychle3(),
   13: () => vlak(),
   14: () => brhlikLesni(),
@@ -16478,7 +16625,7 @@ var M9D_2025_default = createLazyMap({
   15.2: () => procenta8().b,
   15.3: () => procenta8().c
 });
-function uhly7() {
+function uhly8() {
   const pravyUhel = contRightAngle();
   const zadany = contAngle("zadan\xFD", 64);
   const alpha = deduceAs("troj\xFAheln\xEDk KAS je rovnoramenn\xFD")(
@@ -16551,7 +16698,7 @@ function porovnani3() {
     )
   };
 }
-function stuha() {
+function stuha2() {
   const celkem = contLength("stuha celkem", 3, "m");
   return {
     deductionTree: deduce(

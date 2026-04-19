@@ -1,5 +1,5 @@
 import z from "zod";
-import { cont, ctor, ctorOption, sum, ctorDifference, contLength, ctorPercent, rate, lcd, doubleProduct, compRatio, ctorUnit, compRelativePercent, wholePercent, counterPercent, compRelative, compDiff, comp, ctorLinearEquation, proportion, percent, ctorComplement, ctorBooleanOption, ctorExpressionOption, ratio, ctorComparePercent, contArea, evalFormulaAsCont, formulaRegistry, dimensionEntity, product, ratios, nthPart, halfProduct } from "../../components/math";
+import { cont, ctor, ctorOption, sum, ctorDifference, contLength, ctorPercent, rate, lcd, doubleProduct, compRatio, ctorUnit, compRelativePercent, wholePercent, counterPercent, compRelative, compDiff, comp, ctorLinearEquation, proportion, percent, ctorComplement, ctorBooleanOption, ctorExpressionOption, ratio, ctorComparePercent, contArea, evalFormulaAsCont, formulaRegistry, dimensionEntity, product, ratios, nthPart, halfProduct, ctorDelta, sumCombine } from "../../components/math";
 import { createLazyMap, deduce, last, toPercent, toQuotaRest, toRate } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -7,12 +7,15 @@ export default createLazyMap({
     3.1: () => osa().dilek,
     3.2: () => osa().a,
     3.3: () => osa().b,
-    // 4.1: () => stuha().a,
-    // 4.2: () => stuha().b,
+    4.1: () => stuha().a,
+    4.2: () => stuha().b,
     5.1: () => farmar().pocetCuket,
     5.2: () => farmar().celkemCuket,
     7.1: () => kvadr().a,
     7.2: () => kvadr().b,
+    10.1: () => hry().a,
+    10.2: () => hry().b,
+    10.3: () => hry().c,
     11: () => plasty(),
     12: () => podlaha(),
     13: () => nadrz().b,
@@ -20,6 +23,9 @@ export default createLazyMap({
     15.1: () => procenta().a,
     15.2: () => procenta().b,
     15.3: () => procenta().c,
+    // 16.1: () => hra().a,
+    // 16.2: () => hra().a,
+    // 16.3: () => hra().a,
 })
 
 function krabice() {
@@ -92,12 +98,12 @@ function stuha() {
         ctor("quota")
     )
     return {
-        // a: {
-        //     deductionTree: deduce(
-        //         odstrizeno,
-        //         ratios("odstřiženo", ["bílý", "červený"], [1, 1]),
-        //     )
-        // },
+        a: {
+            deductionTree: deduce(
+                odstrizeno,
+                ratios("odstřiženo", ["bílý", "červený"], [1, 1]),
+            )
+        },
         b: {
             deductionTree: deduce(
                 contLength("proužek", 6),
@@ -166,6 +172,65 @@ function farmar() {
                 sum("sklizeno")
             )
 
+        }
+
+    }
+}
+
+function hry() {
+    const finishedEntity = "dohrané hry";
+    const workingEntity = "rozehrané hry";
+    const leden = "leden"
+    const unor = "únor"
+    const brezen = "březen"
+    const duben = "duben"
+    const kveten = "květen"
+
+    return {
+        a: {
+            deductionTree: deduce(
+                deduce(
+                    cont(leden, 2, workingEntity),
+                    cont(unor, 1, workingEntity),
+                    ctor('delta')
+                ),
+                ctorBooleanOption(-1)
+            )
+        },
+        b: {
+            deductionTree: deduce(
+                deduce(
+                    deduce(
+                        cont(unor, 1, workingEntity),
+                        cont(unor, 2, finishedEntity),
+                        sumCombine(`${unor} celkem`, "hry")
+                    ),
+                    deduce(
+                        cont(brezen, 3, workingEntity),
+                        cont(brezen, 3, finishedEntity),
+                        sumCombine(`${brezen} celkem`, "hry")
+                    ),
+                    ctor('delta')
+                ),
+                ctorBooleanOption(2)
+            )
+        },
+        c: {
+            deductionTree: deduce(
+                deduce(
+                    deduce(
+                        cont(brezen, 3, finishedEntity),
+                        cont(duben, 5, finishedEntity),
+                        ctor('delta')
+                    ),
+                    deduce(
+                        cont(duben, 5, finishedEntity),
+                        cont(kveten, 5, finishedEntity),
+                        ctor('delta')
+                    )
+                ),
+                ctorBooleanOption(0)
+            )
         }
 
     }
@@ -297,6 +362,11 @@ function plasty() {
     }
 }
 
+function komora() {
+    return {
+        deductionTree: deduce
+    }
+}
 
 function procenta() {
     const entity = "míst"
@@ -355,6 +425,42 @@ function procenta() {
                 ),
                 ctorOption("A", 10, { asPercent: true })
             )
+        }
+    }
+}
+
+function hra() {
+
+    const entityTyc = "tyč"
+    const entityDeska = "deska"
+    const entityPrkna = "prkno"
+    const entityOhrada = "ohrada"
+
+    const prknaRate = rate("hra", 4, entityPrkna, entityDeska)
+    const tycRate = rate("hra", 5, entityTyc, entityPrkna, 2)
+    const ohradaPrknaRate = rate("hra", 3, entityPrkna, entityOhrada)
+    const ohradaTycRate = rate("hra", 2, entityTyc, entityOhrada)
+    return {
+        a: {
+            deductionTree: deduce(
+                // deduce(
+                //     deduce(
+                //         cont("hra", 3, entityOhrada),
+                //         prknaRate
+                //     ),
+                //     prknaRate,
+                // ),
+                // deduce(
+                    deduce(
+                        deduce(
+                            cont("hra", 3, entityOhrada),
+                            ohradaTycRate,
+                        ),
+                        tycRate
+                    ),
+                    prknaRate
+                )
+            // )
         }
     }
 }
