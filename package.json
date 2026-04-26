@@ -25,7 +25,7 @@
     "build:steps-schema": "esbuild ./src/ai/steps-schema.ts --bundle --platform=neutral --outfile=./src/ai/steps-schema.js",
     "build:ctedu": "esbuild ./src/ctedu/word-problems.ts --bundle --platform=neutral --outfile=./src/ctedu/word-problems.js",
     "build:cermat": "esbuild ./src/cermat/word-problems.ts --bundle --platform=neutral --outfile=./src/cermat/word-problems.js",
-    "build:all": "npm run build:math-solver && npm run build:deduce-utils && npm run build:word-problems && npm run build:schema && npm run build:steps-schema && npm run build:ai && npm run build:tldraw && npm run build:ctedu",
+    "build:all": "npm run build:math-solver && npm run build:deduce-utils && npm run build:word-problems && npm run build:schema && npm run build:steps-schema && npm run build:ai && npm run build:tldraw && npm run build:ctedu && npm run build:cermat",
     "generate:word-problems": "node ./src/data/word-problems-solu-[code].txt.js --code M9I-2025",
     "generate:quiz-question:zip": "node ./src/data/quiz-question.zip.js > ./src/data/quiz-question.zip",
     "generate:quiz-questions:zip": "node ./src/data/quiz-questions.zip.js > ./src/data/quiz-questions.zip",

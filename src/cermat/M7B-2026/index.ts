@@ -1,6 +1,5 @@
-import z from "zod";
-import { cont, ctor, ctorOption, sum, ctorDifference, contLength, ctorPercent, rate, lcd, doubleProduct, compRatio, ctorUnit, compRelativePercent, wholePercent, counterPercent, compRelative, compDiff, comp, ctorLinearEquation, proportion, percent, ctorComplement, ctorBooleanOption, ctorExpressionOption, ratio, ctorComparePercent, contArea, evalFormulaAsCont, formulaRegistry, dimensionEntity, product, ratios, nthPart, halfProduct, ctorDelta, sumCombine } from "../../components/math";
-import { createLazyMap, deduce, last, toPercent, toQuotaRest, toRate } from "../../utils/deduce-utils";
+import { cont, ctor, ctorOption, sum, ctorDifference, contLength, ctorPercent, rate, doubleProduct, ctorUnit, compRelativePercent, compRelative, compDiff, comp, ctorLinearEquation, proportion, percent, ctorComplement, ctorBooleanOption, ratio, ctorComparePercent, contArea, evalFormulaAsCont, formulaRegistry, dimensionEntity, product, ratios, nthPart, halfProduct, sumCombine, ctorRateBatch } from "../../components/math";
+import { createLazyMap, deduce, deduceAs, last, toQuotaRest, toRate } from "../../utils/deduce-utils";
 
 export default createLazyMap({
     1: () => krabice(),
@@ -23,9 +22,9 @@ export default createLazyMap({
     15.1: () => procenta().a,
     15.2: () => procenta().b,
     15.3: () => procenta().c,
-    // 16.1: () => hra().a,
-    // 16.2: () => hra().a,
-    // 16.3: () => hra().a,
+    16.1: () => hra().a,
+    16.2: () => hra().b,
+    16.3: () => hra().c,
 })
 
 function krabice() {
@@ -436,31 +435,60 @@ function hra() {
     const entityPrkna = "prkno"
     const entityOhrada = "ohrada"
 
-    const prknaRate = rate("hra", 4, entityPrkna, entityDeska)
-    const tycRate = rate("hra", 5, entityTyc, entityPrkna, 2)
-    const ohradaPrknaRate = rate("hra", 3, entityPrkna, entityOhrada)
-    const ohradaTycRate = rate("hra", 2, entityTyc, entityOhrada)
+    const agentHra = "spotřeba"
+
+    const prknaRate = rate(agentHra, 4, entityPrkna, entityDeska)
+    const tycRate = rate(agentHra, 5, entityTyc, entityPrkna, 2)
+    const ohradaPrknaRate = rate(agentHra, 3, entityPrkna, entityOhrada)
+    const ohradaTycRate = rate(agentHra, 2, entityTyc, entityOhrada)
+
+
+    const vypocetPotreba = (ohrada, zbytek) => deduce(
+        deduce(
+            deduceAs("přímá spotřeba")(
+                ohrada,
+                ohradaPrknaRate,
+            ),
+            deduceAs("spotřeba výměnou za tyče")(
+                deduce(
+                    ohrada,
+                    ohradaTycRate,
+                ),
+                tycRate,
+                zbytek,
+            ),
+            sum(agentHra)
+        ),
+        prknaRate,
+        zbytek
+    )
+
+    const ohradaTycPrkaRate = deduce(
+        deduce(
+            ohradaTycRate,
+            tycRate,
+            ctor('rate')
+        ),
+        ohradaPrknaRate,
+        sum('spotřeba společně na ohradu')
+    )
+    const vypocetPrumer = celkemDesek => deduce(
+        deduce(
+            celkemDesek,
+            prknaRate
+        ),
+        ohradaTycPrkaRate
+    )
+
     return {
         a: {
-            deductionTree: deduce(
-                // deduce(
-                //     deduce(
-                //         cont("hra", 3, entityOhrada),
-                //         prknaRate
-                //     ),
-                //     prknaRate,
-                // ),
-                // deduce(
-                    deduce(
-                        deduce(
-                            cont("hra", 3, entityOhrada),
-                            ohradaTycRate,
-                        ),
-                        tycRate
-                    ),
-                    prknaRate
-                )
-            // )
+            deductionTree: vypocetPotreba(cont(agentHra, 3, entityOhrada), ctor("rate-batch"))
+        },
+        b: {
+            deductionTree: vypocetPotreba(cont(agentHra, 6, entityOhrada), ctorRateBatch("nespotřebovaný zbytek", { asRestQuantity: true }))
+        },
+        c: {
+            deductionTree: vypocetPrumer(cont(agentHra, 19, entityDeska))
         }
     }
 }

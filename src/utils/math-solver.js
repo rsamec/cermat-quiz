@@ -1715,11 +1715,13 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
           }
         }
         expr = expr.substitute(variable, res);
+        expr = expr.substitute(`base${variable}`, res);
         if (level >= requiredLevel) {
           expr = expr.simplify();
         }
       } else {
         const q = res.quantity ?? res.ratio ?? res.ratios;
+        const baseQ = res.baseQuantity;
         if (typeof q == "number" || !isNaN(parseFloat(q)) || Array.isArray(q)) {
           expr = parser.parse(cleanUpExpression(expr, variable));
           if (level >= requiredLevel || Array.isArray(q)) {
@@ -1728,17 +1730,26 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
             for (let [key, values] of Object.entries(colors2)) {
               if (values.includes(context[variable])) {
                 expr = expr.substitute(variable, parser.parse(`color(${key},${variable})`));
+                if (baseQ != null) {
+                  expr = expr.substitute(`base${variable}`, parser.parse(`color(${key},base${variable})`));
+                }
               }
             }
             for (let [key, values] of Object.entries(bgColors)) {
               if (values.includes(context[variable])) {
                 expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable})`));
+                if (baseQ != null) {
+                  expr = expr.substitute(`base${variable}`, parser.parse(`bgColor(${key},base${variable})`));
+                }
               }
             }
             expr = expr.substitute(variable, q);
           }
         } else {
           expr = expr.substitute(variable, q);
+        }
+        if (baseQ != null) {
+          expr = expr.substitute(`base${variable}`, baseQ);
         }
       }
     }
@@ -1780,7 +1791,7 @@ function toEquationExprAsTex(lastExpr, requiredLevel = 0, context = {}) {
   return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel, context).tokens)} $`;
 }
 function cleanUpExpression(exp, variable = "") {
-  const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratios`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, variable);
+  const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratios`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, `base${variable}`);
   return formatNumbersInExpression(replaced);
 }
 function formatNumbersInExpression(expr) {
@@ -1947,6 +1958,8 @@ function tokensToTex(tokens, opts = {}) {
           stack.push(`\\sqrt{${a}}`);
         } else if (["abs"].includes(tok.value)) {
           stack.push(`\\left|${a}\\right|`);
+        } else if (["ceil"].includes(tok.value)) {
+          stack.push(`\\lceil${a}\\rceil`);
         } else if (["floor"].includes(tok.value)) {
           stack.push(`\\lfloor${a}\\rfloor`);
         } else {

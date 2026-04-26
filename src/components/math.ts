@@ -90,7 +90,7 @@ export function isRatiosPredicate(value: Predicate): value is RatiosPredicate {
 
 export function isOperationPredicate(value: Predicate): value is OperationPredicate {
   return ["sum", "sum-combine", "product", "product-combine", "gcd", "lcd"].includes(value.kind)
-    || ["scale", "scale-invert", "slide", "slide-invert", "diff", "complement", "unit", "round"].includes(value.kind);
+    || ["scale", "scale-invert", "slide", "slide-invert", "diff", "complement", "unit", "round", "floor", "ceil"].includes(value.kind);
 }
 
 function isRatePredicate(value: Predicate): value is Rate {
@@ -172,6 +172,12 @@ export type Round = {
   kind: 'round',
   order: number
 }
+export type Floor = {
+  kind: 'floor',
+}
+export type Ceil = {
+  kind: 'ceil',
+}
 
 export type AngleComparison = {
   kind: 'comp-angle',
@@ -224,6 +230,12 @@ export type Rate = {
   baseQuantity: Quantity
   asRatio?: boolean
 }
+export type RateBatch = {
+  kind: 'rate-batch'
+  agent: Agent,
+  asRestQuantity: boolean
+}
+
 export type Frequency = {
   kind: 'frequency'
   agent: string,
@@ -451,10 +463,10 @@ export type ExpressionPredicate = EvalExpr<ContainerEval | RateEval> | EvalFormu
 export type CommonSensePredicate = CommonSense | Proportion
 
 export type MultipleOperationPredicate = Sum | SumCombine | Product | ProductCombine | GCD | LCD | BalancedPartition | Alligation
-export type SingleOperationPredicate = Scale | InvertScale | Slide | InvertSlide | Difference | ConvertUnit | Round | ConvertPercent | InvertCompRatio | Reverse | RatiosInvert | RatiosBase | NumberDecimalPart | NumberFractionPart
+export type SingleOperationPredicate = Scale | InvertScale | Slide | InvertSlide | Difference | ConvertUnit | Round | Floor | Ceil | ConvertPercent | InvertCompRatio | Reverse | RatiosInvert | RatiosBase | NumberDecimalPart | NumberFractionPart
 
 export type OperationPredicate = SingleOperationPredicate | MultipleOperationPredicate
-export type MetaPredicate = NthRule | NthPart | NthPartFactor | NthPartScale
+export type MetaPredicate = NthRule | NthPart | NthPartFactor | NthPartScale | RateBatch
 export type StructurePredicate = Sequence | Pattern | Tuple | Option
 
 export type TruePredicate = QuantityPredicate | RatioPredicate | RatiosPredicate | StructurePredicate
@@ -465,8 +477,8 @@ export type PredicateKind = Pick<Predicate, 'kind'>
 // #endregion
 
 // #region Predicate constructors
-export function ctor(kind: 'ratio' | 'comp-ratio' | 'comp' | 'rate' | 'quota' | "comp-diff"
-  | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'scale' | 'scale-invert' | 'slide' | 'slide-invert'
+export function ctor(kind: 'ratio' | 'comp-ratio' | 'comp' | 'rate' | 'rate-batch' | 'quota' | "comp-diff"
+  | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'scale' | 'scale-invert' | 'slide' | 'slide-invert' | 'floor' | 'ceil'
   | 'complement' | 'delta' | 'tuple' | 'number-decimal-part' | 'number-fraction-part' | 'simplify-expr' | 'convert-percent' | 'invert-comp-ratio' | 'reverse' | 'ratios-base') {
   return { kind } as Predicate
 }
@@ -480,6 +492,9 @@ export function sum(wholeAgent: string, wholeEntity?: EntityBase): Sum {
 
 export function ctorRate(agent: string | Agent, baseQuantity: number = 1) {
   return { kind: 'rate', agent: normalizeToAgent(agent), baseQuantity } as Predicate
+}
+export function ctorRateBatch(agent: string | Agent, { asRestQuantity }: { asRestQuantity: boolean }) {
+  return { kind: 'rate-batch', agent: normalizeToAgent(agent), asRestQuantity } as Predicate
 }
 
 export function counter(agent: string | Agent, quantity: number, { asRatio }: { asRatio?: boolean } = {}): Container {
@@ -1197,6 +1212,33 @@ function inferRoundToRule(a: Container, b: Round): Question<Container> {
   }
 }
 
+function inferFloorToRule(a: Container, b: Floor): Question<Container> {
+  const result = {
+    ...a,
+    quantity: isNumber(a.quantity) ? Math.floor(a.quantity) : wrapToQuantity(`floor(a.quantity)`, { a }),
+  }
+  return {
+    name: 'floorRule',
+    inputParameters: extractKinds(a, b),
+    question: isNumber(a.quantity) ? `Zaokrouhli ${formatNumber(a.quantity)} ${formatEntity(a)} dolů na celé číslo.` : `Zaokrouhli dolů na celé číslo.`,
+    result,
+    options: isNumber(a.quantity) && isNumber(result.quantity) ? [] : []
+  }
+}
+function inferCeilToRule(a: Container, b: Ceil): Question<Container> {
+  const result = {
+    ...a,
+    quantity: isNumber(a.quantity) ? Math.ceil(a.quantity) : wrapToQuantity(`ceil(a.quantity)`, { a }),
+  }
+  return {
+    name: 'ceilRule',
+    inputParameters: extractKinds(a, b),
+    question: isNumber(a.quantity) ? `Zaokrouhli ${formatNumber(a.quantity)} ${formatEntity(a)} nahoru na celé číslo.` : `Zaokrouhli nahoru na celé číslo.`,
+    result,
+    options: isNumber(a.quantity) && isNumber(result.quantity) ? [] : []
+  }
+}
+
 function computeQuantityByRatioBase<T extends Predicate & { quantity: NumberOrExpression }, K extends Predicate & { ratio: NumberOrExpression }>(a: T, b: K) {
   return isNumber(a.quantity) && isNumber(b.ratio)
     ? b.ratio >= 0 ? a.quantity * b.ratio : a.quantity / abs(b.ratio)
@@ -1770,6 +1812,60 @@ function inferRateRule(a: Container | Quota | Rate, rate: Rate): Question<Contai
       ...(!isUnitRate ? [{ tex: `${formatNumber(a.quantity)} * (${formatNumber(rate.quantity)}/${formatNumber(rate.baseQuantity)})`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity !== rate.entity.entity }] : []),
       { tex: `${formatNumber(a.quantity)} / ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: isUnitRate && aEntity === rate.entity.entity },
       ...(!isUnitRate ? [{ tex: `${formatNumber(a.quantity)} / (${formatNumber(rate.quantity)}/${formatNumber(rate.baseQuantity)})`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity === rate.entity.entity }] : []),
+    ]
+      : []
+  }
+}
+function rateBatchRule(a: Container, rate: Rate, last: RateBatch): Container {
+
+  const aEntity = a.entity
+  if (!(aEntity === rate.entity.entity || aEntity === rate.entityBase.entity)) {
+    throw `Mismatch entity ${aEntity} any of ${rate.entity.entity}, ${rate.entityBase.entity}`
+  }
+  const isEntityBase = aEntity == rate.entity.entity;
+  const isUnitRate = rate.baseQuantity === 1;
+
+  return {
+    kind: 'cont',
+    agent: last?.agent ?? normalizeToAgent(a.agent),
+    entity: isEntityBase
+      ? rate.entityBase.entity
+      : rate.entity.entity,
+    unit: isEntityBase
+      ? rate.entityBase.unit
+      : rate.entity.unit,
+    quantity: isEntityBase && last.asRestQuantity
+      ? isNumber(a.quantity) && isNumber(rate.quantity)
+        ? rate.quantity * Math.ceil(a.quantity / rate.quantity) - a.quantity
+        : wrapToQuantity(`rate.quantity * ceil(a.quantity / rate.quantity) - a.quantity`, { a, rate })
+      : isEntityBase
+        ? isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(rate.baseQuantity)
+          ? isUnitRate ? Math.ceil(a.quantity / rate.quantity) : Math.ceil(a.quantity / rate.quantity) * rate.baseQuantity
+          : isUnitRate
+            ? wrapToQuantity(`ceil(a.quantity / rate.quantity)`, { a, rate })
+            : wrapToQuantity(`ceil(a.quantity / rate.quantity) * rate.baseQuantity`, { a, rate })
+        : isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(rate.baseQuantity)
+          ? isUnitRate ? Math.floor(a.quantity * rate.quantity) : Math.floor(a.quantity / rate.baseQuantity) * rate.quantity
+          : isUnitRate
+            ? wrapToQuantity(`floor(a.quantity * rate.quantity)`, { a, rate })
+            : wrapToQuantity(`floor(a.quantity / rate.baseQuantity) * rate.quantity`, { a, rate })
+  }
+}
+
+function inferRateBatchRule(a: Container, rate: Rate, last: RateBatch): Question<Container> {
+  const result = rateBatchRule(a, rate, last)
+  const aEntity = a.entity;
+  const isUnitRate = rate.baseQuantity === 1;
+  return {
+    name: rateRule.name,
+    inputParameters: extractKinds(a, rate),
+    question: containerQuestion(result),
+    result,
+    options: isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(result.quantity) && isNumber(rate.baseQuantity) ? [
+      { tex: `floor(${formatNumber(a.quantity)} * ${formatNumber(rate.quantity)})`, result: formatNumber(result.quantity), ok: isUnitRate && aEntity !== rate.entity.entity },
+      ...(!isUnitRate ? [{ tex: `floor(${formatNumber(a.quantity)} / ${formatNumber(rate.baseQuantity)}) * ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity !== rate.entity.entity }] : []),
+      { tex: `ceil(${formatNumber(a.quantity)} / ${formatNumber(rate.quantity)})`, result: formatNumber(result.quantity), ok: isUnitRate && aEntity === rate.entity.entity },
+      ...(!isUnitRate ? [{ tex: `ceil(${formatNumber(a.quantity)} / ${formatNumber(rate.quantity)}) * ${formatNumber(rate.baseQuantity)}`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity === rate.entity.entity }] : []),
     ]
       : []
   }
@@ -2671,15 +2767,12 @@ function inferToRatiosRule(parts: Container[] | Rate[], last: PartToPartRatio): 
 }
 
 function transitiveRateRule(a: Rate, b: Rate, newAgent: Agent): Rate {
-  if (a.baseQuantity != b.baseQuantity) {
-    throw `transitive rate uncompatible baseQuantity not supported ${a.baseQuantity}, ${b.baseQuantity}`
-  }
 
   if (isSameEntity(a.entity, b.entityBase)) {
     return {
       kind: 'rate',
       agent: newAgent,
-      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity * b.quantity : wrapToQuantity(`a.quantity * b.quantity`, { a, b }),
+      quantity: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(b.baseQuantity) ? a.quantity * (b.quantity / b.baseQuantity) : wrapToQuantity(`a.quantity * (b.quantity/b.baseQuantity)`, { a, b }),
       entity: b.entity,
       entityBase: a.entityBase,
       baseQuantity: a.baseQuantity
@@ -2689,8 +2782,18 @@ function transitiveRateRule(a: Rate, b: Rate, newAgent: Agent): Rate {
     return {
       kind: 'rate',
       agent: newAgent,
-      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity * b.quantity : wrapToQuantity(`a.quantity * b.quantity`, { a, b }),
+      quantity: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(b.baseQuantity) ? a.quantity * (b.quantity / b.baseQuantity) : wrapToQuantity(`a.quantity * (b.quantity/b.baseQuantity)`, { a, b }),
       entity: b.entity,
+      entityBase: a.entityBase,
+      baseQuantity: a.baseQuantity
+    }
+  }
+  else if (isSameEntity(b.entity, a.entity)) {
+    return {
+      kind: 'rate',
+      agent: newAgent ?? a.agent ?? b.agent,
+      quantity: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(b.baseQuantity) ? (a.quantity / b.quantity) * b.baseQuantity : wrapToQuantity(`(a.quantity / b.quantity) * b.baseQuantity`, { a, b }),
+      entity: b.entityBase,
       entityBase: a.entityBase,
       baseQuantity: a.baseQuantity
     }
@@ -2707,9 +2810,10 @@ function inferTrasitiveRateRule(a: Rate, b: Rate, last: Rate): Question<Rate> {
     inputParameters: extractKinds(a, b),
     question: `Vypočti ${last.agent} ${formatEntity(result.entity)} per ${formatEntity(result.entityBase)}?`,
     result,
-    options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.quantity) ? [
-      { tex: `${formatNumber(a.quantity)} * ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: true },
+    options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.quantity) && isNumber(b.baseQuantity) ? [
+      { tex: `${formatNumber(a.quantity)} * ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: isSameEntity(a.entity, b.entityBase) },
       { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: false },
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)} * ${formatNumber(b.baseQuantity)}`, result: formatNumber(result.quantity), ok: isSameEntity(b.entity, a.entity) },
     ] : []
   }
 }
@@ -3368,6 +3472,19 @@ function inferenceRuleEx(...args: Predicate[]): Question<TruePredicate> {
   else if (a.kind === "round" && (b.kind === "cont")) {
     return inferRoundToRule(b, a);
   }
+  else if ((a.kind === "cont") && b.kind === "floor") {
+    return inferFloorToRule(a, b);
+  }
+  else if (a.kind === "floor" && (b.kind === "cont")) {
+    return inferFloorToRule(b, a);
+  }
+  else if ((a.kind === "cont") && b.kind === "ceil") {
+    return inferCeilToRule(a, b);
+  }
+  else if (a.kind === "ceil" && (b.kind === "cont")) {
+    return inferCeilToRule(b, a);
+  }
+
   else if ((a.kind === "cont") && (b.kind === "number-fraction-part" || b.kind === "number-decimal-part")) {
     return inferSplitDecimalAndFractionPartsRule(a, b);
   }
@@ -3402,10 +3519,14 @@ function inferenceRuleEx(...args: Predicate[]): Question<TruePredicate> {
     return kind === "comp-part-eq" && a.kind === "cont" ? inferPartEqualRule(b, a) : inferCompareRule(a, b);
   }
   else if ((a.kind === "cont" || a.kind === "quota" || a.kind === "rate") && b.kind == "rate") {
-    return kind === "ratio" ? inferToPartWholeRatio(b, a, last) : inferRateRule(a, b)
+    return kind === "ratio"
+      ? inferToPartWholeRatio(b, a, last)
+      : kind === "rate-batch" && a.kind === "cont" ? inferRateBatchRule(a, b, last) : inferRateRule(a, b, last)
   }
   else if (a.kind === "rate" && (b.kind == "cont" || b.kind === "quota" || b.kind === "rate")) {
-    return kind === "ratio" ? inferToPartWholeRatio(a, b, last) : inferRateRule(b, a)
+    return kind === "ratio" ?
+      inferToPartWholeRatio(a, b, last)
+      : kind === "rate-batch" && b.kind === "cont" ? inferRateBatchRule(b, a, last) : inferRateRule(b, a, last)
   }
   else if (a.kind === "comp" && b.kind == "comp-ratio") {
     return kind === "comp" ? inferTransitiveCompareRule(a, b) : inferRatioCompareToCompareRule(b, a, kind === "nth-part" && last)

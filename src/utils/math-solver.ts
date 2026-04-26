@@ -70,7 +70,7 @@ export function substitute(expression: string, source: string, replace: string) 
   return parser.parse(expression).substitute(source, replace)
 }
 
-export function substituteContext(expression:string, context: Record<string, number>) {
+export function substituteContext(expression: string, context: Record<string, number>) {
   let expr = parser.parse(expression);
   const variables = expr.variables();
   for (let variable of variables) {
@@ -105,7 +105,7 @@ function recurExpr(node, level, requiredLevel = 0, parentContext: DeduceContext 
   if (expression) {
     let expr = parser.parse(expression);
     const variables = expr.variables();
-    //console.log(level, node, quantity, expression.toString(), expr.toString(), variables, context)    
+    // console.log(level, node, quantity, expression.toString(), expr.toString(), variables, context)    
     for (let variable of variables) {
       const res = recurExpr(context[variable], level + 1, requiredLevel, parentContext);
 
@@ -125,18 +125,20 @@ function recurExpr(node, level, requiredLevel = 0, parentContext: DeduceContext 
 
         }
         expr = expr.substitute(variable, res)
+        expr = expr.substitute(`base${variable}`, res);
         if (level >= requiredLevel) {
           expr = expr.simplify()
         }
       }
       else {
         const q = res.quantity ?? res.ratio ?? res.ratios;
+        const baseQ = res.baseQuantity;
 
         if (typeof q == 'number' || !isNaN(parseFloat(q)) || Array.isArray(q)) {
           expr = parser.parse(cleanUpExpression(expr, variable))
-          if (level >= requiredLevel || Array.isArray(q)) {            
-            
-            expr = expr.simplify({ [variable]: parentContext?.checkFraction && checkFraction(q) ? getFraction(q): q})
+          if (level >= requiredLevel || Array.isArray(q)) {
+
+            expr = expr.simplify({ [variable]: parentContext?.checkFraction && checkFraction(q) ? getFraction(q) : q })
             //expr = expr.simplify({ [variable]: q})
             //console.log(":", variable, q, expr.toString())
           }
@@ -145,21 +147,32 @@ function recurExpr(node, level, requiredLevel = 0, parentContext: DeduceContext 
             for (let [key, values] of Object.entries(colors)) {
               if (values.includes(context[variable])) {
                 expr = expr.substitute(variable, parser.parse(`color(${key},${variable})`))
+                if (baseQ != null) {
+                  expr = expr.substitute(`base${variable}`, parser.parse(`color(${key},base${variable})`))
+                }
               }
             }
             for (let [key, values] of Object.entries(bgColors)) {
               if (values.includes(context[variable])) {
                 expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable})`))
+                 if (baseQ != null) {
+                  expr = expr.substitute(`base${variable}`, parser.parse(`bgColor(${key},base${variable})`))
+                }
               }
             }
 
             expr = expr.substitute(variable, q);
-
           }
         }
         else {
           expr = expr.substitute(variable, q)
         }
+
+        if (baseQ != null) {
+          expr = expr.substitute(`base${variable}`, baseQ)
+        }
+
+
       }
     }
     return expr;
@@ -177,9 +190,9 @@ function parseFraction(str) {
   if (!match) return null;
   return [Number(match[1]), Number(match[2])];
 }
-function getFraction(str){
+function getFraction(str) {
   const f = parseFraction(str);
-  return f[0]/f[1];
+  return f[0] / f[1];
 }
 export function toEquation(lastNode) {
   const final = recurExpr(lastNode, 0);
@@ -187,7 +200,7 @@ export function toEquation(lastNode) {
 }
 function toEquationExpr(lastExpr, requiredLevel = 0, context: DeduceContext = {}) {
   const final = recurExpr({ quantity: lastExpr }, 0, requiredLevel, context);
-  //console.log("FINAL",final.toString(), lastExpr.toString());
+  //console.log("FINAL",final.toString(), lastExpr);
   return parser.parse(cleanUpExpression(final));
 }
 export function evaluateNodeToNumber(lastNode) {
@@ -207,7 +220,7 @@ function cleanUpExpression(exp, variable = '') {
     .replaceAll(`${variable}.quantity`, variable)
     .replaceAll(`${variable}.ratios`, variable)
     .replaceAll(`${variable}.ratio`, variable)
-    .replaceAll(`${variable}.baseQuantity`, variable)
+    .replaceAll(`${variable}.baseQuantity`, `base${variable}`)
 
   return formatNumbersInExpression(replaced)
 }
@@ -399,6 +412,9 @@ function tokensToTex(tokens, opts = {}) {
         else if (["abs"].includes(tok.value)) {
           stack.push(`\\left|${a}\\right|`);
         }
+        else if (["ceil"].includes(tok.value)) {
+          stack.push(`\\lceil${a}\\rceil`);
+        }
         else if (["floor"].includes(tok.value)) {
           stack.push(`\\lfloor${a}\\rfloor`);
         }
@@ -445,9 +461,9 @@ function tokensToTex(tokens, opts = {}) {
         }
         const f = stack.pop();
         if (f != null && f != "color" && f != "bgColor") {
-          
+
         }
-        
+
         if (tok.value === "sqrt" && args.length === 1) {
           stack.push(`\\sqrt{${args[0]}}`);
         } else if (["sin", "cos", "tan", "log", "ln"].includes(tok.value)) {

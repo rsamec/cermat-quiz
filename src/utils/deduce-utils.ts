@@ -41,7 +41,8 @@ export type TreeNode = {
 export type TreeNodeWithContext = { children: TreeNode, context: DeduceContext };
 export type ColorContext = { colors?: Record<string, Predicate[]>, bgColors?: Record<string, Predicate[]>, autoColors?: boolean }
 export type ExpressionContext = { depth?: number }
-export type DeduceContext = string | (ColorContext & ExpressionContext)
+export type TextContext = {text?: string}
+export type DeduceContext =  ColorContext & ExpressionContext & TextContext
 export function isPredicate(node: Node): node is Predicate {
   return (node as any).kind != null
 }
@@ -52,10 +53,14 @@ export function lastQuantity(input: TreeNode) {
   const lastPredicate = last(input);
   return isNumber(lastPredicate.quantity) ? lastPredicate.quantity : lastPredicate.quantity as unknown as number;
 }
-export function deduceAs(context: DeduceContext) {
+export function deduceAs(context: string | DeduceContext) {
   return (...children: Node[]) => {
-    return toAs(context)(...children.concat(inferenceRule.apply(null, children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]))))
+    return toAs(normalizeDeduceContext(context))(...children.concat(inferenceRule.apply(null, children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]))))
   }
+}
+function normalizeDeduceContext(context: string | DeduceContext){
+  return typeof context === "string" ? {text: context}: context;
+
 }
 export function deduce(...children: Node[]): TreeNode {
   return to(...children.concat(inferenceRule.apply(null, children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]))));
@@ -282,7 +287,6 @@ export function computeTreeMetrics(
 export function jsonToMarkdownTree(node, level = 0, parentContext: DeduceContext) {
   const indent = "  ".repeat(level); // Two spaces for each level
   let markdown = [];
-
   const colorsMap = Object.entries(isObjectContext(parentContext) ? parentContext.colors ?? {} : {});
   const bgColorsMap = Object.entries(isObjectContext(parentContext) ? parentContext.bgColors ?? {} : {});
 
@@ -304,7 +308,7 @@ export function jsonToMarkdownTree(node, level = 0, parentContext: DeduceContext
     for (let i = node.children.length - 1; i >= 0; i--) {
       const child = node.children[i];
       const isConclusion = i === node.children.length - 1;
-      if (isConclusion && isStringContext(node.context)) markdown.push(`${indent}- *${node.context}*\n`)
+      if (isConclusion && isStringContext(node.context)) markdown.push(`${indent}- *${node.context.text}*\n`)
       markdown = markdown.concat(jsonToMarkdownTree(child, level + (isConclusion ? 0 : 1), mergeWithParent(node.context, parentContext)))
     }
   }
@@ -367,7 +371,7 @@ export function jsonToMermaidMindMapEx(node, isConclusion, level = 0) {
     for (let i = node.children.length - 1; i >= 0; i--) {
       const child = node.children[i];
       const isConclusion = i === node.children.length - 1;
-      if (isConclusion && isStringContext(node.context)) markdown.push(`${indent} id${++nextId}["${node.context}"]\n`)
+      if (isConclusion && isStringContext(node.context)) markdown.push(`${indent} id${++nextId}["${node.context.text}"]\n`)
       markdown = markdown.concat(jsonToMermaidMindMapEx(child, isConclusion, level + (isConclusion ? 0 : 1)))
     }
   }
@@ -422,7 +426,7 @@ export function jsonToTLDrawEx(node, isConclusion, level = 0) {
     for (let i = node.children.length - 1; i >= 0; i--) {
       const child = node.children[i];
       const isConclusion = i === node.children.length - 1;
-      if (isConclusion && isStringContext(node.context)) markdown.push(`${indent} id${++nextId}["${node.context}"]\n`)
+      if (isConclusion && isStringContext(node.context)) markdown.push(`${indent} id${++nextId}["${node.context.text}"]\n`)
       markdown = markdown.concat(jsonToMermaidMindMapEx(child, isConclusion, level + (isConclusion ? 0 : 1)))
     }
   }
@@ -449,7 +453,7 @@ export function jsonToMarkdownChat(node, { predicates, rules, formulas }: { pred
       if (node.context != null) {
         if (isStringContext(node.context)) {
           flatStructure.push('\n');
-          flatStructure.push(`Kontext: *${node.context}*\n\n`)
+          flatStructure.push(`Kontext: *${node.context.text}*\n\n`)
         }
       }
 
@@ -929,8 +933,8 @@ export const anglesNames = {
   phi: '𝜑',
 }
 
-export function isStringContext(context: DeduceContext): context is string {
-  return typeof context === "string";
+export function isStringContext(context: DeduceContext): context is TextContext {
+  return context?.text != null;
 }
 function isObjectContext(context: DeduceContext): context is (ColorContext & ExpressionContext) {
   return context != null && typeof context === "object";
@@ -1011,7 +1015,9 @@ export function colorifyDeduceTree(originalTree, { maxDepth, axioms, deductions 
     if (!node.children || node.children.length === 0) {
       if (isPredicate(node)) {
         const newPredicate = (isQuantityPredicate(node) && isNumber(node.quantity))
-          ? Object.assign(node, { quantity: node.quantity.toString() })
+          ? Object.assign(node, { 
+              quantity: node.quantity.toString()
+            })
           : isRatioPredicate(node) && isNumber(node.ratio)
             ? Object.assign(node, { ratio: false ? node.ratio.toString() : `${new Fraction(node.ratio).toFraction()}` })
             : node;

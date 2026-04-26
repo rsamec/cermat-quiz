@@ -350,6 +350,32 @@ function inferRoundToRule(a, b) {
     options: isNumber(a.quantity) && isNumber(result.quantity) ? [] : []
   };
 }
+function inferFloorToRule(a, b) {
+  const result = {
+    ...a,
+    quantity: isNumber(a.quantity) ? Math.floor(a.quantity) : wrapToQuantity(`floor(a.quantity)`, { a })
+  };
+  return {
+    name: "floorRule",
+    inputParameters: extractKinds(a, b),
+    question: isNumber(a.quantity) ? `Zaokrouhli ${formatNumber(a.quantity)} ${formatEntity(a)} dol\u016F na cel\xE9 \u010D\xEDslo.` : `Zaokrouhli dol\u016F na cel\xE9 \u010D\xEDslo.`,
+    result,
+    options: isNumber(a.quantity) && isNumber(result.quantity) ? [] : []
+  };
+}
+function inferCeilToRule(a, b) {
+  const result = {
+    ...a,
+    quantity: isNumber(a.quantity) ? Math.ceil(a.quantity) : wrapToQuantity(`ceil(a.quantity)`, { a })
+  };
+  return {
+    name: "ceilRule",
+    inputParameters: extractKinds(a, b),
+    question: isNumber(a.quantity) ? `Zaokrouhli ${formatNumber(a.quantity)} ${formatEntity(a)} nahoru na cel\xE9 \u010D\xEDslo.` : `Zaokrouhli nahoru na cel\xE9 \u010D\xEDslo.`,
+    result,
+    options: isNumber(a.quantity) && isNumber(result.quantity) ? [] : []
+  };
+}
 function computeQuantityByRatioBase(a, b) {
   return isNumber(a.quantity) && isNumber(b.ratio) ? b.ratio >= 0 ? a.quantity * b.ratio : a.quantity / abs(b.ratio) : isNumber(b.ratio) ? b.ratio >= 0 ? wrapToQuantity(`a.quantity * b.ratio`, { a, b }) : wrapToQuantity(`a.quantity / abs(b.ratio)`, { a, b }) : wrapToQuantity(`a.quantity * b.ratio`, { a, b });
 }
@@ -832,6 +858,38 @@ function inferRateRule(a, rate) {
       ...!isUnitRate ? [{ tex: `${formatNumber(a.quantity)} * (${formatNumber(rate.quantity)}/${formatNumber(rate.baseQuantity)})`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity !== rate.entity.entity }] : [],
       { tex: `${formatNumber(a.quantity)} / ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: isUnitRate && aEntity === rate.entity.entity },
       ...!isUnitRate ? [{ tex: `${formatNumber(a.quantity)} / (${formatNumber(rate.quantity)}/${formatNumber(rate.baseQuantity)})`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity === rate.entity.entity }] : []
+    ] : []
+  };
+}
+function rateBatchRule(a, rate, last2) {
+  const aEntity = a.entity;
+  if (!(aEntity === rate.entity.entity || aEntity === rate.entityBase.entity)) {
+    throw `Mismatch entity ${aEntity} any of ${rate.entity.entity}, ${rate.entityBase.entity}`;
+  }
+  const isEntityBase2 = aEntity == rate.entity.entity;
+  const isUnitRate = rate.baseQuantity === 1;
+  return {
+    kind: "cont",
+    agent: last2?.agent ?? normalizeToAgent(a.agent),
+    entity: isEntityBase2 ? rate.entityBase.entity : rate.entity.entity,
+    unit: isEntityBase2 ? rate.entityBase.unit : rate.entity.unit,
+    quantity: isEntityBase2 && last2.asRestQuantity ? isNumber(a.quantity) && isNumber(rate.quantity) ? rate.quantity * Math.ceil(a.quantity / rate.quantity) - a.quantity : wrapToQuantity(`rate.quantity * ceil(a.quantity / rate.quantity) - a.quantity`, { a, rate }) : isEntityBase2 ? isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(rate.baseQuantity) ? isUnitRate ? Math.ceil(a.quantity / rate.quantity) : Math.ceil(a.quantity / rate.quantity) * rate.baseQuantity : isUnitRate ? wrapToQuantity(`ceil(a.quantity / rate.quantity)`, { a, rate }) : wrapToQuantity(`ceil(a.quantity / rate.quantity) * rate.baseQuantity`, { a, rate }) : isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(rate.baseQuantity) ? isUnitRate ? Math.floor(a.quantity * rate.quantity) : Math.floor(a.quantity / rate.baseQuantity) * rate.quantity : isUnitRate ? wrapToQuantity(`floor(a.quantity * rate.quantity)`, { a, rate }) : wrapToQuantity(`floor(a.quantity / rate.baseQuantity) * rate.quantity`, { a, rate })
+  };
+}
+function inferRateBatchRule(a, rate, last2) {
+  const result = rateBatchRule(a, rate, last2);
+  const aEntity = a.entity;
+  const isUnitRate = rate.baseQuantity === 1;
+  return {
+    name: rateRule.name,
+    inputParameters: extractKinds(a, rate),
+    question: containerQuestion(result),
+    result,
+    options: isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(result.quantity) && isNumber(rate.baseQuantity) ? [
+      { tex: `floor(${formatNumber(a.quantity)} * ${formatNumber(rate.quantity)})`, result: formatNumber(result.quantity), ok: isUnitRate && aEntity !== rate.entity.entity },
+      ...!isUnitRate ? [{ tex: `floor(${formatNumber(a.quantity)} / ${formatNumber(rate.baseQuantity)}) * ${formatNumber(rate.quantity)}`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity !== rate.entity.entity }] : [],
+      { tex: `ceil(${formatNumber(a.quantity)} / ${formatNumber(rate.quantity)})`, result: formatNumber(result.quantity), ok: isUnitRate && aEntity === rate.entity.entity },
+      ...!isUnitRate ? [{ tex: `ceil(${formatNumber(a.quantity)} / ${formatNumber(rate.quantity)}) * ${formatNumber(rate.baseQuantity)}`, result: formatNumber(result.quantity), ok: !isUnitRate && aEntity === rate.entity.entity }] : []
     ] : []
   };
 }
@@ -1613,14 +1671,11 @@ function inferToRatiosRule(parts, last2) {
   };
 }
 function transitiveRateRule(a, b, newAgent) {
-  if (a.baseQuantity != b.baseQuantity) {
-    throw `transitive rate uncompatible baseQuantity not supported ${a.baseQuantity}, ${b.baseQuantity}`;
-  }
   if (isSameEntity(a.entity, b.entityBase)) {
     return {
       kind: "rate",
       agent: newAgent,
-      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity * b.quantity : wrapToQuantity(`a.quantity * b.quantity`, { a, b }),
+      quantity: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(b.baseQuantity) ? a.quantity * (b.quantity / b.baseQuantity) : wrapToQuantity(`a.quantity * (b.quantity/b.baseQuantity)`, { a, b }),
       entity: b.entity,
       entityBase: a.entityBase,
       baseQuantity: a.baseQuantity
@@ -1629,8 +1684,17 @@ function transitiveRateRule(a, b, newAgent) {
     return {
       kind: "rate",
       agent: newAgent,
-      quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity * b.quantity : wrapToQuantity(`a.quantity * b.quantity`, { a, b }),
+      quantity: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(b.baseQuantity) ? a.quantity * (b.quantity / b.baseQuantity) : wrapToQuantity(`a.quantity * (b.quantity/b.baseQuantity)`, { a, b }),
       entity: b.entity,
+      entityBase: a.entityBase,
+      baseQuantity: a.baseQuantity
+    };
+  } else if (isSameEntity(b.entity, a.entity)) {
+    return {
+      kind: "rate",
+      agent: newAgent ?? a.agent ?? b.agent,
+      quantity: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(b.baseQuantity) ? a.quantity / b.quantity * b.baseQuantity : wrapToQuantity(`(a.quantity / b.quantity) * b.baseQuantity`, { a, b }),
+      entity: b.entityBase,
       entityBase: a.entityBase,
       baseQuantity: a.baseQuantity
     };
@@ -1645,9 +1709,10 @@ function inferTrasitiveRateRule(a, b, last2) {
     inputParameters: extractKinds(a, b),
     question: `Vypo\u010Dti ${last2.agent} ${formatEntity(result.entity)} per ${formatEntity(result.entityBase)}?`,
     result,
-    options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.quantity) ? [
-      { tex: `${formatNumber(a.quantity)} * ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: true },
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: false }
+    options: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.quantity) && isNumber(b.baseQuantity) ? [
+      { tex: `${formatNumber(a.quantity)} * ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: isSameEntity(a.entity, b.entityBase) },
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: false },
+      { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)} * ${formatNumber(b.baseQuantity)}`, result: formatNumber(result.quantity), ok: isSameEntity(b.entity, a.entity) }
     ] : []
   };
 }
@@ -2189,6 +2254,14 @@ function inferenceRuleEx(...args) {
     return inferRoundToRule(a, b);
   } else if (a.kind === "round" && b.kind === "cont") {
     return inferRoundToRule(b, a);
+  } else if (a.kind === "cont" && b.kind === "floor") {
+    return inferFloorToRule(a, b);
+  } else if (a.kind === "floor" && b.kind === "cont") {
+    return inferFloorToRule(b, a);
+  } else if (a.kind === "cont" && b.kind === "ceil") {
+    return inferCeilToRule(a, b);
+  } else if (a.kind === "ceil" && b.kind === "cont") {
+    return inferCeilToRule(b, a);
   } else if (a.kind === "cont" && (b.kind === "number-fraction-part" || b.kind === "number-decimal-part")) {
     return inferSplitDecimalAndFractionPartsRule(a, b);
   } else if ((a.kind === "number-fraction-part" || a.kind === "number-decimal-part") && b.kind === "cont") {
@@ -2208,9 +2281,9 @@ function inferenceRuleEx(...args) {
   } else if ((a.kind === "cont" || a.kind == "rate") && b.kind === "comp") {
     return kind === "comp-part-eq" && a.kind === "cont" ? inferPartEqualRule(b, a) : inferCompareRule(a, b);
   } else if ((a.kind === "cont" || a.kind === "quota" || a.kind === "rate") && b.kind == "rate") {
-    return kind === "ratio" ? inferToPartWholeRatio(b, a, last2) : inferRateRule(a, b);
+    return kind === "ratio" ? inferToPartWholeRatio(b, a, last2) : kind === "rate-batch" && a.kind === "cont" ? inferRateBatchRule(a, b, last2) : inferRateRule(a, b, last2);
   } else if (a.kind === "rate" && (b.kind == "cont" || b.kind === "quota" || b.kind === "rate")) {
-    return kind === "ratio" ? inferToPartWholeRatio(a, b, last2) : inferRateRule(b, a);
+    return kind === "ratio" ? inferToPartWholeRatio(a, b, last2) : kind === "rate-batch" && b.kind === "cont" ? inferRateBatchRule(b, a, last2) : inferRateRule(b, a, last2);
   } else if (a.kind === "comp" && b.kind == "comp-ratio") {
     return kind === "comp" ? inferTransitiveCompareRule(a, b) : inferRatioCompareToCompareRule(b, a, kind === "nth-part" && last2);
   } else if (a.kind === "comp-ratio" && b.kind == "comp") {
@@ -6161,11 +6234,13 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
           }
         }
         expr = expr.substitute(variable, res);
+        expr = expr.substitute(`base${variable}`, res);
         if (level >= requiredLevel) {
           expr = expr.simplify();
         }
       } else {
         const q = res.quantity ?? res.ratio ?? res.ratios;
+        const baseQ = res.baseQuantity;
         if (typeof q == "number" || !isNaN(parseFloat(q)) || Array.isArray(q)) {
           expr = parser.parse(cleanUpExpression(expr, variable));
           if (level >= requiredLevel || Array.isArray(q)) {
@@ -6174,17 +6249,26 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
             for (let [key, values] of Object.entries(colors2)) {
               if (values.includes(context[variable])) {
                 expr = expr.substitute(variable, parser.parse(`color(${key},${variable})`));
+                if (baseQ != null) {
+                  expr = expr.substitute(`base${variable}`, parser.parse(`color(${key},base${variable})`));
+                }
               }
             }
             for (let [key, values] of Object.entries(bgColors)) {
               if (values.includes(context[variable])) {
                 expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable})`));
+                if (baseQ != null) {
+                  expr = expr.substitute(`base${variable}`, parser.parse(`bgColor(${key},base${variable})`));
+                }
               }
             }
             expr = expr.substitute(variable, q);
           }
         } else {
           expr = expr.substitute(variable, q);
+        }
+        if (baseQ != null) {
+          expr = expr.substitute(`base${variable}`, baseQ);
         }
       }
     }
@@ -6219,7 +6303,7 @@ function toEquationExprAsTex(lastExpr, requiredLevel = 0, context = {}) {
   return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel, context).tokens)} $`;
 }
 function cleanUpExpression(exp, variable = "") {
-  const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratios`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, variable);
+  const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratios`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, `base${variable}`);
   return formatNumbersInExpression(replaced);
 }
 function formatNumbersInExpression(expr) {
@@ -6386,6 +6470,8 @@ function tokensToTex(tokens, opts = {}) {
           stack.push(`\\sqrt{${a}}`);
         } else if (["abs"].includes(tok.value)) {
           stack.push(`\\left|${a}\\right|`);
+        } else if (["ceil"].includes(tok.value)) {
+          stack.push(`\\lceil${a}\\rceil`);
         } else if (["floor"].includes(tok.value)) {
           stack.push(`\\lfloor${a}\\rfloor`);
         } else {
@@ -6505,8 +6591,11 @@ function lastQuantity(input) {
 }
 function deduceAs(context) {
   return (...children) => {
-    return toAs(context)(...children.concat(inferenceRule.apply(null, children.map((d) => isPredicate(d) ? d : d.children.slice(-1)[0]))));
+    return toAs(normalizeDeduceContext(context))(...children.concat(inferenceRule.apply(null, children.map((d) => isPredicate(d) ? d : d.children.slice(-1)[0]))));
   };
+}
+function normalizeDeduceContext(context) {
+  return typeof context === "string" ? { text: context } : context;
 }
 function deduce(...children) {
   return to(...children.concat(inferenceRule.apply(null, children.map((d) => isPredicate(d) ? d : d.children.slice(-1)[0]))));
@@ -6694,7 +6783,7 @@ function jsonToMarkdownTree(node, level = 0, parentContext) {
       const child = node.children[i];
       const isConclusion = i === node.children.length - 1;
       if (isConclusion && isStringContext(node.context))
-        markdown.push(`${indent}- *${node.context}*
+        markdown.push(`${indent}- *${node.context.text}*
 `);
       markdown = markdown.concat(jsonToMarkdownTree(child, level + (isConclusion ? 0 : 1), mergeWithParent(node.context, parentContext)));
     }
@@ -6751,7 +6840,7 @@ function jsonToMermaidMindMapEx(node, isConclusion, level = 0) {
       const child = node.children[i];
       const isConclusion2 = i === node.children.length - 1;
       if (isConclusion2 && isStringContext(node.context))
-        markdown.push(`${indent} id${++nextId}["${node.context}"]
+        markdown.push(`${indent} id${++nextId}["${node.context.text}"]
 `);
       markdown = markdown.concat(jsonToMermaidMindMapEx(child, isConclusion2, level + (isConclusion2 ? 0 : 1)));
     }
@@ -6800,7 +6889,7 @@ function jsonToTLDrawEx(node, isConclusion, level = 0) {
       const child = node.children[i];
       const isConclusion2 = i === node.children.length - 1;
       if (isConclusion2 && isStringContext(node.context))
-        markdown.push(`${indent} id${++nextId}["${node.context}"]
+        markdown.push(`${indent} id${++nextId}["${node.context.text}"]
 `);
       markdown = markdown.concat(jsonToMermaidMindMapEx(child, isConclusion2, level + (isConclusion2 ? 0 : 1)));
     }
@@ -6819,7 +6908,7 @@ function jsonToMarkdownChat(node, { predicates, rules, formulas } = { predicates
       if (node2.context != null) {
         if (isStringContext(node2.context)) {
           flatStructure.push("\n");
-          flatStructure.push(`Kontext: *${node2.context}*
+          flatStructure.push(`Kontext: *${node2.context.text}*
 
 `);
         }
@@ -7193,7 +7282,7 @@ var anglesNames = {
   phi: "\u{1D711}"
 };
 function isStringContext(context) {
-  return typeof context === "string";
+  return context?.text != null;
 }
 function isObjectContext(context) {
   return context != null && typeof context === "object";
@@ -7255,7 +7344,9 @@ function colorifyDeduceTree(originalTree, { maxDepth, axioms, deductions } = { m
   function traverse(node) {
     if (!node.children || node.children.length === 0) {
       if (isPredicate(node)) {
-        const newPredicate = isQuantityPredicate(node) && isNumber(node.quantity) ? Object.assign(node, { quantity: node.quantity.toString() }) : isRatioPredicate(node) && isNumber(node.ratio) ? Object.assign(node, { ratio: false ? node.ratio.toString() : `${new Fraction(node.ratio).toFraction()}` }) : node;
+        const newPredicate = isQuantityPredicate(node) && isNumber(node.quantity) ? Object.assign(node, {
+          quantity: node.quantity.toString()
+        }) : isRatioPredicate(node) && isNumber(node.ratio) ? Object.assign(node, { ratio: false ? node.ratio.toString() : `${new Fraction(node.ratio).toFraction()}` }) : node;
         return [newPredicate];
       } else {
         return [];
