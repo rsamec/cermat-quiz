@@ -426,7 +426,7 @@ export function stepsTraverse(node) {
       return node;
     }
     if (isStringContext(node.context)) {
-      contextStack.push(node.context);
+      contextStack.push(node.context.text);
     }
 
     const args = []

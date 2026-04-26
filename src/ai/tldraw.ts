@@ -281,11 +281,11 @@ export function deductionTreeToHierarchy(node: { children: any[], context: Deduc
     const conclusion = childrenShapes.slice(-1)[0];
 
     const contextNodes = []
-    if (node.context) {
+    if (node.context?.text) {
         const contextNote: ISimpleNoteShape = {
             type: "note",
             shapeId: createShapeId(),
-            text: node.context,
+            text: node.context.text,
             width: defaultWidth,
             height: defaultHeight,
             x: 0,
