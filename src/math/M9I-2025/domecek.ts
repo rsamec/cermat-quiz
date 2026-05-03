@@ -1,4 +1,4 @@
-import { sum, ctorOption, quota, ratio, contLength, contArea, EmptyUnit, cuboidVolume, dimensionEntity, evalFormulaAsCont, formulaRegistry } from "../../components/math";
+import { sum, ctorOption, quota, ratio, contLength, contArea, EmptyUnit, cuboidVolume, dimensionEntity, evalFormulaAsCont, formulaRegistry, cont, ctor } from "../../components/math";
 import { deduce, last, toCont } from "../../utils/deduce-utils";
 
 
@@ -7,14 +7,14 @@ export function domecek() {
 
   const dumLabel = "domeček"
 
-  const area = contArea(`plocha ${dumLabel}`, 16, EmptyUnit);
-  const pasmo = quota(`plocha ${dumLabel}`, "čtverec", 4);
+  const area = contArea(`plocha ${dumLabel}`, 16);
+  const pasmo = cont(`plocha ${dumLabel}`, 4, "pásma");
 
-  const ctverec = toCont(
-    deduce(
+  const ctverec =  deduce(
       area,
-      pasmo
-    ), { agent: 'čtverec', entity: { entity: dim.area.entity, unit: EmptyUnit } })
+      pasmo,
+      ctor('rate')
+  )
 
   const rectangleVolume = deduce(
     deduce(

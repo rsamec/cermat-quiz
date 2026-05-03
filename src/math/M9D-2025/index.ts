@@ -20,7 +20,6 @@ export default createLazyMap({
   15.1: () => procenta().a,
   15.2: () => procenta().b,
   15.3: () => procenta().c,
-
 })
 
 function uhly() {
@@ -70,7 +69,7 @@ function uhly() {
         deduce(
           deduce(
             gamma,
-            last(alpha),            
+            last(alpha),
             ctorDifference(`${anglesNames.gamma} - ${anglesNames.alpha}`)
           ),
           deduce(
@@ -126,7 +125,7 @@ function stuha() {
 function roboti() {
 
   const entityTime = "doba"
-  const unitTime = "hodina"
+  const unitTime = "h"
   const entity = "bedna";
   const entityBase = "počet jízd";
 
@@ -152,13 +151,11 @@ function roboti() {
 
   return {
     pomerBeden: {
-      deductionTree:
-        deduce(
-          odvezenoA,
-          odvezenoB,
-          ctorRatios("poměr odvezeného množství beden", { useBase: true }),
-
-        )
+      deductionTree: deduce(
+        odvezenoA,
+        odvezenoB,
+        ctorRatios("poměr odvezeného množství beden", { useBase: true }),
+      )
     },
     pomerJizd: {
       deductionTree: deduce(

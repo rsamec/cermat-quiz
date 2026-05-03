@@ -243,7 +243,7 @@ function hranol() {
             deduceAs("počítáme pouze zvětšení/rozdíl mezi dvěmi hranoly")(
                 stranaPovrch,
                 strana,
-                ctor('quota')
+                evalFormulaAsCont(formulaRegistry.surfaceArea.rectangle, x => x.b, "jedna boční stěna", dim.length)
             ),
             ctorOption("B", 6)
         )

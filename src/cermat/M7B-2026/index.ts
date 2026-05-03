@@ -1,5 +1,5 @@
-import { cont, ctor, ctorOption, sum, ctorDifference, contLength, ctorPercent, rate, doubleProduct, ctorUnit, compRelativePercent, compRelative, compDiff, comp, ctorLinearEquation, proportion, percent, ctorComplement, ctorBooleanOption, ratio, ctorComparePercent, contArea, evalFormulaAsCont, formulaRegistry, dimensionEntity, product, ratios, nthPart, halfProduct, sumCombine, ctorRateBatch } from "../../components/math";
-import { createLazyMap, deduce, deduceAs, last, toQuotaRest, toRate } from "../../utils/deduce-utils";
+import { cont, ctor, ctorOption, sum, ctorDifference, contLength, ctorPercent, rate, doubleProduct, ctorUnit, compRelativePercent, compRelative, compDiff, comp, ctorLinearEquation, proportion, percent, ctorComplement, ctorBooleanOption, ratio, ctorComparePercent, contArea, evalFormulaAsCont, formulaRegistry, dimensionEntity, product, ratios, nthPart, halfProduct, sumCombine, ctorRestQuantity, ctorRateQuota, ctorQuota } from "../../components/math";
+import { createLazyMap, deduce, deduceAs, last, toRate } from "../../utils/deduce-utils";
 
 export default createLazyMap({
     1: () => krabice(),
@@ -106,7 +106,7 @@ function stuha() {
         b: {
             deductionTree: deduce(
                 contLength("proužek", 6),
-                toQuotaRest(last(odstrizeno), { agent: ["odstřižení zbytek"], entity: dim.length }),
+                deduce(last(odstrizeno), ctorRestQuantity(["odstřižení zbytek"])),
                 ctorDifference("stuha zbytek"),
             )
         }
@@ -443,7 +443,7 @@ function hra() {
     const ohradaTycRate = rate(agentHra, 2, entityTyc, entityOhrada)
 
 
-    const vypocetPotreba = (ohrada, zbytek) => deduce(
+    const vypocetPotreba = (ohrada, quota) => deduce(
         deduce(
             deduceAs("přímá spotřeba")(
                 ohrada,
@@ -455,13 +455,50 @@ function hra() {
                     ohradaTycRate,
                 ),
                 tycRate,
-                zbytek,
+                quota,
             ),
             sum(agentHra)
         ),
         prknaRate,
-        zbytek
+        quota
     )
+
+
+    const vypocetPotrebaZbytek = (ohrada, quota, zbytek) => {
+        const neprimaSpotreba = deduceAs("spotřeba výměnou za tyče")(
+            deduce(
+                ohrada,
+                ohradaTycRate,
+            ),
+            tycRate,
+            quota
+        );
+        return deduce(
+            deduce(
+                deduce(
+                    deduce(
+                        deduceAs("přímá spotřeba")(
+                            ohrada,
+                            ohradaPrknaRate,
+                        ),
+                        neprimaSpotreba,
+                        sum(agentHra)
+                    ),
+                    prknaRate,
+                    quota
+                ),
+                zbytek),
+            deduce(
+                deduce(
+                    last(neprimaSpotreba),
+                    zbytek,
+                ),
+                ctor('invert')
+            ),
+            ctor('tuple')
+        )
+    }
+
 
     const ohradaTycPrkaRate = deduce(
         deduce(
@@ -482,10 +519,11 @@ function hra() {
 
     return {
         a: {
-            deductionTree: vypocetPotreba(cont(agentHra, 3, entityOhrada), ctor("rate-batch"))
+            deductionTree: vypocetPotreba(cont(agentHra, 3, entityOhrada), ctorRateQuota(undefined, 'ceil'))
         },
         b: {
-            deductionTree: vypocetPotreba(cont(agentHra, 6, entityOhrada), ctorRateBatch("nespotřebovaný zbytek", { asRestQuantity: true }))
+            deductionTree: vypocetPotrebaZbytek(cont(agentHra, 6, entityOhrada), ctorRateQuota(undefined, "ceil"), ctorRestQuantity("nespotřebovaný zbytek")),
+            convertToTestedValue: d => d.items[1].quantity
         },
         c: {
             deductionTree: vypocetPrumer(cont(agentHra, 19, entityDeska))

@@ -1,4 +1,4 @@
-import { commonSense, compAngle, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorUnit, pythagoras, rate, ratio, sum, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorScaleInvert, ctorBooleanOption, triangleAngle, contLength, contArea, dimensionEntity, doubleProduct, triangleArea, circleArea, counter, half, ctorScale, contAngle } from "../../components/math";
+import { commonSense, compAngle, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorUnit, pythagoras, rate, ratio, sum, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorScaleInvert, ctorBooleanOption, triangleAngle, contLength, contArea, dimensionEntity, doubleProduct, triangleArea, circleArea, counter, half, ctorScale, contAngle, evalFormulaAsCont, formulaRegistry } from "../../components/math";
 import { anglesNames, createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -77,16 +77,13 @@ function ctyruhelnik() {
     BD,
     pythagoras("AD", ["BD", "AB"])
   );
-  const CD = toCont(
+  const CD = deduce(
     deduce(
-      deduce(
-        contArea("trojúhelník BCD", 24),
-        ...doubleProduct("obdelník")
-      ),
-      BD,
-      ctor('quota')
+      contArea("trojúhelník BCD", 24),
+      ...doubleProduct("obdelník")
     ),
-    { agent: "CD", entity: dim.length }
+    BD,
+    evalFormulaAsCont(formulaRegistry.surfaceArea.rectangle, x => x.b, "CD", dim.length)
   );
   return {
     obsah: {

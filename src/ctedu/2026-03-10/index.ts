@@ -1,5 +1,4 @@
-
-import { commonSense, cont, Container, ctor, ctorDifference, ctorPercent, ctorSlide, ctorUnit, product, productCombine, quota, rate, sum } from "../../components/math";
+import { commonSense, cont, ctor, ctorDifference, ctorPercent, ctorQuota, ctorQuotaQuantity, ctorRestQuantity, ctorUnit, halfProduct, productCombine, rate, sum } from "../../components/math";
 import { createLazyMap, deduce, deduceAs, last, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -35,17 +34,21 @@ function mozaika() {
     const bileCtverce = "bílé čtverce"
     const ctverec = "čtverec"
 
-    const okraje = "mozaika"
+    const okraje = "mozaika - okraje"
     const mozajka = "mozaika"
 
-    const kratsiStrana = deduce(
+    const kratsiStranaQuota = deduce(
         deduce(
             cont(okraje, 70, bileCtverce),
             cont("korekce - rohy", 4, bileCtverce),
             ctorDifference(okraje)
         ),
-        cont(bileCtverce, 4, "stran"),
-        ctor("quota")
+        cont(okraje, 4, "strana"),
+        ctorQuota(okraje, entitySloupec)
+    );
+    const kratsiStrana = deduce(
+        last(kratsiStranaQuota),
+        ctorQuotaQuantity('kratší strana')
     );
     return {
         a: {
@@ -65,11 +68,20 @@ function mozaika() {
         },
         b: {
             deductionTree: deduce(
-                toCont(kratsiStrana, { agent: okraje, entity: { entity: entitySloupec } }),
-                to(
+                deduce(
+                    kratsiStranaQuota,
+                    ctorQuotaQuantity('kratší strana')
+                ),
+                deduce(
                     last(kratsiStrana),
-                    commonSense("2 zbylé bílé čtverce odpovídájí +1 pro horní a dolní okraj"),
-                    cont(okraje, 17, entityRadek)
+                    deduceAs("2 zbylé bílé čtverce odpovídájí 1 + 1 pro delší stranu")(
+                        deduce(
+                            last(kratsiStranaQuota),
+                            ctorRestQuantity('zbytek'),
+                        ),
+                        ...halfProduct("zbytek")
+                    ),
+                    sum("delší strana"),
                 ),
                 productCombine(okraje, { entity: sedeCtverce })
             )
@@ -160,8 +172,4 @@ function symboly() {
                 )
         },
     }
-}
-
-function slice(arg0: Container): import("../../utils/deduce-utils").Node {
-    throw new Error("Function not implemented.");
 }

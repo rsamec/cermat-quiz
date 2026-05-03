@@ -72,7 +72,7 @@ function boruvky(inputs: {
   const pocetSkupin = deduce(
     cont(agentA.label, agentA.quantity, quantityEntity.entity, quantityEntity.unit),
     skupina,
-    ctor('quota')
+    ctor("quota")
   )
 
   const pocetSkupinAgent = `${last(pocetSkupin).quantity} ${skupinaAgent}`
@@ -87,7 +87,7 @@ function boruvky(inputs: {
           ctorUnit(quantityEntity.unit)
         ),
         skupina,
-        ctor('quota')
+        ctor("quota")
       ),
       ctor('rate'),
     ),

@@ -64,7 +64,7 @@ function pozemek() {
           compRatio("a", "c", 1 / 2),
           pozemek,
         ),
-        ctor("quota")
+        evalFormulaAsCont(formulaRegistry.surfaceArea.rectangle, x => x.b, "dům", dimensionEntity("m").length)
       )
     },
     rozlohaVolnyPozemek: {
@@ -163,8 +163,14 @@ export function zahon() {
     ratios("rostliny", [kratsiStranaLabel, kratsiStranaLabel, kratsiStranaLabel, delsiStranaLabel], [3 / 4, 3 / 4, 3 / 4, 1]),
     obvod,
   );
-  return {
 
+  const velikostSkupina = to(
+    primeFactors([pocetRostlinQuantity]),
+    commonSense(`kombinace 5x13 nebo 13x5, vybereme větší počet opakování a menší skupinu, aby jsme docílili menšího počtu červených růží`),
+    cont("velikost skupina(dohromady bílé a červené rostliny)", 5, entity)
+  );
+
+  return {
     obvod: {
       deductionTree: deduce(obvod, ctorUnit("m"))
     },
@@ -185,21 +191,16 @@ export function zahon() {
     },
     nejmensiPocetCerveneKvetoucich: {
       deductionTree: deduce(
-        deduce(
-          deduce(
-            to(
-              pocetRostlin,
-              primeFactors([pocetRostlinQuantity]),
-              commonSense(`kombinace 5x13 nebo 13x5, vybereme větší počet opakování, aby jsme docílili menšího počtu červených růží`),
-              quota("rostliny", "skupina dohromady bílé a červené rostliny", 13)
-            ),
-            pocetRostlin,
-
-          ),
+        deduce(          
+          velikostSkupina,
           cont("bílých rostlin", 2, entity),
           ctorDifference("červených rostlin")
         ),
-        counter("počet opakování", 13),
+        deduce(
+          pocetRostlin,
+          last(velikostSkupina),
+          ctor("quota")
+        ),
         product("červených rostlin")
       )
     }

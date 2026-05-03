@@ -1,5 +1,5 @@
 import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate, cont } from "../components/math.js"
-import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison, Frequency, PredicateKind, PartWholeRatio} from "../components/math.js"
+import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison, Frequency, PredicateKind, PartWholeRatio } from "../components/math.js"
 import { partionArray } from '../utils/common-utils.js';
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
 import { evaluate, substitute, toEquationExprAsTex, colors } from "./math-solver.js"
@@ -41,8 +41,8 @@ export type TreeNode = {
 export type TreeNodeWithContext = { children: TreeNode, context: DeduceContext };
 export type ColorContext = { colors?: Record<string, Predicate[]>, bgColors?: Record<string, Predicate[]>, autoColors?: boolean }
 export type ExpressionContext = { depth?: number }
-export type TextContext = {text?: string}
-export type DeduceContext =  ColorContext & ExpressionContext & TextContext
+export type TextContext = { text?: string }
+export type DeduceContext = ColorContext & ExpressionContext & TextContext
 export function isPredicate(node: Node): node is Predicate {
   return (node as any).kind != null
 }
@@ -58,8 +58,8 @@ export function deduceAs(context: string | DeduceContext) {
     return toAs(normalizeDeduceContext(context))(...children.concat(inferenceRule.apply(null, children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]))))
   }
 }
-function normalizeDeduceContext(context: string | DeduceContext){
-  return typeof context === "string" ? {text: context}: context;
+function normalizeDeduceContext(context: string | DeduceContext) {
+  return typeof context === "string" ? { text: context } : context;
 
 }
 export function deduce(...children: Node[]): TreeNode {
@@ -76,7 +76,7 @@ export function to(...children: Node[]): TreeNode {
 export function toCont(child: TreeNode | Predicate, { agent, entity }: { agent: string, entity?: { entity: string, unit?: string } }): TreeNode {
   return toPredicate(child, mapToCont({ agent, entity }));
 }
-export function toPercent(child: TreeNode | Predicate, { whole}: { whole:string }): TreeNode {
+export function toPercent(child: TreeNode | Predicate, { whole }: { whole: string }): TreeNode {
   return toPredicate(child, mapToPercent({ whole }));
 }
 export function toFrequency(child: TreeNode | Predicate, { agent, entityBase, baseQuantity }: { agent: string, entityBase: { entity: string, unit?: string }, baseQuantity: number }): TreeNode {
@@ -85,8 +85,18 @@ export function toFrequency(child: TreeNode | Predicate, { agent, entityBase, ba
 export function toRate(child: TreeNode | Predicate, { agent, entityBase, baseQuantity }: { agent: string[], entityBase: { entity: string, unit?: string }, baseQuantity: number }): TreeNode {
   return toPredicate(child, mapToRate({ agent, entityBase, baseQuantity }));
 }
-export function toQuotaRest(child:  TreeNode | Predicate, { agent, entity}: { agent: string[], entity: { entity: string, unit?: string }}): TreeNode {
-  return toPredicate(child, (node: Quota) => cont(agent,  node.restQuantity as number, entity.entity, entity.unit));
+
+export function toQuotaRate(child:  TreeNode | Predicate){    
+  return toPredicate(child, (node: Quota) => ({
+      kind: 'rate',
+      agent: node.agent,
+      entity: node.entityQuota,
+      entityBase: node.entity,
+      quantity: node.quantity,
+      baseQuantity: node.quotaQuantity
+    })
+  )
+  
 }
 
 
@@ -111,7 +121,7 @@ export function mapToCont({ agent, entity }: { agent: string, entity?: { entity:
       entity: entity != null
         ? entity.entity
         : typeNode.kind == "quota"
-          ? typeNode.agentQuota
+          ? typeNode.entityQuota.entity
           : typeNode.kind == "rate"
             ? typeNode.entity.entity
             : typeNode.entity,
@@ -120,7 +130,7 @@ export function mapToCont({ agent, entity }: { agent: string, entity?: { entity:
         : typeNode.kind == "rate"
           ? typeNode.entity.unit
           : typeNode.kind == "quota"
-            ? undefined
+            ? typeNode.entityQuota.unit
             : typeNode.unit
     }
   }
@@ -156,7 +166,7 @@ export function mapToFrequency({ agent, entityBase, baseQuantity }: { agent: str
     }
   }
 }
-export function mapToPercent({ whole }: { whole: string}) {
+export function mapToPercent({ whole }: { whole: string }) {
   return (node: Container): PartWholeRatio => {
     const a = node.agent;
     const part = Array.isArray(a) ? a.join() : a;
@@ -165,7 +175,7 @@ export function mapToPercent({ whole }: { whole: string}) {
       whole,
       part,
       ratio: (node.quantity as number) / 100,
-      asPercent: true, 
+      asPercent: true,
     }
   }
 }
@@ -263,7 +273,7 @@ export function computeTreeMetrics(
         const inputParameters = mapNodeChildrenToPredicates(node);
         const result = inferenceRuleWithQuestion(inputParameters);
         rules.push({
-          name: result.name,          
+          name: result.name,
           inputs: inputParameters.filter(d => d != null && d.kind != null).map(d => d.kind),
           axioms: inputParameters.map(d => !deduceMap.has(d))
         })
@@ -694,11 +704,14 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = compose`${formatAgent(d.agent)} ${d.asRatio ? formatRatio(d.quantity) : formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} per ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? '' : formatQuantity(d.baseQuantity)}${d.entityBase.entity != "" ? " " : ""}${formatEntity(d.entityBase.entity, d.entityBase.unit)}`
       break;
     case "quota":
-      result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${isNumber(d.restQuantity)
-        ? d.restQuantity !== 0
-          ? ` se zbytkem ${formatQuantity(d.restQuantity)}`
-          : ''
-        : `se zbytkem ${formatQuantity(d.restQuantity)}`}`
+      result = d.entityQuota == null
+        ? formatKind(d)
+        : compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? 'po ':`pro každé ${formatQuantity(d.baseQuantity)} ${formatEntity(d.entity.entity, d.entity.unit)} po ` } ${formatQuantity(d.quotaQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity(d.entityQuota.entity, d.entityQuota.unit)}
+         ${isNumber(d.restQuantity)
+            ? d.restQuantity !== 0
+              ? ` se zbytkem ${formatQuantity(d.restQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity(d.entityQuota.entity, d.entityQuota.unit)}`
+              : ''
+            : `se zbytkem ${formatQuantity(d.restQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity(d.entityQuota.entity, d.entityQuota.unit)}`}`
       break;
     case "sequence":
       result = compose`${d.type != null ? formatSequence(d.type) : ''}`
@@ -1015,9 +1028,9 @@ export function colorifyDeduceTree(originalTree, { maxDepth, axioms, deductions 
     if (!node.children || node.children.length === 0) {
       if (isPredicate(node)) {
         const newPredicate = (isQuantityPredicate(node) && isNumber(node.quantity))
-          ? Object.assign(node, { 
-              quantity: node.quantity.toString()
-            })
+          ? Object.assign(node, {
+            quantity: node.quantity.toString()
+          })
           : isRatioPredicate(node) && isNumber(node.ratio)
             ? Object.assign(node, { ratio: false ? node.ratio.toString() : `${new Fraction(node.ratio).toFraction()}` })
             : node;

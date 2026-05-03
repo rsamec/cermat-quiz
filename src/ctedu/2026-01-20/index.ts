@@ -26,8 +26,8 @@ function strihaniCtvercu() {
                         contArea("obdélník", 7.2, "dm2"),
                         ctorUnit("cm2")
                     ),
-                    counter(ctverecLabel, 20),
-                    ctor("quota")
+                    cont("obdélník", 20, ctverecLabel),
+                    ctor("rate")
                 ),
                 evalFormulaAsCont(formulaRegistry.surfaceArea.square, x => x.a, [ctverecLabel, "strana"], dim.length)
             ),

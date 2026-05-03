@@ -126,6 +126,7 @@ function recurExpr(node, level, requiredLevel = 0, parentContext: DeduceContext 
         }
         expr = expr.substitute(variable, res)
         expr = expr.substitute(`base${variable}`, res);
+        expr = expr.substitute(`rest${variable}`, res);
         if (level >= requiredLevel) {
           expr = expr.simplify()
         }
@@ -133,6 +134,7 @@ function recurExpr(node, level, requiredLevel = 0, parentContext: DeduceContext 
       else {
         const q = res.quantity ?? res.ratio ?? res.ratios;
         const baseQ = res.baseQuantity;
+        const restQ = res.restQuantity;
 
         if (typeof q == 'number' || !isNaN(parseFloat(q)) || Array.isArray(q)) {
           expr = parser.parse(cleanUpExpression(expr, variable))
@@ -170,6 +172,9 @@ function recurExpr(node, level, requiredLevel = 0, parentContext: DeduceContext 
 
         if (baseQ != null) {
           expr = expr.substitute(`base${variable}`, baseQ)
+        }
+        if (restQ != null) {
+          expr = expr.substitute(`rest${variable}`, restQ)
         }
 
 
@@ -221,6 +226,7 @@ function cleanUpExpression(exp, variable = '') {
     .replaceAll(`${variable}.ratios`, variable)
     .replaceAll(`${variable}.ratio`, variable)
     .replaceAll(`${variable}.baseQuantity`, `base${variable}`)
+    .replaceAll(`${variable}.restQuantity`, `rest${variable}`)
 
   return formatNumbersInExpression(replaced)
 }
@@ -433,6 +439,8 @@ function tokensToTex(tokens, opts = {}) {
           } else {
             stack.push(`${a} / ${b}`);
           }
+        } else if (tok.value === "%") {
+          stack.push(`${a} \\bmod ${b}`);        
         } else if (tok.value === "^") {
           stack.push(`${parens(a)}^{${b}}`);
         } else if (tok.value === "*") {

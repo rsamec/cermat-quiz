@@ -1,5 +1,5 @@
 
-import { type Predicate, type Pattern, cont, ratio, comp, rate, ratios, compRatio, compDiff, lcd, gcd, ctor, inferenceRule, nth, quota, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont, counter, sum, product, squareNumbersPattern, triangularNumbersPattern, oblongNumbers, halfProduct, dimensionEntity, cuboidVolume, circleArea, contAngle } from "../components/math.js";
+import { type Predicate, type Pattern, cont, ratio, comp, rate, ratios, compRatio, compDiff, lcd, gcd, ctor, inferenceRule, nth, quota, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont, counter, sum, product, squareNumbersPattern, triangularNumbersPattern, oblongNumbers, halfProduct, dimensionEntity, cuboidVolume, circleArea, contAngle, ctorQuota, ctorRestQuantity, ctorQuotaQuantity, ctorRateQuota } from "../components/math.js";
 import { anglesNames } from "./deduce-utils.js";
 
 export default function rules() {
@@ -83,9 +83,23 @@ export default function rules() {
       deduceRule(cont("Petr", 20, "Kč"), rate("Petr", 4, "Kč", "rohlík")),
       deduceRule(cont("Petr", 5, "rohlík"), rate("Petr", 4, "Kč", "rohlík")),
 
-      deduceRule(cont("tyč", 10, "m"), cont("kus", 2, "m"), ctor('quota')),
-      deduceRule(cont("tyč", 10, "m"), quota("tyč", "kus", 5)),
-      deduceRule(cont("kus", 2, "m"), quota("tyč", "kus", 5)),
+      deduceRule(cont("tyč", 10, "m"), cont("tyč", 2, "m"), ctorQuota("tyč", { entity: "kus" })),
+      deduceRule(cont("tyč", 10, "m"), cont("tyč", 5, "kus"), ctor("quota")),
+      deduceRule(cont("tyč", 11, "m"), cont("tyč", 2, "m"), ctorQuota("tyč", { entity: "kus" })),
+      deduceRule(cont("tyč", 11, "m"), cont("tyč", 5, "kus"), ctor("quota")),
+      deduceRule(quota("tyč", 5, { entity: "kus" }, 2, { entity: "m" }, 1), ctorRestQuantity("zbytek")),
+      deduceRule(quota("tyč", 5, { entity: "kus" }, 2, { entity: "m" }, 1), ctorQuotaQuantity("quota")),
+
+      
+      deduceRule(cont("spotřeba", 10, "prkno"), rate("spotřeba", 4, "prkno", "deska"), ctorRateQuota('spotřeba', "ceil")),
+      deduceRule(quota("spotřeba", 3, { entity: "deska" }, 4, { entity: "prkno" }, -2), ctorRestQuantity("zbytek")),
+      deduceRule(quota("spotřeba", 3, { entity: "deska" }, 4, { entity: "prkno" }, -2), ctorQuotaQuantity("quota")),
+      
+      deduceRule(cont("spotřeba", 6, "tyč"), rate("spotřeba", 5, "tyč", "prkno", 2), ctorRateQuota('spotřeba', "ceil")),
+      deduceRule(quota("spotřeba", 3, { entity: "deska" }, 4, { entity: "prkno" }, -2), ctorRestQuantity("zbytek")),
+      deduceRule(quota("spotřeba", 3, { entity: "deska" }, 4, { entity: "prkno" }, -2), ctorQuotaQuantity("quota")),
+      
+
     ],
 
     substract: [

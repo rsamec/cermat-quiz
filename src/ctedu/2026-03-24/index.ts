@@ -1,6 +1,6 @@
 
-import { commonSense, compAngle, compRatio, compRelative, cont, Container, contAngle, contArea, contLength, counter, ctor, ctorDifference, ctorLinearEquation, ctorOption, ctorPercent, ctorRound, ctorSlide, ctorUnit, dimensionEntity, evalFormulaAsCont, formulaRegistry, halfProduct, option, product, productCombine, quota, rate, sum, thirdProduct, triangleAngle } from "../../components/math";
-import { anglesNames, createLazyMap, deduce, deduceAs, last, to, toCont } from "../../utils/deduce-utils";
+import { compAngle, compRelative, cont, contAngle, contArea, contLength, ctor, ctorLinearEquation, ctorOption, ctorRound, ctorUnit, dimensionEntity, evalFormulaAsCont, formulaRegistry, halfProduct, rate, sum, thirdProduct, triangleAngle } from "../../components/math";
+import { anglesNames, createLazyMap, deduce, last } from "../../utils/deduce-utils";
 
 export default createLazyMap({
     1: () => obdelnik(),

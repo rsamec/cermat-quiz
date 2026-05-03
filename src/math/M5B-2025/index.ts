@@ -207,7 +207,7 @@ function koralky() {
 
   const colorQuota = deduce(
     last(skupina4),
-    cont(name, 5, ""),
+    cont(name, 5, entity),
     ctor("quota")
   )
   return {

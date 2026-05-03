@@ -26,7 +26,7 @@ function dimensionEntity(unit = "cm") {
 }
 var dim = dimensionEntity();
 function isQuantityPredicate(value) {
-  return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "quota", "delta", "frequency"].includes(value.kind);
+  return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "rate-quota", "quota", "delta", "frequency"].includes(value.kind);
 }
 function isRatioPredicate(value) {
   return ["ratio", "comp-ratio"].includes(value.kind);
@@ -39,9 +39,6 @@ function isRatePredicate(value) {
 }
 function isFrequencyPredicate(value) {
   return value.kind === "frequency";
-}
-function cont(agent, quantity, entity, unit, opts) {
-  return { kind: "cont", agent: normalizeToAgent(agent), quantity, entity, unit, asRatio: opts?.asFraction };
 }
 function convertToExpression(expectedValue, compareTo, expectedValueOptions, variable = "x") {
   const convertedValue = Array.isArray(expectedValue) ? expectedValue : expectedValueOptions.asFraction ? helpers.convertToFraction(expectedValue) : expectedValueOptions.asPercent ? expectedValue / 100 : expectedValue;
@@ -372,6 +369,19 @@ function inferCeilToRule(a, b) {
     name: "ceilRule",
     inputParameters: extractKinds(a, b),
     question: isNumber(a.quantity) ? `Zaokrouhli ${formatNumber(a.quantity)} ${formatEntity(a)} nahoru na cel\xE9 \u010D\xEDslo.` : `Zaokrouhli nahoru na cel\xE9 \u010D\xEDslo.`,
+    result,
+    options: isNumber(a.quantity) && isNumber(result.quantity) ? [] : []
+  };
+}
+function inferInvertToRule(a, b) {
+  const result = {
+    ...a,
+    quantity: isNumber(a.quantity) ? a.quantity * -1 : wrapToQuantity(`a.quantity * -1`, { a })
+  };
+  return {
+    name: "invertRule",
+    inputParameters: extractKinds(a, b),
+    question: isNumber(a.quantity) ? `P\u0159eve\u010F ${formatNumber(a.quantity)} ${formatEntity(a)} na opa\u010Dnou hodnotu.` : `P\u0159eve\u010F na opa\u010Dnou hodnotu.`,
     result,
     options: isNumber(a.quantity) && isNumber(result.quantity) ? [] : []
   };
@@ -830,23 +840,23 @@ function inferPartToWholeRule(a, b) {
   };
 }
 function rateRule(a, rate) {
-  const aEntity = a.kind == "cont" ? a.entity : a.kind === "quota" ? a.agentQuota : a.entity.entity;
-  if (!(aEntity === rate.entity.entity || aEntity === rate.entityBase.entity)) {
-    throw `Mismatch entity ${aEntity} any of ${rate.entity.entity}, ${rate.entityBase.entity}`;
+  const aEntity = a.kind == "cont" ? toEntity(a) : a.kind === "quota" ? a.entityQuota : a.entity;
+  if (!(isSameEntity(aEntity, rate.entity) || isSameEntity(aEntity, rate.entityBase))) {
+    throw `Mismatch entity ${formatEntity(aEntity)} any of ${formatEntity(rate.entity)}, ${formatEntity(rate.entityBase)}`;
   }
-  const isEntityBase2 = aEntity == rate.entity.entity;
+  const isEntityBase2 = isSameEntity(aEntity, rate.entity);
   const isUnitRate = rate.baseQuantity === 1;
   return {
     kind: "cont",
     agent: Array.isArray(a.agent) ? mergeAgents(a.agent, rate.agent) : normalizeToAgent(a.agent),
     entity: isEntityBase2 ? rate.entityBase.entity : rate.entity.entity,
     unit: isEntityBase2 ? rate.entityBase.unit : rate.entity.unit,
-    quantity: aEntity == rate.entity.entity ? isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(rate.baseQuantity) ? a.quantity / (!isUnitRate ? rate.quantity / rate.baseQuantity : rate.quantity) : !isUnitRate ? wrapToQuantity(`a.quantity / (rate.quantity/rate.baseQuantity)`, { a, rate }) : wrapToQuantity(`a.quantity / rate.quantity`, { a, rate }) : isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(rate.baseQuantity) ? a.quantity * (!isUnitRate ? rate.quantity / rate.baseQuantity : rate.quantity) : !isUnitRate ? wrapToQuantity(`a.quantity * (rate.quantity/rate.baseQuantity)`, { a, rate }) : wrapToQuantity(`a.quantity * rate.quantity`, { a, rate })
+    quantity: isEntityBase2 ? isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(rate.baseQuantity) ? a.quantity / (!isUnitRate ? rate.quantity / rate.baseQuantity : rate.quantity) : !isUnitRate ? wrapToQuantity(`a.quantity / (rate.quantity/rate.baseQuantity)`, { a, rate }) : wrapToQuantity(`a.quantity / rate.quantity`, { a, rate }) : isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(rate.baseQuantity) ? a.quantity * (!isUnitRate ? rate.quantity / rate.baseQuantity : rate.quantity) : !isUnitRate ? wrapToQuantity(`a.quantity * (rate.quantity/rate.baseQuantity)`, { a, rate }) : wrapToQuantity(`a.quantity * rate.quantity`, { a, rate })
   };
 }
 function inferRateRule(a, rate) {
   const result = rateRule(a, rate);
-  const aEntity = a.kind == "cont" ? a.entity : a.kind === "quota" ? a.agentQuota : a.entity.entity;
+  const aEntity = a.kind == "cont" ? a.entity : a.kind === "quota" ? a.agent : a.entity.entity;
   const isUnitRate = rate.baseQuantity === 1;
   return {
     name: rateRule.name,
@@ -861,29 +871,79 @@ function inferRateRule(a, rate) {
     ] : []
   };
 }
-function rateBatchRule(a, rate, last2) {
-  const aEntity = a.entity;
-  if (!(aEntity === rate.entity.entity || aEntity === rate.entityBase.entity)) {
-    throw `Mismatch entity ${aEntity} any of ${rate.entity.entity}, ${rate.entityBase.entity}`;
-  }
-  const isEntityBase2 = aEntity == rate.entity.entity;
-  const isUnitRate = rate.baseQuantity === 1;
+function toQuotaRule(a, quota, last2) {
+  const isQuota = isSameEntity(a, quota);
+  const quantity = isNumber(a.quantity) && isNumber(quota.quantity) ? Math.floor(a.quantity / quota.quantity) : wrapToQuantity(`floor(a.quantity / quota.quantity)`, { a, quota });
   return {
-    kind: "cont",
-    agent: last2?.agent ?? normalizeToAgent(a.agent),
-    entity: isEntityBase2 ? rate.entityBase.entity : rate.entity.entity,
-    unit: isEntityBase2 ? rate.entityBase.unit : rate.entity.unit,
-    quantity: isEntityBase2 && last2.asRestQuantity ? isNumber(a.quantity) && isNumber(rate.quantity) ? rate.quantity * Math.ceil(a.quantity / rate.quantity) - a.quantity : wrapToQuantity(`rate.quantity * ceil(a.quantity / rate.quantity) - a.quantity`, { a, rate }) : isEntityBase2 ? isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(rate.baseQuantity) ? isUnitRate ? Math.ceil(a.quantity / rate.quantity) : Math.ceil(a.quantity / rate.quantity) * rate.baseQuantity : isUnitRate ? wrapToQuantity(`ceil(a.quantity / rate.quantity)`, { a, rate }) : wrapToQuantity(`ceil(a.quantity / rate.quantity) * rate.baseQuantity`, { a, rate }) : isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(rate.baseQuantity) ? isUnitRate ? Math.floor(a.quantity * rate.quantity) : Math.floor(a.quantity / rate.baseQuantity) * rate.quantity : isUnitRate ? wrapToQuantity(`floor(a.quantity * rate.quantity)`, { a, rate }) : wrapToQuantity(`floor(a.quantity / rate.baseQuantity) * rate.quantity`, { a, rate })
+    kind: "quota",
+    agent: normalizeToAgent(a.agent),
+    entity: isQuota ? last2.entity ?? toEntity("skupin") : toEntity(quota.entity),
+    entityQuota: toEntity(a),
+    quantity: isQuota ? quantity : quota.quantity,
+    baseQuantity: 1,
+    restQuantity: isNumber(a.quantity) && isNumber(quota.quantity) ? a.quantity % quota.quantity : wrapToQuantity(`a.quantity % quota.quantity`, { a, quota }),
+    moduloType: "floor",
+    quotaQuantity: isQuota ? quota.quantity : quantity
   };
 }
-function inferRateBatchRule(a, rate, last2) {
-  const result = rateBatchRule(a, rate, last2);
+function inferToQuotaRule(a, quota, last2) {
+  const result = toQuotaRule(a, quota, last2);
+  const isQuota = isSameEntity(a, quota);
+  if (isNumber(a.quantity) && isNumber(quota.quantity) && isNumber(result.quantity)) {
+    return {
+      name: toQuotaRule.name,
+      inputParameters: extractKinds(a, quota),
+      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity, unit: a.unit })} postupn\u011B na ${isQuota ? `skupiny velikosti ${formatNumber(quota.quantity)} ${formatEntity({ entity: quota.entity, unit: quota.unit })}` : `${formatNumber(quota.quantity)} ${formatEntity({ entity: quota.entity, unit: quota.unit })}`}`,
+      result,
+      options: [
+        { tex: `${formatNumber(a.quantity)} / ${formatNumber(quota.quantity)}`, result: formatNumber(result.quantity), ok: true },
+        { tex: `${formatNumber(quota.quantity)} / ${formatNumber(a.quantity)}`, result: formatNumber(result.quantity), ok: false }
+      ]
+    };
+  } else {
+    return resultAsQuestion(result, { name: toQuotaRule.name, inputParameters: extractKinds(a, quota) });
+  }
+}
+function rateQuotaRule(a, rate, moduloType = "floor") {
+  const aEntity = a.entity;
+  if (!(aEntity === rate.entity.entity)) {
+    throw `Mismatch entity ${aEntity} any of ${rate.entity.entity}, ${rate.entityBase.entity}`;
+  }
+  const isUnitRate = rate.baseQuantity === 1;
+  let quantities;
+  if (moduloType === "ceil") {
+    quantities = {
+      quantity: isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(rate.baseQuantity) ? isUnitRate ? Math.ceil(a.quantity / rate.quantity) : Math.ceil(a.quantity / rate.quantity) * rate.baseQuantity : isUnitRate ? wrapToQuantity(`ceil(a.quantity / rate.quantity)`, { a, rate }) : wrapToQuantity(`ceil(a.quantity / rate.quantity) * rate.baseQuantity`, { a, rate }),
+      restQuantity: isNumber(a.quantity) && isNumber(rate.quantity) ? a.quantity - rate.quantity * Math.ceil(a.quantity / rate.quantity) : wrapToQuantity(`a.quantity - rate.quantity * ceil(a.quantity / rate.quantity)`, { a, rate })
+    };
+  } else if (moduloType === "floor") {
+    quantities = {
+      quantity: isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(rate.baseQuantity) ? isUnitRate ? Math.floor(a.quantity / rate.quantity) : Math.floor(a.quantity / rate.quantity) * rate.baseQuantity : isUnitRate ? wrapToQuantity(`floor(a.quantity / rate.quantity)`, { a, rate }) : wrapToQuantity(`floor(a.quantity / rate.quantity) * rate.baseQuantity`, { a, rate }),
+      restQuantity: isNumber(a.quantity) && isNumber(rate.quantity) ? a.quantity - rate.quantity * Math.floor(a.quantity / rate.quantity) : wrapToQuantity(`a.quantity - rate.quantity * floor(a.quantity / rate.quantity)`, { a, rate })
+    };
+  } else {
+    throw `Not supported moduloType:${moduloType}`;
+  }
+  return {
+    kind: "quota",
+    agent: normalizeToAgent(a.agent),
+    entity: rate.entityBase,
+    entityQuota: rate.entity,
+    quotaQuantity: rate.quantity,
+    quantity: quantities.quantity,
+    baseQuantity: rate.baseQuantity,
+    restQuantity: quantities.restQuantity,
+    moduloType
+  };
+}
+function inferRateQuotaRule(a, rate, last2) {
+  const result = rateQuotaRule(a, rate, last2?.moduloType);
   const aEntity = a.entity;
   const isUnitRate = rate.baseQuantity === 1;
   return {
     name: rateRule.name,
     inputParameters: extractKinds(a, rate),
-    question: containerQuestion(result),
+    question: isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(result.quantity) ? `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity, unit: a.unit })} postupn\u011B na skupiny velikosti ${formatNumber(rate.quantity)} ${formatEntity(rate.entity)}` : "",
     result,
     options: isNumber(a.quantity) && isNumber(rate.quantity) && isNumber(result.quantity) && isNumber(rate.baseQuantity) ? [
       { tex: `floor(${formatNumber(a.quantity)} * ${formatNumber(rate.quantity)})`, result: formatNumber(result.quantity), ok: isUnitRate && aEntity !== rate.entity.entity },
@@ -893,34 +953,42 @@ function inferRateBatchRule(a, rate, last2) {
     ] : []
   };
 }
-function quotaRule(a, quota) {
-  if (!(equalAgent(a.agent, quota.agent) || equalAgent(a.agent, quota.agentQuota))) {
-    throw `Mismatch entity ${a.entity} any of ${quota.agent}, ${quota.agentQuota}`;
-  }
-  return {
+function inferRestQuantity(quota, rest) {
+  const result = {
     kind: "cont",
-    agent: equalAgent(a.agent, quota.agentQuota) ? normalizeToAgent(quota.agent) : normalizeToAgent(quota.agentQuota),
-    entity: a.entity,
-    quantity: equalAgent(a.agent, quota.agentQuota) ? isNumber(a.quantity) && isNumber(quota.quantity) ? a.quantity * quota.quantity : wrapToQuantity(`a.quantity * quota.quantity`, { a, quota }) : isNumber(a.quantity) && isNumber(quota.quantity) ? a.quantity / quota.quantity : wrapToQuantity(`a.quantity / quota.quantity`, { a, quota })
+    agent: normalizeToAgent(rest.agent ?? quota.agent),
+    entity: quota.entityQuota.entity,
+    unit: quota.entityQuota.unit,
+    quantity: quota.restQuantity
   };
-}
-function inferQuotaRule(a, quota) {
-  const result = quotaRule(a, quota);
   return {
-    name: quotaRule.name,
-    inputParameters: extractKinds(a, quota),
+    name: "inferRestQuantity",
+    inputParameters: extractKinds(quota, rest),
     question: containerQuestion(result),
     result,
-    options: isNumber(a.quantity) && isNumber(quota.quantity) ? [
-      { tex: `${formatNumber(a.quantity)} * ${formatNumber(quota.quantity)}`, result: formatNumber(a.quantity * quota.quantity), ok: equalAgent(a.agent, quota.agentQuota) },
-      { tex: `${formatNumber(a.quantity)} / ${formatNumber(quota.quantity)}`, result: formatNumber(a.quantity / quota.quantity), ok: !equalAgent(a.agent, quota.agentQuota) }
-    ] : []
+    options: []
+  };
+}
+function inferQuotaQuantity(quota, rest) {
+  const result = {
+    kind: "cont",
+    agent: normalizeToAgent(rest.agent ?? quota.agent),
+    entity: quota.entityQuota.entity,
+    unit: quota.entityQuota.unit,
+    quantity: quota.quotaQuantity
+  };
+  return {
+    name: "inferQuotaQuantity",
+    inputParameters: extractKinds(quota, rest),
+    question: containerQuestion(result),
+    result,
+    options: []
   };
 }
 function toPartWholeRatio(part, whole, asPercent) {
   const toAgent = (predicate) => {
     const agent = normalizeToAgent(predicate.agent);
-    const entities = predicate.kind == "rate" ? [predicate.entityBase.entity] : predicate.kind == "quota" ? normalizeToAgent(predicate.agentQuota) : [];
+    const entities = predicate.kind == "rate" ? [predicate.entityBase.entity] : predicate.kind == "quota" ? [predicate.entityQuota.entity] : [];
     return agent.concat(entities);
   };
   return {
@@ -1164,8 +1232,8 @@ function inferToSequenceRule(items) {
   };
 }
 function toCompareRule(a, b) {
-  const aEntity = a.kind === "rate" ? a.entity : a.kind === "quota" ? { entity: a.agentQuota } : { entity: a.entity, unit: a.unit };
-  const bEntity = b.kind === "rate" ? b.entity : b.kind === "quota" ? { entity: b.agentQuota } : { entity: b.entity, unit: b.unit };
+  const aEntity = a.kind === "rate" ? a.entity : a.kind === "quota" ? a.entityQuota : { entity: a.entity, unit: a.unit };
+  const bEntity = b.kind === "rate" ? b.entity : b.kind === "quota" ? b.entityQuota : { entity: b.entity, unit: b.unit };
   if (aEntity.entity != bEntity.entity) {
     throw `Mismatch entity ${aEntity.entity}, ${bEntity.entity}`;
   }
@@ -1582,8 +1650,8 @@ function toRateRule(a, b, rate) {
       unit: a.unit
     },
     entityBase: {
-      entity: b.kind === "cont" ? b.entity : joinAgent(b.agentQuota),
-      unit: b.kind === "cont" ? b.unit : EmptyUnit
+      entity: b.kind === "cont" ? b.entity : b.entityQuota.entity,
+      unit: b.kind === "cont" ? b.unit : b.entityQuota.unit
     },
     baseQuantity: rate?.baseQuantity ?? 1
   };
@@ -1594,7 +1662,7 @@ function inferToRateRule(a, b, rate) {
     return {
       name: toRateRule.name,
       inputParameters: extractKinds(a, b, rate),
-      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnom\u011Brn\u011B ${formatNumber(b.quantity)} kr\xE1t${result.baseQuantity !== 1 ? ` po ${formatNumber(result.baseQuantity)} ${formatEntity({ entity: b.kind === "cont" ? b.entity : joinAgent(b.agentQuota) })}` : ""}`,
+      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnom\u011Brn\u011B ${formatNumber(b.quantity)} kr\xE1t${result.baseQuantity !== 1 ? ` po ${formatNumber(result.baseQuantity)} ${formatEntity(b.kind === "cont" ? toEntity(b) : b.entityQuota)}` : ""}`,
       result,
       options: [
         { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: rate.baseQuantity === 1 },
@@ -1623,32 +1691,6 @@ function inferSolveEquationRule(a, b, last2) {
     result,
     options: []
   };
-}
-function toQuotaRule(a, quota) {
-  return {
-    kind: "quota",
-    agentQuota: quota.agent,
-    agent: a.agent,
-    quantity: isNumber(a.quantity) && isNumber(quota.quantity) ? Math.floor(a.quantity / quota.quantity) : wrapToQuantity(`floor(a.quantity / quota.quantity)`, { a, quota }),
-    restQuantity: isNumber(a.quantity) && isNumber(quota.quantity) ? a.quantity % quota.quantity : wrapToQuantity(`a.quantity % quota.quantity`, { a, quota })
-  };
-}
-function inferToQuotaRule(a, quota) {
-  const result = toQuotaRule(a, quota);
-  if (isNumber(a.quantity) && isNumber(quota.quantity) && isNumber(result.quantity)) {
-    return {
-      name: toQuotaRule.name,
-      inputParameters: extractKinds(a, quota),
-      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity, unit: a.unit })} postupn\u011B na skupiny velikosti ${formatNumber(quota.quantity)} ${formatEntity({ entity: quota.entity, unit: quota.unit })}`,
-      result,
-      options: [
-        { tex: `${formatNumber(a.quantity)} / ${formatNumber(quota.quantity)}`, result: formatNumber(result.quantity), ok: true },
-        { tex: `${formatNumber(quota.quantity)} / ${formatNumber(a.quantity)}`, result: formatNumber(result.quantity), ok: false }
-      ]
-    };
-  } else {
-    return resultAsQuestion(result, { name: toQuotaRule.name, inputParameters: extractKinds(a, quota) });
-  }
 }
 function toRatiosRule(parts, last2) {
   const ratios = parts.map((d) => d.quantity);
@@ -1833,7 +1875,7 @@ function inferEvalToOptionRule(a, b) {
   };
 }
 function partToPartRule(a, partToPartRatio, nth) {
-  const aEntity = a.kind == "quota" ? { entity: a.agentQuota } : toEntity(a.entity);
+  const aEntity = a.kind == "quota" ? { entity: a.agent } : toEntity(a.entity);
   if (!(partToPartRatio.whole != null && matchAgent(partToPartRatio.whole, a) || partToPartRatio.parts.some((d) => matchAgent(d, a)))) {
     throw `Mismatch agent ${[a.agent, aEntity].join()} any of ${[partToPartRatio.whole].concat(partToPartRatio.parts).join()} (partToPartRule)`;
   }
@@ -2202,7 +2244,7 @@ function inferenceRuleEx(...args) {
     if (kind === "diff")
       return inferToDifferenceRule(a, b, last2);
     if (kind === "quota")
-      return inferToQuotaRule(a, b);
+      return inferToQuotaRule(a, b, last2);
     if (kind === "delta")
       return inferToDeltaRule(a, b, last2);
     if (kind === "pythagoras")
@@ -2262,6 +2304,10 @@ function inferenceRuleEx(...args) {
     return inferCeilToRule(a, b);
   } else if (a.kind === "ceil" && b.kind === "cont") {
     return inferCeilToRule(b, a);
+  } else if (a.kind === "cont" && b.kind === "invert") {
+    return inferInvertToRule(a, b);
+  } else if (a.kind === "invert" && b.kind === "cont") {
+    return inferInvertToRule(b, a);
   } else if (a.kind === "cont" && (b.kind === "number-fraction-part" || b.kind === "number-decimal-part")) {
     return inferSplitDecimalAndFractionPartsRule(a, b);
   } else if ((a.kind === "number-fraction-part" || a.kind === "number-decimal-part") && b.kind === "cont") {
@@ -2281,9 +2327,9 @@ function inferenceRuleEx(...args) {
   } else if ((a.kind === "cont" || a.kind == "rate") && b.kind === "comp") {
     return kind === "comp-part-eq" && a.kind === "cont" ? inferPartEqualRule(b, a) : inferCompareRule(a, b);
   } else if ((a.kind === "cont" || a.kind === "quota" || a.kind === "rate") && b.kind == "rate") {
-    return kind === "ratio" ? inferToPartWholeRatio(b, a, last2) : kind === "rate-batch" && a.kind === "cont" ? inferRateBatchRule(a, b, last2) : inferRateRule(a, b, last2);
+    return kind === "ratio" ? inferToPartWholeRatio(b, a, last2) : kind === "quota" && a.kind === "cont" ? inferRateQuotaRule(a, b, last2) : inferRateRule(a, b);
   } else if (a.kind === "rate" && (b.kind == "cont" || b.kind === "quota" || b.kind === "rate")) {
-    return kind === "ratio" ? inferToPartWholeRatio(a, b, last2) : kind === "rate-batch" && b.kind === "cont" ? inferRateBatchRule(b, a, last2) : inferRateRule(b, a, last2);
+    return kind === "ratio" ? inferToPartWholeRatio(a, b, last2) : kind === "quota" && b.kind === "cont" ? inferRateQuotaRule(b, a, last2) : inferRateRule(b, a);
   } else if (a.kind === "comp" && b.kind == "comp-ratio") {
     return kind === "comp" ? inferTransitiveCompareRule(a, b) : inferRatioCompareToCompareRule(b, a, kind === "nth-part" && last2);
   } else if (a.kind === "comp-ratio" && b.kind == "comp") {
@@ -2308,10 +2354,18 @@ function inferenceRuleEx(...args) {
     return inferProportionRule(b, a);
   } else if (a.kind === "comp-ratio" && b.kind == "proportion") {
     return inferProportionRule(a, b);
-  } else if (a.kind === "cont" && b.kind == "quota") {
-    return kind === "rate" ? inferToRateRule(a, b, last2) : inferQuotaRule(a, b);
-  } else if (a.kind === "quota" && b.kind == "cont") {
-    return kind === "rate" ? inferToRateRule(b, a, last2) : inferQuotaRule(b, a);
+  } else if (a.kind === "cont" && b.kind == "quota" && kind == "rate") {
+    return inferToRateRule(a, b, last2);
+  } else if (a.kind === "quota" && b.kind == "cont" && kind == "rate") {
+    return inferToRateRule(b, a, last2);
+  } else if (a.kind === "rest-quantity" && b.kind == "quota") {
+    return inferRestQuantity(b, a);
+  } else if (a.kind === "quota" && b.kind == "rest-quantity") {
+    return inferRestQuantity(a, b);
+  } else if (a.kind === "quota-quantity" && b.kind == "quota") {
+    return inferQuotaQuantity(b, a);
+  } else if (a.kind === "quota" && b.kind == "quota-quantity") {
+    return inferQuotaQuantity(a, b);
   } else if (a.kind === "comp-ratio" && (b.kind === "cont" || b.kind === "rate")) {
     return inferRatioCompareRule(b, a, kind === "nth-part" && last2);
   } else if ((a.kind === "cont" || a.kind === "rate") && b.kind === "comp-ratio") {
@@ -6235,12 +6289,14 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
         }
         expr = expr.substitute(variable, res);
         expr = expr.substitute(`base${variable}`, res);
+        expr = expr.substitute(`rest${variable}`, res);
         if (level >= requiredLevel) {
           expr = expr.simplify();
         }
       } else {
         const q = res.quantity ?? res.ratio ?? res.ratios;
         const baseQ = res.baseQuantity;
+        const restQ = res.restQuantity;
         if (typeof q == "number" || !isNaN(parseFloat(q)) || Array.isArray(q)) {
           expr = parser.parse(cleanUpExpression(expr, variable));
           if (level >= requiredLevel || Array.isArray(q)) {
@@ -6269,6 +6325,9 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
         }
         if (baseQ != null) {
           expr = expr.substitute(`base${variable}`, baseQ);
+        }
+        if (restQ != null) {
+          expr = expr.substitute(`rest${variable}`, restQ);
         }
       }
     }
@@ -6303,7 +6362,7 @@ function toEquationExprAsTex(lastExpr, requiredLevel = 0, context = {}) {
   return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel, context).tokens)} $`;
 }
 function cleanUpExpression(exp, variable = "") {
-  const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratios`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, `base${variable}`);
+  const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratios`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, `base${variable}`).replaceAll(`${variable}.restQuantity`, `rest${variable}`);
   return formatNumbersInExpression(replaced);
 }
 function formatNumbersInExpression(expr) {
@@ -6488,6 +6547,8 @@ function tokensToTex(tokens, opts = {}) {
           } else {
             stack.push(`${a} / ${b}`);
           }
+        } else if (tok.value === "%") {
+          stack.push(`${a} \\bmod ${b}`);
         } else if (tok.value === "^") {
           stack.push(`${parens(a)}^{${b}}`);
         } else if (tok.value === "*") {
@@ -6620,8 +6681,18 @@ function toFrequency(child, { agent, entityBase, baseQuantity }) {
 function toRate(child, { agent, entityBase, baseQuantity }) {
   return toPredicate(child, mapToRate({ agent, entityBase, baseQuantity }));
 }
-function toQuotaRest(child, { agent, entity }) {
-  return toPredicate(child, (node) => cont(agent, node.restQuantity, entity.entity, entity.unit));
+function toQuotaRate(child) {
+  return toPredicate(
+    child,
+    (node) => ({
+      kind: "rate",
+      agent: node.agent,
+      entity: node.entityQuota,
+      entityBase: node.entity,
+      quantity: node.quantity,
+      baseQuantity: node.quotaQuantity
+    })
+  );
 }
 function toRate2(child, { agent, entity, entityBase }) {
   return to(child, {
@@ -6641,8 +6712,8 @@ function mapToCont({ agent, entity }) {
       kind: "cont",
       agent: [agent],
       quantity: typeNode.quantity,
-      entity: entity != null ? entity.entity : typeNode.kind == "quota" ? typeNode.agentQuota : typeNode.kind == "rate" ? typeNode.entity.entity : typeNode.entity,
-      unit: entity != null ? entity.unit : typeNode.kind == "rate" ? typeNode.entity.unit : typeNode.kind == "quota" ? void 0 : typeNode.unit
+      entity: entity != null ? entity.entity : typeNode.kind == "quota" ? typeNode.entityQuota.entity : typeNode.kind == "rate" ? typeNode.entity.entity : typeNode.entity,
+      unit: entity != null ? entity.unit : typeNode.kind == "rate" ? typeNode.entity.unit : typeNode.kind == "quota" ? typeNode.entityQuota.unit : typeNode.unit
     };
   };
 }
@@ -7097,7 +7168,8 @@ function formatPredicate(d, formatting) {
       result = compose`${formatAgent(d.agent)} ${d.asRatio ? formatRatio2(d.quantity) : formatQuantity(d.quantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} per ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? "" : formatQuantity(d.baseQuantity)}${d.entityBase.entity != "" ? " " : ""}${formatEntity2(d.entityBase.entity, d.entityBase.unit)}`;
       break;
     case "quota":
-      result = compose`${formatAgent(d.agent)} rozděleno na ${formatQuantity(d.quantity)} ${formatAgent(d.agentQuota)} ${isNumber(d.restQuantity) ? d.restQuantity !== 0 ? ` se zbytkem ${formatQuantity(d.restQuantity)}` : "" : `se zbytkem ${formatQuantity(d.restQuantity)}`}`;
+      result = d.entityQuota == null ? formatKind(d) : compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? "po " : `pro ka\u017Ed\xE9 ${formatQuantity(d.baseQuantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} po `} ${formatQuantity(d.quotaQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity2(d.entityQuota.entity, d.entityQuota.unit)}
+         ${isNumber(d.restQuantity) ? d.restQuantity !== 0 ? ` se zbytkem ${formatQuantity(d.restQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity2(d.entityQuota.entity, d.entityQuota.unit)}` : "" : `se zbytkem ${formatQuantity(d.restQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity2(d.entityQuota.entity, d.entityQuota.unit)}`}`;
       break;
     case "sequence":
       result = compose`${d.type != null ? formatSequence2(d.type) : ""}`;
@@ -7443,7 +7515,7 @@ export {
   toFrequency,
   toPercent,
   toPredicate,
-  toQuotaRest,
+  toQuotaRate,
   toRate,
   toRate2,
   wordProblemGroupById

@@ -348,14 +348,13 @@ function uhly() {
 function hranol() {
     const dim = dimensionEntity();
     const stranaZakladna = contLength("základna", 24)
-    const vyska = toCont(deduce(
+    const vyska = deduce(
         deduceAs("doplnění trojúhleník na obdelník, tak že ho složím ze dvou stejných trojúhleníku")(
             contArea("základna", 60),
             ...doubleProduct("obdelník"),
         ),
         stranaZakladna,
-        ctor("quota")),
-        { agent: "výška", entity: dim.length }
+        evalFormulaAsCont(formulaRegistry.surfaceArea.rectangle, x => x.b, "obdelník", dim.length),        
     )
 
     return {

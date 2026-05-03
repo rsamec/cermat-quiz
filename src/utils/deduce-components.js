@@ -599,10 +599,11 @@ export function renderPredicatePlot(newChild, node, options = { predicatesToExcl
     //   { agent: `${newChild.entity?.entity}`, value: newChild.quantity, yValue: `${newChild.entityBase?.entity}` },
     // ], { width, height: 50, marginLeft: 70, formatAsFraction: false, showRelativeValues: false, showSeparate: true }))
   }
-  else if (newChild.kind === "quota" && newChild.quantity && isNumber(newChild.quantity)) {
-    return partion([
-      { agent: `${newChild.agentQuota}`, value: newChild.quantity, yValue: `${newChild.agent}` },
-    ], { width, height: 50, marginLeft: 70, formatAsFraction: false, showRelativeValues: false, showSeparate: true })
+  else if (newChild.kind === "quota" && newChild.quantity && isNumber(newChild.quantity) && isNumber(newChild.restQuantity)) {
+    const newChildQuatity = newChild.quantity;
+    const arr = newChildQuatity > 3 ? [`1.-${newChildQuatity}.${newChild.entity?.entity}`] : [...Array(newChild.quantity)].map(`${i + 1}.${newChild.entity?.entity}`);
+    return partion(arr.map(yValue => ({ agent: `${newChild.entityQuota?.entity}`, value: newChild.quotaQuantity, yValue })).concat(newChild.restQuantity > 0 ? [{ agent: `${newChild.entityQuota?.entity}`, value: newChild.restQuantity, yValue: `zbytek` }] : []),
+      { width, height: 50, marginLeft: 70, formatAsFraction: false, showRelativeValues: false, showAbsoluteValues: false, showSeparate: false})
   }
   else if (newChild.kind === "gcd" || newChild.kind === "lcd") {
     const numbers = node.children.slice(0, -2).map(d => isPredicate(d) ? d : last(d)).map(d => d.quantity);

@@ -1716,12 +1716,14 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
         }
         expr = expr.substitute(variable, res);
         expr = expr.substitute(`base${variable}`, res);
+        expr = expr.substitute(`rest${variable}`, res);
         if (level >= requiredLevel) {
           expr = expr.simplify();
         }
       } else {
         const q = res.quantity ?? res.ratio ?? res.ratios;
         const baseQ = res.baseQuantity;
+        const restQ = res.restQuantity;
         if (typeof q == "number" || !isNaN(parseFloat(q)) || Array.isArray(q)) {
           expr = parser.parse(cleanUpExpression(expr, variable));
           if (level >= requiredLevel || Array.isArray(q)) {
@@ -1750,6 +1752,9 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
         }
         if (baseQ != null) {
           expr = expr.substitute(`base${variable}`, baseQ);
+        }
+        if (restQ != null) {
+          expr = expr.substitute(`rest${variable}`, restQ);
         }
       }
     }
@@ -1791,7 +1796,7 @@ function toEquationExprAsTex(lastExpr, requiredLevel = 0, context = {}) {
   return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel, context).tokens)} $`;
 }
 function cleanUpExpression(exp, variable = "") {
-  const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratios`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, `base${variable}`);
+  const replaced = exp.toString().replaceAll(`${variable}.quantity`, variable).replaceAll(`${variable}.ratios`, variable).replaceAll(`${variable}.ratio`, variable).replaceAll(`${variable}.baseQuantity`, `base${variable}`).replaceAll(`${variable}.restQuantity`, `rest${variable}`);
   return formatNumbersInExpression(replaced);
 }
 function formatNumbersInExpression(expr) {
@@ -1976,6 +1981,8 @@ function tokensToTex(tokens, opts = {}) {
           } else {
             stack.push(`${a} / ${b}`);
           }
+        } else if (tok.value === "%") {
+          stack.push(`${a} \\bmod ${b}`);
         } else if (tok.value === "^") {
           stack.push(`${parens(a)}^{${b}}`);
         } else if (tok.value === "*") {

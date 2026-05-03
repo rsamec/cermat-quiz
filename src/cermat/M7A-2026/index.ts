@@ -157,13 +157,13 @@ function procenta() {
                     last(prvniDen),
                     ctorDifference("2.den")
                 ),
-                ctorOption("A", 20, { asPercent: true })
+                ctorOption("A", 20)
             )
         },
         b: {
             deductionTree: deduce(
                 tretiDen,
-                ctorOption("E", 40, { asPercent: true })
+                ctorOption("E", 40)
             )
         },
         c: {

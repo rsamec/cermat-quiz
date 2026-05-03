@@ -527,7 +527,7 @@ function cestaKeStudance() {
   const unit = "cm"
 
   const tiborAgent = "plánovaná trasa";
-  const tiborMeritko = rate(tiborAgent, 50_000, { entity, unit }, entityBase)
+  const tiborMeritko = rate(tiborAgent, 50_000, { entity, unit }, { entity: entityBase, unit })
   const tiborTrasaPlan = cont(tiborAgent, 4.2, entityBase, unit)
 
   const matyasAgent = "plánovaná trasa";
