@@ -5,6 +5,7 @@ var defaultHelpers = {
   convertToUnit: (d) => d,
   unitAnchor: () => 1,
   solveLinearEquation: (fist, second, variable) => NaN,
+  solveQuadraticEquation: (fist, second, variable) => [],
   evalExpression: (expression, context) => NaN,
   evalNodeToNumber: (expression) => NaN,
   substituteContext: (expression, context) => NaN
@@ -113,6 +114,9 @@ function ctorRound(order = 1) {
 }
 function ctorLinearEquation(agent, entity3, variable = "x") {
   return { kind: "linear-equation", agent, variable, entity: entity3 };
+}
+function ctorQuadraticEquation(agent, entity3, variable = "x") {
+  return { kind: "quadratic-equation", agent, variable, entity: entity3 };
 }
 function ctorDelta(agent) {
   return { kind: "delta", agent: { name: agent } };
@@ -512,28 +516,32 @@ function transitiveRatioCompareRule(a, b) {
       kind: "comp-ratio",
       agentA: a.agentA,
       agentB: b.agentB,
-      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? abs(a.ratio) * abs(b.ratio) : wrapToRatio(`abs(a.ratio) * abs(b.ratio)`, { a, b })
+      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? abs(a.ratio) * abs(b.ratio) : wrapToRatio(`abs(a.ratio) * abs(b.ratio)`, { a, b }),
+      asPercent: a.asPercent && b.asPercent
     };
   } else if (a.agentB === b.agentB) {
     return {
       kind: "comp-ratio",
       agentA: a.agentA,
       agentB: b.agentA,
-      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? abs(a.ratio) * 1 / abs(b.ratio) : wrapToRatio(`abs(a.ratio) * 1 / abs(b.ratio)`, { a, b })
+      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? abs(a.ratio) * 1 / abs(b.ratio) : wrapToRatio(`abs(a.ratio) * 1 / abs(b.ratio)`, { a, b }),
+      asPercent: a.asPercent && b.asPercent
     };
   } else if (a.agentA === b.agentA) {
     return {
       kind: "comp-ratio",
       agentA: a.agentB,
       agentB: b.agentB,
-      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? 1 / abs(a.ratio) * abs(b.ratio) : wrapToRatio(`1 / abs(a.ratio) * abs(b.ratio)`, { a, b })
+      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? 1 / abs(a.ratio) * abs(b.ratio) : wrapToRatio(`1 / abs(a.ratio) * abs(b.ratio)`, { a, b }),
+      asPercent: a.asPercent && b.asPercent
     };
   } else if (a.agentA === b.agentB) {
     return {
       kind: "comp-ratio",
       agentA: a.agentB,
       agentB: b.agentA,
-      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? 1 / abs(a.ratio) * 1 / abs(b.ratio) : wrapToRatio(`1 / abs(a.ratio) * 1 / abs(b.ratio)`, { a, b })
+      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? 1 / abs(a.ratio) * 1 / abs(b.ratio) : wrapToRatio(`1 / abs(a.ratio) * 1 / abs(b.ratio)`, { a, b }),
+      asPercent: a.asPercent && b.asPercent
     };
   } else {
     throw `Mismatch agent ${a.agentA}, ${a.agentB} any of ${b.agentA}, ${b.agentB}`;
@@ -1773,7 +1781,7 @@ function inferConvertPercentRule(a) {
     ] : []
   };
 }
-function toRatioCompareRule(a, b, ctor3) {
+function toRatioCompareRule(a, b, ctor4) {
   if (equalAgent(b.agent, a.agent) && b.entity != a.entity && a.kind === "cont" && b.kind === "cont") {
     b = toGenerAgent(b);
     a = toGenerAgent(a);
@@ -1787,16 +1795,16 @@ function toRatioCompareRule(a, b, ctor3) {
     agentB: singleAgent(bAgent),
     agentA: singleAgent(aAgent),
     ratio: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity / b.quantity : wrapToRatio(`a.quantity / b.quantity`, { a, b }),
-    ...ctor3.asPercent && { asPercent: true }
+    ...ctor4.asPercent && { asPercent: true }
   };
 }
-function inferToRatioCompareRule(a, b, ctor3) {
-  const result = toRatioCompareRule(a, b, ctor3);
+function inferToRatioCompareRule(a, b, ctor4) {
+  const result = toRatioCompareRule(a, b, ctor4);
   if (isNumber(result.ratio) && isNumber(a.quantity) && isNumber(b.quantity)) {
     const between = result.ratio > 1 / 2 && result.ratio < 2;
     return {
       name: toRatioCompareRule.name,
-      inputParameters: extractKinds(a, b, ctor3),
+      inputParameters: extractKinds(a, b, ctor4),
       question: `Porovnej ${result.agentA} a ${result.agentB}.${between ? `O kolik z ${result.agentB}?` : `Kolikr\xE1t ${result.ratio < 1 ? "men\u0161\xED" : "v\u011Bt\u0161\xED"}?`}`,
       result,
       options: between ? [
@@ -1808,7 +1816,7 @@ function inferToRatioCompareRule(a, b, ctor3) {
       ]
     };
   } else {
-    return resultAsQuestion(result, { name: toRatioCompareRule.name, inputParameters: extractKinds(a, b, ctor3) });
+    return resultAsQuestion(result, { name: toRatioCompareRule.name, inputParameters: extractKinds(a, b, ctor4) });
   }
 }
 function compareToRateRule(a, b, last2) {
@@ -2011,7 +2019,7 @@ function solveEquationRule(a, b, last2) {
   return {
     kind: "cont",
     agent: [last2.agent],
-    quantity: helpers.solveLinearEquation(a.quantity, b.quantity, last2.variable),
+    quantity: last2.kind === "quadratic-equation" ? helpers.solveQuadraticEquation(a.quantity, b.quantity, last2.variable)[1] : helpers.solveLinearEquation(a.quantity, b.quantity, last2.variable),
     ...last2.entity
   };
 }
@@ -2020,7 +2028,7 @@ function inferSolveEquationRule(a, b, last2) {
   return {
     name: solveEquationRule.name,
     inputParameters: extractKinds(a, b, last2),
-    question: `Vy\u0159e\u0161 line\xE1rn\xED rovnici ${a.agent} = ${b.agent} pro nezn\xE1mou ${last2.variable}.`,
+    question: `Vy\u0159e\u0161 rovnici ${a.agent} = ${b.agent} pro nezn\xE1mou ${last2.variable}.`,
     result,
     options: []
   };
@@ -2593,6 +2601,8 @@ function inferenceRuleEx(...args) {
     if (kind === "ratio")
       return inferToPartWholeRatio(a, b, last2);
     if (kind === "linear-equation")
+      return inferSolveEquationRule(a, b, last2);
+    if (kind === "quadratic-equation")
       return inferSolveEquationRule(a, b, last2);
     return inferToCompareRule(a, b);
   } else if (a.kind === "delta" && b.kind == "delta") {
@@ -6909,7 +6919,7 @@ function formatNumbersInExpression(expr) {
 }
 function solveLinearEquation(lhs, rhs, variable = "x") {
   const expr = `(${typeof lhs === "number" ? lhs : toEquationExpr(lhs)}) - (${typeof rhs === "number" ? rhs : toEquationExpr(rhs)})`;
-  const terms = evaluateLinearExpression(expr, variable);
+  const terms = LinearSolver.evaluateExpression(expr, variable);
   const a = terms[variable] || 0;
   const b = terms.constant || 0;
   if (a === 0) {
@@ -6921,96 +6931,244 @@ function solveLinearEquation(lhs, rhs, variable = "x") {
   const x = -b / a;
   return x;
 }
-function evaluateLinearExpression(expr, variable) {
-  const tokens = tokenize(expr);
-  const rpn = toRPN(tokens);
-  return evalRPN(rpn, variable);
-}
-function tokenize(str) {
-  const regex = /\d+\.\d+|\d+|[a-zA-Z]+|[\+\-\*\/\(\)]/g;
-  return str.match(regex);
-}
-function toRPN(tokens) {
-  const output = [];
-  const ops = [];
-  const precedence = { "+": 1, "-": 1, "*": 2, "/": 2 };
-  const associativity = { "+": "L", "-": "L", "*": "L", "/": "L" };
-  tokens.forEach((token) => {
-    if (!isNaN(token) || /^[a-zA-Z]+$/.test(token)) {
-      output.push(token);
-    } else if ("+-*/".includes(token)) {
-      while (ops.length > 0 && "*/+-".includes(ops[ops.length - 1])) {
-        const top = ops[ops.length - 1];
-        if (associativity[token] === "L" && precedence[token] <= precedence[top] || associativity[token] === "R" && precedence[token] < precedence[top]) {
+var LinearSolver = /* @__PURE__ */ (() => {
+  function evaluateExpression(expr, variable) {
+    const tokens = tokenize(expr);
+    const rpn = toRPN(tokens);
+    return evalRPN(rpn, variable);
+  }
+  function tokenize(str) {
+    const regex = /\d+\.\d+|\d+|[a-zA-Z]+|[\+\-\*\/\(\)]/g;
+    return str.match(regex);
+  }
+  function toRPN(tokens) {
+    const output = [];
+    const ops = [];
+    const precedence = { "+": 1, "-": 1, "*": 2, "/": 2 };
+    const associativity = { "+": "L", "-": "L", "*": "L", "/": "L" };
+    tokens.forEach((token) => {
+      if (!isNaN(token) || /^[a-zA-Z]+$/.test(token)) {
+        output.push(token);
+      } else if ("+-*/".includes(token)) {
+        while (ops.length > 0 && "*/+-".includes(ops[ops.length - 1])) {
+          const top = ops[ops.length - 1];
+          if (associativity[token] === "L" && precedence[token] <= precedence[top] || associativity[token] === "R" && precedence[token] < precedence[top]) {
+            output.push(ops.pop());
+          } else
+            break;
+        }
+        ops.push(token);
+      } else if (token === "(") {
+        ops.push(token);
+      } else if (token === ")") {
+        while (ops.length && ops[ops.length - 1] !== "(") {
           output.push(ops.pop());
-        } else
-          break;
+        }
+        ops.pop();
       }
-      ops.push(token);
-    } else if (token === "(") {
-      ops.push(token);
-    } else if (token === ")") {
-      while (ops.length && ops[ops.length - 1] !== "(") {
-        output.push(ops.pop());
+    });
+    while (ops.length)
+      output.push(ops.pop());
+    return output;
+  }
+  function evalRPN(rpn, variable) {
+    const stack = [];
+    rpn.forEach((token) => {
+      if (!isNaN(token)) {
+        stack.push({ constant: parseFloat(token) });
+      } else if (token === variable) {
+        stack.push({ [variable]: 1 });
+      } else if ("+-*/".includes(token)) {
+        const b = stack.pop();
+        const a = stack.pop();
+        stack.push(applyOp(a, b, token, variable));
       }
-      ops.pop();
+    });
+    return stack.pop();
+  }
+  function applyOp(a, b, op, variable) {
+    const aCoeff = a[variable] || 0;
+    const bCoeff = b[variable] || 0;
+    const aConst = a.constant || 0;
+    const bConst = b.constant || 0;
+    if (op === "+") {
+      return {
+        [variable]: aCoeff + bCoeff,
+        constant: aConst + bConst
+      };
     }
-  });
-  while (ops.length)
-    output.push(ops.pop());
-  return output;
+    if (op === "-") {
+      return {
+        [variable]: aCoeff - bCoeff,
+        constant: aConst - bConst
+      };
+    }
+    if (op === "*") {
+      if (aCoeff !== 0 && bCoeff !== 0) {
+        throw new Error("Non-linear term produced \u2014 equation must remain linear.");
+      }
+      return {
+        [variable]: aCoeff * bConst + bCoeff * aConst,
+        constant: aConst * bConst
+      };
+    }
+    if (op === "/") {
+      if (bCoeff !== 0) {
+        throw new Error("Division by a variable not supported.");
+      }
+      return {
+        [variable]: aCoeff / bConst,
+        constant: aConst / bConst
+      };
+    }
+  }
+  return {
+    evaluateExpression
+  };
+})();
+function solveQuadraticEquation(lhs, rhs, variable = "x") {
+  const left = `${typeof lhs === "number" ? lhs : toEquationExpr(lhs)}`;
+  const right = `${typeof rhs === "number" ? rhs : toEquationExpr(rhs)}`;
+  const leftExpr = QuadraticSolver.evaluateExpression(left, variable);
+  const rightExpr = QuadraticSolver.evaluateExpression(right, variable);
+  const expr = QuadraticSolver.subtractTerms(leftExpr, rightExpr);
+  const a = expr.quadratic || 0;
+  const b = expr.linear || 0;
+  const c = expr.constant || 0;
+  if (a === 0) {
+    if (b === 0) {
+      throw new Error("Invalid equation.");
+    }
+    return [-c / b];
+  }
+  const discriminant = b * b - 4 * a * c;
+  if (discriminant < 0) {
+    return [];
+  }
+  if (discriminant === 0) {
+    return [-b / (2 * a)];
+  }
+  const sqrtD = Math.sqrt(discriminant);
+  return [
+    (-b + sqrtD) / (2 * a),
+    (-b - sqrtD) / (2 * a)
+  ];
 }
-function evalRPN(rpn, variable) {
-  const stack = [];
-  rpn.forEach((token) => {
-    if (!isNaN(token)) {
-      stack.push({ constant: parseFloat(token) });
-    } else if (token === variable) {
-      stack.push({ [variable]: 1 });
-    } else if ("+-*/".includes(token)) {
-      const b = stack.pop();
-      const a = stack.pop();
-      stack.push(applyOp(a, b, token, variable));
+var QuadraticSolver = /* @__PURE__ */ (() => {
+  function evaluateExpression(expr, variable) {
+    const tokens = tokenize(expr);
+    const rpn = toRPN(tokens);
+    return evalRPN(rpn, variable);
+  }
+  function tokenize(str) {
+    const regex = /\d+\.\d+|\d+|[a-zA-Z]+|[\+\-\*\/\(\)]/g;
+    return str.match(regex);
+  }
+  function toRPN(tokens) {
+    const output = [];
+    const ops = [];
+    const precedence = {
+      "+": 1,
+      "-": 1,
+      "*": 2,
+      "/": 2
+    };
+    tokens.forEach((token) => {
+      if (!isNaN(token) || /^[a-zA-Z]+$/.test(token)) {
+        output.push(token);
+      } else if ("+-*/".includes(token)) {
+        while (ops.length && "+-*/".includes(ops[ops.length - 1]) && precedence[token] <= precedence[ops[ops.length - 1]]) {
+          output.push(ops.pop());
+        }
+        ops.push(token);
+      } else if (token === "(") {
+        ops.push(token);
+      } else if (token === ")") {
+        while (ops.length && ops[ops.length - 1] !== "(") {
+          output.push(ops.pop());
+        }
+        ops.pop();
+      }
+    });
+    while (ops.length) {
+      output.push(ops.pop());
     }
-  });
-  return stack.pop();
-}
-function applyOp(a, b, op, variable) {
-  const aCoeff = a[variable] || 0;
-  const bCoeff = b[variable] || 0;
-  const aConst = a.constant || 0;
-  const bConst = b.constant || 0;
-  if (op === "+") {
-    return {
-      [variable]: aCoeff + bCoeff,
-      constant: aConst + bConst
-    };
+    return output;
   }
-  if (op === "-") {
-    return {
-      [variable]: aCoeff - bCoeff,
-      constant: aConst - bConst
-    };
+  function evalRPN(rpn, variable) {
+    const stack = [];
+    rpn.forEach((token) => {
+      if (!isNaN(token)) {
+        stack.push({
+          quadratic: 0,
+          linear: 0,
+          constant: parseFloat(token)
+        });
+      } else if (token === variable) {
+        stack.push({
+          quadratic: 0,
+          linear: 1,
+          constant: 0
+        });
+      } else if ("+-*/".includes(token)) {
+        const b = stack.pop();
+        const a = stack.pop();
+        stack.push(applyOp(a, b, token));
+      }
+    });
+    return stack.pop();
   }
-  if (op === "*") {
-    if (aCoeff !== 0 && bCoeff !== 0) {
-      throw new Error("Non-linear term produced \u2014 equation must remain linear.");
+  function applyOp(a, b, op) {
+    if (op === "+") {
+      return {
+        quadratic: a.quadratic + b.quadratic,
+        linear: a.linear + b.linear,
+        constant: a.constant + b.constant
+      };
     }
-    return {
-      [variable]: aCoeff * bConst + bCoeff * aConst,
-      constant: aConst * bConst
-    };
-  }
-  if (op === "/") {
-    if (bCoeff !== 0) {
-      throw new Error("Division by a variable not supported.");
+    if (op === "-") {
+      return {
+        quadratic: a.quadratic - b.quadratic,
+        linear: a.linear - b.linear,
+        constant: a.constant - b.constant
+      };
     }
+    if (op === "*") {
+      if (a.quadratic && (b.linear || b.quadratic) || b.quadratic && (a.linear || a.quadratic)) {
+        throw new Error("Expression exceeds quadratic degree.");
+      }
+      const quadratic = a.linear * b.linear + a.quadratic * b.constant + b.quadratic * a.constant;
+      const linear = a.linear * b.constant + b.linear * a.constant;
+      const constant = a.constant * b.constant;
+      return {
+        quadratic,
+        linear,
+        constant
+      };
+    }
+    if (op === "/") {
+      if (b.linear !== 0 || b.quadratic !== 0) {
+        throw new Error("Division by variable expression not supported.");
+      }
+      return {
+        quadratic: a.quadratic / b.constant,
+        linear: a.linear / b.constant,
+        constant: a.constant / b.constant
+      };
+    }
+  }
+  function subtractTerms(a, b) {
     return {
-      [variable]: aCoeff / bConst,
-      constant: aConst / bConst
+      quadratic: (a.quadratic || 0) - (b.quadratic || 0),
+      linear: (a.linear || 0) - (b.linear || 0),
+      constant: (a.constant || 0) - (b.constant || 0)
     };
   }
-}
+  return {
+    evaluateExpression,
+    subtractTerms
+  };
+})();
 var colors = {
   darkred: "#e7040f",
   // red: "#ff4136",
@@ -7145,6 +7303,7 @@ configure({
   convertToUnit: (d, from, to3) => convert(d).from(from).to(to3),
   unitAnchor: (unit) => convert().getUnit(unit)?.unit?.to_anchor,
   solveLinearEquation: (first, second, variable) => solveLinearEquation(first, second, variable),
+  solveQuadraticEquation: (first, second, variable) => solveQuadraticEquation(first, second, variable),
   evalExpression: (expression, quantity) => evalExpression(expression, quantity),
   evalNodeToNumber: (expression) => evaluateNodeToNumber(expression),
   substituteContext: (expression, context) => substituteContext(expression, context)
@@ -8170,7 +8329,7 @@ function najitMensiCislo({ input }) {
 
 // src/math/M7A-2024/13.ts
 function porovnatObsahObdelnikACtverec({ input }) {
-  const ctverec2 = axiomInput(contLength("\u010Dtverec a", input.ctverec.a), 3);
+  const ctverec3 = axiomInput(contLength("\u010Dtverec a", input.ctverec.a), 3);
   return {
     deductionTree: deduce(
       deduce(
@@ -8180,8 +8339,8 @@ function porovnatObsahObdelnikACtverec({ input }) {
           rectangleArea("obd\xE9ln\xEDk")
         ),
         deduce(
-          ctverec2,
-          ctverec2,
+          ctverec3,
+          ctverec3,
           squareArea("\u010Dtverec")
         ),
         ctor("comp-ratio")
@@ -15436,14 +15595,14 @@ function domecek3() {
   const dumLabel = "dome\u010Dek";
   const area = contArea(`plocha ${dumLabel}`, 16);
   const pasmo = cont(`plocha ${dumLabel}`, 4, "p\xE1sma");
-  const ctverec2 = deduce(
+  const ctverec3 = deduce(
     area,
     pasmo,
     ctor("rate")
   );
   const rectangleVolume = deduce(
     deduce(
-      ctverec2,
+      ctverec3,
       evalFormulaAsCont(formulaRegistry.surfaceArea.square, (x) => x.a, "\u0161\xED\u0159ka", { entity: dim2.length.entity, unit: EmptyUnit })
     ),
     contLength("d\xE9lka", 8),
@@ -16649,7 +16808,7 @@ function dlazdice() {
   const polomer = contLength("polom\u011Br", 5);
   const entity3 = "kruh";
   const vzorLabel = "dla\u017Edice (\u010Dtvercov\xFD vzor)";
-  const ctverec2 = contLength(vzorLabel, 40);
+  const ctverec3 = contLength(vzorLabel, 40);
   const malyKruh = rate("pokoj", 4, "kruh", vzorLabel);
   const velkyKruh = rate("pokoj", 1, "kruh", vzorLabel);
   const pocetDlazdic = deduce(
@@ -16658,7 +16817,7 @@ function dlazdice() {
         contLength("\u0161\xED\u0159ka pokoje", 2, "m"),
         ctorUnit("cm")
       ),
-      ctverec2,
+      ctverec3,
       ctor("quota")
     ),
     deduce(
@@ -16666,7 +16825,7 @@ function dlazdice() {
         contLength("d\xE9lka pokoje", 3.2, "m"),
         ctorUnit("cm")
       ),
-      ctverec2,
+      ctverec3,
       ctor("quota")
     ),
     productCombine("pokoj", { entity: vzorLabel })
@@ -17568,6 +17727,156 @@ function kruhovaVysec() {
         cont(vetsiLabel, 360, entity3)
       ),
       ctorOption("B", 160)
+    )
+  };
+}
+
+// src/cermat/MMA-2026/index.ts
+var MMA_2026_default = createLazyMap({
+  4: () => zahradkar(),
+  13: () => ctverec2(),
+  14.1: () => mzda().a,
+  14.2: () => mzda().b,
+  21: () => sedyCtverec(),
+  22: () => papirovaNadoba()
+});
+function zahradkar() {
+  const entity3 = "jahody";
+  return {
+    deductionTree: deduce(
+      compRelativePercent("\u010Dervenec", "\u010Derven", -35),
+      compRelativePercent("\u010Derven", "kv\u011Bten", 200)
+    )
+  };
+}
+function ctverec2() {
+  const dim2 = dimensionEntity();
+  const a = contLength("AB", "a");
+  const DK = contLength("DK", 29);
+  const BK = contLength("BK", 1);
+  return {
+    deductionTree: deduce(
+      deduce(
+        DK,
+        evalFormulaAsCont(formulaRegistry.squareRoot, (x) => x.y, "\u010Dtverec nad p\u0159eponou", dim2.area)
+      ),
+      deduce(
+        deduce(deduce(
+          a,
+          BK,
+          ctorDifference("AK")
+        ), evalFormulaAsCont(formulaRegistry.squareRoot, (x) => x.y, "\u010Dtverec nad AK", dim2.area)),
+        deduce(a, evalFormulaAsCont(formulaRegistry.squareRoot, (x) => x.y, "\u010Dtverec nad AB", dim2.area)),
+        sum("\u010Dtverce nad odv\u011Bsnami")
+      ),
+      ctorQuadraticEquation("strana", dim2.length, "a")
+    )
+  };
+}
+function mzda() {
+  const entity3 = "korun";
+  const entityOsoba = "zam\u011Bstnanci";
+  const nastupniMzda = cont("n\xE1stupn\xED mzda", "n", entity3);
+  const prumernaMzda = rate(["pr\u016Fm\u011Brn\xE1 mzda", "p\u016Fvodn\u011B"], 45e3, entity3, entityOsoba);
+  const prumerPocet = cont("pr\u016Fm\u011Brn\xE1 mzda", 4, entityOsoba);
+  const novePocet = cont("nov\u011B", 1, entityOsoba);
+  const mzdyPuvodniZamestnanci = deduce(
+    prumernaMzda,
+    prumerPocet
+  );
+  const mzdaNovyZamestnanec = deduce(
+    deduce(
+      mzdyPuvodniZamestnanci,
+      nastupniMzda,
+      sum("hodnota celkem")
+    ),
+    deduce(
+      deduce(
+        prumernaMzda,
+        compRelativePercent("n\xE1stupn\xED mzda", "pr\u016Fm\u011Brn\xE1 mzda", -6)
+      ),
+      deduce(
+        prumerPocet,
+        novePocet,
+        sum("celkem")
+      ),
+      productCombine("hodnota celkem", entity3, [])
+    ),
+    ctorLinearEquation("n\xE1stupn\xED mzda nov\xE9ho zam\u011Bstnance", { entity: entity3 }, "n")
+  );
+  return {
+    a: {
+      deductionTree: mzdaNovyZamestnanec
+    },
+    b: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            deduce(
+              last(mzdaNovyZamestnanec),
+              ...doubleProduct("mzdy dvou nov\xFDch zam\u011Bstnanc\u016F")
+            ),
+            last(mzdyPuvodniZamestnanci),
+            sum("celkem")
+          ),
+          deduce(
+            prumerPocet,
+            cont("nov\u011B", 2, entityOsoba),
+            sum("celkem")
+          ),
+          ctorRate(["pr\u016Fm\u011Brn\xE1 mzda", "nov\u011B"])
+        ),
+        prumernaMzda,
+        ctorComparePercent()
+      )
+    }
+  };
+}
+function sedyCtverec() {
+  const dim2 = dimensionEntity();
+  const agent = "\u010Dtverec";
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          deduce(
+            deduce(contLength(["kruh", "strana"], 1), ...halfProduct("polom\u011Br")),
+            evalFormulaAsCont(formulaRegistry.surfaceArea.circle, (x) => x.S, ["kruh", "obsah"], dim2.area)
+          ),
+          ratio("kruh", "\u0161ed\xE1 \u010D\xE1st", 3 / 4)
+        ),
+        deduce(
+          contLength([agent, "strana"], 1),
+          evalFormulaAsCont(formulaRegistry.surfaceArea.square, (x) => x.S, [agent, "obsah"], dim2.area)
+        ),
+        ctorPercent()
+      ),
+      ctorOption("C", 58.9)
+    )
+  };
+}
+function papirovaNadoba() {
+  const dim2 = dimensionEntity();
+  const plastAgent = "pl\xE1\u0161\u0165";
+  const polomer = contLength(["podstava", "polom\u011Br"], 3.5);
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          polomer,
+          deduce(
+            deduce(
+              polomer,
+              evalFormulaAsCont(formulaRegistry.circumReference.circle, (x) => x.o, ["podstava", "obvod"], dim2.length)
+            ),
+            cont([plastAgent, "\u010Dtverce", "obvod"], 7, "po\u010Det"),
+            ctorRate(["v\xE1lec", "v\xFD\u0161ka"])
+          ),
+          evalFormulaAsCont(formulaRegistry.volume.cylinder, (x) => x.V, ["v\xE1lec", "objem"], dim2.volume)
+        ),
+        ctorRound()
+      ),
+      ctorOption("B", 121)
     )
   };
 }
@@ -18563,6 +18872,7 @@ var word_problems_default = createLazyMap({
   "M9D-2025": () => M9D_2025_default,
   "MMA-2023": () => MMA_2023_default,
   "MMA-2025": () => MMA_2025_default,
+  "MMA-2026": () => MMA_2026_default,
   "M9I-2026": () => M9I_2026_default,
   "M9A-2026": () => M9A_2026_default,
   "M9B-2026": () => M9B_2026_default

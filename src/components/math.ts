@@ -5,6 +5,7 @@ export type Helpers = {
   convertToUnit?: (quantity: number, from: UnitType, to: UnitType) => number
   unitAnchor?: (unit: UnitType) => number;
   solveLinearEquation?: (first: Quantity, second: Quantity, variable: string) => number
+  solveQuadraticEquation?: (first: Quantity, second: Quantity, variable: string) => number[]
   evalExpression?: (expression: Expression | ExpressionNode, quantityOrContext: number | Record<string, number>) => number
   evalNodeToNumber?: (expression: ExpressionNode) => number
   substituteContext?: (expression: Expression, context: Record<string, number>) => number
@@ -16,6 +17,7 @@ const defaultHelpers: Helpers = {
   convertToUnit: d => d,
   unitAnchor: () => 1,
   solveLinearEquation: (fist, second, variable) => NaN,
+  solveQuadraticEquation: (fist, second, variable) => [],
   evalExpression: (expression, context) => NaN,
   evalNodeToNumber: (expression) => NaN,
   substituteContext: (expression, context) => NaN,
@@ -427,10 +429,6 @@ export type InvertSlide = {
   kind: 'slide-invert',
   agent: AgentMatcher
 }
-export type Invert = {
-  kind: 'invert',
-  agent: AgentMatcher
-}
 
 export type LinearEquation = {
   kind: 'linear-equation',
@@ -438,7 +436,12 @@ export type LinearEquation = {
   variable: string,
   entity: EntityBase
 }
-
+export type QuadraticEquation = {
+  kind: 'quadratic-equation',
+  agent: string,
+  variable: string,
+  entity: EntityBase
+}
 export type Question<T extends TruePredicate> = {
   name: string
   inputParameters: PredicateKind[],
@@ -473,7 +476,7 @@ export type ComparisonActionPredicate = CompareAndPartEqual | AngleComparison | 
 export type RatioPredicate = RatioComparison | PartWholeRatio
 export type ComplementActionPredicate = Complement | ComplementCompRatio
 export type RatiosPredicate = PartToPartRatio | TwoPartRatio | ThreePartRatio;
-export type ExpressionPredicate = EvalExpr<ContainerEval | RateEval> | EvalFormula<ContainerEval | RateEval> | SimplifyExpr | LinearEquation;
+export type ExpressionPredicate = EvalExpr<ContainerEval | RateEval> | EvalFormula<ContainerEval | RateEval> | SimplifyExpr | LinearEquation | QuadraticEquation;
 export type CommonSensePredicate = CommonSense | Proportion
 
 export type MultipleOperationPredicate = Sum | SumCombine | Product | ProductCombine | GCD | LCD | BalancedPartition | Alligation
@@ -584,6 +587,9 @@ export function ctorRound(order: number = 1): Round {
 }
 export function ctorLinearEquation(agent: string, entity: EntityBase, variable: string = 'x'): LinearEquation {
   return { kind: "linear-equation", agent, variable, entity }
+}
+export function ctorQuadraticEquation(agent: string, entity: EntityBase, variable: string = 'x'): QuadraticEquation {
+  return { kind: "quadratic-equation", agent, variable, entity }
 }
 export function ctorDelta(agent: string): Delta {
   return { kind: "delta", agent: { name: agent } } as Delta
@@ -1053,25 +1059,29 @@ function transitiveRatioCompareRule(a: RatioComparison, b: RatioComparison): Rat
   if (a.agentB === b.agentA) {
     return {
       kind: 'comp-ratio', agentA: a.agentA, agentB: b.agentB,
-      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? abs(a.ratio) * abs(b.ratio) : wrapToRatio(`abs(a.ratio) * abs(b.ratio)`, { a, b })
+      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? abs(a.ratio) * abs(b.ratio) : wrapToRatio(`abs(a.ratio) * abs(b.ratio)`, { a, b }),
+      asPercent: a.asPercent && b.asPercent
     }
   }
   else if (a.agentB === b.agentB) {
     return {
       kind: 'comp-ratio', agentA: a.agentA, agentB: b.agentA,
-      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? abs(a.ratio) * 1 / abs(b.ratio) : wrapToRatio(`abs(a.ratio) * 1 / abs(b.ratio)`, { a, b })
+      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? abs(a.ratio) * 1 / abs(b.ratio) : wrapToRatio(`abs(a.ratio) * 1 / abs(b.ratio)`, { a, b }),
+      asPercent: a.asPercent && b.asPercent
     }
   }
   else if (a.agentA === b.agentA) {
     return {
       kind: 'comp-ratio', agentA: a.agentB, agentB: b.agentB,
-      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? 1 / abs(a.ratio) * abs(b.ratio) : wrapToRatio(`1 / abs(a.ratio) * abs(b.ratio)`, { a, b })
+      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? 1 / abs(a.ratio) * abs(b.ratio) : wrapToRatio(`1 / abs(a.ratio) * abs(b.ratio)`, { a, b }),
+      asPercent: a.asPercent && b.asPercent
     }
   }
   else if (a.agentA === b.agentB) {
     return {
       kind: 'comp-ratio', agentA: a.agentB, agentB: b.agentA,
-      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? 1 / abs(a.ratio) * 1 / abs(b.ratio) : wrapToRatio(`1 / abs(a.ratio) * 1 / abs(b.ratio)`, { a, b })
+      ratio: isNumber(a.ratio) && isNumber(b.ratio) ? 1 / abs(a.ratio) * 1 / abs(b.ratio) : wrapToRatio(`1 / abs(a.ratio) * 1 / abs(b.ratio)`, { a, b }),
+      asPercent: a.asPercent && b.asPercent
     }
   }
   else {
@@ -2792,20 +2802,20 @@ function inferToRateRule(a: Container, b: Container | Quota, rate: Rate): Questi
   }
 }
 
-function solveEquationRule(a: Container | Rate, b: Container | Rate, last: LinearEquation): Container {
+function solveEquationRule(a: Container | Rate, b: Container | Rate, last: LinearEquation | QuadraticEquation): Container {
   return {
     kind: 'cont',
     agent: [last.agent],
-    quantity: helpers.solveLinearEquation(a.quantity, b.quantity, last.variable),
+    quantity: last.kind === "quadratic-equation" ? helpers.solveQuadraticEquation(a.quantity, b.quantity, last.variable)[1]: helpers.solveLinearEquation(a.quantity, b.quantity, last.variable) ,
     ...last.entity,
   }
 }
-function inferSolveEquationRule(a: Container | Rate, b: Container | Rate, last: LinearEquation): Question<Container> {
+function inferSolveEquationRule(a: Container | Rate, b: Container | Rate, last: LinearEquation | QuadraticEquation): Question<Container> {
   const result = solveEquationRule(a, b, last)
   return {
     name: solveEquationRule.name,
     inputParameters: extractKinds(a, b, last),
-    question: `Vyřeš lineární rovnici ${a.agent} = ${b.agent} pro neznámou ${last.variable}.`,
+    question: `Vyřeš rovnici ${a.agent} = ${b.agent} pro neznámou ${last.variable}.`,
     result,
     options: []
   }
@@ -3493,6 +3503,7 @@ function inferenceRuleEx(...args: Predicate[]): Question<TruePredicate> {
     if (kind === "comp-ratio") return inferToRatioCompareRule(a, b, last)
     if (kind === "ratio") return inferToPartWholeRatio(a, b, last)
     if (kind === "linear-equation") return inferSolveEquationRule(a, b, last)
+    if (kind === "quadratic-equation") return inferSolveEquationRule(a, b, last)
     return inferToCompareRule(a, b)
   }
   else if (a.kind === "delta" && b.kind == "delta") {

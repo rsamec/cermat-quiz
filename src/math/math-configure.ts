@@ -8,7 +8,7 @@ import time from 'convert-units/definitions/time'
 import angle from 'convert-units/definitions/angle'
 import { configure, inferenceRuleWithQuestion as IRWQ } from '../components/math.js';
 
-import { solveLinearEquation, evalExpression, evaluateNodeToNumber, substituteContext } from "../utils/math-solver.js";
+import { solveLinearEquation, solveQuadraticEquation, evalExpression, evaluateNodeToNumber, substituteContext } from "../utils/math-solver.js";
 export { inferenceRule } from '../components/math.js'
 const convert = configureMeasurements<any, any, any>({
   length,
@@ -25,6 +25,7 @@ configure({
   convertToUnit: (d, from, to) => convert(d).from(from).to(to),
   unitAnchor: (unit) => convert().getUnit(unit)?.unit?.to_anchor,
   solveLinearEquation: (first, second, variable) => solveLinearEquation(first, second, variable),
+  solveQuadraticEquation: (first, second, variable) => solveQuadraticEquation(first, second, variable),
   evalExpression: (expression, quantity: number) => evalExpression(expression,quantity),
   evalNodeToNumber: (expression) => evaluateNodeToNumber(expression),
   substituteContext: (expression, context)=> substituteContext(expression,context),

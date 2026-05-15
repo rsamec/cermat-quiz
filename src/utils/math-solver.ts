@@ -157,7 +157,7 @@ function recurExpr(node, level, requiredLevel = 0, parentContext: DeduceContext 
             for (let [key, values] of Object.entries(bgColors)) {
               if (values.includes(context[variable])) {
                 expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable})`))
-                 if (baseQ != null) {
+                if (baseQ != null) {
                   expr = expr.substitute(`base${variable}`, parser.parse(`bgColor(${key},base${variable})`))
                 }
               }
@@ -243,7 +243,7 @@ function formatNumbersInExpression(expr) {
 
 export function solveLinearEquation(lhs, rhs, variable = 'x'): number {
   const expr = `(${typeof lhs === "number" ? lhs : toEquationExpr(lhs)}) - (${typeof rhs === "number" ? rhs : toEquationExpr(rhs)})`;
-  const terms = evaluateLinearExpression(expr, variable);
+  const terms = LinearSolver.evaluateExpression(expr, variable);
 
   const a = terms[variable] || 0;
   const b = terms.constant || 0;
@@ -257,111 +257,333 @@ export function solveLinearEquation(lhs, rhs, variable = 'x'): number {
 
   return x;
 }
+const LinearSolver = (() => {
+  function evaluateExpression(expr, variable) {
+    const tokens = tokenize(expr);
+    const rpn = toRPN(tokens);
+    return evalRPN(rpn, variable);
+  }
 
-function evaluateLinearExpression(expr, variable) {
-  const tokens = tokenize(expr);
-  const rpn = toRPN(tokens);
-  return evalRPN(rpn, variable);
-}
+  function tokenize(str) {
+    const regex = /\d+\.\d+|\d+|[a-zA-Z]+|[\+\-\*\/\(\)]/g;
+    return str.match(regex);
+  }
 
-function tokenize(str) {
-  const regex = /\d+\.\d+|\d+|[a-zA-Z]+|[\+\-\*\/\(\)]/g;
-  return str.match(regex);
-}
+  function toRPN(tokens) {
+    const output = [];
+    const ops = [];
+    const precedence = { '+': 1, '-': 1, '*': 2, '/': 2 };
+    const associativity = { '+': 'L', '-': 'L', '*': 'L', '/': 'L' };
 
-function toRPN(tokens) {
-  const output = [];
-  const ops = [];
-  const precedence = { '+': 1, '-': 1, '*': 2, '/': 2 };
-  const associativity = { '+': 'L', '-': 'L', '*': 'L', '/': 'L' };
-
-  tokens.forEach(token => {
-    if (!isNaN(token) || /^[a-zA-Z]+$/.test(token)) {
-      output.push(token);
-    } else if ('+-*/'.includes(token)) {
-      while (ops.length > 0 && '*/+-'.includes(ops[ops.length - 1])) {
-        const top = ops[ops.length - 1];
-        if ((associativity[token] === 'L' && precedence[token] <= precedence[top]) ||
-          (associativity[token] === 'R' && precedence[token] < precedence[top])) {
+    tokens.forEach(token => {
+      if (!isNaN(token) || /^[a-zA-Z]+$/.test(token)) {
+        output.push(token);
+      } else if ('+-*/'.includes(token)) {
+        while (ops.length > 0 && '*/+-'.includes(ops[ops.length - 1])) {
+          const top = ops[ops.length - 1];
+          if ((associativity[token] === 'L' && precedence[token] <= precedence[top]) ||
+            (associativity[token] === 'R' && precedence[token] < precedence[top])) {
+            output.push(ops.pop());
+          } else break;
+        }
+        ops.push(token);
+      } else if (token === '(') {
+        ops.push(token);
+      } else if (token === ')') {
+        while (ops.length && ops[ops.length - 1] !== '(') {
           output.push(ops.pop());
-        } else break;
+        }
+        ops.pop();
       }
-      ops.push(token);
-    } else if (token === '(') {
-      ops.push(token);
-    } else if (token === ')') {
-      while (ops.length && ops[ops.length - 1] !== '(') {
-        output.push(ops.pop());
+    });
+
+    while (ops.length) output.push(ops.pop());
+    return output;
+  }
+
+  function evalRPN(rpn, variable) {
+    const stack = [];
+
+    rpn.forEach(token => {
+      if (!isNaN(token)) {
+        stack.push({ constant: parseFloat(token) });
+      } else if (token === variable) {
+        stack.push({ [variable]: 1 });
+      } else if ('+-*/'.includes(token)) {
+        const b = stack.pop();
+        const a = stack.pop();
+        stack.push(applyOp(a, b, token, variable));
       }
-      ops.pop();
-    }
-  });
+    });
 
-  while (ops.length) output.push(ops.pop());
-  return output;
+    return stack.pop();
+  }
+
+  function applyOp(a, b, op, variable) {
+    const aCoeff = a[variable] || 0;
+    const bCoeff = b[variable] || 0;
+    const aConst = a.constant || 0;
+    const bConst = b.constant || 0;
+
+    if (op === '+') {
+      return {
+        [variable]: aCoeff + bCoeff,
+        constant: aConst + bConst
+      };
+    }
+
+    if (op === '-') {
+      return {
+        [variable]: aCoeff - bCoeff,
+        constant: aConst - bConst
+      };
+    }
+
+    if (op === '*') {
+      // Multiply (ax + a0) * (bx + b0)
+      if (aCoeff !== 0 && bCoeff !== 0) {
+        throw new Error('Non-linear term produced — equation must remain linear.');
+      }
+
+      return {
+        [variable]: aCoeff * bConst + bCoeff * aConst,
+        constant: aConst * bConst
+      };
+    }
+
+    if (op === '/') {
+      if (bCoeff !== 0) {
+        throw new Error('Division by a variable not supported.');
+      }
+
+      return {
+        [variable]: aCoeff / bConst,
+        constant: aConst / bConst
+      };
+    }
+  }
+
+  return {
+    evaluateExpression
+  };
+
+})();
+
+export function solveQuadraticEquation(lhs, rhs, variable = 'x'): number[] {
+  
+  const left = `${typeof lhs === "number" ? lhs : toEquationExpr(lhs)}`
+  const right = `${typeof rhs === "number" ? rhs : toEquationExpr(rhs)}`;
+  const leftExpr = QuadraticSolver.evaluateExpression(left, variable);
+  const rightExpr = QuadraticSolver.evaluateExpression(right, variable);
+
+  // Move everything to left side
+  const expr = QuadraticSolver.subtractTerms(leftExpr, rightExpr);
+
+  const a = expr.quadratic || 0;
+  const b = expr.linear || 0;
+  const c = expr.constant || 0;
+
+  // Linear fallback
+  if (a === 0) {
+    if (b === 0) {
+      throw new Error("Invalid equation.");
+    }
+
+    return [-c / b];
+  }
+
+  const discriminant = b * b - 4 * a * c;
+
+  if (discriminant < 0) {
+    return [];
+  }
+
+  if (discriminant === 0) {
+    return [-b / (2 * a)];
+  }
+
+  const sqrtD = Math.sqrt(discriminant);
+
+  return [
+    (-b + sqrtD) / (2 * a),
+    (-b - sqrtD) / (2 * a)
+  ];
 }
 
-function evalRPN(rpn, variable) {
-  const stack = [];
+const QuadraticSolver = (() => {  
+  function evaluateExpression(expr, variable) {
+    const tokens = tokenize(expr);
+    const rpn = toRPN(tokens);
+    return evalRPN(rpn, variable);
+  }
 
-  rpn.forEach(token => {
-    if (!isNaN(token)) {
-      stack.push({ constant: parseFloat(token) });
-    } else if (token === variable) {
-      stack.push({ [variable]: 1 });
-    } else if ('+-*/'.includes(token)) {
-      const b = stack.pop();
-      const a = stack.pop();
-      stack.push(applyOp(a, b, token, variable));
+  function tokenize(str) {
+    const regex = /\d+\.\d+|\d+|[a-zA-Z]+|[\+\-\*\/\(\)]/g;
+    return str.match(regex);
+  }
+
+  function toRPN(tokens) {
+    const output = [];
+    const ops = [];
+
+    const precedence = {
+      '+': 1,
+      '-': 1,
+      '*': 2,
+      '/': 2
+    };
+
+    tokens.forEach(token => {
+
+      if (!isNaN(token) || /^[a-zA-Z]+$/.test(token)) {
+        output.push(token);
+      }
+      else if ('+-*/'.includes(token)) {
+
+        while (
+          ops.length &&
+          '+-*/'.includes(ops[ops.length - 1]) &&
+          precedence[token] <= precedence[ops[ops.length - 1]]
+        ) {
+          output.push(ops.pop());
+        }
+
+        ops.push(token);
+      }
+      else if (token === '(') {
+        ops.push(token);
+      }
+      else if (token === ')') {
+
+        while (ops.length && ops[ops.length - 1] !== '(') {
+          output.push(ops.pop());
+        }
+
+        ops.pop();
+      }
+
+    });
+
+    while (ops.length) {
+      output.push(ops.pop());
     }
-  });
 
-  return stack.pop();
-}
-
-function applyOp(a, b, op, variable) {
-  const aCoeff = a[variable] || 0;
-  const bCoeff = b[variable] || 0;
-  const aConst = a.constant || 0;
-  const bConst = b.constant || 0;
-
-  if (op === '+') {
-    return {
-      [variable]: aCoeff + bCoeff,
-      constant: aConst + bConst
-    };
+    return output;
   }
 
-  if (op === '-') {
-    return {
-      [variable]: aCoeff - bCoeff,
-      constant: aConst - bConst
-    };
+  function evalRPN(rpn, variable) {
+    const stack = [];
+
+    rpn.forEach(token => {
+
+      if (!isNaN(token)) {
+
+        stack.push({
+          quadratic: 0,
+          linear: 0,
+          constant: parseFloat(token)
+        });
+
+      }
+      else if (token === variable) {
+
+        stack.push({
+          quadratic: 0,
+          linear: 1,
+          constant: 0
+        });
+
+      }
+      else if ('+-*/'.includes(token)) {
+
+        const b = stack.pop();
+        const a = stack.pop();
+
+        stack.push(applyOp(a, b, token));
+      }
+
+    });
+
+    return stack.pop();
   }
 
-  if (op === '*') {
-    // Multiply (ax + a0) * (bx + b0)
-    if (aCoeff !== 0 && bCoeff !== 0) {
-      throw new Error('Non-linear term produced — equation must remain linear.');
+  function applyOp(a, b, op) {
+
+    if (op === '+') {
+      return {
+        quadratic: a.quadratic + b.quadratic,
+        linear: a.linear + b.linear,
+        constant: a.constant + b.constant
+      };
     }
 
-    return {
-      [variable]: aCoeff * bConst + bCoeff * aConst,
-      constant: aConst * bConst
-    };
-  }
-
-  if (op === '/') {
-    if (bCoeff !== 0) {
-      throw new Error('Division by a variable not supported.');
+    if (op === '-') {
+      return {
+        quadratic: a.quadratic - b.quadratic,
+        linear: a.linear - b.linear,
+        constant: a.constant - b.constant
+      };
     }
 
+    if (op === '*') {
+
+      // Prevent degree > 2
+      if (
+        (a.quadratic && (b.linear || b.quadratic)) ||
+        (b.quadratic && (a.linear || a.quadratic))
+      ) {
+        throw new Error("Expression exceeds quadratic degree.");
+      }
+
+      const quadratic =
+        a.linear * b.linear +
+        a.quadratic * b.constant +
+        b.quadratic * a.constant;
+
+      const linear =
+        a.linear * b.constant +
+        b.linear * a.constant;
+
+      const constant =
+        a.constant * b.constant;
+
+      return {
+        quadratic,
+        linear,
+        constant
+      };
+    }
+
+    if (op === '/') {
+
+      if (b.linear !== 0 || b.quadratic !== 0) {
+        throw new Error("Division by variable expression not supported.");
+      }
+
+      return {
+        quadratic: a.quadratic / b.constant,
+        linear: a.linear / b.constant,
+        constant: a.constant / b.constant
+      };
+    }
+  }
+
+  function subtractTerms(a, b) {
     return {
-      [variable]: aCoeff / bConst,
-      constant: aConst / bConst
+      quadratic: (a.quadratic || 0) - (b.quadratic || 0),
+      linear: (a.linear || 0) - (b.linear || 0),
+      constant: (a.constant || 0) - (b.constant || 0)
     };
   }
-}
+
+  return {
+    evaluateExpression,
+    subtractTerms,
+  };
+
+})();
+
+
 export const colors = ({
   darkred: "#e7040f",
   // red: "#ff4136",
@@ -440,7 +662,7 @@ function tokensToTex(tokens, opts = {}) {
             stack.push(`${a} / ${b}`);
           }
         } else if (tok.value === "%") {
-          stack.push(`${a} \\bmod ${b}`);        
+          stack.push(`${a} \\bmod ${b}`);
         } else if (tok.value === "^") {
           stack.push(`${parens(a)}^{${b}}`);
         } else if (tok.value === "*") {

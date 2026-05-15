@@ -227,11 +227,12 @@ Výsledky jsou zaokrouhleny na celé cm.
 VÝCHOZÍ TEXT A OBRÁZEK K ÚLOZE 19 
 ===
 
-Kruh s poloměrem $r$ má stejný obsah jako kruhová výseč se středovým úhlem $\varphi$ a poloměrem $\frac32r$. 
+> Kruh s poloměrem $r$ má stejný obsah jako kruhová výseč se středovým úhlem $\varphi$ a poloměrem $\frac32r$. 
+> 
+> ![alt text](image-3.png)
+>  
+> (*CZVV*) 
 
-![alt text](image-3.png)
- 
-(*CZVV*) 
 # 19 
 Jakou velikost má úhel $\varphi$? 
 - [A] $120\degree$

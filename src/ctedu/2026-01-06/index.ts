@@ -1,5 +1,5 @@
 import { cont, ctor, ctorOption, sum, counter, product, ctorDifference, contLength, dimensionEntity, contArea, ctorUnit, contVolume, evalFormulaAsCont, formulaRegistry, ctorPercent, ctorComplement, compRelative, ratio, doubleProduct, ctorRate } from "../../components/math";
-import { createLazyMap, deduce, toCont } from "../../utils/deduce-utils";
+import { createLazyMap, deduce } from "../../utils/deduce-utils";
 
 export default createLazyMap({
     1: () => porovnani(),
