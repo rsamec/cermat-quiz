@@ -118,5 +118,20 @@
         "explainer": "",
         "deepDive": "Logické_pasti_a_elegantní_matematické_zkratky.m4a",
         "code": "M9B-2026"
+    },
+    {
+        "explainer": "",
+        "deepDive": "Jak_porozumět_logice_za_matematickými_chybami.m4a",
+        "code": "M7A-2026"
+    },    
+    {
+        "explainer": "",
+        "deepDive": "Zrádná_procenta_a_geometrické_pasti_v_testech.m4a",
+        "code": "M7B-2026"
+    },
+    {
+        "explainer": "",
+        "deepDive": "Jak_náš_mozek_sabotuje_jednoduché_počty.m4a",
+        "code": "MMA-2026"
     }    
 ]
