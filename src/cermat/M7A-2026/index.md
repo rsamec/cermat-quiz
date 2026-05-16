@@ -9,7 +9,7 @@ VÝCHOZÍ TEXT K ÚLOZE 1
  
 
 [!NOTE] 
-**Doporučení**: Úlohu **2** řešte přímo** v záznamovém archu**. 
+**Doporučení**: Úlohu **2** řešte přímo **v záznamovém archu**. 
 
 # 2 Vypočtěte a výsledek zapište zlomkem v základním tvaru. 
 [!NOTE]
@@ -195,8 +195,8 @@ VÝCHOZÍ TEXT K ÚLOZE 12
 VÝCHOZÍ TEXT A OBRÁZEK K ÚLOHÁM 13–14 
 ===
 
-> Tvrdý papír tvaru obdélníku má obsah 198 cm2.  
-> Z rohů tohoto papíru odstřihneme čtyři shodné čtverce, čímž se jeho obsah zmenší o 16 cm2. 
+> Tvrdý papír tvaru obdélníku má obsah 198 cm^2^.  
+> Z rohů tohoto papíru odstřihneme čtyři shodné čtverce, čímž se jeho obsah zmenší o 16 cm^2^. 
 > 
 > Potom z papíru složíme krabičku tvaru kvádru, jehož nejdelší hrana měří 14 cm (viz obrázek). 
 > 
@@ -212,10 +212,10 @@ VÝCHOZÍ TEXT A OBRÁZEK K ÚLOHÁM 13–14
 - [D] 22 cm 
 - [E] jinou délku 
 # 14 Jaký je objem krabičky? 
-- [A] 168 cm3 
-- [B] 196 cm3 
-- [C] 308 cm3 
-- [D] 396 cm3 
+- [A] 168 cm^3^ 
+- [B] 196 cm^3^ 
+- [C] 308 cm^3^ 
+- [D] 396 cm^3^ 
 - [E] jiný objem 
  
  

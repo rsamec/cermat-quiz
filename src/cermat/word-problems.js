@@ -547,6 +547,63 @@ function transitiveRatioCompareRule(a, b) {
     throw `Mismatch agent ${a.agentA}, ${a.agentB} any of ${b.agentA}, ${b.agentB}`;
   }
 }
+function transitiveRatiosCompareRule(a, b) {
+  if (a.ratios.length != 2 || b.ratios.length != 2) {
+    throw "Only two part ratios is supported.";
+  }
+  if (!areNumbers(a.ratios) || !areNumbers(b.ratios)) {
+    throw "ratios are not supported by non quantity types";
+  }
+  const aAgentA = a.parts[0];
+  const aAgentB = a.parts[1];
+  const bAgentA = b.parts[0];
+  const bAgentB = b.parts[1];
+  const aRatios = a.ratios;
+  const bRatios = b.ratios;
+  if (aAgentB === bAgentA) {
+    const shared = [aRatios[1], bRatios[0]];
+    const factorA = aRatios[0];
+    const factorB = bRatios[1];
+    return {
+      kind: "ratios",
+      whole: a.whole,
+      parts: [aAgentA, bAgentB],
+      ratios: [lcdCalc(shared) / shared[0] * factorA, lcdCalc(shared) / shared[1] * factorB]
+    };
+  } else if (aAgentB === bAgentB) {
+    const shared = [aRatios[1], bRatios[1]];
+    const factorA = aRatios[0];
+    const factorB = bRatios[0];
+    return {
+      kind: "ratios",
+      whole: a.whole,
+      parts: [aAgentA, bAgentA],
+      ratios: [lcdCalc(shared) / shared[0] * factorA, lcdCalc(shared) / shared[1] * factorB]
+    };
+  } else if (aAgentA === bAgentA) {
+    const shared = [aRatios[0], bRatios[0]];
+    const factorA = aRatios[1];
+    const factorB = bRatios[1];
+    return {
+      kind: "ratios",
+      whole: a.whole,
+      parts: [aAgentB, bAgentB],
+      ratios: [lcdCalc(shared) / shared[0] * factorA, lcdCalc(shared) / shared[1] * factorB]
+    };
+  } else if (aAgentA === bAgentB) {
+    const shared = [aRatios[0], bRatios[1]];
+    const factorA = aRatios[1];
+    const factorB = bRatios[0];
+    return {
+      kind: "ratios",
+      whole: a.whole,
+      parts: [aAgentB, bAgentA],
+      ratios: [lcdCalc(shared) / shared[0] * factorA, lcdCalc(shared) / shared[1] * factorB]
+    };
+  } else {
+    throw `Mismatch agent ${aAgentA}, ${aAgentB} any of ${bAgentA}, ${bAgentB}`;
+  }
+}
 function inferTransitiveRatioCompareRule(a, b) {
   const result = transitiveRatioCompareRule(a, b);
   return {
@@ -559,6 +616,21 @@ function inferTransitiveRatioCompareRule(a, b) {
       { tex: `${formatRatio(abs(a.ratio))} / ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentB === b.agentB },
       { tex: `1/${formatRatio(abs(a.ratio))} * ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentA === b.agentA },
       { tex: `1/${formatRatio(abs(a.ratio))} / ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentA === b.agentB }
+    ] : []
+  };
+}
+function inferTransitiveRatiosCompareRule(a, b) {
+  const result = transitiveRatiosCompareRule(a, b);
+  return {
+    name: transitiveRatiosCompareRule.name,
+    inputParameters: extractKinds(a, b),
+    question: `Porovnej ${result.parts[0]} a ${result.parts[0]}?`,
+    result,
+    options: areNumbers(a.ratios) && areNumbers(b.ratios) && areNumbers(result.ratios) ? [
+      // { tex: `${formatRatio(abs(a.ratio))} * ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentB === b.agentA },
+      // { tex: `${formatRatio(abs(a.ratio))} / ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentB === b.agentB },
+      // { tex: `1/${formatRatio(abs(a.ratio))} * ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentA === b.agentA },
+      // { tex: `1/${formatRatio(abs(a.ratio))} / ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentA === b.agentB }
     ] : []
   };
 }
@@ -2735,6 +2807,8 @@ function inferenceRuleEx(...args) {
     return inferInvertRatioCompareRule(b);
   } else if (a.kind === "comp-ratio" && b.kind === "comp-ratio") {
     return kind === "diff" ? inferToDifferenceAsRatioRule(a, b, last2) : inferTransitiveRatioCompareRule(a, b);
+  } else if (a.kind === "ratios" && b.kind === "ratios") {
+    return inferTransitiveRatiosCompareRule(a, b);
   } else if (a.kind === "cont" && b.kind === "ratio") {
     return inferPartToWholeRule(a, b);
   } else if (a.kind === "ratio" && b.kind === "cont") {
@@ -9892,9 +9966,15 @@ var M7A_2026_default = createLazyMap({
   1: () => veslarka(),
   4.1: () => aquapark().toboganJizdy,
   4.2: () => aquapark().zetony,
+  6.1: () => barevneSamolepky().a,
+  6.2: () => barevneSamolepky().b,
   7.1: () => pekar().a,
   7.2: () => pekar().b,
   7.3: () => pekar().c,
+  11: () => testMatematika(),
+  12: () => sportovniDen(),
+  13: () => krabicka().a,
+  14: () => krabicka().b,
   15.1: () => procenta().a,
   15.2: () => procenta().b,
   15.3: () => procenta().c
@@ -10051,6 +10131,134 @@ function procenta() {
           ctorPercent()
         ),
         ctorOption("C", 30, { asPercent: true })
+      )
+    }
+  };
+}
+function testMatematika() {
+  const entity3 = "hodnota";
+  const entityBase = "po\u010Det";
+  const cetnosti = [6, 5, 2, 3, 4];
+  return {
+    deductionTree: deduce(
+      deduce(
+        cont("zn\xE1mky", cetnosti.reduce((out, d, i) => out += d * (i + 1), 0), entity3),
+        cont("zn\xE1mky", cetnosti.reduce((out, d) => out += d, 0), entityBase),
+        ctor("rate")
+      ),
+      ctorOption("A", 2.7)
+    )
+  };
+}
+function barevneSamolepky() {
+  const entity3 = "\u010Dtverec";
+  const obdelnikAgent = "obdeln\xEDk";
+  const celkem = deduce(
+    cont([obdelnikAgent, "d\xE9lka"], 30, entity3),
+    cont([obdelnikAgent, "\u0161\xEDrka"], 20, entity3),
+    product("celkem")
+  );
+  const cervene = deduce(
+    celkem,
+    ratio("celkem", "\u010Derven\xE9", 1 / 5)
+  );
+  const cerveneAModre = deduce(
+    cervene,
+    deduce(
+      deduce(
+        last(celkem),
+        last(cervene),
+        ctorDifference("zbytek")
+      ),
+      ratio("zbytek", "modr\xE9", 1 / 3)
+    ),
+    sum("\u010Derven\xE9 a modr\xE9")
+  );
+  return {
+    a: {
+      deductionTree: cerveneAModre
+    },
+    b: {
+      deductionTree: deduce(
+        deduce(
+          deduce(
+            last(celkem),
+            last(cerveneAModre),
+            ctorDifference("zbytek")
+          ),
+          comp("zelen\xE9", "\u017Elut\xE9", -20, entity3),
+          ctor("comp-part-eq")
+        ),
+        last(celkem),
+        ctor("ratio")
+      )
+    }
+  };
+}
+function sportovniDen() {
+  const entity3 = "\u017E\xE1k\u016F";
+  const b = deduce(
+    ratios("skupiny", ["A", "B"], [7, 9]),
+    comp("B", "A", 16, entity3)
+  );
+  return {
+    deductionTree: deduce(
+      deduce(
+        deduce(
+          b,
+          ratios("skupiny", ["B", "C"], [4, 7]),
+          nthPart("C")
+        ),
+        last(b)
+      ),
+      ctorOption("C", 54)
+    )
+  };
+}
+function krabicka() {
+  const dim2 = dimensionEntity();
+  const a = contLength(["nejdel\u0161\xED hrana krabi\u010Dka", "strana a"], 14);
+  const c = deduce(
+    deduce(
+      contArea("pap\xEDr", 16),
+      cont("pap\xEDr", 4, "roh"),
+      ctor("quota")
+    ),
+    evalFormulaAsCont(formulaRegistry.surfaceArea.square, (x) => x.a, ["roh", "strana c"], dim2.length)
+  );
+  const rohy = deduce(
+    c,
+    ...doubleProduct("ohy po stran\xE1ch")
+  );
+  const papirDelka = deduce(
+    rohy,
+    contLength(["nejdel\u0161\xED hrana krabi\u010Dka", "strana a"], 14),
+    sum(["pap\xEDr", "del\u0161\xED strana"].join())
+  );
+  return {
+    a: {
+      deductionTree: deduce(
+        papirDelka,
+        ctorOption("B", 18)
+      )
+    },
+    b: {
+      deductionTree: deduce(
+        deduce(
+          a,
+          deduce(
+            deduce(
+              contArea("pap\xEDr", 198),
+              last(papirDelka),
+              evalFormulaAsCont(formulaRegistry.surfaceArea.rectangle, (x) => x.b, ["pap\xEDr", "krat\u0161\xED strana"], dim2.length)
+            ),
+            last(rohy),
+            ctorDifference(["hrana krabi\u010Dka", "strana b"].join())
+          ),
+          last(c),
+          evalFormulaAsCont(formulaRegistry.volume.cuboid, (x) => x.V, "krabi\u010Dka", dim2.volume)
+        ),
+        ctorOption("B", 196)
       )
     }
   };

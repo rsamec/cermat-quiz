@@ -1088,6 +1088,64 @@ function transitiveRatioCompareRule(a: RatioComparison, b: RatioComparison): Rat
     throw `Mismatch agent ${a.agentA}, ${a.agentB} any of ${b.agentA}, ${b.agentB}`
   }
 }
+function transitiveRatiosCompareRule(a: TwoPartRatio, b: TwoPartRatio): TwoPartRatio {
+  if (a.ratios.length != 2 || b.ratios.length != 2) {
+    throw 'Only two part ratios is supported.'
+  }
+  if (!areNumbers(a.ratios) || !areNumbers(b.ratios)) {
+    throw "ratios are not supported by non quantity types"
+  }
+  const aAgentA = a.parts[0]
+  const aAgentB = a.parts[1]
+  const bAgentA = b.parts[0]
+  const bAgentB = b.parts[1]
+
+  const aRatios = a.ratios as number[]
+  const bRatios = b.ratios as number[]
+
+
+  if (aAgentB === bAgentA) {
+    const shared = [aRatios[1], bRatios[0]]
+    const factorA = aRatios[0]
+    const factorB = bRatios[1]
+
+    return {
+      kind: 'ratios', whole: a.whole, parts: [aAgentA, bAgentB],
+      ratios: [lcdCalc(shared) / shared[0] * factorA, lcdCalc(shared) / shared[1] * factorB],
+    }
+  }
+  else if (aAgentB === bAgentB) {
+    const shared = [aRatios[1], bRatios[1]]
+    const factorA = aRatios[0]
+    const factorB = bRatios[0]
+    return {
+      kind: 'ratios', whole: a.whole, parts: [aAgentA, bAgentA],
+      ratios: [lcdCalc(shared) / shared[0] * factorA, lcdCalc(shared) / shared[1] * factorB],
+    }
+  }
+  else if (aAgentA === bAgentA) {
+    const shared = [aRatios[0], bRatios[0]]
+    const factorA = aRatios[1]
+    const factorB = bRatios[1]
+    return {
+      kind: 'ratios', whole: a.whole, parts: [aAgentB, bAgentB],
+      ratios: [lcdCalc(shared) / shared[0] * factorA, lcdCalc(shared) / shared[1] * factorB],
+    }
+  }
+  else if (aAgentA === bAgentB) {
+    const shared = [aRatios[0], bRatios[1]]
+    const factorA = aRatios[1]
+    const factorB = bRatios[0]
+    return {
+      kind: 'ratios', whole: a.whole, parts: [aAgentB, bAgentA],
+      ratios: [lcdCalc(shared) / shared[0] * factorA, lcdCalc(shared) / shared[1] * factorB],
+    }
+  }
+  else {
+    throw `Mismatch agent ${aAgentA}, ${aAgentB} any of ${bAgentA}, ${bAgentB}`
+  }
+}
+
 function inferTransitiveRatioCompareRule(a: RatioComparison, b: RatioComparison): Question<RatioComparison> {
   const result = transitiveRatioCompareRule(a, b)
   return {
@@ -1101,6 +1159,23 @@ function inferTransitiveRatioCompareRule(a: RatioComparison, b: RatioComparison)
         { tex: `${formatRatio(abs(a.ratio))} / ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentB === b.agentB },
         { tex: `1/${formatRatio(abs(a.ratio))} * ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentA === b.agentA },
         { tex: `1/${formatRatio(abs(a.ratio))} / ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentA === b.agentB }
+      ]
+      : []
+  }
+}
+function inferTransitiveRatiosCompareRule(a: TwoPartRatio, b: TwoPartRatio): Question<TwoPartRatio> {
+  const result = transitiveRatiosCompareRule(a, b)
+  return {
+    name: transitiveRatiosCompareRule.name,
+    inputParameters: extractKinds(a, b),
+    question: `Porovnej ${result.parts[0]} a ${result.parts[0]}?`,
+    result,
+    options: areNumbers(a.ratios) && areNumbers(b.ratios) && areNumbers(result.ratios)
+      ? [
+        // { tex: `${formatRatio(abs(a.ratio))} * ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentB === b.agentA },
+        // { tex: `${formatRatio(abs(a.ratio))} / ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentB === b.agentB },
+        // { tex: `1/${formatRatio(abs(a.ratio))} * ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentA === b.agentA },
+        // { tex: `1/${formatRatio(abs(a.ratio))} / ${formatRatio(abs(b.ratio))}`, result: formatRatio(result.ratio), ok: a.agentA === b.agentB }
       ]
       : []
   }
@@ -2806,7 +2881,7 @@ function solveEquationRule(a: Container | Rate, b: Container | Rate, last: Linea
   return {
     kind: 'cont',
     agent: [last.agent],
-    quantity: last.kind === "quadratic-equation" ? helpers.solveQuadraticEquation(a.quantity, b.quantity, last.variable)[1]: helpers.solveLinearEquation(a.quantity, b.quantity, last.variable) ,
+    quantity: last.kind === "quadratic-equation" ? helpers.solveQuadraticEquation(a.quantity, b.quantity, last.variable)[1] : helpers.solveLinearEquation(a.quantity, b.quantity, last.variable),
     ...last.entity,
   }
 }
@@ -3704,6 +3779,9 @@ function inferenceRuleEx(...args: Predicate[]): Question<TruePredicate> {
   }
   else if (a.kind === "comp-ratio" && b.kind === "comp-ratio") {
     return kind === "diff" ? inferToDifferenceAsRatioRule(a, b, last) : inferTransitiveRatioCompareRule(a, b)
+  }
+  else if (a.kind === "ratios" && b.kind === "ratios") {
+    return inferTransitiveRatiosCompareRule(a as TwoPartRatio, b as TwoPartRatio)
   }
   else if (a.kind === "cont" && b.kind === "ratio") {
     return inferPartToWholeRule(a, b);
