@@ -1,5 +1,5 @@
-import { commonSense, compAngle, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ctorUnit, pythagoras, rate, ratio, sum, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorScaleInvert, ctorBooleanOption, triangleAngle, contLength, contArea, dimensionEntity, doubleProduct, triangleArea, circleArea, counter, half, ctorScale, contAngle, evalFormulaAsCont, formulaRegistry } from "../../components/math";
-import { anglesNames, createLazyMap, deduce, deduceAs, last, to, toCont, toPredicate } from "../../utils/deduce-utils";
+import { commonSense, compAngle, compRatio, cont, ctorComplement, ctorDifference, ctorComparePercent, ctorUnit, pythagoras, rate, ratio, sum, ctorSlide, ctorPercent, ctorOption, compRelative, compRelativePercent, type Container, evalExprAsCont, ctorBooleanOption, triangleAngle, contLength, contArea, dimensionEntity, doubleProduct, triangleArea, circleArea, half, ctorScale, contAngle, evalFormulaAsCont, formulaRegistry } from "../../components/math";
+import { anglesNames, createLazyMap, deduce, deduceAs, last, to, toPredicate } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   1: () => delkaKroku(),

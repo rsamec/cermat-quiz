@@ -1,5 +1,5 @@
-import { cont, ctor, sum, ctorDifference, contLength, dimensionEntity, evalFormulaAsCont, formulaRegistry, ctorLinearEquation, productCombine, compRelativePercent, ctorQuadraticEquation, doubleProduct, ctorRate, rate, ctorComparePercent, ctorQuota, ctorRound, ctorOption, ratio, ctorPercent, halfProduct } from "../../components/math";
-import { createLazyMap, deduce, last, toCont } from "../../utils/deduce-utils";
+import { cont, sum, ctorDifference, contLength, dimensionEntity, evalFormulaAsCont, formulaRegistry, ctorLinearEquation, productCombine, compRelativePercent, ctorQuadraticEquation, doubleProduct, ctorRate, rate, ctorComparePercent, ctorRound, ctorOption, ratio, ctorPercent, halfProduct } from "../../components/math";
+import { createLazyMap, deduce, last } from "../../utils/deduce-utils";
 
 export default createLazyMap({
     4: () => zahradkar(),

@@ -1,5 +1,5 @@
-import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, evalExprAsCont, counter, proportion, productCombine, ctorLinearEquation, comp, ctorComplementCompRatio, ctorSlideInvert, ctorScaleInvert, ctorBooleanOption, pythagoras, contArea, dimensionEntity, contLength, squareNumbersPattern, nth, halfProduct, formulaRegistry, evalFormulaAsCont, rectangleArea, baseAreaVolume, cuboidVolume, doubleProduct, circleArea, half, ctorScale, triangleAngle, compAngle, contAngle } from "../../components/math";
-import { anglesNames, createLazyMap, deduce, deduceAs, last, lastQuantity, to, toCont } from "../../utils/deduce-utils";
+import { commonSense, compRatio, cont, ctor, ctorComplement, ctorDifference, ctorComparePercent, ratio, sum, product, ctorSlide, double, ctorPercent, ctorOption, compRelative, compRelativePercent, evalExprAsCont, counter, proportion, productCombine, ctorLinearEquation, comp, ctorComplementCompRatio, ctorSlideInvert, ctorBooleanOption, pythagoras, contArea, dimensionEntity, contLength, squareNumbersPattern, nth, halfProduct, formulaRegistry, evalFormulaAsCont, rectangleArea, baseAreaVolume, cuboidVolume, doubleProduct, circleArea, half, ctorScale, triangleAngle, compAngle, contAngle } from "../../components/math";
+import { anglesNames, createLazyMap, deduce, deduceAs, last, lastQuantity, to } from "../../utils/deduce-utils";
 
 export default createLazyMap({
     2.1: () => lyzarskaPermice().porovnani,

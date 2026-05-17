@@ -1,5 +1,5 @@
-import { sum, ctorOption, quota, ratio, contLength, contArea, EmptyUnit, cuboidVolume, dimensionEntity, evalFormulaAsCont, formulaRegistry, cont, ctor } from "../../components/math";
-import { deduce, last, toCont } from "../../utils/deduce-utils";
+import { sum, ctorOption, ratio, contLength, contArea, EmptyUnit, cuboidVolume, dimensionEntity, evalFormulaAsCont, formulaRegistry, cont, ctor } from "../../components/math";
+import { deduce, last } from "../../utils/deduce-utils";
 
 
 export function domecek() {

@@ -1284,37 +1284,37 @@ function inferRateRule(a, rate2) {
     ] : []
   };
 }
-function toQuotaRule(a, quota3, last2) {
-  const isQuota = isSameEntity(a, quota3);
-  const quantity = isNumber(a.quantity) && isNumber(quota3.quantity) ? Math.floor(a.quantity / quota3.quantity) : wrapToQuantity(`floor(a.quantity / quota.quantity)`, { a, quota: quota3 });
+function toQuotaRule(a, quota2, last2) {
+  const isQuota = isSameEntity(a, quota2);
+  const quantity = isNumber(a.quantity) && isNumber(quota2.quantity) ? Math.floor(a.quantity / quota2.quantity) : wrapToQuantity(`floor(a.quantity / quota.quantity)`, { a, quota: quota2 });
   return {
     kind: "quota",
     agent: normalizeToAgent(a.agent),
-    entity: isQuota ? last2.entity ?? toEntity("skupin") : toEntity(quota3.entity),
+    entity: isQuota ? last2.entity ?? toEntity("skupin") : toEntity(quota2.entity),
     entityQuota: toEntity(a),
-    quantity: isQuota ? quantity : quota3.quantity,
+    quantity: isQuota ? quantity : quota2.quantity,
     baseQuantity: 1,
-    restQuantity: isNumber(a.quantity) && isNumber(quota3.quantity) ? a.quantity % quota3.quantity : wrapToQuantity(`a.quantity % quota.quantity`, { a, quota: quota3 }),
+    restQuantity: isNumber(a.quantity) && isNumber(quota2.quantity) ? a.quantity % quota2.quantity : wrapToQuantity(`a.quantity % quota.quantity`, { a, quota: quota2 }),
     moduloType: "floor",
-    quotaQuantity: isQuota ? quota3.quantity : quantity
+    quotaQuantity: isQuota ? quota2.quantity : quantity
   };
 }
-function inferToQuotaRule(a, quota3, last2) {
-  const result = toQuotaRule(a, quota3, last2);
-  const isQuota = isSameEntity(a, quota3);
-  if (isNumber(a.quantity) && isNumber(quota3.quantity) && isNumber(result.quantity)) {
+function inferToQuotaRule(a, quota2, last2) {
+  const result = toQuotaRule(a, quota2, last2);
+  const isQuota = isSameEntity(a, quota2);
+  if (isNumber(a.quantity) && isNumber(quota2.quantity) && isNumber(result.quantity)) {
     return {
       name: toQuotaRule.name,
-      inputParameters: extractKinds(a, quota3),
-      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity, unit: a.unit })} postupn\u011B na ${isQuota ? `skupiny velikosti ${formatNumber(quota3.quantity)} ${formatEntity({ entity: quota3.entity, unit: quota3.unit })}` : `${formatNumber(quota3.quantity)} ${formatEntity({ entity: quota3.entity, unit: quota3.unit })}`}`,
+      inputParameters: extractKinds(a, quota2),
+      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity, unit: a.unit })} postupn\u011B na ${isQuota ? `skupiny velikosti ${formatNumber(quota2.quantity)} ${formatEntity({ entity: quota2.entity, unit: quota2.unit })}` : `${formatNumber(quota2.quantity)} ${formatEntity({ entity: quota2.entity, unit: quota2.unit })}`}`,
       result,
       options: [
-        { tex: `${formatNumber(a.quantity)} / ${formatNumber(quota3.quantity)}`, result: formatNumber(result.quantity), ok: true },
-        { tex: `${formatNumber(quota3.quantity)} / ${formatNumber(a.quantity)}`, result: formatNumber(result.quantity), ok: false }
+        { tex: `${formatNumber(a.quantity)} / ${formatNumber(quota2.quantity)}`, result: formatNumber(result.quantity), ok: true },
+        { tex: `${formatNumber(quota2.quantity)} / ${formatNumber(a.quantity)}`, result: formatNumber(result.quantity), ok: false }
       ]
     };
   } else {
-    return resultAsQuestion(result, { name: toQuotaRule.name, inputParameters: extractKinds(a, quota3) });
+    return resultAsQuestion(result, { name: toQuotaRule.name, inputParameters: extractKinds(a, quota2) });
   }
 }
 function rateQuotaRule(a, rate2, moduloType = "floor") {
@@ -1366,33 +1366,33 @@ function inferRateQuotaRule(a, rate2, last2) {
     ] : []
   };
 }
-function inferRestQuantity(quota3, rest) {
+function inferRestQuantity(quota2, rest) {
   const result = {
     kind: "cont",
-    agent: normalizeToAgent(rest.agent ?? quota3.agent),
-    entity: quota3.entityQuota.entity,
-    unit: quota3.entityQuota.unit,
-    quantity: quota3.restQuantity
+    agent: normalizeToAgent(rest.agent ?? quota2.agent),
+    entity: quota2.entityQuota.entity,
+    unit: quota2.entityQuota.unit,
+    quantity: quota2.restQuantity
   };
   return {
     name: "inferRestQuantity",
-    inputParameters: extractKinds(quota3, rest),
+    inputParameters: extractKinds(quota2, rest),
     question: containerQuestion(result),
     result,
     options: []
   };
 }
-function inferQuotaQuantity(quota3, rest) {
+function inferQuotaQuantity(quota2, rest) {
   const result = {
     kind: "cont",
-    agent: normalizeToAgent(rest.agent ?? quota3.agent),
-    entity: quota3.entityQuota.entity,
-    unit: quota3.entityQuota.unit,
-    quantity: quota3.quotaQuantity
+    agent: normalizeToAgent(rest.agent ?? quota2.agent),
+    entity: quota2.entityQuota.entity,
+    unit: quota2.entityQuota.unit,
+    quantity: quota2.quotaQuantity
   };
   return {
     name: "inferQuotaQuantity",
-    inputParameters: extractKinds(quota3, rest),
+    inputParameters: extractKinds(quota2, rest),
     question: containerQuestion(result),
     result,
     options: []
@@ -1853,7 +1853,7 @@ function inferConvertPercentRule(a) {
     ] : []
   };
 }
-function toRatioCompareRule(a, b, ctor4) {
+function toRatioCompareRule(a, b, ctor2) {
   if (equalAgent(b.agent, a.agent) && b.entity != a.entity && a.kind === "cont" && b.kind === "cont") {
     b = toGenerAgent(b);
     a = toGenerAgent(a);
@@ -1867,16 +1867,16 @@ function toRatioCompareRule(a, b, ctor4) {
     agentB: singleAgent(bAgent),
     agentA: singleAgent(aAgent),
     ratio: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity / b.quantity : wrapToRatio(`a.quantity / b.quantity`, { a, b }),
-    ...ctor4.asPercent && { asPercent: true }
+    ...ctor2.asPercent && { asPercent: true }
   };
 }
-function inferToRatioCompareRule(a, b, ctor4) {
-  const result = toRatioCompareRule(a, b, ctor4);
+function inferToRatioCompareRule(a, b, ctor2) {
+  const result = toRatioCompareRule(a, b, ctor2);
   if (isNumber(result.ratio) && isNumber(a.quantity) && isNumber(b.quantity)) {
     const between = result.ratio > 1 / 2 && result.ratio < 2;
     return {
       name: toRatioCompareRule.name,
-      inputParameters: extractKinds(a, b, ctor4),
+      inputParameters: extractKinds(a, b, ctor2),
       question: `Porovnej ${result.agentA} a ${result.agentB}.${between ? `O kolik z ${result.agentB}?` : `Kolikr\xE1t ${result.ratio < 1 ? "men\u0161\xED" : "v\u011Bt\u0161\xED"}?`}`,
       result,
       options: between ? [
@@ -1888,7 +1888,7 @@ function inferToRatioCompareRule(a, b, ctor4) {
       ]
     };
   } else {
-    return resultAsQuestion(result, { name: toRatioCompareRule.name, inputParameters: extractKinds(a, b, ctor4) });
+    return resultAsQuestion(result, { name: toRatioCompareRule.name, inputParameters: extractKinds(a, b, ctor2) });
   }
 }
 function compareToRateRule(a, b, last2) {
@@ -4215,11 +4215,11 @@ Fraction.prototype = {
   "simplify": function(eps2) {
     const ieps = BigInt(1 / (eps2 || 1e-3) | 0);
     const thisABS = this["abs"]();
-    const cont5 = thisABS["toContinued"]();
-    for (let i = 1; i < cont5.length; i++) {
-      let s = newFraction(cont5[i - 1], C_ONE);
+    const cont4 = thisABS["toContinued"]();
+    for (let i = 1; i < cont4.length; i++) {
+      let s = newFraction(cont4[i - 1], C_ONE);
       for (let k = i - 2; k >= 0; k--) {
-        s = s["inverse"]()["add"](cont5[k]);
+        s = s["inverse"]()["add"](cont4[k]);
       }
       let t = s["sub"](thisABS);
       if (t["n"] * ieps < t["d"]) {
@@ -10678,7 +10678,7 @@ function hra() {
   const tycRate = rate(agentHra, 5, entityTyc, entityPrkna, 2);
   const ohradaPrknaRate = rate(agentHra, 3, entityPrkna, entityOhrada);
   const ohradaTycRate = rate(agentHra, 2, entityTyc, entityOhrada);
-  const vypocetPotreba = (ohrada, quota3) => deduce(
+  const vypocetPotreba = (ohrada, quota2) => deduce(
     deduce(
       deduceAs("p\u0159\xEDm\xE1 spot\u0159eba")(
         ohrada,
@@ -10690,21 +10690,21 @@ function hra() {
           ohradaTycRate
         ),
         tycRate,
-        quota3
+        quota2
       ),
       sum(agentHra)
     ),
     prknaRate,
-    quota3
+    quota2
   );
-  const vypocetPotrebaZbytek = (ohrada, quota3, zbytek) => {
+  const vypocetPotrebaZbytek = (ohrada, quota2, zbytek) => {
     const neprimaSpotreba = deduceAs("spot\u0159eba v\xFDm\u011Bnou za ty\u010De")(
       deduce(
         ohrada,
         ohradaTycRate
       ),
       tycRate,
-      quota3
+      quota2
     );
     return deduce(
       deduce(
@@ -10718,7 +10718,7 @@ function hra() {
             sum(agentHra)
           ),
           prknaRate,
-          quota3
+          quota2
         ),
         zbytek
       ),

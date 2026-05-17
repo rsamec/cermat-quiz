@@ -1,4 +1,4 @@
-import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate, cont } from "../components/math.js"
+import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate } from "../components/math.js"
 import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison, Frequency, PredicateKind, PartWholeRatio } from "../components/math.js"
 import { partionArray } from '../utils/common-utils.js';
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
@@ -85,20 +85,6 @@ export function toFrequency(child: TreeNode | Predicate, { agent, entityBase, ba
 export function toRate(child: TreeNode | Predicate, { agent, entityBase, baseQuantity }: { agent: string[], entityBase: { entity: string, unit?: string }, baseQuantity: number }): TreeNode {
   return toPredicate(child, mapToRate({ agent, entityBase, baseQuantity }));
 }
-
-export function toQuotaRate(child:  TreeNode | Predicate){    
-  return toPredicate(child, (node: Quota) => ({
-      kind: 'rate',
-      agent: node.agent,
-      entity: node.entityQuota,
-      entityBase: node.entity,
-      quantity: node.quantity,
-      baseQuantity: node.quotaQuantity
-    })
-  )
-  
-}
-
 
 export function toRate2(child: RatioComparison, { agent, entity, entityBase }: { agent: string[], entity: EntityDef, entityBase: EntityDef }) {
   return to(child, {

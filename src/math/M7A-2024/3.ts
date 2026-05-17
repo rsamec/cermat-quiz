@@ -1,5 +1,5 @@
 import { cont, counter, ctor, ctorDifference, ctorSlide } from "../../components/math";
-import { axiomInput, deduce, last, toCont } from "../../utils/deduce-utils";
+import { axiomInput, deduce, last } from "../../utils/deduce-utils";
 import { cislaNaOse } from "../cislaNaOse";
 
 export function triCislaNaOse({ input }: { input: { mensiCislo: number, vetsiCislo: number, pocetUsekuMeziCisly: number, A: number, B: number, C: number } }) {
