@@ -530,11 +530,7 @@ function uhly() {
       deduce(
         deduceAs(`2 trojúhelníky - ${pravouhlyLabel}, ${rovnoramennyLabel}`)(
           vrchol,
-          deduce(
-            last(vrchol),
-            compAngle("vrchol K", "vrchol C", "isosceles-triangle-at-the-base")
-          ),
-          triangleAngle("vrchol S")
+          compAngle("vrchol S", "vrchol C", "isosceles-triangle-at-the-apex")
         ),
         compAngle(anglesNames.omega, "vrchol S", "supplementary")
       ),

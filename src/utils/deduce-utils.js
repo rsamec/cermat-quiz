@@ -2707,10 +2707,14 @@ function computeOtherAngle(a, relationship) {
     case "alternate-interior":
     case "alternate-exterior":
     case "axially-symmetric":
-    case "isosceles-triangle-at-the-base":
+    case "isosceles-triangle-equal-at-the-base":
     case "equilateral-triangle":
     case "opposite-in-parallelogram":
       return isNumber(quantity) ? quantity : wrapToQuantity(`a.quantity`, { a });
+    case "isosceles-triangle-at-the-apex":
+      return isNumber(quantity) ? 180 - quantity * 2 : wrapToQuantity(`180 - (a.quantity * 2)`, { a });
+    case "isosceles-triangle-at-the-base":
+      return isNumber(quantity) ? (180 - quantity) / 2 : wrapToQuantity(`(180 - a.quantity) / 2`, { a });
     default:
       throw "Unknown Angle Relationship";
   }
@@ -2735,8 +2739,12 @@ function formatAngle(relationship) {
       return "st\u0159\xEDdav\xFD vn\u011Bj\u0161\xED";
     case "axially-symmetric":
       return "osov\u011B soum\u011Brn\xFD";
-    case "isosceles-triangle-at-the-base":
+    case "isosceles-triangle-equal-at-the-base":
       return "shodnost \xFAhl\u016F p\u0159i z\xE1kadn\u011B rovnoramenn\xE9ho troj\xFAheln\xEDku";
+    case "isosceles-triangle-at-the-base":
+      return "vrcholov\xFD \xFAhel k \xFAhlu p\u0159i z\xE1kadn\u011B rovnoramenn\xE9ho troj\xFAheln\xEDku";
+    case "isosceles-triangle-at-the-apex":
+      return "\xFAhel p\u0159i z\xE1kladn\u011B k vrcholov\xE9mu \xFAhlu rovnoramenn\xE9ho troj\xFAheln\xEDku";
     case "equilateral-triangle":
       return "shodnost v\u0161ech \xFAhl\u016F v rovnostrann\xE9m troj\xFAheln\xEDku";
     case "opposite-in-parallelogram":
@@ -6985,32 +6993,6 @@ function toPredicate(node, mapFn) {
     useMapping: true
   };
 }
-function connectTo(node, input) {
-  let inputState = {
-    node: { children: input.children.map((d) => ({ ...d })) },
-    used: false
-  };
-  const connect = function(node2, input2) {
-    if (isPredicate(node2)) {
-      if (node2 === input2.children[input2.children.length - 1]) {
-        const newNode = inputState.used ? inputState.node.children[inputState.node.children.length - 1] : inputState.node;
-        inputState.used = true;
-        return newNode;
-      }
-      return node2;
-    }
-    if (node2.children && Array.isArray(node2.children)) {
-      let newChildren = [];
-      for (const child of node2.children) {
-        const newChild = connect(child, input2);
-        newChildren.push(newChild);
-      }
-      node2.children = newChildren;
-    }
-    return node2;
-  };
-  return connect(node, input);
-}
 function computeTreeMetrics(node, level = 0, levels = {}, predicates = [], rules = [], formulas = [], useBase, deduceMap = /* @__PURE__ */ new Map()) {
   if (isPredicate(node)) {
     levels[level] = (levels[level] || 0) + 1;
@@ -7699,7 +7681,6 @@ export {
   colorifyDeduceTree,
   computeTreeMetrics,
   concatString,
-  connectTo,
   createLazyMap,
   deduce,
   deduceAs,
@@ -7721,13 +7702,8 @@ export {
   last,
   lastQuantity,
   mapNodeChildrenToPredicates,
-  mapToCont,
-  mapToFrequency,
-  mapToPercent,
-  mapToRate,
   mdFormatTable,
   to,
-  toAs,
   toCont,
   toFrequency,
   toPercent,

@@ -1,5 +1,5 @@
 import { commonSense, comp, compRatio, cont, ctorComplement, ctorDelta, ctorDifference, ctorOption, ctorRatios, nthPart, nthPartFactor, rate, ratio, ratios, sum, counter, double, product, ctor, ctorBooleanOption, contLength, evalExprAsCont, ctorTuple, dimensionEntity, squareArea, triangleArea, rectangleArea } from "../../components/math";
-import { createLazyMap, deduce, deduceAs, last, mapToCont, to, toCont } from "../../utils/deduce-utils";
+import { createLazyMap, deduce, deduceAs, last, to, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   2.1: () => ramecek(),
@@ -509,7 +509,7 @@ export function poutnik() {
   const kouzelnik2 = deduce(
     deduce(
       last(kouzelnik1),
-      mapToCont({ agent: "poutník" })(last(kouzelnik1)),
+      toCont(kouzelnik1,{ agent: "poutník" }),
       sum("celkem")
     ),
     ratiosKvP
@@ -518,7 +518,7 @@ export function poutnik() {
   return {
     prvniKouzlo: {
       deductionTree: deduce(
-        mapToCont({ agent: "kouzelník původně" })(kouzelnik),
+        toCont(kouzelnik, { agent: "kouzelník původně" }),
         toCont(kouzelnik1, { agent: "kouzelník po 1.kouzle" }),
         ctorDelta("kouzelník")
       )
@@ -528,7 +528,7 @@ export function poutnik() {
         deduce(
           deduce(
             last(kouzelnik1),
-            mapToCont({ agent: "poutník" })(last(kouzelnik1)),
+            toCont(kouzelnik1,{ agent: "poutník" }),
             sum("celkem")
           ),
           last(ratiosKvP),
@@ -544,7 +544,7 @@ export function poutnik() {
           deduce(
             deduce(
               last(kouzelnik2),
-              mapToCont({ agent: "poutník" })(last(kouzelnik2)),
+              toCont(kouzelnik2,{ agent: "poutník" }),
               sum("celkem")
             ),
             last(ratiosKvP),

@@ -314,11 +314,7 @@ function uhly() {
     const zadanyVrcholB = contAngle("zadaný vrchol B", 80)
     const uhelC = deduce(
         zadanyVrcholB,
-        deduce(
-            zadanyVrcholB,
-            compAngle("vrchol A", "zadaný vrchol B", "isosceles-triangle-at-the-base")
-        ),
-        triangleAngle("vrchol C")
+        compAngle("vrchol C", "zadaný vrchol B", "isosceles-triangle-at-the-apex")        
     )
     return {
         deductionTree: deduce(

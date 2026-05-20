@@ -250,7 +250,7 @@ function uhelAlfa() {
                     contRightAngle("BSC"),
                     deduceAs("Vlastnost těžnice v pravoúhlém trojúhelníku, resp. trojúhelník CSX je rovnoramenný s rameny SX and CX")(
                         csx,
-                        compAngle("CSX", "SCX", "isosceles-triangle-at-the-base")
+                        compAngle("CSX", "SCX", "isosceles-triangle-equal-at-the-base")
                     ),
                     triangleAngle("CBS")
                 ),

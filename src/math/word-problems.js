@@ -3014,10 +3014,14 @@ function computeOtherAngle(a, relationship) {
     case "alternate-interior":
     case "alternate-exterior":
     case "axially-symmetric":
-    case "isosceles-triangle-at-the-base":
+    case "isosceles-triangle-equal-at-the-base":
     case "equilateral-triangle":
     case "opposite-in-parallelogram":
       return isNumber(quantity) ? quantity : wrapToQuantity(`a.quantity`, { a });
+    case "isosceles-triangle-at-the-apex":
+      return isNumber(quantity) ? 180 - quantity * 2 : wrapToQuantity(`180 - (a.quantity * 2)`, { a });
+    case "isosceles-triangle-at-the-base":
+      return isNumber(quantity) ? (180 - quantity) / 2 : wrapToQuantity(`(180 - a.quantity) / 2`, { a });
     default:
       throw "Unknown Angle Relationship";
   }
@@ -3042,8 +3046,12 @@ function formatAngle(relationship) {
       return "st\u0159\xEDdav\xFD vn\u011Bj\u0161\xED";
     case "axially-symmetric":
       return "osov\u011B soum\u011Brn\xFD";
-    case "isosceles-triangle-at-the-base":
+    case "isosceles-triangle-equal-at-the-base":
       return "shodnost \xFAhl\u016F p\u0159i z\xE1kadn\u011B rovnoramenn\xE9ho troj\xFAheln\xEDku";
+    case "isosceles-triangle-at-the-base":
+      return "vrcholov\xFD \xFAhel k \xFAhlu p\u0159i z\xE1kadn\u011B rovnoramenn\xE9ho troj\xFAheln\xEDku";
+    case "isosceles-triangle-at-the-apex":
+      return "\xFAhel p\u0159i z\xE1kladn\u011B k vrcholov\xE9mu \xFAhlu rovnoramenn\xE9ho troj\xFAheln\xEDku";
     case "equilateral-triangle":
       return "shodnost v\u0161ech \xFAhl\u016F v rovnostrann\xE9m troj\xFAheln\xEDku";
     case "opposite-in-parallelogram":
@@ -7452,32 +7460,6 @@ function toPredicate(node, mapFn) {
     useMapping: true
   };
 }
-function connectTo(node, input) {
-  let inputState = {
-    node: { children: input.children.map((d) => ({ ...d })) },
-    used: false
-  };
-  const connect = function(node2, input2) {
-    if (isPredicate(node2)) {
-      if (node2 === input2.children[input2.children.length - 1]) {
-        const newNode = inputState.used ? inputState.node.children[inputState.node.children.length - 1] : inputState.node;
-        inputState.used = true;
-        return newNode;
-      }
-      return node2;
-    }
-    if (node2.children && Array.isArray(node2.children)) {
-      let newChildren = [];
-      for (const child of node2.children) {
-        const newChild = connect(child, input2);
-        newChildren.push(newChild);
-      }
-      node2.children = newChildren;
-    }
-    return node2;
-  };
-  return connect(node, input);
-}
 function isEmptyOrWhiteSpace(value) {
   return value == null || typeof value === "string" && value.trim() === "";
 }
@@ -9854,11 +9836,7 @@ function uhly() {
       deduce(
         deduceAs(`2 troj\xFAheln\xEDky - ${pravouhlyLabel}, ${rovnoramennyLabel}`)(
           vrchol,
-          deduce(
-            last(vrchol),
-            compAngle("vrchol K", "vrchol C", "isosceles-triangle-at-the-base")
-          ),
-          triangleAngle("vrchol S")
+          compAngle("vrchol S", "vrchol C", "isosceles-triangle-at-the-apex")
         ),
         compAngle(anglesNames.omega, "vrchol S", "supplementary")
       ),
@@ -11032,7 +11010,7 @@ function poutnik() {
   const kouzelnik2 = deduce(
     deduce(
       last(kouzelnik1),
-      mapToCont({ agent: "poutn\xEDk" })(last(kouzelnik1)),
+      toCont(kouzelnik1, { agent: "poutn\xEDk" }),
       sum("celkem")
     ),
     ratiosKvP
@@ -11040,7 +11018,7 @@ function poutnik() {
   return {
     prvniKouzlo: {
       deductionTree: deduce(
-        mapToCont({ agent: "kouzeln\xEDk p\u016Fvodn\u011B" })(kouzelnik),
+        toCont(kouzelnik, { agent: "kouzeln\xEDk p\u016Fvodn\u011B" }),
         toCont(kouzelnik1, { agent: "kouzeln\xEDk po 1.kouzle" }),
         ctorDelta("kouzeln\xEDk")
       )
@@ -11050,7 +11028,7 @@ function poutnik() {
         deduce(
           deduce(
             last(kouzelnik1),
-            mapToCont({ agent: "poutn\xEDk" })(last(kouzelnik1)),
+            toCont(kouzelnik1, { agent: "poutn\xEDk" }),
             sum("celkem")
           ),
           last(ratiosKvP),
@@ -11065,7 +11043,7 @@ function poutnik() {
         deduce(
           deduce(
             last(kouzelnik2),
-            mapToCont({ agent: "poutn\xEDk" })(last(kouzelnik2)),
+            toCont(kouzelnik2, { agent: "poutn\xEDk" }),
             sum("celkem")
           ),
           last(ratiosKvP),
@@ -12349,11 +12327,7 @@ function uhly2() {
   const zadanyVrcholB = contAngle("zadan\xFD vrchol B", 80);
   const uhelC = deduce(
     zadanyVrcholB,
-    deduce(
-      zadanyVrcholB,
-      compAngle("vrchol A", "zadan\xFD vrchol B", "isosceles-triangle-at-the-base")
-    ),
-    triangleAngle("vrchol C")
+    compAngle("vrchol C", "zadan\xFD vrchol B", "isosceles-triangle-at-the-apex")
   );
   return {
     deductionTree: deduce(
@@ -12484,11 +12458,7 @@ function uhly3() {
   const zadanyVrcholA = contAngle("zadan\xFD vrchol A", 55);
   const uhelE = deduce(
     zadanyVrcholA,
-    deduce(
-      zadanyVrcholA,
-      compAngle("vrchol B", zadanyVrcholA.agent, "isosceles-triangle-at-the-base")
-    ),
-    triangleAngle("vrchol E")
+    compAngle("vrchol E", zadanyVrcholA.agent.join(), "isosceles-triangle-at-the-apex")
   );
   const uhelB = to(
     commonSense("v\u0161echny \xFAhly v rovnostrann\xE9m troj\xFAheln\xEDku jsou stejn\xE9"),
@@ -14886,44 +14856,27 @@ function procenta5() {
 }
 
 // src/math/M9I-2025/angle.ts
-function desetiuhelnik({ input }) {
+function desetiUhelnik() {
   const pocetUhlu = "\xFAhl\u016F";
-  const rovnoramennyTrojLabel = "rovnoramenn\xFD troj\xFAheln\xEDk";
   const vrcholovyUhelLabel = "vrcholov\xFD \xFAhel";
   const celkem = contAngle("desiti\xFAheln\xEDk", 360);
-  const pocet = cont("desiti\xFAheln\xEDk", input.pocetUhlu, pocetUhlu);
+  const pocet = cont("desiti\xFAheln\xEDk", 10, pocetUhlu);
   const minUhel = deduce(celkem, pocet, ctor("rate"));
   const alfa = toCont(deduce(minUhel, cont(anglesNames.alpha, 2, pocetUhlu)), { agent: anglesNames.alpha });
-  const triangleSum = contTringleAngleSum(rovnoramennyTrojLabel);
-  const uhelRamenaRovnoramennehoTrojuhelniku = ({ vrcholovyUhel: vrcholovyUhel2 }, { uhelRamenoLabel }) => toCont(
-    deduce(
-      deduce(
-        triangleSum,
-        vrcholovyUhel2,
-        ctorDifference("ob\u011B ramena")
-      ),
-      cont("ob\u011B ramena", 2, pocetUhlu),
-      ctor("rate")
-    ),
-    { agent: uhelRamenoLabel ?? "\xFAhel ramena" }
-  );
   const vrcholovyUhel = toCont(
     deduce(last(minUhel), cont(vrcholovyUhelLabel, 3, pocetUhlu)),
     { agent: vrcholovyUhelLabel }
   );
-  const beta = connectTo(uhelRamenaRovnoramennehoTrojuhelniku(
-    {
-      vrcholovyUhel: last(vrcholovyUhel)
-    },
-    { uhelRamenoLabel: anglesNames.beta }
-  ), vrcholovyUhel);
+  const lastVrcholovyUhel = last(vrcholovyUhel);
+  const beta = deduce(
+    lastVrcholovyUhel,
+    compAngle(lastVrcholovyUhel.agent.join(), anglesNames.beta, "isosceles-triangle-at-the-base")
+  );
   const gama = deduce(
     last(alfa),
-    uhelRamenaRovnoramennehoTrojuhelniku(
-      {
-        vrcholovyUhel: contAngle(vrcholovyUhelLabel, lastQuantity(minUhel))
-      },
-      { uhelRamenoLabel: anglesNames.gamma }
+    deduce(
+      contAngle(vrcholovyUhelLabel, lastQuantity(minUhel)),
+      compAngle(vrcholovyUhelLabel, anglesNames.gamma, "isosceles-triangle-at-the-base")
     )
   );
   return [
@@ -15245,9 +15198,9 @@ var M9I_2025_default = createLazyMap({
   7.1: () => plnaKrabice({ input: krabiceParams })[0],
   7.2: () => plnaKrabice({ input: krabiceParams })[1],
   7.3: () => plnaKrabice({ input: krabiceParams })[2],
-  11.1: () => desetiuhelnik({ input: { pocetUhlu: 10 } })[0],
-  11.2: () => desetiuhelnik({ input: { pocetUhlu: 10 } })[1],
-  11.3: () => desetiuhelnik({ input: { pocetUhlu: 10 } })[2],
+  11.1: () => desetiUhelnik()[0],
+  11.2: () => desetiUhelnik()[1],
+  11.3: () => desetiUhelnik()[2],
   12: () => kytice({ input: { cenaZaKus: { ruze: 54, chryzantema: 40, statice: 35 } } }),
   13: () => caryNaPapire({ input: { pocetCasti: 40 } }),
   14: () => domecek3(),
@@ -16373,20 +16326,16 @@ function uhly8() {
   const zadany = contAngle("zadan\xFD", 64);
   const alpha = deduceAs("troj\xFAheln\xEDk KAS je rovnoramenn\xFD")(
     zadany,
-    compAngle("zadan\xFD", anglesNames.alpha, "isosceles-triangle-at-the-base")
+    compAngle("zadan\xFD", anglesNames.alpha, "isosceles-triangle-equal-at-the-base")
   );
   const alfaABetaLabel = [anglesNames.alpha, anglesNames.beta].join(" a ");
   const SKB = deduce(
     zadany,
     compAngle("zadan\xFD", "SKB", "complementary")
   );
-  const gamma2 = deduce(
+  const gamma2 = deduceAs(`troj\xFAheln\xEDk SBK je rovnoramenn\xFD`)(
     SKB,
-    deduceAs(`troj\xFAheln\xEDk SBK je rovnoramenn\xFD`)(
-      last(SKB),
-      compAngle(anglesNames.beta, "SKB", "isosceles-triangle-at-the-base")
-    ),
-    triangleAngle(anglesNames.gamma)
+    compAngle(anglesNames.gamma, "SKB", "isosceles-triangle-at-the-apex")
   );
   return {
     a: {

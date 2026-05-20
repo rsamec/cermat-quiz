@@ -1,5 +1,5 @@
 import { createLazyMap } from "../../utils/deduce-utils";
-import { desetiuhelnik } from "./angle";
+import { desetiUhelnik } from "./angle";
 import { domecek } from "./domecek";
 import { plnaKrabice } from "./krabice";
 import { kytice } from "./kytice";
@@ -18,9 +18,9 @@ export default createLazyMap({
   7.1: () => plnaKrabice({ input: krabiceParams })[0],
   7.2: () => plnaKrabice({ input: krabiceParams })[1],
   7.3: () => plnaKrabice({ input: krabiceParams })[2],
-  11.1: () => desetiuhelnik({ input: { pocetUhlu: 10 } })[0],
-  11.2: () => desetiuhelnik({ input: { pocetUhlu: 10 } })[1],
-  11.3: () => desetiuhelnik({ input: { pocetUhlu: 10 } })[2],
+  11.1: () => desetiUhelnik()[0],
+  11.2: () => desetiUhelnik()[1],
+  11.3: () => desetiUhelnik()[2],
   12: () => kytice({ input: { cenaZaKus: { ruze: 54, chryzantema: 40, statice: 35 } } }),
   13: () => caryNaPapire({ input: { pocetCasti: 40 } }),
   14: () => domecek(),

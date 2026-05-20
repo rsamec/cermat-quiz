@@ -27,11 +27,7 @@ function uhly() {
     const zadanyVrcholA = contAngle("zadaný vrchol A", 55)
     const uhelE = deduce(
         zadanyVrcholA,
-        deduce(
-            zadanyVrcholA,
-            compAngle("vrchol B", zadanyVrcholA.agent, "isosceles-triangle-at-the-base")
-        ),
-        triangleAngle("vrchol E")
+        compAngle("vrchol E", zadanyVrcholA.agent.join(), "isosceles-triangle-at-the-apex")
     )
 
     const uhelB = to(

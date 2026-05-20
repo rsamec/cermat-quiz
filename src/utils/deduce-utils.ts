@@ -65,7 +65,7 @@ function normalizeDeduceContext(context: string | DeduceContext) {
 export function deduce(...children: Node[]): TreeNode {
   return to(...children.concat(inferenceRule.apply(null, children.map(d => isPredicate(d) ? d : d.children.slice(-1)[0]))));
 }
-export function toAs(context: DeduceContext) {
+function toAs(context: DeduceContext) {
   return (...children: Node[]) => {
     return { children, context }
   }
@@ -97,7 +97,7 @@ export function toRate2(child: RatioComparison, { agent, entity, entityBase }: {
     asRatio: true
   } as Rate)
 }
-export function mapToCont({ agent, entity }: { agent: string, entity?: { entity: string, unit?: string } }) {
+function mapToCont({ agent, entity }: { agent: string, entity?: { entity: string, unit?: string } }) {
   return (node: Container | Transfer | ComparisonDiff | Comparison | Rate | Quota | Delta): Container => {
     const typeNode = node as unknown as ComparisonDiff | Comparison | Rate | Quota;
     return {
@@ -121,7 +121,7 @@ export function mapToCont({ agent, entity }: { agent: string, entity?: { entity:
     }
   }
 }
-export function mapToRate({ agent, entityBase, baseQuantity }: { agent: string[], entityBase: { entity: string, unit?: string }, baseQuantity: number }) {
+function mapToRate({ agent, entityBase, baseQuantity }: { agent: string[], entityBase: { entity: string, unit?: string }, baseQuantity: number }) {
   return (node: Container): Rate => {
     return {
       kind: 'rate',
@@ -136,8 +136,7 @@ export function mapToRate({ agent, entityBase, baseQuantity }: { agent: string[]
     }
   }
 }
-
-export function mapToFrequency({ agent, entityBase, baseQuantity }: { agent: string, entityBase: { entity: string, unit?: string }, baseQuantity: number }) {
+function mapToFrequency({ agent, entityBase, baseQuantity }: { agent: string, entityBase: { entity: string, unit?: string }, baseQuantity: number }) {
   return (node: Container): Frequency => {
     return {
       kind: 'frequency',
@@ -152,7 +151,7 @@ export function mapToFrequency({ agent, entityBase, baseQuantity }: { agent: str
     }
   }
 }
-export function mapToPercent({ whole }: { whole: string }) {
+function mapToPercent({ whole }: { whole: string }) {
   return (node: Container): PartWholeRatio => {
     const a = node.agent;
     const part = Array.isArray(a) ? a.join() : a;
@@ -174,39 +173,6 @@ export function toPredicate<T extends Predicate>(node: TreeNode | T, mapFn: (nod
     useMapping: true
   };
 }
-
-export function connectTo(node: any, input: TreeNode) {
-  let inputState = {
-    node: { children: input.children.map(d => ({ ...d })) },
-    used: false
-  };
-  const connect = function (node: any, input: TreeNode) {
-    // Base case: If the node is a leaf
-    if (isPredicate(node)) {
-      if (node === input.children[input.children.length - 1]) {
-        const newNode = inputState.used ? inputState.node.children[inputState.node.children.length - 1] : inputState.node
-        inputState.used = true;
-
-        return newNode;
-      }
-      return node;
-    }
-
-    // Recursive case: Process children and calculate depth
-    if (node.children && Array.isArray(node.children)) {
-
-      let newChildren = [];
-      for (const child of node.children) {
-        const newChild = connect(child, input);
-        newChildren.push(newChild);
-      }
-      node.children = newChildren;
-    }
-    return node;
-  }
-  return connect(node, input)
-}
-
 
 type TreeMetrics = {
   depth: number;

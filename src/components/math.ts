@@ -4139,8 +4139,8 @@ function ratiosToBaseForm(ratios) {
 // #endregion
 
 // #region Angle utils
-export type AngleRelationship = "complementary" | "supplementary" | "opposite" | "corresponding" | "sameSide" | "alternate" | "alternate-interior" | "alternate-exterior" | "axially-symmetric" | "opposite-in-parallelogram"
-  | "isosceles-triangle-at-the-base" | "equilateral-triangle";
+export type AngleRelationship = "complementary" | "supplementary" | "opposite" | "corresponding" | "sameSide" | "alternate" | "alternate-interior" | "alternate-exterior" | "axially-symmetric" | "opposite-in-parallelogram" | "isosceles-triangle-at-the-apex"
+  | "isosceles-triangle-at-the-base" | "isosceles-triangle-equal-at-the-base" | "equilateral-triangle";
 function computeOtherAngle(a: Container, relationship: AngleRelationship) {
   const quantity = a.quantity
   switch (relationship) {
@@ -4148,17 +4148,21 @@ function computeOtherAngle(a: Container, relationship: AngleRelationship) {
       return isNumber(quantity) ? 90 - quantity : wrapToQuantity(`90 - a.quantity`, { a }); // Sum must be 90°
     case "supplementary":
     case "sameSide":
-      return isNumber(quantity) ? 180 - quantity : wrapToQuantity(`180 - a.quantity`, { a }); // Sum must be 18°      
+      return isNumber(quantity) ? 180 - quantity : wrapToQuantity(`180 - a.quantity`, { a }); // Sum must be 180°      
     case "opposite":
     case "corresponding":
     case "alternate":
     case "alternate-interior":
     case "alternate-exterior":
     case "axially-symmetric":
-    case "isosceles-triangle-at-the-base":
+    case "isosceles-triangle-equal-at-the-base":
     case "equilateral-triangle":
     case "opposite-in-parallelogram":
       return isNumber(quantity) ? quantity : wrapToQuantity(`a.quantity`, { a }); // Equal angles
+    case "isosceles-triangle-at-the-apex":
+       return isNumber(quantity) ? 180 - (quantity * 2) : wrapToQuantity(`180 - (a.quantity * 2)`, { a }); // apex compute
+    case "isosceles-triangle-at-the-base":
+       return isNumber(quantity) ? (180 - quantity) / 2 : wrapToQuantity(`(180 - a.quantity) / 2`, { a }); // base compute
     default:
       throw "Unknown Angle Relationship";
   }
@@ -4184,8 +4188,12 @@ export function formatAngle(relationship: AngleRelationship) {
       return "střídavý vnější";
     case "axially-symmetric":
       return "osově souměrný";
-    case "isosceles-triangle-at-the-base":
+    case "isosceles-triangle-equal-at-the-base":
       return "shodnost úhlů při zákadně rovnoramenného trojúhelníku";
+    case "isosceles-triangle-at-the-base":
+      return "vrcholový úhel k úhlu při zákadně rovnoramenného trojúhelníku";
+    case "isosceles-triangle-at-the-apex":
+      return "úhel při základně k vrcholovému úhlu rovnoramenného trojúhelníku";    
     case "equilateral-triangle":
       return "shodnost všech úhlů v rovnostranném trojúhelníku";
     case "opposite-in-parallelogram":

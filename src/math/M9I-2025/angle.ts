@@ -1,52 +1,34 @@
-import { cont, contAngle, contTringleAngleSum, ctor, ctorBooleanOption, ctorDifference } from "../../components/math";
-import { anglesNames, connectTo, deduce, last, lastQuantity, toCont } from "../../utils/deduce-utils";
+import { compAngle, cont, contAngle, ctor, ctorBooleanOption } from "../../components/math";
+import { anglesNames, deduce, last, lastQuantity, toCont } from "../../utils/deduce-utils";
 
 
 
-export function desetiuhelnik({ input }: {
-  input: { pocetUhlu: number }
-}) {
-
-
+export function desetiUhelnik() {
   const pocetUhlu = "úhlů"
-  const rovnoramennyTrojLabel = "rovnoramenný trojúhelník";
   const vrcholovyUhelLabel = "vrcholový úhel"
   const celkem = contAngle("desitiúhelník", 360);
-  const pocet = cont("desitiúhelník", input.pocetUhlu, pocetUhlu);
+  const pocet = cont("desitiúhelník", 10, pocetUhlu);
 
   const minUhel = deduce(celkem, pocet, ctor('rate'))
   const alfa = toCont(deduce(minUhel, cont(anglesNames.alpha, 2, pocetUhlu)), { agent: anglesNames.alpha });
 
-  const triangleSum = contTringleAngleSum(rovnoramennyTrojLabel);
-  const uhelRamenaRovnoramennehoTrojuhelniku = (
-    { vrcholovyUhel }: { vrcholovyUhel: any },
-    { uhelRamenoLabel }: { uhelRamenoLabel?: string }) => toCont(deduce(
-      deduce(
-        triangleSum,
-        vrcholovyUhel,
-        ctorDifference('obě ramena')
-      ),
-      cont('obě ramena', 2, pocetUhlu),
-      ctor('rate')), { agent: uhelRamenoLabel ?? 'úhel ramena' }
-    )
 
   const vrcholovyUhel = toCont(
     deduce(last(minUhel), cont(vrcholovyUhelLabel, 3, pocetUhlu)),
     { agent: vrcholovyUhelLabel });
 
-  const beta = connectTo(uhelRamenaRovnoramennehoTrojuhelniku({
-    vrcholovyUhel: last(vrcholovyUhel)
-  },
-    { uhelRamenoLabel: anglesNames.beta }), vrcholovyUhel)
-
-
+  const lastVrcholovyUhel = last(vrcholovyUhel);
+  const beta = deduce(
+    lastVrcholovyUhel,
+    compAngle(lastVrcholovyUhel.agent.join(), anglesNames.beta, "isosceles-triangle-at-the-base")
+  )
 
   const gama = deduce(
     last(alfa),
-    uhelRamenaRovnoramennehoTrojuhelniku({
-      vrcholovyUhel: contAngle(vrcholovyUhelLabel, lastQuantity(minUhel))
-    },
-      { uhelRamenoLabel: anglesNames.gamma }),
+    deduce(
+      contAngle(vrcholovyUhelLabel, lastQuantity(minUhel)),
+      compAngle(vrcholovyUhelLabel, anglesNames.gamma, "isosceles-triangle-at-the-base")
+    )
   )
 
   return [
