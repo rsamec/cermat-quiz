@@ -1,5 +1,5 @@
 import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityPredicate, isRatioPredicate, isRatiosPredicate } from "../components/math.js"
-import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison, Frequency, PredicateKind, PartWholeRatio } from "../components/math.js"
+import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison, PredicateKind, PartWholeRatio } from "../components/math.js"
 import { partionArray } from '../utils/common-utils.js';
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
 import { evaluate, substitute, toEquationExprAsTex, colors } from "./math-solver.js"
@@ -79,8 +79,8 @@ export function toCont(child: TreeNode | Predicate, { agent, entity }: { agent: 
 export function toPercent(child: TreeNode | Predicate, { whole }: { whole: string }): TreeNode {
   return toPredicate(child, mapToPercent({ whole }));
 }
-export function toFrequency(child: TreeNode | Predicate, { agent, entityBase, baseQuantity }: { agent: string, entityBase: { entity: string, unit?: string }, baseQuantity: number }): TreeNode {
-  return toPredicate(child, mapToFrequency({ agent, entityBase, baseQuantity }));
+export function toQuota(child: TreeNode | Predicate, { agent, entityQuota, quotaQuantity }: { agent: string, entityQuota: { entity: string, unit?: string }, quotaQuantity: number }): TreeNode {
+  return toPredicate(child, mapToQuota({ agent: [agent], entityQuota, quotaQuantity }));
 }
 export function toRate(child: TreeNode | Predicate, { agent, entityBase, baseQuantity }: { agent: string[], entityBase: { entity: string, unit?: string }, baseQuantity: number }): TreeNode {
   return toPredicate(child, mapToRate({ agent, entityBase, baseQuantity }));
@@ -136,18 +136,21 @@ function mapToRate({ agent, entityBase, baseQuantity }: { agent: string[], entit
     }
   }
 }
-function mapToFrequency({ agent, entityBase, baseQuantity }: { agent: string, entityBase: { entity: string, unit?: string }, baseQuantity: number }) {
-  return (node: Container): Frequency => {
+function mapToQuota({ agent, entityQuota, quotaQuantity }: { agent: string[], entityQuota: { entity: string, unit?: string }, quotaQuantity: number }) {
+  return (node: Container): Quota => {
     return {
-      kind: 'frequency',
+      kind: 'quota',
       agent,
       quantity: node.quantity,
-      baseQuantity,
+      quotaQuantity,
       entity: {
         entity: node.entity,
         unit: node.unit,
       },
-      entityBase
+      entityQuota,
+      restQuantity: 0,    
+      baseQuantity: 1,
+      moduloType: 'floor'
     }
   }
 }
@@ -658,7 +661,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
     case "quota":
       result = d.entityQuota == null
         ? formatKind(d)
-        : compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? 'po ':`pro každé ${formatQuantity(d.baseQuantity)} ${formatEntity(d.entity.entity, d.entity.unit)} po ` } ${formatQuantity(d.quotaQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity(d.entityQuota.entity, d.entityQuota.unit)}
+        : compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? 'po ' : `pro každé ${formatQuantity(d.baseQuantity)} ${formatEntity(d.entity.entity, d.entity.unit)} po `} ${formatQuantity(d.quotaQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity(d.entityQuota.entity, d.entityQuota.unit)}
          ${isNumber(d.restQuantity)
             ? d.restQuantity !== 0
               ? ` se zbytkem ${formatQuantity(d.restQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity(d.entityQuota.entity, d.entityQuota.unit)}`

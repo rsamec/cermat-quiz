@@ -79,7 +79,7 @@ export function angleEntity(unit: AngleUnitDim = "deg") {
 
 // #region Predicates type guards
 export function isQuantityPredicate(value: Predicate): value is QuantityPredicate {
-  return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "rate-quota", "quota", "delta", "frequency"].includes(value.kind);
+  return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "rate-quota", "quota", "delta"].includes(value.kind);
 }
 
 export function isRatioPredicate(value: Predicate): value is RatioPredicate {
@@ -98,8 +98,8 @@ export function isOperationPredicate(value: Predicate): value is OperationPredic
 function isRatePredicate(value: Predicate): value is Rate {
   return value.kind === "rate";
 }
-function isFrequencyPredicate(value: Predicate): value is Frequency {
-  return value.kind === "frequency";
+function isQuotaPredicate(value: Predicate): value is Quota {
+  return value.kind === "quota";
 }
 // #endregion
 
@@ -254,15 +254,6 @@ export type RestQuantity = {
 export type QuotaQuantity = {
   kind: 'quota-quantity'
   agent: Agent,
-}
-
-export type Frequency = {
-  kind: 'frequency'
-  agent: string,
-  entity: EntityBase,
-  entityBase: EntityBase,
-  quantity: Quantity
-  baseQuantity: Quantity
 }
 
 export type PartWholeRatio = {
@@ -471,7 +462,7 @@ export type FormattingOptions = {
 
 export type EntityDef = string | EntityBase
 
-export type QuantityPredicate = Container | Comparison | ComparisonDiff | Rate | Quota | Frequency | Delta | Transfer
+export type QuantityPredicate = Container | Comparison | ComparisonDiff | Rate | Quota | Delta | Transfer
 export type ComparisonActionPredicate = CompareAndPartEqual | AngleComparison | TriangleAngle | Phytagoras
 export type RatioPredicate = RatioComparison | PartWholeRatio
 export type ComplementActionPredicate = Complement | ComplementCompRatio
@@ -911,9 +902,6 @@ export function nthPartScale(agent): NthPartScale {
 export function rate(agent: string | Agent, quantity: NumberOrVariable, entity: EntityDef, entityBase: EntityDef, baseQuantity: number = 1): Rate {
   return { kind: 'rate', agent: normalizeToAgent(agent), quantity: quantity as NumberOrExpression, baseQuantity, entity: toEntity(entity), entityBase: toEntity(entityBase) }
 }
-export function frequency(agent: string, quantity: number, entity: EntityDef, entityBase: EntityDef, baseQuantity): Frequency {
-  return { kind: 'frequency', agent, quantity, baseQuantity, entity: toEntity(entity), entityBase: toEntity(entityBase) }
-}
 
 export function quota(agent: string | Agent, quantity: number, entity: EntityDef, quotaQuantity: number, entityQuota: EntityDef, restQuantity = 0, baseQuantity = 1): Quota {
   return { kind: 'quota', agent: normalizeToAgent(agent), quantity, quotaQuantity, entity: toEntity(entity), entityQuota: toEntity(entityQuota), restQuantity, baseQuantity, moduloType: 'floor' }
@@ -978,11 +966,16 @@ function inferCompareRule(a: Container | Rate, b: Comparison): Question<Containe
   }
 }
 
-function angleCompareRule(a: Container, b: AngleComparison): Container {
-  //check
-  return { kind: 'cont', agent: equalAgent(a.agent, b.agentB) ? [b.agentA] : [b.agentB], quantity: computeOtherAngle(a, b.relationship), entity: a.entity, unit: a.unit }
+function angleCompareRule(a: Container | Rate, b: AngleComparison): Container {
+  return {
+    kind: 'cont',
+    agent: equalAgent(a.agent, b.agentB) ? [b.agentA] : [b.agentB],
+    quantity: computeOtherAngle(a, b.relationship),
+    entity: toEntity(a.entity).entity,
+    unit: a.kind === "cont" ? a.unit : a.entity.unit,
+  }
 }
-function inferAngleCompareRule(a: Container, b: AngleComparison): Question<Container> {
+function inferAngleCompareRule(a: Container | Rate, b: AngleComparison): Question<Container> {
   const result = angleCompareRule(a, b)
   return {
     name: angleCompareRule.name,
@@ -993,6 +986,8 @@ function inferAngleCompareRule(a: Container, b: AngleComparison): Question<Conta
       ? [
         { tex: `90 - ${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship == "complementary" },
         { tex: `180 - ${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship == "supplementary" || b.relationship == "sameSide" },
+        { tex: `180 - 2 * ${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship == "isosceles-triangle-at-the-apex"},
+        { tex: `(180 - ${a.quantity})/2`, result: formatNumber(result.quantity), ok: b.relationship == "isosceles-triangle-at-the-base"},
         { tex: `${a.quantity}`, result: formatNumber(result.quantity), ok: b.relationship != "supplementary" && b.relationship != "complementary" && b.relationship != "sameSide" },
       ]
       : []
@@ -2151,7 +2146,7 @@ function inferCompareDiffRule(a: Container, b: ComparisonDiff): Question<Contain
   }
 }
 
-function sumRule(items: Container[] | PartWholeRatio[] | Rate[] | RatioComparison[] | Frequency[], b: SumCombine | Sum): Container | PartWholeRatio | Rate | RatioComparison {
+function sumRule(items: Container[] | PartWholeRatio[] | Rate[] | RatioComparison[] | Quota[], b: SumCombine | Sum): Container | PartWholeRatio | Rate | RatioComparison {
   if (items.every(d => isRatioPredicate(d))) {
 
     const bases = items.every(d => d.kind === "ratio") ? items.map(d => d.whole) : items.map(d => d.agentB);
@@ -2167,15 +2162,15 @@ function sumRule(items: Container[] | PartWholeRatio[] | Rate[] | RatioCompariso
       : { kind: 'comp-ratio', agentA: joinAgent(b.wholeAgent), agentB: bases[0], ratio, asPercent: items[0].asPercent }
   }
   else if (items.every(d => isQuantityPredicate(d))) {
-    if (items.every(d => isFrequencyPredicate(d))) {
-      const values = items.map(d => [d.quantity, d.baseQuantity]);
-      const quantity = areTupleNumbers(values) ? values.reduce((out, [q, baseQ]) => out += q * baseQ, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity * x${i + 1}.baseQuantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
+    if (items.every(d => isQuotaPredicate(d))) {
+      const values = items.map(d => [d.quantity, d.quotaQuantity]);
+      const quantity = areTupleNumbers(values) ? values.reduce((out, [q, quotaQ]) => out += q * quotaQ, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity * x${i + 1}.quotaQuantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
       return {
         kind: 'cont',
         agent: normalizeToAgent(b.wholeAgent),
         quantity,
-        entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entityBase.entity,
-        unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].entityBase.unit
+        entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entityQuota.entity,
+        unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].entityQuota.unit
       }
     }
     else {
@@ -2203,7 +2198,7 @@ function sumRule(items: Container[] | PartWholeRatio[] | Rate[] | RatioCompariso
     }
   }
 }
-function inferSumRule(items: Container[] | PartWholeRatio[] | Rate[] | RatioComparison[] | Frequency[], b: SumCombine | Sum): Question<Container | PartWholeRatio | Rate | RatioComparison> {
+function inferSumRule(items: Container[] | PartWholeRatio[] | Rate[] | RatioComparison[] | Quota[], b: SumCombine | Sum): Question<Container | PartWholeRatio | Rate | RatioComparison> {
   const result = sumRule(items, b)
   const isQuantity = isQuantityPredicate(result);
   return {
@@ -2217,7 +2212,7 @@ function inferSumRule(items: Container[] | PartWholeRatio[] | Rate[] | RatioComp
           ? `${computeQuestion(result.ratio)} ${result.part} z ${result.whole}?`
           : `${computeQuestion(result.ratio)} kolikrát ${result.agentA} více nebo méně než ${result.agentB}?`,
     result,
-    options: items.every(d => isFrequencyPredicate(d))
+    options: items.every(d => isQuotaPredicate(d))
       ? []
       : (isQuantity && isNumber(result.quantity)) || (isRatioPredicate(result) && isNumber(result.ratio)) ? [
         {
@@ -3650,10 +3645,10 @@ function inferenceRuleEx(...args: Predicate[]): Question<TruePredicate> {
   else if ((a.kind === "number-fraction-part" || a.kind === "number-decimal-part") && (b.kind === "cont")) {
     return inferSplitDecimalAndFractionPartsRule(b, a);
   }
-  else if (a.kind === "cont" && b.kind === "comp-angle") {
+  else if ((a.kind === "cont" || a.kind === "rate") && b.kind === "comp-angle") {
     return inferAngleCompareRule(a, b);
   }
-  else if (a.kind === "comp-angle" && b.kind === "cont") {
+  else if (a.kind === "comp-angle" && (b.kind === "cont" || b.kind === "rate")) {
     return inferAngleCompareRule(b, a);
   }
   else if (a.kind === "convert-percent" && b.kind === "ratio") {
@@ -4141,7 +4136,7 @@ function ratiosToBaseForm(ratios) {
 // #region Angle utils
 export type AngleRelationship = "complementary" | "supplementary" | "opposite" | "corresponding" | "sameSide" | "alternate" | "alternate-interior" | "alternate-exterior" | "axially-symmetric" | "opposite-in-parallelogram" | "isosceles-triangle-at-the-apex"
   | "isosceles-triangle-at-the-base" | "isosceles-triangle-equal-at-the-base" | "equilateral-triangle";
-function computeOtherAngle(a: Container, relationship: AngleRelationship) {
+function computeOtherAngle(a: QuantityPredicate, relationship: AngleRelationship) {
   const quantity = a.quantity
   switch (relationship) {
     case "complementary":
@@ -4160,9 +4155,9 @@ function computeOtherAngle(a: Container, relationship: AngleRelationship) {
     case "opposite-in-parallelogram":
       return isNumber(quantity) ? quantity : wrapToQuantity(`a.quantity`, { a }); // Equal angles
     case "isosceles-triangle-at-the-apex":
-       return isNumber(quantity) ? 180 - (quantity * 2) : wrapToQuantity(`180 - (a.quantity * 2)`, { a }); // apex compute
+      return isNumber(quantity) ? 180 - (quantity * 2) : wrapToQuantity(`180 - (a.quantity * 2)`, { a }); // apex compute
     case "isosceles-triangle-at-the-base":
-       return isNumber(quantity) ? (180 - quantity) / 2 : wrapToQuantity(`(180 - a.quantity) / 2`, { a }); // base compute
+      return isNumber(quantity) ? (180 - quantity) / 2 : wrapToQuantity(`(180 - a.quantity) / 2`, { a }); // base compute
     default:
       throw "Unknown Angle Relationship";
   }
@@ -4193,7 +4188,7 @@ export function formatAngle(relationship: AngleRelationship) {
     case "isosceles-triangle-at-the-base":
       return "vrcholový úhel k úhlu při zákadně rovnoramenného trojúhelníku";
     case "isosceles-triangle-at-the-apex":
-      return "úhel při základně k vrcholovému úhlu rovnoramenného trojúhelníku";    
+      return "úhel při základně k vrcholovému úhlu rovnoramenného trojúhelníku";
     case "equilateral-triangle":
       return "shodnost všech úhlů v rovnostranném trojúhelníku";
     case "opposite-in-parallelogram":
@@ -4258,7 +4253,7 @@ function singleAgent(a: string | Agent) {
     return a[0];
   }
   else {
-    a
+    return a
   }
 }
 function arrayDiffs(arr1: Agent, arr2: Agent) {
@@ -4304,7 +4299,7 @@ function intersection(...arrays) {
 function complementSingleAgent(a: Agent, arr: Agent[]) {
   if (a.length === 1) return a[0];
   const complements = complementAgent(a, arr.length > 1 ? intersection(...arr) : arr[0]);
-  return singleAgent(complements);
+  return singleAgent(complements.join());
 }
 function equalAgent(f: string | Agent, s: string | Agent) {
   const a = normalizeToAgent(f);

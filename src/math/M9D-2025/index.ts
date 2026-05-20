@@ -1,5 +1,5 @@
 import { commonSense, compRatio, cont, ctor, ctorRatios, ctorUnit, nthPart, rate, ratio, ratios, ctorLinearEquation, ctorOption, sum, contLength, dimensionEntity, comp, ctorComplement, evalExprAsCont, pythagoras, compRelativePercent, ctorDifference, compRelative, ctorRate, triangleArea, doubleProduct, cubeArea, cubeVolume, evalFormulaAsCont, formulaRegistry, tuple, contAngle, compAngle, ctorBooleanOption, contRightAngle, triangleAngle } from "../../components/math";
-import { anglesNames, createLazyMap, deduce, deduceAs, last, to, toCont, toFrequency } from "../../utils/deduce-utils";
+import { anglesNames, createLazyMap, deduce, deduceAs, last, to, toCont, toQuota } from "../../utils/deduce-utils";
 
 export default createLazyMap({
   1: () => stuha(),
@@ -204,9 +204,9 @@ function soutez() {
     prvniKolo: {
       deductionTree: deduce(
         deduce(
-          toFrequency(_8, { agent, entityBase, baseQuantity: 8 }),
-          toFrequency(_9, { agent, entityBase, baseQuantity: 9 }),
-          toFrequency(_10, { agent, entityBase, baseQuantity: 10 }),
+          toQuota(_8, { agent, entityQuota: entityBase, quotaQuantity: 8 }),
+          toQuota(_9, { agent, entityQuota: entityBase, quotaQuantity: 9 }),
+          toQuota(_10, { agent, entityQuota: entityBase, quotaQuantity: 10 }),
           sum("celkem")
         ),
         deduce(

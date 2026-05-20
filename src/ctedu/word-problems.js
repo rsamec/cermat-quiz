@@ -33,7 +33,7 @@ function angleEntity(unit = "deg") {
   };
 }
 function isQuantityPredicate(value) {
-  return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "rate-quota", "quota", "delta", "frequency"].includes(value.kind);
+  return ["cont", "comp", "transfer", "rate", "comp-diff", "transfer", "rate-quota", "quota", "delta"].includes(value.kind);
 }
 function isRatioPredicate(value) {
   return ["ratio", "comp-ratio"].includes(value.kind);
@@ -44,8 +44,8 @@ function isRatiosPredicate(value) {
 function isRatePredicate(value) {
   return value.kind === "rate";
 }
-function isFrequencyPredicate(value) {
-  return value.kind === "frequency";
+function isQuotaPredicate(value) {
+  return value.kind === "quota";
 }
 function ctor(kind) {
   return { kind };
@@ -316,7 +316,13 @@ function inferCompareRule(a, b) {
   };
 }
 function angleCompareRule(a, b) {
-  return { kind: "cont", agent: equalAgent(a.agent, b.agentB) ? [b.agentA] : [b.agentB], quantity: computeOtherAngle(a, b.relationship), entity: a.entity, unit: a.unit };
+  return {
+    kind: "cont",
+    agent: equalAgent(a.agent, b.agentB) ? [b.agentA] : [b.agentB],
+    quantity: computeOtherAngle(a, b.relationship),
+    entity: toEntity(a.entity).entity,
+    unit: a.kind === "cont" ? a.unit : a.entity.unit
+  };
 }
 function inferAngleCompareRule(a, b) {
   const result = angleCompareRule(a, b);
@@ -328,6 +334,8 @@ function inferAngleCompareRule(a, b) {
     options: isNumber(result.quantity) ? [
       { tex: `90 - ${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship == "complementary" },
       { tex: `180 - ${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship == "supplementary" || b.relationship == "sameSide" },
+      { tex: `180 - 2 * ${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship == "isosceles-triangle-at-the-apex" },
+      { tex: `(180 - ${a.quantity})/2`, result: formatNumber(result.quantity), ok: b.relationship == "isosceles-triangle-at-the-base" },
       { tex: `${a.quantity}`, result: formatNumber(result.quantity), ok: b.relationship != "supplementary" && b.relationship != "complementary" && b.relationship != "sameSide" }
     ] : []
   };
@@ -1348,15 +1356,15 @@ function sumRule(items, b) {
     const ratio2 = areNumbers(ratios2) ? ratios2.reduce((out, d) => out += d, 0) : wrapToRatio(items.map((d, i) => `x${i + 1}.quantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
     return items.every((d) => d.kind === "ratio") ? { kind: "ratio", whole: bases[0], ratio: ratio2, part: joinAgent(b.wholeAgent), asPercent: items[0].asPercent } : { kind: "comp-ratio", agentA: joinAgent(b.wholeAgent), agentB: bases[0], ratio: ratio2, asPercent: items[0].asPercent };
   } else if (items.every((d) => isQuantityPredicate(d))) {
-    if (items.every((d) => isFrequencyPredicate(d))) {
-      const values = items.map((d) => [d.quantity, d.baseQuantity]);
-      const quantity = areTupleNumbers(values) ? values.reduce((out, [q, baseQ]) => out += q * baseQ, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity * x${i + 1}.baseQuantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
+    if (items.every((d) => isQuotaPredicate(d))) {
+      const values = items.map((d) => [d.quantity, d.quotaQuantity]);
+      const quantity = areTupleNumbers(values) ? values.reduce((out, [q, quotaQ]) => out += q * quotaQ, 0) : wrapToQuantity(items.map((d, i) => `x${i + 1}.quantity * x${i + 1}.quotaQuantity`).join(" + "), Object.fromEntries(items.map((d, i) => [`x${i + 1}`, d])));
       return {
         kind: "cont",
         agent: normalizeToAgent(b.wholeAgent),
         quantity,
-        entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entityBase.entity,
-        unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].entityBase.unit
+        entity: b.wholeEntity != null ? b.wholeEntity.entity : items[0].entityQuota.entity,
+        unit: b.wholeEntity != null ? b.wholeEntity.unit : items[0].entityQuota.unit
       };
     } else {
       const values = items.map((d) => d.quantity);
@@ -1390,7 +1398,7 @@ function inferSumRule(items, b) {
     inputParameters: extractKinds(...items, b),
     question: result.kind === "cont" ? containerQuestion(result) : result.kind === "rate" ? `${computeQuestion(result.quantity)} ${result.agent}?` : result.kind === "ratio" ? `${computeQuestion(result.ratio)} ${result.part} z ${result.whole}?` : `${computeQuestion(result.ratio)} kolikr\xE1t ${result.agentA} v\xEDce nebo m\xE9n\u011B ne\u017E ${result.agentB}?`,
     result,
-    options: items.every((d) => isFrequencyPredicate(d)) ? [] : isQuantity && isNumber(result.quantity) || isRatioPredicate(result) && isNumber(result.ratio) ? [
+    options: items.every((d) => isQuotaPredicate(d)) ? [] : isQuantity && isNumber(result.quantity) || isRatioPredicate(result) && isNumber(result.ratio) ? [
       {
         tex: items.map((d) => isQuantity ? formatNumber(d.quantity) : formatRatio(d.ratio, d.percent)).join(" + "),
         result: isQuantity ? isNumber(result.quantity) ? formatNumber(result.quantity) : "N/A" : isNumber(result.ratio) ? formatRatio(result.ratio, result.asPercent) : "N/A",
@@ -2610,9 +2618,9 @@ function inferenceRuleEx(...args) {
     return inferSplitDecimalAndFractionPartsRule(a, b);
   } else if ((a.kind === "number-fraction-part" || a.kind === "number-decimal-part") && b.kind === "cont") {
     return inferSplitDecimalAndFractionPartsRule(b, a);
-  } else if (a.kind === "cont" && b.kind === "comp-angle") {
+  } else if ((a.kind === "cont" || a.kind === "rate") && b.kind === "comp-angle") {
     return inferAngleCompareRule(a, b);
-  } else if (a.kind === "comp-angle" && b.kind === "cont") {
+  } else if (a.kind === "comp-angle" && (b.kind === "cont" || b.kind === "rate")) {
     return inferAngleCompareRule(b, a);
   } else if (a.kind === "convert-percent" && b.kind === "ratio") {
     return inferTogglePartWholeAsPercentRule(b);
@@ -2996,7 +3004,7 @@ function singleAgent(a) {
     }
     return a[0];
   } else {
-    a;
+    return a;
   }
 }
 function arrayDiffs(arr1, arr2) {
@@ -3038,7 +3046,7 @@ function complementSingleAgent(a, arr) {
   if (a.length === 1)
     return a[0];
   const complements = complementAgent(a, arr.length > 1 ? intersection(...arr) : arr[0]);
-  return singleAgent(complements);
+  return singleAgent(complements.join());
 }
 function equalAgent(f, s) {
   const a = normalizeToAgent(f);

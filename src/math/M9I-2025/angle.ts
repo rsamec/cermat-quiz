@@ -1,33 +1,31 @@
 import { compAngle, cont, contAngle, ctor, ctorBooleanOption } from "../../components/math";
-import { anglesNames, deduce, last, lastQuantity, toCont } from "../../utils/deduce-utils";
+import { anglesNames, deduce, last } from "../../utils/deduce-utils";
 
 
 
 export function desetiUhelnik() {
-  const pocetUhlu = "úhlů"
+  const pocetUhlu = "úhel"
   const vrcholovyUhelLabel = "vrcholový úhel"
-  const celkem = contAngle("desitiúhelník", 360);
-  const pocet = cont("desitiúhelník", 10, pocetUhlu);
+  const desetiuhelnikAgent = "desitiúhelník"
+  const celkem = contAngle(desetiuhelnikAgent, 360);
+  const pocet = cont(desetiuhelnikAgent, 10, pocetUhlu);
 
   const minUhel = deduce(celkem, pocet, ctor('rate'))
-  const alfa = toCont(deduce(minUhel, cont(anglesNames.alpha, 2, pocetUhlu)), { agent: anglesNames.alpha });
+  const alfa = deduce(minUhel, cont([desetiuhelnikAgent, anglesNames.alpha], 2, pocetUhlu));
 
 
-  const vrcholovyUhel = toCont(
-    deduce(last(minUhel), cont(vrcholovyUhelLabel, 3, pocetUhlu)),
-    { agent: vrcholovyUhelLabel });
+  const vrcholovyUhel = deduce(last(minUhel), cont([desetiuhelnikAgent, vrcholovyUhelLabel], 3, pocetUhlu))
 
-  const lastVrcholovyUhel = last(vrcholovyUhel);
   const beta = deduce(
-    lastVrcholovyUhel,
-    compAngle(lastVrcholovyUhel.agent.join(), anglesNames.beta, "isosceles-triangle-at-the-base")
+    vrcholovyUhel,
+    compAngle(last(vrcholovyUhel).agent.join(), anglesNames.beta, "isosceles-triangle-at-the-base")
   )
 
   const gama = deduce(
     last(alfa),
     deduce(
-      contAngle(vrcholovyUhelLabel, lastQuantity(minUhel)),
-      compAngle(vrcholovyUhelLabel, anglesNames.gamma, "isosceles-triangle-at-the-base")
+      last(minUhel),
+      compAngle(desetiuhelnikAgent, anglesNames.gamma, "isosceles-triangle-at-the-base")
     )
   )
 
