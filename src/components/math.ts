@@ -208,8 +208,9 @@ export type RatioComparison = {
 
 export type ComparisonDiff = EntityBase & {
   kind: "comp-diff"
-  agentMinuend: string,
-  agentSubtrahend: string,
+  minuend: Agent,
+  subtrahend: Agent,
+  difference: Agent
   quantity: Quantity
 }
 
@@ -485,7 +486,7 @@ export type PredicateKind = Pick<Predicate, 'kind'>
 // #endregion
 
 // #region Predicate constructors
-export function ctor(kind: 'ratio' | 'comp-ratio' | 'comp' | 'rate' | 'quota' | "comp-diff" | 'quota-quantity' | 'rest-quantity'
+export function ctor(kind: 'ratio' | 'comp-ratio' | 'comp' | 'rate' | 'quota' | 'quota-quantity' | 'rest-quantity'
   | 'comp-part-eq' | 'sequence' | 'nth' | 'ratios' | 'scale' | 'scale-invert' | 'slide' | 'slide-invert' | 'floor' | 'ceil' | 'invert'
   | 'complement' | 'delta' | 'tuple' | 'number-decimal-part' | 'number-fraction-part' | 'simplify-expr' | 'convert-percent' | 'invert-comp-ratio' | 'reverse' | 'ratios-base') {
   return { kind } as Predicate
@@ -606,6 +607,9 @@ export function ctorComplement(part: AgentMatcher): Complement {
 }
 export function ctorDifference(differenceAgent: AgentMatcher): Difference {
   return { kind: "diff", differenceAgent }
+}
+export function ctorCompDiff(difference: string | Agent): ComparisonDiff {
+  return { kind: 'comp-diff', difference: normalizeToAgent(difference) } as ComparisonDiff
 }
 export function ctorSlide(agent: AgentMatcher): Slide {
   return { kind: "slide", agent }
@@ -744,8 +748,8 @@ export function compRatio(agentA: string, agentB: string, ratio: number): RatioC
 export function compPercent(agentA: string, agentB: string, percent: number): RatioComparison {
   return { kind: 'comp-ratio', agentA, agentB, ratio: percent / 100, asPercent: true }
 }
-export function compDiff(agentMinuend: string, agentSubtrahend: string, quantity: number, entity: string): ComparisonDiff {
-  return { kind: "comp-diff", agentMinuend, agentSubtrahend, quantity, entity }
+export function compDiff({ minuend, subtrahend, difference }: { minuend: string | Agent, subtrahend: string | Agent, difference: string | Agent }, quantity: number, entity: string): ComparisonDiff {
+  return { kind: "comp-diff", minuend: normalizeToAgent(minuend), subtrahend: normalizeToAgent(subtrahend), difference: normalizeToAgent(difference), quantity, entity }
 }
 export function ratio(whole: AgentMatcher, part: AgentMatcher, ratio: number): PartWholeRatio {
   return { kind: 'ratio', whole, part, ratio }
@@ -986,8 +990,8 @@ function inferAngleCompareRule(a: Container | Rate, b: AngleComparison): Questio
       ? [
         { tex: `90 - ${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship == "complementary" },
         { tex: `180 - ${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship == "supplementary" || b.relationship == "sameSide" },
-        { tex: `180 - 2 * ${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship == "isosceles-triangle-at-the-apex"},
-        { tex: `(180 - ${a.quantity})/2`, result: formatNumber(result.quantity), ok: b.relationship == "isosceles-triangle-at-the-base"},
+        { tex: `180 - 2 * ${a.quantity} `, result: formatNumber(result.quantity), ok: b.relationship == "isosceles-triangle-at-the-apex" },
+        { tex: `(180 - ${a.quantity})/2`, result: formatNumber(result.quantity), ok: b.relationship == "isosceles-triangle-at-the-base" },
         { tex: `${a.quantity}`, result: formatNumber(result.quantity), ok: b.relationship != "supplementary" && b.relationship != "complementary" && b.relationship != "sameSide" },
       ]
       : []
@@ -2113,8 +2117,8 @@ function inferToPartWholeRatio(part: Container | Rate | Quota, whole: Container 
 
 
 function compareDiffRule(a: Container, b: ComparisonDiff): Container {
-  if (!(equalAgent(a.agent, b.agentMinuend) || equalAgent(a.agent, b.agentSubtrahend))) {
-    throw `CompareDiff: Mismatch agents ${a.agent} any of ${b.agentMinuend} ${b.agentSubtrahend}`
+  if (!(equalAgent(a.agent, b.minuend) || equalAgent(a.agent, b.subtrahend))) {
+    throw `CompareDiff: Mismatch agents ${a.agent} any of ${b.minuend} ${b.subtrahend}`
   }
   if (a.entity != b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`
@@ -2125,8 +2129,8 @@ function compareDiffRule(a: Container, b: ComparisonDiff): Container {
 
   return {
     kind: 'cont',
-    agent: equalAgent(a.agent, b.agentMinuend) ? [b.agentSubtrahend] : [b.agentMinuend],
-    quantity: equalAgent(a.agent, b.agentMinuend)
+    agent: equalAgent(a.agent, b.minuend) ? b.subtrahend : b.minuend,
+    quantity: equalAgent(a.agent, b.minuend)
       ? minus
       : plus,
     entity: b.entity
@@ -2140,8 +2144,8 @@ function inferCompareDiffRule(a: Container, b: ComparisonDiff): Question<Contain
     question: containerQuestion(result),
     result,
     options: isNumber(a.quantity) && isNumber(b.quantity) ? [
-      { tex: `${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}`, result: formatNumber(a.quantity - b.quantity), ok: equalAgent(a.agent, b.agentMinuend) },
-      { tex: `${formatNumber(a.quantity)} + ${formatNumber(b.quantity)}`, result: formatNumber(a.quantity + b.quantity), ok: !equalAgent(a.agent, b.agentMinuend) }
+      { tex: `${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}`, result: formatNumber(a.quantity - b.quantity), ok: equalAgent(a.agent, b.minuend) },
+      { tex: `${formatNumber(a.quantity)} + ${formatNumber(b.quantity)}`, result: formatNumber(a.quantity + b.quantity), ok: !equalAgent(a.agent, b.minuend) }
     ] : []
   }
 }
@@ -2678,21 +2682,22 @@ function inferCompareToRateRule(a: Comparison, b: Comparison, last?: { agent: Ag
   }
 }
 
-function toCompareDiffRule(a: Container, b: Container): ComparisonDiff {
+function toCompareDiffRule(a: Container, b: Container, c: ComparisonDiff): ComparisonDiff {
   if (a.entity !== b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`
   }
   return {
     kind: "comp-diff",
-    agentMinuend: singleAgent(a.agent),
-    agentSubtrahend: singleAgent(b.agent),
+    minuend: a.agent,
+    subtrahend: b.agent,
+    difference: c.difference,
     quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity - b.quantity : wrapToQuantity(`a.quantity - b.quantity`, { a, b }),
     entity: a.entity
 
   }
 }
-function inferToCompareDiffRule(a: Container, b: Container): Question<ComparisonDiff> {
-  const result = toCompareDiffRule(a, b)
+function inferToCompareDiffRule(a: Container, b: Container, c: ComparisonDiff): Question<ComparisonDiff> {
+  const result = toCompareDiffRule(a, b, c)
   return {
     name: toCompareDiffRule.name,
     inputParameters: extractKinds(a, b),
@@ -3362,7 +3367,9 @@ function partEqualRule(a: Comparison, b: Container) {
   if (!isNumber(a.quantity)) {
     throw "partEqual are not supported by non quantity types"
   }
-  const diff = compDiff(singleAgent(b.agent), a.quantity > 0 ? a.agentB : a.agentA, abs(a.quantity), a.entity);
+  const subtrahend = a.quantity > 0 ? a.agentB : a.agentA;
+  const difference = a.quantity > 0 ? a.agentA : a.agentB;
+  const diff = compDiff({ minuend: b.agent, subtrahend, difference }, abs(a.quantity), a.entity);
   const rest = compareDiffRule(b, diff);
   if (!isNumber(rest.quantity)) {
     throw "partEqual are not supported by non quantity types"
@@ -3376,7 +3383,9 @@ function inferPartEqualRule(a: Comparison, b: Container): Question<Container> {
   if (!isNumber(a.quantity)) {
     throw "partEqual are not supported by non quantity types"
   }
-  const diff = compDiff(singleAgent(b.agent), a.quantity > 0 ? a.agentB : a.agentA, abs(a.quantity), a.entity);
+  const subtrahend = a.quantity > 0 ? a.agentB : a.agentA;
+  const difference = a.quantity > 0 ? a.agentA : a.agentB;
+  const diff = compDiff({ minuend: b.agent, subtrahend, difference }, abs(a.quantity), a.entity);
   const result = partEqualRule(a, b)
   return {
     name: partEqualRule.name,
@@ -3384,8 +3393,8 @@ function inferPartEqualRule(a: Comparison, b: Container): Question<Container> {
     question: containerQuestion(result),
     result,
     options: isNumber(b.quantity) && isNumber(a.quantity) && isNumber(diff.quantity) ? [
-      { tex: `(${formatNumber(b.quantity)} - ${formatNumber(diff.quantity)}) / 2`, result: formatNumber((b.quantity - diff.quantity) / 2), ok: equalAgent(b.agent, diff.agentMinuend) },
-      { tex: `(${formatNumber(b.quantity)} + ${formatNumber(diff.quantity)}) / 2`, result: formatNumber((b.quantity + diff.quantity) / 2), ok: !equalAgent(b.agent, diff.agentMinuend) }
+      { tex: `(${formatNumber(b.quantity)} - ${formatNumber(diff.quantity)}) / 2`, result: formatNumber((b.quantity - diff.quantity) / 2), ok: equalAgent(b.agent, diff.minuend) },
+      { tex: `(${formatNumber(b.quantity)} + ${formatNumber(diff.quantity)}) / 2`, result: formatNumber((b.quantity + diff.quantity) / 2), ok: !equalAgent(b.agent, diff.minuend) }
     ] : []
   }
 
@@ -3560,7 +3569,7 @@ function inferenceRuleEx(...args: Predicate[]): Question<TruePredicate> {
     }
   }
   else if (a.kind === "cont" && b.kind == "cont") {
-    if (kind === "comp-diff") return inferToCompareDiffRule(a, b)
+    if (kind === "comp-diff") return inferToCompareDiffRule(a, b, last)
     if (kind === "scale" || kind === "scale-invert") return inferToScaleRule(a, b, last)
     if (kind === "slide" || kind === "slide-invert") return infetToSlideRule(a, b, last)
     if (kind === "diff") return inferToDifferenceRule(a, b, last)

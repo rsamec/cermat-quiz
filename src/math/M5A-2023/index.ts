@@ -1,4 +1,4 @@
-import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, lcd, rate, sum, counter, product, ctorScale, ctorScaleInvert, ratios, ctorDifference, contLength, dimensionEntity, cuboidVolume } from "../../components/math";
+import { commonSense, cont, ctor, ctorBooleanOption, ctorOption, lcd, rate, sum, counter, product, ctorScale, ctorScaleInvert, ratios, ctorDifference, contLength, dimensionEntity, cuboidVolume, ctorCompDiff } from "../../components/math";
 import { axiomInput, createLazyMap, deduce, last, to } from "../../utils/deduce-utils";
 import { comparingValues } from "../comparing-values";
 import { compass } from "../compass";
@@ -207,7 +207,7 @@ function desitiuhelnik() {
           deduce(
             last(triangleWidth),
             last(squareSize),
-            ctor('comp-diff')
+            ctorCompDiff('rozdíl')
           ),
           sum("obvod")
         ),

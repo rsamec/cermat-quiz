@@ -14,6 +14,8 @@ export default function build({ input }: {
   const skupinaEN = "angličtina celkem"
   const skupinaDE = "němčina"
 
+  const skupinaChlapciEN = "angličtina chlapci"
+
   const celkemAgent = "chlapců celkem"
   const entityChlapci = "chlapci"
   const entityDivky = "dívky"
@@ -21,7 +23,7 @@ export default function build({ input }: {
 
 
   const chlapci = axiomInput(cont(celkemAgent, input.chlapci, entityChlapci), 1);
-  const chlapciDiff = axiomInput(compDiff(celkemAgent, skupinaDE, input.anglictinaChlapci, entityChlapci), 2)
+  const chlapciDiff = axiomInput(compDiff({minuend:celkemAgent, subtrahend:skupinaDE, difference: skupinaChlapciEN}, input.anglictinaChlapci, entityChlapci), 2)
   const de = axiomInput(cont(skupinaDE, input.nemcinaDivky, entityDivky), 3);
 
 
@@ -41,7 +43,7 @@ export default function build({ input }: {
         commonSense("angličtina a němčina - stejný počet žáků"),
         cont(skupinaEN, (input.chlapci - input.anglictinaChlapci) + input.nemcinaDivky, entity)
       ),
-      compDiff(skupinaEN, entityDivky, input.anglictinaChlapci, entity)
+      compDiff({minuend:skupinaEN, subtrahend:entityDivky, difference: skupinaChlapciEN }, input.anglictinaChlapci, entity)
     )
 
 

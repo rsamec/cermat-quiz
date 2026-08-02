@@ -68,7 +68,7 @@ function prevody() {
               ),
               ratio("kilogram", "1/5 kilogramu", 1 / 5)
             ),
-            node => ({ kind: 'comp-diff', quantity: node.quantity, agentMinuend: "hledané číslo", agentSubtrahend: "3 kg", entity: entityHmotnost, unit: "g" })
+            node => ({ kind: 'comp-diff', quantity: node.quantity, minuend: ["hledané číslo"], subtrahend: ["3 kg"], difference: ['rozdíl'], entity: entityHmotnost, unit: "g" })
           )
         ),
         counter("zmenšení", 4),

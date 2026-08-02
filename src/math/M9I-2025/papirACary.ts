@@ -14,7 +14,7 @@ export function caryNaPapire({ input }: { input: InputParameters }) {
   const emptyEntity = ""
 
 
-  const diff = compDiff(usekLabel, separatorLabel, 1, emptyEntity);
+  const diff = compDiff({ minuend: usekLabel, subtrahend: separatorLabel, difference: "rozdíl" }, 1, emptyEntity);
 
 
   const dvojice = to(

@@ -1,5 +1,5 @@
 
-import { type Predicate, type Pattern, cont, ratio, comp, rate, ratios, compRatio, compDiff, lcd, gcd, ctor, inferenceRule, nth, quota, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont, counter, sum, product, squareNumbersPattern, triangularNumbersPattern, oblongNumbers, halfProduct, dimensionEntity, cuboidVolume, circleArea, contAngle, ctorQuota, ctorRestQuantity, ctorQuotaQuantity, ctorRateQuota } from "../components/math.js";
+import { type Predicate, type Pattern, cont, ratio, comp, rate, ratios, compRatio, compDiff, lcd, gcd, ctor, inferenceRule, nth, quota, ctorRatios, ctorUnit, transfer, compAngle, ctorComplement, delta, evalExprAsCont, counter, sum, product, squareNumbersPattern, triangularNumbersPattern, oblongNumbers, halfProduct, dimensionEntity, cuboidVolume, circleArea, contAngle, ctorQuota, ctorRestQuantity, ctorQuotaQuantity, ctorRateQuota, ctorCompDiff } from "../components/math.js";
 import { anglesNames } from "./deduce-utils.js";
 
 export default function rules() {
@@ -103,9 +103,9 @@ export default function rules() {
     ],
 
     substract: [
-      deduceRule(cont("dohromady", 8, "sešity"), b, ctor('comp-diff')),
-      deduceRule(cont("dohromady", 8, "sešity"), compDiff("dohromady", "Honzík", 2, "sešity")),
-      deduceRule(b, compDiff("dohromady", "Honzík", 2, "sešity"))
+      deduceRule(cont("dohromady", 8, "sešity"), b, ctorCompDiff('Ája')),
+      deduceRule(cont("dohromady", 8, "sešity"), compDiff({minuend: "dohromady", subtrahend: "Honzík", difference: "Ája"}, 2, "sešity")),
+      deduceRule(b, compDiff({minuend:"dohromady", subtrahend: "Honzík", difference: "Ája"}, 2, "sešity"))
     ],
     sum: [
       deduceRule(a, b, cont("Pepa", 4, "sešity"), sum("dohromady")),

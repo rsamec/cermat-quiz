@@ -50,7 +50,7 @@ function houskyARohliky() {
             houskaRate,
             cont(houskaLabel, 2, entity),
         ),
-        compDiff(houskaLabel, rohlikLabel, 6, cena)
+        compDiff({ minuend: houskaLabel, subtrahend: rohlikLabel, difference: "zbytek" }, 6, cena)
     );
     const rohlikRate = deduce(
         last(triRohliky),

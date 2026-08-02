@@ -129,14 +129,14 @@ function farmar() {
         deduce(
             deduce(
                 deduce(
-                    compDiff(["sklizeno", "malé"].join(), ["prodané", "malé"].join(), 1, entityBase),
+                    compDiff({ minuend: ["sklizeno", "malé"], subtrahend: ["prodané", "malé"], difference: ["neprodáno", "malé"] }, 1, entityBase),
                     male
                 ),
                 malaRate,
             ),
             deduce(
                 deduce(
-                    compDiff(["sklizeno", "střední"].join(), ["prodané", "střední"].join(), 1, entityBase),
+                    compDiff({ minuend: ["sklizeno", "střední"], subtrahend: ["prodané", "střední"], difference: ["neprodáno","střední"] }, 1, entityBase),
                     stredni,
                 ),
                 deduce(

@@ -19,7 +19,7 @@ export function plnaKrabice({ input }: { input: InputParameters }) {
   const missingVyrobkyPocet = axiomInput(cont(missingVyrobkyLabel, input.missingVyrobku, vyrobekEntity), 2);
 
   const triKrabice = axiomInput(cont(triKrabiceABezPetiLabel, 2000, entity), 3);
-  const rozdil = axiomInput(compDiff(triKrabiceABezPetiLabel, plnaKrabiceLabel, 480, entity), 4)
+  const rozdil = axiomInput(compDiff({ minuend: triKrabiceABezPetiLabel, subtrahend: plnaKrabiceLabel, difference: "rozdíl" }, 480, entity), 4)
 
   const krabiceRate = deduce(
     deduce(triKrabice, rozdil),

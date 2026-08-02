@@ -14,7 +14,7 @@ export default createLazyMap({
     11: () => obchod(),
     12: () => knizniSerie(),
     13: () => brambory(),
-    14: () => uhly(),
+    // 14: () => uhly(),
     15.1: () => jablka().stejnaMnozstvi,
     15.2: () => jablka().jenLevnejsi,
     15.3: () => jablka().nejviceKilogramu,

@@ -139,6 +139,9 @@ function ctorComplement(part) {
 function ctorDifference(differenceAgent) {
   return { kind: "diff", differenceAgent };
 }
+function ctorCompDiff(difference) {
+  return { kind: "comp-diff", difference: normalizeToAgent(difference) };
+}
 function ctorSlide(agent) {
   return { kind: "slide", agent };
 }
@@ -258,8 +261,8 @@ function compRatio(agentA, agentB, ratio3) {
 function compPercent(agentA, agentB, percent2) {
   return { kind: "comp-ratio", agentA, agentB, ratio: percent2 / 100, asPercent: true };
 }
-function compDiff(agentMinuend, agentSubtrahend, quantity, entity3) {
-  return { kind: "comp-diff", agentMinuend, agentSubtrahend, quantity, entity: entity3 };
+function compDiff({ minuend, subtrahend, difference }, quantity, entity3) {
+  return { kind: "comp-diff", minuend: normalizeToAgent(minuend), subtrahend: normalizeToAgent(subtrahend), difference: normalizeToAgent(difference), quantity, entity: entity3 };
 }
 function ratio(whole, part, ratio3) {
   return { kind: "ratio", whole, part, ratio: ratio3 };
@@ -1434,8 +1437,8 @@ function inferToPartWholeRatio(part, whole, last2) {
   };
 }
 function compareDiffRule(a, b) {
-  if (!(equalAgent(a.agent, b.agentMinuend) || equalAgent(a.agent, b.agentSubtrahend))) {
-    throw `CompareDiff: Mismatch agents ${a.agent} any of ${b.agentMinuend} ${b.agentSubtrahend}`;
+  if (!(equalAgent(a.agent, b.minuend) || equalAgent(a.agent, b.subtrahend))) {
+    throw `CompareDiff: Mismatch agents ${a.agent} any of ${b.minuend} ${b.subtrahend}`;
   }
   if (a.entity != b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`;
@@ -1444,8 +1447,8 @@ function compareDiffRule(a, b) {
   const minus = isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity - b.quantity : wrapToQuantity(`a.quantity - b.quantity`, { a, b });
   return {
     kind: "cont",
-    agent: equalAgent(a.agent, b.agentMinuend) ? [b.agentSubtrahend] : [b.agentMinuend],
-    quantity: equalAgent(a.agent, b.agentMinuend) ? minus : plus,
+    agent: equalAgent(a.agent, b.minuend) ? b.subtrahend : b.minuend,
+    quantity: equalAgent(a.agent, b.minuend) ? minus : plus,
     entity: b.entity
   };
 }
@@ -1457,8 +1460,8 @@ function inferCompareDiffRule(a, b) {
     question: containerQuestion(result),
     result,
     options: isNumber(a.quantity) && isNumber(b.quantity) ? [
-      { tex: `${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}`, result: formatNumber(a.quantity - b.quantity), ok: equalAgent(a.agent, b.agentMinuend) },
-      { tex: `${formatNumber(a.quantity)} + ${formatNumber(b.quantity)}`, result: formatNumber(a.quantity + b.quantity), ok: !equalAgent(a.agent, b.agentMinuend) }
+      { tex: `${formatNumber(a.quantity)} - ${formatNumber(b.quantity)}`, result: formatNumber(a.quantity - b.quantity), ok: equalAgent(a.agent, b.minuend) },
+      { tex: `${formatNumber(a.quantity)} + ${formatNumber(b.quantity)}`, result: formatNumber(a.quantity + b.quantity), ok: !equalAgent(a.agent, b.minuend) }
     ] : []
   };
 }
@@ -1861,7 +1864,7 @@ function inferConvertPercentRule(a) {
     ] : []
   };
 }
-function toRatioCompareRule(a, b, ctor2) {
+function toRatioCompareRule(a, b, ctor3) {
   if (equalAgent(b.agent, a.agent) && b.entity != a.entity && a.kind === "cont" && b.kind === "cont") {
     b = toGenerAgent(b);
     a = toGenerAgent(a);
@@ -1875,16 +1878,16 @@ function toRatioCompareRule(a, b, ctor2) {
     agentB: singleAgent(bAgent),
     agentA: singleAgent(aAgent),
     ratio: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity / b.quantity : wrapToRatio(`a.quantity / b.quantity`, { a, b }),
-    ...ctor2.asPercent && { asPercent: true }
+    ...ctor3.asPercent && { asPercent: true }
   };
 }
-function inferToRatioCompareRule(a, b, ctor2) {
-  const result = toRatioCompareRule(a, b, ctor2);
+function inferToRatioCompareRule(a, b, ctor3) {
+  const result = toRatioCompareRule(a, b, ctor3);
   if (isNumber(result.ratio) && isNumber(a.quantity) && isNumber(b.quantity)) {
     const between = result.ratio > 1 / 2 && result.ratio < 2;
     return {
       name: toRatioCompareRule.name,
-      inputParameters: extractKinds(a, b, ctor2),
+      inputParameters: extractKinds(a, b, ctor3),
       question: `Porovnej ${result.agentA} a ${result.agentB}.${between ? `O kolik z ${result.agentB}?` : `Kolikr\xE1t ${result.ratio < 1 ? "men\u0161\xED" : "v\u011Bt\u0161\xED"}?`}`,
       result,
       options: between ? [
@@ -1896,7 +1899,7 @@ function inferToRatioCompareRule(a, b, ctor2) {
       ]
     };
   } else {
-    return resultAsQuestion(result, { name: toRatioCompareRule.name, inputParameters: extractKinds(a, b, ctor2) });
+    return resultAsQuestion(result, { name: toRatioCompareRule.name, inputParameters: extractKinds(a, b, ctor3) });
   }
 }
 function compareToRateRule(a, b, last2) {
@@ -1922,20 +1925,21 @@ function inferCompareToRateRule(a, b, last2) {
     ] : []
   };
 }
-function toCompareDiffRule(a, b) {
+function toCompareDiffRule(a, b, c) {
   if (a.entity !== b.entity) {
     throw `Mismatch entity ${a.entity}, ${b.entity}`;
   }
   return {
     kind: "comp-diff",
-    agentMinuend: singleAgent(a.agent),
-    agentSubtrahend: singleAgent(b.agent),
+    minuend: a.agent,
+    subtrahend: b.agent,
+    difference: c.difference,
     quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity - b.quantity : wrapToQuantity(`a.quantity - b.quantity`, { a, b }),
     entity: a.entity
   };
 }
-function inferToCompareDiffRule(a, b) {
-  const result = toCompareDiffRule(a, b);
+function inferToCompareDiffRule(a, b, c) {
+  const result = toCompareDiffRule(a, b, c);
   return {
     name: toCompareDiffRule.name,
     inputParameters: extractKinds(a, b),
@@ -2487,7 +2491,9 @@ function partEqualRule(a, b) {
   if (!isNumber(a.quantity)) {
     throw "partEqual are not supported by non quantity types";
   }
-  const diff = compDiff(singleAgent(b.agent), a.quantity > 0 ? a.agentB : a.agentA, abs(a.quantity), a.entity);
+  const subtrahend = a.quantity > 0 ? a.agentB : a.agentA;
+  const difference = a.quantity > 0 ? a.agentA : a.agentB;
+  const diff = compDiff({ minuend: b.agent, subtrahend, difference }, abs(a.quantity), a.entity);
   const rest = compareDiffRule(b, diff);
   if (!isNumber(rest.quantity)) {
     throw "partEqual are not supported by non quantity types";
@@ -2501,7 +2507,9 @@ function inferPartEqualRule(a, b) {
   if (!isNumber(a.quantity)) {
     throw "partEqual are not supported by non quantity types";
   }
-  const diff = compDiff(singleAgent(b.agent), a.quantity > 0 ? a.agentB : a.agentA, abs(a.quantity), a.entity);
+  const subtrahend = a.quantity > 0 ? a.agentB : a.agentA;
+  const difference = a.quantity > 0 ? a.agentA : a.agentB;
+  const diff = compDiff({ minuend: b.agent, subtrahend, difference }, abs(a.quantity), a.entity);
   const result = partEqualRule(a, b);
   return {
     name: partEqualRule.name,
@@ -2509,8 +2517,8 @@ function inferPartEqualRule(a, b) {
     question: containerQuestion(result),
     result,
     options: isNumber(b.quantity) && isNumber(a.quantity) && isNumber(diff.quantity) ? [
-      { tex: `(${formatNumber(b.quantity)} - ${formatNumber(diff.quantity)}) / 2`, result: formatNumber((b.quantity - diff.quantity) / 2), ok: equalAgent(b.agent, diff.agentMinuend) },
-      { tex: `(${formatNumber(b.quantity)} + ${formatNumber(diff.quantity)}) / 2`, result: formatNumber((b.quantity + diff.quantity) / 2), ok: !equalAgent(b.agent, diff.agentMinuend) }
+      { tex: `(${formatNumber(b.quantity)} - ${formatNumber(diff.quantity)}) / 2`, result: formatNumber((b.quantity - diff.quantity) / 2), ok: equalAgent(b.agent, diff.minuend) },
+      { tex: `(${formatNumber(b.quantity)} + ${formatNumber(diff.quantity)}) / 2`, result: formatNumber((b.quantity + diff.quantity) / 2), ok: !equalAgent(b.agent, diff.minuend) }
     ] : []
   };
 }
@@ -2657,7 +2665,7 @@ function inferenceRuleEx(...args) {
     }
   } else if (a.kind === "cont" && b.kind == "cont") {
     if (kind === "comp-diff")
-      return inferToCompareDiffRule(a, b);
+      return inferToCompareDiffRule(a, b, last2);
     if (kind === "scale" || kind === "scale-invert")
       return inferToScaleRule(a, b, last2);
     if (kind === "slide" || kind === "slide-invert")
@@ -7607,9 +7615,6 @@ function formatPredicate(d, formatting) {
     case "cont":
       result = compose`${formatAgent(d.agent)}=${d.asRatio ? formatRatio2(d.quantity) : formatQuantity(d.quantity)}${d.entity != "" ? " " : ""}${formatEntity2(d.entity, d.unit)}`;
       break;
-    case "frequency":
-      result = compose`${formatAgent(d.agent)}=${formatQuantity(d.quantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} po ${formatQuantity(d.baseQuantity)}${d.entityBase.entity != "" ? " " : ""}${formatEntity2(d.entityBase.entity, d.entityBase.unit)}`;
-      break;
     case "comp":
       if (isNumber(d.quantity)) {
         result = d.quantity === 0 ? compose`${formatAgent(d.agentA)} je rovno ${formatAgent(d.agentB)}` : compose`${formatAgent(d.agentA)} ${d.quantity > 0 ? "v\xEDce" : "m\xE9n\u011B"} než ${formatAgent(d.agentB)} o ${formatQuantity(Math.abs(d.quantity))}${d.entity != "" ? " " : ""}${formatEntity2(d.entity, d.unit)}`;
@@ -7636,7 +7641,7 @@ function formatPredicate(d, formatting) {
       }
       break;
     case "comp-diff":
-      result = compose`${formatAgent(d.agentMinuend)} - ${formatAgent(d.agentSubtrahend)}=${formatQuantity(d.quantity)}${d.entity != "" ? " " : ""}${formatEntity2(d.entity, d.unit)}`;
+      result = compose`${formatAgent(d.difference)}=${formatQuantity(d.quantity)}${d.entity != "" ? " " : ""}${formatEntity2(d.entity, d.unit)}`;
       break;
     case "ratio":
       result = compose`${formatAgent(d.part)} z ${formatAgent(d.whole)}=${formatRatio2(d.ratio, d.asPercent)}`;
@@ -8278,7 +8283,7 @@ function example_12() {
           rectangleWidth,
           deduce(
             last(rectangleWidth),
-            compDiff(rectangleWidthLabel, "v\xFD\u0161ka obdeln\xEDku", 3, dim2.length.entity)
+            compDiff({ minuend: rectangleWidthLabel, subtrahend: "v\xFD\u0161ka obdeln\xEDku", difference: "rozd\xEDl" }, 3, dim2.length.entity)
           ),
           rectangleArea("obdeln\xEDk")
         ),
@@ -8287,7 +8292,7 @@ function example_12() {
             triangleHeight,
             deduce(
               last(rectangleWidth),
-              compDiff(rectangleWidthLabel, "z\xE1kladna \u0161ed\xE9ho troj\xFAheln\xEDku", 1, dim2.length.entity)
+              compDiff({ minuend: rectangleWidthLabel, subtrahend: "z\xE1kladna \u0161ed\xE9ho troj\xFAheln\xEDku", difference: "rozd\xEDl" }, 1, dim2.length.entity)
             ),
             triangleArea("\u0161ed\xFD troj\xFAheln\xEDku")
           ),
@@ -8346,7 +8351,7 @@ function example_15_3() {
           deduce(
             deduce(
               obec,
-              compDiff("obec", "zb\xFDvaj\xEDc\xED dosp\u011Bl\xFD", 500, entity3)
+              compDiff({ minuend: "obec", subtrahend: "zb\xFDvaj\xEDc\xED dosp\u011Bl\xFD", difference: "rozd\xEDl" }, 500, entity3)
             ),
             axiomInput(percent("zb\xFDvaj\xEDc\xED dosp\u011Bl\xFD", "p\u0159i\u0161lo 2.den", 70), 3)
           ),
@@ -10376,14 +10381,14 @@ function farmar() {
     deduce(
       deduce(
         deduce(
-          compDiff(["sklizeno", "mal\xE9"].join(), ["prodan\xE9", "mal\xE9"].join(), 1, entityBase),
+          compDiff({ minuend: ["sklizeno", "mal\xE9"], subtrahend: ["prodan\xE9", "mal\xE9"], difference: ["neprod\xE1no", "mal\xE9"] }, 1, entityBase),
           male
         ),
         malaRate
       ),
       deduce(
         deduce(
-          compDiff(["sklizeno", "st\u0159edn\xED"].join(), ["prodan\xE9", "st\u0159edn\xED"].join(), 1, entityBase),
+          compDiff({ minuend: ["sklizeno", "st\u0159edn\xED"], subtrahend: ["prodan\xE9", "st\u0159edn\xED"], difference: ["neprod\xE1no", "st\u0159edn\xED"] }, 1, entityBase),
           stredni
         ),
         deduce(
@@ -10936,7 +10941,7 @@ function desitiuhelnik() {
           deduce(
             last(triangleWidth),
             last(squareSize),
-            ctor("comp-diff")
+            ctorCompDiff("rozd\xEDl")
           ),
           sum("obvod")
         ),
@@ -11997,7 +12002,7 @@ function prevody() {
               ),
               ratio("kilogram", "1/5 kilogramu", 1 / 5)
             ),
-            (node) => ({ kind: "comp-diff", quantity: node.quantity, agentMinuend: "hledan\xE9 \u010D\xEDslo", agentSubtrahend: "3 kg", entity: entityHmotnost, unit: "g" })
+            (node) => ({ kind: "comp-diff", quantity: node.quantity, minuend: ["hledan\xE9 \u010D\xEDslo"], subtrahend: ["3 kg"], difference: ["rozd\xEDl"], entity: entityHmotnost, unit: "g" })
           )
         ),
         counter("zmen\u0161en\xED", 4),
@@ -14076,7 +14081,7 @@ function rozdilUhlu({ input }) {
         triangleAngle(anglesNames.gamma)
       ),
       last(alfa),
-      ctor("comp-diff")
+      ctorCompDiff()
     ),
     ctorOption("B", 11)
   );
@@ -14381,12 +14386,13 @@ function build9({ input }) {
 function build10({ input }) {
   const skupinaEN = "angli\u010Dtina celkem";
   const skupinaDE = "n\u011Bm\u010Dina";
+  const skupinaChlapciEN = "angli\u010Dtina chlapci";
   const celkemAgent = "chlapc\u016F celkem";
   const entityChlapci = "chlapci";
   const entityDivky = "d\xEDvky";
   const entity3 = "";
   const chlapci = axiomInput(cont(celkemAgent, input.chlapci, entityChlapci), 1);
-  const chlapciDiff = axiomInput(compDiff(celkemAgent, skupinaDE, input.anglictinaChlapci, entityChlapci), 2);
+  const chlapciDiff = axiomInput(compDiff({ minuend: celkemAgent, subtrahend: skupinaDE, difference: skupinaChlapciEN }, input.anglictinaChlapci, entityChlapci), 2);
   const de = axiomInput(cont(skupinaDE, input.nemcinaDivky, entityDivky), 3);
   const dBase = deduce(
     deduce(
@@ -14402,7 +14408,7 @@ function build10({ input }) {
       commonSense("angli\u010Dtina a n\u011Bm\u010Dina - stejn\xFD po\u010Det \u017E\xE1k\u016F"),
       cont(skupinaEN, input.chlapci - input.anglictinaChlapci + input.nemcinaDivky, entity3)
     ),
-    compDiff(skupinaEN, entityDivky, input.anglictinaChlapci, entity3)
+    compDiff({ minuend: skupinaEN, subtrahend: entityDivky, difference: skupinaChlapciEN }, input.anglictinaChlapci, entity3)
   );
   const dTree2 = to(
     dBase,
@@ -15297,7 +15303,7 @@ var M9D_2024_default = createLazyMap({
   11: () => obchod2(),
   12: () => knizniSerie(),
   13: () => brambory(),
-  14: () => uhly5(),
+  // 14: () => uhly(),
   15.1: () => jablka().stejnaMnozstvi,
   15.2: () => jablka().jenLevnejsi,
   15.3: () => jablka().nejviceKilogramu,
@@ -15305,38 +15311,6 @@ var M9D_2024_default = createLazyMap({
   16.2: () => procenta7().zlomky,
   16.3: () => procenta7().cerpadla
 });
-function uhly5() {
-  const pravyUhly = contRightAngle();
-  const suma = deduce(
-    deduce(
-      contAngle("zadan\xFD", 126.5),
-      compAngle("zadan\xFD", anglesNames.gamma, "supplementary")
-    ),
-    deduce(
-      pravyUhly,
-      compAngle(rightAngleAgent, [anglesNames.alpha, anglesNames.beta].join(" a "), "supplementary")
-    ),
-    sum("celkem")
-  );
-  return {
-    deductionTree: deduce(
-      deduce(
-        suma,
-        ctor("number-decimal-part")
-      ),
-      deduce(
-        deduce(
-          last(suma),
-          ctor("number-fraction-part")
-        ),
-        ctorUnit("arcmin")
-      ),
-      ctor("tuple")
-    )
-    //     ctorOption("C", [143, 30])
-    // )
-  };
-}
 function trasa() {
   const dim2 = dimensionEntity();
   const baseEntity = "krok";
@@ -15803,7 +15777,7 @@ function plnaKrabice({ input }) {
   const plnaKrabiceVyrobkuPocet = axiomInput(cont(plnaKrabiceLabel, input.pocetKusuVKrabice, vyrobekEntity), 1);
   const missingVyrobkyPocet = axiomInput(cont(missingVyrobkyLabel, input.missingVyrobku, vyrobekEntity), 2);
   const triKrabice = axiomInput(cont(triKrabiceABezPetiLabel, 2e3, entity3), 3);
-  const rozdil = axiomInput(compDiff(triKrabiceABezPetiLabel, plnaKrabiceLabel, 480, entity3), 4);
+  const rozdil = axiomInput(compDiff({ minuend: triKrabiceABezPetiLabel, subtrahend: plnaKrabiceLabel, difference: "rozd\xEDl" }, 480, entity3), 4);
   const krabiceRate = deduce(
     deduce(triKrabice, rozdil),
     cont(plnaKrabiceLabel, 2, vyrobekEntity),
@@ -16027,7 +16001,7 @@ function caryNaPapire({ input }) {
   const separatorLabel = "po\u010Det \u010Dar";
   const pocetCasti = axiomInput(cont("po\u010Det \u010D\xE1st\xED", input.pocetCasti, entity3), 1);
   const emptyEntity = "";
-  const diff = compDiff(usekLabel, separatorLabel, 1, emptyEntity);
+  const diff = compDiff({ minuend: usekLabel, subtrahend: separatorLabel, difference: "rozd\xEDl" }, 1, emptyEntity);
   const dvojice = to(
     pocetCasti,
     primeFactors([input.pocetCasti]),
@@ -16090,9 +16064,9 @@ var M9A_2025_default = createLazyMap({
   5.2: () => pozemek2().rozlohaVolnyPozemek,
   6.1: () => sud2().vzestupObjem,
   6.2: () => sud2().vzestupVyska,
-  7.1: () => uhly6().alfa,
-  7.2: () => uhly6().beta,
-  7.3: () => uhly6().gamma,
+  7.1: () => uhly5().alfa,
+  7.2: () => uhly5().beta,
+  7.3: () => uhly5().gamma,
   8.1: () => zahon3().obvod,
   8.2: () => zahon3().rozdilPocetRostlin,
   8.3: () => zahon3().nejmensiPocetCerveneKvetoucich,
@@ -16168,7 +16142,7 @@ function sud2() {
     }
   };
 }
-function uhly6() {
+function uhly5() {
   const angleLabel = "zadan\xFD";
   const angle1 = contAngle(angleLabel, 30);
   const angle2 = contAngle(angleLabel, 130);
@@ -16805,12 +16779,12 @@ var M9C_2025_default = createLazyMap({
   11.3: () => rodinnyDum().c,
   12: () => hriste(),
   13: () => krychle2(),
-  14: () => uhly7(),
+  14: () => uhly6(),
   15.1: () => kbelik(),
   15.2: () => hrnciri(),
   15.3: () => rybiz()
 });
-function uhly7() {
+function uhly6() {
   const zadanyUhel = contAngle("XAo~1~", 22, "deg");
   const zadanyUhelStred = contAngle("ASo~2~", 62, "deg");
   const osoveSymetrnyUhel = deduce(
@@ -17183,9 +17157,9 @@ var M9D_2025_default = createLazyMap({
   8.2: () => ctverec().obvod,
   7.1: () => soutez2().prvniKolo,
   7.2: () => soutez2().druheKolo,
-  11.1: () => uhly8().a,
-  11.2: () => uhly8().b,
-  11.3: () => uhly8().c,
+  11.1: () => uhly7().a,
+  11.2: () => uhly7().b,
+  11.3: () => uhly7().c,
   12: () => krychle3(),
   13: () => vlak(),
   14: () => brhlikLesni(),
@@ -17193,7 +17167,7 @@ var M9D_2025_default = createLazyMap({
   15.2: () => procenta8().b,
   15.3: () => procenta8().c
 });
-function uhly8() {
+function uhly7() {
   const pravyUhel = contRightAngle();
   const zadany = contAngle("zadan\xFD", 64);
   const alpha = deduceAs("troj\xFAheln\xEDk KAS je rovnoramenn\xFD")(
@@ -18689,7 +18663,7 @@ function houskyARohliky() {
       houskaRate,
       cont(houskaLabel, 2, entity3)
     ),
-    compDiff(houskaLabel, rohlikLabel, 6, cena)
+    compDiff({ minuend: houskaLabel, subtrahend: rohlikLabel, difference: "zbytek" }, 6, cena)
   );
   const rohlikRate = deduce(
     last(triRohliky),

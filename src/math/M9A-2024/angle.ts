@@ -1,4 +1,4 @@
-import { ctor, compAngle, ctorOption, triangleAngle, contAngle } from "../../components/math";
+import { ctor, compAngle, ctorOption, triangleAngle, contAngle, ctorCompDiff } from "../../components/math";
 import { anglesNames, deduce, last } from "../../utils/deduce-utils";
 
 
@@ -23,7 +23,7 @@ export function rozdilUhlu({ input }: {
         triangleAngle(anglesNames.gamma)
       ),
       last(alfa),
-      ctor("comp-diff")
+      ctorCompDiff()
     ),
     ctorOption("B", 11)
   )

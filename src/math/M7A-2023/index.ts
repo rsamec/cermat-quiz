@@ -136,7 +136,7 @@ function example_11() {
       deduceAs(triangle)(
         deduce(
           deduce(
-            axiomInput(contAngle(inputAngleLabel, 40), 2), 
+            axiomInput(contAngle(inputAngleLabel, 40), 2),
             compAngle(inputAngleLabel, `vrchol B`, 'alternate')
           ),
           deduce(
@@ -183,7 +183,7 @@ function example_12() {
           rectangleWidth,
           deduce(
             last(rectangleWidth),
-            compDiff(rectangleWidthLabel, "výška obdelníku", 3, dim.length.entity)
+            compDiff({ minuend: rectangleWidthLabel, subtrahend: "výška obdelníku", difference: "rozdíl" }, 3, dim.length.entity)
           ),
           rectangleArea("obdelník")
         ),
@@ -192,7 +192,7 @@ function example_12() {
             triangleHeight,
             deduce(
               last(rectangleWidth),
-              compDiff(rectangleWidthLabel, "základna šedého trojúhelníku", 1, dim.length.entity)
+              compDiff({ minuend: rectangleWidthLabel, subtrahend: "základna šedého trojúhelníku", difference: "rozdíl" }, 1, dim.length.entity)
             ),
             triangleArea("šedý trojúhelníku")
           ),
@@ -258,7 +258,7 @@ function example_15_3() {
           deduce(
             deduce(
               obec,
-              compDiff("obec", "zbývající dospělý", 500, entity)),
+              compDiff({ minuend: "obec", subtrahend: "zbývající dospělý", difference: 'rozdíl' }, 500, entity)),
             axiomInput(percent("zbývající dospělý", "přišlo 2.den", 70), 3)
           ),
           den1,

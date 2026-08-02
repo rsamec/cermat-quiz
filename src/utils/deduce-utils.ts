@@ -593,10 +593,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
   switch (d.kind) {
     case "cont":
       result = compose`${formatAgent(d.agent)}=${d.asRatio ? formatRatio(d.quantity) : formatQuantity(d.quantity)}${d.entity != "" ? " " : ""}${formatEntity(d.entity, d.unit)}`;
-      break;
-    case "frequency":
-      result = compose`${formatAgent(d.agent)}=${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} po ${formatQuantity(d.baseQuantity)}${d.entityBase.entity != "" ? " " : ""}${formatEntity(d.entityBase.entity, d.entityBase.unit)}`;
-      break;
+      break;  
 
     case "comp":
       if (isNumber(d.quantity)) {
@@ -639,7 +636,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
       }
       break;
     case "comp-diff":
-      result = compose`${formatAgent(d.agentMinuend)} - ${formatAgent(d.agentSubtrahend)}=${formatQuantity(d.quantity)}${d.entity != "" ? " " : ""}${formatEntity(d.entity, d.unit)}`
+      result = compose`${formatAgent(d.difference)}=${formatQuantity(d.quantity)}${d.entity != "" ? " " : ""}${formatEntity(d.entity, d.unit)}`
       break;
     case "ratio":
       result = compose`${formatAgent(d.part)} z ${formatAgent(d.whole)}=${formatRatio(d.ratio, d.asPercent)}`;
