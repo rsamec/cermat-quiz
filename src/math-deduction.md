@@ -146,7 +146,7 @@ Predikáty umožňují formalní zápis situačního modelu úlohy.
     </tr>
     <tr>
       <td><div class="badge">COMP DIFF</div> comparison by difference</td>
-      <td>(agentMinuend=celkem,</br>agentSubtrahend=Honzík,</br>quantity=7,</br>entity=sešity)</td>
+      <td>(minuend=celkem,</br>subtrahend=Honzík,difference=rozdíl</br>quantity=7,</br>entity=sešity)</td>
       <td>Rozdíl mezi sešity celkem a Honzíkem je 7 sešitů./td>
     </tr>
     <tr>
@@ -175,16 +175,6 @@ Predikáty umožňují formalní zápis situačního modelu úlohy.
       <td>Poměr chlapců a dívek ve třídě je 1:3 (1 chlapec ku 3 dívkám).</td>
     </tr>
     <tr>
-      <td><div class="badge">SCALE</div>scaling number or part to part scaling</td>
-      <td></td>
-      <td>Zvětšení. Zvětši 2 krát číslo 6 = 12. Dvojnásobné rozšíření poměru 1:3 je 2:6.</td>
-    </tr>
-    <tr>
-      <td><div class="badge">SCALE-INVERT</div>inverse scaling number or part to part scaling</td>
-      <td></td>
-      <td>Zmenšení. Zmenši 2 krát  číslo 6  = 3. Dvojnásobné zkrácení poměru 2:6 je 1:3.</td>
-    </tr>
-    <tr>
       <td><div class="badge">RATE</div> rate</td>
       <td>(agent=Ája,</br>quantity=3,</br>entity=Kč,</br>entityBase=rohlík)</td>
       <td>Každý rohlík, který má Ája, stojí 3 Kč.</td>
@@ -195,6 +185,16 @@ Predikáty umožňují formalní zápis situačního modelu úlohy.
       <td>Skupina rozdělena na 5 dvojic.</td>
     </tr>
     <tr>
+      <td><div class="badge">SCALE</div>scaling number or part to part scaling</td>
+      <td></td>
+      <td>Zvětšení. Zvětši 2 krát číslo 6 = 12. Dvojnásobné rozšíření poměru 1:3 je 2:6.</td>
+    </tr>
+    <tr>
+      <td><div class="badge">SCALE-INVERT</div>inverse scaling number or part to part scaling</td>
+      <td></td>
+      <td>Zmenšení. Zmenši 2 krát  číslo 6  = 3. Dvojnásobné zkrácení poměru 2:6 je 1:3.</td>
+    </tr>
+    <tr>
       <td><div class="badge">SUM</div> sum</td>
       <td>(agentWhole=třída,</br>partAgents=[chlapci,dívky],</br>entityWhole=žáků)</td>
       <td>Počet chlapců a dívek dohromady dává počet žáků ve třídě.</td>
@@ -203,11 +203,6 @@ Predikáty umožňují formalní zápis situačního modelu úlohy.
       <td><div class="badge">PRODUCT</div> product </td>
       <td>(agentWhole=obsah obdélníku,</br>partAgents=[šířka,délka],</br>entityWhole=cm2)</td>
       <td>Obsah obdelníku je produktem výšky a šířky.</td>
-    </tr>
-    <tr>
-      <td><div class="badge">PROPORTION</div> proportion </td>
-      <td>(inverse=true,</br> entities=[počet výrobků, počet pracovníků])</td>
-      <td>Nepřímá úměra platí mezi veličinami počet výrobků a počet pracovníků.</td>
     </tr>
     <tr>
       <td><div class="badge">UNIT</div> convert unit </td>
@@ -224,6 +219,12 @@ Predikáty umožňují formalní zápis situačního modelu úlohy.
       <td>(agent=skupina,</br>entity=osob)</td>
       <td>Nejmenší možná skupina osob.</td>
     </tr>    
+    <tr>
+      <td><div class="badge">PROPORTION</div> proportion </td>
+      <td>(inverse=true,</br> entities=[počet výrobků, počet pracovníků])</td>
+      <td>Nepřímá úměra platí mezi veličinami počet výrobků a počet pracovníků.</td>
+    </tr>
+
     <tr>
       <td><div class="badge">COMMON SENSE</div> common sense</td>
       <td>(description=...)</td>

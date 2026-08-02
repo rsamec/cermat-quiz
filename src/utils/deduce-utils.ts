@@ -86,7 +86,7 @@ export function toRate(child: TreeNode | Predicate, { agent, entityBase, baseQua
   return toPredicate(child, mapToRate({ agent, entityBase, baseQuantity }));
 }
 
-export function toRate2(child: RatioComparison, { agent, entity, entityBase }: { agent: string[], entity: EntityDef, entityBase: EntityDef }) {
+export function toRateAsRatio(child: RatioComparison, { agent, entity, entityBase }: { agent: string[], entity: EntityDef, entityBase: EntityDef }) {
   return to(child, {
     kind: 'rate',
     agent,

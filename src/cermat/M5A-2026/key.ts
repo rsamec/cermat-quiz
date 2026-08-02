@@ -26,7 +26,7 @@ const form = rootGroup({
   }),
   5: group({
     5.1: number(4, { suffix: 'cm^2^' }, twoPoints),
-    5.3: number(44, { suffix: 'cm^2^' }, twoPoints),
+    5.2: number(44, { suffix: 'cm^2^' }, twoPoints),
   }),
   6: group({
     6.1: number(6, { suffix: 'cm' }),

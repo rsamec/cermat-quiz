@@ -4,7 +4,12 @@ import { createLazyMap, deduce, last, toPercent } from "../../utils/deduce-utils
 export default createLazyMap({
     1: () => veslarka(),
     4.1: () => aquapark().toboganJizdy,
-    4.2: () => aquapark().zetony,
+    4.2: () => {
+        deductionTree: deduce(
+            aquapark().zetony.deductionTree,
+            ctorOption("C", 61)
+        )
+    },
 
     6.1: () => barevneSamolepky().a,
     6.2: () => barevneSamolepky().b,
@@ -36,7 +41,7 @@ function veslarka() {
     }
 }
 
-function aquapark() {
+export function aquapark() {
     const toboganLabel = "tobogán"
     const clunLabel = "člun"
     const entityBase = "žeton"

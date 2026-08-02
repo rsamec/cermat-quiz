@@ -9,6 +9,7 @@ import M5A_2023 from '../math/M5A-2023/index';
 import M5A_2024 from '../math/M5A-2024/index';
 import M5A_2025 from '../math/M5A-2025/index';
 import M5B_2025 from '../math/M5B-2025/index';
+import M5A_2026 from './M5A-2026/index';
 
 import M7I_2018 from '../math/M7I-2018/index';
 
@@ -51,6 +52,7 @@ export default createLazyMap({
     "M5A-2024": () => M5A_2024,
     "M5A-2025": () => M5A_2025,
     "M5B-2025": () => M5B_2025,
+    "M5A-2026": () => M5A_2026,    
     
     "M7A-2023": () => M7A_2023,
     "M7A-2024": () => M7A_2024,

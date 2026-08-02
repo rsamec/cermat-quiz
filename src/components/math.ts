@@ -145,7 +145,8 @@ export type Option = {
 
 export type ConvertUnit = {
   kind: 'unit',
-  unit: Unit
+  unit: Unit,
+  entity?: string
 }
 export type ConvertPercent = {
   kind: 'convert-percent'
@@ -492,8 +493,8 @@ export function ctor(kind: 'ratio' | 'comp-ratio' | 'comp' | 'rate' | 'quota' | 
   return { kind } as Predicate
 }
 
-export function ctorUnit(unit: Unit): ConvertUnit {
-  return { kind: "unit", unit }
+export function ctorUnit(unit: Unit, entity?: string): ConvertUnit {
+  return { kind: "unit", unit, entity }
 }
 export function sum(wholeAgent: string, wholeEntity?: EntityBase): Sum {
   return { kind: "sum", wholeAgent, wholeEntity: wholeEntity }
@@ -1262,8 +1263,8 @@ function inferConvertRatioCompareToRatiosRule(arr: RatioComparison[], a: { whole
   }
 }
 
-function unitConvertFactors(a: Container | Comparison, b: ConvertUnit) {
-  const destination = helpers.unitAnchor(a.unit);
+function unitConvertFactors(aUnit: string, b: ConvertUnit) {
+  const destination = helpers.unitAnchor(aUnit);
   const origin = helpers.unitAnchor(b.unit);
   const convertFactor = destination >= origin ? destination / origin : origin / destination;
   return { destination, origin, convertFactor };
@@ -1273,7 +1274,7 @@ function convertToUnitRule(a: Container | Comparison, b: ConvertUnit): Container
     throw `Missing unit ${a.kind === "cont" ? a.agent : `${a.agentA} to ${a.agentB}`} a ${a.entity}`;
   }
 
-  const { destination, origin, convertFactor } = unitConvertFactors(a, b);
+  const { destination, origin, convertFactor } = unitConvertFactors(a.unit, b);
   return {
     ...a,
     quantity: isNumber(a.quantity)
@@ -1286,7 +1287,7 @@ function convertToUnitRule(a: Container | Comparison, b: ConvertUnit): Container
 }
 function inferConvertToUnitRule(a: Container | Comparison, b: ConvertUnit): Question<Container | Comparison> {
   const result = convertToUnitRule(a, b)
-  const { destination, origin, convertFactor } = unitConvertFactors(a, b);
+  const { destination, origin, convertFactor } = unitConvertFactors(a.unit, b);
   return {
     name: convertToUnitRule.name,
     inputParameters: extractKinds(a, b),
@@ -1295,6 +1296,59 @@ function inferConvertToUnitRule(a: Container | Comparison, b: ConvertUnit): Ques
     options: isNumber(a.quantity) && isNumber(result.quantity) ? [
       { tex: `${formatNumber(a.quantity)} * ${formatNumber(convertFactor)}`, result: formatNumber(result.quantity), ok: destination >= origin },
       { tex: `${formatNumber(a.quantity)} / ${formatNumber(convertFactor)}`, result: formatNumber(result.quantity), ok: destination < origin },
+    ] : []
+  }
+}
+
+function convertToUnitAsRate(a: Rate, b: ConvertUnit): Rate {
+  const isBaseEntity = b.entity === a.entityBase.entity;
+  const entityToConvert = isBaseEntity ? a.entityBase : a.entity
+  if (entityToConvert.unit == null) {
+    throw `Missing unit ${a.agent} a ${entityToConvert.entity}`;
+  }
+
+  const { destination, origin, convertFactor } = unitConvertFactors(entityToConvert.unit, b);
+  const unit = b.unit;
+  const entity = isBaseEntity ? a.entity : { ...a.entity, unit }
+  const entityBase = isBaseEntity ? { ...a.entityBase, unit } : a.entityBase
+
+  const quantity = isBaseEntity
+    ? isNumber(a.baseQuantity)
+      ? helpers.convertToUnit(a.baseQuantity, entityToConvert.unit, b.unit)
+      : destination >= origin
+        ? wrapToQuantity(`a.baseQuantity * ${convertFactor}`, { a })
+        : wrapToQuantity(`a.baseQuantity / ${convertFactor}`, { a })
+    : isNumber(a.quantity)
+      ? helpers.convertToUnit(a.quantity, entityToConvert.unit, b.unit)
+      : destination >= origin
+        ? wrapToQuantity(`a.quantity * ${convertFactor}`, { a })
+        : wrapToQuantity(`a.quantity / ${convertFactor}`, { a });
+
+  return {
+    kind: "rate",
+    agent: a.agent,
+    asRatio: a.asRatio,
+    entity,
+    entityBase,
+    quantity: isBaseEntity ? a.quantity : quantity,
+    baseQuantity: isBaseEntity ? quantity : a.baseQuantity,
+
+  }
+}
+
+function inferConvertToUnitAsRate(a: Rate, b: ConvertUnit): Question<Rate> {
+  const result = convertToUnitAsRate(a, b)
+  const isBaseEntity = b.entity === a.entityBase.entity;
+  const entityToConvert = isBaseEntity ? a.entityBase : a.entity
+  const { destination, origin, convertFactor } = unitConvertFactors(a.entityBase.unit, b);
+  return {
+    name: convertToUnitRule.name,
+    inputParameters: extractKinds(a, b),
+    question: isNumber(a.quantity) && isNumber(a.baseQuantity) ? `Převeď ${formatNumber(isBaseEntity ? a.baseQuantity : a.quantity)} ${formatEntity(entityToConvert)} na ${b.unit}.` : `Převeď na ${b.unit}.`,
+    result,
+    options: isNumber(a.quantity) && isNumber(a.baseQuantity) && isNumber(result.quantity) ? [
+      { tex: `${formatNumber(isBaseEntity ? a.baseQuantity : a.quantity)} * ${formatNumber(convertFactor)}`, result: formatNumber(result.quantity), ok: destination >= origin },
+      { tex: `${formatNumber(isBaseEntity ? a.baseQuantity : a.quantity)} / ${formatNumber(convertFactor)}`, result: formatNumber(result.quantity), ok: destination < origin },
     ] : []
   }
 }
@@ -2662,8 +2716,8 @@ function compareToRateRule(a: Comparison, b: Comparison, last?: { agent: Agent }
     kind: 'rate',
     agent: last?.agent ?? [a.agentA],
     quantity: isNumber(a.quantity) && isNumber(b.quantity) ? abs(a.quantity) / abs(b.quantity) : wrapToQuantity(`abs(a.quantity) / abs(b.quantity)`, { a, b }),
-    entity: { entity: a.entity },
-    entityBase: { entity: b.entity },
+    entity: { entity: a.entity, unit: a.unit },
+    entityBase: { entity: b.entity, unit: b.unit },
     baseQuantity: 1
   }
 }
@@ -2692,7 +2746,8 @@ function toCompareDiffRule(a: Container, b: Container, c: ComparisonDiff): Compa
     subtrahend: b.agent,
     difference: c.difference,
     quantity: isNumber(a.quantity) && isNumber(b.quantity) ? a.quantity - b.quantity : wrapToQuantity(`a.quantity - b.quantity`, { a, b }),
-    entity: a.entity
+    entity: a.entity,
+    unit: a.unit
 
   }
 }
@@ -3624,6 +3679,13 @@ function inferenceRuleEx(...args: Predicate[]): Question<TruePredicate> {
   else if (a.kind === "unit" && (b.kind === "cont" || b.kind === "comp")) {
     return inferConvertToUnitRule(b, a);
   }
+  else if ((a.kind === "rate") && b.kind === "unit") {
+    return inferConvertToUnitAsRate(a, b);
+  }
+  else if (a.kind === "unit" && (b.kind === "rate")) {
+    return inferConvertToUnitAsRate(b, a);
+  }
+
   else if ((a.kind === "cont") && b.kind === "round") {
     return inferRoundToRule(a, b);
   }
