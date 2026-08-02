@@ -4,13 +4,7 @@ import { createLazyMap, deduce, last, toPercent } from "../../utils/deduce-utils
 export default createLazyMap({
     1: () => veslarka(),
     4.1: () => aquapark().toboganJizdy,
-    4.2: () => {
-        deductionTree: deduce(
-            aquapark().zetony.deductionTree,
-            ctorOption("C", 61)
-        )
-    },
-
+    4.2: () => aquapark().zetony,
     6.1: () => barevneSamolepky().a,
     6.2: () => barevneSamolepky().b,
 

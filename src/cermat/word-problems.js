@@ -10001,13 +10001,7 @@ function ctvercovaSit() {
 var M7A_2026_default = createLazyMap({
   1: () => veslarka(),
   4.1: () => aquapark().toboganJizdy,
-  4.2: () => {
-    deductionTree:
-      deduce(
-        aquapark().zetony.deductionTree,
-        ctorOption("C", 61)
-      );
-  },
+  4.2: () => aquapark().zetony,
   6.1: () => barevneSamolepky().a,
   6.2: () => barevneSamolepky().b,
   7.1: () => pekar().a,
