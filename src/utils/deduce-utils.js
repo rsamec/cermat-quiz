@@ -6361,10 +6361,10 @@ parser.functions.closeTo = function(value, center) {
   const end = center + eps;
   return start <= value && value <= end;
 };
-parser.functions.color = function(color, value) {
+parser.functions.color = function(color, value, id) {
   return value;
 };
-parser.functions.bgColor = function(bgColor, value) {
+parser.functions.bgColor = function(bgColor, value, id) {
   return value;
 };
 function gcdCalc2(numbers) {
@@ -6407,6 +6407,12 @@ function evalExpression(expression, quantityOrContext) {
   const res = expr.simplify(context);
   return res.toString();
 }
+function uniqueColorsKey(key, context) {
+  return `${context.uniqueId}color${key}`;
+}
+function uniqueBgColorsKey(key, context) {
+  return `${context.uniqueId}bgcolor${key}`;
+}
 function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
   const quantity = node.quantity ?? node.ratio ?? {};
   const { context, expression } = quantity;
@@ -6422,12 +6428,12 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
         if (level < requiredLevel) {
           for (let [key, values] of Object.entries(colors2)) {
             if (values.includes(context[variable])) {
-              expr = expr.substitute(variable, parser.parse(`color(${key},${variable})`));
+              expr = expr.substitute(variable, parser.parse(`color(${key},${variable},${uniqueColorsKey(key, parentContext)})`));
             }
           }
           for (let [key, values] of Object.entries(bgColors)) {
             if (values.includes(context[variable])) {
-              expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable})`));
+              expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable},${uniqueBgColorsKey(key, parentContext)})`));
             }
           }
         }
@@ -6448,17 +6454,17 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
           } else {
             for (let [key, values] of Object.entries(colors2)) {
               if (values.includes(context[variable])) {
-                expr = expr.substitute(variable, parser.parse(`color(${key},${variable})`));
+                expr = expr.substitute(variable, parser.parse(`color(${key},${variable},${uniqueColorsKey(key, parentContext)})`));
                 if (baseQ != null) {
-                  expr = expr.substitute(`base${variable}`, parser.parse(`color(${key},base${variable})`));
+                  expr = expr.substitute(`base${variable}`, parser.parse(`color(${key},base${variable},${uniqueColorsKey(key, parentContext)})`));
                 }
               }
             }
             for (let [key, values] of Object.entries(bgColors)) {
               if (values.includes(context[variable])) {
-                expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable})`));
+                expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable},${uniqueBgColorsKey(key, parentContext)})`));
                 if (baseQ != null) {
-                  expr = expr.substitute(`base${variable}`, parser.parse(`bgColor(${key},base${variable})`));
+                  expr = expr.substitute(`base${variable}`, parser.parse(`bgColor(${key},base${variable},${uniqueBgColorsKey(key, parentContext)})`));
                 }
               }
             }
@@ -6501,6 +6507,9 @@ function toEquationExpr(lastExpr, requiredLevel = 0, context = {}) {
 function evaluateNodeToNumber(lastNode) {
   const final = toEquationExpr(lastNode);
   return parseFloat(final.toString());
+}
+function toEquationExprAsText(lastExpr, requiredLevel = 0, context = {}) {
+  return expressionToString2(toEquationExpr(lastExpr, requiredLevel, context).tokens, false).replaceAll('"', "");
 }
 function toEquationExprAsTex(lastExpr, requiredLevel = 0, context = {}) {
   return `$ ${tokensToTex(toEquationExpr(lastExpr, requiredLevel, context).tokens)} $`;
@@ -6873,10 +6882,10 @@ function tokensToTex(tokens, opts = {}) {
           stack.push(`\\sqrt{${args[0]}}`);
         } else if (["sin", "cos", "tan", "log", "ln"].includes(tok.value)) {
           stack.push(`\\${tok.value}\\left(${args.join(", ")}\\right)`);
-        } else if (f == "color" && args.length === 2) {
-          stack.push(`\\textcolor{${colors[args[0]]}}{${args[1]}}`);
-        } else if (f == "bgColor" && args.length === 2) {
-          stack.push(`\\fcolorbox{${colors[args[0]]}}{none}{\\(${args[1]}\\)}`);
+        } else if (f == "color" && args.length === 3) {
+          stack.push(`\\htmlData{var=${args[2]}}{\\htmlClass{axiom}{\\textcolor{${colors[args[0]]}}{${args[1]}}}}`);
+        } else if (f == "bgColor" && args.length === 3) {
+          stack.push(`\\htmlData{var=${args[2]}}{\\fcolorbox{${colors[args[0]]}}{transparent}{\\(${args[1]}\\)}}`);
         } else {
           stack.push(`${tok.value}\\left(${args.join(", ")}\\right)`);
         }
@@ -6887,6 +6896,151 @@ function tokensToTex(tokens, opts = {}) {
     }
   }
   return stack.pop();
+}
+var INUMBER2 = "INUMBER";
+var IOP12 = "IOP1";
+var IOP22 = "IOP2";
+var IOP32 = "IOP3";
+var IVAR2 = "IVAR";
+var IVARNAME2 = "IVARNAME";
+var IFUNCALL2 = "IFUNCALL";
+var IFUNDEF2 = "IFUNDEF";
+var IEXPR2 = "IEXPR";
+var IMEMBER2 = "IMEMBER";
+var IENDSTATEMENT2 = "IENDSTATEMENT";
+var IARRAY2 = "IARRAY";
+function expressionToString2(tokens, toJS) {
+  var nstack = [];
+  var n1, n2, n3;
+  var f, args, argCount;
+  for (var i = 0; i < tokens.length; i++) {
+    var item = tokens[i];
+    var type = item.type;
+    if (type === INUMBER2) {
+      if (typeof item.value === "number" && item.value < 0) {
+        nstack.push("(" + item.value + ")");
+      } else if (Array.isArray(item.value)) {
+        nstack.push("[" + item.value.map(escapeValue2).join(", ") + "]");
+      } else {
+        nstack.push(escapeValue2(item.value));
+      }
+    } else if (type === IOP22) {
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      f = item.value;
+      if (toJS) {
+        if (f === "^") {
+          nstack.push("Math.pow(" + n1 + ", " + n2 + ")");
+        } else if (f === "and") {
+          nstack.push("(!!" + n1 + " && !!" + n2 + ")");
+        } else if (f === "or") {
+          nstack.push("(!!" + n1 + " || !!" + n2 + ")");
+        } else if (f === "||") {
+          nstack.push("(function(a,b){ return Array.isArray(a) && Array.isArray(b) ? a.concat(b) : String(a) + String(b); }((" + n1 + "),(" + n2 + ")))");
+        } else if (f === "==") {
+          nstack.push("(" + n1 + " === " + n2 + ")");
+        } else if (f === "!=") {
+          nstack.push("(" + n1 + " !== " + n2 + ")");
+        } else if (f === "[") {
+          nstack.push(n1 + "[(" + n2 + ") | 0]");
+        } else {
+          nstack.push("(" + n1 + " " + f + " " + n2 + ")");
+        }
+      } else {
+        if (f === "[") {
+          nstack.push(n1 + "[" + n2 + "]");
+        } else {
+          if (f === "+") {
+            nstack.push(n1 + " " + f + " " + n2);
+          } else {
+            const isExprN1 = typeof n1 === "string" && n1.indexOf(" ") !== -1;
+            const isExprN2 = typeof n2 === "string" && n2.indexOf(" ") !== -1;
+            nstack.push(`${isExprN1 ? `(${n1})` : n1} ${f} ${isExprN2 ? `(${n2})` : n2}`);
+          }
+        }
+      }
+    } else if (type === IOP32) {
+      n3 = nstack.pop();
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      f = item.value;
+      if (f === "?") {
+        nstack.push("(" + n1 + " ? " + n2 + " : " + n3 + ")");
+      } else {
+        throw new Error("invalid Expression");
+      }
+    } else if (type === IVAR2 || type === IVARNAME2) {
+      nstack.push(item.value);
+    } else if (type === IOP12) {
+      n1 = nstack.pop();
+      f = item.value;
+      if (f === "-" || f === "+") {
+        nstack.push("(" + f + n1 + ")");
+      } else if (toJS) {
+        if (f === "not") {
+          nstack.push("(!" + n1 + ")");
+        } else if (f === "!") {
+          nstack.push("fac(" + n1 + ")");
+        } else {
+          nstack.push(f + "(" + n1 + ")");
+        }
+      } else if (f === "!") {
+        nstack.push("(" + n1 + "!)");
+      } else {
+        nstack.push(f + " " + n1);
+      }
+    } else if (type === IFUNCALL2) {
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+      }
+      f = nstack.pop();
+      nstack.push(f + "(" + args.join(", ") + ")");
+    } else if (type === IFUNDEF2) {
+      n2 = nstack.pop();
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+      }
+      n1 = nstack.pop();
+      if (toJS) {
+        nstack.push("(" + n1 + " = function(" + args.join(", ") + ") { return " + n2 + " })");
+      } else {
+        nstack.push("(" + n1 + "(" + args.join(", ") + ") = " + n2 + ")");
+      }
+    } else if (type === IMEMBER2) {
+      n1 = nstack.pop();
+      nstack.push(n1 + "." + item.value);
+    } else if (type === IARRAY2) {
+      argCount = item.value;
+      args = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+      }
+      nstack.push("[" + args.join(", ") + "]");
+    } else if (type === IEXPR2) {
+      nstack.push("(" + expressionToString2(item.value, toJS) + ")");
+    } else if (type === IENDSTATEMENT2) {
+    } else {
+      throw new Error("invalid Expression");
+    }
+  }
+  if (nstack.length > 1) {
+    if (toJS) {
+      nstack = [nstack.join(",")];
+    } else {
+      nstack = [nstack.join(";")];
+    }
+  }
+  return String(nstack[0]);
+}
+function escapeValue2(v) {
+  if (typeof v === "string") {
+    return JSON.stringify(v).replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
+  }
+  return v;
 }
 
 // src/math/math-configure.ts
@@ -7102,7 +7256,8 @@ function jsonToMarkdownTree(node, level = 0, parentContext) {
     const textColor = isObjectContext(parentContext) ? colorsMap.find(([color2, arr]) => arr.includes(node))?.[0] : null;
     const bgColor = isObjectContext(parentContext) ? bgColorsMap.find(([color2, arr]) => arr.includes(node))?.[0] : null;
     const color = textColor ?? bgColor;
-    markdown.push(`${indent}- ${formatPredicate(node, color != null ? colorFormattingFunc(0, color, parentContext) : mdFormattingFunc(0, parentContext))}
+    const useColor = level > 0 && color != null;
+    markdown.push(`${indent}- ${formatPredicate(node, useColor ? colorFormattingFunc(0, color, parentContext) : mdFormattingFunc(0, parentContext))}${useColor ? ` {onclick=highlightVariable(event,'${parentContext.uniqueId}${textColor != null ? `color${textColor}` : `bgcolor${bgColor}`}','${color}')}` : ""}
 `);
     return markdown;
   }
@@ -7114,6 +7269,7 @@ function jsonToMarkdownTree(node, level = 0, parentContext) {
         markdown.push(`${indent}- *${node.context.text}*
 `);
       markdown = markdown.concat(jsonToMarkdownTree(child, level + (isConclusion ? 0 : 1), mergeWithParent(node.context, parentContext)));
+      parentContext.depth = 0;
     }
   }
   return markdown;
@@ -7326,9 +7482,25 @@ var chatFormattingFunc = (defaultExpressionDepth) => ({
 
 ${mdFormatTable(d)}`
 });
+function tryToFormatNumber(d) {
+  const numberValue = parseFloat(d);
+  return isNaN(numberValue) ? d : numberValue.toLocaleString("cs-CZ", { maximumFractionDigits: 2, minimumFractionDigits: 0 });
+}
 var colorFormattingFunc = (defaultExpressionDepth, color, context) => ({
   ...mdFormattingFunc(defaultExpressionDepth, context),
-  formatAgent: (d) => `{${color}}(**${d}**)`
+  compose: (strings, ...args) => `{${color}}(${concatString(strings, ...args)})`,
+  formatQuantity: (d) => {
+    if (typeof d === "number") {
+      return d.toLocaleString("cs-CZ", { maximumFractionDigits: 2, minimumFractionDigits: 0 });
+    } else if (d?.expression != null) {
+      const value = toEquationExprAsText(d, isObjectContext(context) ? context.depth ?? defaultExpressionDepth : defaultExpressionDepth, isObjectContext(context) ? context : null);
+      return tryToFormatNumber(value);
+    } else if (typeof d === "string") {
+      return tryToFormatNumber(d);
+    } else {
+      return tryToFormatNumber(d);
+    }
+  }
 });
 function mdFormatTable(data) {
   if (!Array.isArray(data) || data.length === 0)
@@ -7422,8 +7594,7 @@ function formatPredicate(d, formatting) {
       result = compose`${formatAgent(d.agent)} ${d.asRatio ? formatRatio2(d.quantity) : formatQuantity(d.quantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} per ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? "" : formatQuantity(d.baseQuantity)}${d.entityBase.entity != "" ? " " : ""}${formatEntity2(d.entityBase.entity, d.entityBase.unit)}`;
       break;
     case "quota":
-      result = d.entityQuota == null ? formatKind(d) : compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? "po " : `pro ka\u017Ed\xE9 ${formatQuantity(d.baseQuantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} po `} ${formatQuantity(d.quotaQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity2(d.entityQuota.entity, d.entityQuota.unit)}
-         ${isNumber(d.restQuantity) ? d.restQuantity !== 0 ? ` se zbytkem ${formatQuantity(d.restQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity2(d.entityQuota.entity, d.entityQuota.unit)}` : "" : `se zbytkem ${formatQuantity(d.restQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity2(d.entityQuota.entity, d.entityQuota.unit)}`}`;
+      result = d.entityQuota == null ? formatKind(d) : compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? "po " : `pro ka\u017Ed\xE9 ${formatQuantity(d.baseQuantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} po `} ${formatQuantity(d.quotaQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity2(d.entityQuota.entity, d.entityQuota.unit)} ${isNumber(d.restQuantity) ? d.restQuantity !== 0 ? ` se zbytkem ${formatQuantity(d.restQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity2(d.entityQuota.entity, d.entityQuota.unit)}` : "" : `se zbytkem ${formatQuantity(d.restQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity2(d.entityQuota.entity, d.entityQuota.unit)}`}`;
       break;
     case "sequence":
       result = compose`${d.type != null ? formatSequence2(d.type) : ""}`;
@@ -7472,7 +7643,7 @@ function formatPredicate(d, formatting) {
       result = formatKind(d);
       break;
   }
-  return compose`${result}`;
+  return result;
 }
 function joinArray(arr, sep) {
   return arr?.flatMap(
@@ -7661,6 +7832,9 @@ function getStepsFromTree(tree) {
 function isColorifyPredicate(d) {
   return isQuantityPredicate(d) || isRatioPredicate(d);
 }
+function generateUniqueId() {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+}
 function colorifyDeduceTree(originalTree, { maxDepth, axioms, deductions } = { maxDepth: 2, axioms: true, deductions: false }) {
   let counter = 0;
   const tree = originalTree;
@@ -7726,7 +7900,8 @@ function colorifyDeduceTree(originalTree, { maxDepth, axioms, deductions } = { m
         return out;
       }, {})
     } : {},
-    checkFraction: true
+    checkFraction: true,
+    uniqueId: generateUniqueId()
   };
   return { deductionTree: result, colorsMap };
 }

@@ -1641,10 +1641,10 @@ parser.functions.closeTo = function(value, center) {
   const end = center + eps;
   return start <= value && value <= end;
 };
-parser.functions.color = function(color, value) {
+parser.functions.color = function(color, value, id) {
   return value;
 };
-parser.functions.bgColor = function(bgColor, value) {
+parser.functions.bgColor = function(bgColor, value, id) {
   return value;
 };
 function gcdCalc(numbers) {
@@ -1690,6 +1690,12 @@ function evalExpression(expression, quantityOrContext) {
   const res = expr.simplify(context);
   return res.toString();
 }
+function uniqueColorsKey(key, context) {
+  return `${context.uniqueId}color${key}`;
+}
+function uniqueBgColorsKey(key, context) {
+  return `${context.uniqueId}bgcolor${key}`;
+}
 function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
   const quantity = node.quantity ?? node.ratio ?? {};
   const { context, expression } = quantity;
@@ -1705,12 +1711,12 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
         if (level < requiredLevel) {
           for (let [key, values] of Object.entries(colors2)) {
             if (values.includes(context[variable])) {
-              expr = expr.substitute(variable, parser.parse(`color(${key},${variable})`));
+              expr = expr.substitute(variable, parser.parse(`color(${key},${variable},${uniqueColorsKey(key, parentContext)})`));
             }
           }
           for (let [key, values] of Object.entries(bgColors)) {
             if (values.includes(context[variable])) {
-              expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable})`));
+              expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable},${uniqueBgColorsKey(key, parentContext)})`));
             }
           }
         }
@@ -1731,17 +1737,17 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
           } else {
             for (let [key, values] of Object.entries(colors2)) {
               if (values.includes(context[variable])) {
-                expr = expr.substitute(variable, parser.parse(`color(${key},${variable})`));
+                expr = expr.substitute(variable, parser.parse(`color(${key},${variable},${uniqueColorsKey(key, parentContext)})`));
                 if (baseQ != null) {
-                  expr = expr.substitute(`base${variable}`, parser.parse(`color(${key},base${variable})`));
+                  expr = expr.substitute(`base${variable}`, parser.parse(`color(${key},base${variable},${uniqueColorsKey(key, parentContext)})`));
                 }
               }
             }
             for (let [key, values] of Object.entries(bgColors)) {
               if (values.includes(context[variable])) {
-                expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable})`));
+                expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable},${uniqueBgColorsKey(key, parentContext)})`));
                 if (baseQ != null) {
-                  expr = expr.substitute(`base${variable}`, parser.parse(`bgColor(${key},base${variable})`));
+                  expr = expr.substitute(`base${variable}`, parser.parse(`bgColor(${key},base${variable},${uniqueBgColorsKey(key, parentContext)})`));
                 }
               }
             }
@@ -2163,10 +2169,10 @@ function tokensToTex(tokens, opts = {}) {
           stack.push(`\\sqrt{${args[0]}}`);
         } else if (["sin", "cos", "tan", "log", "ln"].includes(tok.value)) {
           stack.push(`\\${tok.value}\\left(${args.join(", ")}\\right)`);
-        } else if (f == "color" && args.length === 2) {
-          stack.push(`\\textcolor{${colors[args[0]]}}{${args[1]}}`);
-        } else if (f == "bgColor" && args.length === 2) {
-          stack.push(`\\fcolorbox{${colors[args[0]]}}{none}{\\(${args[1]}\\)}`);
+        } else if (f == "color" && args.length === 3) {
+          stack.push(`\\htmlData{var=${args[2]}}{\\htmlClass{axiom}{\\textcolor{${colors[args[0]]}}{${args[1]}}}}`);
+        } else if (f == "bgColor" && args.length === 3) {
+          stack.push(`\\htmlData{var=${args[2]}}{\\fcolorbox{${colors[args[0]]}}{transparent}{\\(${args[1]}\\)}}`);
         } else {
           stack.push(`${tok.value}\\left(${args.join(", ")}\\right)`);
         }

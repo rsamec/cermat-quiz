@@ -15,66 +15,109 @@ ul {
   max-width: inherit;
 }
 .katex .fcolorbox {
-    border-width: 2px !important;
+    border-width: 1px !important;
 }
 
+.md-colorify{
+    padding: 0.15rem 0.35rem;
+    border-radius: 0.35rem;
+}
+.darkred.eq-highlight > .axiom,
 .md-colorify.darkred {
-    color: #e7040f;
+    background-color:color-mix(in oklab, #e7040f 30%, transparent) !important;
 }
+.red.eq-highlight > .axiom,
 .md-colorify.red {
-    color: #ff4136;
+    background-color:color-mix(in oklab, #ff4136 30%, transparent) !important;
 }
+.lightred.eq-highlight > .axiom,
 .md-colorify.lightred {
-    color: #ff725c;
+    background-color:color-mix(in oklab, #ff725c 30%, transparent) !important;
 }
+.orange.eq-highlight > .axiom,
 .md-colorify.orange {
-    color: #ff6300;
+    background-color:color-mix(in oklab, #ff6300 30%, transparent) !important;
 }
+.gold.eq-highlight > .axiom,
 .md-colorify.gold {
-    color: #ffb700;
+    background-color:color-mix(in oklab, #ffb700 30%, transparent) !important;
 }
+.yellow.eq-highlight > .axiom,
 .md-colorify.yellow {
-    color: #ffd700;
+    background-color:color-mix(in oklab, #ffd700 30%, transparent) !important;
 }
+.lightyellow.eq-highlight > .axiom,
 .md-colorify.lightyellow {
-    color: #fbf1a9;
+    background-color:color-mix(in oklab, #fbf1a9 30%, transparent) !important;
 }
+.purple.eq-highlight > .axiom,
 .md-colorify.purple {
-    color: #5e2ca5;
+    background-color:color-mix(in oklab, #5e2ca5 30%, transparent) !important;
 }
+.lightpurple.eq-highlight > .axiom,
 .md-colorify.lightpurple {
-    color: #a463f2;
+    background-color:color-mix(in oklab, #a463f2 30%, transparent) !important;
 }
+.darkpink.eq-highlight > .axiom,
 .md-colorify.darkpink {
-    color: #d5008f;
+    background-color:color-mix(in oklab, #d5008f 30%, transparent) !important;
 }
+.hotpink.eq-highlight > .axiom,
 .md-colorify.hotpink {
-    color: #ff41b4;
+    background-color:color-mix(in oklab, #ff41b4 30%, transparent) !important;
 }
+.pink.eq-highlight > .axiom,
 .md-colorify.pink {
-    color: #ff80cc;
+    background-color:color-mix(in oklab, #ff80cc 30%, transparent) !important;
 }
+.lightpink.eq-highlight > .axiom,
 .md-colorify.lightpink {
-    color: #ffa3d7;
+    background-color:color-mix(in oklab, #ffa3d7 30%, transparent) !important;
 }
+.darkgreen.eq-highlight > .axiom,
 .md-colorify.darkgreen {
-    color: #137752;
+    background-color:color-mix(in oklab, #137752 30%, transparent) !important;
 }
+.green.eq-highlight > .axiom,
 .md-colorify.green {
-    color: #19a974;
+    background-color:color-mix(in oklab, #19a974 30%, transparent) !important;
 }
+.lightgreen.eq-highlight > .axiom,
 .md-colorify.lightgreen {
-    color: #9eebcf;
+    background-color:color-mix(in oklab, #9eebcf 30%, transparent) !important;
 }
+.navy.eq-highlight > .axiom,
 .md-colorify.navy {
-    color: #001b44;
+    background-color:color-mix(in oklab, #001b44 30%, transparent) !important;
 }
+.darkblue.eq-highlight > .axiom,
 .md-colorify.darkblue {
-    color: #1b4b98;
+    background-color:color-mix(in oklab, #1b4b98 30%, transparent) !important;
 }
+.blue.eq-highlight > .axiom,
 .md-colorify.blue {
-    color: #266bd9;
+    background-color:color-mix(in oklab, #266bd9 30%, transparent) !important;
 }
+.lightblue.eq-highlight > .axiom,
 .md-colorify.lightblue {
-    color: #96ccff;
+    background-color:color-mix(in oklab, #96ccff 30%, transparent) !important;    
 }     
+
+
+.enclosing {
+  position: relative;
+  .fcolorbox {
+    border-radius: 0.37rem;
+  }
+  
+}
+ 
+.enclosing.eq-highlight.eq-highlight > .axiom {
+    border-radius: 2em;
+    padding: 4px 5px;
+    background-color:color-mix(in oklab, currentColor 30%, transparent);
+}
+
+li .md-colorify {
+    cursor: pointer;
+}

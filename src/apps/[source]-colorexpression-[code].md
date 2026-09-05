@@ -1,5 +1,5 @@
 ---
-title: Barevný rozpad výpočtu - $code$
+title: Barevný rozpad výpočtu
 sidebar: true
 pager: false
 footer: false
@@ -30,6 +30,40 @@ const code = observable.params.code;
 const quiz = parseQuiz(rawContent);
 
 const ids = quiz.questions.map(d => d.id);
+
+function highlightVariable(event,variable, color) {
+  event.stopPropagation();
+
+  // Remove previous highlights
+  document
+    .querySelectorAll(".eq-highlight")
+    .forEach(el => {
+      el.classList.remove("eq-highlight");
+    });
+
+  document
+    .querySelectorAll(".eq-highlight-colorbox")
+    .forEach(el => {
+      el.classList.remove("eq-highlight-colorbox" ,"md-colorify");
+    });
+
+  // Highlight matching variables
+  document
+    .querySelectorAll(
+      `[data-var="${CSS.escape(variable)}"]`
+    )
+    .forEach(el => {
+      el.classList.add("eq-highlight",color);
+
+      // Find the first .colorbox inside this variable
+      const colorbox = el.querySelector(".fcolorbox");
+
+      if (colorbox) {
+        colorbox.classList.add("eq-highlight-colorbox","md-colorify", color);        
+      }
+    });
+}
+window.highlightVariable = highlightVariable;
 
 ```
 
@@ -78,7 +112,7 @@ display(html`<div>
             const colorifyParamsForm = Inputs.form({
                 maxDepth: Inputs.range([0, finalDepth], {step: 1, value: finalDepth, label: "Maximální hloubka"}),
                 axioms:  Inputs.toggle({label:"Axioms", value: true}),
-                deductions: Inputs.toggle({label:"Deductions", value: false}),
+                deductions: Inputs.toggle({label:"Deductions", value: true}),
             });
         
             // const notSupportedRules = ["convertToUnitRule", "evalToQuantityRule", "commonSense","alligationRule"]

@@ -7,6 +7,8 @@ import mark from 'markdown-it-mark';
 import color from 'markdown-it-color-plus';
 const colorPlugin = color.default ?? color;
 import html5Media from 'markdown-it-html5-embed';
+import markdownItAttrs from 'markdown-it-attrs';
+
 let counter = 1;
 const ATXRenderer = function () {
   const mapping = {
@@ -92,12 +94,15 @@ const underline = (md) => {
 const MarkdownWithKatex = new markdownit({ html: false, })
   .use(underline)
   .use(katex.default ?? katex, {
+    trust: true,
+    strict: false,
   })
   .use(sup)
   .use(sub)
   .use(colorPlugin)
   .use(mark)
   .use(MarkdownItFootnote)
+  .use(markdownItAttrs)
   // .use(textBgColor.default, { inline: false, isMultiLine: true })
   .use(html5Media, {
     html5embed: {

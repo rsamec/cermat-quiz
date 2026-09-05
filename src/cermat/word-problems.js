@@ -6900,10 +6900,10 @@ parser.functions.closeTo = function(value, center) {
   const end = center + eps;
   return start <= value && value <= end;
 };
-parser.functions.color = function(color, value) {
+parser.functions.color = function(color, value, id) {
   return value;
 };
-parser.functions.bgColor = function(bgColor, value) {
+parser.functions.bgColor = function(bgColor, value, id) {
   return value;
 };
 function gcdCalc2(numbers) {
@@ -6946,6 +6946,12 @@ function evalExpression(expression, quantityOrContext) {
   const res = expr.simplify(context);
   return res.toString();
 }
+function uniqueColorsKey(key, context) {
+  return `${context.uniqueId}color${key}`;
+}
+function uniqueBgColorsKey(key, context) {
+  return `${context.uniqueId}bgcolor${key}`;
+}
 function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
   const quantity = node.quantity ?? node.ratio ?? {};
   const { context, expression } = quantity;
@@ -6961,12 +6967,12 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
         if (level < requiredLevel) {
           for (let [key, values] of Object.entries(colors2)) {
             if (values.includes(context[variable])) {
-              expr = expr.substitute(variable, parser.parse(`color(${key},${variable})`));
+              expr = expr.substitute(variable, parser.parse(`color(${key},${variable},${uniqueColorsKey(key, parentContext)})`));
             }
           }
           for (let [key, values] of Object.entries(bgColors)) {
             if (values.includes(context[variable])) {
-              expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable})`));
+              expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable},${uniqueBgColorsKey(key, parentContext)})`));
             }
           }
         }
@@ -6987,17 +6993,17 @@ function recurExpr(node, level, requiredLevel = 0, parentContext = {}) {
           } else {
             for (let [key, values] of Object.entries(colors2)) {
               if (values.includes(context[variable])) {
-                expr = expr.substitute(variable, parser.parse(`color(${key},${variable})`));
+                expr = expr.substitute(variable, parser.parse(`color(${key},${variable},${uniqueColorsKey(key, parentContext)})`));
                 if (baseQ != null) {
-                  expr = expr.substitute(`base${variable}`, parser.parse(`color(${key},base${variable})`));
+                  expr = expr.substitute(`base${variable}`, parser.parse(`color(${key},base${variable},${uniqueColorsKey(key, parentContext)})`));
                 }
               }
             }
             for (let [key, values] of Object.entries(bgColors)) {
               if (values.includes(context[variable])) {
-                expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable})`));
+                expr = expr.substitute(variable, parser.parse(`bgColor(${key},${variable},${uniqueBgColorsKey(key, parentContext)})`));
                 if (baseQ != null) {
-                  expr = expr.substitute(`base${variable}`, parser.parse(`bgColor(${key},base${variable})`));
+                  expr = expr.substitute(`base${variable}`, parser.parse(`bgColor(${key},base${variable},${uniqueBgColorsKey(key, parentContext)})`));
                 }
               }
             }
@@ -7412,10 +7418,10 @@ function tokensToTex(tokens, opts = {}) {
           stack.push(`\\sqrt{${args[0]}}`);
         } else if (["sin", "cos", "tan", "log", "ln"].includes(tok.value)) {
           stack.push(`\\${tok.value}\\left(${args.join(", ")}\\right)`);
-        } else if (f == "color" && args.length === 2) {
-          stack.push(`\\textcolor{${colors[args[0]]}}{${args[1]}}`);
-        } else if (f == "bgColor" && args.length === 2) {
-          stack.push(`\\fcolorbox{${colors[args[0]]}}{none}{\\(${args[1]}\\)}`);
+        } else if (f == "color" && args.length === 3) {
+          stack.push(`\\htmlData{var=${args[2]}}{\\htmlClass{axiom}{\\textcolor{${colors[args[0]]}}{${args[1]}}}}`);
+        } else if (f == "bgColor" && args.length === 3) {
+          stack.push(`\\htmlData{var=${args[2]}}{\\fcolorbox{${colors[args[0]]}}{transparent}{\\(${args[1]}\\)}}`);
         } else {
           stack.push(`${tok.value}\\left(${args.join(", ")}\\right)`);
         }
@@ -7703,8 +7709,7 @@ function formatPredicate(d, formatting) {
       result = compose`${formatAgent(d.agent)} ${d.asRatio ? formatRatio2(d.quantity) : formatQuantity(d.quantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} per ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? "" : formatQuantity(d.baseQuantity)}${d.entityBase.entity != "" ? " " : ""}${formatEntity2(d.entityBase.entity, d.entityBase.unit)}`;
       break;
     case "quota":
-      result = d.entityQuota == null ? formatKind(d) : compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? "po " : `pro ka\u017Ed\xE9 ${formatQuantity(d.baseQuantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} po `} ${formatQuantity(d.quotaQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity2(d.entityQuota.entity, d.entityQuota.unit)}
-         ${isNumber(d.restQuantity) ? d.restQuantity !== 0 ? ` se zbytkem ${formatQuantity(d.restQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity2(d.entityQuota.entity, d.entityQuota.unit)}` : "" : `se zbytkem ${formatQuantity(d.restQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity2(d.entityQuota.entity, d.entityQuota.unit)}`}`;
+      result = d.entityQuota == null ? formatKind(d) : compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? "po " : `pro ka\u017Ed\xE9 ${formatQuantity(d.baseQuantity)} ${formatEntity2(d.entity.entity, d.entity.unit)} po `} ${formatQuantity(d.quotaQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity2(d.entityQuota.entity, d.entityQuota.unit)} ${isNumber(d.restQuantity) ? d.restQuantity !== 0 ? ` se zbytkem ${formatQuantity(d.restQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity2(d.entityQuota.entity, d.entityQuota.unit)}` : "" : `se zbytkem ${formatQuantity(d.restQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity2(d.entityQuota.entity, d.entityQuota.unit)}`}`;
       break;
     case "sequence":
       result = compose`${d.type != null ? formatSequence2(d.type) : ""}`;
@@ -7753,7 +7758,7 @@ function formatPredicate(d, formatting) {
       result = formatKind(d);
       break;
   }
-  return compose`${result}`;
+  return result;
 }
 function joinArray(arr, sep) {
   return arr?.flatMap(

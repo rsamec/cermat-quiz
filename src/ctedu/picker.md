@@ -33,7 +33,7 @@ const ctEduFolders = await FileAttachment("../ctedu/folders.json").json();
                   <a class="h-stack h-stack--s" href="./form-${period}" title="Vyplnění odpovědí"><i class="fa fa-file-waveform"></i><span>Vyplňovačka</span></a>
                   <a class="h-stack h-stack--s" href="./calculator-${period}" title="Kalkulačka"><i class="fa fa-calculator"></i><span>Kalkulačka</span></a>
                   <a class="h-stack h-stack--s" href="./chat-stepper-${period}" title="Rozhodovačka"><i class="fa fa-diagram-project"></i><span>Rozhodovačka</span></a>
-                  <a class="h-stack h-stack--s" href="./color-expression-${period}" title="Obarvovačka"><i class="fa fa-palette"></i><span>Rozpad výpočtu</span></a>
+                  <a class="h-stack h-stack--s" href="../apps/ctedu-colorexpression-${period}" title="Obarvovačka"><i class="fa fa-palette"></i><span>Rozpad výpočtu</span></a>
                 </div>
               </div>
               <button  popovertarget=popover-data-${period}>Data<i class="fas fa-caret-down"></i></button>

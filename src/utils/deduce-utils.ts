@@ -2,7 +2,7 @@ import { formatAngle, inferenceRule, nthQuadraticElements, isNumber, isQuantityP
 import type { Predicate, Container, Rate, ComparisonDiff, Comparison, Quota, Transfer, Delta, EntityDef, RatioComparison, PredicateKind, PartWholeRatio } from "../components/math.js"
 import { partionArray } from '../utils/common-utils.js';
 import { inferenceRuleWithQuestion } from "../math/math-configure.js"
-import { evaluate, substitute, toEquationExprAsTex, colors } from "./math-solver.js"
+import { evaluate, substitute, toEquationExprAsTex, colors, toEquationExprAsText } from "./math-solver.js"
 import Fraction from 'fraction.js';
 
 type PredicateLabel = { labelKind?: 'input' | 'deduce', label?: number }
@@ -39,7 +39,7 @@ export type TreeNode = {
 }
 
 export type TreeNodeWithContext = { children: TreeNode, context: DeduceContext };
-export type ColorContext = { colors?: Record<string, Predicate[]>, bgColors?: Record<string, Predicate[]>, autoColors?: boolean }
+export type ColorContext = { colors?: Record<string, Predicate[]>, bgColors?: Record<string, Predicate[]>, autoColors?: boolean, uniqueId?: string }
 export type ExpressionContext = { depth?: number }
 export type TextContext = { text?: string }
 export type DeduceContext = ColorContext & ExpressionContext & TextContext
@@ -248,7 +248,6 @@ export function computeTreeMetrics(
   return { depth: level, width: Math.max(...Object.values(levels)), predicates, rules, formulas, useBase };
 }
 
-
 export function jsonToMarkdownTree(node, level = 0, parentContext: DeduceContext) {
   const indent = "  ".repeat(level); // Two spaces for each level
   let markdown = [];
@@ -262,19 +261,21 @@ export function jsonToMarkdownTree(node, level = 0, parentContext: DeduceContext
     const bgColor = isObjectContext(parentContext) ? bgColorsMap.find(([color, arr]) => arr.includes(node))?.[0] : null;
     const color = textColor ?? bgColor;
 
-    markdown.push(`${indent}- ${formatPredicate(node, color != null ? colorFormattingFunc(0, color, parentContext) : mdFormattingFunc(0, parentContext))}\n`);
+    const useColor = level > 0 && color != null;
+    markdown.push(`${indent}- ${formatPredicate(node, useColor ? colorFormattingFunc(0, color, parentContext) :mdFormattingFunc(0, parentContext))}${useColor ? ` {onclick=highlightVariable(event,'${parentContext.uniqueId}${textColor != null ? `color${textColor}`:`bgcolor${bgColor}`}','${color}')}`:''}\n`);
     return markdown;
   }
 
 
   // Process children recursively
   if (node.children && Array.isArray(node.children)) {
-
     for (let i = node.children.length - 1; i >= 0; i--) {
       const child = node.children[i];
       const isConclusion = i === node.children.length - 1;
       if (isConclusion && isStringContext(node.context)) markdown.push(`${indent}- *${node.context.text}*\n`)
       markdown = markdown.concat(jsonToMarkdownTree(child, level + (isConclusion ? 0 : 1), mergeWithParent(node.context, parentContext)))
+      //evaluate deeply only top level value
+      parentContext.depth = 0;
     }
   }
 
@@ -530,9 +531,32 @@ const chatFormattingFunc = (defaultExpressionDepth: number) => ({
   ...mdFormattingFunc(defaultExpressionDepth),
   formatTable: d => `vzor opakování \n\n${mdFormatTable(d)}`
 })
+
+function tryToFormatNumber(d){
+  const numberValue = parseFloat(d);      
+  return isNaN(numberValue) 
+    ? d
+    : numberValue.toLocaleString("cs-CZ",{ maximumFractionDigits: 2, minimumFractionDigits: 0 });
+}
 const colorFormattingFunc = (defaultExpressionDepth: number, color: string, context: DeduceContext) => ({
   ...mdFormattingFunc(defaultExpressionDepth, context),
-  formatAgent: (d) => `{${color}}(**${d}**)`,
+  compose: (strings: TemplateStringsArray, ...args) => `{${color}}(${concatString(strings, ...args)})`,
+  formatQuantity: d => {
+    if (typeof d === "number") {      
+      return d.toLocaleString("cs-CZ", { maximumFractionDigits: 2, minimumFractionDigits: 0 });
+    }
+    else if (d?.expression != null) {
+      const value = toEquationExprAsText(d, isObjectContext(context) ? (context.depth ?? defaultExpressionDepth) : defaultExpressionDepth, isObjectContext(context) ? context : null);
+      return tryToFormatNumber(value)
+    }
+    else if (typeof d === "string") {
+      return tryToFormatNumber(d);
+    }
+    else {
+      return tryToFormatNumber(d);
+    }
+  },
+
 })
 export function mdFormatTable(data: (string | number)[][]) {
   if (!Array.isArray(data) || data.length === 0) return "";
@@ -658,8 +682,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
     case "quota":
       result = d.entityQuota == null
         ? formatKind(d)
-        : compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? 'po ' : `pro každé ${formatQuantity(d.baseQuantity)} ${formatEntity(d.entity.entity, d.entity.unit)} po `} ${formatQuantity(d.quotaQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity(d.entityQuota.entity, d.entityQuota.unit)}
-         ${isNumber(d.restQuantity)
+        : compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? 'po ' : `pro každé ${formatQuantity(d.baseQuantity)} ${formatEntity(d.entity.entity, d.entity.unit)} po `} ${formatQuantity(d.quotaQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity(d.entityQuota.entity, d.entityQuota.unit)} ${isNumber(d.restQuantity)
             ? d.restQuantity !== 0
               ? ` se zbytkem ${formatQuantity(d.restQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity(d.entityQuota.entity, d.entityQuota.unit)}`
               : ''
@@ -721,7 +744,7 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = formatKind(d);
       break;
   }
-  return compose`${result}`;
+  return result;
 }
 
 function joinArray(arr: string[], sep: string) {
@@ -968,6 +991,9 @@ export function getStepsFromTree(tree) {
 function isColorifyPredicate(d) {
   return isQuantityPredicate(d) || isRatioPredicate(d);
 }
+function generateUniqueId() {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+}
 export function colorifyDeduceTree(originalTree, { maxDepth, axioms, deductions }: { maxDepth?: number, axioms?: boolean, deductions?: boolean } = { maxDepth: 2, axioms: true, deductions: false }) {
   let counter = 0;
   //const tree = JSON.parse(JSON.stringify(originalTree));
@@ -1045,7 +1071,9 @@ export function colorifyDeduceTree(originalTree, { maxDepth, axioms, deductions 
         return out;
       }, {})
     } : {}),
-    checkFraction: true
+    checkFraction: true,
+    uniqueId: generateUniqueId()
+
   }
   return { deductionTree: result, colorsMap }
 }
