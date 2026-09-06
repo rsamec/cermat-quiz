@@ -33,7 +33,8 @@ const ids = quiz.questions.map(d => d.id);
 
 function highlightVariable(event,variable, color) {
   event.stopPropagation();
-
+  const target = event.target.closest('li');
+ 
   // Remove previous highlights
   document
     .querySelectorAll(".eq-highlight")
@@ -41,6 +42,9 @@ function highlightVariable(event,variable, color) {
       el.classList.remove("eq-highlight");
     });
 
+  if (target){
+    target.classList.add('eq-highlight')
+  }
   document
     .querySelectorAll(".eq-highlight-colorbox")
     .forEach(el => {

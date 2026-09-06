@@ -1,4 +1,4 @@
-import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, rate, ratio, ctorPercent, percent, ctorOption, sum, product, counter, contLength, dimensionEntity, contArea, ctorExpressionOption, compRelativePercent, comp, ctorComplement, ctorRound, productCombine, pythagoras, ctorBooleanOption, evalFormulaAsCont, formulaRegistry, circleArea, compAngle, triangleAngle, contAngle, contRightAngle } from "../../components/math";
+import { compRatio, compRelative, cont, ctor, ctorDifference, ctorRatios, ctorUnit, rate, ratio, ctorPercent, percent, ctorOption, sum, product, counter, contLength, dimensionEntity, contArea, ctorExpressionOption, compRelativePercent, comp, ctorComplement, ctorRound, productCombine, pythagoras, ctorBooleanOption, evalFormulaAsCont, formulaRegistry, circleArea, compAngle, triangleAngle, contAngle, contRightAngle, cont } from "../../components/math";
 import { anglesNames, createLazyMap, deduce, deduceAs, last, toCont } from "../../utils/deduce-utils";
 
 export default createLazyMap({
@@ -198,7 +198,7 @@ function dlazdice() {
   const polomer = contLength("poloměr", 5);
   const entity = "kruh"
 
-  const vzorLabel = "dlaždice (čtvercový vzor)";
+  const vzorLabel = "dlaždice";
   const ctverec = contLength(vzorLabel, 40)
   const malyKruh = rate("pokoj", 4, "kruh", vzorLabel);
   const velkyKruh = rate("pokoj", 1, "kruh", vzorLabel);
@@ -235,14 +235,14 @@ function dlazdice() {
     },
     pokoj: {
       deductionTree: deduce(
-        toCont(deduce(
+        deduce(
           pocetDlazdic,
           malyKruh
-        ), { agent: "malý kruh" }),
-        toCont(deduce(
+        ),
+        deduce(
           last(pocetDlazdic),
           velkyKruh
-        ), { agent: "velký kruh" }),
+        ),
         ctorDifference("rozdíl")
       )
     }
@@ -317,24 +317,20 @@ function hriste() {
 function krychle() {
   const dim = dimensionEntity();
   const agent = "krychle";
-  const entity = "bílý čtvereček"
-  const agentStena = "stěna";
+  const entity = "bílý čtvereček" 
   return {
     deductionTree: deduce(
       deduce(
         deduce(
-          toCont(
+          deduce(
             deduce(
-              toCont(
-                deduce(
-                  contArea(agent, 480),
-                  counter(agent, 6),
-                  ctor("rate")
-                ), { agent: agentStena }
-              ),
-              cont(agentStena, 20, entity),
+              contArea(agent, 480),
+              cont(agent, 6, "stěna"),
               ctor("rate")
-            ), { agent: entity }),
+            ),
+            cont(agent, 20, entity),
+            ctor("rate")
+          ),
           evalFormulaAsCont(formulaRegistry.surfaceArea.square, x => x.a, "čtvereček", dim.length)
         ),
         counter("čtvereček", 5),

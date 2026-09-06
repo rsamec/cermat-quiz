@@ -2890,35 +2890,33 @@ function inferTransitiveRatioRule(a: PartWholeRatio, b: PartWholeRatio): Questio
     ] : []
   }
 }
-function toRateRule(a: Container, b: Container | Quota, rate: Rate): Rate {
+function toRateRule(a: Container | Rate, b: Container | Quota | Rate, rate: Rate): Rate {
   if (!equalAgent(a.agent, b.agent)) {
     throw `Mismatch angent ${a.agent}, ${b.agent}`
   }
   const baseQuantity = rate?.baseQuantity ?? 1;
+  const entity = a.kind ==="rate" ? a.entity: toEntity(a)
   return {
     kind: 'rate',
     agent: rate.agent ?? a.agent,
     quantity: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(baseQuantity)
       ? (baseQuantity === 1 ? a.quantity / b.quantity * baseQuantity : a.quantity / b.quantity * baseQuantity)
       : (isNumber(baseQuantity) && baseQuantity === 1) ? wrapToQuantity(`a.quantity / b.quantity`, { a, b }) : wrapToQuantity(`a.quantity / b.quantity * rate.baseQuantity`, { a, b, rate }),
-    entity: {
-      entity: a.entity,
-      unit: a.unit
-    },
+    entity,
     entityBase: {
-      entity: b.kind === "cont" ? b.entity : b.entityQuota.entity,
-      unit: b.kind === "cont" ? b.unit : b.entityQuota.unit,
+      entity: b.kind === "quota" ? b.entityQuota.entity : b.kind === "rate" ? b.entity.entity : b.entity,
+      unit: b.kind === "quota" ? b.entityQuota.unit : b.kind === "rate" ? b.entity.unit : b.unit,
     },
     baseQuantity: rate?.baseQuantity ?? 1
   }
 }
-function inferToRateRule(a: Container, b: Container | Quota, rate: Rate): Question<Rate> {
+function inferToRateRule(a: Container | Rate, b: Container | Quota | Rate, rate: Rate): Question<Rate> {
   const result = toRateRule(a, b, rate)
   if (isNumber(a.quantity) && isNumber(b.quantity) && isNumber(result.baseQuantity) && isNumber(result.quantity)) {
     return {
       name: toRateRule.name,
       inputParameters: extractKinds(a, b, rate),
-      question: `Rozděl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnoměrně ${formatNumber(b.quantity)} krát${result.baseQuantity !== 1 ? ` po ${formatNumber(result.baseQuantity)} ${formatEntity(b.kind === "cont" ? toEntity(b) : b.entityQuota)}` : ''}`,
+      question: `Rozděl ${formatNumber(a.quantity)} ${formatEntity(a.kind === "rate"? a.entity: toEntity(a))} rovnoměrně ${formatNumber(b.quantity)} krát${result.baseQuantity !== 1 ? ` po ${formatNumber(result.baseQuantity)} ${formatEntity(b.kind === "cont" ? toEntity(b) : b.kind === "rate" ? b.entity : b.entityQuota)}` : ''}`,
       result,
       options: [
         { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: rate.baseQuantity === 1 },
@@ -3743,6 +3741,12 @@ function inferenceRuleEx(...args: Predicate[]): Question<TruePredicate> {
 
     return kind === "comp-part-eq" && a.kind === "cont" ? inferPartEqualRule(b, a) : inferCompareRule(a, b);
   }
+  else if ((a.kind === "cont" || a.kind == "rate") && (b.kind === "cont" || b.kind == "quota" || b.kind ==="rate") && kind == "rate") {
+    return inferToRateRule(a, b, last)
+  }
+  else if ((b.kind === "cont" || b.kind == "rate") && (a.kind === "cont" || a.kind == "quota" || a.kind ==="rate") && kind == "rate") {
+    return inferToRateRule(b, a, last)
+  }  
   else if ((a.kind === "cont" || a.kind === "quota" || a.kind === "rate") && b.kind == "rate") {
     return kind === "ratio"
       ? inferToPartWholeRatio(b, a, last)
@@ -3751,7 +3755,9 @@ function inferenceRuleEx(...args: Predicate[]): Question<TruePredicate> {
   else if (a.kind === "rate" && (b.kind == "cont" || b.kind === "quota" || b.kind === "rate")) {
     return kind === "ratio" ?
       inferToPartWholeRatio(a, b, last)
-      : kind === "quota" && b.kind === "cont" ? inferRateQuotaRule(b, a, last) : inferRateRule(b, a);
+      : kind === "quota" && b.kind === "cont"
+        ? inferRateQuotaRule(b, a, last)
+        : inferRateRule(b, a);
   }
   else if (a.kind === "comp" && b.kind == "comp-ratio") {
     return kind === "comp" ? inferTransitiveCompareRule(a, b) : inferRatioCompareToCompareRule(b, a, kind === "nth-part" && last)
@@ -3788,12 +3794,6 @@ function inferenceRuleEx(...args: Predicate[]): Question<TruePredicate> {
   }
   else if (a.kind === "comp-ratio" && b.kind == "proportion") {
     return inferProportionRule(a, b)
-  }
-  else if (a.kind === "cont" && b.kind == "quota" && kind == "rate") {
-    return inferToRateRule(a, b, last)
-  }
-  else if (a.kind === "quota" && b.kind == "cont" && kind == "rate") {
-    return inferToRateRule(b, a, last)
   }
   else if (a.kind === "rest-quantity" && b.kind == "quota") {
     return inferRestQuantity(b, a)

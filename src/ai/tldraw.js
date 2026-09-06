@@ -3844,20 +3844,20 @@ var QuadraticSolver = /* @__PURE__ */ (() => {
 var colors = {
   darkred: "#e7040f",
   // red: "#ff4136",
-  //lightred: "#ff725c",
+  // lightred: "#ff725c",
   orange: "#ff6300",
   yellow: "#ffd700",
   // lightyellow: "#fbf1a9",
   purple: "#5e2ca5",
   // lightpurple: "#a463f2",
   darkpink: "#d5008f",
-  // hotpink: "#ff41b4",
+  hotpink: "#ff41b4",
   pink: "#ff80cc",
   // lightpink: "#ffa3d7",
-  // darkgreen: "#137752",
+  darkgreen: "#137752",
   green: "#19a974",
-  // lightgreen: "#9eebcf",
-  // navy: "#001b44",
+  //lightgreen: "#9eebcf",
+  navy: "#001b44",
   // darkblue: "#1b4b98",
   blue: "#266bd9",
   lightblue: "#96ccff",
@@ -5946,17 +5946,15 @@ function toRateRule(a, b, rate) {
     throw `Mismatch angent ${a.agent}, ${b.agent}`;
   }
   const baseQuantity = rate?.baseQuantity ?? 1;
+  const entity = a.kind === "rate" ? a.entity : toEntity(a);
   return {
     kind: "rate",
     agent: rate.agent ?? a.agent,
     quantity: isNumber2(a.quantity) && isNumber2(b.quantity) && isNumber2(baseQuantity) ? baseQuantity === 1 ? a.quantity / b.quantity * baseQuantity : a.quantity / b.quantity * baseQuantity : isNumber2(baseQuantity) && baseQuantity === 1 ? wrapToQuantity(`a.quantity / b.quantity`, { a, b }) : wrapToQuantity(`a.quantity / b.quantity * rate.baseQuantity`, { a, b, rate }),
-    entity: {
-      entity: a.entity,
-      unit: a.unit
-    },
+    entity,
     entityBase: {
-      entity: b.kind === "cont" ? b.entity : b.entityQuota.entity,
-      unit: b.kind === "cont" ? b.unit : b.entityQuota.unit
+      entity: b.kind === "quota" ? b.entityQuota.entity : b.kind === "rate" ? b.entity.entity : b.entity,
+      unit: b.kind === "quota" ? b.entityQuota.unit : b.kind === "rate" ? b.entity.unit : b.unit
     },
     baseQuantity: rate?.baseQuantity ?? 1
   };
@@ -5967,7 +5965,7 @@ function inferToRateRule(a, b, rate) {
     return {
       name: toRateRule.name,
       inputParameters: extractKinds(a, b, rate),
-      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnom\u011Brn\u011B ${formatNumber(b.quantity)} kr\xE1t${result.baseQuantity !== 1 ? ` po ${formatNumber(result.baseQuantity)} ${formatEntity(b.kind === "cont" ? toEntity(b) : b.entityQuota)}` : ""}`,
+      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity(a.kind === "rate" ? a.entity : toEntity(a))} rovnom\u011Brn\u011B ${formatNumber(b.quantity)} kr\xE1t${result.baseQuantity !== 1 ? ` po ${formatNumber(result.baseQuantity)} ${formatEntity(b.kind === "cont" ? toEntity(b) : b.kind === "rate" ? b.entity : b.entityQuota)}` : ""}`,
       result,
       options: [
         { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: rate.baseQuantity === 1 },
@@ -6633,6 +6631,10 @@ function inferenceRuleEx(...args) {
     return kind === "comp-part-eq" && b.kind === "cont" ? inferPartEqualRule(a, b) : inferCompareRule(b, a);
   } else if ((a.kind === "cont" || a.kind == "rate") && b.kind === "comp") {
     return kind === "comp-part-eq" && a.kind === "cont" ? inferPartEqualRule(b, a) : inferCompareRule(a, b);
+  } else if ((a.kind === "cont" || a.kind == "rate") && (b.kind === "cont" || b.kind == "quota" || b.kind === "rate") && kind == "rate") {
+    return inferToRateRule(a, b, last);
+  } else if ((b.kind === "cont" || b.kind == "rate") && (a.kind === "cont" || a.kind == "quota" || a.kind === "rate") && kind == "rate") {
+    return inferToRateRule(b, a, last);
   } else if ((a.kind === "cont" || a.kind === "quota" || a.kind === "rate") && b.kind == "rate") {
     return kind === "ratio" ? inferToPartWholeRatio(b, a, last) : kind === "quota" && a.kind === "cont" ? inferRateQuotaRule(a, b, last) : inferRateRule(a, b);
   } else if (a.kind === "rate" && (b.kind == "cont" || b.kind === "quota" || b.kind === "rate")) {
@@ -6661,10 +6663,6 @@ function inferenceRuleEx(...args) {
     return inferProportionRule(b, a);
   } else if (a.kind === "comp-ratio" && b.kind == "proportion") {
     return inferProportionRule(a, b);
-  } else if (a.kind === "cont" && b.kind == "quota" && kind == "rate") {
-    return inferToRateRule(a, b, last);
-  } else if (a.kind === "quota" && b.kind == "cont" && kind == "rate") {
-    return inferToRateRule(b, a, last);
   } else if (a.kind === "rest-quantity" && b.kind == "quota") {
     return inferRestQuantity(b, a);
   } else if (a.kind === "quota" && b.kind == "rest-quantity") {

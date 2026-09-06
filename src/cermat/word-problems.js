@@ -2104,17 +2104,15 @@ function toRateRule(a, b, rate2) {
     throw `Mismatch angent ${a.agent}, ${b.agent}`;
   }
   const baseQuantity = rate2?.baseQuantity ?? 1;
+  const entity3 = a.kind === "rate" ? a.entity : toEntity(a);
   return {
     kind: "rate",
     agent: rate2.agent ?? a.agent,
     quantity: isNumber(a.quantity) && isNumber(b.quantity) && isNumber(baseQuantity) ? baseQuantity === 1 ? a.quantity / b.quantity * baseQuantity : a.quantity / b.quantity * baseQuantity : isNumber(baseQuantity) && baseQuantity === 1 ? wrapToQuantity(`a.quantity / b.quantity`, { a, b }) : wrapToQuantity(`a.quantity / b.quantity * rate.baseQuantity`, { a, b, rate: rate2 }),
-    entity: {
-      entity: a.entity,
-      unit: a.unit
-    },
+    entity: entity3,
     entityBase: {
-      entity: b.kind === "cont" ? b.entity : b.entityQuota.entity,
-      unit: b.kind === "cont" ? b.unit : b.entityQuota.unit
+      entity: b.kind === "quota" ? b.entityQuota.entity : b.kind === "rate" ? b.entity.entity : b.entity,
+      unit: b.kind === "quota" ? b.entityQuota.unit : b.kind === "rate" ? b.entity.unit : b.unit
     },
     baseQuantity: rate2?.baseQuantity ?? 1
   };
@@ -2125,7 +2123,7 @@ function inferToRateRule(a, b, rate2) {
     return {
       name: toRateRule.name,
       inputParameters: extractKinds(a, b, rate2),
-      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity({ entity: a.entity })} rovnom\u011Brn\u011B ${formatNumber(b.quantity)} kr\xE1t${result.baseQuantity !== 1 ? ` po ${formatNumber(result.baseQuantity)} ${formatEntity(b.kind === "cont" ? toEntity(b) : b.entityQuota)}` : ""}`,
+      question: `Rozd\u011Bl ${formatNumber(a.quantity)} ${formatEntity(a.kind === "rate" ? a.entity : toEntity(a))} rovnom\u011Brn\u011B ${formatNumber(b.quantity)} kr\xE1t${result.baseQuantity !== 1 ? ` po ${formatNumber(result.baseQuantity)} ${formatEntity(b.kind === "cont" ? toEntity(b) : b.kind === "rate" ? b.entity : b.entityQuota)}` : ""}`,
       result,
       options: [
         { tex: `${formatNumber(a.quantity)} / ${formatNumber(b.quantity)}`, result: formatNumber(result.quantity), ok: rate2.baseQuantity === 1 },
@@ -2799,6 +2797,10 @@ function inferenceRuleEx(...args) {
     return kind === "comp-part-eq" && b.kind === "cont" ? inferPartEqualRule(a, b) : inferCompareRule(b, a);
   } else if ((a.kind === "cont" || a.kind == "rate") && b.kind === "comp") {
     return kind === "comp-part-eq" && a.kind === "cont" ? inferPartEqualRule(b, a) : inferCompareRule(a, b);
+  } else if ((a.kind === "cont" || a.kind == "rate") && (b.kind === "cont" || b.kind == "quota" || b.kind === "rate") && kind == "rate") {
+    return inferToRateRule(a, b, last2);
+  } else if ((b.kind === "cont" || b.kind == "rate") && (a.kind === "cont" || a.kind == "quota" || a.kind === "rate") && kind == "rate") {
+    return inferToRateRule(b, a, last2);
   } else if ((a.kind === "cont" || a.kind === "quota" || a.kind === "rate") && b.kind == "rate") {
     return kind === "ratio" ? inferToPartWholeRatio(b, a, last2) : kind === "quota" && a.kind === "cont" ? inferRateQuotaRule(a, b, last2) : inferRateRule(a, b);
   } else if (a.kind === "rate" && (b.kind == "cont" || b.kind === "quota" || b.kind === "rate")) {
@@ -2827,10 +2829,6 @@ function inferenceRuleEx(...args) {
     return inferProportionRule(b, a);
   } else if (a.kind === "comp-ratio" && b.kind == "proportion") {
     return inferProportionRule(a, b);
-  } else if (a.kind === "cont" && b.kind == "quota" && kind == "rate") {
-    return inferToRateRule(a, b, last2);
-  } else if (a.kind === "quota" && b.kind == "cont" && kind == "rate") {
-    return inferToRateRule(b, a, last2);
   } else if (a.kind === "rest-quantity" && b.kind == "quota") {
     return inferRestQuantity(b, a);
   } else if (a.kind === "quota" && b.kind == "rest-quantity") {
@@ -7318,20 +7316,20 @@ var QuadraticSolver = /* @__PURE__ */ (() => {
 var colors = {
   darkred: "#e7040f",
   // red: "#ff4136",
-  //lightred: "#ff725c",
+  // lightred: "#ff725c",
   orange: "#ff6300",
   yellow: "#ffd700",
   // lightyellow: "#fbf1a9",
   purple: "#5e2ca5",
   // lightpurple: "#a463f2",
   darkpink: "#d5008f",
-  // hotpink: "#ff41b4",
+  hotpink: "#ff41b4",
   pink: "#ff80cc",
   // lightpink: "#ffa3d7",
-  // darkgreen: "#137752",
+  darkgreen: "#137752",
   green: "#19a974",
-  // lightgreen: "#9eebcf",
-  // navy: "#001b44",
+  //lightgreen: "#9eebcf",
+  navy: "#001b44",
   // darkblue: "#1b4b98",
   blue: "#266bd9",
   lightblue: "#96ccff",
@@ -17251,7 +17249,7 @@ function dlazdice() {
   const dim2 = dimensionEntity();
   const polomer = contLength("polom\u011Br", 5);
   const entity3 = "kruh";
-  const vzorLabel = "dla\u017Edice (\u010Dtvercov\xFD vzor)";
+  const vzorLabel = "dla\u017Edice";
   const ctverec3 = contLength(vzorLabel, 40);
   const malyKruh = rate("pokoj", 4, "kruh", vzorLabel);
   const velkyKruh = rate("pokoj", 1, "kruh", vzorLabel);
@@ -17286,14 +17284,14 @@ function dlazdice() {
     },
     pokoj: {
       deductionTree: deduce(
-        toCont(deduce(
+        deduce(
           pocetDlazdic,
           malyKruh
-        ), { agent: "mal\xFD kruh" }),
-        toCont(deduce(
+        ),
+        deduce(
           last(pocetDlazdic),
           velkyKruh
-        ), { agent: "velk\xFD kruh" }),
+        ),
         ctorDifference("rozd\xEDl")
       )
     }
@@ -17365,25 +17363,18 @@ function krychle2() {
   const dim2 = dimensionEntity();
   const agent = "krychle";
   const entity3 = "b\xEDl\xFD \u010Dtvere\u010Dek";
-  const agentStena = "st\u011Bna";
   return {
     deductionTree: deduce(
       deduce(
         deduce(
-          toCont(
+          deduce(
             deduce(
-              toCont(
-                deduce(
-                  contArea(agent, 480),
-                  counter(agent, 6),
-                  ctor("rate")
-                ),
-                { agent: agentStena }
-              ),
-              cont(agentStena, 20, entity3),
+              contArea(agent, 480),
+              cont(agent, 6, "st\u011Bna"),
               ctor("rate")
             ),
-            { agent: entity3 }
+            cont(agent, 20, entity3),
+            ctor("rate")
           ),
           evalFormulaAsCont(formulaRegistry.surfaceArea.square, (x) => x.a, "\u010Dtvere\u010Dek", dim2.length)
         ),

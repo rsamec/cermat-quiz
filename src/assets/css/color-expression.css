@@ -108,6 +108,7 @@ ul {
   position: relative;
   .fcolorbox {
     border-radius: 0.37rem;
+    /* border: none !important; */
   }
   
 }
@@ -120,4 +121,8 @@ ul {
 
 li .md-colorify {
     cursor: pointer;
+}
+
+li.eq-highlight > .md-colorify {
+    box-shadow: 0 0 16px currentColor;
 }
