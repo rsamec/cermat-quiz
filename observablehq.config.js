@@ -147,7 +147,8 @@ export default {
     .concat(['/components/quiz-store.js'])
     .concat(['/components/math.js'])
     .concat(['gpt-4o', 'o3-mini', 'gpt-5-mini', 'gemini-2.5-flash'].map(model => `/ai-results-${model}`))
-   
+    .concat(['cermat','ctedu'].flatMap(source => 
+      ['word-problems-structure-rules', 'word-problems-structure-predicates'].map(d => `/apps/${source}-${d}`)))
     .concat(ctEduFolders.map(d => `/ctedu/print-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/arch-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/solution-${d}`))
@@ -163,7 +164,7 @@ export default {
     .concat(ctEduFolders.map(d => `/ctedu/chat-stepper-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/calculator-${d}`))
     .concat(ctEduFolders.flatMap(d => ['print','colorexpression'].map(app => `/apps/ctedu-${app}-${d}`)))
-    .concat(cermatFolders.flatMap(d => ['form', 'chatstepper', 'calculator', 'colorexpression','colorpalete','print', 'word-problems-structure-rules', 'word-problems-structure-predicates'].map(app => `/apps/cermat-${app}-${d}`)))
+    .concat(cermatFolders.flatMap(d => ['form', 'chatstepper', 'calculator', 'colorexpression','colorpalete','print'].map(app => `/apps/cermat-${app}-${d}`)))
     //.concat(quizes.flatMap(d => d.codes).map(code => `/data/arch-${code}.schema.json`))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.md`))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.json`))
