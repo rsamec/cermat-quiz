@@ -261,7 +261,7 @@ function vzestupHladinyVody() {
         half(),
         ctorScale("válec poloměr")
       ),
-      evalExprAsRate("r^2*Pi", { kind: 'rate', agent: 'voda', entity: dim.volume, entityBase: dim.length, baseQuantity: 1 })
+      evalExprAsRate("r^2*Pi", { kind: 'rate', agent: ['voda'], entity: dim.volume, entityBase: dim.length, baseQuantity: 1 })
     )
 
 

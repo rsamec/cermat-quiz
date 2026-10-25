@@ -1,4 +1,4 @@
-import wordProblems from '../math/word-problems.js';
+import wordProblems from './word-problems.js';
 import { unique } from '../utils/common-utils.js';
 import { computeTreeMetrics } from "../utils/deduce-utils.js";
 import { rulesCategories } from '../utils/quiz-utils.js';
@@ -18,12 +18,20 @@ const result = Object.entries(wordProblems)
     return Object.entries(value).flatMap(([key, value]) => {
       const metrics = computeTreeMetrics(value.deductionTree);
       const { rules } = metrics;
+      const filteredRules = rules.filter(d => d.name != "evalToOptionRule").filter(unique);
+      
+      const categoryMap = filteredRules.reduce((out,d) => {
+        const category = rulesMap[d.name] ?? d.name;
+        out[category] = (out[category] ?? []).concat(d.name);
+        return out;
+      }, {});
+
       return {
         name: `${code}-${key}`,
         code,
         key,
         question: key.split(".")[0],
-        sets: rules.filter(d => d.name != "evalToOptionRule").map(d => (rulesMap[d.name] ?? d.name)).filter(unique)
+        sets: Object.keys(categoryMap)
       }
     })
   })

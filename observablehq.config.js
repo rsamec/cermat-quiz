@@ -104,10 +104,10 @@ export default {
       open: false,
       name: "Matematika",
       pages: [
-        { name: "Slovní úlohy", path: "/word-problems-summary" },
-        { name: "Výrazy, konstrukční úlohy", path: "/math" },
         { name: "Matematizace", path: "/math-deduction" },
-        // { name: "Analýza struktury slovních úloh", path: "/word-problems-structure" },
+        { name: "Struktura slovních úloh", path: "/word-problems-structure-summary" },
+        { name: "Slovní úlohy", path: "/word-problems-summary" },
+        { name: "Výrazy, konstrukční úlohy", path: "/math" },      
         { name: "Měření obtížnosti", path: "/word-problems-measure" },
         // { name: "Prostředí", path:"math-environments"},
       ]
@@ -147,11 +147,7 @@ export default {
     .concat(['/components/quiz-store.js'])
     .concat(['/components/math.js'])
     .concat(['gpt-4o', 'o3-mini', 'gpt-5-mini', 'gemini-2.5-flash'].map(model => `/ai-results-${model}`))
-    //.concat('/blog/20250330')
-    // .concat('/data/quiz-question.zip')
-    // .concat('/data/quiz-questions.zip')
-    // .concat('/data/word-problem.zip')
-    // .concat('/data/word-problems.zip')
+   
     .concat(ctEduFolders.map(d => `/ctedu/print-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/arch-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/solution-${d}`))
@@ -167,7 +163,7 @@ export default {
     .concat(ctEduFolders.map(d => `/ctedu/chat-stepper-${d}`))
     .concat(ctEduFolders.map(d => `/ctedu/calculator-${d}`))
     .concat(ctEduFolders.flatMap(d => ['print','colorexpression'].map(app => `/apps/ctedu-${app}-${d}`)))
-    .concat(cermatFolders.flatMap(d => ['form', 'chatstepper', 'calculator', 'colorexpression','print'].map(app => `/apps/cermat-${app}-${d}`)))
+    .concat(cermatFolders.flatMap(d => ['form', 'chatstepper', 'calculator', 'colorexpression','colorpalete','print', 'word-problems-structure-rules', 'word-problems-structure-predicates'].map(app => `/apps/cermat-${app}-${d}`)))
     //.concat(quizes.flatMap(d => d.codes).map(code => `/data/arch-${code}.schema.json`))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.md`))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.json`))

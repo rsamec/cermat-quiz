@@ -4378,7 +4378,7 @@ function equalAgent(f: string | Agent, s: string | Agent) {
   return a.join() === b.join() || a.some(d => b.includes(d));
 }
 function mergeAgents(f: Agent, s: Agent) {
-  return [...new Set([...f, ...s])];
+  return [...new Set([...f, ...normalizeToAgent(s)])];
 }
 function mergeAgent(agent: string, newAgent: string, array: Agent) {
   const arr = Array.isArray(array) ? array : [array];
@@ -4444,7 +4444,7 @@ function formatNumber(d: number) {
 }
 
 function formatRatio(d: number, asPercent?: boolean) {
-  if (asPercent) return `${formatNumber(d * 100)} %`;
+  if (asPercent) return `${formatNumber(d * 100)}`;
   return globalFormatRatioAsLatex
     ? helpers.convertToFractionAsLatex(d)
     : (d > -2 && d < 2) ? helpers.convertToFraction(d) as string : formatNumber(d)

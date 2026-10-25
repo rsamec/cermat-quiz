@@ -7,7 +7,6 @@ import { toEquationExprAsText } from "../utils/math-solver.js";
 import { flextree } from 'd3-flextree';
 import Fraction from 'fraction.js';
 import { convertToShapes, createFrame, createShapeId } from "./tldraw-utils.js";
-import { dir } from "console";
 export { createBookmarks, createFrame, createShapeId, convertToShapes, createEmbed } from "./tldraw-utils.js";
 
 const defaultWidth = 250;

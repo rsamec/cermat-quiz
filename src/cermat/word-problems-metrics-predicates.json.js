@@ -1,7 +1,7 @@
-import wordProblems from '../math/word-problems.js';
+import wordProblems from './word-problems.js';
 import { computeTreeMetrics } from "../utils/deduce-utils.js";
 import { predicatesCategories } from '../utils/quiz-utils.js';
-
+import { unique } from '../utils/common-utils.js';
 
 const predicatesMap = [...predicatesCategories.entries()].reduce((out, [key, values]) => {
   for (let val of values) {
@@ -23,7 +23,7 @@ const result = Object.entries(wordProblems)
       question: key.split(".")[0],
       index:i,
       rule: d.name,
-      sets: d.inputs.flatMap(d => predicatesMap[d] ?? d)
+      sets: d.inputs.flatMap(d => predicatesMap[d] ?? d).filter(unique)
     }))
   })
 })

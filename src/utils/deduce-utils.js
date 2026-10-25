@@ -2876,7 +2876,7 @@ function equalAgent(f, s) {
   return a.join() === b.join() || a.some((d) => b.includes(d));
 }
 function mergeAgents(f, s) {
-  return [.../* @__PURE__ */ new Set([...f, ...s])];
+  return [.../* @__PURE__ */ new Set([...f, ...normalizeToAgent(s)])];
 }
 function mergeAgent(agent, newAgent, array) {
   const arr = Array.isArray(array) ? array : [array];
@@ -2929,7 +2929,7 @@ function formatNumber(d) {
 }
 function formatRatio(d, asPercent) {
   if (asPercent)
-    return `${formatNumber(d * 100)} %`;
+    return `${formatNumber(d * 100)}`;
   return globalFormatRatioAsLatex ? helpers.convertToFractionAsLatex(d) : d > -2 && d < 2 ? helpers.convertToFraction(d) : formatNumber(d);
 }
 function containerQuestion(d) {
@@ -7233,7 +7233,9 @@ function computeTreeMetrics(node, level = 0, levels = {}, predicates = [], rules
         rules.push({
           name: result.name,
           inputs: inputParameters.filter((d) => d != null && d.kind != null).map((d) => d.kind),
-          axioms: inputParameters.map((d) => !deduceMap.has(d))
+          axioms: inputParameters.map((d) => !deduceMap.has(d)),
+          inputParameters,
+          result
         });
       }
       const metrics = computeTreeMetrics(child, level + 1, levels, predicates, rules, formulas, useBase, deduceMap);
@@ -7267,7 +7269,9 @@ function jsonToMarkdownTree(node, level = 0, parentContext) {
         markdown.push(`${indent}- *${node.context.text}*
 `);
       markdown = markdown.concat(jsonToMarkdownTree(child, level + (isConclusion ? 0 : 1), mergeWithParent(node.context, parentContext)));
-      parentContext.depth = 0;
+      if (parentContext != null) {
+        parentContext.depth = 0;
+      }
     }
   }
   return markdown;
@@ -7348,6 +7352,21 @@ function deductionTreeToHierarchy(node, convertFn) {
     children: predicates
   };
 }
+function deductionTreeToRulesHierarchy(node, state = { nextIndex: 0 }) {
+  if (isPredicate(node)) {
+    return [];
+  }
+  if (node.children && Array.isArray(node.children)) {
+    const predicates = mapNodeChildrenToPredicates(node);
+    const result = inferenceRuleWithQuestion2(predicates);
+    const children = node.children.flatMap((d) => deductionTreeToRulesHierarchy(d, state)).sort((f, s) => f.rule.localeCompare(s.rule));
+    return {
+      rule: result.name,
+      index: state.nextIndex++,
+      children
+    };
+  }
+}
 function jsonToTLDrawEx(node, isConclusion, level = 0) {
   const indent = "  ".repeat(level);
   let markdown = [];
@@ -7378,8 +7397,13 @@ function jsonToTLDrawEx(node, isConclusion, level = 0) {
   }
   return markdown;
 }
-function jsonToMarkdownChat(node, { predicates, rules, formulas } = { predicates: [], rules: [], formulas: [] }) {
+function jsonToMarkdownChat(node, filteringParams = { predicates: [], rules: [], formulas: [], steps: [] }) {
+  return jsonToMarkdownChatEx(node, filteringParams).map((d) => d.md);
+}
+function jsonToMarkdownChatEx(node, filteringParams) {
+  const { predicates, rules, formulas, steps } = { ...{ predicates: [], rules: [], formulas: [], steps: [] }, ...filteringParams };
   const flatStructure = [];
+  var stepCounter = 0;
   function traverseEx(node2) {
     const args = [];
     if (isPredicate(node2)) {
@@ -7389,10 +7413,14 @@ function jsonToMarkdownChat(node, { predicates, rules, formulas } = { predicates
     if (node2.children && Array.isArray(node2.children)) {
       if (node2.context != null) {
         if (isStringContext(node2.context)) {
-          flatStructure.push("\n");
-          flatStructure.push(`Kontext: *${node2.context.text}*
+          flatStructure.push({
+            md: `
+Kontext: *${node2.context.text}*
 
-`);
+`,
+            isContext: true,
+            anyHighlighted: false
+          });
         }
       }
       for (let i = 0; i != node2.children.length; i++) {
@@ -7418,14 +7446,24 @@ function jsonToMarkdownChat(node, { predicates, rules, formulas } = { predicates
         return predicates.includes(d.kind) || d.kind == "eval-formula" && formulas.includes(d.formulaName) ? `==${formatPredicate(d, chatFormattingFunc(0))}==` : formatPredicate(d, chatFormattingFunc(0));
       }).filter((d) => !isEmptyOrWhiteSpace(d)).map((d) => `- ${d}`).join("\n");
       const stepContext = "";
-      flatStructure.push((q != null ? `${stepContext}${rules.includes(q.name) ? `==${q.question.trim()}==` : q.question}
+      const rulesInclude = q != null ? rules.includes(q.name) : false;
+      const stepsInclude = steps.includes(stepCounter);
+      const anyPredicatesOrFormulaInclude = q != null ? predicatesArr.some((d) => predicates.includes(d.kind) || d.kind == "eval-formula" && formulas.includes(d.formulaName)) : false;
+      const anyHighlighted = rulesInclude || stepsInclude || anyPredicatesOrFormulaInclude;
+      flatStructure.push(
+        {
+          md: (q != null ? `${stepContext}${stepsInclude || rules.includes(q.name) ? `==${q.question.trim()}==` : q.question}
 ${body}
 
-` + (answer != null ? `${rules.includes(q.name) ? "==V\xFDpo\u010Det==" : "V\xFDpo\u010Det"}: ${answer.tex} = ${answer.result}` : "") : `${stepContext}${body}`) + `
+` + (answer != null ? `${stepsInclude || rules.includes(q.name) ? "==V\xFDpo\u010Det==" : "V\xFDpo\u010Det"}: $${answer.tex} = ${answer.result}$` : "") : `${stepContext}${body}`) + `
 
-${rules.includes(q?.name) ? "==Z\xE1v\u011Br==" : "Z\xE1v\u011Br"}:${predicates.includes(conclusion.kind) ? `==${formatPredicate(conclusion, chatFormattingFunc(1))}==` : formatPredicate(conclusion, chatFormattingFunc(1))}
+${stepsInclude || rules.includes(q?.name) ? "==Z\xE1v\u011Br==" : "Z\xE1v\u011Br"}:${predicates.includes(conclusion.kind) ? `==${formatPredicate(conclusion, chatFormattingFunc(1))}==` : formatPredicate(conclusion, chatFormattingFunc(1))}
 
-`);
+`,
+          anyHighlighted
+        }
+      );
+      stepCounter++;
     }
     return args;
   }
@@ -7480,6 +7518,10 @@ var chatFormattingFunc = (defaultExpressionDepth) => ({
 
 ${mdFormatTable(d)}`
 });
+function tryToFormatFraction(d) {
+  const numberValue = parseFloat(d);
+  return isNaN(numberValue) ? d : new Fraction(numberValue).simplify(1e-3).toFraction();
+}
 function tryToFormatNumber(d) {
   const numberValue = parseFloat(d);
   return isNaN(numberValue) ? d : numberValue.toLocaleString("cs-CZ", { maximumFractionDigits: 2, minimumFractionDigits: 0 });
@@ -7494,9 +7536,23 @@ var colorFormattingFunc = (defaultExpressionDepth, color, context) => ({
       const value = toEquationExprAsText(d, isObjectContext(context) ? context.depth ?? defaultExpressionDepth : defaultExpressionDepth, isObjectContext(context) ? context : null);
       return tryToFormatNumber(value);
     } else if (typeof d === "string") {
-      return tryToFormatNumber(d);
+      return d;
     } else {
-      return tryToFormatNumber(d);
+      return d;
+    }
+  },
+  formatRatio: (d, asPercent) => {
+    if (typeof d === "number") {
+      return asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : new Fraction(d).toFraction();
+    } else if (d?.expression != null) {
+      const colorContext = isObjectContext(context) ? context : null;
+      const requiredLevel = isObjectContext(context) ? context.depth ?? defaultExpressionDepth : defaultExpressionDepth;
+      const value = asPercent ? toEquationExprAsText({ ...d, expression: `(${d.expression}) * 100` }, requiredLevel, colorContext) : toEquationExprAsText(d, requiredLevel, colorContext);
+      return tryToFormatFraction(value);
+    } else if (typeof d === "string") {
+      return d;
+    } else {
+      return d;
     }
   }
 });
@@ -7544,7 +7600,7 @@ function formatPredicate(d, formatting) {
   let result = "";
   switch (d.kind) {
     case "cont":
-      result = compose`${formatAgent(d.agent)}=${d.asRatio ? formatRatio2(d.quantity) : formatQuantity(d.quantity)}${d.entity != "" ? " " : ""}${formatEntity2(d.entity, d.unit)}`;
+      result = compose`${formatAgent(d.agent)}=${d.asRatio ? formatRatio2(d.quantity) : formatQuantity(d.quantity)}${d.entity != "" || d.unit != "" ? " " : ""}${formatEntity2(d.entity, d.unit)}`;
       break;
     case "comp":
       if (isNumber(d.quantity)) {
@@ -7914,6 +7970,7 @@ export {
   deduceAs,
   deduceLbl,
   deductionTreeToHierarchy,
+  deductionTreeToRulesHierarchy,
   extractAxiomsFromTree,
   formatPredicate,
   generateAIMessages,
@@ -7923,6 +7980,7 @@ export {
   isPredicate,
   isStringContext,
   jsonToMarkdownChat,
+  jsonToMarkdownChatEx,
   jsonToMarkdownTree,
   jsonToMermaidMindMap,
   jsonToMermaidMindMapEx,

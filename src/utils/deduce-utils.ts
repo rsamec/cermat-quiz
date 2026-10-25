@@ -148,7 +148,7 @@ function mapToQuota({ agent, entityQuota, quotaQuantity }: { agent: string[], en
         unit: node.unit,
       },
       entityQuota,
-      restQuantity: 0,    
+      restQuantity: 0,
       baseQuantity: 1,
       moduloType: 'floor'
     }
@@ -230,7 +230,9 @@ export function computeTreeMetrics(
         rules.push({
           name: result.name,
           inputs: inputParameters.filter(d => d != null && d.kind != null).map(d => d.kind),
-          axioms: inputParameters.map(d => !deduceMap.has(d))
+          axioms: inputParameters.map(d => !deduceMap.has(d)),
+          inputParameters,
+          result,
         })
 
       }
@@ -262,7 +264,7 @@ export function jsonToMarkdownTree(node, level = 0, parentContext: DeduceContext
     const color = textColor ?? bgColor;
 
     const useColor = level > 0 && color != null;
-    markdown.push(`${indent}- ${formatPredicate(node, useColor ? colorFormattingFunc(0, color, parentContext) :mdFormattingFunc(0, parentContext))}${useColor ? ` {onclick=highlightVariable(event,'${parentContext.uniqueId}${textColor != null ? `color${textColor}`:`bgcolor${bgColor}`}','${color}')}`:''}\n`);
+    markdown.push(`${indent}- ${formatPredicate(node, useColor ? colorFormattingFunc(0, color, parentContext) : mdFormattingFunc(0, parentContext))}${useColor ? ` {onclick=highlightVariable(event,'${parentContext.uniqueId}${textColor != null ? `color${textColor}` : `bgcolor${bgColor}`}','${color}')}` : ''}\n`);
     return markdown;
   }
 
@@ -275,7 +277,9 @@ export function jsonToMarkdownTree(node, level = 0, parentContext: DeduceContext
       if (isConclusion && isStringContext(node.context)) markdown.push(`${indent}- *${node.context.text}*\n`)
       markdown = markdown.concat(jsonToMarkdownTree(child, level + (isConclusion ? 0 : 1), mergeWithParent(node.context, parentContext)))
       //evaluate deeply only top level value
-      parentContext.depth = 0;
+      if (parentContext != null) {
+        parentContext.depth = 0;
+      }
     }
   }
 
@@ -364,6 +368,23 @@ export function deductionTreeToHierarchy(node: { children: any[] }, convertFn?: 
     children: predicates
   }
 }
+export function deductionTreeToRulesHierarchy(node: { children: any[] }, state = { nextIndex: 0 }) {  
+  if (isPredicate(node)) {
+    return [];
+  }
+  if (node.children && Array.isArray(node.children)) {
+    const predicates = mapNodeChildrenToPredicates(node);
+    const result = inferenceRuleWithQuestion(predicates);
+    const children = node.children
+      .flatMap(d => deductionTreeToRulesHierarchy(d, state))
+      .sort((f,s) => f.rule.localeCompare(s.rule))
+    return {
+        rule: result.name,
+        index: state.nextIndex++,
+        children,
+    }
+  }
+}
 
 export function jsonToTLDrawEx(node, isConclusion, level = 0) {
   const indent = "  ".repeat(level); // Two spaces for each level
@@ -400,10 +421,16 @@ export function jsonToTLDrawEx(node, isConclusion, level = 0) {
 }
 
 
+type DeduceFilteringParams = { predicates: string[], rules: string[], formulas: string[], steps: number[] }
+type MdDeduceStep = { md: string, isContext?: boolean, anyHighlighted: boolean }
 
-export function jsonToMarkdownChat(node, { predicates, rules, formulas }: { predicates: string[], rules: string[], formulas: string[] } = { predicates: [], rules: [], formulas: [] }) {
-
-  const flatStructure = [];
+export function jsonToMarkdownChat(node, filteringParams: DeduceFilteringParams = { predicates: [], rules: [], formulas: [], steps: [] }) {
+  return jsonToMarkdownChatEx(node, filteringParams).map(d => d.md);
+}
+export function jsonToMarkdownChatEx(node, filteringParams: DeduceFilteringParams) {
+  const { predicates, rules, formulas, steps } = { ...{ predicates: [], rules: [], formulas: [], steps: [] }, ...filteringParams };
+  const flatStructure: MdDeduceStep[] = [];
+  var stepCounter = 0;
   function traverseEx(node) {
     const args = []
     // Add node details if they exist
@@ -418,8 +445,11 @@ export function jsonToMarkdownChat(node, { predicates, rules, formulas }: { pred
 
       if (node.context != null) {
         if (isStringContext(node.context)) {
-          flatStructure.push('\n');
-          flatStructure.push(`Kontext: *${node.context.text}*\n\n`)
+          flatStructure.push({
+            md: `\nKontext: *${node.context.text}*\n\n`,
+            isContext: true,
+            anyHighlighted: false
+          })
         }
       }
 
@@ -459,13 +489,23 @@ export function jsonToMarkdownChat(node, { predicates, rules, formulas }: { pred
 
       const stepContext = '';
 
-      flatStructure.push((q != null
-        ? `${stepContext}${rules.includes(q.name) ? `==${q.question.trim()}==` : q.question}\n${body}\n\n` + (answer != null
-          ? `${rules.includes(q.name) ? '==Výpočet==' : 'Výpočet'}: ${answer.tex} = ${answer.result}`
-          : '')
-        : `${stepContext}${body}`) + '\n\n' + `${rules.includes(q?.name) ? '==Závěr==' : 'Závěr'}:${predicates.includes(conclusion.kind)
-          ? `==${formatPredicate(conclusion, chatFormattingFunc(1))}==`
-          : formatPredicate(conclusion, chatFormattingFunc(1))}` + "\n\n");
+      const rulesInclude = q != null ? rules.includes(q.name) : false;
+      const stepsInclude = steps.includes(stepCounter);
+      const anyPredicatesOrFormulaInclude = q != null ? predicatesArr.some(d => predicates.includes(d.kind) || (d.kind == "eval-formula" && formulas.includes(d.formulaName))) : false;
+      const anyHighlighted = rulesInclude || stepsInclude || anyPredicatesOrFormulaInclude
+      flatStructure.push({
+        md: (q != null
+          ? `${stepContext}${stepsInclude || rules.includes(q.name) ? `==${q.question.trim()}==` : q.question}\n${body}\n\n` + (answer != null
+            ? `${stepsInclude || rules.includes(q.name) ? '==Výpočet==' : 'Výpočet'}: $${answer.tex} = ${answer.result}$`
+            : '')
+          : `${stepContext}${body}`) + '\n\n' + `${stepsInclude || rules.includes(q?.name) ? '==Závěr==' : 'Závěr'}:${predicates.includes(conclusion.kind)
+            ? `==${formatPredicate(conclusion, chatFormattingFunc(1))}==`
+            : formatPredicate(conclusion, chatFormattingFunc(1))}` + "\n\n",
+        anyHighlighted,
+      }
+      );
+      stepCounter++;
+
     }
 
     return args
@@ -532,17 +572,24 @@ const chatFormattingFunc = (defaultExpressionDepth: number) => ({
   formatTable: d => `vzor opakování \n\n${mdFormatTable(d)}`
 })
 
-function tryToFormatNumber(d){
-  const numberValue = parseFloat(d);      
-  return isNaN(numberValue) 
+function tryToFormatFraction(d) {
+  const numberValue = parseFloat(d);
+  return isNaN(numberValue)
     ? d
-    : numberValue.toLocaleString("cs-CZ",{ maximumFractionDigits: 2, minimumFractionDigits: 0 });
+    : new Fraction(numberValue).simplify(0.001).toFraction()
 }
+function tryToFormatNumber(d) {
+  const numberValue = parseFloat(d);
+  return isNaN(numberValue)
+    ? d
+    : numberValue.toLocaleString("cs-CZ", { maximumFractionDigits: 2, minimumFractionDigits: 0 });
+}
+
 const colorFormattingFunc = (defaultExpressionDepth: number, color: string, context: DeduceContext) => ({
   ...mdFormattingFunc(defaultExpressionDepth, context),
   compose: (strings: TemplateStringsArray, ...args) => `{${color}}(${concatString(strings, ...args)})`,
   formatQuantity: d => {
-    if (typeof d === "number") {      
+    if (typeof d === "number") {
       return d.toLocaleString("cs-CZ", { maximumFractionDigits: 2, minimumFractionDigits: 0 });
     }
     else if (d?.expression != null) {
@@ -550,12 +597,31 @@ const colorFormattingFunc = (defaultExpressionDepth: number, color: string, cont
       return tryToFormatNumber(value)
     }
     else if (typeof d === "string") {
-      return tryToFormatNumber(d);
+      return d;
     }
     else {
-      return tryToFormatNumber(d);
+      return d;
     }
   },
+  formatRatio: (d, asPercent) => {
+    if (typeof d === "number") {
+      return asPercent ? `${(d * 100).toLocaleString("cs-CZ")}%` : new Fraction(d).toFraction();
+    }
+    else if (d?.expression != null) {
+      const colorContext = isObjectContext(context) ? context : null;
+      const requiredLevel = isObjectContext(context) ? (context.depth ?? defaultExpressionDepth) : defaultExpressionDepth;
+      const value = asPercent
+        ? toEquationExprAsText({ ...d, expression: `(${d.expression}) * 100` }, requiredLevel, colorContext)
+        : toEquationExprAsText(d, requiredLevel, colorContext)
+      return tryToFormatFraction(value)
+    }
+    else if (typeof d === "string") {
+      return d;
+    }
+    else {
+      return d;
+    }
+  }
 
 })
 export function mdFormatTable(data: (string | number)[][]) {
@@ -616,8 +682,8 @@ export function formatPredicate(d: Predicate, formatting: any) {
   let result = ''
   switch (d.kind) {
     case "cont":
-      result = compose`${formatAgent(d.agent)}=${d.asRatio ? formatRatio(d.quantity) : formatQuantity(d.quantity)}${d.entity != "" ? " " : ""}${formatEntity(d.entity, d.unit)}`;
-      break;  
+      result = compose`${formatAgent(d.agent)}=${d.asRatio ? formatRatio(d.quantity) : formatQuantity(d.quantity)}${d.entity != "" || d.unit != "" ? " " : ""}${formatEntity(d.entity, d.unit)}`;
+      break;
 
     case "comp":
       if (isNumber(d.quantity)) {
@@ -683,10 +749,10 @@ export function formatPredicate(d: Predicate, formatting: any) {
       result = d.entityQuota == null
         ? formatKind(d)
         : compose`${formatAgent(d.agent)} ${formatQuantity(d.quantity)} ${formatEntity(d.entity.entity, d.entity.unit)} ${isNumber(d.baseQuantity) && d.baseQuantity == 1 ? 'po ' : `pro každé ${formatQuantity(d.baseQuantity)} ${formatEntity(d.entity.entity, d.entity.unit)} po `} ${formatQuantity(d.quotaQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity(d.entityQuota.entity, d.entityQuota.unit)} ${isNumber(d.restQuantity)
-            ? d.restQuantity !== 0
-              ? ` se zbytkem ${formatQuantity(d.restQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity(d.entityQuota.entity, d.entityQuota.unit)}`
-              : ''
-            : `se zbytkem ${formatQuantity(d.restQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity(d.entityQuota.entity, d.entityQuota.unit)}`}`
+          ? d.restQuantity !== 0
+            ? ` se zbytkem ${formatQuantity(d.restQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity(d.entityQuota.entity, d.entityQuota.unit)}`
+            : ''
+          : `se zbytkem ${formatQuantity(d.restQuantity)}${d.entityQuota.entity != "" ? " " : ""}${formatEntity(d.entityQuota.entity, d.entityQuota.unit)}`}`
       break;
     case "sequence":
       result = compose`${d.type != null ? formatSequence(d.type) : ''}`
@@ -992,7 +1058,7 @@ function isColorifyPredicate(d) {
   return isQuantityPredicate(d) || isRatioPredicate(d);
 }
 function generateUniqueId() {
-    return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+  return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
 }
 export function colorifyDeduceTree(originalTree, { maxDepth, axioms, deductions }: { maxDepth?: number, axioms?: boolean, deductions?: boolean } = { maxDepth: 2, axioms: true, deductions: false }) {
   let counter = 0;

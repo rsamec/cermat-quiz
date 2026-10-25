@@ -51,7 +51,9 @@ const assets = assetsData.filter((({code}) => parseCode(code).period == observab
                   <a class="h-stack h-stack--s" href="../apps/cermat-form-${code}" title="Vyplnění odpovědí"><i class="fa fa-file-waveform"></i><span>Vyplňovačka</span></a>
                   ${subject == "math" ? html.fragment`<a class="h-stack h-stack--s" href="../apps/cermat-calculator-${code}" title="Kalkulačka"><i class="fa fa-calculator"></i><span>Kalkulačka</span></a>
                   <a class="h-stack h-stack--s" href="../apps/cermat-chatstepper-${code}" title="Rozhodovačka"><i class="fa fa-diagram-project"></i><span>Rozhodovačka</span></a>
-                  <a class="h-stack h-stack--s" href="../apps/cermat-colorexpression-${code}" title="Obarvovačka"><i class="fa fa-palette"></i><span>Rozpad výpočtu</span></a>`:''}
+                  <a class="h-stack h-stack--s" href="../apps/cermat-tree-${code}" title="Rozhodovačka"><i class="fa fa-diagram-project"></i><span>Strom</span></a>
+                  <a class="h-stack h-stack--s" href="../apps/cermat-colorexpression-${code}" title="Obarvovačka"><i class="fa fa-palette"></i><span>Rozpad výpočtu</span></a>
+                  <a class="h-stack h-stack--s" href="../apps/cermat-colorpalete-${code}" title="Obarvovačka 2"><i class="fa fa-palette"></i><span>Rozpad výpočtu 2</span></a>`:''}
                 </div>
               </div>
               ${subject == "math" ? html`<button  popovertarget=popover-data-${code}>Data<i class="fas fa-caret-down"></i></button>

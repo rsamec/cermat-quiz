@@ -104,25 +104,25 @@ export const providersConfig = [
 export const predicatesCategories = new Map([
   ["Hodnota", ["cont"]],
   ["Porov. rozdílem", ["comp", "comp-diff", "diff"]],
-  ["Porov. podílem", ["comp-ratio", "complement-comp-ratio"]],
-  ["Část z celku", ["ratio", "complement"]],
+  ["Porov. podílem", ["comp-ratio", "complement-comp-ratio","invert-comp-ratio", "comp-part-eq"]],
+  ["Část z celku", ["ratio", "complement", "convert-percent"]],
   ["Část ku části", ["ratios", "nth-part", "ratios-invert", "alligation"]],
   ["Stav/změna stavu", ["delta", "transfer"]],
-  ["Rozdělování", ["rate", "quota", "frequency"]],
+  ["Rozdělování", ["rate", "quota", "frequency","rest-quantity","quota-quantity"]],
   ["Seskupování", ["sum", "sum-combine", "product", "product-combine"]],
   ["Úměrnosti", ["proportion"]],
   ["Škálování", ["scale", "scale-invert", "nth-factor", "nth-scale"]],
-  ["Posuny", ["slide", "slide-invert", "reverse"]],
+  ["Posuny", ["slide", "slide-invert", "reverse", "invert"]],
   ["Převod jednotek", ["unit"]],
   ["Zaokrouhlování", ["round"]],
   ["NSN, NSD", ["gcd", "lcd"]],
   ["Výrazy, vzorce", ["eval-formula", "eval-expr", "simplify-expr"]],
-  ["Proměnné, rovnice", ["linear-equation"]],
+  ["Proměnné, rovnice", ["linear-equation", "quadratic-equation"]],
   ["Pythagorova věta", ["pythagoras"]],
   ["Vztahy úhlů", ["comp-angle", "triangle-angle"]],
   ["Vzory opakování", ["sequence", "nth", "pattern", "balanced-partition"]],
   ["Selský rozum", ["common-sense"]],
-  ["Vyhodnocení", ["eval-option"]],
+  ["Vyhodnocení", ["eval-option", "tuple"]],
 
 ])
 
@@ -131,17 +131,25 @@ export const rulesCategories = new Map([
   ["Porovnání poměrem", [`ratioCompareRule`, 'toRatioCompareRule', "toDifferenceAsRatioRule", "ratioCompareToCompareRule"]],
   ["Část z celku", ["partToWholeRule", "toPartWholeRatio", "partWholeComplementRule"]],
   ["Část ku části", ["partToPartRule", "toRatiosRule", "invertRatiosRule", "reverseRatiosRule"]],
-  ["Propojení poměru s část–celek", ["partWholeCompareRule", "toPartWholeCompareRule", "invertRatioCompareRule"]],
-  ["Propojení poměru s část-část", ["compRatiosToCompRule", "convertRatioCompareToRatiosRule"]],
-  ["Převod mezi část-celek a poměrem", ['convertPartWholeToRatioCompareRule', 'convertRatioCompareToRatioRule']],
-  ["Převod mezi část-část a poměrem", ["convertRatioCompareToTwoPartRatioRule", "convertTwoPartRatioToRatioCompareRule"]],
-  ["Převod část-část na část-celek", ["convertPartToPartToPartWholeRule"]],
-  ["Převod mezi poměrem a procentem", ["togglePartWholeAsPercentRule", "convertPercentRule"]],
+  // ["Propojení poměru s část–celek", ["partWholeCompareRule", "toPartWholeCompareRule", "invertRatioCompareRule"]],
+  // ["Propojení poměru s část-část", ["compRatiosToCompRule", "convertRatioCompareToRatiosRule"]],
+  // ["Převod mezi část-celek a poměrem", ['convertPartWholeToRatioCompareRule', 'convertRatioCompareToRatioRule']],
+  // ["Převod mezi část-část a poměrem", ["convertRatioCompareToTwoPartRatioRule", "convertTwoPartRatioToRatioCompareRule"]],
+  // ["Převod část-část na část-celek", ["convertPartToPartToPartWholeRule"]],
+  // ["Převod mezi poměrem a procentem", ["togglePartWholeAsPercentRule", "convertPercentRule"]],
+  ["Poměry", [] 
+    .concat(["partWholeCompareRule", "toPartWholeCompareRule", "invertRatioCompareRule"])
+    .concat(["compRatiosToCompRule", "convertRatioCompareToRatiosRule"])
+    .concat(['convertPartWholeToRatioCompareRule', 'convertRatioCompareToRatioRule'])
+    .concat(["convertRatioCompareToTwoPartRatioRule", "convertTwoPartRatioToRatioCompareRule"])
+    .concat(["convertPartToPartToPartWholeRule"])
+    .concat(["togglePartWholeAsPercentRule", "convertPercentRule"])
+  ],
   ["Řetězení poměrů", [`transitiveRatioCompareRule`, "transitiveCompareRule", "transitiveRatioRule", "transitiveRateRule"]],
 
   ["Spojování", [`sumRule`, `productRule`]],
-  ["Rozdělení (rovnoměrně)", [`rateRule`, "toRateRule"]],
-  ["Rozdělení dle kvóty", [`quotaRule`, "toQuotaRule"]],
+  ["Rozdělení rovnoměrně", [`rateRule`, "toRateRule"]],
+  ["Rozdělení dle kvóty", [`quotaRule`, "toQuotaRule", "inferRestQuantity", "inferQuotaQuantity"]],
   ["Rozdělení dle rate", ["compareToRateRule"]],
 
   ["Úměrnosti", [`proportionRule`, "proportionTwoPartRatioRule"]],
@@ -152,25 +160,25 @@ export const rulesCategories = new Map([
   ["Převod jednotek", [`convertToUnitRule`]],
   ["Zaokrouhlení", [`roundToRule`]],
   // ["Rozklad čísla na prvočinitele", ["primeFactorizationRule"]],
-  ["Rozklady a uspořádání", ["splitDecimalAndFractionPartsRule", "tupleRule"]],
+  ["Rozklady/uspořádání", ["splitDecimalAndFractionPartsRule", "tupleRule"]],
 
   ["Pythagorovy věta", [`pythagorasRule`]],
   ["Vztahy úhlů", [`angleCompareRule`, "triangleAngleRule"]],
 
-  ["Posuny", ["toSlideRule"]],
-  ["Škálování", ["scaleRule"]],
-  ["Škálování část-část", ["mapRationsByFactorRule", "nthPartFactorByRule", "nthPartScaleByRule"]],
+  ["Posuny", ["toSlideRule","invertRule"]],
+  ["Škálování", ["scaleRule", "mapRationsByFactorRule", "nthPartFactorByRule", "nthPartScaleByRule"]],
+  // ["Škálování část-část", ["mapRationsByFactorRule", "nthPartFactorByRule", "nthPartScaleByRule"]],
 
-  ["Míšení(aligace)", ["alligationRule"]],
+  // ["Míšení(aligace)", ["alligationRule"]],
 
   ["Výraz, vzorec", ["evalToQuantityRule", "simplifyExprRule", "evalQuotaRemainderExprRule"]],
   ["Řešení rovnice", ["solveEquationRule"]],
 
   ["Vzor opakování", ["sequenceRule", "nthTermRule", "nthPositionRule"]],
-  ["Vyvážené rozdělování", ["balancedPartitionRule"]],
+  ["Vyvážené rozdělování", ["balancedPartitionRule","alligationRule"]],
 
   ["Vyhodnocení", ["evalToOptionRule"]],
-  ["Selský rozum", ["commonSense"]],
+  ["Selský rozum", ["commonSense", "unknownRule"]],
 
 ])
 

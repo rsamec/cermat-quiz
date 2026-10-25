@@ -20,7 +20,7 @@ toc: true
 Data banka rozšířena o [úlohy od ČT EDU](/ctedu/picker).
 - rozbor, tisk, klíč řešení
 - balíčky pro tisk
-- balíčky (markdown formát) pro AI/automatizaci
+- balíčky (markdown formát - vhodný pro AI/automatizaci)
 
 
 ## Automatizace generování artifacts (audio, infografiky, ...) z aplikace NotebookLM z banky úloh

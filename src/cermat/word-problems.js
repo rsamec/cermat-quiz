@@ -3219,7 +3219,7 @@ function equalAgent(f, s) {
   return a.join() === b.join() || a.some((d) => b.includes(d));
 }
 function mergeAgents(f, s) {
-  return [.../* @__PURE__ */ new Set([...f, ...s])];
+  return [.../* @__PURE__ */ new Set([...f, ...normalizeToAgent(s)])];
 }
 function mergeAgent(agent, newAgent, array) {
   const arr = Array.isArray(array) ? array : [array];
@@ -3272,7 +3272,7 @@ function formatNumber(d) {
 }
 function formatRatio(d, asPercent) {
   if (asPercent)
-    return `${formatNumber(d * 100)} %`;
+    return `${formatNumber(d * 100)}`;
   return globalFormatRatioAsLatex ? helpers.convertToFractionAsLatex(d) : d > -2 && d < 2 ? helpers.convertToFraction(d) : formatNumber(d);
 }
 function containerQuestion(d) {
@@ -7659,7 +7659,7 @@ function formatPredicate(d, formatting) {
   let result = "";
   switch (d.kind) {
     case "cont":
-      result = compose`${formatAgent(d.agent)}=${d.asRatio ? formatRatio2(d.quantity) : formatQuantity(d.quantity)}${d.entity != "" ? " " : ""}${formatEntity2(d.entity, d.unit)}`;
+      result = compose`${formatAgent(d.agent)}=${d.asRatio ? formatRatio2(d.quantity) : formatQuantity(d.quantity)}${d.entity != "" || d.unit != "" ? " " : ""}${formatEntity2(d.entity, d.unit)}`;
       break;
     case "comp":
       if (isNumber(d.quantity)) {
@@ -18019,7 +18019,7 @@ function vzestupHladinyVody() {
       half(),
       ctorScale("v\xE1lec polom\u011Br")
     ),
-    evalExprAsRate("r^2*Pi", { kind: "rate", agent: "voda", entity: dim2.volume, entityBase: dim2.length, baseQuantity: 1 })
+    evalExprAsRate("r^2*Pi", { kind: "rate", agent: ["voda"], entity: dim2.volume, entityBase: dim2.length, baseQuantity: 1 })
   );
   return {
     deductionTree: deduce(
