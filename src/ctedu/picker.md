@@ -40,7 +40,8 @@ const ctEduFolders = await FileAttachment("../ctedu/folders.json").json();
               <div id=popover-data-${period} class="menu-items" popover>
                 <div class="v-stack v-stack--m">
                   <a class="h-stack h-stack--s" href="./word-problems-${period}" title="Řešení slovních úloh (markdown)"><i class="fa fa-brands fa-markdown"></i><span>Postupy řešení - markdown</span></a>
-                  <a download class="h-stack h-stack--s" href="./word-problems-${period}.tldr"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-chart-diagram"></i><span>Postupy řešení - tldraw</span><a>
+                  <a download class="h-stack h-stack--s" href="./word-problems-${period}.tldr"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-chart-diagram"></i><span>Postupy řešení - tldraw</span></a>
+                  <a download class="h-stack h-stack--s" href="./word-problems-${period}.json"  title="Řešení slovních úloh (json)"><i class="fa-brands fa-js"></i><span>Postupy řešení - json</span></a>
                 </div>
               </div>
               </div>                        
