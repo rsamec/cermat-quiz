@@ -52,15 +52,15 @@ const assets = assetsData.filter((({code}) => parseCode(code).period == observab
                   ${subject == "math" ? html.fragment`<a class="h-stack h-stack--s" href="../apps/cermat-calculator-${code}" title="Kalkulačka"><i class="fa fa-calculator"></i><span>Kalkulačka</span></a>
                   <a class="h-stack h-stack--s" href="../apps/cermat-chatstepper-${code}" title="Rozhodovačka"><i class="fa fa-diagram-project"></i><span>Rozhodovačka</span></a>
                   <a class="h-stack h-stack--s" href="../apps/cermat-tree-${code}" title="Rozhodovačka"><i class="fa fa-diagram-project"></i><span>Strom</span></a>
-                  <a class="h-stack h-stack--s" href="../apps/cermat-colorexpression-${code}" title="Obarvovačka"><i class="fa fa-palette"></i><span>Rozpad výpočtu</span></a>
-                  <a class="h-stack h-stack--s" href="../apps/cermat-colorpalete-${code}" title="Obarvovačka 2"><i class="fa fa-palette"></i><span>Rozpad výpočtu 2</span></a>`:''}
+                  <a class="h-stack h-stack--s" href="../apps/cermat-colorexpression-${code}" title="Obarvovačka"><i class="fa fa-palette"></i><span>Rozpad výpočtu</span></a>`:''}
                 </div>
               </div>
               ${subject == "math" ? html`<button  popovertarget=popover-data-${code}>Data<i class="fas fa-caret-down"></i></button>
               <div id=popover-data-${code} class="menu-items" popover>
                 <div class="v-stack v-stack--m">
                   <a class="h-stack h-stack--s" href="./word-problems-${code}" title="Řešení slovních úloh (markdown)"><i class="fa fa-brands fa-markdown"></i><span>Postupy řešení - markdown</span></a>
-                  <a download class="h-stack h-stack--s" href="./word-problems-${code}.tldr"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-chart-diagram"></i><span>Postupy řešení - tldraw</span><a>
+                  <a download class="h-stack h-stack--s" href="./word-problems-${code}.tldr"  title="Řešení slovních úloh (tldraw)"><i class="fa fa-chart-diagram"></i><span>Postupy řešení - tldraw</span></a>
+                  <a download class="h-stack h-stack--s" href="./word-problems-${code}.json"  title="Řešení slovních úloh (json)"><i class="fa-brands fa-js"></i><span>Postupy řešení - json</span></a>
                 </div>
               </div>`:''}              
           <div>`

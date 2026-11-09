@@ -66,7 +66,7 @@ async def createWithSources(period:str, results: List[Tuple[str,str]]) -> str:
             # raise ValueError(f"Already exists {matched.id}: {matched.title}")
             return matched.id                        
        
-async def generateArfifacts(id:str, result :dict[str,int],  opt: dict[str, bool], waitForComplation: bool) -> dict[str,int]:
+async def generateArfifacts(id:str, result :dict[str,int],  opt: dict[str, bool], waitForComplation: bool) -> dict[str,str]:
     async with await NotebookLMClient.from_storage() as client:
         # List and manage
         sources = await client.sources.list(id)
@@ -84,16 +84,17 @@ async def generateArfifacts(id:str, result :dict[str,int],  opt: dict[str, bool]
                     await client.artifacts.wait_for_completion(id, status.task_id, initial_interval, max_interval, timeout)
                 else:
                     await asyncio.sleep(between_generation_delay)  # second(s) delay
-                result[status.task_id] = int(src.title.split(".")[0])
+                result[status.task_id] = src.title
             
             # infografics
             if opt["infographic"] and not any(d.kind == "infographic" for d in artifacts):
-                status = await client.artifacts.generate_infographic(id, [src.id], "cs", None, InfographicOrientation.PORTRAIT, InfographicDetail.STANDARD)
+                status = await client.artifacts.generate_infographic(id, [src.id], "cs", None, InfographicOrientation.PORTRAIT, InfographicDetail.STANDARD, later=not(waitForComplation))
                 if waitForComplation:
                     await client.artifacts.wait_for_completion(id, status.task_id, initial_interval, max_interval, timeout)
                 else:
                     await asyncio.sleep(between_generation_delay)  # second(s) delay
-                result[status.task_id] = int(src.title.split(".")[0])
+                result[status.task_id] = src.title
+                print(f"{src.title}, {status.task_id}")
         
         return result
 

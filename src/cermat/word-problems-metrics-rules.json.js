@@ -12,8 +12,6 @@ const rulesMap = [...rulesCategories.entries()].reduce((out, [key, values]) => {
 }, {})
 
 const result = Object.entries(wordProblems)
-  // .filter(([code]) => code === "M9B-2024")  
-  
   .flatMap(([code, value]) => {
     return Object.entries(value).flatMap(([key, value]) => {
       const metrics = computeTreeMetrics(value.deductionTree);

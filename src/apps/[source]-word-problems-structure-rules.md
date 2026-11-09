@@ -29,6 +29,7 @@ const getSelections = (selection) => {
 ```
 # Členění dle odvozovacích pravidel
 
+<!-- <a download class="h-stack h-stack--s  h-stack-items--center" href="/cermat/word-problems-metrics-rules.zip"><i class="fa fa-brands fa-markdown"></i><span>balíček zadání a řešení</span> -->
 
 ```js
 const metricsData = await FileAttachment(`../${observable.params.source}/word-problems-metrics-rules.json`).json();

@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser(description="Example CLI")
 parser.add_argument("--code", type=str)
 args = parser.parse_args()
 code = args.code
-zip_path = os.path.join(os.getcwd(),"src", ".observablehq","cache","ctedu", "word-problem.zip")
+zip_path = os.path.join(os.getcwd(),"src", ".observablehq","cache","cermat", "word-problems-metrics-rules.zip")
 
 files = read_zip_directory_contents_flat(zip_path, code)
 
@@ -39,7 +39,7 @@ async def run_task(code:str):
     # data_path = os.path.join(os.getcwd(),"src", "notebook-lm","data", f"temp-artifacts-{code}.json")
     # existing_artificats = load_existing_source(data_path)
     existing_artificats = {}
-    artifact_source = await generateArfifacts(notebook_id, existing_artificats, {"infographic":True, "audio": True}, False)
+    artifact_source = await generateArfifacts(notebook_id, existing_artificats, {"infographic":True, "audio": False}, False)
     return artifact_source
 
 artifacts = asyncio.run(run_task(code))

@@ -167,7 +167,7 @@ export default {
     .concat(cermatFolders.flatMap(d => ['form', 'chatstepper', 'calculator', 'colorexpression','colorpalete','print'].map(app => `/apps/cermat-${app}-${d}`)))
     //.concat(quizes.flatMap(d => d.codes).map(code => `/data/arch-${code}.schema.json`))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.md`))
-    // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.json`))
+    .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.json`))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.tldr`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/math-answers-${code}.json`))
     .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/math-geometry-${code}.json`))
