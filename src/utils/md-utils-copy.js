@@ -4,7 +4,7 @@ import MarkdownItFootnote from "npm:markdown-it-footnote";
 import sup from 'npm:markdown-it-sup';
 //const inlineTextColor = import('https://cdn.skypack.dev/@gerhobbelt/markdown-it-inline-text-color@1.0.1-1?min');
 //import textBgColor from 'https://cdn.jsdelivr.net/npm/markdown-it-color-plus/+esm';
-import html5Media from 'npm:markdown-it-html5-embed';
+import html5Media from '../lib/ markdown-it-html5-embed/index.js';
 let counter = 1;
 const ATXRenderer = function () {
   const mapping = {

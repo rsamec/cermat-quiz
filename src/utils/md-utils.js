@@ -6,7 +6,7 @@ import sub from 'markdown-it-sub';
 import mark from 'markdown-it-mark';
 import color from 'markdown-it-color-plus';
 const colorPlugin = color.default ?? color;
-import html5Media from 'markdown-it-html5-embed';
+import html5Media from '../lib/ markdown-it-html5-embed/index.js';
 import markdownItAttrs from 'markdown-it-attrs';
 
 let counter = 1;

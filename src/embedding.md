@@ -44,10 +44,10 @@ Zdroje vloženy za jednotlivé úlohy
 
 vložit do www stránek lze pomocí elementu iframe.
 
-<iframe width="100%" height="200" frameborder="0" src="https://www.cermatdata.cz/form-M9A-2024"></iframe>
+<iframe width="100%" height="200" frameborder="0" src="https://www.cermatdata.cz/apps/cermat-form-M9A-2024"></iframe>
 
 ```html run=false
-<iframe width="100%" height="200" frameborder="0" src="https://www.cermatdata.cz/form-M9A-2024"></iframe>
+<iframe width="100%" height="200" frameborder="0" src="https://www.cermatdata.cz/apps/cermat-form-M9A-2024"></iframe>
 ```
 ---
 # javascript module

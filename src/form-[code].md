@@ -64,10 +64,10 @@ const state = {
 
 
 ```js
-
+const { subject } = parseCode(code);
 const parameters = ({
-  questions: [[code].concat(getQuestionIds(metadata,code))],
-  subject:parseCode(code).subject,
+  questions: [[code].concat(getQuestionIds(metadata,subject))],
+  subject,
   quizQuestionsMap,
   displayOptions: {useFormControl:true,useAIHelpers:true,useGoToDetail: true, useResources:false},
   mathResourcesMap,
