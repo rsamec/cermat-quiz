@@ -1,5 +1,5 @@
 ---
-title: Kalkulačka - $code$
+title: Kalkulačka
 sidebar: true
 pager: false
 footer: false

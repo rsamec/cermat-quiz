@@ -1,5 +1,5 @@
 ---
-title: CT_EDU Rozbor řešení
+title: Rozbor řešení
 sidebar: true
 footer: false
 pager: true

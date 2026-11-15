@@ -4,11 +4,16 @@ import wordProblems from './src/math/word-problems.js';
 import { readdirSync, statSync } from 'fs';
 import { join, resolve } from 'path';
 
-const codeRegex = /\$(.*?)\$/g;
 export function formatPeriodDate(period) {
   const [year, month, date] = period.split("-").map(d => parseInt(d));
   return new Date(year, month - 1, date).toLocaleDateString()
 }
+
+export function formatTitle(path){  
+  const periodOrCode = path.slice(-8);  
+  return periodOrCode.split('-').length === 3 ? formatPeriodDate(periodOrCode) : formatCode(periodOrCode)
+}
+
 /**
  * Recursively retrieves all files in a directory.
  * @param {string} dir - The directory path to search.
@@ -66,7 +71,7 @@ const cermatKeys = Object.keys(Object.groupBy(cermatFolders.map(d => parseCode(d
 export default {
   // The app’s title; used in the sidebar and webpage titles.
   title: "Banka úloh",
-  header: ({ title, data, path }) => title?.startsWith("CT_EDU") ? `${title.substring(6)} - ${formatPeriodDate(path.slice(-10))}` : codeRegex.test(title) ? title.replace(codeRegex, (_, __) => formatCode(path.slice(-8))) : title,
+  header: ({ title, data, path }) => path.startsWith("/apps/") > -1 ? `${title} ${formatTitle(path)}` : path,  
   footer: ({ title, data, path }) => `<div class="h-stack"><div class="h-stack h-stack--s"  style="flex:1"><span>2025</span><i class="fa-solid fa-copyright"></i><a href="mailto:roman.samec2@gmail.com">Roman Samec</a></div></a></div>`,
 
   // The pages and sections in the sidebar. If you don’t specify this option,
@@ -165,7 +170,7 @@ export default {
 
     // .concat(ctEduFolders.map(d => `/ctedu/chat-stepper-${d}`))
     // .concat(ctEduFolders.map(d => `/ctedu/calculator-${d}`))
-    .concat(ctEduFolders.flatMap(d => ['print','colorexpression'].map(app => `/apps/ctedu-${app}-${d}`)))
+    .concat(ctEduFolders.flatMap(d => ['form', 'chatstepper', 'calculator', 'colorexpression','colorpalete','print'].map(app => `/apps/ctedu-${app}-${d}`)))
     .concat(cermatFolders.flatMap(d => ['form', 'chatstepper', 'calculator', 'colorexpression','colorpalete','print'].map(app => `/apps/cermat-${app}-${d}`)))
     //.concat(quizes.flatMap(d => d.codes).map(code => `/data/arch-${code}.schema.json`))
     // .concat(quizes.filter(d => d.subject == "math").flatMap(d => d.codes).map(code => `/data/word-problems-${code}.md`))

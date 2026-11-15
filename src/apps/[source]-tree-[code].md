@@ -1,5 +1,5 @@
 ---
-title: Rozhodovačka - $code$
+title: Rozhodovačka
 sidebar: true
 pager: false
 footer: false
