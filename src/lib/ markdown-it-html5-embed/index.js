@@ -3,8 +3,65 @@
 
 'use strict';
 
-import mime from 'mime';
+const MIME_TYPES = {
+  // Text
+  html: "text/html",
+  htm: "text/html",
+  css: "text/css",
+  csv: "text/csv",
+  txt: "text/plain",
+  xml: "application/xml",
+  js: "text/javascript",
+  mjs: "text/javascript",
+  json: "application/json",
+  pdf: "application/pdf",
 
+  // Images
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  gif: "image/gif",
+  svg: "image/svg+xml",
+  webp: "image/webp",
+  ico: "image/x-icon",
+  avif: "image/avif",
+  bmp: "image/bmp",
+
+  // Audio
+  mp3: "audio/mpeg",
+  wav: "audio/wav",
+  ogg: "audio/ogg",
+  m4a: "audio/mp4",
+
+  // Video
+  mp4: "video/mp4",
+  webm: "video/webm",
+  mov: "video/quicktime",
+
+  // Archives
+  zip: "application/zip",
+  gz: "application/gzip",
+  tar: "application/x-tar",
+
+  // Documents
+  doc: "application/msword",
+  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  xls: "application/vnd.ms-excel",
+  xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  ppt: "application/vnd.ms-powerpoint",
+  pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+};
+
+/**
+ * Returns MIME type based on URL or filename.
+ * Similar to mime.getType().
+ */
+function getMimeType(url) {
+  const pathname = new URL(url, "http://localhost").pathname;
+  const extension = pathname.split(".").pop()?.toLowerCase();
+
+  return MIME_TYPES[extension] ?? null;
+}
 
 // Default UI messages. You can customize and add simple translations via
 // options.messages. The language has to be provided via the markdown-it
@@ -60,7 +117,7 @@ function parseToken(tokens, idx, env) {
   }
 
   parsed.url = token.attrs[aIndex][1];
-  parsed.mimeType = mime.getType(parsed.url);
+  parsed.mimeType = getMimeType(parsed.url);
   var RE = /^(audio|video)\/.*/gi;
   var mimetype_matches = RE.exec(parsed.mimeType);
   if (mimetype_matches === null) {
