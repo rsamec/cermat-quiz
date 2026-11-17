@@ -12,7 +12,7 @@ toc: true
 
 ![alt text](image.png)
 
-- stáhnout zip balíček <a download href="/ctedu/word-problem.zip">ČT EDU data</a>, případně <a download href="/data/word-problem.zip">cermat data</a>
+- stáhnout zip balíček <a download href="/ctedu/word-problem.zip">ČT EDU data</a>, případně <a download href="/cermat/word-problem.zip">cermat data</a>
 - extrahovat soubory z balíčku/adresáře
 - use [notebooklm-py](https://github.com/teng-lin/notebooklm-py) knihovnu 
   - vytvoření notebook
