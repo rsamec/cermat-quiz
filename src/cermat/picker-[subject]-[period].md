@@ -71,13 +71,13 @@ const assets = assetsData.filter((({code}) => parseCode(code).period == observab
 </div>
 
 
-${assets.length > 0 ? html`<h2>AI Artifacts - Podcasts</h2><div class="warning" label="Vygenerovány pomocí NotebookLM"><b>Minimalizace chyb</b> je dosaženo tak, že se vedle zadání úlohy vždy předává i <b>řešení úlohy</b> ve formě heslovitého rozboru řešení úlohy.</div>`:''}
+${subject ==="math" && assets.length > 0 ? html`<h2>AI Artifacts - Podcasts</h2><div class="warning" label="Vygenerovány pomocí NotebookLM"><b>Minimalizace chyb</b> je dosaženo tak, že se vedle zadání úlohy vždy předává i <b>řešení úlohy</b> ve formě heslovitého rozboru řešení úlohy.</div>`:''}
 
 
 
 
 <div class="grid grid-cols-4">
-${assets.map(({ video, name, id, audio, description }, i) => html`<div class="carousel__slide" data-label=a${i}>
+${(subject === "math" ? assets:[]).map(({ video, name, id, audio, description }, i) => html`<div class="carousel__slide" data-label=a${i}>
     <figure class="parallax-item" role="tabpanel">
     <figcaption style="padding:10px 0px">    
       <h2>${name}</h2>
