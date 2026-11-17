@@ -91,7 +91,7 @@ function renderChatButton(label, provider, query){
 }
 
 function renderAudio(code,id) {
-  return html`<audio src="./assets/math/${code}/${id}.mp3" autoplay playsinline muted controls style="min-width: 100px;"></audio>`
+  return html`<audio src="/assets/math/${code}/${id}.mp3" autoplay playsinline muted controls style="min-width: 100px;"></audio>`
 }
 function renderQuestion(id) {
   return html`${mdPlus.unsafe(quiz.content([id]))}`

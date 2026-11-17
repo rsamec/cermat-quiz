@@ -47,7 +47,7 @@ function renderResult(key, {Name, Answer, TemplateSteps}){
   </div>`:''}
   <div class="v-stack v-stack--m">${TemplateSteps.map((d,i) => 
     html`<div class="v-stack v-stack--s">
-      <video src="./assets/math/${observable.params.code}/${key}-${i}.mp4" playsinline muted controls></video>
+      <video src="/assets/math/${observable.params.code}/${key}-${i}.mp4" playsinline muted controls></video>
       ${d.Steps?.length > 0 ? renderTemplateSteps(d):''}
     </div>`)}</div>
   </div>`
