@@ -69,7 +69,7 @@ function parseResults(input) {
 
 const d = parseCode(code);
 
-const fileLocation = path.resolve('./src/data/math-answers.json');
+const fileLocation = path.resolve('./src/cermat/math-answers.json');
 
 if (await fileExists(fileLocation)) {
   const outputData = await readJsonFromFile(fileLocation)

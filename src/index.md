@@ -3,7 +3,7 @@ toc: true
 style: /assets/css/main.css
 ---
 <div class="hero">
-  <h1>Cermat úlohy</h1>
+  <h1>Banka úloh</h1>
   <h2>Mimooficiální databanka úloh a postupů řešení</h2>
   <a href="/blog/2026-february/">Novinky</a>
 
@@ -15,7 +15,7 @@ style: /assets/css/main.css
 import { quizes } from './utils/quiz-utils.js';
 import { formatShortCode,formatShortCodeAlt, formatSubject, formatPeriod, parseCode, baseMediaPublic, formatNumber } from './utils/quiz-string-utils.js';
 
-const mathMetricsData = await FileAttachment("./data/math-metrics.json").json();
+const mathMetricsData = await FileAttachment("./cermat/math-metrics.json").json();
 const mathMetricsFlatData = mathMetricsData.flatMap(d => {
   const category = parseCode(d.key).period
   return [
@@ -35,6 +35,20 @@ const mathMetricsCount = mathMetricsData.reduce((out,d) => {
   return out;
 },{wordProblem:{count: 0, steps:0}, geometry:{count:0, steps:0}, expression:{count:0, steps:0}});
 
+const metricsCtEduData = await FileAttachment("./ctedu/math-metrics.json").json();
+const metricsFlatCtEduData = metricsCtEduData.flatMap(d => {
+  return [
+  { key: d.key, type: "Slovní úlohy", value: d.wordProblem?.count ?? 0},
+]}
+);
+
+const metricsCtEduCount = metricsCtEduData.reduce((out,d) => {
+  out.wordProblem.count+= d.wordProblem?.count ?? 0
+  out.wordProblem.steps+= d.wordProblem?.steps ?? 0
+  out.questions.count+= d.questions?.count ?? 0  
+  return out;
+},{wordProblem:{count: 0, steps:0}, questions: {count: 0}});
+
 
 const cermatFolders = await FileAttachment("./cermat/folders.json").json();
 const parsedCermatFolders = Object.entries(Object.groupBy(cermatFolders.map(d => parseCode(d)), d => d.subject)).map(([subject, codes]) => {
@@ -47,24 +61,14 @@ const parsedCermatFolders = Object.entries(Object.groupBy(cermatFolders.map(d =>
   return [subject, {total: codes.length, tasks, periods: Object.keys(periods)}]
 });
 
+const ctEduFolders = await FileAttachment("./ctedu/folders.json").json();
+const parsedCtEduFolders = Object.entries(Object.groupBy(ctEduFolders.map(d => ({code: d, year: d.substring(0,4)})), d => d.year)).map(([year, codes]) => {
+  return [year, {total: codes.length, tasks: metricsCtEduCount.questions.count, periods: []}]
+});
 
 
-const code = "M9D-2025";
-const notebookVideosData = await FileAttachment("./data/notebook-videos.json").json();
-const notebookVideos = notebookVideosData[code] ?? [];
-
-
-const videos = notebookVideos.map(d => {  
-  return {
-    video: `${baseMediaPublic}/${code}/${d.fileName}`,
-    name: `Úloha ${d.id}`,
-    id: d.id,
-  }
-})
-
-function plotWaffle(rawData) {
-
-  const data = rawData.map((d) => ({code:d.key,period: parseCode(d.key).period,...d}));
+function plotCermatWaffle(rawData){
+    const data = rawData.map((d) => ({code:d.key,period: parseCode(d.key).period,...d}));
   const tasksPerPeriod = quizes.filter(d => d.subject == "math")
     .reduce((out,d) => {
       out[d.period] = d.tasksRate;
@@ -73,6 +77,9 @@ function plotWaffle(rawData) {
 
   
   const groupedData = [...d3.rollup(data, v => ({totalPoints:d3.sum(v, d => d.value), maxTasks: v.map(d => d.code).filter((value, index, array) => array.indexOf(value) === index).length}), d => d.period)].map(([period,value]) => ({...value, maxTotalPoints: value.maxTasks * tasksPerPeriod[period], period})).sort((f,s) => f.maxTotalPoints - s.maxTotalPoints);
+  return plotWaffle(groupedData)
+}
+function plotWaffle(groupedData) {
   return Plot.plot({
     grid: true,
     axis: null,
@@ -135,17 +142,18 @@ function plotWaffle(rawData) {
 }
 
 ```
-**Smyslem** tohoto projektu je **zdarma** poskytnout [strukturovaná data](/inputs) pro tvorbu vlastních výukových materiálů (<a href="./notebook-M9D-2025" target="_blank">videa</a>, <a href="./picker-math-4" targe="_blank">audia</a>, pracovní listy, kvízů, kartiček, <a href="/math-trainer">aplikací</a>,...). 
+**Smyslem** tohoto projektu je **zdarma** poskytnout [strukturovaná data](/inputs) pro tvorbu vlastních výukových materiálů (video, audia, pracovní listy, kvízů, kartiček, html stránek, vlastních aplikací,...). 
 
 <div class="tip" label="Tvorba výukových materiálu">
     
-  Nejjednodušší způsob jak vytvořit **vyukové materiály na míru** na pár kliků je stáhnout **balíčky zadání a řešení úloh** ve formátu markdown <a download href="/cermat/word-problem.zip"  title="Řešení slovních úloh "><i class="fa fa-brands fa-markdown"></i><span> zde</span></a> a nahrát do aplikace, např. <a href="https://notebooklm.google.com/" target="_blank">NotebookLM</a>.
+  Nejjednodušší způsob jak vytvořit **vyukové materiály na míru** na pár kliků je stáhnout **balíčky zadání a řešení úloh** ve formátu markdown <i class="fa fa-brands fa-markdown"></i><span> níže</span> a nahrát do aplikace, např. <a href="https://notebooklm.google.com/" target="_blank">NotebookLM</a>.
 
   Případně prozkoumejte další možnosti integrace <a href="/embedding">více informací</a>.
 </div>
 
+## Cermat úlohy
 
-## Banka zadání úloh
+### Zadání úloh
 
 <div class="grid grid-cols-4" style="grid-auto-rows: auto;">
  ${parsedCermatFolders.map(([subject, data]) => html`<div class="card">
@@ -177,7 +185,7 @@ Balíček **všech zadání úloh** ve formátu markdown členěno dle **granula
 </li>
 </ul>
 
-## Banka řešení úloh
+### Řešení úloh
 
 <div class="grid grid-cols-4" style="grid-auto-rows: auto;">
   <div class="card">
@@ -239,10 +247,10 @@ Balíček **úloh s postupy řešení** ve formátu markdown (generováno heslov
 </li>
 </ul>
 
-### Aktuální stav vyřešených matematických úloh ze všech úloh v databance.
+### Aktuální stav vyřešených matematických úloh ze všech úloh.
 
 ${
-  plotWaffle(mathMetricsFlatData)
+  plotCermatWaffle(mathMetricsFlatData)
 }
 
 <details>
@@ -277,6 +285,106 @@ ${
 </details>
 
 ---
+## ČT EDU úlohy
+
+### Zadání úloh
+
+<div class="grid grid-cols-4" style="grid-auto-rows: auto;">
+ ${parsedCtEduFolders.map(([year, data]) => html`<div class="card">
+    <h2><strong>${year}</strong></h2>
+    <div class="v-stack v-stack--s">
+      <div class="h-stack h-stack--l">
+        <div>
+          <span class="big">${data.tasks}</span>
+          <span>úloh</span>
+        </div>
+        <div>
+          <span class="big">${data.total}</span>
+          <span>testů</span>
+        </div>
+      </div>
+      <div class="h-stack h-stack--m h-stack--wrap">
+        <a class="h-stack h-stack--xs" href="./ctedu/picker">čtyřleté<span><span></a>      
+      </div>
+    </div>
+  </div>`)}
+</div>
+
+Balíček **všech zadání úloh** ve formátu markdown členěno dle **granularity** až na úroveň
+<ul>
+<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/ctedu/questions.zip" ><i class="fa fa-brands fa-markdown"></i><span>jednotlivých testů</span></a>
+</li>
+<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/ctedu/question.zip" ><i class="fa fa-brands fa-markdown"></i><span>jednotlivých úloh</span></a>
+</li>
+</ul>
+
+### Řešení úloh
+
+<div class="grid grid-cols-4" style="grid-auto-rows: auto;">
+  <div class="card">
+    <h2><strong>Vyřešené slovní úlohy</strong></h2>
+    <div class="v-stack v-stack--s">
+      <div class="h-stack h-stack--l">
+        <div>
+          <span class="big">${metricsCtEduCount.wordProblem.count}</span>
+          <span>úloh</span>
+        </div>
+        <div>
+          <span class="big">${formatNumber(metricsCtEduCount.wordProblem.steps)}</span>
+          <span>kroků řešení</span>
+        </div>
+      </div>
+      <a class="h-stack h-stack--xs" href="./word-problems-summary">Slovní úlohy<span><span></a>
+    </div>
+  </div>
+</div>
+
+Balíček **úloh s postupy řešení** ve formátu markdown (generováno heslovitě) s členěním dle **granularity** až na úroveň
+<ul>
+<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/cermat/word-problems.zip"><i class="fa fa-brands fa-markdown"></i><span>jednotlivých testů</span></a>
+</li>
+<li><a download class="h-stack h-stack--s  h-stack-items--center" href="/cermat/word-problem.zip"><i class="fa fa-brands fa-markdown"></i><span>jednotlivých úloh</span></a>
+</li>
+</ul>
+
+### Aktuální stav vyřešených úloh ze všech úloh.
+
+${
+  plotWaffle([{totalPoints: metricsCtEduCount.wordProblem.count, maxTotalPoints: metricsCtEduCount.questions.count, period: '4'}])
+}
+
+<details>
+<summary>Přehled za jednotlivé testy</summary>
+${
+  Plot.plot({
+  marginLeft: 120,
+  grid:true,
+  color: { legend: true },
+  x:{
+    label:'Úlohy'    
+  },
+  y:{
+    label: null,
+    tickFormat: d => d
+  },
+  marks: [
+    Plot.waffleX(
+      metricsFlatCtEduData,
+      Plot.groupY(
+        { x: "sum" },
+        {
+          fill: "type",
+          y: "key",
+          x: "value",
+        }
+      )
+    )
+  ]
+})
+}
+</details>
+
+
 ## Co nabízíme
 
 <div class="grid grid-cols-4" style="grid-auto-rows: auto;"> 

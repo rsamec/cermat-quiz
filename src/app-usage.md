@@ -7,9 +7,9 @@
   Jedná se o **neoficiální** verzi s uděleným souhlasem CERMAT.
 </div>
 <div class="warning" label="Varování">
-  ČT EDU úlohy byly převzaty z kanálu ČT EDU dle uváděného hesla vzdělávání volně dostupné pro všechny. 🐹
+  ČT EDU úlohy byly převzaty z kanálu ČT EDU. 🐹
   
-  Jedná se o **neoficiální** verzi bez vědomí ČT.
+  Jedná se o **neoficiální** verzi.
 </div>
 
 1. Aplikace je zdarma a je poskytována „tak, jak je“, bez jakýchkoliv záruk. „Experimentální režim: používejte jen na vlastní riziko a s přimhouřeným okem.“ 😉

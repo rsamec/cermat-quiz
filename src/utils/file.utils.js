@@ -46,3 +46,28 @@ export async function saveJsonToFile(filePath, jsonData) {
       throw error;
   }
 }
+
+
+export function mergeShallow(target, ...sources) {
+  for (const source of sources) {
+    if (!source) continue;
+    for (const i in source) {
+      const value = source[i];
+      const key = value.key;
+      if (
+        typeof value === 'object' &&
+        value !== null &&
+        !Array.isArray(value) &&
+        typeof target[key] === 'object' &&
+        target[key] !== null &&
+        !Array.isArray(target[key])
+      ) {
+        // Merge one level deep
+        target[key] = { ...target[key], ...value };
+      } else {
+        target[key] = value;
+      }
+    }
+  }
+  return target;
+}

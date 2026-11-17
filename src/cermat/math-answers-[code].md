@@ -31,12 +31,12 @@ toc: false
 
 </style>
 ```js
-import mdPlus from './utils/md-utils.js';
-import { isEmptyOrWhiteSpace } from './utils/string-utils.js';
-import { formatCode } from './utils/quiz-string-utils.js';
+import mdPlus from '../utils/md-utils.js';
+import { isEmptyOrWhiteSpace } from '../utils/string-utils.js';
+import { formatCode } from '../utils/quiz-string-utils.js';
 
-const metadata = await FileAttachment(`./data/math-answers-${observable.params.code}.json`).json();
-const videoExlusions = await FileAttachment('./data/math-answers-video-exclude.json').json();
+const metadata = await FileAttachment(`./math-answers-${observable.params.code}.json`).json();
+const videoExlusions = await FileAttachment('./math-answers-video-exclude.json').json();
 const videoExclude = videoExlusions[observable.params.code] ?? {};
 const entries = Object.entries(metadata);
 function normalizeMath(value){

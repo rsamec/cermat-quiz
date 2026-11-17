@@ -8,7 +8,7 @@ const {
   options: { code: { type: "string" } }
 });
 
-const fileLocation = path.resolve('./src/data/math-geometry.json');
+const fileLocation = path.resolve('./src/cermat/math-geometry.json');
 
 const outputData = await readJsonFromFile(fileLocation)
 const parResults = outputData[code] ?? {};

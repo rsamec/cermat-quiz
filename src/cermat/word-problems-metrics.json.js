@@ -1,4 +1,4 @@
-import wordProblems from '../cermat/word-problems.js';
+import wordProblems from './word-problems.js';
 import { computeTreeMetrics, wordProblemGroupById } from "../utils/deduce-utils.js";
 import { unique } from "../utils/common-utils.js";
 

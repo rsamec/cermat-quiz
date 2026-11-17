@@ -11,9 +11,9 @@ const {
   }
 });
 
-const expressionArtifacts = await readJsonFromFile(path.resolve('./src/data/math-answers.json'))
-const videoExlusions = await readJsonFromFile(path.resolve('./src/data/math-answers-video-exclude.json'))
-const geometryArtifacts = await readJsonFromFile(path.resolve('./src/data/math-geometry.json'))
+const expressionArtifacts = await readJsonFromFile(path.resolve('./src/cermat/math-answers.json'))
+const videoExlusions = await readJsonFromFile(path.resolve('./src/cermat/math-answers-video-exclude.json'))
+const geometryArtifacts = await readJsonFromFile(path.resolve('./src/cermat/math-geometry.json'))
 
 const allArtifacts = Object.keys(geometryArtifacts).reduce((merged, key) => {
   merged[key] = merge(expressionArtifacts[key] ?? {}, geometryArtifacts[key])

@@ -31,11 +31,11 @@ toc: false
 
 </style>
 ```js
-import mdPlus from './utils/md-utils.js';
-import { isEmptyOrWhiteSpace } from './utils/string-utils.js';
-import { formatCode } from './utils/quiz-string-utils.js';
+import mdPlus from '../utils/md-utils.js';
+import { isEmptyOrWhiteSpace } from '../utils/string-utils.js';
+import { formatCode } from '../utils/quiz-string-utils.js';
 
-const metadata = await FileAttachment(`./data/math-geometry-${observable.params.code}.json`).json();
+const metadata = await FileAttachment(`./math-geometry-${observable.params.code}.json`).json();
 
 const entries = Object.entries(metadata);
 

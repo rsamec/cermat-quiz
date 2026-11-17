@@ -1,0 +1,241 @@
+---
+footer: false
+pager: true
+toc: true
+title: Slovní úlohy
+style: /assets/css/word-problems.css
+---
+<style>
+  .description {
+    font-size: 12px;
+    font-style: italic;
+  }
+ 
+</style>
+```js
+import { formatCode, parseCode, formatPeriod, formatShortCodeAlt, formatShortCode, formatVersion} from '../utils/quiz-string-utils.js';
+import { unique, download } from "../utils/common-utils.js";
+import wordProblems from './word-problems.js';
+
+import {categories, predicatesCategories, rulesCategories} from '../utils/quiz-utils.js';
+import { renderChatStepper, useInput } from '../utils/deduce-chat.js';
+import { jsonToMarkdownChat} from '../utils/deduce-utils.js';
+import mdPlus from '../utils/md-utils.js';
+import { parser } from '@lezer/markdown';
+import { getQuizBuilder } from "../utils/parse-utils.js";
+import * as math from "../components/math.js";
+import { renderMarkdownWithCopy } from "../utils/render-utils.js";
+
+const questionsMaxLimit = 25;
+
+const quizQuestionsMap = await FileAttachment(`./quiz-math.json`).json();
+
+const wordProblemsMetrics = await FileAttachment("./word-problems-metrics.json").json();
+
+const markdownParser = parser.configure([]);
+function makeQuizBuilder(normalizedQuiz) {  
+  const parsedTree = markdownParser.parse(normalizedQuiz);
+  return getQuizBuilder(parsedTree, normalizedQuiz,{});
+}
+
+const filteredQuizCategories = Object.entries(wordProblems).flatMap(([code, codeProblems]) => {
+  
+  const parsedCode = parseCode(code);
+  const questionMap = quizQuestionsMap
+  
+  const quiz = questionMap[code];
+  if (quiz == null) return [];
+  const builder = makeQuizBuilder(quiz.rawContent)
+  return Object.entries(Object.groupBy(Object.entries(codeProblems), ([id]) => id.split('.')[0])).map(([groupKey, problems]) => {
+    const metrics = wordProblemsMetrics[code]?.[groupKey]; 
+      return {
+        id: groupKey,
+        name: builder.questions.find(q => q.id == groupKey)?.title ?? groupKey,
+        code,
+        year: parsedCode.year,
+        period: parsedCode.period,
+        subject: parsedCode.subject,
+        order: parsedCode.order,
+        version: formatVersion(parsedCode),
+        predicates: metrics?.predicates ?? [],
+        rules: metrics?.rules ?? [],
+        formulas: metrics?.formulas ?? [],
+        hasSolution: metrics != null,
+        builder,      
+        deductionTrees: problems.map(([id, value]) => value.deductionTree)
+      };
+    })
+  }
+).filter(d => d.subject === "math" && d.hasSolution)
+
+const resetValue = (input, defaultValue) => {
+  input.value = defaultValue;
+  input.dispatchEvent(new Event("input", {bubbles: true}));
+}
+const years = Object.keys(Object.groupBy(filteredQuizCategories, ({year}) => year));
+const selectedYearsInput = Inputs.select(years,{ multiple:true, label:"Rok"});
+const selectedYears = Generators.input(selectedYearsInput);
+
+const periods = Object.keys(Object.groupBy(filteredQuizCategories, ({period}) => period));
+const selectedPeriodsInput = Inputs.select(periods,{ multiple:true, format: d => formatPeriod(d), label:"Studium" });
+const selectedPeriods = Generators.input(selectedPeriodsInput);
+
+const versions = Object.keys(Object.groupBy(filteredQuizCategories, ({order}) => order));
+const selectedVersionsInput = Inputs.select(versions,{ multiple:true, format: order => formatVersion({order}), label:"Verze" });
+const selectedVersions = Generators.input(selectedVersionsInput);
+
+
+const codes = Object.keys(Object.groupBy(filteredQuizCategories, ({code}) => code));
+const selectedCodesInput = Inputs.select(codes,{ multiple:true, format: d => formatCode(d), label:"Test" });
+const selectedCodes = Generators.input(selectedCodesInput);
+
+const uniquePredicates = predicatesCategories;
+const selectedPredicatesInput = Inputs.select(uniquePredicates,{ multiple:true, label:"Predikáty"});
+const selectedPredicates = Generators.input(selectedPredicatesInput);
+
+//const uniqueRules = filteredQuizCategories.flatMap(d => d.rules).filter(unique)
+
+
+const uniqueRules = rulesCategories;
+
+const selectedRulesInput = Inputs.select(uniqueRules,{ multiple:true, label:"Pravidla"});
+const selectedRules = Generators.input(selectedRulesInput);
+
+const registry = math.formulaRegistry;
+const formulaItems = [].concat(Object.values(registry.circumReference).concat(Object.values(registry.surfaceArea)).concat(Object.values(registry.volume)).concat([registry.speed, registry.squareRoot]))
+const uniqueFormulas =  new Map(formulaItems.map(d => [d.name, [d.name]]));
+
+const selectedFormulasInput = Inputs.select(uniqueFormulas,{ multiple:true, label:"Vzorce"});
+const selectedFormulas = Generators.input(selectedFormulasInput);
+
+
+const controlsInput = Inputs.radio(
+    new Map([
+      ["Pouze zadání", "A"],
+      ["Pouze řešení", "B"],
+      ["Zadání a řešení", "AB"]
+    ]),
+    {value: "AB"}
+  )
+const controls = Generators.input(controlsInput);
+
+
+
+const toBadge = (selected, selectedInput, label) => selected.length > 0 ? html`<div class="badge">
+  ${label != null ? `${label}: ${selected.length}`: `${selected.join(", ")}` }
+  <i class="fa-solid fa-xmark" onClick=${() => resetValue(selectedInput, [])}></i>
+</div>`: ''
+
+```
+
+<details>
+    <summary>
+    Filtrování úloh
+    </summary>
+  <section>
+    <div class="grid grid-cols-3">
+      <div>
+        ${selectedYearsInput}
+      </div>
+      <div>
+        ${selectedPeriodsInput}
+      </div>
+      <div>
+        ${selectedVersionsInput}
+      </div>
+      <div>
+        ${selectedPredicatesInput}
+      </div>
+      <div>
+        ${selectedRulesInput}
+      </div>
+      <div>
+        ${selectedFormulasInput}
+      </div>
+    </div>
+  </section>
+</details>
+<div class="h-stack h-stack--l h-stack--wrap">
+  ${toBadge(selectedYears, selectedYearsInput)}
+  ${toBadge(selectedPeriods, selectedPeriodsInput,"Studium")}
+  ${toBadge(selectedVersions, selectedVersionsInput,"Verze")}
+  ${toBadge(selectedPredicates, selectedPredicatesInput, "Predikáty")}
+  ${toBadge(selectedRules, selectedRulesInput, "Pravidla")}
+  ${toBadge(selectedFormulas, selectedFormulasInput, "Vzorce")}
+</div>
+
+
+
+```js
+let filtered = filteredQuizCategories;
+if (selectedYears.length > 0){
+  filtered = filtered.filter(d=> selectedYears.some(year => d.year === year));
+}
+if (selectedPeriods.length > 0){
+  filtered = filtered.filter(d=> selectedPeriods.some(period => d.period === period));
+}
+if (selectedVersions.length > 0){
+  filtered = filtered.filter(d=> selectedVersions.some(order => d.order === order));
+}
+
+// if (selectedCodes.length > 0){
+//   filtered = filtered.filter(d=> selectedCodes.some(code => d.code === code));
+// }
+
+if (selectedPredicates.length > 0){
+  filtered = filtered.filter(d=> selectedPredicates.flatMap(d => d).some(predicate => d.predicates.includes(predicate)));
+}
+if (selectedRules.length > 0){
+  filtered = filtered.filter(d=> selectedRules.flatMap(d => d).some(rule => d.rules.includes(rule)));
+}
+if (selectedFormulas.length > 0){
+  filtered = filtered.filter(d=> selectedFormulas.flatMap(d => d).some(rule => d.formulas.includes(rule)));
+}
+
+const search = view(Inputs.search(filtered,{placeholder: "Vyhledej úlohy…"}));
+
+```
+
+```js
+const selected = view(Inputs.table(search,{  
+  columns: [
+    "name",
+    "year",
+    "period",
+    "version",
+  ],
+  header: {
+    year:"Rok",
+    period: "Period",
+    name: "Úloha",
+    version: "Verze",
+  },
+  width: {
+    name: 240,
+    year: 40,
+    period: 70,
+    version: 70,   
+  },
+  format: {
+    name: (d,i,o) => html`<a href="/cermat/solution-${o[i].code}#${o[i].id}" target="_blank">${d}</a>`,
+    period: d => html`${formatPeriod(d)}`
+  }
+}))
+```
+```js
+// const uniqueRulesValues = [...uniqueRules.values()].flatMap(d => d);
+// console.log(selected.flatMap(d =>  d.rules.filter(r => !uniqueRulesValues.includes(r))).filter(d => d!= "commonSense"));
+const selectedToRender = selected.length > questionsMaxLimit ? selected.filter((_,i)=> i < questionsMaxLimit): selected;
+```
+
+${controlsInput}
+
+${html`${selected.length > questionsMaxLimit
+            ? html`<div class="caution" label="Limit - maximální počet úloh">
+              <div>Zobrazeno <b>${selectedToRender.length}</b> z <b>${selected.length} úloh</b></div>
+            <div>`
+          :''}`}
+
+
+${ html`<div class="card">${renderMarkdownWithCopy(selectedToRender.map(d => (controls.startsWith("A") ? d.builder.content([parseInt(d.id)], { render: 'content' }) : "") + ' ' + (controls.endsWith("B") ?  (controls.startsWith("A") ? `\n---\n`:'') + d.deductionTrees.map(tree => jsonToMarkdownChat(tree, {rules:selectedRules.flatMap(d => d),predicates:selectedPredicates.flatMap(d => d), formulas: selectedFormulas.flatMap(d => d)}).join("")).join("---\n") : "")).join("\n---\n"), 'md')}</div>`}
+

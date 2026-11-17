@@ -1,36 +1,13 @@
 import path from 'path';
-import { readJsonFromFile } from '../utils/file.utils.js';
-import wordProblems from '../cermat/word-problems.js';
+import { readJsonFromFile, mergeShallow } from '../utils/file.utils.js';
+import wordProblems from './word-problems.js';
 import { uniqueQuestionCount } from '../utils/quiz-string-utils.js';
 import { computeTreeMetrics } from "../utils/deduce-utils.js";
 
-const expressions = await readJsonFromFile(path.resolve('./src/data/math-answers.json'));
-const geometry = await readJsonFromFile(path.resolve('./src/data/math-geometry.json'));
+const expressions = await readJsonFromFile(path.resolve('./src/cermat/math-answers.json'));
+const geometry = await readJsonFromFile(path.resolve('./src/cermat/math-geometry.json'));
 
 
-function mergeShallow(target, ...sources) {
-  for (const source of sources) {
-    if (!source) continue;
-    for (const i in source) {
-      const value = source[i];
-      const key = value.key;
-      if (
-        typeof value === 'object' &&
-        value !== null &&
-        !Array.isArray(value) &&
-        typeof target[key] === 'object' &&
-        target[key] !== null &&
-        !Array.isArray(target[key])
-      ) {
-        // Merge one level deep
-        target[key] = { ...target[key], ...value };
-      } else {
-        target[key] = value;
-      }
-    }
-  }
-  return target;
-}
 
 function uniqueStepsCount(value) {
   return sum(Object.entries(value).map(([_, value]) => sum(value.results?.flatMap(d => d.TemplateSteps.flatMap(s => s.Steps.length)) ?? [])));
