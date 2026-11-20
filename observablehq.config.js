@@ -71,7 +71,9 @@ const cermatKeys = Object.keys(Object.groupBy(cermatFolders.map(d => parseCode(d
 export default {
   // The app’s title; used in the sidebar and webpage titles.
   title: "Banka úloh",
-  header: ({ title, data, path }) => path.startsWith("/apps/") > 0 ? `${title} ${formatTitle(path)}` : title,  
+  header: ({ title, data, path }) => {    
+    return path.startsWith("/apps/") > 0 && path.indexOf("word-problems-structure") === -1 ? `${title} ${formatTitle(path)}` : title
+  },  
   footer: ({ title, data, path }) => `<div class="h-stack"><div class="h-stack h-stack--s"  style="flex:1"><span>2025</span><i class="fa-solid fa-copyright"></i><a href="mailto:roman.samec2@gmail.com">Roman Samec</a></div></a></div>`,
 
   // The pages and sections in the sidebar. If you don’t specify this option,

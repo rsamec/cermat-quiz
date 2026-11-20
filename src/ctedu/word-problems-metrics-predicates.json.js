@@ -23,7 +23,8 @@ const result = Object.entries(wordProblems)
       question: key.split(".")[0],
       index:i,
       rule: d.name,
-      sets: d.inputs.flatMap(d => predicatesMap[d] ?? d).filter(unique)
+      sets: d.inputs.flatMap(d => predicatesMap[d] ?? d).filter(unique),
+      category: code,
     }))
   })
 })

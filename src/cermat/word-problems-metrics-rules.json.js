@@ -2,6 +2,7 @@ import wordProblems from './word-problems.js';
 import { unique } from '../utils/common-utils.js';
 import { computeTreeMetrics } from "../utils/deduce-utils.js";
 import { rulesCategories } from '../utils/quiz-utils.js';
+import { parseCode, formatPeriod } from '../utils/quiz-string-utils.js';
 
 
 const rulesMap = [...rulesCategories.entries()].reduce((out, [key, values]) => {
@@ -29,7 +30,8 @@ const result = Object.entries(wordProblems)
         code,
         key,
         question: key.split(".")[0],
-        sets: Object.keys(categoryMap)
+        sets: Object.keys(categoryMap),
+        category: formatPeriod(parseCode(code).period)
       }
     })
   })

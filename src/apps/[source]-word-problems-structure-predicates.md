@@ -10,7 +10,7 @@ sidebar: true
 import mdPlus from "../utils/md-utils.js"
 import { inferenceRuleWithQuestion } from '../math/word-problems.js';
 import { formatPredicate, mapNodeChildrenToPredicates, jsonToMarkdownChatEx } from "../utils/deduce-utils.js";
-import { extractSets, generateCombinations,renderVennDiagram, render as renderUpSetJS} from 'npm:@upsetjs/bundle';
+import { extractSets, generateCombinations,renderVennDiagram, render as renderUpSetJS, categoricalAddon} from 'npm:@upsetjs/bundle';
 import { formatCode, parseCode, formatPeriod, formatShortCodeAlt, formatShortCode, formatVersion} from '../utils/quiz-string-utils.js';
 import { predicatesCategories } from '../utils/quiz-utils.js';
 import { unique, download } from "../utils/common-utils.js";
@@ -34,7 +34,7 @@ const getSelections = (selection) => {
 const metricsData = await FileAttachment(`../${observable.params.source}/word-problems-metrics-predicates.json`).json();
 const sets = extractSets(metricsData).filter(d => !["eval-option"].includes(d.name));
 const combinations = generateCombinations(sets, {type:'distinctIntersection', order: 'cardinality:desc', min: 2})
-const selection = view(UpSetJSElement(sets, combinations, {height: 1200, theme: mode, mode:'click'}))
+const selection = view(UpSetJSElement(metricsData, sets, combinations, {height: 1200, theme: mode, mode:'click'}))
 ```
 ${onlyHighlightedInput}
 
@@ -106,13 +106,21 @@ function renderVenn(sets, combinations){
   return root
 }
 
-function UpSetJSElement(sets, combinations = undefined, extras = {}) {
+function UpSetJSElement(elems, sets, combinations = undefined, extras = {}) {
   const props = {
     sets,
     height: 500,
     width,
     selection: null,
-  
+    setAddons:[categoricalAddon('category',elems,{
+              name: 'Category',
+              position: 'right',
+              size: 150,
+            })],
+    combinationAddons:[categoricalAddon('category', elems, {
+              name: 'Category',
+              orient:'vertical',
+            })],
     ...extras
   };
   if (combinations) {

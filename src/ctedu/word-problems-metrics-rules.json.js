@@ -31,7 +31,8 @@ const result = Object.entries(wordProblems)
         code,
         key,
         question: key.split(".")[0],
-        sets: Object.keys(categoryMap)
+        sets: Object.keys(categoryMap),
+        category: code
       }
     })
   })

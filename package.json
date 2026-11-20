@@ -84,17 +84,17 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@google/genai": "^1.10.0",
     "@kitschpatrol/tldraw-cli": "^4.6.41",
     "@playwright/test": "^1.57.0",
     "@types/node": "^22.7.6",
-    "pdf-lib": "^1.17.1",
-    "rimraf": "^5.0.5",
     "openai": "^4.91.1",
     "pako": "^2.1.0",
+    "pdf-lib": "^1.17.1",
     "playwright": "^1.49.0",
     "prosemirror-markdown": "^1.13.2",
     "prosemirror-schema-basic": "^1.2.4",
-    "@google/genai": "^1.10.0"
+    "rimraf": "^5.0.5"
   },
   "engines": {
     "node": ">=18"

@@ -285,6 +285,7 @@ ${
 </details>
 
 ---
+
 ## ČT EDU úlohy
 
 ### Zadání úloh
@@ -384,6 +385,7 @@ ${
 }
 </details>
 
+---
 
 ## Co nabízíme
 
