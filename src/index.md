@@ -247,7 +247,7 @@ Balíček **úloh s postupy řešení** ve formátu markdown (generováno heslov
 </li>
 </ul>
 
-### Aktuální stav vyřešených matematických úloh ze všech úloh.
+### Aktuální stav vyřešených úloh ze všech úloh z matematiky.
 
 ${
   plotCermatWaffle(mathMetricsFlatData)

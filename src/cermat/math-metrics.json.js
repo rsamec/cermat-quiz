@@ -1,36 +1,27 @@
-import fs from "node:fs";
-import path from "node:path";
-import { readJsonFromFile, mergeShallow } from "../utils/file.utils.js";
+import path from 'path';
+import { readJsonFromFile, mergeShallow } from '../utils/file.utils.js';
 import wordProblems from './word-problems.js';
 import { uniqueQuestionCount } from '../utils/quiz-string-utils.js';
 import { computeTreeMetrics } from "../utils/deduce-utils.js";
 
-const source = "cermat"
-const relativeBaseUrl = `/${source}`;
-const sourcePath = path.resolve(`./src/${source}`);
-const sourceFolders = fs.readdirSync(sourcePath, { withFileTypes: true })
-  .filter(dirent => dirent.isDirectory())
-  .map(dirent => dirent.name)
-
-async function sourceQuestions() {
-  const data = []
-  for (const code of sourceFolders) {
-    const content = await readJsonFromFile(path.resolve(sourcePath, `${code}/key.json`));
-
-    const questionsKeys = Object.keys(content.children)
-    data.push({
-      key:code,
-      questions: {
-        count: questionsKeys.length,
-        keys: questionsKeys
-      }
-    })
-  }
-
-  return data;
-};
+const expressions = await readJsonFromFile(path.resolve('./src/cermat/math-answers.json'));
+const geometry = await readJsonFromFile(path.resolve('./src/cermat/math-geometry.json'));
 
 
+
+function uniqueStepsCount(value) {
+  return sum(Object.entries(value).map(([_, value]) => sum(value.results?.flatMap(d => d.TemplateSteps.flatMap(s => s.Steps.length)) ?? [])));
+}
+
+function toKeys(data, keyName, stepsKeyName) {
+  return Object.entries(data).map(([key, value]) => ({
+    key,
+    [keyName]: {
+      count: uniqueQuestionCount(value),
+      steps: uniqueStepsCount(value)
+    }
+  }))
+}
 function toWordProblemsKeys(data) {
   return Object.entries(data).map(([key, value]) => ({
     key,
@@ -60,12 +51,11 @@ function wordProblemGroupById(wordProblem) {
   return Object.groupBy(deductionTrees, ({ key }) => parseInt(key.split(".")[0]));
 }
 
-const questionsCount = await sourceQuestions();
+const expressionObject = toKeys(expressions, "expression")
+const geometryObject = toKeys(geometry, "geometry")
 const wordProblemObject = toWordProblemsKeys(wordProblems)
 
-
-
-const result = Object.values(mergeShallow({}, questionsCount, wordProblemObject))
+const result = Object.values(mergeShallow({}, wordProblemObject, expressionObject, geometryObject))
 
 process.stdout.write(JSON.stringify(result))
 
